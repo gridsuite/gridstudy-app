@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnNodesDialog from './custom-columns-nodes-dialog';
-import AcUnitIcon from '@mui/icons-material/AcUnit';
+import BuildIcon from '@mui/icons-material/Build';
 import { spreadsheetStyles } from '../utils/style';
 
 export default function CustomColumnsNodesConfig() {
@@ -21,7 +21,7 @@ export default function CustomColumnsNodesConfig() {
     return (
         <>
             <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={dialogOpen.setTrue}>
-                <AcUnitIcon />
+                <BuildIcon />
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
             </Button>
 

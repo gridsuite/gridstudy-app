@@ -30,7 +30,7 @@ const NodeAliasCreation = ({ name, index }) => {
     );
 
     const getNodeName = (nodeInfo: NodeInfo): string => {
-        return nodeInfo.nodeName;
+        return nodeInfo?.nodeName ?? '';
     };
 
     const nodeAliasField = (
@@ -39,15 +39,15 @@ const NodeAliasCreation = ({ name, index }) => {
 
     const nodeNameField = (
         <AutocompleteInput
-            allowNewValue
             forcePopupIcon
             //hack to work with freesolo autocomplete
             //setting null programatically when freesolo is enable wont empty the field
+            isOptionEqualToValue={(option, value) => option.nodeName === value.nodeName}
             name={`${name}.${index}.${NODE_INFO}`}
             label={'spreadsheet/parameter_aliases/node_name'}
             options={nodeInfos}
             getOptionLabel={getNodeName}
-            inputTransform={(value) => (value === null ? '' : value)}
+            inputTransform={(value) => (value == null ? '' : value)}
             outputTransform={(value) => value}
             size={'small'}
             formProps={{ margin: 'normal' }}

@@ -38,7 +38,6 @@ const styles = {
         maxWidth: 'none',
         margin: 'auto',
     },
-    columnDescription: { width: '95%', marginTop: '20px', marginBottom: '20px' },
     field: { width: '70%' },
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 } as const satisfies Record<string, SxProps<Theme>>;

@@ -306,7 +306,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         equipmentDefinition as EquipmentProps,
-        formatFetchedEquipmentsHandler
+        formatFetchedEquipmentsHandler,
+        tabIndex
     );
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams

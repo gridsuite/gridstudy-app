@@ -35,7 +35,8 @@ type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 
 export const useSpreadsheetEquipments = (
     equipment: EquipmentProps,
-    formatFetchedEquipments: FormatFetchedEquipments
+    formatFetchedEquipments: FormatFetchedEquipments,
+    tabIndex: number
 ) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
@@ -47,6 +48,7 @@ export const useSpreadsheetEquipments = (
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
+    const tablesNames = useSelector((state: AppState) => state.tables.names);
 
     const {
         impactedSubstationsIds,
@@ -168,34 +170,37 @@ export const useSpreadsheetEquipments = (
                 SpreadsheetEquipmentType,
                 string[]
             >;
-            //TODO: this could be improved by fetching only the additional equipments of the tab we are currently on
             Object.entries(customColumnsDefinitions).forEach((customColumnDefinition) => {
                 let equipmentType = customColumnDefinition[0];
                 let equipmentTypeForFetch: SpreadsheetEquipmentType = toEquipmentType(equipmentType);
                 let customColumns = customColumnDefinition[1];
                 const nodeLabels = treeModel ? treeModel.treeNodes.map((node) => node.data.label) : [];
-                customColumns.columns.forEach((column) => {
-                    const pattern: string = nodeLabels.map((nodeLabel) => `\\b${nodeLabel}\\b\\.`).join('|'); // pattern to find the nodes in the expression
-                    const regex = new RegExp(pattern, 'g');
-                    const nodesFoundInFormula = column.formulaForEval?.match(regex); // contains all the nodes that were found in the expression
-                    nodesFoundInFormula?.forEach((node) => {
-                        let nodeName = node.slice(0, -1);
-                        let treeNodeIndex = treeModel?.treeNodes.findIndex(
-                            (treeNode) => treeNode.data.label === nodeName
-                        );
-                        let nodeId = treeModel?.treeNodes[treeNodeIndex].id;
-                        if (
-                            nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch] === undefined ||
-                            !nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch].includes(nodeId)
-                        ) {
-                            if (nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch] === undefined) {
-                                nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch] = [nodeId];
-                            } else {
-                                nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch].push(nodeId);
+                const currentTabEquipmentType = toEquipmentType(tablesNames[tabIndex]);
+                //we only need to fetch other nodes equipments of the tab we are on
+                if (equipmentTypeForFetch === currentTabEquipmentType) {
+                    customColumns.columns.forEach((column) => {
+                        const pattern: string = nodeLabels.map((nodeLabel) => `\\b${nodeLabel}\\b\\.`).join('|'); // pattern to find the nodes in the expression
+                        const regex = new RegExp(pattern, 'g');
+                        const nodesFoundInFormula = column.formulaForEval?.match(regex); // contains all the nodes that were found in the expression
+                        nodesFoundInFormula?.forEach((node) => {
+                            let nodeName = node.slice(0, -1);
+                            let treeNodeIndex = treeModel?.treeNodes.findIndex(
+                                (treeNode) => treeNode.data.label === nodeName
+                            );
+                            let nodeId = treeModel?.treeNodes[treeNodeIndex].id;
+                            if (
+                                nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch] === undefined ||
+                                !nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch].includes(nodeId)
+                            ) {
+                                if (nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch] === undefined) {
+                                    nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch] = [nodeId];
+                                } else {
+                                    nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch].push(nodeId);
+                                }
                             }
-                        }
+                        });
                     });
-                });
+                }
             });
 
             let fetchers: Promise<any>[] = [];
@@ -227,7 +232,16 @@ export const useSpreadsheetEquipments = (
                 dispatch(addAdditionalEquipmentsByNodesForCustomColumns(additionalEquipmentsByNodes));
             });
         }
-    }, [dispatch, equipments, studyUuid, formatFetchedEquipments, treeModel, customColumnsDefinitions]);
+    }, [
+        dispatch,
+        equipments,
+        studyUuid,
+        formatFetchedEquipments,
+        treeModel,
+        customColumnsDefinitions,
+        tabIndex,
+        tablesNames,
+    ]);
 
     return { equipments, errorMessage, isFetching };
 };

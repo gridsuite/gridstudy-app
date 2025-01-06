@@ -14,10 +14,7 @@ export const NODE_NAME = 'nodeName';
 export const NODES_ALIASES = 'nodesAliases';
 
 export const initialCustomColumnNodesForm: CustomColumnNodesForm = {
-    [NODES_ALIASES]: [
-        { alias: 'alias1', nodeInfo: { nodeId: 'nodeId1', nodeName: 'name1' } },
-        { alias: 'alias2', nodeInfo: { nodeId: 'nodeId2', nodeName: 'name2' } },
-    ],
+    [NODES_ALIASES]: [],
 };
 
 export const customColumnNodesFormSchema = yup.object().shape({
@@ -25,7 +22,7 @@ export const customColumnNodesFormSchema = yup.object().shape({
         .array()
         .of(
             yup.object().shape({
-                [NODE_ALIAS]: yup.string().required().max(60, 'Column name must be at most 60 characters'),
+                [NODE_ALIAS]: yup.string().default('').required().max(60, 'Column name must be at most 60 characters'),
                 [NODE_INFO]: yup
                     .object()
                     .shape({
