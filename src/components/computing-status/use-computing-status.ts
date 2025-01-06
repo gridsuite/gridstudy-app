@@ -168,7 +168,6 @@ export const useComputingStatus: UseComputingStatusProps = (
         ) {
             return;
         }
-        console.log('!!!!!!!!!! fetcher ', fetcher);
         const isUpdateForUs = isWorthUpdate(
             studyUpdatedForce,
             fetcher,

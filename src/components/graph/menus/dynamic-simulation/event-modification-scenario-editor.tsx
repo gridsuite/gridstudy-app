@@ -142,8 +142,6 @@ const EventModificationScenarioEditor = () => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            console.log('TEST ====== ******', studyUpdatedForce.eventData.headers);
-
             if (currentNodeIdRef.current !== studyUpdatedForce.eventData.headers['parentNode']) {
                 return;
             }
