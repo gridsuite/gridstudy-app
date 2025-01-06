@@ -3,7 +3,9 @@
 
     "LimitReductions" : "Limit reductions",
     "IST" : "IST",
-    "LimitDuration" : "Limit duration {sign} {value}min",
+    "LimitDurationInterval" : "Between {highBound} and {lowBound}",
+    "LimitDurationAfterIST": "Beyond IT{value}",
+    "voltageRange": "Voltage range",
 
     "button.delete": "Delete",
     "filter": "Filter",
@@ -597,6 +599,7 @@
     "NodeCreateError": "An error occurred while creating node",
     "NodeDeleteError": "An error occurred while deleting node",
     "NodeUpdateError": "An error occurred while updating node",
+    "NodeUpdateColumnPositions": "An error occured while updating the nodes' positions in the tree",
     "NodeBuildingError": "An error occurred while building node",
     "NodeUnbuildingError": "An error occurred while unbuilding node",
     "NetworkModifications": "Network modifications",
@@ -1065,6 +1068,7 @@
     "restoreNodes": "Restore nodes",
     "restoreNodesText": "Please select nodes to restore:",
     "deleteNodesText": "{numberToDelete, plural, =0 {Please select a node to delete} =1 {One node or subtree will be permanently deleted.} other {# nodes or subtrees will be permanently deleted.}}",
+    "ReorderSubtreeInvalidNotifInfo": "Subtree order update cancelled (invalid notification infos) !",
 
     "LoadStudyAndParentsInfoError": "An error occurred while loading current study's name and path",
     "InvalidNode": "Node not built",

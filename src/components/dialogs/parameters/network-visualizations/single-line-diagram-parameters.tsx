@@ -8,7 +8,7 @@
 import { Grid } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useMemo, useState } from 'react';
-import { getAvailableComponentLibraries } from '../../../../services/study/index';
+import { getAvailableComponentLibraries } from '../../../../services/study';
 import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,

@@ -69,6 +69,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../../common/properties/property-utils';
+import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 
 const formSchema = yup
     .object()
@@ -104,7 +105,6 @@ const VscModificationDialog: React.FC<any> = ({
     editDataFetchStatus,
     ...dialogProps
 }) => {
-    const currentNodeUuid = currentNode.id;
     const [tabIndex, setTabIndex] = useState(VSC_MODIFICATION_TABS.HVDC_LINE_TAB);
 
     const [equipmentId, setEquipmentId] = useState<string | null>(null); // add defaultIdValue to preselect an equipment ? see GeneratorModificationDialog for an example
@@ -161,7 +161,7 @@ const VscModificationDialog: React.FC<any> = ({
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
-                    currentNodeUuid,
+                    currentNode.id,
                     EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -179,7 +179,8 @@ const VscModificationDialog: React.FC<any> = ({
                                     previousReactiveCapabilityCurveTable1,
                                     `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     getValues,
-                                    setValue
+                                    setValue,
+                                    isNodeBuilt(currentNode)
                                 );
                             }
 
@@ -190,7 +191,8 @@ const VscModificationDialog: React.FC<any> = ({
                                     previousReactiveCapabilityCurveTable2,
                                     `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     getValues,
-                                    setValue
+                                    setValue,
+                                    isNodeBuilt(currentNode)
                                 );
                             }
                             setSelectedReactiveLimits(
@@ -231,7 +233,7 @@ const VscModificationDialog: React.FC<any> = ({
                     });
             }
         },
-        [setValuesAndEmptyOthers, studyUuid, currentNodeUuid, setValue, reset, getValues, editData?.equipmentId]
+        [setValuesAndEmptyOthers, studyUuid, currentNode, setValue, reset, getValues, editData?.equipmentId]
     );
 
     useEffect(() => {
@@ -251,27 +253,27 @@ const VscModificationDialog: React.FC<any> = ({
             vscToModify?.converterStation2
         );
 
-        modifyVsc(
-            studyUuid,
-            currentNode.id,
-            equipmentId,
-            sanitizeString(hvdcLine[EQUIPMENT_NAME]),
-            hvdcLineTab[NOMINAL_V],
-            hvdcLineTab[R],
-            hvdcLineTab[MAX_P],
-            hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
-            hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
-            hvdcLineTab[CONVERTERS_MODE],
-            hvdcLineTab[ACTIVE_POWER_SETPOINT],
-            hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
-            hvdcLineTab[P0],
-            hvdcLineTab[DROOP],
-            converterStation1,
-            converterStation2,
-            toModificationProperties(hvdcLine),
-            !!editData,
-            editData?.uuid ?? null
-        ).catch((error) => {
+        modifyVsc({
+            studyUuid: studyUuid,
+            nodeUuid: currentNode.id,
+            id: equipmentId,
+            name: sanitizeString(hvdcLine[EQUIPMENT_NAME]),
+            nominalV: hvdcLineTab[NOMINAL_V],
+            r: hvdcLineTab[R],
+            maxP: hvdcLineTab[MAX_P],
+            operatorActivePowerLimitSide1: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
+            operatorActivePowerLimitSide2: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
+            convertersMode: hvdcLineTab[CONVERTERS_MODE],
+            activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
+            angleDroopActivePowerControl: hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
+            p0: hvdcLineTab[P0],
+            droop: hvdcLineTab[DROOP],
+            converterStation1: converterStation1,
+            converterStation2: converterStation2,
+            properties: toModificationProperties(hvdcLine),
+            isUpdate: !!editData,
+            modificationUuid: editData?.uuid ?? null,
+        }).catch((error) => {
             snackError({
                 messageTxt: error.message,
                 headerId: 'VscModificationError',
