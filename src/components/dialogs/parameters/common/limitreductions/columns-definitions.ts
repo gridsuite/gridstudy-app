@@ -78,7 +78,7 @@ export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS: IColumnsDef[] = [
     {
         label: 'IST',
         dataKey: IST_FORM,
-        tooltip: 'Permanent',
+        tooltip: 'IST',
     },
 ];
 

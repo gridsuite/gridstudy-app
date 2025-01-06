@@ -39,7 +39,7 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({ co
                                 }}
                                 title={column.tooltip}
                             >
-                                <span style={{ letterSpacing: '0.1em', fontSize: '0.8em' }}>{column.label}</span>
+                                {column.label}
                             </TableCell>
                         ))}
                     </TableRow>
