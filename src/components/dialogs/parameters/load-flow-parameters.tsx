@@ -628,7 +628,7 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
                     vlLNewLimits.temporaryLimitReductions[index] = {
                         ...temporaryLimit,
                         // @ts-expect-error type issue with yup schema , see columns-definitions.ts:getLimitDurationsFormSchema
-                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM][index],
+                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
                     };
                 });
                 return vlLNewLimits;
@@ -726,7 +726,6 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
                                                 sx={{
                                                     fontSize: 17,
                                                     fontWeight: 'bold',
-                                                    textTransform: 'capitalize',
                                                 }}
                                             />
                                         )
