@@ -799,17 +799,22 @@ export function DiagramPane({
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            console.log('???????? ', studyUpdatedForce.eventData.headers['updateType']);
+            if (
+                studyUpdatedForce.eventData.headers['rootNetwork'] !== currentRootNetworkRef.current &&
+                currentRootNetworkRef
+            ) {
+                return;
+            }
             if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult') {
                 //TODO reload data more intelligently
+
                 updateDiagramsByCurrentNode();
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
                 // FM if we want to reload data more precisely, we need more information from notifications
+
                 updateDiagramsByCurrentNode();
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'buildCompleted') {
                 if (studyUpdatedForce.eventData.headers['node'] === currentNodeRef.current?.id) {
-                    console.log('   ???????? buildCompleted ', studyUpdatedForce.eventData.headers['rootNetwork']);
-
                     updateDiagramsByCurrentNode();
                 }
             }

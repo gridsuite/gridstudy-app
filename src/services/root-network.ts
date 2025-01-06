@@ -48,14 +48,14 @@ export const createRootNetwork = (
 };
 
 export function deleteRootNetworks(studyUuid: UUID, rootNetworkUuids: UUID[]) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('rootNetworkUuids', String(rootNetworkUuids));
     const rootNetworkDeleteUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/root-networks`;
 
-    const modificationDeleteUrl = rootNetworkDeleteUrl + '?' + urlSearchParams.toString();
-
-    console.debug(modificationDeleteUrl);
-    return backendFetch(modificationDeleteUrl, {
+    console.debug(rootNetworkDeleteUrl);
+    return backendFetch(rootNetworkDeleteUrl, {
         method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(rootNetworkUuids),
     });
 }

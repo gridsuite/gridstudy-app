@@ -149,7 +149,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         isDiagramRunningOneBusShortcircuitAnalysis,
         displayOneBusShortcircuitAnalysisLoader,
         resetOneBusShortcircuitAnalysisLoader,
-    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode?.id!);
+    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode?.id!, currentRootNetworkUuid!);
 
     // dynamic simulation event configuration states
     const [equipmentToConfigDynamicSimulationEvent, setEquipmentToConfigDynamicSimulationEvent] =

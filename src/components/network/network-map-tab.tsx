@@ -212,6 +212,7 @@ export const NetworkMapTab = ({
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         isUpdate={true}
                         defaultIdValue={equipmentToModify?.id}
                         onClose={() => closeModificationDialog()}
@@ -225,6 +226,7 @@ export const NetworkMapTab = ({
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         isUpdate={true}
                         defaultIdValue={equipmentToModify?.id}
                         onClose={() => closeModificationDialog()}
@@ -238,6 +240,7 @@ export const NetworkMapTab = ({
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultIdValue={equipmentToModify?.id}
                         isUpdate={true}
                         onClose={() => closeModificationDialog()}
@@ -803,12 +806,15 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         if (isInitialized && studyUpdatedForce.eventData.headers) {
-            console.log('TEST ====== ', studyUpdatedForce);
-            if (studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult') {
+            const currentRootNetwork = studyUpdatedForce.eventData.headers['rootNetwork'];
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
+                currentRootNetwork === currentRootNetworkUuid
+            ) {
                 reloadMapEquipments(currentNodeRef.current, undefined);
             }
         }
-    }, [isInitialized, studyUpdatedForce, reloadMapEquipments]);
+    }, [isInitialized, studyUpdatedForce, currentRootNetworkUuid, reloadMapEquipments]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {

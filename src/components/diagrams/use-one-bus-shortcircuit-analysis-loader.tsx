@@ -43,7 +43,11 @@ const styles = {
 //the first function submits the sld data on hand to the redux store and the second function reset the redux store state
 type oneBusShortcircuitAnalysisLoader = [ReactElement, boolean, () => void, () => void];
 
-export function useOneBusShortcircuitAnalysisLoader(diagramId: string, nodeId: UUID): oneBusShortcircuitAnalysisLoader {
+export function useOneBusShortcircuitAnalysisLoader(
+    diagramId: string,
+    nodeId: UUID,
+    rootNetworkUuid: UUID
+): oneBusShortcircuitAnalysisLoader {
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const oneBusShortCircuitAnalysisDiagram = useSelector((state: AppState) => state.oneBusShortCircuitAnalysisDiagram);
 
@@ -83,7 +87,9 @@ export function useOneBusShortcircuitAnalysisLoader(diagramId: string, nodeId: U
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            console.log('TEST ====== ', studyUpdatedForce);
+            if (studyUpdatedForce.eventData.headers['rootNetwork'] !== rootNetworkUuid) {
+                return;
+            }
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'oneBusShortCircuitAnalysisResult' ||
                 studyUpdatedForce.eventData.headers['updateType'] === 'oneBusShortCircuitAnalysis_failed'
@@ -91,7 +97,7 @@ export function useOneBusShortcircuitAnalysisLoader(diagramId: string, nodeId: U
                 resetOneBusShortcircuitAnalysisLoader();
             }
         }
-    }, [resetOneBusShortcircuitAnalysisLoader, studyUpdatedForce]);
+    }, [resetOneBusShortcircuitAnalysisLoader, studyUpdatedForce, rootNetworkUuid]);
 
     return [
         oneBusShortcircuitAnalysisLoaderMessage,

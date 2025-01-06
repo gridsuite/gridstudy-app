@@ -164,7 +164,7 @@ const RootNetworkNodeEditor = () => {
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers['updateType'] === 'rootNetworksUpdated') {
-                setMessageId('updateRootNetworksList'); // creatingRootNetwork to do distinct creation:deletion action on notification
+                setMessageId('updateRootNetworksList');  
                 dofetchRootNetworks();
             }
         }
