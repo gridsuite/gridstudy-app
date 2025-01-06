@@ -34,12 +34,7 @@ const MappingParameters: FunctionComponent<MappingParametersProps> = ({ mapping,
     const { mappings } = mapping ?? {};
 
     const mappingOptions = useMemo(() => {
-        return (
-            mappings?.map((elem) => ({
-                id: elem.name,
-                label: elem.name,
-            })) ?? []
-        );
+        return mappings?.map((elem) => elem.name) ?? [];
     }, [mappings]);
 
     const defParams: Record<string, DefParam> = {
