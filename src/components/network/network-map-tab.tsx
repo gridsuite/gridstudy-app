@@ -589,6 +589,14 @@ export const NetworkMapTab = ({
         updateLinesTemporaryGeoData,
     ]);
 
+    const handleChange = useCallback(
+        (newValues: unknown[]) => {
+            setFilteredNominalVoltages(newValues);
+            onNominalVoltagesChange(newValues);
+        },
+        [setFilteredNominalVoltages, onNominalVoltagesChange]
+    );
+
     // loads all root node geo-data then saves them in redux
     // it will be considered as the source of truth to check whether we need to fetch geo-data for a specific equipment or not
     const loadRootNodeGeoData = useCallback(() => {
@@ -645,6 +653,7 @@ export const NetworkMapTab = ({
         dispatch,
         snackError,
         networkMapRef,
+        handleChange,
     ]);
 
     const loadGeoData = useCallback(() => {
@@ -1046,11 +1055,6 @@ export const NetworkMapTab = ({
             shouldDisableToolTip={!visible || isInDrawingMode}
         />
     );
-
-    function handleChange(newValues: unknown[]) {
-        setFilteredNominalVoltages(newValues);
-        onNominalVoltagesChange(newValues);
-    }
 
     function renderNominalVoltageFilter() {
         return (

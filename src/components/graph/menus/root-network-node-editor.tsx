@@ -121,7 +121,7 @@ const RootNetworkNodeEditor = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
     const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
-    const [saveInProgress, setSaveInProgress] = useState(false);
+    // const [saveInProgress, setSaveInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
@@ -164,7 +164,7 @@ const RootNetworkNodeEditor = () => {
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers['updateType'] === 'rootNetworksUpdated') {
-                setMessageId('updateRootNetworksList');  
+                setMessageId('updateRootNetworksList');
                 dofetchRootNetworks();
             }
         }
@@ -340,7 +340,7 @@ const RootNetworkNodeEditor = () => {
     }
 
     const doCreateRootNetwork = ({ name, caseName, caseId }: FormData) => {
-        setSaveInProgress(true);
+        // setSaveInProgress(true);
 
         getCaseImportParameters(caseId as UUID)
             .then((params: GetCaseImportParametersReturn) => {
