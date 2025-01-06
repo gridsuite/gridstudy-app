@@ -9,7 +9,7 @@ import { ChangeEvent, useMemo } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { computeTolerance } from '../../../hooks/use-aggrid-local-row-filter';
-import { countDecimalPlaces } from '../../../utils/rounding';
+import { countDecimalPlacesFromString } from '../../../utils/rounding';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
 import { FilterParams } from '../custom-aggrid-header.type';
 
@@ -43,7 +43,7 @@ export const useCustomAggridComparatorFilter = (field: string, filterParams: Fil
 
     const decimalAfterDot = useMemo(() => {
         if (isNumberInput) {
-            let decimalAfterDot = countDecimalPlaces(Number(selectedFilterData));
+            let decimalAfterDot: number = countDecimalPlacesFromString(String(selectedFilterData));
             if (decimalAfterDot >= 13) {
                 snackWarning({
                     headerId: 'filter.warnRounding',

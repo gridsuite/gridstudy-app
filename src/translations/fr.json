@@ -1,9 +1,11 @@
 {
     "General": "General",
 
-    "LimitReductions" : "Abattements de limites",
+    "LimitReductions" : "Abattements",
     "IST" : "IST",
-    "LimitDuration" : "Surcharge {sign} {value}min",
+    "LimitDurationInterval" : "Entre {highBound} et {lowBound}",
+    "LimitDurationAfterIST": "Au-delà de IT{value}",
+    "voltageRange": "Niveau de tension",
 
     "button.delete": "Supprimer",
     "filter": "Filtre",
@@ -421,6 +423,7 @@
     "CalculatedValue": "Valeur calculée (A ou kV)",
     "OverloadedEquipment": "Ouvrage",
     "PermanentLimitName": "IST",
+    "Permanent":"Permanent",
     "LimitAcceptableDuration": "Durée",
     "Overload": "Surcharge",
 
@@ -606,6 +609,7 @@
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
     "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
+    "NodeUpdateColumnPositions": "Une erreur est survenue lors de la mise à jour de la position des nœuds dans l'arbre",
     "NodeBuildingError": "Une erreur est survenue lors de la réalisation du nœud",
     "NodeUnbuildingError": "Une erreur est survenue lors de la déréalisation du nœud",
     "NetworkModifications": "Modifications de réseau",
@@ -1071,6 +1075,7 @@
     "restoreNodes": "Restaurer des nœuds",
     "restoreNodesText": "Veuillez sélectionner les nœuds à restaurer\u00a0:",
     "deleteNodesText": "{numberToDelete, plural, =0 {Veuillez sélectionner un nœuds à supprimer} =1 {Un nœud ou sous-arbre va être définitivement supprimé.} other {# nœuds ou sous-arbres vont être définitivement supprimés.}}",
+    "ReorderSubtreeInvalidNotifInfo": "Mise à jour de l'ordre d'un sous arbre annulée (infos de notification invalides) !",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",

@@ -15,6 +15,7 @@ import {
     networkModificationHandleSubtree,
     setNodeSelectionForCopy,
     resetLogsFilter,
+    reorderNetworkModificationTreeNodes,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -78,7 +79,7 @@ const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
-    const { snackError, snackInfo } = useSnackMessage();
+    const { snackError, snackWarning, snackInfo } = useSnackMessage();
     const DownloadIframe = 'downloadIframe';
     const isInitiatingCopyTab = useRef(false);
     const [nodesToRestore, setNodesToRestore] = useState([]);
@@ -129,6 +130,10 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     }, [broadcastChannel]);
 
     const [activeNode, setActiveNode] = useState(null);
+
+    const treeModel = useSelector((state) => state.networkModificationTreeModel);
+    const treeModelRef = useRef();
+    treeModelRef.current = treeModel;
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
@@ -188,6 +193,27 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
         }
     }, [broadcastChannel, dispatch, snackInfo]);
 
+    const reorderSubtree = useCallback(
+        (parentNodeId, orderedChildrenNodeIds) => {
+            // We check that the received node order from the notification is coherent with what we have locally.
+            const children = new Set(treeModelRef.current.getChildren(parentNodeId).map((c) => c.id));
+            let isListsEqual =
+                orderedChildrenNodeIds.length === children.size &&
+                orderedChildrenNodeIds.every((id) => children.has(id));
+            if (!isListsEqual) {
+                snackWarning({
+                    messageId: 'ReorderSubtreeInvalidNotifInfo',
+                });
+                console.warn('Subtree order update cancelled : the ordered children list is incompatible');
+                return;
+            }
+
+            // dispatch reorder
+            dispatch(reorderNetworkModificationTreeNodes(parentNodeId, orderedChildrenNodeIds));
+        },
+        [dispatch, snackWarning]
+    );
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers['updateType'] === UpdateType.NODE_CREATED) {
@@ -219,6 +245,11 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                             networkModificationHandleSubtree(nodes, studyUpdatedForce.eventData.headers['parentNode'])
                         );
                     }
+                );
+            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodesColumnPositionsChanged') {
+                reorderSubtree(
+                    studyUpdatedForce.eventData.headers['parentNode'],
+                    JSON.parse(studyUpdatedForce.eventData.payload)
                 );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeMoved') {
                 fetchNetworkModificationTreeNode(
@@ -299,6 +330,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
         studyUuid,
         studyUpdatedForce,
         updateNodes,
+        reorderSubtree,
         snackInfo,
         dispatch,
         broadcastChannel,
