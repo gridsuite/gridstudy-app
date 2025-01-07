@@ -76,7 +76,7 @@ export const useReportFetcher = (
         reportType: ReportType,
         filterMessage: string
     ) => Promise<Log[]> | undefined,
-    (reportId: string, reportType: ReportType) => Promise<SeverityLevel[]> | undefined
+    (reportId: string, reportType?: ReportType) => Promise<SeverityLevel[]> | undefined
 ] => {
     const [isLoading, setIsLoading] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -153,7 +153,7 @@ export const useReportFetcher = (
     );
 
     const fetchReportSeverities = useCallback(
-        (reportId: string, reportType: ReportType) => {
+        (reportId: string, reportType?: ReportType) => {
             if (!studyUuid) {
                 return;
             }

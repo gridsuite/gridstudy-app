@@ -12,7 +12,7 @@ import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import WaitingLoader from '../../utils/waiting-loader';
 import { useReportFetcher } from '../../../hooks/use-report-fetcher';
-import { Report, ReportType, SeverityLevel } from '../../../utils/report/report.type';
+import { Report, SeverityLevel } from '../../../utils/report/report.type';
 import { BUILD_STATUS } from 'components/network/constants';
 import { Box } from '@mui/material';
 import { sortSeverityList } from 'utils/report/report-severity';
@@ -37,11 +37,9 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
             fetchReport().then((report) => {
                 if (report !== undefined) {
                     setReport(report);
-                    fetchReportSeverities?.(report?.id, report?.parentId ? ReportType.NODE : ReportType.GLOBAL)?.then(
-                        (severities) => {
-                            setSeverities(sortSeverityList(severities));
-                        }
-                    );
+                    fetchReportSeverities?.(report?.id)?.then((severities) => {
+                        setSeverities(sortSeverityList(severities));
+                    });
                 }
             });
         } else {
