@@ -8,7 +8,7 @@
 import { Grid, InputAdornment } from '@mui/material';
 import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
-import { FloatInput, IntegerInput, MuiSelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import { FloatInput, IntegerInput, Option, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import LineSeparator from '../../commons/line-separator';
 import { ReactElement } from 'react';
 
@@ -24,7 +24,7 @@ export enum TYPES {
 export type DefParam = {
     type: TYPES;
     label: string;
-    options?: { id: string; label: string }[];
+    options?: Option[];
     render?: (defParam: DefParam, path: string, key: string) => ReactElement;
 };
 
@@ -32,7 +32,7 @@ const defaultParamRender = (defParam: DefParam, path: string, key: string) => {
     switch (defParam.type) {
         case TYPES.ENUM:
             return (
-                <MuiSelectInput
+                <SelectInput
                     name={`${path}.${key}`}
                     label={''}
                     options={defParam?.options ?? []}
