@@ -146,7 +146,7 @@ export function LimitsPane({
 
     const addNewLimitSet = () => {
         const newLimitsGroup: OperationalLimitsGroup = {
-            [ID]: `DEFAULT ${allLimitsGroupsStr.length > 0 ? allLimitsGroupsStr.length - 1 : ''}`,
+            [ID]: `LIMIT_SET(${allLimitsGroupsStr.length > 0 ? allLimitsGroupsStr.length - 1 : ''})`,
             [CURRENT_LIMITS]: {
                 [TEMPORARY_LIMITS]: [],
                 [PERMANENT_LIMIT]: undefined,

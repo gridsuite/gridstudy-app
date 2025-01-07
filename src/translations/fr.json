@@ -916,7 +916,7 @@
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
-    "SelectedOperationalLimitGroup": "Operational limit group sélectionné",
+    "SelectedOperationalLimitGroup": "Set de limites sélectionné",
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
     "powerFactorMinValueError": "La valeur du coefficient Q/P doit être supérieure à -1",
