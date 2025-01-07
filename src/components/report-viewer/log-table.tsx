@@ -15,12 +15,12 @@ import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-f
 import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
-import { getDefaultSeverityFilter, getReportSeverities, REPORT_SEVERITY } from '../../utils/report/report-severity';
+import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { Report, ReportLog, ReportType } from 'utils/report/report.type';
+import { ReportLog, ReportType, SeverityLevel } from 'utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -59,21 +59,22 @@ const styles = {
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
 type LogTableProps = {
-    report: Report;
     selectedReportId: string;
     reportType: string;
     reportNature: ReportType;
     onRowClick: (data: ReportLog) => void;
 };
 
-const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowClick }: LogTableProps) => {
+const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: LogTableProps) => {
     const intl = useIntl();
 
     const theme = useTheme<Theme>();
 
     const dispatch = useDispatch();
 
-    const [, , fetchReportLogs] = useReportFetcher(reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE);
+    const [, , fetchReportLogs, fetchNodeSeverities] = useReportFetcher(
+        reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
+    );
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: LOGS_STORE_FIELD,
         filterTab: reportType,
@@ -89,7 +90,7 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
 
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
-    const severities = useMemo(() => getReportSeverities(report), [report]);
+    const [severities, setSeverities] = useState<SeverityLevel[] | null>(null);
 
     const resetSearch = useCallback(() => {
         setSearchResults([]);
@@ -120,7 +121,12 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
     }, [severityFilter, fetchReportLogs, selectedReportId, reportNature, messageFilter, resetSearch]);
 
     useEffect(() => {
-        if (filterSelector?.length === 0 && severities?.length > 0) {
+        if (severities === null && selectedReportId && reportNature) {
+            fetchNodeSeverities(selectedReportId, reportNature)?.then((severities) => {
+                setSeverities(severities.toSorted((a, b) => REPORT_SEVERITY[b].level - REPORT_SEVERITY[a].level));
+            });
+        }
+        if (filterSelector?.length === 0 && severities && severities.length > 0) {
             dispatch(
                 setLogsFilter(reportType, [
                     {
@@ -132,7 +138,12 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
                 ])
             );
         }
-    }, [severities, dispatch, reportType, filterSelector]);
+    }, [severities, dispatch, reportType, filterSelector, fetchNodeSeverities, selectedReportId, reportNature]);
+
+    // Reset the severities when the report nature changes
+    useEffect(() => {
+        setSeverities(null);
+    }, [reportNature]);
 
     useEffect(() => {
         if (selectedReportId && reportNature) {
@@ -320,7 +331,7 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
                 />
             </Box>
             <Box sx={styles.chipContainer}>
-                {severities.map((severity, index) => (
+                {severities?.map((severity, index) => (
                     <Chip
                         key={severity}
                         label={severity}
