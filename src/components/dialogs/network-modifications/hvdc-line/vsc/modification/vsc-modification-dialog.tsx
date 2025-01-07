@@ -363,6 +363,7 @@ const VscModificationDialog: React.FC<any> = ({
                         tabIndex={tabIndex}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={equipmentId}
                         setTabIndex={setTabIndex}
                         vscToModify={vscToModify}

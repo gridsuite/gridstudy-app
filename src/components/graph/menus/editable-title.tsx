@@ -40,12 +40,12 @@ interface EditableTitleProps {
     name: string;
     onClose: () => void;
     onChange?: (value: string) => void;
-    isCloseIconVisible: boolean;
+    isCloseIconVisible?: boolean;
 }
 
 export const EditableTitle: FunctionComponent<EditableTitleProps> = ({
     name,
-    isCloseIconVisible,
+    isCloseIconVisible = true,
     onClose,
     onChange,
 }) => {

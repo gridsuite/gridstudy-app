@@ -93,6 +93,9 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
 
     // Fetch default directory based on study UUID
     const fetchDefaultDirectoryForStudy = useCallback(() => {
+        if (!studyUuid) {
+            return;
+        }
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (!res || res.length < 2) {
                 snackError({

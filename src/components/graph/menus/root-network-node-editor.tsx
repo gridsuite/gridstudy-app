@@ -368,7 +368,7 @@ const RootNetworkNodeEditor = () => {
                 });
             })
             .finally(() => {
-                setSaveInProgress(false);
+                //    setSaveInProgress(false);
             });
     };
     const renderPaneSubtitle = () => {

@@ -270,7 +270,12 @@ export function LccCreationDialog({
                 }}
                 {...dialogProps}
             >
-                <LccCreationForm studyUuid={studyUuid} currentNode={currentNode} tabIndex={tabIndex} />
+                <LccCreationForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    tabIndex={tabIndex}
+                />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}

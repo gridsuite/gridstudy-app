@@ -54,7 +54,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const nodeUuid = currentNode?.id;
 
     const getEnumLabel = useCallback(
@@ -69,7 +69,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
     // for nmk views, click handler on subjectId cell
     const onClickNmKConstraint = useCallback(
         (row: SecurityAnalysisNmkTableRow, column?: ColDef) => {
-            if (studyUuid && nodeUuid) {
+            if (studyUuid && nodeUuid && currentRootNetworkUuid) {
                 if (column?.field === 'subjectId') {
                     let vlId: string | undefined = '';
                     const { subjectId, side } = row || {};
@@ -86,6 +86,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     fetchVoltageLevelIdForLineOrTransformerBySide(
                         studyUuid,
                         nodeUuid,
+                        currentRootNetworkUuid,
                         subjectId ?? '',
                         getBranchSide(side) ?? BranchSide.ONE
                     )
@@ -115,7 +116,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                 }
             }
         },
-        [nodeUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
+        [nodeUuid, currentRootNetworkUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
     );
 
     // for nmk views, custom view for subjectId cell

@@ -219,7 +219,7 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
 
         // fetch all associated models and variables for current node and study
         useEffect(() => {
-            if (!currentNode?.id) {
+            if (!currentNode?.id || !currentRootNetworkUuid) {
                 return;
             }
             fetchDynamicSimulationModels(studyUuid, currentNode.id, currentRootNetworkUuid).then(

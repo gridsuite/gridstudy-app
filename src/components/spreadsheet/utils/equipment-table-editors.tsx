@@ -111,6 +111,7 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
                 open={openGeneratorPopup}
                 onClose={handleCancelRegulatingTerminalPopup}
                 currentNode={gridContext.currentNode}
+                currentRootNetworkUuid={gridContext.currentRootNetworkUuid}
                 studyUuid={gridContext.studyUuid}
                 onModifyRegulatingTerminalGenerator={(updatedRegulatedTerminal: any) => {
                     handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
@@ -188,6 +189,7 @@ export const TWTRegulatingTerminalEditor = forwardRef(
                 open={openTWTRegulatingTerminalPopup}
                 onClose={handleCancelRegulatingTerminalPopup}
                 currentNode={gridContext.currentNode}
+                currentRootNetworkUuid={gridContext.currentRootNetworkUuid}
                 studyUuid={gridContext.studyUuid}
                 onModifyRegulatingTerminalGenerator={(updatedRegulatedTerminal: any) => {
                     handleSaveRegulatingTerminalPopup(updatedRegulatedTerminal);
