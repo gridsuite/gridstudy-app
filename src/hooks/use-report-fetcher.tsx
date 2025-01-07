@@ -8,7 +8,7 @@
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { useCallback, useMemo, useState } from 'react';
-import { fetchNodeReportLogs, fetchParentNodesReport } from '../services/study';
+import { fetchNodeReportLogs, fetchNodeSeverities, fetchParentNodesReport } from '../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Log, Report, ReportLog, ReportSeverity, ReportType, SeverityLevel } from '../utils/report/report.type';
 import { getContainerDefaultSeverityList, REPORT_SEVERITY } from '../utils/report/report-severity';
@@ -75,7 +75,8 @@ export const useReportFetcher = (
         severityList: string[],
         reportType: ReportType,
         filterMessage: string
-    ) => Promise<Log[]> | undefined
+    ) => Promise<Log[]> | undefined,
+    (reportId: string, reportType?: ReportType) => Promise<SeverityLevel[]> | undefined
 ] => {
     const [isLoading, setIsLoading] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -169,5 +170,21 @@ export const useReportFetcher = (
         [currentNode, currentRootNetwork, studyUuid, nodesNames]
     );
 
-    return [isLoading, fetchRawParentReport, fetchReportLogs];
+    const fetchReportSeverities = useCallback(
+        (reportId: string, reportType?: ReportType) => {
+            if (!studyUuid) {
+                return;
+            }
+            let fetchPromise: (reportId: string) => Promise<SeverityLevel[]>;
+            if (reportType === ReportType.GLOBAL) {
+                fetchPromise = () => fetchNodeSeverities(studyUuid, currentNode!.id, null, true);
+            } else {
+                fetchPromise = (reportId: string) => fetchNodeSeverities(studyUuid, currentNode!.id, reportId, false);
+            }
+            return fetchPromise(reportId);
+        },
+        [currentNode, studyUuid]
+    );
+
+    return [isLoading, fetchRawParentReport, fetchReportLogs, fetchReportSeverities];
 };

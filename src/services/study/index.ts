@@ -136,6 +136,16 @@ export function fetchNodeReportLogs(
     return backendFetchJson(url);
 }
 
+export function fetchNodeSeverities(studyUuid: UUID, nodeUuid: UUID, reportId: string | null, isGlobalLogs: boolean) {
+    let url;
+    if (isGlobalLogs) {
+        url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/aggregated-severities';
+    } else {
+        url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/' + reportId + '/aggregated-severities';
+    }
+    return backendFetchJson(url);
+}
+
 export function fetchSvg(svgUrl: string) {
     console.debug(svgUrl);
     return backendFetch(svgUrl).then((response) => (response.status === 204 ? null : response.json()));

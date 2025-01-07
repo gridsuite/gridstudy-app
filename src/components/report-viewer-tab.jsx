@@ -19,6 +19,8 @@ import { useReportFetcher } from '../hooks/use-report-fetcher';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { Box, Paper } from '@mui/material';
+import { ReportType } from 'utils/report/report.type';
+import { sortSeverityList } from 'utils/report/report-severity';
 
 const styles = {
     div: {
@@ -41,10 +43,11 @@ const styles = {
  */
 export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     const [report, setReport] = useState();
+    const [severities, setSeverities] = useState();
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
     const intl = useIntl();
-    const [isReportLoading, fetchReport] = useReportFetcher(
+    const [isReportLoading, fetchReport, , fetchReportSeverities] = useReportFetcher(
         COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION
     );
 
@@ -65,16 +68,20 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
             fetchReport(nodeOnlyReport).then((r) => {
                 if (r !== undefined) {
                     setReport(r);
+                    fetchReportSeverities(r.id, r.parentId ? ReportType.NODE : ReportType.GLOBAL).then((severities) => {
+                        setSeverities(sortSeverityList(severities));
+                    });
                 }
             });
         } else {
             // if the user unbuilds a node, the report needs to be reset.
             // otherwise, the report will be kept in the state and useless report fetches with previous id will be made when the user rebuilds the node.
             setReport();
+            setSeverities();
         }
         // It is important to keep the notifications in the useEffect's dependencies (even if it is not
         // apparent that they are used) to trigger the update of reports when a notification happens.
-    }, [visible, currentNode, disabled, fetchReport, nodeOnlyReport]);
+    }, [visible, currentNode, disabled, fetchReport, nodeOnlyReport, fetchReportSeverities]);
 
     return (
         <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
@@ -102,6 +109,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                     <ReportViewer
                         report={report}
                         reportType={COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION}
+                        severities={severities}
                     />
                 )}
             </Paper>
