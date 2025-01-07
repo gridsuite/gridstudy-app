@@ -62,10 +62,11 @@ type LogTableProps = {
     selectedReportId: string;
     reportType: string;
     reportNature: ReportType;
+    severities: SeverityLevel[] | undefined;
     onRowClick: (data: ReportLog) => void;
 };
 
-const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: LogTableProps) => {
+const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRowClick }: LogTableProps) => {
     const intl = useIntl();
 
     const theme = useTheme<Theme>();
@@ -90,7 +91,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: Lo
 
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
-    const [severities, setSeverities] = useState<SeverityLevel[] | null>(null);
 
     const resetSearch = useCallback(() => {
         setSearchResults([]);
@@ -121,17 +121,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: Lo
     }, [severityFilter, fetchReportLogs, selectedReportId, reportNature, messageFilter, resetSearch]);
 
     useEffect(() => {
-        if (severities === null && selectedReportId && reportNature) {
-            fetchNodeSeverities(selectedReportId, reportNature)?.then((severities) => {
-                setSeverities(
-                    severities
-                        .slice()
-                        .sort(
-                            (a: SeverityLevel, b: SeverityLevel) => REPORT_SEVERITY[b].level - REPORT_SEVERITY[a].level
-                        )
-                );
-            });
-        }
         if (filterSelector?.length === 0 && severities && severities.length > 0) {
             dispatch(
                 setLogsFilter(reportType, [
@@ -145,11 +134,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: Lo
             );
         }
     }, [severities, dispatch, reportType, filterSelector, fetchNodeSeverities, selectedReportId, reportNature]);
-
-    // Reset the severities when the report nature changes
-    useEffect(() => {
-        setSeverities(null);
-    }, [reportNature]);
 
     useEffect(() => {
         if (selectedReportId && reportNature) {
