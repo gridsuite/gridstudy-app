@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ReportSeverity, SeverityLevel, Report } from './report.type';
+import { ReportSeverity, SeverityLevel } from './report.type';
 
 export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
     UNKNOWN: {
@@ -80,19 +80,9 @@ export const getDefaultSeverityFilter = (severityList: string[]): string[] => {
     return severityFilter;
 };
 
-export const getReportSeverities = (report: Report): SeverityLevel[] => {
-    const severities: SeverityLevel[] = [];
-    if (report.severity) {
-        severities.push(report.severity);
-    }
-    if (report.subReports.length > 0) {
-        report.subReports.forEach((subreport) => {
-            severities.push(...getReportSeverities(subreport));
-        });
-    }
-    severities.sort((a, b) => REPORT_SEVERITY[b].level - REPORT_SEVERITY[a].level);
-    return [...new Set(severities)];
-};
+export function sortSeverityList(severityList: SeverityLevel[]): SeverityLevel[] {
+    return severityList.sort((a, b) => REPORT_SEVERITY[b].level - REPORT_SEVERITY[a].level);
+}
 
 export function getContainerDefaultSeverityList(): string[] {
     // return name list like ['WARN', 'INFO']
