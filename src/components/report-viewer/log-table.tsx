@@ -123,7 +123,13 @@ const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: Lo
     useEffect(() => {
         if (severities === null && selectedReportId && reportNature) {
             fetchNodeSeverities(selectedReportId, reportNature)?.then((severities) => {
-                setSeverities(severities.toSorted((a, b) => REPORT_SEVERITY[b].level - REPORT_SEVERITY[a].level));
+                setSeverities(
+                    severities
+                        .slice()
+                        .sort(
+                            (a: SeverityLevel, b: SeverityLevel) => REPORT_SEVERITY[b].level - REPORT_SEVERITY[a].level
+                        )
+                );
             });
         }
         if (filterSelector?.length === 0 && severities && severities.length > 0) {
