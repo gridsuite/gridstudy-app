@@ -140,8 +140,8 @@ export const getAllLimitsFormData = (
     {
         operationalLimitsGroups1 = [],
         operationalLimitsGroups2 = [],
-        selectedOperationalLimitsGroupId1 = null,
-        selectedOperationalLimitsGroupId2 = null,
+        selectedOperationalLimitsGroup1 = null,
+        selectedOperationalLimitsGroup2 = null,
     },
     id = LIMITS
 ) => {
@@ -149,8 +149,8 @@ export const getAllLimitsFormData = (
         [id]: {
             [LIMITS_GROUP_1]: operationalLimitsGroups1,
             [LIMITS_GROUP_2]: operationalLimitsGroups2,
-            [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroupId1,
-            [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroupId2,
+            [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroup1,
+            [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroup2,
         },
     };
 };

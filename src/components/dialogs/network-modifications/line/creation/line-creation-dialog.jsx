@@ -196,8 +196,8 @@ const LineCreationDialog = ({
                 ...getAllLimitsFormData({
                     [LIMITS_GROUP_1]: formatCompleteCurrentLimit(line.currentLimits1),
                     [LIMITS_GROUP_2]: formatCompleteCurrentLimit(line.currentLimits2),
-                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroupId1 ?? null,
-                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroupId2 ?? null,
+                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
+                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
                 }),
                 ...copyEquipmentPropertiesForCreation(line),
             },
@@ -245,8 +245,8 @@ const LineCreationDialog = ({
                 ...getAllLimitsFormData({
                     [LIMITS_GROUP_1]: line.operationalLimitsGroups1,
                     [LIMITS_GROUP_2]: line.operationalLimitsGroups2,
-                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroupId1 ?? null,
-                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroupId2 ?? null,
+                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
+                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
                 }),
                 ...getPropertiesFromModification(line.properties),
             });
