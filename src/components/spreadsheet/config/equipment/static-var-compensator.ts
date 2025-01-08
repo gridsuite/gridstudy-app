@@ -62,7 +62,6 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -71,7 +70,6 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

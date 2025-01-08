@@ -33,7 +33,6 @@ export const BUS_TAB_DEF = {
             field: 'v',
             numeric: true,
             fractionDigits: 1,
-            canBeInvalidated: true,
             ...defaultNumericFilterConfig,
         },
         {
@@ -41,7 +40,6 @@ export const BUS_TAB_DEF = {
             field: 'angle',
             numeric: true,
             fractionDigits: 1,
-            canBeInvalidated: true,
             ...defaultNumericFilterConfig,
         },
         {

@@ -65,7 +65,6 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -74,7 +73,6 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

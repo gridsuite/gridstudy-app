@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Checkbox, Tooltip, IconButton, Box } from '@mui/material';
+import { Box, Checkbox, IconButton, Tooltip } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
@@ -53,9 +52,6 @@ const styles = {
         whiteSpace: 'pre',
         textOverflow: 'ellipsis',
         overflow: 'hidden',
-    },
-    valueInvalid: {
-        opacity: INVALID_LOADFLOW_OPACITY,
     },
     numericValue: {
         marginLeft: 'inherit',
@@ -149,13 +145,7 @@ export const DefaultCellRenderer = (props: any) => {
                 disableTouchListener
                 title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
             >
-                <Box
-                    sx={mergeSx(
-                        styles.overflow,
-                        props?.colDef?.cellRendererParams?.isValueInvalid ? styles.valueInvalid : undefined
-                    )}
-                    children={cellValue.value}
-                />
+                <Box sx={styles.overflow} children={cellValue.value} />
             </Tooltip>
         </Box>
     );

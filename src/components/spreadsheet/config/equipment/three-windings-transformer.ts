@@ -103,7 +103,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -112,7 +111,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -121,7 +119,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -130,7 +127,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -139,7 +135,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -148,7 +143,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

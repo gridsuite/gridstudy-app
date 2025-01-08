@@ -68,7 +68,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            canBeInvalidated: true,
             withFluxConvention: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
