@@ -93,10 +93,10 @@ export function LimitsPane({
         }
     }, [editingTabIndex]);
 
-    useEffect(() => {
-        console.log("Mathieu combine limitsGroups1 and limitsGroups2");
-        // all the limit sets have to be present in both sides even if empty
-        // the cleaning is done at the validation
+    // all the limit sets from both sides have to be
+    // - in AllLimitsGroupsStr which is used for the tabs
+    // - in both sides (limitsGroups1 and limitsGroups2) even if they are empty
+    const synchronizeOperationalLimitsGroups = useCallback(() => {
         limitsGroups1.forEach((limitsGroup1: OperationalLimitsGroup) => {
             if (
                 limitsGroup1.id &&
@@ -125,6 +125,30 @@ export function LimitsPane({
                 });
             }
         });
+
+        // updates AllLimitsGroupsStr which contains all the UNIQUE operational limits group names from both sides
+            let allLimitsGroups: string[] = [];
+            allLimitsGroups.push(...limitsGroups1.map((limitGroup: { id: string }) => limitGroup.id));
+            allLimitsGroups.push(
+                ...limitsGroups2
+                    .filter(
+                        (limitGroup: OperationalLimitsGroup) =>
+                            !allLimitsGroups.find((limitsGroupStr) => limitsGroupStr === limitGroup.id)
+                    )
+                    .map((limitsGroup: { id: string }) => limitsGroup.id)
+            );
+            setAllLimitsGroupsStr(allLimitsGroups);
+    }, [
+        selectedGroupStr,
+        limitsGroups1,
+        limitsGroups2,
+        useFieldArrayLimitsGroups1,
+        useFieldArrayLimitsGroups2,
+        ]
+    );
+
+    useEffect(() => {
+        synchronizeOperationalLimitsGroups();
         setIndexSelectedLimitSet1(
             selectedGroupStr
                 ? limitsGroups1.findIndex((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr)
@@ -136,34 +160,14 @@ export function LimitsPane({
                 : undefined
         );
     }, [
-        selectedGroupStr,
-        setIndexSelectedLimitSet1,
-        setIndexSelectedLimitSet2,
         limitsGroups1,
         limitsGroups2,
-        useFieldArrayLimitsGroups1,
-        useFieldArrayLimitsGroups2,
+        setIndexSelectedLimitSet1,
+        setIndexSelectedLimitSet2,
     ]);
-
-    // updates AllLimitsGroupsStr which contains all the UNIQUE operational limits group names from both sides
-    useEffect(() => {
-        console.log("Mathieu : updates AllLimitsGroupsStr");
-        let allLimitsGroups: string[] = [];
-        allLimitsGroups.push(...limitsGroups1.map((limitGroup: { id: string }) => limitGroup.id));
-        allLimitsGroups.push(
-            ...limitsGroups2
-                .filter(
-                    (limitGroup: OperationalLimitsGroup) =>
-                        !allLimitsGroups.find((limitsGroupStr) => limitsGroupStr === limitGroup.id)
-                )
-                .map((limitsGroup: { id: string }) => limitsGroup.id)
-        );
-        setAllLimitsGroupsStr(allLimitsGroups);
-    }, [limitsGroups1, limitsGroups2]);
 
     const startEditingLimitsGroup = useCallback(
         (index: number, name: string) => {
-            setSelectedLimitGroupTabIndex(index);
             setEditingTabIndex(index);
             setEditedLimitGroupName(name);
         },
@@ -199,8 +203,9 @@ export function LimitsPane({
                     [ID]: editedLimitGroupName,
                 });
             }
-            setEditingTabIndex(null);
             setSelectedGroupStr(editedLimitGroupName);
+            setSelectedLimitGroupTabIndex(editingTabIndex);
+            setEditingTabIndex(null);
         }
     }, [
         allLimitsGroupsStr,
@@ -222,7 +227,7 @@ export function LimitsPane({
     );
 
     const addNewLimitSet = () => {
-        const newIndex: number = allLimitsGroupsStr.length - 1;
+        const newIndex: number = allLimitsGroupsStr.length;
         let newName: string = `LIMIT_SET`;
         if (newIndex > 0) {
             newName += `(${allLimitsGroupsStr.length > 0 ? newIndex : ''})`;
@@ -236,8 +241,6 @@ export function LimitsPane({
         };
         useFieldArrayLimitsGroups1.append(newLimitsGroup);
         useFieldArrayLimitsGroups2.append(newLimitsGroup);
-        // setSelectedLimitGroupTabIndex(allLimitsGroupsStr.length - 1);
-        // setSelectedGroupStr(newLimitsGroup.id);
         startEditingLimitsGroup(newIndex, newName);
     };
 
