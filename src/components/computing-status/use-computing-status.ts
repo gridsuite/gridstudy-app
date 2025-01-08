@@ -37,7 +37,7 @@ interface LastUpdateProps {
 
 function isWorthUpdate(
     studyUpdatedForce: StudyUpdated,
-    fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
+    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string>,
     lastUpdateRef: RefObject<LastUpdateProps>,
     nodeUuidRef: RefObject<UUID>,
     rootNetworkUuidRef: RefObject<UUID>,
