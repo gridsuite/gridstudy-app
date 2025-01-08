@@ -121,7 +121,6 @@ export const HVDC_LINE_TAB_DEF = {
         {
             id: 'AcEmulation',
             field: 'hvdcAngleDroopActivePowerControl.isEnabled',
-            boolean: true,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,

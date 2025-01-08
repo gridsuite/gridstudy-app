@@ -93,7 +93,6 @@ export const DANGLING_LINE_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,

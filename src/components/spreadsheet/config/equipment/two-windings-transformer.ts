@@ -615,7 +615,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'connected1',
             field: 'terminal1Connected',
-            boolean: true,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -623,7 +622,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'connected2',
             field: 'terminal2Connected',
-            boolean: true,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
