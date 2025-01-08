@@ -67,9 +67,6 @@ export function LimitsPane({
     const limitsGroups2: OperationalLimitsGroup[] = useWatch({
         name: `${id}.${LIMITS_GROUP_2}`,
     });
-    // in the limitSets1 array
-    const [indexSelectedLimitSet1, setIndexSelectedLimitSet1] = useState<number | undefined>(undefined);
-    // in the limitSets2 array
     const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | undefined>(undefined);
 
     const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
@@ -129,13 +126,6 @@ export function LimitsPane({
     useEffect(() => {
         if (limitsGroups1[selectedLimitGroupTabIndex]) {
             const selectedGroupStr = limitsGroups1[selectedLimitGroupTabIndex].id;
-            setIndexSelectedLimitSet1(
-                selectedGroupStr
-                    ? limitsGroups1.findIndex(
-                          (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr
-                      )
-                    : undefined
-            );
             setIndexSelectedLimitSet2(
                 selectedGroupStr
                     ? limitsGroups2.findIndex(
@@ -148,7 +138,6 @@ export function LimitsPane({
         selectedLimitGroupTabIndex,
         limitsGroups1,
         limitsGroups2,
-        setIndexSelectedLimitSet1,
         setIndexSelectedLimitSet2,
     ]);
 
@@ -332,7 +321,7 @@ export function LimitsPane({
                 <Grid item xs={5}>
                     {limitsGroups1.map(
                         (item: OperationalLimitsGroup, index: number) =>
-                            index === indexSelectedLimitSet1 && (
+                            index === selectedLimitGroupTabIndex && (
                                 <LimitsSidePane
                                     key={item.id}
                                     limitsGroupFormName={`${id}.${LIMITS_GROUP_1}`}
