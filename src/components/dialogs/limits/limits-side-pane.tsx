@@ -214,7 +214,7 @@ export function LimitsSidePane({
                     withAddRowsDialog={false}
                     withBottomButtons={false}
                     withCheckboxes={false}
-                    withTopRightAddButton
+                    withButtonOnTheRight
                     previousValues={previousValues}
                     disableTableCell={disableTableCell}
                     getPreviousValue={getPreviousValue}

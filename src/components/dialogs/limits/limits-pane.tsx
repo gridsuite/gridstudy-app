@@ -22,7 +22,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
 import { CurrentTreeNode } from '../../../redux/reducer';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from './limits-type';
 import IconButton from '@mui/material/IconButton';
@@ -134,12 +134,7 @@ export function LimitsPane({
                     : undefined
             );
         }
-    }, [
-        selectedLimitGroupTabIndex,
-        limitsGroups1,
-        limitsGroups2,
-        setIndexSelectedLimitSet2,
-    ]);
+    }, [selectedLimitGroupTabIndex, limitsGroups1, limitsGroups2, setIndexSelectedLimitSet2]);
 
     const startEditingLimitsGroup = useCallback(
         (index: number, name: string) => {

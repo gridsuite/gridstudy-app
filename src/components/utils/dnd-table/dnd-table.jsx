@@ -36,6 +36,7 @@ import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export const MAX_ROWS_NUMBER = 100;
 const styles = {
@@ -133,7 +134,7 @@ const DndTable = ({
     withBottomButtons = true,
     withAddRowsDialog = true,
     withCheckboxes = true,
-    withTopRightAddButton = false,
+    withButtonOnTheRight = false,
     previousValues,
     disableTableCell,
     getPreviousValue,
@@ -304,8 +305,8 @@ const DndTable = ({
                             </Box>
                         </TableCell>
                     ))}
-                    {withTopRightAddButton && (
-                        <span>
+                    {withButtonOnTheRight && (
+                        <TableCell>
                             <IconButton
                                 color="primary"
                                 onClick={handleAddRowsButton}
@@ -313,7 +314,7 @@ const DndTable = ({
                             >
                                 <AddCircleIcon />
                             </IconButton>
-                        </span>
+                        </TableCell>
                     )}
                 </TableRow>
             </TableHead>
@@ -349,6 +350,24 @@ const DndTable = ({
                                     </TableCell>
                                 )}
                                 {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
+                                {withButtonOnTheRight && (
+                                    <TableCell>
+                                        <Tooltip
+                                            title={intl.formatMessage({
+                                                id: 'DeleteRows',
+                                            })}
+                                            placement="top"
+                                        >
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => deleteSelectedRows()}
+                                                disabled
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
+                                )}
                             </TableRow>
                         )}
                     </Draggable>
@@ -431,7 +450,7 @@ DndTable.propTypes = {
     withAddRowsDialog: PropTypes.bool,
     withBottomButtons: PropTypes.bool,
     withCheckboxes: PropTypes.bool,
-    withTopRightAddButton: PropTypes.bool,
+    withButtonOnTheRight: PropTypes.bool,
     minRowsNumber: PropTypes.number,
 };
 
