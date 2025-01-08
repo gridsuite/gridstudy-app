@@ -93,7 +93,8 @@ export function LimitsPane({
     // synchronizeOperationalLimitsGroups : all the limit sets from both sides have to be
     // in both limitsGroups1 and limitsGroups2, even if they are empty
     useEffect(() => {
-        if (editingTabIndex === null) { // no synchronization while editing
+        // no synchronization while editing
+        if (editingTabIndex === null) {
             limitsGroups1.forEach((limitsGroup1: OperationalLimitsGroup) => {
                 if (
                     limitsGroup1.id &&
@@ -130,12 +131,16 @@ export function LimitsPane({
             const selectedGroupStr = limitsGroups1[selectedLimitGroupTabIndex].id;
             setIndexSelectedLimitSet1(
                 selectedGroupStr
-                    ? limitsGroups1.findIndex((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr)
+                    ? limitsGroups1.findIndex(
+                          (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr
+                      )
                     : undefined
             );
             setIndexSelectedLimitSet2(
                 selectedGroupStr
-                    ? limitsGroups2.findIndex((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr)
+                    ? limitsGroups2.findIndex(
+                          (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr
+                      )
                     : undefined
             );
         }
@@ -155,41 +160,43 @@ export function LimitsPane({
         [setEditingTabIndex, setEditedLimitGroupName]
     );
 
-    const finishEditingLimitsGroup = useCallback((editedTabIndex: number | null) => {
-        if (editedTabIndex !== null) {
-            // get the old name of the modified limit set in order to update it on both sides
-            const oldName: string = limitsGroups1[editedTabIndex].id;
-            const indexInLs1: number | undefined = limitsGroups1.findIndex(
-                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
-            );
-            if (indexInLs1) {
-                useFieldArrayLimitsGroups1.update(indexInLs1, {
-                    ...limitsGroups1[indexInLs1],
-                    [ID]: editedLimitGroupName,
-                });
-            }
+    const finishEditingLimitsGroup = useCallback(
+        (editedTabIndex: number | null) => {
+            if (editedTabIndex !== null) {
+                // get the old name of the modified limit set in order to update it on both sides
+                const oldName: string = limitsGroups1[editedTabIndex].id;
+                const indexInLs1: number | undefined = limitsGroups1.findIndex(
+                    (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
+                );
+                if (indexInLs1) {
+                    useFieldArrayLimitsGroups1.update(indexInLs1, {
+                        ...limitsGroups1[indexInLs1],
+                        [ID]: editedLimitGroupName,
+                    });
+                }
 
-            const indexInLs2: number | undefined = limitsGroups2.findIndex(
-                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
-            );
-            if (indexInLs2) {
-                useFieldArrayLimitsGroups2.update(indexInLs2, {
-                    ...limitsGroups2[indexInLs2],
-                    [ID]: editedLimitGroupName,
-                });
+                const indexInLs2: number | undefined = limitsGroups2.findIndex(
+                    (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
+                );
+                if (indexInLs2) {
+                    useFieldArrayLimitsGroups2.update(indexInLs2, {
+                        ...limitsGroups2[indexInLs2],
+                        [ID]: editedLimitGroupName,
+                    });
+                }
+                setSelectedLimitGroupTabIndex(editedTabIndex);
+                setEditingTabIndex(null);
             }
-            setSelectedLimitGroupTabIndex(editedTabIndex);
-            setEditingTabIndex(null);
-        }
-    }, [
-        editedLimitGroupName,
-        editingTabIndex,
-        limitsGroups1,
-        limitsGroups2,
-        useFieldArrayLimitsGroups1,
-        useFieldArrayLimitsGroups2,
-        setEditingTabIndex,
-    ]);
+        },
+        [
+            editedLimitGroupName,
+            limitsGroups1,
+            limitsGroups2,
+            useFieldArrayLimitsGroups1,
+            useFieldArrayLimitsGroups2,
+            setEditingTabIndex,
+        ]
+    );
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
@@ -216,7 +223,7 @@ export function LimitsPane({
         useFieldArrayLimitsGroups1.append(newLimitsGroup);
         useFieldArrayLimitsGroups2.append(newLimitsGroup);
         startEditingLimitsGroup(newIndex, newName);
-    }, [startEditingLimitsGroup, useFieldArrayLimitsGroups1, useFieldArrayLimitsGroups2]);
+    }, [startEditingLimitsGroup, useFieldArrayLimitsGroups1, useFieldArrayLimitsGroups2, limitsGroups1.length]);
 
     return (
         <Grid container spacing={2}>
