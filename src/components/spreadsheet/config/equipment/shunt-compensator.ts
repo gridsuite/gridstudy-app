@@ -8,16 +8,13 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     editableColumnConfig,
     excludeFromGlobalFilter,
-    getDefaultEnumConfig,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
@@ -52,8 +49,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             id: 'NominalV',
@@ -98,7 +94,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'Type',
             field: 'type',
-            ...getDefaultEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
+            ...defaultTextFilterConfig,
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
         },

@@ -88,11 +88,8 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     crossValidation?: CrossValidationOptions;
     filterTab?: string[];
     fractionDigits?: number;
-    getEnumLabel?: (value: string) => string | undefined;
     id: string;
-    isCountry?: boolean;
     isDefaultSort?: boolean;
-    isEnum?: boolean;
     numeric?: boolean;
     sortProps?: SortPropsType;
     forceDisplayFilterIcon?: boolean;

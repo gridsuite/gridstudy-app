@@ -8,12 +8,9 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
-    defaultEnumFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
@@ -55,7 +52,7 @@ export const HVDC_LINE_TAB_DEF = {
             field: 'convertersMode',
             columnWidth: LARGE_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
-            ...defaultEnumFilterConfig,
+            ...defaultTextFilterConfig,
         },
         {
             id: 'ConverterStationId1',
@@ -72,14 +69,12 @@ export const HVDC_LINE_TAB_DEF = {
         {
             id: 'Country1',
             field: 'country1',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             id: 'Country2',
             field: 'country2',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             id: 'R',

@@ -9,9 +9,7 @@ import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import {
-    countryEnumFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     editableColumnConfig,
@@ -70,8 +68,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             id: 'NominalV',
