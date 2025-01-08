@@ -122,7 +122,7 @@ const RootNetworkNodeEditor = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
-    // const [saveInProgress, setSaveInProgress] = useState(false);
+    const [createInProgress, setCreateInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
@@ -172,11 +172,10 @@ const RootNetworkNodeEditor = () => {
     }, [studyUpdatedForce, dofetchRootNetworks]);
 
     useEffect(() => {
-        if (!currentRootNetwork) {
-            setRootNetworks([]);
+        if (rootNetworks.length === 0) {
+            dofetchRootNetworks();
         }
-        dofetchRootNetworks();
-    }, [currentRootNetwork, dofetchRootNetworks]);
+    }, [dofetchRootNetworks, rootNetworks]);
 
     const openRootNetworkCreationDialog = useCallback(() => {
         setRootNetworkCreationDialogOpen(true);
@@ -227,7 +226,7 @@ const RootNetworkNodeEditor = () => {
         if (!rootNetwork) {
             return '';
         }
-        return intl.formatMessage({ id: 'RootNetwork' }) + ' ' + rootNetwork.rootNetworkUuid;
+        return intl.formatMessage({ id: 'RootNetwork' }) + ': ' + rootNetwork.rootNetworkUuid;
     };
 
     const handleSecondaryAction = useCallback(
@@ -365,7 +364,7 @@ const RootNetworkNodeEditor = () => {
     }
 
     const doCreateRootNetwork = ({ name, caseName, caseId }: FormData) => {
-        // setSaveInProgress(true);
+        setCreateInProgress(true);
 
         getCaseImportParameters(caseId as UUID)
             .then((params: GetCaseImportParametersReturn) => {
@@ -388,6 +387,9 @@ const RootNetworkNodeEditor = () => {
                     messageTxt: error.message,
                     headerId: 'errCreateRootNetworksMsg',
                 });
+            })
+            .finally(() => {
+                setCreateInProgress(false);
             });
     };
     const renderPaneSubtitle = () => {
