@@ -11,11 +11,11 @@ import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
 import { VirtualizedTreeview } from './virtualized-treeview';
 import { ReportItem } from './treeview-item';
-import { Report, ReportLog, ReportTree, ReportType } from 'utils/report/report.type';
+import { Report, ReportLog, ReportTree, ReportType, SeverityLevel } from 'utils/report/report.type';
 
-type ReportViewerProps = { report: Report; reportType: string };
+type ReportViewerProps = { report: Report; reportType: string; severities: SeverityLevel[] | undefined };
 
-export default function ReportViewer({ report, reportType }: ReportViewerProps) {
+export default function ReportViewer({ report, reportType, severities }: ReportViewerProps) {
     const dispatch = useDispatch();
 
     const [expandedTreeReports, setExpandedTreeReports] = useState<string[]>([]);
@@ -97,10 +97,10 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                 <Grid item xs={12} sm={9}>
                     {selectedReportId && selectedReportType && (
                         <LogTable
-                            report={report}
                             selectedReportId={selectedReportId}
                             reportType={reportType}
                             reportNature={selectedReportType} // GlobalReport or NodeReport
+                            severities={severities}
                             onRowClick={onLogRowClick}
                         />
                     )}
