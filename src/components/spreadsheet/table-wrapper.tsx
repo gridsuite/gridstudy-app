@@ -15,7 +15,6 @@ import { EDIT_COLUMN, MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DA
 import { EquipmentTable } from './equipment-table';
 import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../utils/config-params';
-import { RunningStatus } from '../utils/running-status';
 import {
     DefaultCellRenderer,
     EditableCellRenderer,
@@ -63,7 +62,6 @@ import { fetchNetworkElementInfos } from 'services/study/network';
 import { toModificationOperation } from 'components/utils/utils';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
-import ComputingType from 'components/computing-status/computing-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
@@ -171,8 +169,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState<number>(0);
-
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const allDisplayedColumnsNames = useSelector((state: AppState) => state.tables.columnsNamesJson);
     const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
@@ -339,12 +335,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             columnExtended.headerName = intl.formatMessage({ id: columnExtended.id });
 
             if (columnExtended.numeric) {
-                //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
-                const isValueInvalid = loadFlowStatus !== RunningStatus.SUCCEED && columnExtended.canBeInvalidated;
-
-                columnExtended.cellRendererParams = {
-                    isValueInvalid: isValueInvalid,
-                };
                 if (columnExtended.withFluxConvention) {
                     // We enrich "flux convention" properties here (and not in config-tables) because we use a hook
                     // to get the convention, which requires a component context.
@@ -464,7 +454,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             translate,
             onSortChanged,
             sortConfig,
-            loadFlowStatus,
             applyFluxConvention,
         ]
     );
