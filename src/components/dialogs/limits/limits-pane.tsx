@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid, Tab, Tabs } from '@mui/material';
+import { Box, Grid, Tab, Tabs, TextField } from '@mui/material';
 import {
     CURRENT_LIMITS,
     ID,
@@ -22,21 +22,21 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
 import { CurrentTreeNode } from '../../../redux/reducer';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from './limits-type';
+import IconButton from '@mui/material/IconButton';
+import { Edit } from '@mui/icons-material';
 
 const styles = {
     limitsBackground: {
         backgroundColor: '#1a1919', // TODO : those colors may be found in the theme see with Stephane ??
-        alignItems: 'self-start',
-        justifyContent: 'flex-start',
+        p: 1,
         '&.Mui-selected': { backgroundColor: '#383838' },
     },
     limitsBackgroundUnselected: {
         backgroundColor: '#1a1919',
-        alignItems: 'self-start',
-        justifyContent: 'flex-start',
+        p: 1,
     },
 };
 export interface LimitsPaneProps {
@@ -60,6 +60,9 @@ export function LimitsPane({
         setSelectedLimitGroupTabIndex(newValue);
         setSelectedGroupStr(allLimitsGroupsStr[newValue] || null);
     };
+    const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
+    const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
+    const editLimitGroupRef = useRef<HTMLInputElement>(null);
 
     const limitsGroups1: OperationalLimitsGroup[] = useWatch({
         name: `${id}.${LIMITS_GROUP_1}.`,
@@ -78,8 +81,20 @@ export function LimitsPane({
     const useFieldArrayLimitsGroups2 = useFieldArray({
         name: `${id}.${LIMITS_GROUP_2}`,
     });
+    const handleLimitsGroupNameChange = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            setEditedLimitGroupName(event.target.value);
+        },
+        [setEditedLimitGroupName]
+    );
+    useEffect(() => {
+        if (editingTabIndex && editLimitGroupRef.current) {
+            editLimitGroupRef.current.focus();
+        }
+    }, [editingTabIndex]);
 
     useEffect(() => {
+        console.log("Mathieu combine limitsGroups1 and limitsGroups2");
         // all the limit sets have to be present in both sides even if empty
         // the cleaning is done at the validation
         limitsGroups1.forEach((limitsGroup1: OperationalLimitsGroup) => {
@@ -130,7 +145,9 @@ export function LimitsPane({
         useFieldArrayLimitsGroups2,
     ]);
 
+    // updates AllLimitsGroupsStr which contains all the UNIQUE operational limits group names from both sides
     useEffect(() => {
+        console.log("Mathieu : updates AllLimitsGroupsStr");
         let allLimitsGroups: string[] = [];
         allLimitsGroups.push(...limitsGroups1.map((limitGroup: { id: string }) => limitGroup.id));
         allLimitsGroups.push(
@@ -144,9 +161,74 @@ export function LimitsPane({
         setAllLimitsGroupsStr(allLimitsGroups);
     }, [limitsGroups1, limitsGroups2]);
 
+    const startEditingLimitsGroup = useCallback(
+        (index: number, name: string) => {
+            setSelectedLimitGroupTabIndex(index);
+            setEditingTabIndex(index);
+            setEditedLimitGroupName(name);
+        },
+        [setEditingTabIndex, setEditedLimitGroupName]
+    );
+    const finishEditingLimitsGroup = useCallback(() => {
+        if (editingTabIndex) {
+            // get the old name of the modified limit set in order to update it on both sides
+            const oldName: string | undefined = allLimitsGroupsStr.find((limitsGroup, index) => {
+                return index === editingTabIndex;
+            });
+            const ls1: OperationalLimitsGroup | undefined = limitsGroups1.find(
+                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
+            );
+            const indexInLs1: number | undefined = limitsGroups1.findIndex(
+                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
+            );
+            if (ls1 && indexInLs1) {
+                useFieldArrayLimitsGroups1.update(indexInLs1, {
+                    ...ls1,
+                    [ID]: editedLimitGroupName,
+                });
+            }
+            const ls2: OperationalLimitsGroup | undefined = limitsGroups2.find(
+                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
+            );
+            const indexInLs2: number | undefined = limitsGroups2.findIndex(
+                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
+            );
+            if (ls2 && indexInLs2) {
+                useFieldArrayLimitsGroups2.update(indexInLs2, {
+                    ...ls2,
+                    [ID]: editedLimitGroupName,
+                });
+            }
+            setEditingTabIndex(null);
+            setSelectedGroupStr(editedLimitGroupName);
+        }
+    }, [
+        allLimitsGroupsStr,
+        editedLimitGroupName,
+        editingTabIndex,
+        limitsGroups1,
+        limitsGroups2,
+        useFieldArrayLimitsGroups1,
+        useFieldArrayLimitsGroups2,
+    ]);
+
+    const handleKeyDown = useCallback(
+        (event: React.KeyboardEvent) => {
+            if (event.key === 'Enter') {
+                finishEditingLimitsGroup();
+            }
+        },
+        [finishEditingLimitsGroup]
+    );
+
     const addNewLimitSet = () => {
+        const newIndex: number = allLimitsGroupsStr.length - 1;
+        let newName: string = `LIMIT_SET`;
+        if (newIndex > 0) {
+            newName += `(${allLimitsGroupsStr.length > 0 ? newIndex : ''})`;
+        }
         const newLimitsGroup: OperationalLimitsGroup = {
-            [ID]: `LIMIT_SET(${allLimitsGroupsStr.length > 0 ? allLimitsGroupsStr.length - 1 : ''})`,
+            [ID]: newName,
             [CURRENT_LIMITS]: {
                 [TEMPORARY_LIMITS]: [],
                 [PERMANENT_LIMIT]: undefined,
@@ -154,8 +236,9 @@ export function LimitsPane({
         };
         useFieldArrayLimitsGroups1.append(newLimitsGroup);
         useFieldArrayLimitsGroups2.append(newLimitsGroup);
-        setSelectedLimitGroupTabIndex(allLimitsGroupsStr.length - 1);
-        setSelectedGroupStr(newLimitsGroup.id);
+        // setSelectedLimitGroupTabIndex(allLimitsGroupsStr.length - 1);
+        // setSelectedGroupStr(newLimitsGroup.id);
+        startEditingLimitsGroup(newIndex, newName);
     };
 
     return (
@@ -176,7 +259,22 @@ export function LimitsPane({
             </Grid>
             {/* active limit set */}
             <Grid container item xs={12} columns={11} spacing={2}>
-                <Grid item xs={1} />
+                <Grid item xs={1}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            width: '100%',
+                            flexGrow: 1,
+                        }}
+                    >
+                        <IconButton onClick={() => addNewLimitSet()} sx={{
+                            align: 'right',
+                            marginLeft: "auto",
+                        }}>
+                            <AddCircleIcon />
+                        </IconButton>
+                    </Box>
+                </Grid>
                 <Grid item xs={5}>
                     <SelectedOperationalLimitGroup
                         selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
@@ -193,7 +291,6 @@ export function LimitsPane({
             {/* limits */}
             <Grid container item xs={12} columns={11}>
                 <Grid item xs={1}>
-                    <Tab icon={<AddCircleIcon />} onClick={() => addNewLimitSet()} iconPosition="end" />
                     <Tabs
                         orientation="vertical"
                         variant="scrollable"
@@ -201,10 +298,43 @@ export function LimitsPane({
                         onChange={handleTabChange}
                         sx={{ flexGrow: 1 }}
                     >
-                        {allLimitsGroupsStr.map((set, index) => (
+                        {allLimitsGroupsStr.map((setName, index) => (
                             <Tab
-                                key={set}
-                                label={set}
+                                key={setName + index}
+                                label={
+                                    editingTabIndex === index ? (
+                                        <TextField
+                                            value={editedLimitGroupName}
+                                            onChange={handleLimitsGroupNameChange}
+                                            onBlur={finishEditingLimitsGroup}
+                                            onKeyDown={handleKeyDown}
+                                            inputRef={editLimitGroupRef}
+                                            autoFocus
+                                            size="small"
+                                            fullWidth
+                                        />
+                                    ) : (
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                width: '100%',
+                                            }}
+                                        >
+                                            {setName}
+                                            <IconButton
+                                                size="small"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    startEditingLimitsGroup(index, setName);
+                                                }}
+                                            >
+                                                <Edit fontSize="small" />
+                                            </IconButton>
+                                        </Box>
+                                    )
+                                }
                                 sx={
                                     index === selectedLimitGroupTabIndex
                                         ? styles.limitsBackground
