@@ -72,10 +72,10 @@ export function LimitsPane({
     // in the limitSets2 array
     const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | undefined>(undefined);
 
-    const useFieldArrayLimitsGroups1 = useFieldArray({
+    const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
         name: `${id}.${LIMITS_GROUP_1}`,
     });
-    const useFieldArrayLimitsGroups2 = useFieldArray({
+    const { append: appendToLimitsGroups2, update: updateLimitsGroups2 } = useFieldArray({
         name: `${id}.${LIMITS_GROUP_2}`,
     });
     const handleLimitsGroupNameChange = useCallback(
@@ -100,7 +100,7 @@ export function LimitsPane({
                     limitsGroup1.id &&
                     !limitsGroups2.find((limitsGroup2: OperationalLimitsGroup) => limitsGroup1.id === limitsGroup2.id)
                 ) {
-                    useFieldArrayLimitsGroups2.append({
+                    appendToLimitsGroups2({
                         [ID]: limitsGroup1.id,
                         [CURRENT_LIMITS]: {
                             [PERMANENT_LIMIT]: null,
@@ -114,7 +114,7 @@ export function LimitsPane({
                     limitsGroup2.id &&
                     !limitsGroups1.find((limitsGroup1: OperationalLimitsGroup) => limitsGroup2.id === limitsGroup1.id)
                 ) {
-                    useFieldArrayLimitsGroups1.append({
+                    appendToLimitsGroups1({
                         [ID]: limitsGroup2.id,
                         [CURRENT_LIMITS]: {
                             [PERMANENT_LIMIT]: null,
@@ -124,7 +124,7 @@ export function LimitsPane({
                 }
             });
         }
-    }, [limitsGroups1, limitsGroups2, useFieldArrayLimitsGroups1, useFieldArrayLimitsGroups2, editingTabIndex]);
+    }, [limitsGroups1, limitsGroups2, appendToLimitsGroups1, appendToLimitsGroups2, editingTabIndex]);
 
     useEffect(() => {
         if (limitsGroups1[selectedLimitGroupTabIndex]) {
@@ -168,7 +168,7 @@ export function LimitsPane({
                 (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
             );
             if (indexInLs1) {
-                useFieldArrayLimitsGroups1.update(indexInLs1, {
+                updateLimitsGroups1(indexInLs1, {
                     ...limitsGroups1[indexInLs1],
                     [ID]: editedLimitGroupName,
                 });
@@ -178,7 +178,7 @@ export function LimitsPane({
                 (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
             );
             if (indexInLs2) {
-                useFieldArrayLimitsGroups2.update(indexInLs2, {
+                updateLimitsGroups2(indexInLs2, {
                     ...limitsGroups2[indexInLs2],
                     [ID]: editedLimitGroupName,
                 });
@@ -191,8 +191,8 @@ export function LimitsPane({
         editedLimitGroupName,
         limitsGroups1,
         limitsGroups2,
-        useFieldArrayLimitsGroups1,
-        useFieldArrayLimitsGroups2,
+        updateLimitsGroups1,
+        updateLimitsGroups2,
         setEditingTabIndex,
     ]);
 
@@ -218,10 +218,10 @@ export function LimitsPane({
                 [PERMANENT_LIMIT]: undefined,
             },
         };
-        useFieldArrayLimitsGroups1.append(newLimitsGroup);
-        useFieldArrayLimitsGroups2.append(newLimitsGroup);
+        appendToLimitsGroups1(newLimitsGroup);
+        appendToLimitsGroups2(newLimitsGroup);
         startEditingLimitsGroup(newIndex, newName);
-    }, [startEditingLimitsGroup, useFieldArrayLimitsGroups1, useFieldArrayLimitsGroups2, limitsGroups1.length]);
+    }, [startEditingLimitsGroup, appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1.length]);
 
     return (
         <Grid container spacing={2}>
