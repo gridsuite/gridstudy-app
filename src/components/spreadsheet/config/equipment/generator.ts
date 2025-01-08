@@ -12,18 +12,15 @@ import {
     type EquipmentTableDataEditorProps,
     GeneratorRegulatingTerminalEditor,
 } from '../../utils/equipment-table-editors';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import type { EditableCallback, ValueGetterFunc } from 'ag-grid-community';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     editableCellStyle,
     editableColumnConfig,
     excludeFromGlobalFilter,
-    getDefaultEnumConfig,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
@@ -88,8 +85,7 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             id: 'NominalV',
@@ -101,9 +97,9 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'energySource',
             field: 'energySource',
-            ...getDefaultEnumConfig(ENERGY_SOURCES),
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.energySource, ENERGY_SOURCES),
+            ...defaultTextFilterConfig,
         },
         {
             id: 'activePower',
@@ -412,7 +408,7 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'RegulationTypeText',
             field: 'RegulationTypeText',
-            ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
+            ...defaultTextFilterConfig,
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.RegulationTypeText, Object.values(REGULATION_TYPES)),
         },

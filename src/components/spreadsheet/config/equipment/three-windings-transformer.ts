@@ -8,12 +8,9 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
-    defaultEnumFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     editableColumnConfig,
@@ -73,8 +70,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             id: 'NominalVT3WSide1',
@@ -274,7 +270,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingMode1',
             field: 'regulationModeName1',
-            ...defaultEnumFilterConfig,
+            ...defaultTextFilterConfig,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -316,7 +312,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingMode2',
             field: 'regulationModeName2',
-            ...defaultEnumFilterConfig,
+            ...defaultTextFilterConfig,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -358,7 +354,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingMode3',
             field: 'regulationModeName3',
-            ...defaultEnumFilterConfig,
+            ...defaultTextFilterConfig,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
         },

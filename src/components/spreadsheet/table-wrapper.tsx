@@ -51,7 +51,6 @@ import {
 } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
-    deepFindValue,
     formatFetchedEquipment,
     formatFetchedEquipments,
     updateGeneratorCells,
@@ -66,7 +65,6 @@ import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-ag
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter, updateEquipments } from 'redux/actions';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
@@ -160,7 +158,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const gridRef = useRef<AgGridReact>(null);
     const timerRef = useRef<NodeJS.Timeout>();
     const intl = useIntl();
-    const { translate } = useLocalizedCountries();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState<number>(0);
@@ -292,30 +289,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         formatFetchedEquipmentsHandler
     );
 
-    // Function to get the columns that have isEnum filter set to true in customFilterParams
-    const getEnumFilterColumns = useCallback(() => {
-        return currentColumns().filter((c) => c.isEnum);
-    }, [currentColumns]);
-
-    const generateEquipmentsFilterEnums = useCallback(() => {
-        if (!equipments) {
-            return {};
-        }
-        const filterEnums: any = {};
-        getEnumFilterColumns().forEach((column) => {
-            filterEnums[column.field ?? ''] = [
-                ...new Set(
-                    equipments
-                        .map((equipment: any) => deepFindValue(equipment, column.field))
-                        .filter((value: any) => value != null)
-                ),
-            ];
-        });
-        return filterEnums;
-    }, [getEnumFilterColumns, equipments]);
-
-    const filterEnums = useMemo(() => generateEquipmentsFilterEnums(), [generateEquipmentsFilterEnums]);
-
     const enrichColumn = useCallback(
         (column: CustomColDef<any, any, CustomAggridAutocompleteFilterParams & CustomAggridFilterParams>) => {
             const columnExtended = { ...column };
@@ -339,38 +312,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 },
             };
 
-            //Set sorting comparator for enum columns so it sorts the translated values instead of the enum values
-            if (columnExtended?.isEnum) {
-                const getTranslatedOrOriginalValue = (value: string) => {
-                    if (value === undefined || value === null) {
-                        return '';
-                    }
-                    if (columnExtended.isCountry) {
-                        return translate(value);
-                    } else if (columnExtended.getEnumLabel) {
-                        const labelId = columnExtended.getEnumLabel(value);
-                        return intl.formatMessage({
-                            id: labelId || value,
-                            defaultMessage: value,
-                        });
-                    }
-                    return value;
-                };
-
-                columnExtended.comparator = (valueA: string, valueB: string) => {
-                    const translatedValueA = getTranslatedOrOriginalValue(valueA);
-                    const translatedValueB = getTranslatedOrOriginalValue(valueB);
-
-                    return translatedValueA.localeCompare(translatedValueB);
-                };
-
-                columnExtended.filterComponentParams = {
-                    ...columnExtended.filterComponentParams,
-                    filterEnums: filterEnums,
-                    getEnumLabel: getTranslatedOrOriginalValue,
-                };
-            }
-
             return makeAgGridCustomHeaderColumn({
                 headerName: columnExtended.headerName,
                 field: columnExtended.field,
@@ -381,7 +322,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 ...columnExtended,
             });
         },
-        [intl, lockedColumnsNames, updateFilter, filterSelector, filterEnums, translate, onSortChanged, sortConfig]
+        [intl, lockedColumnsNames, updateFilter, filterSelector, onSortChanged, sortConfig]
     );
     useEffect(() => {
         if (errorMessage) {
