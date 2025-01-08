@@ -42,6 +42,7 @@ export interface Contingency {
 
 export interface SecurityAnalysisNmkTableRow {
     subjectId?: string;
+    locationId?: string;
     acceptableDuration?: number | null;
     status?: string;
     contingencyEquipmentsIds?: (string | undefined)[];
@@ -59,12 +60,12 @@ export interface SecurityAnalysisNmkTableRow {
 export interface Constraint {
     limitViolation?: LimitViolation;
     subjectId?: string;
-    locationId?: string;
+    locationId: string;
 }
 
 export interface ContingenciesFromConstraintItem {
     subjectId: string;
-    locationId?: string;
+    locationId: string;
     contingencies?: Contingency[];
 }
 

@@ -29,7 +29,8 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
             ? result?.map((preContingencyResult: PreContingencyResult) => {
                   const { limitViolation, subjectId, locationId } = preContingencyResult;
                   return {
-                      subjectId: locationId ?? subjectId,
+                      subjectId: subjectId,
+                      locationId: locationId,
                       limitType: intl.formatMessage({
                           id: limitViolation?.limitType,
                       }),
