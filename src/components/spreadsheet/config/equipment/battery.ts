@@ -63,7 +63,6 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            withFluxConvention: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -72,7 +71,6 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            withFluxConvention: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

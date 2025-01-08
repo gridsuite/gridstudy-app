@@ -8,7 +8,6 @@
 import {
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_FLUX_CONVENTION,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
     PARAM_THEME,
@@ -34,7 +33,6 @@ import {
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
-import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { DiagramType } from '../components/diagrams/diagram-common';
 import { Filter } from '../components/results/common/results-global-filter';
 import {
@@ -86,7 +84,6 @@ export type AppActions =
     | CloseStudyAction
     | RemoveSelectedCaseAction
     | UseNameAction
-    | FluxConventionAction
     | EnableDeveloperModeAction
     | LimitReductionAction
     | LimitReductionModifiedAction
@@ -435,14 +432,6 @@ export function setUpdateNetworkVisualizationParameters(
         type: UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
         parameters: parameters,
     };
-}
-
-export const FLUX_CONVENTION = 'FLUX_CONVENTION';
-export type FluxConventionAction = Readonly<Action<typeof FLUX_CONVENTION>> & {
-    [PARAM_FLUX_CONVENTION]: FluxConventions;
-};
-export function selectFluxConvention(fluxConvention: FluxConventions): FluxConventionAction {
-    return { type: FLUX_CONVENTION, [PARAM_FLUX_CONVENTION]: fluxConvention };
 }
 
 export const ENABLE_DEVELOPER_MODE = 'ENABLE_DEVELOPER_MODE';

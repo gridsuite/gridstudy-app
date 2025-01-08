@@ -111,7 +111,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            withFluxConvention: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -120,7 +119,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            withFluxConvention: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
