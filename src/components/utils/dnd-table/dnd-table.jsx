@@ -230,6 +230,11 @@ const DndTable = ({
 
         remove(rowsToDelete);
     }
+    function deleteRow(index) {
+        const currentRowsValues = getValues(arrayFormName);
+        const rowToDelete = currentRowsValues[index];
+        remove(rowToDelete);
+    }
 
     function selectAllRows() {
         for (let i = 0; i < currentRows.length; i++) {
@@ -352,20 +357,12 @@ const DndTable = ({
                                 {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
                                 {withButtonOnTheRight && (
                                     <TableCell>
-                                        <Tooltip
-                                            title={intl.formatMessage({
-                                                id: 'DeleteRows',
-                                            })}
-                                            placement="top"
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() => deleteRow(index)}
                                         >
-                                            <IconButton
-                                                color="primary"
-                                                onClick={() => deleteSelectedRows()}
-                                                disabled
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Tooltip>
+                                            <DeleteIcon />
+                                        </IconButton>
                                     </TableCell>
                                 )}
                             </TableRow>
