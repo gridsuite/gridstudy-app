@@ -160,51 +160,49 @@ export function LimitsPane({
         [setEditingTabIndex, setEditedLimitGroupName]
     );
 
-    const finishEditingLimitsGroup = useCallback(
-        (editedTabIndex: number | null) => {
-            if (editedTabIndex !== null) {
-                // get the old name of the modified limit set in order to update it on both sides
-                const oldName: string = limitsGroups1[editedTabIndex].id;
-                const indexInLs1: number | undefined = limitsGroups1.findIndex(
-                    (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
-                );
-                if (indexInLs1) {
-                    useFieldArrayLimitsGroups1.update(indexInLs1, {
-                        ...limitsGroups1[indexInLs1],
-                        [ID]: editedLimitGroupName,
-                    });
-                }
-
-                const indexInLs2: number | undefined = limitsGroups2.findIndex(
-                    (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
-                );
-                if (indexInLs2) {
-                    useFieldArrayLimitsGroups2.update(indexInLs2, {
-                        ...limitsGroups2[indexInLs2],
-                        [ID]: editedLimitGroupName,
-                    });
-                }
-                setSelectedLimitGroupTabIndex(editedTabIndex);
-                setEditingTabIndex(null);
+    const finishEditingLimitsGroup = useCallback(() => {
+        if (editingTabIndex !== null) {
+            // get the old name of the modified limit set in order to update it on both sides
+            const oldName: string = limitsGroups1[editingTabIndex].id;
+            const indexInLs1: number | undefined = limitsGroups1.findIndex(
+                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
+            );
+            if (indexInLs1) {
+                useFieldArrayLimitsGroups1.update(indexInLs1, {
+                    ...limitsGroups1[indexInLs1],
+                    [ID]: editedLimitGroupName,
+                });
             }
-        },
-        [
-            editedLimitGroupName,
-            limitsGroups1,
-            limitsGroups2,
-            useFieldArrayLimitsGroups1,
-            useFieldArrayLimitsGroups2,
-            setEditingTabIndex,
-        ]
-    );
+
+            const indexInLs2: number | undefined = limitsGroups2.findIndex(
+                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
+            );
+            if (indexInLs2) {
+                useFieldArrayLimitsGroups2.update(indexInLs2, {
+                    ...limitsGroups2[indexInLs2],
+                    [ID]: editedLimitGroupName,
+                });
+            }
+            setSelectedLimitGroupTabIndex(editingTabIndex);
+            setEditingTabIndex(null);
+        }
+    }, [
+        editingTabIndex,
+        editedLimitGroupName,
+        limitsGroups1,
+        limitsGroups2,
+        useFieldArrayLimitsGroups1,
+        useFieldArrayLimitsGroups2,
+        setEditingTabIndex,
+    ]);
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
             if (event.key === 'Enter') {
-                finishEditingLimitsGroup(editingTabIndex);
+                finishEditingLimitsGroup();
             }
         },
-        [finishEditingLimitsGroup, editingTabIndex]
+        [finishEditingLimitsGroup]
     );
 
     const addNewLimitSet = useCallback(() => {
@@ -293,7 +291,7 @@ export function LimitsPane({
                                         <TextField
                                             value={editedLimitGroupName}
                                             onChange={handleLimitsGroupNameChange}
-                                            onBlur={() => finishEditingLimitsGroup(editingTabIndex)}
+                                            onBlur={finishEditingLimitsGroup}
                                             onKeyDown={handleKeyDown}
                                             inputRef={editLimitGroupRef}
                                             autoFocus
