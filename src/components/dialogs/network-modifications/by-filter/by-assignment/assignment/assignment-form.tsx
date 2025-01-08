@@ -81,9 +81,9 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             if (typeof value === 'string') {
                 return value;
             }
-            return `${value.label} ${value.unit ?? ''}`;
+            return `${intl.formatMessage({ id: value.label })} ${value.unit ?? ''}`;
         };
-    }, []);
+    }, [intl]);
 
     const filtersField = (
         <DirectoryItemsInput
@@ -104,7 +104,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             size={'small'}
             inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) => intl.formatMessage({ id: formatLabelWithUnit(option) })}
+            getOptionLabel={(option: any) => formatLabelWithUnit(option)}
             isOptionEqualToValue={areIdsEqual}
         />
     );
