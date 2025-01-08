@@ -152,7 +152,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,

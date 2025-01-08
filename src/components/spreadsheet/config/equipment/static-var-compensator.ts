@@ -89,7 +89,6 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,

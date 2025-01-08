@@ -85,7 +85,6 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
         {
             id: 'voltageRegulationOn',
             field: 'voltageRegulatorOn',
-            boolean: true,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -109,7 +108,6 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,

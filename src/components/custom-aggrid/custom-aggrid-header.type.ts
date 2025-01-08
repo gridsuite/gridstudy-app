@@ -82,7 +82,6 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     agGridFilterParams?: {
         filterOptions: IFilterOptionDef[];
     };
-    boolean?: boolean;
     changeCmd?: string;
     columnWidth?: number;
     crossValidation?: CrossValidationOptions;
