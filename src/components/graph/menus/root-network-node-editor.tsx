@@ -7,9 +7,10 @@
 
 import { CheckBoxList, ElementType, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
 
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import FileUpload from '@mui/icons-material/FileUpload';
+
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography, Badge } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import { useCallback, useEffect, useState } from 'react';
@@ -119,7 +120,7 @@ export function isPartial(s1: number, s2: number) {
 const RootNetworkNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const { snackInfo, snackError } = useSnackMessage();
+    const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
     // const [saveInProgress, setSaveInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
@@ -183,20 +184,35 @@ const RootNetworkNodeEditor = () => {
 
     const doDeleteRootNetwork = useCallback(() => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
-        if (studyUuid) {
-            deleteRootNetworks(studyUuid, selectedRootNetworksUuid)
+        const itemsToDelete = selectedRootNetworksUuid.filter((uuid) => uuid !== currentRootNetwork);
+
+        // If there are no items to delete, show warning
+        if (itemsToDelete.length === 0) {
+            snackWarning({ headerId: 'warnDeleteCurrentRootNetwork' });
+            return;
+        }
+
+        if (studyUuid && currentRootNetwork) {
+            deleteRootNetworks(studyUuid, itemsToDelete)
                 .then(() => {
                     setDeleteInProgress(true);
                 })
                 .catch((errmsg) => {
                     snackError({
                         messageTxt: errmsg,
-                        headerId: 'errDeleteModificationMsg',
+                        headerId: 'errDeleteRootNetworkMsg',
                     });
                 })
-                .finally(() => setDeleteInProgress(false));
+                .finally(() => {
+                    setDeleteInProgress(false);
+                    if (selectedRootNetworksUuid.includes(currentRootNetwork)) {
+                        snackWarning({
+                            headerId: 'warnDeleteCurrentRootNetwork',
+                        });
+                    }
+                });
         }
-    }, [selectedItems, snackError, studyUuid]);
+    }, [selectedItems, snackError, snackWarning, studyUuid, currentRootNetwork]);
 
     const toggleSelectAllRootNetworks = useCallback(() => {
         setSelectedItems((oldVal) => (oldVal.length === 0 ? rootNetworks : []));
@@ -214,6 +230,35 @@ const RootNetworkNodeEditor = () => {
         return intl.formatMessage({ id: 'RootNetwork' }) + ' ' + rootNetwork.rootNetworkUuid;
     };
 
+    const handleSecondaryAction = useCallback(
+        (rootNetwork: RootNetworkMetadata) => {
+            const isCurrentRootNetwork = rootNetwork.rootNetworkUuid === currentRootNetwork;
+
+            return (
+                <Box sx={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}>
+                    <IconButton
+                        size="small"
+                        disabled={isCurrentRootNetwork}
+                        onClick={() => {
+                            if (rootNetwork.rootNetworkUuid !== currentRootNetwork) {
+                                dispatch(setCurrentRootNetwork(rootNetwork.rootNetworkUuid));
+                            }
+                        }}
+                    >
+                        {isCurrentRootNetwork ? (
+                            <Badge overlap="circular" color="primary" variant="dot">
+                                <RemoveRedEyeIcon />
+                            </Badge>
+                        ) : (
+                            <VisibilityOffIcon />
+                        )}
+                    </IconButton>
+                </Box>
+            );
+        },
+        [currentRootNetwork, dispatch]
+    );
+
     const renderRootNetworksList = () => {
         return (
             <CheckBoxList
@@ -226,7 +271,6 @@ const RootNetworkNodeEditor = () => {
                         checkBoxIcon: styles.checkBoxIcon,
                         checkboxButton: styles.checkboxButton,
                     }),
-                    // dragAndDropContainer: styles.listContainer,
                 }}
                 onItemClick={(rootNetwork) => {
                     console.log(rootNetwork.rootNetworkUuid, 'on click');
@@ -237,26 +281,7 @@ const RootNetworkNodeEditor = () => {
                 getItemId={(val) => val.rootNetworkUuid}
                 getItemLabel={getRootNetworkLabel}
                 divider
-                secondaryAction={(rootNetwork) => {
-                    const isCurrentRootNetwork = rootNetwork.rootNetworkUuid === currentRootNetwork;
-
-                    return (
-                        <Box sx={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}>
-                            <IconButton
-                                size="small"
-                                disabled={isCurrentRootNetwork}
-                                onClick={() => {
-                                    if (rootNetwork.rootNetworkUuid !== currentRootNetwork) {
-                                        // Set this root network as the current root network
-                                        dispatch(setCurrentRootNetwork(rootNetwork.rootNetworkUuid));
-                                    }
-                                }}
-                            >
-                                {isCurrentRootNetwork ? <RemoveRedEyeIcon /> : <VisibilityOffIcon />}
-                            </IconButton>
-                        </Box>
-                    );
-                }}
+                secondaryAction={handleSecondaryAction}
             />
         );
     };
@@ -348,27 +373,21 @@ const RootNetworkNodeEditor = () => {
                 const formattedParams = formatCaseImportParameters(params.parameters);
                 const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
                 // Call createRootNetwork with formatted parameters
-
                 return createRootNetwork(caseId as UUID, params.formatName, studyUuid, customizedCurrentParameters);
             })
             .then(() => {
-                // Success handler
                 snackInfo({
-                    headerId: 'infoCreateRootNetworkMsg',
+                    headerId: 'rootNetworkCreated',
                     headerValues: {
                         rootNetworkName: name,
                     },
                 });
             })
             .catch((error) => {
-                // Error handler
                 snackError({
                     messageTxt: error.message,
                     headerId: 'errCreateRootNetworksMsg',
                 });
-            })
-            .finally(() => {
-                //    setSaveInProgress(false);
             });
     };
     const renderPaneSubtitle = () => {
@@ -403,7 +422,7 @@ const RootNetworkNodeEditor = () => {
                             sx={styles.toolbarIcon}
                             disabled={false} //TODO
                         >
-                            <CreateNewFolderIcon />
+                            <FileUpload />
                         </IconButton>
                     </span>
                 </Tooltip>

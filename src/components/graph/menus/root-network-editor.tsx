@@ -28,7 +28,7 @@ const RootNetworkEditor = () => {
 
     return (
         <Box sx={styles.paper}>
-            <EditableTitle //TODO
+            <EditableTitle //TODO what to put on title
                 name={currentRootNetworkUuid ?? ''}
                 onClose={closeModificationsDrawer}
                 isCloseIconVisible={false}

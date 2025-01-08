@@ -1461,7 +1461,10 @@
     "rootNetworksCount":"{hide, select, false {{count, plural, =0 {no root network} =1 {{count} root network} other {{count} root networks}}} other {...}}",
     "updateRootNetworksList": "Mise à jour de la liste des réseaux racine cours ...",
     "deletingRootNetwork": "Suppression du réseau racine en cours ...",
-    "creatingRootNetwork": "Création du réseau racine en cours ..."
+    "creatingRootNetwork": "Création du réseau racine en cours ...",
+    "rootNetworkCreated": "Le réseau racine a été créé avec succès",
+    "errDeleteRootNetworkMsg": "Une erreur est survenue lors de la suppression des réseaux racine",
+    "warnDeleteCurrentRootNetwork": "Le réseau racine actuel ne peut pas être supprimé"
 
 
 }
