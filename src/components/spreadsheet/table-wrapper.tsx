@@ -14,7 +14,7 @@ import { Theme } from '@mui/material/styles';
 import { EDIT_COLUMN, MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/constants';
 import { EquipmentTable } from './equipment-table';
 import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../utils/config-params';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import {
     DefaultCellRenderer,
     EditableCellRenderer,
@@ -81,12 +81,7 @@ import {
     ICellRendererParams,
 } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
-import {
-    CustomAggridFilterParams,
-    CustomColDef,
-    FILTER_NUMBER_COMPARATORS,
-} from '../custom-aggrid/custom-aggrid-header.type';
-import { FluxConventions } from '../dialogs/parameters/network-parameters';
+import { CustomAggridFilterParams, CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import { CustomAggridAutocompleteFilterParams } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
@@ -187,7 +182,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [lockedColumnsNames, setLockedColumnsNames] = useState<Set<string>>(new Set());
     const [reorderedTableDefinitionIndexes, setReorderedTableDefinitionIndexes] = useState<string[]>([]);
 
-    const fluxConvention = useSelector((state: AppState) => state[PARAM_FLUX_CONVENTION]);
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
 
     const [lastModifiedEquipment, setLastModifiedEquipment] = useState<any>();
@@ -236,13 +230,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         });
         rollbackEdit();
     }, [rollbackEdit]);
-
-    const applyFluxConvention = useCallback(
-        (val: number) => {
-            return fluxConvention === FluxConventions.TARGET && val !== undefined ? -val : val;
-        },
-        [fluxConvention]
-    );
 
     const currentColumns = useCallback(() => {
         const equipment = tablesDefinitionIndexes.get(tabIndex);
@@ -334,57 +321,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             const columnExtended = { ...column };
             columnExtended.headerName = intl.formatMessage({ id: columnExtended.id });
 
-            if (columnExtended.numeric) {
-                if (columnExtended.withFluxConvention) {
-                    // We enrich "flux convention" properties here (and not in config-tables) because we use a hook
-                    // to get the convention, which requires a component context.
-                    columnExtended.cellRendererParams.applyFluxConvention = applyFluxConvention;
-                    columnExtended.comparator = (valueA: number, valueB: number) => {
-                        const normedValueA = valueA !== undefined ? applyFluxConvention(valueA) : undefined;
-                        const normedValueB = valueB !== undefined ? applyFluxConvention(valueB) : undefined;
-                        if (normedValueA !== undefined && normedValueB !== undefined) {
-                            return normedValueA - normedValueB;
-                        } else if (normedValueA === undefined && normedValueB === undefined) {
-                            return 0;
-                        } else if (normedValueA === undefined) {
-                            return -1;
-                        } else if (normedValueB === undefined) {
-                            return 1;
-                        }
-                        return 0;
-                    };
-                    // redefine agGrid predicates to possibly invert sign depending on flux convention (called when we use useAggridLocalRowFilter).
-                    columnExtended.agGridFilterParams = {
-                        filterOptions: [
-                            {
-                                displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                predicate: (filterValues: number[], cellValue: number) => {
-                                    const filterValue = filterValues.at(0);
-                                    if (filterValue === undefined) {
-                                        return false;
-                                    }
-                                    const transformedValue = applyFluxConvention(cellValue);
-                                    return transformedValue != null ? transformedValue >= filterValue : false;
-                                },
-                            },
-                            {
-                                displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                predicate: (filterValues: number[], cellValue: number) => {
-                                    const filterValue = filterValues.at(0);
-                                    if (filterValue === undefined) {
-                                        return false;
-                                    }
-                                    const transformedValue = applyFluxConvention(cellValue);
-                                    return transformedValue != null ? transformedValue <= filterValue : false;
-                                },
-                            },
-                        ],
-                    };
-                }
-            }
-
             if (columnExtended.cellRenderer == null) {
                 columnExtended.cellRenderer = DefaultCellRenderer;
             }
@@ -445,17 +381,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 ...columnExtended,
             });
         },
-        [
-            intl,
-            lockedColumnsNames,
-            updateFilter,
-            filterSelector,
-            filterEnums,
-            translate,
-            onSortChanged,
-            sortConfig,
-            applyFluxConvention,
-        ]
+        [intl, lockedColumnsNames, updateFilter, filterSelector, filterEnums, translate, onSortChanged, sortConfig]
     );
     useEffect(() => {
         if (errorMessage) {

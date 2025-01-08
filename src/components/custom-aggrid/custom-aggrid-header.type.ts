@@ -95,7 +95,6 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     isEnum?: boolean;
     numeric?: boolean;
     sortProps?: SortPropsType;
-    withFluxConvention?: boolean;
     forceDisplayFilterIcon?: boolean;
     tabIndex?: number;
     isCustomColumn?: boolean;
