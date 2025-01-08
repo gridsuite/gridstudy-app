@@ -22,8 +22,8 @@ import {
 import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    convertInputValues,
-    convertOutputValues,
+    convertInputValue,
+    convertOutputValue,
     CustomFormProvider,
     FieldType,
     useSnackMessage,
@@ -111,9 +111,9 @@ const VoltageLevelModificationDialog = ({
                 [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value ?? null,
                 [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value ?? null,
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                    convertInputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, editData?.ipMin?.value) ?? null,
+                    convertInputValue(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, editData?.ipMin?.value) ?? null,
                 [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                    convertInputValues(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, editData?.ipMax?.value) ?? null,
+                    convertInputValue(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, editData?.ipMax?.value) ?? null,
                 ...getPropertiesFromModification(editData.properties),
             });
         }
@@ -135,11 +135,11 @@ const VoltageLevelModificationDialog = ({
                         if (voltageLevel) {
                             //We convert values of low short circuit current limit and high short circuit current limit from A to KA
                             if (voltageLevel.identifiableShortCircuit) {
-                                voltageLevel.identifiableShortCircuit.ipMax = convertInputValues(
+                                voltageLevel.identifiableShortCircuit.ipMax = convertInputValue(
                                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                                     voltageLevel.identifiableShortCircuit?.ipMax
                                 );
-                                voltageLevel.identifiableShortCircuit.ipMin = convertInputValues(
+                                voltageLevel.identifiableShortCircuit.ipMin = convertInputValue(
                                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                                     voltageLevel.identifiableShortCircuit?.ipMin
                                 );
@@ -185,11 +185,11 @@ const VoltageLevelModificationDialog = ({
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                lowShortCircuitCurrentLimit: convertOutputValues(
+                lowShortCircuitCurrentLimit: convertOutputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
-                highShortCircuitCurrentLimit: convertOutputValues(
+                highShortCircuitCurrentLimit: convertOutputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),

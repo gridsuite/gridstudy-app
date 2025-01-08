@@ -6,8 +6,8 @@
  */
 
 import {
-    convertInputValues,
-    convertOutputValues,
+    convertInputValue,
+    convertOutputValue,
     CustomFormProvider,
     FieldType,
     useSnackMessage,
@@ -223,8 +223,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 ...getTwoWindingsTransformerFormData({
                     r: twt.r,
                     x: twt.x,
-                    g: convertInputValues(FieldType.G, twt.g),
-                    b: convertInputValues(FieldType.B, twt.b),
+                    g: convertInputValue(FieldType.G, twt.g),
+                    b: convertInputValue(FieldType.B, twt.b),
                     ratedU1: twt.ratedU1,
                     ratedU2: twt.ratedU2,
                     ratedS: twt.ratedS,
@@ -316,8 +316,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getTwoWindingsTransformerFormData({
                         r: twt.r,
                         x: twt.x,
-                        g: convertInputValues(FieldType.G, twt.g),
-                        b: convertInputValues(FieldType.B, twt.b),
+                        g: convertInputValue(FieldType.G, twt.g),
+                        b: convertInputValue(FieldType.B, twt.b),
                         ratedU1: twt.ratedU1,
                         ratedU2: twt.ratedU2,
                         ratedS: twt.ratedS,
@@ -508,8 +508,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 temporaryLimits: sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
             };
 
-            characteristics[G] = convertOutputValues(FieldType.G, characteristics[G]);
-            characteristics[B] = convertOutputValues(FieldType.B, characteristics[B]);
+            characteristics[G] = convertOutputValue(FieldType.G, characteristics[G]);
+            characteristics[B] = convertOutputValue(FieldType.B, characteristics[B]);
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];

@@ -7,7 +7,7 @@
 
 import { Grid } from '@mui/material';
 import { MicroSusceptanceAdornment, OhmAdornment } from '../../../dialog-utils';
-import { convertInputValues, FieldType, FloatInput } from '@gridsuite/commons-ui';
+import { convertInputValue, FieldType, FloatInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import {
     B1,
@@ -69,7 +69,7 @@ const LineCharacteristicsPane = ({
             name={`${id}.${G1}`}
             label="ShuntConductanceText"
             adornment={MicroSusceptanceAdornment}
-            previousValue={convertInputValues(FieldType.G1, lineToModify?.g1)}
+            previousValue={convertInputValue(FieldType.G1, lineToModify?.g1)}
             clearable={clearableFields}
         />
     );
@@ -79,7 +79,7 @@ const LineCharacteristicsPane = ({
             name={`${id}.${B1}`}
             label="ShuntSusceptanceText"
             adornment={MicroSusceptanceAdornment}
-            previousValue={convertInputValues(FieldType.B1, lineToModify?.b1)}
+            previousValue={convertInputValue(FieldType.B1, lineToModify?.b1)}
             clearable={clearableFields}
         />
     );
@@ -89,7 +89,7 @@ const LineCharacteristicsPane = ({
             name={`${id}.${G2}`}
             label="ShuntConductanceText"
             adornment={MicroSusceptanceAdornment}
-            previousValue={convertInputValues(FieldType.G2, lineToModify?.g2)}
+            previousValue={convertInputValue(FieldType.G2, lineToModify?.g2)}
             clearable={clearableFields}
         />
     );
@@ -99,7 +99,7 @@ const LineCharacteristicsPane = ({
             name={`${id}.${B2}`}
             label="ShuntSusceptanceText"
             adornment={MicroSusceptanceAdornment}
-            previousValue={convertInputValues(FieldType.B2, lineToModify?.b2)}
+            previousValue={convertInputValue(FieldType.B2, lineToModify?.b2)}
             clearable={clearableFields}
         />
     );

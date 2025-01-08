@@ -8,8 +8,8 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
-    convertInputValues,
-    convertOutputValues,
+    convertInputValue,
+    convertOutputValue,
     CustomFormProvider,
     FieldType,
     useSnackMessage,
@@ -79,7 +79,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                     const fieldKey = assignment[EDITED_FIELD] as keyof typeof FieldType;
                     const field = FieldType[fieldKey];
                     const value = assignment[VALUE_FIELD];
-                    const valueConverted = convertInputValues(field, value);
+                    const valueConverted = convertInputValue(field, value);
                     return {
                         ...assignment,
                         [VALUE_FIELD]: valueConverted,
@@ -103,7 +103,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 const fieldKey = assignment[EDITED_FIELD] as keyof typeof FieldType;
                 const field = FieldType[fieldKey];
                 const value = assignment[VALUE_FIELD];
-                const valueConverted = convertOutputValues(field, value);
+                const valueConverted = convertOutputValue(field, value);
                 return {
                     ...assignment,
                     dataType,

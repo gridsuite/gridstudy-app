@@ -7,8 +7,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    convertInputValues,
-    convertOutputValues,
+    convertInputValue,
+    convertOutputValue,
     CustomFormProvider,
     FieldType,
     useSnackMessage,
@@ -166,10 +166,10 @@ const LineModificationDialog = ({
                 ...getCharacteristicsWithOutConnectivityFormData({
                     r: line.r?.value ?? null,
                     x: line.x?.value ?? null,
-                    g1: convertInputValues(FieldType.G1, line.g1?.value ?? null),
-                    b1: convertInputValues(FieldType.B1, line.b1?.value ?? null),
-                    g2: convertInputValues(FieldType.G2, line.g2?.value ?? null),
-                    b2: convertInputValues(FieldType.B2, line.b2?.value ?? null),
+                    g1: convertInputValue(FieldType.G1, line.g1?.value ?? null),
+                    b1: convertInputValue(FieldType.B1, line.b1?.value ?? null),
+                    g2: convertInputValue(FieldType.G2, line.g2?.value ?? null),
+                    b2: convertInputValue(FieldType.B2, line.b2?.value ?? null),
                 }),
                 ...getLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
@@ -247,10 +247,10 @@ const LineModificationDialog = ({
                 sanitizeString(line[EQUIPMENT_NAME]),
                 characteristics[R],
                 characteristics[X],
-                convertOutputValues(FieldType.G1, characteristics[G1]),
-                convertOutputValues(FieldType.B1, characteristics[B1]),
-                convertOutputValues(FieldType.G2, characteristics[G2]),
-                convertOutputValues(FieldType.B2, characteristics[B2]),
+                convertOutputValue(FieldType.G1, characteristics[G1]),
+                convertOutputValue(FieldType.B1, characteristics[B1]),
+                convertOutputValue(FieldType.G2, characteristics[G2]),
+                convertOutputValue(FieldType.B2, characteristics[B2]),
                 currentLimits1,
                 currentLimits2,
                 connectivity1[VOLTAGE_LEVEL]?.id,

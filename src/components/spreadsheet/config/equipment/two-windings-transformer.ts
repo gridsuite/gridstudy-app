@@ -38,7 +38,7 @@ import {
     numericalCellEditorConfig,
     standardSelectCellEditorConfig,
 } from '../common/cell-editors';
-import { convertInputValues, FieldType } from '@gridsuite/commons-ui';
+import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 
 function getTwtRatioRegulationModeId(twt: any) {
     //regulationMode is set by the user (in edit mode)
@@ -600,7 +600,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params) => convertInputValues(FieldType.G, params.data.g),
+            valueGetter: (params) => convertInputValue(FieldType.G, params.data.g),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -609,7 +609,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params) => convertInputValues(FieldType.B, params.data.b),
+            valueGetter: (params) => convertInputValue(FieldType.B, params.data.b),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { convertInputValues, convertOutputValues, FieldType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { convertInputValue, convertOutputValue, FieldType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
     B,
     B1,
@@ -132,16 +132,16 @@ const convertCamelToSnake = (key: string) =>
             .toUpperCase() as keyof typeof FieldType
     ];
 
-export const convertInputValue = (key: string, value: { value: string | number }) => {
+export const convertInputValues = (key: string, value: { value: string | number }) => {
     if (key === EQUIPMENT_ID) {
         return value;
     }
-    return convertInputValues(convertCamelToSnake(key), value?.value);
+    return convertInputValue(convertCamelToSnake(key), value?.value);
 };
 
-export const convertOutputValue = (key: string, value: string | number) => {
+export const convertOutputValues = (key: string, value: string | number) => {
     if (key === EQUIPMENT_ID) {
         return value;
     }
-    return toModificationOperation(convertOutputValues(convertCamelToSnake(key), value));
+    return toModificationOperation(convertOutputValue(convertCamelToSnake(key), value));
 };

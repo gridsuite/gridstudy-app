@@ -8,8 +8,8 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
-    convertInputValues,
-    convertOutputValues,
+    convertInputValue,
+    convertOutputValue,
     CustomFormProvider,
     FieldType,
     useSnackMessage,
@@ -39,7 +39,7 @@ function getFieldOrConvertedUnitValue(input, fieldType) {
     const value = input.replace(',', '.');
     const isNumber = !isNaN(parseFloat(value));
     return {
-        [VALUE]: isNumber ? convertOutputValues(fieldType, value) : null,
+        [VALUE]: isNumber ? convertOutputValue(fieldType, value) : null,
         [EQUIPMENT_FIELD]: isNumber ? null : input,
     };
 }
@@ -77,11 +77,11 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
     useEffect(() => {
         if (editData) {
             const formulas = editData.formulaInfosList?.map((formula) => {
-                const valueConverted1 = convertInputValues(
+                const valueConverted1 = convertInputValue(
                     FieldType[formula[EDITED_FIELD]],
                     formula?.fieldOrValue1?.value
                 );
-                const valueConverted2 = convertInputValues(
+                const valueConverted2 = convertInputValue(
                     FieldType[formula[EDITED_FIELD]],
                     formula?.fieldOrValue2?.value
                 );

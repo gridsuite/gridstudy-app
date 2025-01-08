@@ -6,8 +6,8 @@
  */
 
 import {
-    convertInputValues,
-    convertOutputValues,
+    convertInputValue,
+    convertOutputValue,
     CustomFormProvider,
     FieldType,
     useSnackMessage,
@@ -241,8 +241,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getCharacteristicsFormData({
                     r: twt.r?.value,
                     x: twt.x?.value,
-                    g: convertInputValues(FieldType.G, twt.g?.value),
-                    b: convertInputValues(FieldType.B, twt.b?.value),
+                    g: convertInputValue(FieldType.G, twt.g?.value),
+                    b: convertInputValue(FieldType.B, twt.b?.value),
                     ratedU1: twt.ratedU1?.value,
                     ratedU2: twt.ratedU2?.value,
                     ratedS: twt.ratedS?.value,
@@ -495,8 +495,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 twoWindingsTransformerName: toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
                 r: toModificationOperation(characteristics[R]),
                 x: toModificationOperation(characteristics[X]),
-                g: toModificationOperation(convertOutputValues(FieldType.G, characteristics[G])),
-                b: toModificationOperation(convertOutputValues(FieldType.B, characteristics[B])),
+                g: toModificationOperation(convertOutputValue(FieldType.G, characteristics[G])),
+                b: toModificationOperation(convertOutputValue(FieldType.B, characteristics[B])),
                 ratedS: toModificationOperation(characteristics[RATED_S]),
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),

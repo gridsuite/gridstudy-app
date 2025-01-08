@@ -20,7 +20,7 @@ import {
 } from './common-config';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { numericalCellEditorConfig } from '../common/cell-editors';
-import { convertInputValues, convertOutputValues, FieldType } from '@gridsuite/commons-ui';
+import { convertInputValue, convertOutputValue, FieldType } from '@gridsuite/commons-ui';
 
 function generateEditableNumericColumnDefinition<
     TId extends string,
@@ -92,20 +92,20 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             ...editableColumnConfig,
             numeric: true,
             ...numericalCellEditorConfig((params) =>
-                convertInputValues(
+                convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMin
                 )
             ),
             valueGetter: (params) =>
-                convertInputValues(
+                convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMin
                 ),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
-                    ipMin: convertOutputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
+                    ipMin: convertOutputValue(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
                 };
                 return true;
             },
@@ -122,20 +122,20 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             ...editableColumnConfig,
             numeric: true,
             ...numericalCellEditorConfig((params) =>
-                convertInputValues(
+                convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMax
                 )
             ),
             valueGetter: (params) =>
-                convertInputValues(
+                convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMax
                 ),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
-                    ipMax: convertOutputValues(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
+                    ipMax: convertOutputValue(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
                 };
                 return true;
             },

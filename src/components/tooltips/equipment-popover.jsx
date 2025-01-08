@@ -16,7 +16,7 @@ import { RunningStatus } from '../utils/running-status';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { mergeSx } from '../utils/functions';
-import { convertInputValues, FieldType, useDebounce } from '@gridsuite/commons-ui';
+import { convertInputValue, FieldType, useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
     tableCells: {
@@ -224,7 +224,7 @@ const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, eq
                 {renderTableCell({ value: voltageLevelId, isLabel: false })}
                 {renderTableCell({ label: 'shuntSusceptance', isLabel: true })}
                 {renderTableCell({
-                    value: convertInputValues(fieldType, susceptanceValue)?.toFixed(2),
+                    value: convertInputValue(fieldType, susceptanceValue)?.toFixed(2),
                     isLabel: false,
                 })}
             </TableRow>

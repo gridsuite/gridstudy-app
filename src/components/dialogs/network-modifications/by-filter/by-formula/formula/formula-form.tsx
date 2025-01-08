@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent } from 'react';
 import { AutocompleteInput, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
@@ -20,9 +20,9 @@ import { EQUIPMENTS_FIELDS } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
-import { useIntl } from 'react-intl';
 import { Grid } from '@mui/material';
 import GridItem from '../../../../commons/grid-item';
+import useFormatLabelWithUnit from '../../../../../../hooks/use-format-label-with-unit';
 
 interface FormulaProps {
     name: string;
@@ -40,21 +40,11 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
     const equipmentTypeWatch = useWatch({
         name: EQUIPMENT_TYPE_FIELD,
     });
-
-    const intl = useIntl();
-
     const equipmentFields: { id: string; label: string; unit: string }[] =
         // @ts-expect-error TODO: missing type in context
         EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
 
-    const formatLabelWithUnit = useMemo(() => {
-        return (value: string | { label: string; unit?: string }) => {
-            if (typeof value === 'string') {
-                return value;
-            }
-            return `${intl.formatMessage({ id: value.label })} ${value.unit ?? ''}`;
-        };
-    }, [intl]);
+    const formatLabelWithUnit = useFormatLabelWithUnit();
 
     const filtersField = (
         <DirectoryItemsInput
