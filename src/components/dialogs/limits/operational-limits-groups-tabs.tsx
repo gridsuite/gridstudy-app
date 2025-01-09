@@ -148,12 +148,12 @@ export function OperationalLimitsGroupsTabs({
 
     const finishEditingLimitsGroup = useCallback(() => {
         if (editingTabIndex !== null) {
-            // get the old name of the modified limit set in order to update it on both sides
+            // get the old name of the modified limit set in order to update it on both sides (and the selected sides if needed)
             const oldName: string = limitsGroups1[editingTabIndex].id;
             const indexInLs1: number | undefined = limitsGroups1.findIndex(
                 (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
             );
-            if (indexInLs1) {
+            if (indexInLs1 !== undefined) {
                 updateLimitsGroups1(indexInLs1, {
                     ...limitsGroups1[indexInLs1],
                     [ID]: editedLimitGroupName,
@@ -166,7 +166,7 @@ export function OperationalLimitsGroupsTabs({
             const indexInLs2: number | undefined = limitsGroups2.findIndex(
                 (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
             );
-            if (indexInLs2) {
+            if (indexInLs2 !== undefined) {
                 updateLimitsGroups2(indexInLs2, {
                     ...limitsGroups2[indexInLs2],
                     [ID]: editedLimitGroupName,
