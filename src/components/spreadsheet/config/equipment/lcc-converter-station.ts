@@ -13,7 +13,6 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
@@ -62,7 +61,6 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
@@ -70,7 +68,6 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'PowerFactor',
@@ -78,7 +75,6 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'LossFactor',
@@ -86,14 +82,12 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected',
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesReadonly,
     ],

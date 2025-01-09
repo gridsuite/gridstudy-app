@@ -14,7 +14,6 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
@@ -81,7 +80,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
@@ -89,14 +87,12 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerRegulationDroop',
@@ -105,7 +101,6 @@ export const GENERATOR_TAB_DEF = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             valueGetter: (params) => params.data?.activePowerControl?.droop,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'minP',
@@ -113,7 +108,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'maxP',
@@ -121,7 +115,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'activePowerSetpoint',
@@ -129,7 +122,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'reactivePowerSetpoint',
@@ -137,14 +129,12 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'voltageRegulationOn',
             field: 'voltageRegulatorOn',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'voltageSetpoint',
@@ -152,13 +142,11 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePercentageVoltageRegulation',
             field: 'coordinatedReactiveControl.qPercent',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             numeric: true,
             fractionDigits: 1,
             valueGetter: (params) => {
@@ -172,7 +160,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
             valueGetter: (params) => params.data?.generatorShortCircuit?.directTransX,
         },
         {
@@ -181,7 +168,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
             valueGetter: (params) => params.data?.generatorShortCircuit?.stepUpTransformerX,
         },
         {
@@ -190,7 +176,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
             valueGetter: (params) => params.data?.generatorStartup?.plannedActivePowerSetPoint,
         },
         {
@@ -199,7 +184,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
             valueGetter: (params) => params.data?.generatorStartup?.marginalCost,
         },
         {
@@ -208,7 +192,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 2,
-            getQuickFilterText: excludeFromGlobalFilter,
             valueGetter: (params) => params.data?.generatorStartup?.plannedOutageRate,
         },
         {
@@ -217,7 +200,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 2,
-            getQuickFilterText: excludeFromGlobalFilter,
             valueGetter: (params) => params.data?.generatorStartup?.forcedOutageRate,
         },
         {
@@ -225,7 +207,6 @@ export const GENERATOR_TAB_DEF = {
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RegulationTypeText',

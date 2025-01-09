@@ -18,7 +18,6 @@ import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { DefaultCellRenderer } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
 import { EquipmentProps, useSpreadsheetEquipments } from './use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
@@ -127,8 +126,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { createCustomColumn } = useCustomColumn(tabIndex);
 
-    const globalFilterRef = useRef<any>();
-
     useEffect(() => {
         setCustomColumnData(createCustomColumn());
     }, [tabIndex, customColumnsDefinitions, createCustomColumn]);
@@ -140,7 +137,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [columnData, customColumnData]);
 
     const cleanTableState = useCallback(() => {
-        globalFilterRef.current?.resetFilter();
         gridRef?.current?.api.setFilterModel(null);
         // reset aggrid column definitions
         gridRef.current?.api.setGridOption('columnDefs', []);
@@ -329,13 +325,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         tablesDefinitionTypes,
     ]);
 
-    const handleGridReady = useCallback(() => {
-        if (globalFilterRef.current) {
-            gridRef.current?.api?.setGridOption('quickFilterText', globalFilterRef.current.getFilterValue().value);
-        }
-        scrollToEquipmentIndex();
-    }, [scrollToEquipmentIndex]);
-
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
         // wait a moment  before removing the loading message.
@@ -430,9 +419,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             <Grid container justifyContent={'space-between'}>
                 <EquipmentTabs disabled={disabled} tabIndex={tabIndex} handleSwitchTab={handleSwitchTab} />
                 <Grid container columnSpacing={2} sx={styles.toolbar}>
-                    <Grid item sx={styles.filter}>
-                        <GlobalFilter disabled={disabled} gridRef={gridRef} ref={globalFilterRef} />
-                    </Grid>
                     <Grid item sx={styles.selectColumns}>
                         <ColumnsConfig
                             tabIndex={tabIndex}
@@ -476,7 +462,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         columnData={mergedColumnData}
                         fetched={!!equipments || !!errorMessage}
                         handleColumnDrag={handleColumnDrag}
-                        handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
                     />

@@ -13,7 +13,6 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
@@ -65,7 +64,6 @@ export const LOAD_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
@@ -73,7 +71,6 @@ export const LOAD_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'p0',
@@ -81,7 +78,6 @@ export const LOAD_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'q0',
@@ -89,14 +85,12 @@ export const LOAD_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected',
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesReadonly,
     ],

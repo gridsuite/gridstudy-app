@@ -8,12 +8,7 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import {
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
+import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
 import { convertInputValue, convertOutputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 
@@ -56,7 +51,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'HighVoltageLimitkV',
@@ -64,7 +58,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'IpMin',
@@ -77,7 +70,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMin
                 ),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'IpMax',
@@ -90,7 +82,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMax
                 ),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesReadonly,
     ],
