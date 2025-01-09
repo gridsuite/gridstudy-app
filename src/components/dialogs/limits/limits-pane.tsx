@@ -10,8 +10,8 @@ import {
     CURRENT_LIMITS,
     ID,
     LIMITS,
-    LIMITS_GROUP_1,
-    LIMITS_GROUP_2,
+    OPERATIONAL_LIMITS_GROUPS_1,
+    OPERATIONAL_LIMITS_GROUPS_2,
     PERMANENT_LIMIT,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
@@ -62,18 +62,18 @@ export function LimitsPane({
     const editLimitGroupRef = useRef<HTMLInputElement>(null);
 
     const limitsGroups1: OperationalLimitsGroup[] = useWatch({
-        name: `${id}.${LIMITS_GROUP_1}.`,
+        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}.`,
     });
     const limitsGroups2: OperationalLimitsGroup[] = useWatch({
-        name: `${id}.${LIMITS_GROUP_2}`,
+        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
     const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | undefined>(undefined);
 
     const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
-        name: `${id}.${LIMITS_GROUP_1}`,
+        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
     });
     const { append: appendToLimitsGroups2, update: updateLimitsGroups2 } = useFieldArray({
-        name: `${id}.${LIMITS_GROUP_2}`,
+        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
     const handleLimitsGroupNameChange = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -247,13 +247,13 @@ export function LimitsPane({
                 <Grid item xs={5}>
                     <SelectedOperationalLimitGroup
                         selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
-                        optionsFormName={`${id}.${LIMITS_GROUP_1}`}
+                        optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`}
                     />
                 </Grid>
                 <Grid item xs={5}>
                     <SelectedOperationalLimitGroup
                         selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
-                        optionsFormName={`${id}.${LIMITS_GROUP_2}`}
+                        optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_2}`}
                     />
                 </Grid>
             </Grid>
@@ -319,7 +319,7 @@ export function LimitsPane({
                             index === selectedLimitGroupTabIndex && (
                                 <LimitsSidePane
                                     key={item.id}
-                                    limitsGroupFormName={`${id}.${LIMITS_GROUP_1}`}
+                                    limitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`}
                                     clearableFields={clearableFields}
                                     indexLimitGroup={index}
                                     permanentCurrentLimitPreviousValue={
@@ -337,7 +337,7 @@ export function LimitsPane({
                             index === indexSelectedLimitSet2 && (
                                 <LimitsSidePane
                                     key={item.id}
-                                    limitsGroupFormName={`${id}.${LIMITS_GROUP_2}`}
+                                    limitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_2}`}
                                     clearableFields={clearableFields}
                                     indexLimitGroup={index}
                                     permanentCurrentLimitPreviousValue={

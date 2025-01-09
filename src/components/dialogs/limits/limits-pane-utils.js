@@ -12,8 +12,8 @@ import {
     CURRENT_LIMITS_2,
     ID,
     LIMITS,
-    LIMITS_GROUP_1,
-    LIMITS_GROUP_2,
+    OPERATIONAL_LIMITS_GROUPS_1,
+    OPERATIONAL_LIMITS_GROUPS_2,
     PERMANENT_LIMIT,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
@@ -36,9 +36,11 @@ const temporaryLimitsValidationSchema = () => {
     return yup.object().shape({
         [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
         [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-        [TEMPORARY_LIMIT_NAME]: yup.string().nullable().when(
-            [TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
-                is: (limitValue, limitDuration) => (limitValue || limitDuration),
+        [TEMPORARY_LIMIT_NAME]: yup
+            .string()
+            .nullable()
+            .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
+                is: (limitValue, limitDuration) => limitValue || limitDuration,
                 then: () => yup.string().nullable().required(),
                 otherwise: () => yup.string().nullable(), // empty lines are ignored
             }),
@@ -57,9 +59,7 @@ const currentLimitsValidationSchema = () => ({
             return areArrayElementsUnique(namesArray);
         })
         .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
-            const durationsArray = array
-                .map((l) => l[TEMPORARY_LIMIT_DURATION])
-                .filter(d => d); // empty lines are ignored
+            const durationsArray = array.map((l) => l[TEMPORARY_LIMIT_DURATION]).filter((d) => d); // empty lines are ignored
             return areArrayElementsUnique(durationsArray);
         }),
 });
@@ -71,13 +71,13 @@ const limitsValidationSchema = (id, onlySelectedLimits = true) => {
     };
 
     const limitsGroupSchema = {
-        [LIMITS_GROUP_1]: yup.array(yup.object().shape(limitsGroupValidationSchema())),
-        [LIMITS_GROUP_2]: yup.array(yup.object().shape(limitsGroupValidationSchema())),
+        [OPERATIONAL_LIMITS_GROUPS_1]: yup.array(yup.object().shape(limitsGroupValidationSchema())),
+        [OPERATIONAL_LIMITS_GROUPS_2]: yup.array(yup.object().shape(limitsGroupValidationSchema())),
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
     };
-    return { [id]: yup.object().shape(onlySelectedLimits ? currentLimitsSchema : limitsGroupSchema), };
-}
+    return { [id]: yup.object().shape(onlySelectedLimits ? currentLimitsSchema : limitsGroupSchema) };
+};
 
 export const getLimitsValidationSchema = (id = LIMITS, onlySelectedLimits = true) => {
     return limitsValidationSchema(id, onlySelectedLimits);
@@ -95,14 +95,14 @@ const limitsEmptyFormData = (id, onlySelectedLimits = true) => {
         },
     };
     const limitsGroup = {
-        [LIMITS_GROUP_1]: [],
-        [LIMITS_GROUP_2]: [],
+        [OPERATIONAL_LIMITS_GROUPS_1]: [],
+        [OPERATIONAL_LIMITS_GROUPS_2]: [],
         [SELECTED_LIMITS_GROUP_1]: null,
         [SELECTED_LIMITS_GROUP_2]: null,
     };
 
-    return { [id]: onlySelectedLimits ? currentLimits : limitsGroup, };
-}
+    return { [id]: onlySelectedLimits ? currentLimits : limitsGroup };
+};
 
 export const getLimitsEmptyFormData = (id = LIMITS, onlySelectedLimits = true) => {
     return limitsEmptyFormData(id, onlySelectedLimits);
@@ -141,8 +141,8 @@ export const getAllLimitsFormData = (
 ) => {
     return {
         [id]: {
-            [LIMITS_GROUP_1]: operationalLimitsGroups1,
-            [LIMITS_GROUP_2]: operationalLimitsGroups2,
+            [OPERATIONAL_LIMITS_GROUPS_1]: operationalLimitsGroups1,
+            [OPERATIONAL_LIMITS_GROUPS_2]: operationalLimitsGroups2,
             [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroup1,
             [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroup2,
         },
@@ -158,11 +158,8 @@ export const sanitizeLimitsGroups = (limitsGroups /*: OperationalLimitsGroup[]*/
         currentLimits: {
             permanentLimit: currentLimits.permanentLimit,
             temporaryLimits: currentLimits.temporaryLimits
-                .filter(
-                    (limit) =>
-                        // completely empty lines should be filtered out (the interface always displays some lines even if empty)
-                        limit.name !== undefined && limit.name !== null && limit.name !== ''
-                )
+                // completely empty lines should be filtered out (the interface always displays some lines even if empty)
+                .filter(({ name }) => name?.trim())
                 .map(({ name, ...temporaryLimit }) => ({
                     ...temporaryLimit,
                     name: sanitizeString(name),
@@ -172,17 +169,11 @@ export const sanitizeLimitsGroups = (limitsGroups /*: OperationalLimitsGroup[]*/
 
 export const sanitizeLimitNames = (temporaryLimitList /*:TemporaryLimitData[]*/) /*:TemporaryLimitData[]*/ =>
     temporaryLimitList
-        ? temporaryLimitList
-              .filter(
-                  (limit) =>
-                      // completely empty lines should be filtered out (the interface display always some lines even if empty)
-                      limit.name !== undefined && limit.name !== null && limit.name !== ''
-              )
-              .map(({ name, ...temporaryLimit }) => ({
-                  ...temporaryLimit,
-                  name: sanitizeString(name),
-              }))
-        : [];
+        ?.filter((limit) => limit?.name?.trim())
+        .map(({ name, ...temporaryLimit }) => ({
+            ...temporaryLimit,
+            name: sanitizeString(name),
+        })) || [];
 
 const findTemporaryLimit = (temporaryLimits, limit) =>
     temporaryLimits?.find((l) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration);

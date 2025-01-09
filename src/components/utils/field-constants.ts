@@ -46,8 +46,8 @@ export const RATED_S = 'ratedS';
 
 export const RATED_U1 = 'ratedU1';
 export const RATED_U2 = 'ratedU2';
-export const LIMITS_GROUP_1 = 'operationalLimitsGroups1';
-export const LIMITS_GROUP_2 = 'operationalLimitsGroups2';
+export const OPERATIONAL_LIMITS_GROUPS_1 = 'operationalLimitsGroups1';
+export const OPERATIONAL_LIMITS_GROUPS_2 = 'operationalLimitsGroups2';
 export const CURRENT_LIMITS = 'currentLimits';
 export const CURRENT_LIMITS_1 = 'currentLimits1';
 export const CURRENT_LIMITS_2 = 'currentLimits2';

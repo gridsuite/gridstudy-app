@@ -42,7 +42,7 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-import { LIMITS_GROUP_1, LIMITS_GROUP_2 } from '../../components/utils/field-constants';
+import { OPERATIONAL_LIMITS_GROUPS_1, OPERATIONAL_LIMITS_GROUPS_2 } from '../../components/utils/field-constants';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -961,8 +961,8 @@ export function createLine({
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
-            [LIMITS_GROUP_1]: limitsGroups1,
-            [LIMITS_GROUP_2]: limitsGroups2,
+            [OPERATIONAL_LIMITS_GROUPS_1]: limitsGroups1,
+            [OPERATIONAL_LIMITS_GROUPS_2]: limitsGroups2,
             selectedOperationalLimitsGroup1: selectedLimitGroup1,
             selectedOperationalLimitsGroup2: selectedLimitGroup2,
             connectionName1: connectionName1,
@@ -1111,8 +1111,8 @@ export function createTwoWindingsTransformer({
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            [LIMITS_GROUP_1]: limitsGroups1,
-            [LIMITS_GROUP_2]: limitsGroups2,
+            [OPERATIONAL_LIMITS_GROUPS_1]: limitsGroups1,
+            [OPERATIONAL_LIMITS_GROUPS_2]: limitsGroups2,
             selectedOperationalLimitsGroup1: selectedLimitGroup1,
             selectedOperationalLimitsGroup2: selectedLimitGroup2,
             voltageLevelId1: voltageLevelId1,
