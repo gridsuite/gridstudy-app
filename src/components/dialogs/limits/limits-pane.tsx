@@ -27,6 +27,7 @@ import { useFieldArray, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from './limits-type';
 import IconButton from '@mui/material/IconButton';
 import { Edit } from '@mui/icons-material';
+import { TemporaryLimit } from '../../../services/network-modification-types';
 
 const styles = {
     limitsBackground: {
@@ -54,6 +55,7 @@ export function LimitsPane({
 }: Readonly<LimitsPaneProps>) {
     // selected set in the tab interface
     const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number>(0);
+    const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number>(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setSelectedLimitGroupTabIndex(newValue);
     };
@@ -67,7 +69,6 @@ export function LimitsPane({
     const limitsGroups2: OperationalLimitsGroup[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
-    const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | undefined>(undefined);
 
     const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
@@ -127,11 +128,7 @@ export function LimitsPane({
         if (limitsGroups1[selectedLimitGroupTabIndex]) {
             const selectedGroupStr = limitsGroups1[selectedLimitGroupTabIndex].id;
             setIndexSelectedLimitSet2(
-                selectedGroupStr
-                    ? limitsGroups2.findIndex(
-                          (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr
-                      )
-                    : undefined
+                limitsGroups2.findIndex((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr)
             );
         }
     }, [selectedLimitGroupTabIndex, limitsGroups1, limitsGroups2, setIndexSelectedLimitSet2]);
@@ -207,21 +204,43 @@ export function LimitsPane({
         startEditingLimitsGroup(newIndex, newName);
     }, [startEditingLimitsGroup, appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1.length]);
 
+    const renderTitle = (id: string) => (
+        <Grid item xs={5}>
+            <Box component="h3">
+                <FormattedMessage id={id} />
+            </Box>
+        </Grid>
+    );
+
+    const renderSidePane = (
+        limitsGroups: OperationalLimitsGroup[],
+        selectedTabIndex: number,
+        formName: string,
+        previousValues: TemporaryLimit[],
+        permanentCurrentLimitPreviousValue: number
+    ) =>
+        limitsGroups.map(
+            (item: OperationalLimitsGroup, index: number) =>
+                index === selectedTabIndex && (
+                    <LimitsSidePane
+                        key={item.id}
+                        limitsGroupFormName={formName}
+                        clearableFields={clearableFields}
+                        indexLimitGroup={index}
+                        permanentCurrentLimitPreviousValue={permanentCurrentLimitPreviousValue}
+                        previousValues={previousValues}
+                        currentNode={currentNode}
+                    />
+                )
+        );
+
     return (
         <Grid container spacing={2}>
             {/* titles */}
             <Grid container item xs={12} columns={11} spacing={2}>
                 <Grid item xs={1} />
-                <Grid item xs={5}>
-                    <Box component={`h3`}>
-                        <FormattedMessage id="Side1" />
-                    </Box>
-                </Grid>
-                <Grid item xs={5}>
-                    <Box component={`h3`}>
-                        <FormattedMessage id="Side2" />
-                    </Box>
-                </Grid>
+                {renderTitle('Side1')}
+                {renderTitle('Side2')}
             </Grid>
             {/* active limit set */}
             <Grid container item xs={12} columns={11} spacing={2}>
@@ -314,39 +333,21 @@ export function LimitsPane({
                     </Tabs>
                 </Grid>
                 <Grid item xs={5}>
-                    {limitsGroups1.map(
-                        (item: OperationalLimitsGroup, index: number) =>
-                            index === selectedLimitGroupTabIndex && (
-                                <LimitsSidePane
-                                    key={item.id}
-                                    limitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`}
-                                    clearableFields={clearableFields}
-                                    indexLimitGroup={index}
-                                    permanentCurrentLimitPreviousValue={
-                                        equipmentToModify?.currentLimits1?.permanentLimit
-                                    }
-                                    previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
-                                    currentNode={currentNode}
-                                />
-                            )
+                    {renderSidePane(
+                        limitsGroups1,
+                        selectedLimitGroupTabIndex,
+                        `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
+                        equipmentToModify?.currentLimits1?.temporaryLimits,
+                        equipmentToModify?.currentLimits1?.permanentLimit
                     )}
                 </Grid>
                 <Grid item xs={5}>
-                    {limitsGroups2.map(
-                        (item: OperationalLimitsGroup, index: number) =>
-                            index === indexSelectedLimitSet2 && (
-                                <LimitsSidePane
-                                    key={item.id}
-                                    limitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_2}`}
-                                    clearableFields={clearableFields}
-                                    indexLimitGroup={index}
-                                    permanentCurrentLimitPreviousValue={
-                                        equipmentToModify?.currentLimits2?.permanentLimit
-                                    }
-                                    previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
-                                    currentNode={currentNode}
-                                />
-                            )
+                    {renderSidePane(
+                        limitsGroups2,
+                        indexSelectedLimitSet2,
+                        `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
+                        equipmentToModify?.currentLimits2?.temporaryLimits,
+                        equipmentToModify?.currentLimits2?.permanentLimit
                     )}
                 </Grid>
             </Grid>
