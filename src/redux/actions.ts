@@ -968,21 +968,27 @@ export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
 > & {
     nadIdentifier: string;
     equipmentId: string;
-    x: number;
-    y: number;
+    shiftX: number;
+    shiftY: number;
+    connectionShiftX: number;
+    connectionShiftY: number;
 };
 export function storeNetworkAreaDiagramTextNodeMovement(
     nadIdentifier: string,
     equipmentId: string,
-    x: number,
-    y: number
+    shiftX: number,
+    shiftY: number,
+    connectionShiftX: number,
+    connectionShiftY: number
 ): StoreNetworkAreaDiagramTextNodeMovementAction {
     return {
         type: STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
         nadIdentifier: nadIdentifier,
         equipmentId: equipmentId,
-        x: x,
-        y: y,
+        shiftX: shiftX,
+        shiftY: shiftY,
+        connectionShiftX: connectionShiftX,
+        connectionShiftY: connectionShiftY,
     };
 }
 export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS = 'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';

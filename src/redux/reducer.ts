@@ -438,11 +438,20 @@ export type DiagramState = {
     needsToBlink?: boolean;
 };
 
-export type NadMovement = {
+export type NadNodeMovement = {
     nadIdentifier: string;
     equipmentId: string;
     x: number;
     y: number;
+};
+
+export type NadTextMovement = {
+    nadIdentifier: string;
+    equipmentId: string;
+    shiftX: number;
+    shiftY: number;
+    connectionShiftX: number;
+    connectionShiftY: number;
 };
 
 /**
@@ -487,8 +496,8 @@ export interface AppState extends CommonStoreState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
-    nadNodeMovements: NadMovement[];
-    nadTextNodeMovements: NadMovement[];
+    nadNodeMovements: NadNodeMovement[];
+    nadTextNodeMovements: NadTextMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -1532,7 +1541,7 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
-            const correspondingMovement: NadMovement[] = state.nadNodeMovements.filter(
+            const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
                 (movement) =>
                     movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
             );
@@ -1553,7 +1562,7 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
-            const correspondingMovement: NadMovement[] = state.nadTextNodeMovements.filter(
+            const correspondingMovement: NadTextMovement[] = state.nadTextNodeMovements.filter(
                 (movement) =>
                     movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
             );
@@ -1561,12 +1570,16 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.nadTextNodeMovements.push({
                     nadIdentifier: action.nadIdentifier,
                     equipmentId: action.equipmentId,
-                    x: action.x,
-                    y: action.y,
+                    shiftX: action.shiftX,
+                    shiftY: action.shiftY,
+                    connectionShiftX: action.connectionShiftX,
+                    connectionShiftY: action.connectionShiftY,
                 });
             } else {
-                correspondingMovement[0].x = action.x;
-                correspondingMovement[0].y = action.y;
+                correspondingMovement[0].shiftX = action.shiftX;
+                correspondingMovement[0].shiftY = action.shiftY;
+                correspondingMovement[0].connectionShiftX = action.connectionShiftX;
+                correspondingMovement[0].connectionShiftY = action.connectionShiftY;
             }
         }
     );
