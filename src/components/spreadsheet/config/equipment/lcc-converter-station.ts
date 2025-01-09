@@ -16,7 +16,7 @@ import {
     excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const LCC_CONVERTER_STATION_TAB_DEF = {
     index: 11,
@@ -95,6 +95,6 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

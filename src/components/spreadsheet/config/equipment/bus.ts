@@ -9,7 +9,7 @@ import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const BUS_TAB_DEF = {
     index: 14,
@@ -63,6 +63,6 @@ export const BUS_TAB_DEF = {
             fractionDigits: 0,
             ...defaultNumericFilterConfig,
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

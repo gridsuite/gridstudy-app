@@ -8,9 +8,8 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { SelectCountryField } from '../../utils/equipment-table-editors';
-import { defaultTextFilterConfig, editableColumnConfig, typeAndFetchers } from './common-config';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const SUBSTATION_TAB_DEF = {
     index: 0,
@@ -26,20 +25,13 @@ export const SUBSTATION_TAB_DEF = {
         {
             id: 'Name',
             field: 'name',
-            ...editableColumnConfig,
             ...defaultTextFilterConfig,
         },
         {
             id: 'Country',
             field: 'country',
-            ...editableColumnConfig,
-            cellEditor: SelectCountryField,
-            valueSetter: (params) => {
-                params.data.country = params?.newValue;
-                return true;
-            },
             ...defaultTextFilterConfig,
         },
-        genericColumnOfPropertiesEditPopup, // FIXME try valueFormatter?
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

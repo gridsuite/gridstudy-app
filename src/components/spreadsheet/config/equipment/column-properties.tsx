@@ -6,9 +6,8 @@
  */
 
 import { PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
-import type { ValueGetterFunc, ValueSetterParams } from 'ag-grid-community';
-import { defaultTextFilterConfig, editableColumnConfig, excludeFromGlobalFilter } from '../equipment/common-config';
+import type { ValueGetterFunc } from 'ag-grid-community';
+import { defaultTextFilterConfig, excludeFromGlobalFilter } from './common-config';
 
 const propertiesGetter: ValueGetterFunc = (params) => {
     const properties = params?.data?.properties;
@@ -30,19 +29,4 @@ export const genericColumnOfPropertiesReadonly = {
     minWidth: 300,
     getQuickFilterText: excludeFromGlobalFilter,
     ...defaultTextFilterConfig,
-};
-
-export const genericColumnOfProperties = {
-    ...genericColumnOfPropertiesReadonly,
-    valueSetter: (params: ValueSetterParams) => {
-        params.data.properties = params.newValue;
-        return true;
-    },
-};
-
-export const genericColumnOfPropertiesEditPopup = {
-    ...editableColumnConfig,
-    ...genericColumnOfProperties,
-    cellEditor: SitePropertiesEditor,
-    cellEditorPopup: true,
 };

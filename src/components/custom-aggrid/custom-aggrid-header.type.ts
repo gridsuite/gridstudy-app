@@ -7,7 +7,6 @@
 import { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
-import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
 import { CustomColumnConfigProps } from 'components/spreadsheet/custom-columns/custom-column-menu';
 import React, { ComponentType } from 'react';
 
@@ -82,10 +81,7 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     agGridFilterParams?: {
         filterOptions: IFilterOptionDef[];
     };
-    changeCmd?: string;
     columnWidth?: number;
-    crossValidation?: CrossValidationOptions;
-    filterTab?: string[];
     fractionDigits?: number;
     id: string;
     isDefaultSort?: boolean;

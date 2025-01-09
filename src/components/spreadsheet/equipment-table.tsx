@@ -9,20 +9,10 @@ import { FunctionComponent, Ref, useCallback, useMemo } from 'react';
 import { useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import {
-    CellEditingStartedEvent,
-    CellEditingStoppedEvent,
-    ColDef,
-    ColumnMovedEvent,
-    GetRowIdParams,
-    RowClassParams,
-    RowHeightParams,
-    RowStyle,
-} from 'ag-grid-community';
+import { ColDef, ColumnMovedEvent, GetRowIdParams, RowClassParams, RowStyle } from 'ag-grid-community';
 import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 
-const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
 
 const getRowId = (params: GetRowIdParams<{ id: string }>) => params.data.id;
@@ -39,14 +29,11 @@ const defaultColDef: ColDef = {
 
 interface EquipmentTableProps {
     rowData: unknown[];
-    topPinnedData: unknown[] | undefined;
     columnData: ColDef[];
     gridRef: Ref<any> | undefined;
     studyUuid: string;
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
-    handleCellEditingStarted: (e: CellEditingStartedEvent) => void;
-    handleCellEditingStopped: (e: CellEditingStoppedEvent) => void;
     handleGridReady: () => void;
     handleRowDataUpdated: () => void;
     fetched: boolean;
@@ -57,14 +44,11 @@ const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     rowData,
-    topPinnedData,
     columnData,
     gridRef,
     studyUuid,
     currentNode,
     handleColumnDrag,
-    handleCellEditingStarted,
-    handleCellEditingStopped,
     handleGridReady,
     handleRowDataUpdated,
     fetched,
@@ -87,21 +71,11 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
 
     const gridContext = useMemo(
         () => ({
-            editErrors: {},
-            dynamicValidation: {},
-            isEditing: !!topPinnedData,
             theme,
-            lastEditedField: undefined,
-            dataToModify: topPinnedData ? JSON.parse(JSON.stringify(topPinnedData[0])) : {},
             currentNode: currentNode,
             studyUuid: studyUuid,
         }),
-        [currentNode, studyUuid, theme, topPinnedData]
-    );
-
-    const getRowHeight = useCallback(
-        (params: RowHeightParams): number => (params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT),
-        []
+        [currentNode, studyUuid, theme]
     );
 
     const rowsToShow = useMemo(() => (fetched && rowData.length > 0 ? rowData : []), [rowData, fetched]);
@@ -128,24 +102,20 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             ref={gridRef}
             getRowId={getRowId}
             rowData={rowsToShow}
-            pinnedTopRowData={topPinnedData}
             debounceVerticalScrollbar={true}
             getRowStyle={getRowStyle}
             columnDefs={columnData}
             defaultColDef={defaultColDef}
             undoRedoCellEditing={true}
-            onCellEditingStarted={handleCellEditingStarted}
-            onCellEditingStopped={handleCellEditingStopped}
             onRowDataUpdated={handleRowDataUpdated}
             onColumnMoved={handleColumnDrag}
             suppressDragLeaveHidesColumns={true}
             suppressColumnVirtualisation={true}
-            suppressClickEdit={!topPinnedData}
             singleClickEdit={true}
             context={gridContext}
             onGridReady={handleGridReady}
             shouldHidePinnedHeaderRightBorder={shouldHidePinnedHeaderRightBorder}
-            getRowHeight={getRowHeight}
+            rowHeight={DEFAULT_ROW_HEIGHT}
             overlayNoRowsTemplate={message}
             loadingOverlayComponent={loadingOverlayComponent}
             loadingOverlayComponentParams={loadingOverlayComponentParams}

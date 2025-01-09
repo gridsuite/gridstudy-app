@@ -12,13 +12,11 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableColumnConfig,
     excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const BATTERY_TAB_DEF = {
     index: 9,
@@ -35,7 +33,6 @@ export const BATTERY_TAB_DEF = {
             id: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            ...editableColumnConfig,
         },
         {
             id: 'VoltageLevelId',
@@ -75,15 +72,6 @@ export const BATTERY_TAB_DEF = {
             field: 'activePowerControl.participate',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            ...editableColumnConfig,
-            valueSetter: (params) => {
-                params.data.activePowerControl = {
-                    ...(params.data.activePowerControl || {}),
-                    participate: params.newValue,
-                };
-                return true;
-            },
-            ...booleanCellEditorConfig((params) => params.data?.activePowerControl?.participate ?? false),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -92,22 +80,7 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
             valueGetter: (params) => params.data?.activePowerControl?.droop,
-            valueSetter: (params) => {
-                params.data.activePowerControl = {
-                    ...(params.data.activePowerControl || {}),
-                    droop: params.newValue,
-                };
-                return true;
-            },
-            crossValidation: {
-                requiredOn: {
-                    dependencyColumn: 'activePowerControl.participate',
-                    columnValue: true,
-                },
-            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -116,11 +89,6 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.minP),
-            crossValidation: {
-                maxExpression: 'maxP',
-            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -129,11 +97,6 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.maxP),
-            crossValidation: {
-                minExpression: 'minP',
-            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -142,13 +105,6 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.targetP),
-            crossValidation: {
-                minExpression: 'minP',
-                maxExpression: 'maxP',
-                allowZero: true,
-            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -157,8 +113,6 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.targetQ),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -168,6 +122,6 @@ export const BATTERY_TAB_DEF = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
