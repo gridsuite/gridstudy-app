@@ -17,9 +17,11 @@ import {
     OPERATIONAL_LIMITS_GROUPS_1,
     OPERATIONAL_LIMITS_GROUPS_2,
     PERMANENT_LIMIT,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
 
 const styles = {
     limitsBackground: {
@@ -58,6 +60,18 @@ export function OperationalLimitsGroupsTabs({
     const { append: appendToLimitsGroups2, update: updateLimitsGroups2 } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
+    const selectedLimitsGroups1: string = useWatch({
+        name: `${id}.${SELECTED_LIMITS_GROUP_1}.`,
+    });
+    const { replace: replaceSelectedLimitsGroups1 } = useFieldArray({
+        name: `${id}.${SELECTED_LIMITS_GROUP_1}`,
+    });
+    const selectedLimitsGroups2: string = useWatch({
+        name: `${id}.${SELECTED_LIMITS_GROUP_2}.`,
+    });
+    const { replace: replaceSelectedLimitsGroups2 } = useFieldArray({
+        name: `${id}.${SELECTED_LIMITS_GROUP_2}`,
+    });
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number): void => {
         setSelectedLimitGroupTabIndex(newValue);
@@ -69,12 +83,6 @@ export function OperationalLimitsGroupsTabs({
         },
         [setEditedLimitGroupName]
     );
-
-    useEffect(() => {
-        if (editingTabIndex && editLimitGroupRef.current) {
-            editLimitGroupRef.current.focus();
-        }
-    }, [editingTabIndex]);
 
     const startEditingLimitsGroup = useCallback(
         (index: number, name: string) => {
@@ -150,6 +158,9 @@ export function OperationalLimitsGroupsTabs({
                     ...limitsGroups1[indexInLs1],
                     [ID]: editedLimitGroupName,
                 });
+                if (selectedLimitsGroups1 === oldName) {
+                    replaceSelectedLimitsGroups1(editedLimitGroupName);
+                }
             }
 
             const indexInLs2: number | undefined = limitsGroups2.findIndex(
@@ -160,10 +171,17 @@ export function OperationalLimitsGroupsTabs({
                     ...limitsGroups2[indexInLs2],
                     [ID]: editedLimitGroupName,
                 });
+                if (selectedLimitsGroups2 === oldName) {
+                    replaceSelectedLimitsGroups2(editedLimitGroupName);
+                }
             }
             setEditingTabIndex(null);
         }
     }, [
+        replaceSelectedLimitsGroups1,
+        replaceSelectedLimitsGroups2,
+        selectedLimitsGroups1,
+        selectedLimitsGroups2,
         editingTabIndex,
         editedLimitGroupName,
         limitsGroups1,

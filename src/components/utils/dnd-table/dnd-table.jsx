@@ -159,6 +159,7 @@ const DndTable = ({
     }
 
     const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
+    const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
 
     function renderTableCell(rowId, rowIndex, column) {
         let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;
@@ -327,7 +328,12 @@ const DndTable = ({
                 {currentRows.map((row, index) => (
                     <Draggable key={row.id} draggableId={row.id.toString()} index={index}>
                         {(provided, snapshot) => (
-                            <TableRow ref={provided.innerRef} {...provided.draggableProps}>
+                            <TableRow
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                onMouseEnter={() => setHoveredRowIndex(index)}
+                                onMouseLeave={() => setHoveredRowIndex(-1)}
+                            >
                                 <Tooltip
                                     title={intl.formatMessage({
                                         id: 'DragAndDrop',
@@ -350,7 +356,7 @@ const DndTable = ({
                                     </TableCell>
                                 )}
                                 {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
-                                {withButtonOnTheRight && (
+                                {withButtonOnTheRight && index === hoveredRowIndex && (
                                     <TableCell>
                                         <IconButton color="primary" onClick={() => remove(index)}>
                                             <DeleteIcon />
