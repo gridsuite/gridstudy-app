@@ -482,8 +482,8 @@ export interface LineCreationInfo {
     permanentCurrentLimit2: number;
     limitsGroups1: OperationalLimitsGroup[];
     limitsGroups2: OperationalLimitsGroup[];
-    selectedLimitGroup1: string;
-    selectedLimitGroup2: string;
+    selectedLimitsGroup1: string;
+    selectedLimitsGroup2: string;
     isUpdate: boolean;
     modificationUuid: string;
     connectionName1: string | null;
@@ -541,8 +541,8 @@ export interface TwoWindingsTransformerCreationInfo {
     ratedU2: number;
     limitsGroups1: OperationalLimitsGroup[];
     limitsGroups2: OperationalLimitsGroup[];
-    selectedLimitGroup1: string;
-    selectedLimitGroup2: string;
+    selectedLimitsGroup1: string;
+    selectedLimitsGroup2: string;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
