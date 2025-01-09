@@ -13,7 +13,6 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
@@ -78,7 +77,6 @@ export const LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerSide2',
@@ -86,7 +84,6 @@ export const LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerSide1',
@@ -94,7 +91,6 @@ export const LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerSide2',
@@ -102,7 +98,6 @@ export const LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'r',
@@ -110,7 +105,6 @@ export const LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'x',
@@ -118,7 +112,6 @@ export const LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'g1',
@@ -127,7 +120,6 @@ export const LINE_TAB_DEF = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             valueGetter: (params) => unitToMicroUnit(params.data.g1),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'g2',
@@ -136,7 +128,6 @@ export const LINE_TAB_DEF = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             valueGetter: (params) => unitToMicroUnit(params.data.g2),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'b1',
@@ -145,7 +136,6 @@ export const LINE_TAB_DEF = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             valueGetter: (params) => unitToMicroUnit(params.data.b1),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'b2',
@@ -154,21 +144,18 @@ export const LINE_TAB_DEF = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             valueGetter: (params) => unitToMicroUnit(params.data.b2),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected1',
             field: 'terminal1Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected2',
             field: 'terminal2Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesReadonly,
     ],

@@ -12,7 +12,6 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
@@ -57,7 +56,6 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
@@ -65,14 +63,12 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'DroopColumnName',
@@ -81,7 +77,6 @@ export const BATTERY_TAB_DEF = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             valueGetter: (params) => params.data?.activePowerControl?.droop,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'minP',
@@ -89,7 +84,6 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'maxP',
@@ -97,7 +91,6 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'activePowerSetpoint',
@@ -105,7 +98,6 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'reactivePowerSetpoint',
@@ -113,14 +105,12 @@ export const BATTERY_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected',
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesReadonly,
     ],

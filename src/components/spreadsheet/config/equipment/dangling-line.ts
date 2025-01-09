@@ -13,7 +13,6 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
@@ -55,7 +54,6 @@ export const DANGLING_LINE_TAB_DEF = {
         {
             id: 'PairingKey',
             field: 'pairingKey',
-            getQuickFilterText: excludeFromGlobalFilter,
             ...defaultTextFilterConfig,
         },
         {
@@ -64,7 +62,6 @@ export const DANGLING_LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
@@ -72,7 +69,6 @@ export const DANGLING_LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'p0',
@@ -80,7 +76,6 @@ export const DANGLING_LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'q0',
@@ -88,14 +83,12 @@ export const DANGLING_LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected',
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesReadonly,
     ],

@@ -13,7 +13,6 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
@@ -51,7 +50,6 @@ export const HVDC_LINE_TAB_DEF = {
             id: 'ConvertersMode',
             field: 'convertersMode',
             columnWidth: LARGE_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
             ...defaultTextFilterConfig,
         },
         {
@@ -82,7 +80,6 @@ export const HVDC_LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerSetpoint',
@@ -90,7 +87,6 @@ export const HVDC_LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'maxActivePower',
@@ -98,7 +94,6 @@ export const HVDC_LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'OprFromCS1toCS2',
@@ -107,7 +102,6 @@ export const HVDC_LINE_TAB_DEF = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             columnWidth: LARGE_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'OprFromCS2toCS1',
@@ -116,14 +110,12 @@ export const HVDC_LINE_TAB_DEF = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             columnWidth: LARGE_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'AcEmulation',
             field: 'hvdcAngleDroopActivePowerControl.isEnabled',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'K',
@@ -131,7 +123,6 @@ export const HVDC_LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'P0',
@@ -139,7 +130,6 @@ export const HVDC_LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesReadonly,
     ],

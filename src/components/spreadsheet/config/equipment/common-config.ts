@@ -84,11 +84,6 @@ export const typeAndFetchers = <TEquipType extends SpreadsheetEquipmentType>(equ
         fetchers: getFetchers(equipmentType),
     } as const);
 
-//this function enables us to exclude some columns from the computation of the spreadsheet global filter
-// The columns we want to include in the global filter at the date of this comment: ID (all), Name, Country, Type and Nominal Voltage (all).
-// All the others should be excluded.
-export const excludeFromGlobalFilter = () => '' as const;
-
 export const defaultTextFilterConfig = {
     filter: 'agTextColumnFilter',
     filterComponent: CustomAggridComparatorFilter,

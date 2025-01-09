@@ -8,12 +8,7 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import {
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
+import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
 import { unitToKiloUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 
@@ -56,7 +51,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'HighVoltageLimitkV',
@@ -64,7 +58,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'IpMin',
@@ -73,7 +66,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             fractionDigits: 1,
             numeric: true,
             valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'IpMax',
@@ -82,7 +74,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             fractionDigits: 1,
             numeric: true,
             valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesReadonly,
     ],

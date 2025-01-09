@@ -13,7 +13,6 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
@@ -60,21 +59,18 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'maximumSectionCount',
             field: 'maximumSectionCount',
             numeric: true,
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'sectionCount',
             field: 'sectionCount',
             numeric: true,
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'Type',
@@ -87,7 +83,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'SwitchedOnMaxQAtNominalV',
@@ -97,7 +92,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'maxSusceptance',
@@ -105,7 +99,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 5,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'SwitchedOnMaxSusceptance',
@@ -115,7 +108,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
             ...defaultNumericFilterConfig,
             fractionDigits: 5,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'voltageSetpoint',
@@ -123,14 +115,12 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected',
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesReadonly,
     ],

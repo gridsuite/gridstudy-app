@@ -34,7 +34,6 @@ interface EquipmentTableProps {
     studyUuid: string;
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
-    handleGridReady: () => void;
     handleRowDataUpdated: () => void;
     fetched: boolean;
     shouldHidePinnedHeaderRightBorder: boolean;
@@ -49,7 +48,6 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     studyUuid,
     currentNode,
     handleColumnDrag,
-    handleGridReady,
     handleRowDataUpdated,
     fetched,
     shouldHidePinnedHeaderRightBorder,
@@ -113,7 +111,6 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             suppressColumnVirtualisation={true}
             singleClickEdit={true}
             context={gridContext}
-            onGridReady={handleGridReady}
             shouldHidePinnedHeaderRightBorder={shouldHidePinnedHeaderRightBorder}
             rowHeight={DEFAULT_ROW_HEIGHT}
             overlayNoRowsTemplate={message}

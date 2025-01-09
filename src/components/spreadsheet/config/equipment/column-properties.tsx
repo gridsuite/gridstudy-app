@@ -7,7 +7,7 @@
 
 import { PropertiesCellRenderer } from '../../utils/cell-renderers';
 import type { ValueGetterFunc } from 'ag-grid-community';
-import { defaultTextFilterConfig, excludeFromGlobalFilter } from './common-config';
+import { defaultTextFilterConfig } from './common-config';
 
 const propertiesGetter: ValueGetterFunc = (params) => {
     const properties = params?.data?.properties;
@@ -27,6 +27,5 @@ export const genericColumnOfPropertiesReadonly = {
     valueGetter: propertiesGetter,
     cellRenderer: PropertiesCellRenderer,
     minWidth: 300,
-    getQuickFilterText: excludeFromGlobalFilter,
     ...defaultTextFilterConfig,
 };
