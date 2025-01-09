@@ -216,12 +216,9 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: Placemen
  * @param placements represents the nodes's placements in a grid after the algorithm's first pass, without compression
  */
 function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementGrid) {
-    // First, we find all the nodes that start a branch and that have a sibling to their left.
-
     // Create a node lookup map and parent-children relationship map
     const nodeMap = new Map<string, { index: number; node: CurrentTreeNode }>();
     const childrenMap = new Map<string, CurrentTreeNode[]>();
-    const subTreeSizeMap = new Map<string, number>();
 
     nodes.forEach((node, index) => {
         nodeMap.set(node.id, { index, node });
@@ -233,6 +230,8 @@ function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementG
     });
 
     // Calculate subtree sizes in a single pass (bottom-up) to have the children nodes sizes ready
+    const subTreeSizeMap = new Map<string, number>();
+
     for (let i = nodes.length - 1; i >= 0; i--) {
         const node = nodes[i];
         const children = childrenMap.get(node.id) || [];
@@ -240,6 +239,7 @@ function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementG
         subTreeSizeMap.set(node.id, 1 + childrenSize);
     }
 
+    // We find all the nodes that start a branch and that have a sibling to their left.
     const nonEldestSiblingsIds = nodes
         .filter((node) => node.parentId && childrenMap.get(node.parentId)![0].id !== node.id)
         .map((node) => node.id);
