@@ -13,14 +13,11 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableColumnConfig,
     excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { LOAD_TYPES } from '../../../network/constants';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const LOAD_TAB_DEF = {
     index: 6,
@@ -39,17 +36,11 @@ export const LOAD_TAB_DEF = {
             field: 'name',
             ...defaultTextFilterConfig,
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            ...editableColumnConfig,
         },
         {
             id: 'loadType',
             field: 'type',
             ...defaultTextFilterConfig,
-            ...editableColumnConfig,
-            ...enumCellEditorConfig(
-                (params) => params.data?.type,
-                [...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]
-            ),
         },
         {
             id: 'VoltageLevelId',
@@ -90,8 +81,6 @@ export const LOAD_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.p0),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -100,8 +89,6 @@ export const LOAD_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.q0),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -111,6 +98,6 @@ export const LOAD_TAB_DEF = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

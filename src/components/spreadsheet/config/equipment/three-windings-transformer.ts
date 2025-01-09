@@ -13,27 +13,11 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableColumnConfig,
     excludeFromGlobalFilter,
-    generateTapPositions,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { genericColumnOfProperties } from '../common/column-properties';
-import { standardSelectCellEditorConfig } from '../common/cell-editors';
-
-function generateTapRequest(tapType: string, legNumber: number) {
-    return (
-        `tap = equipment.getLeg${legNumber}().get${tapType}TapChanger()\n` +
-        'if (tap.getLowTapPosition() <= {} && {} <= tap.getHighTapPosition()) { \n' +
-        '    tap.setTapPosition({})\n' +
-        // to force update of transformer as sub elements changes like tapChanger are not detected
-        '    equipment.setFictitious(equipment.isFictitious())\n' +
-        '} else {\n' +
-        "    throw new Exception('incorrect value')\n" +
-        ' }\n'
-    );
-}
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
     index: 4,
@@ -167,18 +151,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'RatioTap1',
             field: 'ratioTapChanger1',
             ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Ratio', 1),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.ratioTapChanger1?.tapPosition,
-            valueSetter: (params) => {
-                params.data.ratioTapChanger1 = {
-                    ...params.data.ratioTapChanger1,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger1)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -207,18 +181,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'RatioTap2',
             field: 'ratioTapChanger2',
             ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Ratio', 2),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.ratioTapChanger2?.tapPosition,
-            valueSetter: (params) => {
-                params.data.ratioTapChanger2 = {
-                    ...params.data.ratioTapChanger2,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger2)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -247,18 +211,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'RatioTap3',
             field: 'ratioTapChanger3',
             ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Ratio', 3),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.ratioTapChanger3?.tapPosition,
-            valueSetter: (params) => {
-                params.data.ratioTapChanger3 = {
-                    ...params.data.ratioTapChanger3,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger3)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -266,7 +220,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'regulationModeName1',
             ...defaultTextFilterConfig,
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RegulatingPhase1',
@@ -279,18 +232,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'PhaseTap1',
             field: 'phaseTapChanger1',
             ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Phase', 1),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.phaseTapChanger1?.tapPosition,
-            valueSetter: (params) => {
-                params.data.phaseTapChanger1 = {
-                    ...params.data.phaseTapChanger1,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger1)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -320,18 +263,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'PhaseTap2',
             field: 'phaseTapChanger2',
             ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Phase', 2),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.phaseTapChanger2?.tapPosition,
-            valueSetter: (params) => {
-                params.data.phaseTapChanger2 = {
-                    ...params.data.phaseTapChanger2,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger1)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -361,18 +294,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'PhaseTap3',
             field: 'phaseTapChanger3',
             ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Phase', 3),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.phaseTapChanger3?.tapPosition,
-            valueSetter: (params) => {
-                params.data.phaseTapChanger3 = {
-                    ...params.data.phaseTapChanger3,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger3)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -405,6 +328,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

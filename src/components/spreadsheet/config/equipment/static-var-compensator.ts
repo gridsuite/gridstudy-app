@@ -18,7 +18,7 @@ import {
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { NOMINAL_V } from '../../../utils/field-constants';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
     index: 8,
@@ -93,6 +93,6 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

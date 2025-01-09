@@ -7,41 +7,15 @@
 
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
-import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableColumnConfig,
     excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
-import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/unit-converter';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { numericalCellEditorConfig } from '../common/cell-editors';
-
-function generateEditableNumericColumnDefinition<
-    TId extends string,
-    TField extends string,
-    TMin extends string | undefined,
-    TMax extends string | undefined
->(id: TId, field: TField, minExpression: TMin, maxExpression: TMax) {
-    return {
-        id: id,
-        field: field,
-        numeric: true,
-        ...defaultNumericFilterConfig,
-        fractionDigits: 1,
-        ...editableColumnConfig,
-        ...numericalCellEditorConfig((params) => params.data[field]),
-        crossValidation: {
-            optional: true,
-            minExpression: minExpression,
-            maxExpression: maxExpression,
-        },
-        getQuickFilterText: excludeFromGlobalFilter,
-    } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
-}
+import { unitToKiloUnit } from '../../../../utils/unit-converter';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const VOLTAGE_LEVEL_TAB_DEF = {
     index: 1,
@@ -57,7 +31,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'Name',
             field: 'name',
-            ...editableColumnConfig,
             ...defaultTextFilterConfig,
         },
         {
@@ -76,55 +49,41 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 0,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.nominalV),
         },
-        generateEditableNumericColumnDefinition('LowVoltageLimitkV', 'lowVoltageLimit', undefined, 'highVoltageLimit'),
-        generateEditableNumericColumnDefinition('HighVoltageLimitkV', 'highVoltageLimit', 'lowVoltageLimit', undefined),
+        {
+            id: 'LowVoltageLimitkV',
+            field: 'lowVoltageLimit',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'HighVoltageLimitkV',
+            field: 'highVoltageLimit',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
         {
             id: 'IpMin',
             field: 'identifiableShortCircuit.ipMin',
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            ...editableColumnConfig,
             numeric: true,
-            ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin)),
             valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
-            valueSetter: (params) => {
-                params.data.identifiableShortCircuit = {
-                    ...params.data.identifiableShortCircuit,
-                    ipMin: kiloUnitToUnit(params.newValue),
-                };
-                return true;
-            },
             getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                optional: true,
-            },
         },
         {
             id: 'IpMax',
             field: 'identifiableShortCircuit.ipMax',
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            ...editableColumnConfig,
             numeric: true,
-            ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax)),
             valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
-            valueSetter: (params) => {
-                params.data.identifiableShortCircuit = {
-                    ...params.data.identifiableShortCircuit,
-                    ipMax: kiloUnitToUnit(params.newValue),
-                };
-                return true;
-            },
             getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                requiredOn: {
-                    dependencyColumn: 'identifiableShortCircuit.ipMin',
-                },
-            },
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

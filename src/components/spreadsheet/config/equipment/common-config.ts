@@ -12,7 +12,6 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../../custom-aggrid/custom-aggrid-header.type';
-import type { CellStyleFunc, EditableCallback } from 'ag-grid-community';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     fetchBatteries,
@@ -39,11 +38,6 @@ import {
     CustomAggridBooleanFilter,
 } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { CustomAggridComparatorFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-
-type TapPositionsType = {
-    lowTapPosition: number;
-    highTapPosition: number;
-};
 
 export const getFetchers = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher[] => {
     switch (equipmentType) {
@@ -89,28 +83,6 @@ export const typeAndFetchers = <TEquipType extends SpreadsheetEquipmentType>(equ
         type: equipmentType,
         fetchers: getFetchers(equipmentType),
     } as const);
-
-export const generateTapPositions = (params: TapPositionsType) => {
-    return params ? Array.from(Array(params.highTapPosition - params.lowTapPosition + 1).keys()) : [];
-};
-
-export const isEditable: EditableCallback = (params) => params.context.isEditing && params.node.rowPinned === 'top';
-
-export const editableCellStyle: CellStyleFunc = (params) => {
-    if (isEditable(params)) {
-        if (Object.keys(params.context.editErrors).includes(params.column.getColId())) {
-            return params.context.theme.editableCellError;
-        } else {
-            return params.context.theme.editableCell;
-        }
-    }
-    return null;
-};
-
-export const editableColumnConfig = {
-    editable: isEditable,
-    cellStyle: editableCellStyle,
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter
 // The columns we want to include in the global filter at the date of this comment: ID (all), Name, Country, Type and Nominal Voltage (all).

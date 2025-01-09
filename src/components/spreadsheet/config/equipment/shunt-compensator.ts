@@ -13,14 +13,11 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableColumnConfig,
     excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
-import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const SHUNT_COMPENSATOR_TAB_DEF = {
     index: 7,
@@ -38,7 +35,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             id: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            ...editableColumnConfig,
             columnWidth: MIN_COLUMN_WIDTH,
         },
         {
@@ -69,47 +65,29 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'maximumSectionCount',
             field: 'maximumSectionCount',
-            ...editableColumnConfig,
             numeric: true,
-            ...numericalCellEditorConfig((params) => params.data.maximumSectionCount),
             ...defaultNumericFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                minExpression: 1,
-            },
         },
         {
             id: 'sectionCount',
             field: 'sectionCount',
-            ...editableColumnConfig,
             numeric: true,
-            ...numericalCellEditorConfig((params) => params.data.sectionCount),
             ...defaultNumericFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                minExpression: 0,
-                maxExpression: 'maximumSectionCount',
-            },
         },
         {
             id: 'Type',
             field: 'type',
             ...defaultTextFilterConfig,
-            ...editableColumnConfig,
-            ...enumCellEditorConfig((params) => params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
         },
         {
             id: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
-            ...editableColumnConfig,
             numeric: true,
-            ...numericalCellEditorConfig((params) => params.data.maxQAtNominalV),
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                minExpression: 0,
-            },
         },
         {
             id: 'SwitchedOnMaxQAtNominalV',
@@ -123,10 +101,8 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         },
         {
             id: 'maxSusceptance',
-            ...editableColumnConfig,
             field: 'maxSusceptance',
             numeric: true,
-            ...numericalCellEditorConfig((params) => params.data.maxSusceptance),
             ...defaultNumericFilterConfig,
             fractionDigits: 5,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -156,6 +132,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

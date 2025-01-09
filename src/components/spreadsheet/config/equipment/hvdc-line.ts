@@ -17,7 +17,7 @@ import {
     typeAndFetchers,
 } from './common-config';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const HVDC_LINE_TAB_DEF = {
     index: 10,
@@ -141,6 +141,6 @@ export const HVDC_LINE_TAB_DEF = {
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

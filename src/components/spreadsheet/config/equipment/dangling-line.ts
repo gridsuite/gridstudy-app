@@ -17,7 +17,7 @@ import {
     typeAndFetchers,
 } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const DANGLING_LINE_TAB_DEF = {
     index: 13,
@@ -97,6 +97,6 @@ export const DANGLING_LINE_TAB_DEF = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

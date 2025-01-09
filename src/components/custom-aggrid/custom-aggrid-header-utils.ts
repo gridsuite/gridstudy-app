@@ -10,7 +10,6 @@ import CustomHeaderComponent from './custom-aggrid-header';
 
 export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
     sortProps, // sortProps: contains useAgGridSort params
-    filterTab,
     forceDisplayFilterIcon,
     filterComponent,
     filterComponentParams,

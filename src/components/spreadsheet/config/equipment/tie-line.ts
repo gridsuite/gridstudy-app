@@ -18,7 +18,7 @@ import {
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
-import { genericColumnOfPropertiesReadonly } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const TIE_LINE_TAB_DEF = {
     index: 15,
