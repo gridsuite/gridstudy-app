@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
+import { FunctionComponent, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { FixedSizeList } from 'react-window';
 import { ReportItem, TreeviewItem } from './treeview-item';
 import { AutoSizer } from 'react-virtualized';
@@ -12,14 +12,22 @@ import { ReportTree } from '../../utils/report/report.type';
 import Label from '@mui/icons-material/Label';
 import { Theme } from '@mui/system';
 import { useTreeViewScroll } from './use-treeview-scroll';
+import { QuickSearch } from './QuickSearch';
+import { Box } from '@mui/material';
 
 const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
     treeItem: {
         whiteSpace: 'nowrap',
     },
     labelIcon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
     }),
+    quickSearch: { minWidth: '100%', flexShrink: 0, marginBottom: 1 },
 };
 
 export interface TreeViewProps {
@@ -40,6 +48,9 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
     reportTree,
 }) => {
     const listRef = useRef<FixedSizeList>(null);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [searchResults, setSearchResults] = useState<number[]>([]);
+    const [currentResultIndex, setCurrentResultIndex] = useState(-1);
 
     const onExpandItem = useCallback(
         (node: ReportItem) => {
@@ -81,22 +92,113 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
 
     useTreeViewScroll(highlightedReportId, nodes, listRef);
 
+    const expandIfMatch = useCallback((item: ReportTree, searchTerm: string, newExpandedTreeReports: Set<string>) => {
+        let hasMatchingChild = false;
+        item.subReports.forEach((subReport) => {
+            if (expandIfMatch(subReport, searchTerm, newExpandedTreeReports)) {
+                hasMatchingChild = true;
+            }
+        });
+        if (item.message.toLowerCase().includes(searchTerm.toLowerCase()) || hasMatchingChild) {
+            newExpandedTreeReports.add(item.id);
+            return true;
+        }
+        return false;
+    }, []);
+
+    const handleSearch = useCallback(
+        (searchTerm: string) => {
+            setSearchTerm(searchTerm);
+            const matches: number[] = [];
+            const newExpandedTreeReports = new Set(expandedTreeReports);
+
+            expandIfMatch(reportTree, searchTerm, newExpandedTreeReports);
+
+            const expandedNodes = toTreeNodes(reportTree, 0);
+            expandedNodes.forEach((node, index) => {
+                if (node.label.toLowerCase().includes(searchTerm.toLowerCase())) {
+                    matches.push(index);
+                }
+            });
+
+            setExpandedTreeReports(Array.from(newExpandedTreeReports));
+            setSearchResults(matches);
+            setCurrentResultIndex(matches.length > 0 ? 0 : -1);
+        },
+        [expandedTreeReports, expandIfMatch, reportTree, toTreeNodes, setExpandedTreeReports]
+    );
+
+    useEffect(() => {
+        if (currentResultIndex >= 0 && searchResults.length > 0) {
+            listRef.current?.scrollToItem(searchResults[currentResultIndex], 'end');
+        }
+    }, [currentResultIndex, searchResults]);
+
+    const handleNavigate = useCallback(
+        (direction: 'next' | 'previous') => {
+            if (searchResults.length === 0) {
+                return;
+            }
+
+            let newIndex;
+
+            if (direction === 'next') {
+                newIndex = (currentResultIndex + 1) % searchResults.length;
+            } else {
+                newIndex = (currentResultIndex - 1 + searchResults.length) % searchResults.length;
+            }
+
+            setCurrentResultIndex(newIndex);
+        },
+        [currentResultIndex, searchResults]
+    );
+
+    const resetSearch = useCallback(() => {
+        setSearchTerm('');
+        setSearchResults([]);
+        setCurrentResultIndex(-1);
+    }, []);
+
     return (
-        <AutoSizer>
-            {({ height, width }) => (
-                <FixedSizeList
-                    ref={listRef}
-                    height={height}
-                    width={width}
-                    style={styles.treeItem}
-                    itemCount={nodes.length}
-                    itemSize={32}
-                    itemKey={(index) => nodes[index].id}
-                    itemData={{ nodes, onSelectedItem, onExpandItem, highlightedReportId }}
-                >
-                    {TreeviewItem}
-                </FixedSizeList>
-            )}
-        </AutoSizer>
+        <Box sx={styles.container}>
+            <Box sx={styles.quickSearch}>
+                <QuickSearch
+                    currentResultIndex={currentResultIndex}
+                    selectedReportId={reportTree.id}
+                    onSearch={handleSearch}
+                    onNavigate={handleNavigate}
+                    resultCount={searchResults.length}
+                    resetSearch={resetSearch}
+                    placeholder="searchPlaceholderLogsContainers"
+                    style={{ minWidth: '80%' }}
+                />
+            </Box>
+            <Box sx={{ flexGrow: 1 }}>
+                <AutoSizer>
+                    {({ height, width }) => (
+                        <FixedSizeList
+                            ref={listRef}
+                            height={height}
+                            width={width}
+                            style={styles.treeItem}
+                            itemCount={nodes.length}
+                            itemSize={32}
+                            itemKey={(index) => nodes[index].id}
+                            itemData={{
+                                nodes,
+                                onSelectedItem,
+                                onExpandItem,
+                                highlightedReportId,
+                                searchTerm,
+                                currentResultIndex,
+                                searchResults,
+                            }}
+                        >
+                            {TreeviewItem}
+                        </FixedSizeList>
+                    )}
+                </AutoSizer>
+            </Box>
+        </Box>
     );
 };

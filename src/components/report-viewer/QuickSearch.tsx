@@ -8,6 +8,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { TextField, InputAdornment, IconButton, Box } from '@mui/material';
 import { Clear, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 interface QuickSearchProps {
     currentResultIndex: number;
@@ -16,6 +17,8 @@ interface QuickSearchProps {
     onNavigate: (direction: 'next' | 'previous') => void;
     resultCount: number;
     resetSearch: () => void;
+    placeholder?: string;
+    style?: React.CSSProperties;
 }
 
 const styles = {
@@ -31,16 +34,19 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
     onNavigate,
     resultCount,
     resetSearch,
+    placeholder,
+    style = { minWidth: '30%' },
 }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [resultsCountDisplay, setResultsCountDisplay] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const intl = useIntl();
+    const debounceSearch = useDebounce(onSearch, 300);
 
     const handleSearch = useCallback(() => {
-        onSearch(searchTerm);
+        debounceSearch(searchTerm);
         setResultsCountDisplay(true);
-    }, [searchTerm, onSearch]);
+    }, [searchTerm, debounceSearch]);
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
@@ -63,12 +69,12 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
                 setResultsCountDisplay(false);
             }
             setSearchTerm(value);
-            onSearch(value);
+            debounceSearch(value);
             if (value.length > 0) {
                 setResultsCountDisplay(true);
             }
         },
-        [onSearch, resetSearch, searchTerm.length]
+        [debounceSearch, resetSearch, searchTerm.length]
     );
 
     const handleClear = useCallback(() => {
@@ -91,8 +97,8 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
             value={searchTerm}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            placeholder={intl.formatMessage({ id: 'searchPlaceholderLog' })}
-            sx={{ minWidth: '30%' }}
+            placeholder={placeholder ? intl.formatMessage({ id: placeholder }) : ''}
+            sx={{ ...style }}
             size="small"
             InputProps={{
                 endAdornment: (

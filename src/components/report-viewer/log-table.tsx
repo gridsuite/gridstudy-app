@@ -318,6 +318,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                     onNavigate={handleNavigate}
                     resultCount={searchResults.length}
                     resetSearch={resetSearch}
+                    placeholder="searchPlaceholderLog"
                 />
             </Box>
             <Box sx={styles.chipContainer}>
