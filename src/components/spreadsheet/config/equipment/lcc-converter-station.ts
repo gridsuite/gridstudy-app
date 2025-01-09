@@ -8,13 +8,7 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
+import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const LCC_CONVERTER_STATION_TAB_DEF = {
@@ -86,8 +80,7 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultTextFilterConfig,
         },
         genericColumnOfPropertiesReadonly,
     ],
