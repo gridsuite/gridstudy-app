@@ -726,7 +726,6 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
                                                 sx={{
                                                     fontSize: 17,
                                                     fontWeight: 'bold',
-                                                    textTransform: 'capitalize',
                                                 }}
                                             />
                                         )

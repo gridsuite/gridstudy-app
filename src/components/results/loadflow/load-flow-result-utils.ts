@@ -64,6 +64,7 @@ export const convertSide = (side: string | undefined, intl: IntlShape) => {
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string> = {
     subjectId: 'subjectId',
+    locationId: 'locationId',
     status: 'status',
     limitType: 'limitType',
     limitName: 'limitName',
@@ -148,6 +149,7 @@ export const makeData = (
         return {
             overload: overloadedEquipment.overload,
             subjectId: overloadedEquipment.subjectId,
+            locationId: overloadedEquipment.locationId,
             value: overloadedEquipment.value,
             actualOverloadDuration:
                 overloadedEquipment.actualOverloadDuration === UNDEFINED_ACCEPTABLE_DURATION
@@ -234,8 +236,8 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
-            id: 'subjectId',
-            field: 'subjectId',
+            id: 'locationId',
+            field: 'locationId',
             sortProps,
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: { filterParams: { ...filterProps, ...textFilterParams } },
@@ -346,7 +348,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
             id: 'subjectId',
-            field: 'subjectId',
+            field: 'locationId',
             sortProps,
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: { filterParams: { ...filterProps, ...textFilterParams } },
