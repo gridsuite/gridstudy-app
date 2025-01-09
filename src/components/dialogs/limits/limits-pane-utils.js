@@ -32,38 +32,36 @@ const limitsGroupValidationSchema = () => ({
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema()),
 });
 
+const temporaryLimitsValidationSchema = () => {
+    return yup.object().shape({
+        [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
+        [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
+        [TEMPORARY_LIMIT_NAME]: yup.string().nullable().when(
+            [TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
+                is: (limitValue, limitDuration) => (limitValue || limitDuration),
+                then: () => yup.string().nullable().required(),
+                otherwise: () => yup.string().nullable(), // empty lines are ignored
+            }),
+    });
+};
+
 const currentLimitsValidationSchema = () => ({
     [PERMANENT_LIMIT]: yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero'),
     [TEMPORARY_LIMITS]: yup
         .array()
-        .of(
-            yup.lazy((item) => {
-                if (item[TEMPORARY_LIMIT_NAME]) {
-                    return yup.object().shape({
-                        [TEMPORARY_LIMIT_NAME]: yup.string().required(),
-                        [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
-                        [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-                    });
-                }
-                // totally empty lines are fine : they will be ignored later
-                // TODO : how to force the case when all are empty ? Or should I drop them before ??
-                return yup.object().shape({
-                    [TEMPORARY_LIMIT_NAME]: yup.string().nullable(),
-                    [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
-                    [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-                });
-            })
-        )
+        .of(temporaryLimitsValidationSchema())
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
             const namesArray = array
                 .filter((l) => !!l[TEMPORARY_LIMIT_NAME])
                 .map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
             return areArrayElementsUnique(namesArray);
+        })
+        .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
+            const durationsArray = array
+                .map((l) => l[TEMPORARY_LIMIT_DURATION])
+                .filter(d => d); // empty lines are ignored
+            return areArrayElementsUnique(durationsArray);
         }),
-    /* .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
-            const durationsArray = array.map((l) => l[TEMPORARY_LIMIT_DURATION]);
-            return areArrayElementsUnique(durationsArray); // TODO ignorer les lignes vides et réactiver ça
-        }), */
 });
 
 const limitsValidationSchema = (id, onlySelectedLimits = true) =>
