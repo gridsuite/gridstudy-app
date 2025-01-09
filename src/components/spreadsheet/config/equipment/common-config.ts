@@ -33,6 +33,10 @@ import {
     fetchVscConverterStations,
 } from '../../../../services/study/network';
 import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
+import {
+    BooleanFilterValue,
+    CustomAggridBooleanFilter,
+} from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { CustomAggridComparatorFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 
 export const getFetchers = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher[] => {
@@ -87,6 +91,41 @@ export const defaultTextFilterConfig = {
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.TEXT,
             filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+        },
+    },
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+
+/**
+ * Default configuration for a boolean filter
+ */
+export const defaultBooleanFilterConfig = {
+    filter: 'agTextColumnFilter',
+    agGridFilterParams: {
+        filterOptions: [
+            {
+                displayKey: 'booleanMatches',
+                displayName: 'booleanMatches',
+                predicate: (filterValues: string[], cellValue: boolean) => {
+                    const filterValue = filterValues.at(0);
+                    if (filterValue === undefined) {
+                        return false;
+                    }
+                    // We receive here the filter boolean value as a string (filterValue)
+                    // we check if the cellValue is not null neither undefined
+                    if (cellValue != null) {
+                        return filterValue === cellValue.toString();
+                    }
+
+                    // we return true if the filter chosen is undefinedValue
+                    return filterValue === BooleanFilterValue.UNDEFINED;
+                },
+            },
+        ],
+    },
+    filterComponent: CustomAggridBooleanFilter,
+    filterComponentParams: {
+        filterParams: {
+            filterDataType: FILTER_DATA_TYPES.BOOLEAN,
         },
     },
 } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;

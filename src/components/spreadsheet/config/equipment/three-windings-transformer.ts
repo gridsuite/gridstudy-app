@@ -8,7 +8,13 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
+import {
+    defaultBooleanFilterConfig,
+    defaultNumericFilterConfig,
+    defaultTextFilterConfig,
+    typeAndFetchers,
+} from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 
@@ -115,12 +121,14 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'HasLoadTapChanging1Capabilities',
             field: 'hasLoadTapChanging1Capabilities',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'RegulatingRatio1',
             field: 'isRegulatingRatio1',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'TargetVPoint1',
@@ -139,12 +147,14 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'HasLoadTapChanging2Capabilities',
             field: 'hasLoadTapChanging2Capabilities',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'RegulatingRatio2',
             field: 'isRegulatingRatio2',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'TargetVPoint2',
@@ -163,12 +173,14 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'HasLoadTapChanging3Capabilities',
             field: 'hasLoadTapChanging3Capabilities',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'RegulatingRatio3',
             field: 'isRegulatingRatio3',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'TargetVPoint3',
@@ -193,7 +205,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingPhase1',
             field: 'isRegulatingPhase1',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'PhaseTap1',
@@ -219,7 +232,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingPhase2',
             field: 'isRegulatingPhase2',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'PhaseTap2',
@@ -245,7 +259,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingPhase3',
             field: 'isRegulatingPhase3',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'PhaseTap3',
@@ -265,17 +280,20 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'ConnectedT3WSide1',
             field: 'terminal1Connected',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'ConnectedT3WSide2',
             field: 'terminal2Connected',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'ConnectedT3WSide3',
             field: 'terminal3Connected',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         genericColumnOfPropertiesReadonly,
     ],

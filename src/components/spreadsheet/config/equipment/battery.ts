@@ -7,7 +7,13 @@
 
 import type { ReadonlyDeep } from 'type-fest';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
+import {
+    defaultBooleanFilterConfig,
+    defaultNumericFilterConfig,
+    defaultTextFilterConfig,
+    typeAndFetchers,
+} from './common-config';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 
@@ -61,7 +67,8 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'DroopColumnName',
@@ -102,7 +109,8 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         genericColumnOfPropertiesReadonly,
     ],

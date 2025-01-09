@@ -8,7 +8,13 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
+import {
+    defaultBooleanFilterConfig,
+    defaultNumericFilterConfig,
+    defaultTextFilterConfig,
+    typeAndFetchers,
+} from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
@@ -142,12 +148,14 @@ export const TIE_LINE_TAB_DEF = {
         {
             id: 'connected1',
             field: 'terminal1Connected',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'connected2',
             field: 'terminal2Connected',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         genericColumnOfPropertiesReadonly,
     ],

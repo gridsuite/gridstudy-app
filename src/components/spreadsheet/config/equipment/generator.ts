@@ -9,7 +9,13 @@ import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import type { ValueGetterFunc } from 'ag-grid-community';
-import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
+import {
+    defaultBooleanFilterConfig,
+    defaultNumericFilterConfig,
+    defaultTextFilterConfig,
+    typeAndFetchers,
+} from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 
@@ -85,7 +91,8 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'ActivePowerRegulationDroop',
@@ -126,7 +133,8 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'voltageRegulationOn',
             field: 'voltageRegulatorOn',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'voltageSetpoint',
@@ -197,7 +205,8 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'RegulationTypeText',

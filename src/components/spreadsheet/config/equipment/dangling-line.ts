@@ -8,7 +8,13 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
+import {
+    defaultBooleanFilterConfig,
+    defaultNumericFilterConfig,
+    defaultTextFilterConfig,
+    typeAndFetchers,
+} from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 
@@ -81,7 +87,8 @@ export const DANGLING_LINE_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         genericColumnOfPropertiesReadonly,
     ],

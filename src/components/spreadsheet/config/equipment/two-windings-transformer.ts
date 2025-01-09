@@ -8,7 +8,13 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
+import {
+    defaultBooleanFilterConfig,
+    defaultNumericFilterConfig,
+    defaultTextFilterConfig,
+    typeAndFetchers,
+} from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { computeHighTapPosition } from '../../../utils/utils';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
@@ -105,7 +111,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'HasLoadTapChangingCapabilities',
             field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
             valueGetter: (params) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'RatioRegulationMode',
@@ -269,12 +276,14 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'connected1',
             field: 'terminal1Connected',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         {
             id: 'connected2',
             field: 'terminal2Connected',
-            ...defaultTextFilterConfig,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
         },
         genericColumnOfPropertiesReadonly,
     ],
