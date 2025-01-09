@@ -33,7 +33,7 @@ const styles = {
     },
 };
 
-export interface LimitsPaneTabsProps {
+export interface OperationalLimitsGroupsTabsProps {
     id?: string;
     limitsGroups1: OperationalLimitsGroup[];
     limitsGroups2: OperationalLimitsGroup[];
@@ -47,7 +47,7 @@ export function OperationalLimitsGroupsTabs({
     limitsGroups2,
     setIndexSelectedLimitSet1,
     setIndexSelectedLimitSet2,
-}: Readonly<LimitsPaneTabsProps>) {
+}: Readonly<OperationalLimitsGroupsTabsProps>) {
     const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number>(0);
     const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
