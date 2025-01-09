@@ -6,8 +6,6 @@
  */
 
 import { CurrentTreeNode } from 'redux/reducer';
-import { countNodes } from './network-modification-tree-model';
-import { UUID } from 'crypto';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
@@ -114,26 +112,8 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
 }
 
 /**
- * Finds the IDs of nodes that have a sibling but are not the first child of their parent.
- */
-function getNonEldestSiblingsIds(nodes: CurrentTreeNode[]): string[] {
-    const seenParentIds = new Set<string>();
-    const nonEldestSiblingsIds: string[] = [];
-    nodes.forEach((node) => {
-        if (node.parentId) {
-            if (seenParentIds.has(node.parentId)) {
-                nonEldestSiblingsIds.push(node.id);
-            } else {
-                seenParentIds.add(node.parentId);
-            }
-        }
-    });
-    return nonEldestSiblingsIds;
-}
-
-/**
  * Create a Map using row number as keys and column number as value. The column value
- * for each row is the lowest value among column values of the same row, for the provided nodes.
+ * for each row is either the lowest or highest value among column values of the same row, for the provided nodes.
  *
  * Example nodes and placements :
  * - NodeA {row:0, column:30}
@@ -143,50 +123,35 @@ function getNonEldestSiblingsIds(nodes: CurrentTreeNode[]): string[] {
  * - NodeE {row:2, column:80}
  *
  * For these placements, the returned Map would be like this : {0 => 30, 1 => 10, 2 => 40}
+ *
+ * @param nodes The nodes to process
+ * @param placements The grid placements
+ * @param getMax If true, returns maximum columns, if false returns minimum columns
  */
-function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
-    const minColumnByRow: Map<number, number> = new Map();
+function getColumnsByRows(nodes: CurrentTreeNode[], placements: PlacementGrid, getMax: boolean): Map<number, number> {
+    const columnsByRow: Map<number, number> = new Map();
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
         if (nodePlacement) {
             if (
-                !minColumnByRow.has(nodePlacement.row) ||
-                nodePlacement.column < minColumnByRow.get(nodePlacement.row)!
+                !columnsByRow.has(nodePlacement.row) ||
+                (getMax
+                    ? nodePlacement.column > columnsByRow.get(nodePlacement.row)!
+                    : nodePlacement.column < columnsByRow.get(nodePlacement.row)!)
             ) {
-                minColumnByRow.set(nodePlacement.row, nodePlacement.column);
+                columnsByRow.set(nodePlacement.row, nodePlacement.column);
             }
         }
     });
-    return minColumnByRow;
+    return columnsByRow;
 }
 
-/**
- * Create a Map using row number as keys and column number as value. The column value
- * for each row is the highest value among column values of the same row, for the provided nodes.
- *
- * Example nodes and placements :
- * - NodeA {row:0, column:30}
- * - NodeB {row:1, column:10}
- * - NodeC {row:1, column:50}
- * - NodeD {row:2, column:40}
- * - NodeE {row:2, column:80}
- *
- * For these placements, the returned Map would be like this : {0 => 30, 1 => 50, 2 => 80}
- */
+function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
+    return getColumnsByRows(nodes, placements, false);
+}
+
 function getMaximumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
-    const maxColumnByRow: Map<number, number> = new Map();
-    nodes.forEach((node) => {
-        const nodePlacement = placements.getPlacement(node.id);
-        if (nodePlacement) {
-            if (
-                !maxColumnByRow.has(nodePlacement.row) ||
-                nodePlacement.column > maxColumnByRow.get(nodePlacement.row)!
-            ) {
-                maxColumnByRow.set(nodePlacement.row, nodePlacement.column);
-            }
-        }
-    });
-    return maxColumnByRow;
+    return getColumnsByRows(nodes, placements, true);
 }
 
 /**
@@ -251,8 +216,33 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: Placemen
  * @param placements represents the nodes's placements in a grid after the algorithm's first pass, without compression
  */
 function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementGrid) {
-    // First, we find all the nodes that start a branch and that have a sibling to their left.
-    const nonEldestSiblingsIds = getNonEldestSiblingsIds(nodes);
+    // Create a node lookup map and parent-children relationship map
+    const nodeMap = new Map<string, { index: number; node: CurrentTreeNode }>();
+    const childrenMap = new Map<string, CurrentTreeNode[]>();
+
+    nodes.forEach((node, index) => {
+        nodeMap.set(node.id, { index, node });
+        if (node.parentId) {
+            const children = childrenMap.get(node.parentId) || [];
+            children.push(node);
+            childrenMap.set(node.parentId, children);
+        }
+    });
+
+    // Calculate subtree sizes in a single pass (bottom-up) to have the children nodes sizes ready
+    const subTreeSizeMap = new Map<string, number>();
+
+    for (let i = nodes.length - 1; i >= 0; i--) {
+        const node = nodes[i];
+        const children = childrenMap.get(node.id) || [];
+        const childrenSize = children.reduce((sum, child) => sum + (subTreeSizeMap.get(child.id) || 0), 0);
+        subTreeSizeMap.set(node.id, 1 + childrenSize);
+    }
+
+    // We find all the nodes that start a branch and that have a sibling to their left.
+    const nonEldestSiblingsIds = nodes
+        .filter((node) => node.parentId && childrenMap.get(node.parentId)![0].id !== node.id)
+        .map((node) => node.id);
 
     // For each of those nodes's branches, we will calculate how much space available there is to
     // the left, for each row of the branch.
@@ -261,22 +251,25 @@ function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementG
         // to the maximum column placement values (per row) of the nodes on the left.
         // The resulting space we find represents how much we can shift the current column to the left.
 
-        const currentSubTreeSize = 1 + countNodes(nodes, currentNodeId as UUID);
-        const indexOfCurrentNode = nodes.findIndex((n) => n.id === currentNodeId);
-        const nodesOfTheCurrentBranch = nodes.slice(indexOfCurrentNode, indexOfCurrentNode + currentSubTreeSize);
-        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(nodesOfTheCurrentBranch, placements);
+        const currentNodeIndex = nodeMap.get(currentNodeId)!.index;
+        const currentSubTreeSize = subTreeSizeMap.get(currentNodeId)!;
+
+        const currentBranchNodes = nodes.slice(currentNodeIndex, currentNodeIndex + currentSubTreeSize);
 
         // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some
         // cases other branches could go under the left neighbor and make edges cross.
-        const nodesOnTheLeft = nodes.slice(0, indexOfCurrentNode);
-        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(nodesOnTheLeft, placements);
+        const leftNodes = nodes.slice(0, currentNodeIndex);
+
+        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements);
+        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements);
 
         const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
 
         if (availableSpace > 0) {
-            shiftPlacementsToTheLeft(nodesOfTheCurrentBranch, placements, availableSpace);
+            shiftPlacementsToTheLeft(currentBranchNodes, placements, availableSpace);
         }
     });
+
     return placements;
 }
 
