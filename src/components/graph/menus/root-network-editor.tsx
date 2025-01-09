@@ -7,10 +7,12 @@
 
 import PropTypes from 'prop-types';
 import { EditableTitle } from './editable-title';
-import { Box } from '@mui/material';
+import { Box, Theme } from '@mui/material';
 import { AppState } from '../../../redux/reducer';
 import RootNetworkNodeEditor from './root-network-node-editor';
 import { useSelector } from 'react-redux';
+import { OverflowableText } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
 
 const styles = {
     paper: () => ({
@@ -19,20 +21,26 @@ const styles = {
         flexDirection: 'column',
         elevation: 3,
     }),
+    header: (theme: Theme) => ({
+        padding: theme.spacing(1),
+        display: 'flex',
+        alignItems: 'center',
+    }),
+    rootNameTitle: (theme: Theme) => ({
+        flexGrow: 1,
+        fontWeight: 'bold',
+        marginLeft: theme.spacing(2),
+    }),
 };
 
 const RootNetworkEditor = () => {
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
-
-    const closeModificationsDrawer = () => {};
+    const intl = useIntl();
 
     return (
         <Box sx={styles.paper}>
-            <EditableTitle //TODO what to put on title
-                name={currentRootNetworkUuid ?? ''}
-                onClose={closeModificationsDrawer}
-                isCloseIconVisible={false}
-            />
+            <Box sx={styles.header}>
+                <OverflowableText text={intl.formatMessage({ id: 'root' })} sx={styles.rootNameTitle} />
+            </Box>
             <RootNetworkNodeEditor />
         </Box>
     );

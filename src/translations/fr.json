@@ -1458,7 +1458,7 @@
     "StateEstimationStatus": "Statut : ",
     "StateEstimationQuality": "Qualité: ",
     "Or": "ou",
-    "rootNetworksCount":"{hide, select, false {{count, plural, =0 {no root network} =1 {{count} root network} other {{count} root networks}}} other {...}}",
+    "rootNetworksCount":"{hide, select, false {{count, plural, =0 {aucun réseau} =1 {# Réseau} other {# Réseaux}}} other {...}}",
     "updateRootNetworksList": "Mise à jour de la liste des réseaux racine cours ...",
     "deletingRootNetwork": "Suppression du réseau racine en cours ...",
     "creatingRootNetwork": "Création du réseau racine en cours ...",

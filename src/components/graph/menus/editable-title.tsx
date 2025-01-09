@@ -40,30 +40,19 @@ interface EditableTitleProps {
     name: string;
     onClose: () => void;
     onChange?: (value: string) => void;
-    isCloseIconVisible?: boolean;
 }
 
-export const EditableTitle: FunctionComponent<EditableTitleProps> = ({
-    name,
-    isCloseIconVisible = true,
-    onClose,
-    onChange,
-}) => {
+export const EditableTitle: FunctionComponent<EditableTitleProps> = ({ name, onClose, onChange }) => {
     const [openEditTitle, setOpenEditTitle] = useState(false);
     const intl = useIntl();
 
     return (
         <Box sx={styles.header}>
-            <IconButton
-                sx={{ visibility: isCloseIconVisible ? 'visible' : 'hidden' }}
-                size={'small'}
-                onClick={() => setOpenEditTitle(true)}
-                disabled={onChange === undefined}
-            >
+            <IconButton size={'small'} onClick={() => setOpenEditTitle(true)} disabled={onChange === undefined}>
                 <EditIcon />
             </IconButton>
             <OverflowableText text={name} sx={styles.nodeNameTitle} />
-            <IconButton sx={{ visibility: isCloseIconVisible ? 'visible' : 'hidden' }} size={'small'} onClick={onClose}>
+            <IconButton size={'small'} onClick={onClose}>
                 <CloseIcon />
             </IconButton>
             <AskTextDialog

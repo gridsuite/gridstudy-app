@@ -40,10 +40,9 @@ export const styles = {
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
     }),
-    listItem: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
     checkBoxLabel: { flexGrow: '1' },
     disabledRootNetwork: { opacity: 0.4 },
-    checkBoxIcon: { minWidth: 0, padding: 0 },
+    checkBoxIcon: { minWidth: 0, padding: 0, marginLeft: 2 },
     checkboxButton: {
         padding: 0.5,
         margin: 0,
@@ -52,12 +51,12 @@ export const styles = {
     },
     rootNetworksTitle: (theme: Theme) => ({
         display: 'flex',
-        alignItems: 'center',
-        margin: theme.spacing(0),
+        marginLeft: 2,
         padding: theme.spacing(1),
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText,
         overflow: 'hidden',
+        borderTop: `1px solid ${theme.palette.divider}`,
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        marginRight: '8px',
     }),
     toolbar: (theme: Theme) => ({
         '&': {
@@ -66,7 +65,6 @@ export const styles = {
             minHeight: 0,
         },
         border: theme.spacing(1),
-        margin: 0,
         flexShrink: 0,
     }),
     toolbarIcon: (theme: Theme) => ({
@@ -234,10 +232,9 @@ const RootNetworkNodeEditor = () => {
             const isCurrentRootNetwork = rootNetwork.rootNetworkUuid === currentRootNetwork;
 
             return (
-                <Box sx={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', padding: '8px 0', marginRight: '8px' }}>
                     <IconButton
                         size="small"
-                        disabled={isCurrentRootNetwork}
                         onClick={() => {
                             if (rootNetwork.rootNetworkUuid !== currentRootNetwork) {
                                 dispatch(setCurrentRootNetwork(rootNetwork.rootNetworkUuid));
@@ -422,7 +419,7 @@ const RootNetworkNodeEditor = () => {
                             onClick={openRootNetworkCreationDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={false} //TODO
+                            disabled={rootNetworks.length >= 3}
                         >
                             <FileUpload />
                         </IconButton>
@@ -433,7 +430,9 @@ const RootNetworkNodeEditor = () => {
                     onClick={doDeleteRootNetwork}
                     size={'small'}
                     sx={styles.toolbarIcon}
-                    disabled={selectedItems.length === 0 || !currentNode}
+                    disabled={
+                        selectedItems.length === 0 || !currentNode || rootNetworks.length === selectedItems.length
+                    }
                 >
                     <DeleteIcon />
                 </IconButton>

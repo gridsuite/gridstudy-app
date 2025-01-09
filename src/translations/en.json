@@ -1456,7 +1456,7 @@
     "StateEstimationStatus": "Status : ",
     "StateEstimationQuality": "Quality : ",
     "Or": "or",
-    "rootNetworksCount":"{hide, select, false {{count, plural, =0 {aucun réseau racine} =1 {# réseau racine} other {# réseaux racine}}} other {...}}",
+    "rootNetworksCount":"{hide, select, false {{count, plural, =0 {no root} =1 {{count} Root} other {{count} Roots}}} other {...}}",
     "updateRootNetworksList": "Updating root network list ...",
     "deletingRootNetwork": "Deleting root network ...",
     "creatingRootNetwork": "Creating root network ...",

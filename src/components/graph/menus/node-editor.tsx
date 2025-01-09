@@ -59,7 +59,6 @@ const NodeEditor = () => {
                 name={currentTreeNode?.data?.label ?? ''}
                 onClose={closeModificationsDrawer}
                 onChange={changeNodeName}
-                isCloseIconVisible={true}
             />
             <NetworkModificationNodeEditor />
         </Box>
