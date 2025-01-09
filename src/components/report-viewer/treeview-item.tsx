@@ -4,12 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CSSProperties, FunctionComponent, ReactNode } from 'react';
-import { Box, Stack, Typography, styled, Theme } from '@mui/material';
+import { CSSProperties, FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
+import { Box, Stack, Typography, styled, Theme, useTheme } from '@mui/material';
 import * as React from 'react';
 import { mergeSx } from '@gridsuite/commons-ui';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { ListChildComponentProps } from 'react-window';
 
 export interface ReportItem {
     id: string;
@@ -83,9 +84,12 @@ export interface TreeViewItemData {
     onSelectedItem: (node: ReportItem) => void;
     onExpandItem: (node: ReportItem) => void;
     highlightedReportId?: string;
+    searchTerm: string;
+    currentResultIndex: number;
+    searchResults: number[];
 }
 
-export interface TreeViewItemProps {
+export interface TreeViewItemProps extends ListChildComponentProps {
     data: TreeViewItemData;
     index: number;
     style: CSSProperties;
@@ -95,10 +99,49 @@ const ITEM_DEPTH_OFFSET = 12;
 
 export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
     const { data, index } = props;
-    const { nodes, onSelectedItem, onExpandItem, highlightedReportId } = data;
+    const { nodes, onSelectedItem, onExpandItem, highlightedReportId, searchTerm, currentResultIndex, searchResults } =
+        data;
     const currentNode = nodes[index];
     const left = currentNode.depth * ITEM_DEPTH_OFFSET;
     const isCollapsable = currentNode.isCollapsable ?? true;
+    const theme = useTheme();
+
+    const handleClick = useCallback(() => {
+        onSelectedItem(currentNode);
+    }, [onSelectedItem, currentNode]);
+
+    const handleExpand = useCallback(() => {
+        onExpandItem(currentNode);
+    }, [onExpandItem, currentNode]);
+
+    const highlightText = useMemo(
+        () => (text: string, highlight: string) => {
+            if (!highlight) {
+                return text;
+            }
+            const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+            return parts.map((part, partIndex) => {
+                if (part.toLowerCase() === highlight.toLowerCase()) {
+                    const isCurrentOccurrence = searchResults[currentResultIndex] === index;
+                    return (
+                        <span
+                            key={`${part}-${partIndex}`}
+                            style={{
+                                backgroundColor: isCurrentOccurrence
+                                    ? theme.searchedText.currentHighlightColor
+                                    : theme.searchedText.highlightColor,
+                            }}
+                        >
+                            {part}
+                        </span>
+                    );
+                }
+                return part;
+            });
+        },
+        [searchResults, currentResultIndex, index, theme]
+    );
+
     return (
         <TreeViewItemBox sx={mergeSx(styles.content, styles.labelRoot)} style={props.style}>
             <TreeViewItemStack
@@ -111,12 +154,12 @@ export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
                     <Box
                         component={currentNode.collapsed ? ArrowRightIcon : ArrowDropDownIcon}
                         sx={{ visibility: currentNode.isLeaf ? 'hidden' : 'visible', fontSize: '18px' }}
-                        onClick={() => onExpandItem(currentNode)}
+                        onClick={handleExpand}
                     />
                 )}
                 {currentNode.icon}
-                <Typography variant="body2" sx={styles.labelText} onClick={() => onSelectedItem(currentNode)}>
-                    {currentNode.label}
+                <Typography variant="body2" sx={styles.labelText} onClick={handleClick}>
+                    {highlightText(currentNode.label, searchTerm)}
                 </Typography>
             </TreeViewItemStack>
         </TreeViewItemBox>
