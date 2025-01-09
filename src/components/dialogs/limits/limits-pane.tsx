@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid, Tab, Tabs, TextField } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
     ID,
@@ -22,24 +22,13 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
 import { CurrentTreeNode } from '../../../redux/reducer';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from './limits-type';
 import IconButton from '@mui/material/IconButton';
-import { Edit } from '@mui/icons-material';
 import { TemporaryLimit } from '../../../services/network-modification-types';
+import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 
-const styles = {
-    limitsBackground: {
-        backgroundColor: '#1a1919', // TODO : those colors may be found in the theme see with Stephane ??
-        p: 1,
-        '&.Mui-selected': { backgroundColor: '#383838' },
-    },
-    limitsBackgroundUnselected: {
-        backgroundColor: '#1a1919',
-        p: 1,
-    },
-};
 export interface LimitsPaneProps {
     id?: string;
     currentNode?: CurrentTreeNode;
@@ -53,15 +42,8 @@ export function LimitsPane({
     equipmentToModify,
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
-    // selected set in the tab interface
-    const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number>(0);
+    const [indexSelectedLimitSet1, setIndexSelectedLimitSet1] = useState<number>(0);
     const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number>(0);
-    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-        setSelectedLimitGroupTabIndex(newValue);
-    };
-    const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
-    const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
-    const editLimitGroupRef = useRef<HTMLInputElement>(null);
 
     const limitsGroups1: OperationalLimitsGroup[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}.`,
@@ -69,122 +51,12 @@ export function LimitsPane({
     const limitsGroups2: OperationalLimitsGroup[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
-
-    const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
+    const { append: appendToLimitsGroups1 } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
     });
-    const { append: appendToLimitsGroups2, update: updateLimitsGroups2 } = useFieldArray({
+    const { append: appendToLimitsGroups2 } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
-    const handleLimitsGroupNameChange = useCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            setEditedLimitGroupName(event.target.value);
-        },
-        [setEditedLimitGroupName]
-    );
-    useEffect(() => {
-        if (editingTabIndex && editLimitGroupRef.current) {
-            editLimitGroupRef.current.focus();
-        }
-    }, [editingTabIndex]);
-
-    // synchronizeOperationalLimitsGroups : all the limit sets from both sides have to be
-    // in both limitsGroups1 and limitsGroups2, even if they are empty
-    useEffect(() => {
-        // no synchronization while editing
-        if (editingTabIndex === null) {
-            limitsGroups1.forEach((limitsGroup1: OperationalLimitsGroup) => {
-                if (
-                    limitsGroup1.id &&
-                    !limitsGroups2.find((limitsGroup2: OperationalLimitsGroup) => limitsGroup1.id === limitsGroup2.id)
-                ) {
-                    appendToLimitsGroups2({
-                        [ID]: limitsGroup1.id,
-                        [CURRENT_LIMITS]: {
-                            [PERMANENT_LIMIT]: null,
-                            [TEMPORARY_LIMITS]: [],
-                        },
-                    });
-                }
-            });
-            limitsGroups2.forEach((limitsGroup2: OperationalLimitsGroup) => {
-                if (
-                    limitsGroup2.id &&
-                    !limitsGroups1.find((limitsGroup1: OperationalLimitsGroup) => limitsGroup2.id === limitsGroup1.id)
-                ) {
-                    appendToLimitsGroups1({
-                        [ID]: limitsGroup2.id,
-                        [CURRENT_LIMITS]: {
-                            [PERMANENT_LIMIT]: null,
-                            [TEMPORARY_LIMITS]: [],
-                        },
-                    });
-                }
-            });
-        }
-    }, [limitsGroups1, limitsGroups2, appendToLimitsGroups1, appendToLimitsGroups2, editingTabIndex]);
-
-    useEffect(() => {
-        if (limitsGroups1[selectedLimitGroupTabIndex]) {
-            const selectedGroupStr = limitsGroups1[selectedLimitGroupTabIndex].id;
-            setIndexSelectedLimitSet2(
-                limitsGroups2.findIndex((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr)
-            );
-        }
-    }, [selectedLimitGroupTabIndex, limitsGroups1, limitsGroups2, setIndexSelectedLimitSet2]);
-
-    const startEditingLimitsGroup = useCallback(
-        (index: number, name: string) => {
-            setEditingTabIndex(index);
-            setEditedLimitGroupName(name);
-        },
-        [setEditingTabIndex, setEditedLimitGroupName]
-    );
-
-    const finishEditingLimitsGroup = useCallback(() => {
-        if (editingTabIndex !== null) {
-            // get the old name of the modified limit set in order to update it on both sides
-            const oldName: string = limitsGroups1[editingTabIndex].id;
-            const indexInLs1: number | undefined = limitsGroups1.findIndex(
-                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
-            );
-            if (indexInLs1) {
-                updateLimitsGroups1(indexInLs1, {
-                    ...limitsGroups1[indexInLs1],
-                    [ID]: editedLimitGroupName,
-                });
-            }
-
-            const indexInLs2: number | undefined = limitsGroups2.findIndex(
-                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
-            );
-            if (indexInLs2) {
-                updateLimitsGroups2(indexInLs2, {
-                    ...limitsGroups2[indexInLs2],
-                    [ID]: editedLimitGroupName,
-                });
-            }
-            setSelectedLimitGroupTabIndex(editingTabIndex);
-            setEditingTabIndex(null);
-        }
-    }, [
-        editingTabIndex,
-        editedLimitGroupName,
-        limitsGroups1,
-        limitsGroups2,
-        updateLimitsGroups1,
-        updateLimitsGroups2,
-        setEditingTabIndex,
-    ]);
-
-    const handleKeyDown = useCallback(
-        (event: React.KeyboardEvent) => {
-            if (event.key === 'Enter') {
-                finishEditingLimitsGroup();
-            }
-        },
-        [finishEditingLimitsGroup]
-    );
 
     const addNewLimitSet = useCallback(() => {
         const newIndex: number = limitsGroups1.length;
@@ -201,8 +73,7 @@ export function LimitsPane({
         };
         appendToLimitsGroups1(newLimitsGroup);
         appendToLimitsGroups2(newLimitsGroup);
-        startEditingLimitsGroup(newIndex, newName);
-    }, [startEditingLimitsGroup, appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1.length]);
+    }, [appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1.length]);
 
     const renderTitle = (id: string) => (
         <Grid item xs={5}>
@@ -236,7 +107,6 @@ export function LimitsPane({
 
     return (
         <Grid container spacing={2}>
-            {/* titles */}
             <Grid container item xs={12} columns={11} spacing={2}>
                 <Grid item xs={1} />
                 {renderTitle('Side1')}
@@ -279,63 +149,17 @@ export function LimitsPane({
             {/* limits */}
             <Grid container item xs={12} columns={11}>
                 <Grid item xs={1}>
-                    <Tabs
-                        orientation="vertical"
-                        variant="scrollable"
-                        value={selectedLimitGroupTabIndex}
-                        onChange={handleTabChange}
-                        sx={{ flexGrow: 1 }}
-                    >
-                        {limitsGroups1.map((set: OperationalLimitsGroup, index: number) => (
-                            <Tab
-                                key={set.id + index}
-                                label={
-                                    editingTabIndex === index ? (
-                                        <TextField
-                                            value={editedLimitGroupName}
-                                            onChange={handleLimitsGroupNameChange}
-                                            onBlur={finishEditingLimitsGroup}
-                                            onKeyDown={handleKeyDown}
-                                            inputRef={editLimitGroupRef}
-                                            autoFocus
-                                            size="small"
-                                            fullWidth
-                                        />
-                                    ) : (
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                width: '100%',
-                                            }}
-                                        >
-                                            {set.id}
-                                            <IconButton
-                                                size="small"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    startEditingLimitsGroup(index, set.id);
-                                                }}
-                                            >
-                                                <Edit fontSize="small" />
-                                            </IconButton>
-                                        </Box>
-                                    )
-                                }
-                                sx={
-                                    index === selectedLimitGroupTabIndex
-                                        ? styles.limitsBackground
-                                        : styles.limitsBackgroundUnselected
-                                }
-                            />
-                        ))}
-                    </Tabs>
+                    <OperationalLimitsGroupsTabs
+                        limitsGroups1={limitsGroups1}
+                        limitsGroups2={limitsGroups2}
+                        setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}
+                        setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
+                    />
                 </Grid>
                 <Grid item xs={5}>
                     {renderSidePane(
                         limitsGroups1,
-                        selectedLimitGroupTabIndex,
+                        indexSelectedLimitSet1,
                         `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
                         equipmentToModify?.currentLimits1?.temporaryLimits,
                         equipmentToModify?.currentLimits1?.permanentLimit
