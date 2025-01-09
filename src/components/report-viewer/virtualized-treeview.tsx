@@ -16,6 +16,11 @@ import { QuickSearch } from './QuickSearch';
 import { Box } from '@mui/material';
 
 const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
     treeItem: {
         whiteSpace: 'nowrap',
     },
@@ -155,7 +160,7 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
     }, []);
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box sx={styles.container}>
             <Box sx={styles.quickSearch}>
                 <QuickSearch
                     currentResultIndex={currentResultIndex}
