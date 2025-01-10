@@ -6,10 +6,11 @@
  */
 
 import { backendFetchJson, getRequestParamFromList } from './utils';
+import { UnknownArray } from 'type-fest';
 
 const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
 
-export function fetchContingencyAndFiltersLists(listIds) {
+export function fetchContingencyAndFiltersLists(listIds: UnknownArray) {
     console.info('Fetching contingency and filters lists');
 
     // Add params to Url

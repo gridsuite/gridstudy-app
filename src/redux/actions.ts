@@ -6,26 +6,11 @@
  */
 
 import {
-    MAP_BASEMAP_CARTO,
-    MAP_BASEMAP_CARTO_NOLABEL,
-    MAP_BASEMAP_MAPBOX,
-    PARAM_CENTER_LABEL,
-    PARAM_COMPONENT_LIBRARY,
     PARAM_DEVELOPER_MODE,
-    PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
-    PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
-    PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAM_LINE_FLOW_COLOR_MODE,
-    PARAM_LINE_FLOW_MODE,
-    PARAM_LINE_FULL_PATH,
-    PARAM_LINE_PARALLEL_PATH,
-    PARAM_MAP_BASEMAP,
-    PARAM_MAP_MANUAL_REFRESH,
-    PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
@@ -36,7 +21,6 @@ import { UUID } from 'crypto';
 import type { LiteralUnion, UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import {
     AppState,
     CurrentTreeNode,
@@ -51,7 +35,7 @@ import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
-import { DiagramType, SubstationLayout } from '../components/diagrams/diagram-common';
+import { DiagramType } from '../components/diagrams/diagram-common';
 import { Filter } from '../components/results/common/results-global-filter';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
@@ -70,6 +54,7 @@ import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 
 type MutableUnknownArray = unknown[];
 
@@ -92,7 +77,7 @@ export type AppActions =
     | NetworkModificationHandleSubtreeAction
     | NetworkModificationTreeNodesRemovedAction
     | NetworkModificationTreeNodesUpdatedAction
-    | NetworkModificationTreeSwitchNodesAction
+    | NetworkModificationTreeNodesReorderAction
     | SelectThemeAction
     | SelectLanguageAction
     | SelectComputedLanguageAction
@@ -101,25 +86,14 @@ export type AppActions =
     | CloseStudyAction
     | RemoveSelectedCaseAction
     | UseNameAction
-    | CenterLabelAction
-    | DiagonalLabelAction
-    | LineFullPathAction
-    | LineParallelPathAction
-    | LineFlowModeAction
     | FluxConventionAction
     | EnableDeveloperModeAction
-    | LineFlowColorModeAction
-    | LineFlowAlertThresholdAction
     | LimitReductionAction
     | LimitReductionModifiedAction
     | StudyUpdatedAction
     | MapDataLoadingAction
-    | MapManualRefreshAction
-    | MapBasemapAction
     | ResetMapReloadedAction
     | MapEquipmentsInitializedAction
-    | SubstationLayoutAction
-    | ComponentLibraryAction
     | SetFullscreenDiagramAction
     | ChangeDisplayedColumnsNamesAction
     | ChangeLockedColumnsNamesAction
@@ -161,6 +135,7 @@ export type AppActions =
     | LogsFilterAction
     | UpdateCustomColumnsDefinitionsAction
     | RemoveCustomColumnsDefinitionsAction
+    | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
@@ -317,21 +292,21 @@ export function networkModificationTreeNodeMoved(
     };
 }
 
-export const NETWORK_MODIFICATION_TREE_SWITCH_NODES = 'NETWORK_MODIFICATION_TREE_SWITCH_NODES';
-export type NetworkModificationTreeSwitchNodesAction = Readonly<
-    Action<typeof NETWORK_MODIFICATION_TREE_SWITCH_NODES>
+export const NETWORK_MODIFICATION_TREE_NODES_REORDER = 'NETWORK_MODIFICATION_TREE_NODES_REORDER';
+export type NetworkModificationTreeNodesReorderAction = Readonly<
+    Action<typeof NETWORK_MODIFICATION_TREE_NODES_REORDER>
 > & {
-    nodeToMoveId: string;
-    destinationNodeId: string;
+    parentNodeId: string;
+    nodeIds: string[];
 };
-export function networkModificationTreeSwitchNodes(
-    nodeToMoveId: string,
-    destinationNodeId: string
-): NetworkModificationTreeSwitchNodesAction {
+export function reorderNetworkModificationTreeNodes(
+    parentNodeId: string,
+    nodeIds: string[]
+): NetworkModificationTreeNodesReorderAction {
     return {
-        type: NETWORK_MODIFICATION_TREE_SWITCH_NODES,
-        nodeToMoveId,
-        destinationNodeId,
+        type: NETWORK_MODIFICATION_TREE_NODES_REORDER,
+        parentNodeId,
+        nodeIds,
     };
 }
 
@@ -447,47 +422,19 @@ export function selectUseName(useName: boolean): UseNameAction {
     return { type: USE_NAME, [PARAM_USE_NAME]: useName };
 }
 
-export const CENTER_LABEL = 'CENTER_LABEL';
-export type CenterLabelAction = Readonly<Action<typeof CENTER_LABEL>> & {
-    [PARAM_CENTER_LABEL]: boolean;
+export const UPDATE_NETWORK_VISUALIZATION_PARAMETERS = 'UPDATE_NETWORK_VISUALIZATION_PARAMETERS';
+export type UpdateNetworkVisualizationParametersAction = Readonly<
+    Action<typeof UPDATE_NETWORK_VISUALIZATION_PARAMETERS>
+> & {
+    parameters: NetworkVisualizationParameters;
 };
-export function selectCenterLabelState(centerLabel: boolean): CenterLabelAction {
-    return { type: CENTER_LABEL, [PARAM_CENTER_LABEL]: centerLabel };
-}
-
-export const DIAGONAL_LABEL = 'DIAGONAL_LABEL';
-export type DiagonalLabelAction = Readonly<Action<typeof DIAGONAL_LABEL>> & {
-    [PARAM_DIAGONAL_LABEL]: boolean;
-};
-export function selectDiagonalLabelState(diagonalLabel: boolean): DiagonalLabelAction {
-    return { type: DIAGONAL_LABEL, [PARAM_DIAGONAL_LABEL]: diagonalLabel };
-}
-
-export const LINE_FULL_PATH = 'LINE_FULL_PATH';
-export type LineFullPathAction = Readonly<Action<typeof LINE_FULL_PATH>> & {
-    [PARAM_LINE_FULL_PATH]: boolean;
-};
-export function selectLineFullPathState(lineFullPath: boolean): LineFullPathAction {
-    return { type: LINE_FULL_PATH, [PARAM_LINE_FULL_PATH]: lineFullPath };
-}
-
-export const LINE_PARALLEL_PATH = 'LINE_PARALLEL_PATH';
-export type LineParallelPathAction = Readonly<Action<typeof LINE_PARALLEL_PATH>> & {
-    [PARAM_LINE_PARALLEL_PATH]: boolean;
-};
-export function selectLineParallelPathState(lineParallelPath: boolean): LineParallelPathAction {
+export function setUpdateNetworkVisualizationParameters(
+    parameters: NetworkVisualizationParameters
+): UpdateNetworkVisualizationParametersAction {
     return {
-        type: LINE_PARALLEL_PATH,
-        [PARAM_LINE_PARALLEL_PATH]: lineParallelPath,
+        type: UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+        parameters: parameters,
     };
-}
-
-export const LINE_FLOW_MODE = 'LINE_FLOW_MODE';
-export type LineFlowModeAction = Readonly<Action<typeof LINE_FLOW_MODE>> & {
-    [PARAM_LINE_FLOW_MODE]: LineFlowMode;
-};
-export function selectLineFlowMode(lineFlowMode: LineFlowMode): LineFlowModeAction {
-    return { type: LINE_FLOW_MODE, [PARAM_LINE_FLOW_MODE]: lineFlowMode };
 }
 
 export const FLUX_CONVENTION = 'FLUX_CONVENTION';
@@ -506,39 +453,6 @@ export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableD
     return {
         type: ENABLE_DEVELOPER_MODE,
         [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
-    };
-}
-
-export const INIT_NAD_WITH_GEO_DATA = 'INIT_NAD_GEO_WITH_DATA';
-export type InitNadWithGeoDataAction = Readonly<Action<typeof INIT_NAD_WITH_GEO_DATA>> & {
-    [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
-};
-export function selectInitNadWithGeoData(initNadWithGeoData: boolean): InitNadWithGeoDataAction {
-    return {
-        type: INIT_NAD_WITH_GEO_DATA,
-        [PARAM_INIT_NAD_WITH_GEO_DATA]: initNadWithGeoData,
-    };
-}
-
-export const LINE_FLOW_COLOR_MODE = 'LINE_FLOW_COLOR_MODE';
-export type LineFlowColorModeAction = Readonly<Action<typeof LINE_FLOW_COLOR_MODE>> & {
-    [PARAM_LINE_FLOW_COLOR_MODE]: LineFlowColorMode;
-};
-export function selectLineFlowColorMode(lineFlowColorMode: LineFlowColorMode): LineFlowColorModeAction {
-    return {
-        type: LINE_FLOW_COLOR_MODE,
-        [PARAM_LINE_FLOW_COLOR_MODE]: lineFlowColorMode,
-    };
-}
-
-export const LINE_FLOW_ALERT_THRESHOLD = 'LINE_FLOW_ALERT_THRESHOLD';
-export type LineFlowAlertThresholdAction = Readonly<Action<typeof LINE_FLOW_ALERT_THRESHOLD>> & {
-    [PARAM_LINE_FLOW_ALERT_THRESHOLD]: number;
-};
-export function selectLineFlowAlertThreshold(lineFlowAlertThreshold: number): LineFlowAlertThresholdAction {
-    return {
-        type: LINE_FLOW_ALERT_THRESHOLD,
-        [PARAM_LINE_FLOW_ALERT_THRESHOLD]: lineFlowAlertThreshold,
     };
 }
 
@@ -588,30 +502,6 @@ export function setMapDataLoading(mapDataLoading: boolean): MapDataLoadingAction
     };
 }
 
-export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
-export type MapManualRefreshAction = Readonly<Action<typeof MAP_MANUAL_REFRESH>> & {
-    [PARAM_MAP_MANUAL_REFRESH]: boolean;
-};
-export function selectMapManualRefresh(mapManualRefresh: boolean): MapManualRefreshAction {
-    return {
-        type: MAP_MANUAL_REFRESH,
-        [PARAM_MAP_MANUAL_REFRESH]: mapManualRefresh,
-    };
-}
-
-export const MAP_BASEMAP = 'MAP_BASEMAP';
-export type MapBasemapAction = Readonly<Action<typeof MAP_BASEMAP>> & {
-    [PARAM_MAP_BASEMAP]: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL;
-};
-export function selectMapBaseMap(
-    mapBaseMap: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL
-): MapBasemapAction {
-    return {
-        type: MAP_BASEMAP,
-        [PARAM_MAP_BASEMAP]: mapBaseMap,
-    };
-}
-
 export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
 export type ResetMapReloadedAction = Readonly<Action<typeof RESET_MAP_RELOADED>>;
 export function resetMapReloaded(): ResetMapReloadedAction {
@@ -628,28 +518,6 @@ export function setMapEquipementsInitialized(newValue: boolean): MapEquipmentsIn
     return {
         type: MAP_EQUIPMENTS_INITIALIZED,
         newValue,
-    };
-}
-
-export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
-export type SubstationLayoutAction = Readonly<Action<typeof SUBSTATION_LAYOUT>> & {
-    [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
-};
-export function selectSubstationLayout(substationLayout: SubstationLayout): SubstationLayoutAction {
-    return {
-        type: SUBSTATION_LAYOUT,
-        [PARAM_SUBSTATION_LAYOUT]: substationLayout,
-    };
-}
-
-export const COMPONENT_LIBRARY = 'COMPONENT_LIBRARY';
-export type ComponentLibraryAction = Readonly<Action<typeof COMPONENT_LIBRARY>> & {
-    [PARAM_COMPONENT_LIBRARY]: unknown;
-};
-export function selectComponentLibrary(componentLibrary: unknown): ComponentLibraryAction {
-    return {
-        type: COMPONENT_LIBRARY,
-        [PARAM_COMPONENT_LIBRARY]: componentLibrary,
     };
 }
 

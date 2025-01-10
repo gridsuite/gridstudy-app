@@ -29,7 +29,6 @@ import { mergeSx } from '../../utils/functions';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
-import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params';
 import { getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
@@ -161,7 +160,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const nadTextNodeMovementsRef = useRef<NadTextMovement[]>([]);
     nadTextNodeMovementsRef.current = nadTextNodeMovements;
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
-    const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
+    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
@@ -169,8 +168,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const nadIdentifier = useMemo(() => {
-        return getNadIdentifier(diagramStates, initNadWithGeoData);
-    }, [diagramStates, initNadWithGeoData]);
+        return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
+    }, [diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {

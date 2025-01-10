@@ -149,20 +149,20 @@ const LineSplitWithVoltageLevelDialog = ({
         (lineSplit) => {
             const currentVoltageLevelId = lineSplit[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
             const isNewVoltageLevel = newVoltageLevel?.equipmentId === currentVoltageLevelId;
-            divideLine(
-                studyUuid,
-                currentNodeUuid,
-                editData?.uuid,
-                lineSplit[LINE_TO_ATTACH_OR_SPLIT_ID],
-                parseFloat(lineSplit[SLIDER_PERCENTAGE]),
-                isNewVoltageLevel ? newVoltageLevel : null,
-                currentVoltageLevelId,
-                lineSplit[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                lineSplit[LINE1_ID],
-                sanitizeString(lineSplit[LINE1_NAME]),
-                lineSplit[LINE2_ID],
-                sanitizeString(lineSplit[LINE2_NAME])
-            ).catch((error) => {
+            divideLine({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                lineToSplitId: lineSplit[LINE_TO_ATTACH_OR_SPLIT_ID],
+                percent: parseFloat(lineSplit[SLIDER_PERCENTAGE]),
+                mayNewVoltageLevelInfos: isNewVoltageLevel ? newVoltageLevel : null,
+                existingVoltageLevelId: currentVoltageLevelId,
+                bbsOrBusId: lineSplit[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                newLine1Id: lineSplit[LINE1_ID],
+                newLine1Name: sanitizeString(lineSplit[LINE1_NAME]),
+                newLine2Id: lineSplit[LINE2_ID],
+                newLine2Name: sanitizeString(lineSplit[LINE2_NAME]),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LineDivisionError',

@@ -19,8 +19,8 @@ import { createTabulareModification } from 'services/study/network-modifications
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
-    convertValueFromBackToFront,
-    convertValueFromFrontToBack,
+    convertInputValues,
+    convertOutputValues,
     formatModification,
     getEquipmentTypeFromModificationType,
     TABULAR_MODIFICATION_TYPES,
@@ -76,7 +76,7 @@ const TabularModificationDialog = ({
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    modification[key] = convertValueFromBackToFront(key, modif[key]);
+                    modification[key] = convertInputValues(key, modif[key]);
                 });
                 return modification;
             });
@@ -95,7 +95,7 @@ const TabularModificationDialog = ({
                     type: modificationType,
                 };
                 Object.keys(row).forEach((key) => {
-                    modification[key] = convertValueFromFrontToBack(key, row[key]);
+                    modification[key] = convertOutputValues(key, row[key]);
                 });
                 return modification;
             });

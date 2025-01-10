@@ -21,6 +21,7 @@ export type AbstractNode = {
     readOnly?: boolean;
     reportUuid?: UUID;
     type: NodeType;
+    columnPosition?: number;
 };
 
 export interface NodeBuildStatus {

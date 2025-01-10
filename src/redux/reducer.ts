@@ -38,9 +38,7 @@ import {
     AddSortForNewSpreadsheetAction,
     AddToRecentGlobalFiltersAction,
     AppActions,
-    CENTER_LABEL,
     CENTER_ON_SUBSTATION,
-    CenterLabelAction,
     CenterOnSubstationAction,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
@@ -54,8 +52,6 @@ import {
     CloseDiagramAction,
     CloseDiagramsAction,
     CloseStudyAction,
-    COMPONENT_LIBRARY,
-    ComponentLibraryAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
     UPDATE_CUSTOM_COLUMNS_DEFINITION,
@@ -66,8 +62,6 @@ import {
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
     DeleteEquipmentsAction,
-    DIAGONAL_LABEL,
-    DiagonalLabelAction,
     DYNAMIC_SIMULATION_RESULT_FILTER,
     DynamicSimulationResultFilterAction,
     ENABLE_DEVELOPER_MODE,
@@ -78,22 +72,10 @@ import {
     FluxConventionAction,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     IncrementNetworkAreaDiagramDepthAction,
-    INIT_NAD_WITH_GEO_DATA,
-    InitNadWithGeoDataAction,
     LIMIT_REDUCTION,
     LIMIT_REDUCTION_MODIFIED,
     LimitReductionAction,
     LimitReductionModifiedAction,
-    LINE_FLOW_ALERT_THRESHOLD,
-    LINE_FLOW_COLOR_MODE,
-    LINE_FLOW_MODE,
-    LINE_FULL_PATH,
-    LINE_PARALLEL_PATH,
-    LineFlowAlertThresholdAction,
-    LineFlowColorModeAction,
-    LineFlowModeAction,
-    LineFullPathAction,
-    LineParallelPathAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
@@ -102,16 +84,12 @@ import {
     LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LogsFilterAction,
-    MAP_BASEMAP,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
     MAP_EQUIPMENTS_INITIALIZED,
-    MAP_MANUAL_REFRESH,
-    MapBasemapAction,
     MapDataLoadingAction,
     MapEquipmentsCreatedAction,
     MapEquipmentsInitializedAction,
-    MapManualRefreshAction,
     MINIMIZE_DIAGRAM,
     MinimizeDiagramAction,
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
@@ -120,14 +98,14 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-    NETWORK_MODIFICATION_TREE_SWITCH_NODES,
+    NETWORK_MODIFICATION_TREE_NODES_REORDER,
     NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
     NetworkModificationTreeNodesRemovedAction,
     NetworkModificationTreeNodesUpdatedAction,
-    NetworkModificationTreeSwitchNodesAction,
+    NetworkModificationTreeNodesReorderAction,
     OPEN_DIAGRAM,
     OPEN_NAD_LIST,
     OPEN_STUDY,
@@ -196,8 +174,6 @@ import {
     StoreNetworkAreaDiagramTextNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
-    SUBSTATION_LAYOUT,
-    SubstationLayoutAction,
     TABLE_SORT,
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
@@ -210,6 +186,8 @@ import {
     UseNameAction,
     STATEESTIMATION_RESULT_FILTER,
     StateEstimationResultFilterAction,
+    UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+    UpdateNetworkVisualizationParametersAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -315,10 +293,12 @@ import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.
 import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 
 export enum NotificationType {
     STUDY = 'study',
     COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
+    NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
 }
 
 export enum StudyIndexationStatus {
@@ -514,6 +494,7 @@ export interface AppState extends CommonStoreState {
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
+    networkVisualizationsParameters: NetworkVisualizationParameters;
 
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
@@ -845,7 +826,7 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(CLOSE_STUDY, (state, action: CloseStudyAction) => {
+    builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
         state.studyUuid = null;
         state.geoData = null;
         state.networkModificationTreeModel = null;
@@ -920,19 +901,13 @@ export const reducer = createReducer(initialState, (builder) => {
     );
 
     builder.addCase(
-        NETWORK_MODIFICATION_TREE_SWITCH_NODES,
-        (state, action: NetworkModificationTreeSwitchNodesAction) => {
+        NETWORK_MODIFICATION_TREE_NODES_REORDER,
+        (state, action: NetworkModificationTreeNodesReorderAction) => {
             if (state.networkModificationTreeModel) {
                 let newModel = state.networkModificationTreeModel.newSharedForUpdate();
-
-                const nodeToMove = newModel.treeNodes.find((n: CurrentTreeNode) => n.id === action.nodeToMoveId);
-                const destinationNode = newModel.treeNodes.find(
-                    (n: CurrentTreeNode) => n.id === action.destinationNodeId
-                );
-                if (nodeToMove && destinationNode) {
-                    newModel.switchBranches(nodeToMove, destinationNode);
+                if (newModel.reorderChildrenNodes(action.parentNodeId, action.nodeIds)) {
+                    state.networkModificationTreeModel = newModel;
                 }
-                state.networkModificationTreeModel = newModel;
             }
         }
     );
@@ -1075,32 +1050,19 @@ export const reducer = createReducer(initialState, (builder) => {
         state[PARAMS_LOADED] = action[PARAMS_LOADED];
     });
 
+    builder.addCase(
+        UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+        (state, action: UpdateNetworkVisualizationParametersAction) => {
+            state.networkVisualizationsParameters = action.parameters;
+        }
+    );
+
     builder.addCase(USE_NAME, (state, action: UseNameAction) => {
         state[PARAM_USE_NAME] = action[PARAM_USE_NAME];
     });
 
     builder.addCase(USER, (state, action: UserAction) => {
         state.user = action.user;
-    });
-
-    builder.addCase(CENTER_LABEL, (state, action: CenterLabelAction) => {
-        state[PARAM_CENTER_LABEL] = action[PARAM_CENTER_LABEL];
-    });
-
-    builder.addCase(DIAGONAL_LABEL, (state, action: DiagonalLabelAction) => {
-        state[PARAM_DIAGONAL_LABEL] = action[PARAM_DIAGONAL_LABEL];
-    });
-
-    builder.addCase(LINE_FULL_PATH, (state, action: LineFullPathAction) => {
-        state[PARAM_LINE_FULL_PATH] = action[PARAM_LINE_FULL_PATH];
-    });
-
-    builder.addCase(LINE_PARALLEL_PATH, (state, action: LineParallelPathAction) => {
-        state[PARAM_LINE_PARALLEL_PATH] = action[PARAM_LINE_PARALLEL_PATH];
-    });
-
-    builder.addCase(LINE_FLOW_MODE, (state, action: LineFlowModeAction) => {
-        state[PARAM_LINE_FLOW_MODE] = action[PARAM_LINE_FLOW_MODE];
     });
 
     builder.addCase(FLUX_CONVENTION, (state, action: FluxConventionAction) => {
@@ -1111,24 +1073,12 @@ export const reducer = createReducer(initialState, (builder) => {
         state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
     });
 
-    builder.addCase(INIT_NAD_WITH_GEO_DATA, (state, action: InitNadWithGeoDataAction) => {
-        state[PARAM_INIT_NAD_WITH_GEO_DATA] = action[PARAM_INIT_NAD_WITH_GEO_DATA];
-    });
-
-    builder.addCase(LINE_FLOW_COLOR_MODE, (state, action: LineFlowColorModeAction) => {
-        state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
-    });
-
     builder.addCase(LIMIT_REDUCTION, (state, action: LimitReductionAction) => {
         state[PARAM_LIMIT_REDUCTION] = action[PARAM_LIMIT_REDUCTION];
     });
 
     builder.addCase(LIMIT_REDUCTION_MODIFIED, (state, action: LimitReductionModifiedAction) => {
         state.limitReductionModified = action.limitReductionModified;
-    });
-
-    builder.addCase(LINE_FLOW_ALERT_THRESHOLD, (state, action: LineFlowAlertThresholdAction) => {
-        state[PARAM_LINE_FLOW_ALERT_THRESHOLD] = action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
     });
 
     builder.addCase(UNAUTHORIZED_USER_INFO, (state, action: UnauthorizedUserAction) => {
@@ -1143,7 +1093,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.authenticationRouterError = action.authenticationRouterError;
     });
 
-    builder.addCase(RESET_AUTHENTICATION_ROUTER_ERROR, (state, action: AuthenticationRouterErrorAction) => {
+    builder.addCase(RESET_AUTHENTICATION_ROUTER_ERROR, (state, _action: AuthenticationRouterErrorAction) => {
         state.authenticationRouterError = null;
     });
 
@@ -1151,28 +1101,12 @@ export const reducer = createReducer(initialState, (builder) => {
         state.showAuthenticationRouterLogin = action.showAuthenticationRouterLogin;
     });
 
-    builder.addCase(MAP_MANUAL_REFRESH, (state, action: MapManualRefreshAction) => {
-        state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
-    });
-
-    builder.addCase(MAP_BASEMAP, (state, action: MapBasemapAction) => {
-        state[PARAM_MAP_BASEMAP] = action[PARAM_MAP_BASEMAP];
-    });
-
-    builder.addCase(RESET_MAP_RELOADED, (state, action: ResetMapReloadedAction) => {
+    builder.addCase(RESET_MAP_RELOADED, (state, _action: ResetMapReloadedAction) => {
         state.reloadMap = false;
     });
 
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {
         state.isMapEquipmentsInitialized = action.newValue;
-    });
-
-    builder.addCase(SUBSTATION_LAYOUT, (state, action: SubstationLayoutAction) => {
-        state[PARAM_SUBSTATION_LAYOUT] = action[PARAM_SUBSTATION_LAYOUT];
-    });
-
-    builder.addCase(COMPONENT_LIBRARY, (state, action: ComponentLibraryAction) => {
-        state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
     });
 
     builder.addCase(SET_FULLSCREEN_DIAGRAM, (state, action: SetFullscreenDiagramAction) => {
@@ -1516,7 +1450,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
     });
 
-    builder.addCase(STOP_DIAGRAM_BLINK, (state, action: StopDiagramBlinkAction) => {
+    builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {
         state.diagramStates.forEach((diagram) => {
             if (diagram.needsToBlink) {
                 diagram.needsToBlink = undefined;
@@ -1524,15 +1458,15 @@ export const reducer = createReducer(initialState, (builder) => {
         });
     });
 
-    builder.addCase(RESET_NETWORK_AREA_DIAGRAM_DEPTH, (state, action: ResetNetworkAreaDiagramDepthAction) => {
+    builder.addCase(RESET_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: ResetNetworkAreaDiagramDepthAction) => {
         state.networkAreaDiagramDepth = 0;
     });
 
-    builder.addCase(INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, action: IncrementNetworkAreaDiagramDepthAction) => {
+    builder.addCase(INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: IncrementNetworkAreaDiagramDepthAction) => {
         state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
     });
 
-    builder.addCase(DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, action: DecrementNetworkAreaDiagramDepthAction) => {
+    builder.addCase(DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: DecrementNetworkAreaDiagramDepthAction) => {
         if (state.networkAreaDiagramDepth > 0) {
             state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
         }
@@ -1620,7 +1554,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
             if (currentEquipment != null) {
-                //since substations data contains voltage level ones, they have to be treated separatly
+                //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
                         state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] as Substation[],
@@ -1664,7 +1598,7 @@ export const reducer = createReducer(initialState, (builder) => {
         });
     });
 
-    builder.addCase(RESET_EQUIPMENTS, (state, action: ResetEquipmentsAction) => {
+    builder.addCase(RESET_EQUIPMENTS, (state, _action: ResetEquipmentsAction) => {
         state.spreadsheetNetwork = {
             ...initialSpreadsheetNetworkState,
         };
@@ -1675,7 +1609,7 @@ export const reducer = createReducer(initialState, (builder) => {
         });
     });
 
-    builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state, action: ResetEquipmentsPostLoadflowAction) => {
+    builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state, _action: ResetEquipmentsPostLoadflowAction) => {
         state.spreadsheetNetwork = {
             ...initialSpreadsheetNetworkState,
             [EQUIPMENT_TYPES.SUBSTATION]: state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
@@ -1769,7 +1703,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state[LOGS_STORE_FIELD][action.filterTab] = action[LOGS_STORE_FIELD];
     });
 
-    builder.addCase(RESET_LOGS_FILTER, (state, action: ResetLogsFilterAction) => {
+    builder.addCase(RESET_LOGS_FILTER, (state, _action: ResetLogsFilterAction) => {
         state[LOGS_STORE_FIELD] = {
             ...initialLogsFilterState,
         };
