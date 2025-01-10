@@ -13,7 +13,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from './computing-type';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
-import { AppState, StudyUpdated } from 'redux/reducer';
+import { AppDispatch } from '../../redux/store';
+import { AppState, StudyUpdated } from '../../redux/reducer';
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
@@ -105,7 +106,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     const nodeUuidRef = useRef<UUID | null>(null);
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const status = computingTypeToStatusMapper[computingType];
     //the callback crosschecks the computation status and the content of the last update reference
     //in order to determine which computation just ended
