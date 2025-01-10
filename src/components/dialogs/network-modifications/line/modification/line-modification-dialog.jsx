@@ -6,7 +6,13 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    convertOutputValue,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ADDITIONAL_PROPERTIES,
@@ -39,7 +45,6 @@ import {
 } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 
@@ -161,10 +166,10 @@ const LineModificationDialog = ({
                 ...getCharacteristicsWithOutConnectivityFormData({
                     r: line.r?.value ?? null,
                     x: line.x?.value ?? null,
-                    g1: unitToMicroUnit(line.g1?.value ?? null),
-                    b1: unitToMicroUnit(line.b1?.value ?? null),
-                    g2: unitToMicroUnit(line.g2?.value ?? null),
-                    b2: unitToMicroUnit(line.b2?.value ?? null),
+                    g1: convertInputValue(FieldType.G1, line.g1?.value ?? null),
+                    b1: convertInputValue(FieldType.B1, line.b1?.value ?? null),
+                    g2: convertInputValue(FieldType.G2, line.g2?.value ?? null),
+                    b2: convertInputValue(FieldType.B2, line.b2?.value ?? null),
                 }),
                 ...getSelectedLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
@@ -228,10 +233,10 @@ const LineModificationDialog = ({
                 lineName: sanitizeString(line[EQUIPMENT_NAME]),
                 r: characteristics[R],
                 x: characteristics[X],
-                g1: microUnitToUnit(characteristics[G1]),
-                b1: microUnitToUnit(characteristics[B1]),
-                g2: microUnitToUnit(characteristics[G2]),
-                b2: microUnitToUnit(characteristics[B2]),
+                g1: convertOutputValue(FieldType.G1, characteristics[G1]),
+                b1: convertOutputValue(FieldType.B1, characteristics[B1]),
+                g2: convertOutputValue(FieldType.G2, characteristics[G2]),
+                b2: convertOutputValue(FieldType.B2, characteristics[B2]),
                 currentLimit1: currentLimits1,
                 currentLimit2: currentLimits2,
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,

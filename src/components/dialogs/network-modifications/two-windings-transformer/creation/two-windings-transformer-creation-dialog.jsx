@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    convertOutputValue,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid } from '@mui/material';
 import {
@@ -56,7 +62,6 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
@@ -220,8 +225,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 ...getTwoWindingsTransformerFormData({
                     r: twt.r,
                     x: twt.x,
-                    g: unitToMicroUnit(twt.g),
-                    b: unitToMicroUnit(twt.b),
+                    g: convertInputValue(FieldType.G, twt.g),
+                    b: convertInputValue(FieldType.B, twt.b),
                     ratedU1: twt.ratedU1,
                     ratedU2: twt.ratedU2,
                     ratedS: twt.ratedS,
@@ -325,8 +330,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getTwoWindingsTransformerFormData({
                         r: twt.r,
                         x: twt.x,
-                        g: unitToMicroUnit(twt.g),
-                        b: unitToMicroUnit(twt.b),
+                        g: convertInputValue(FieldType.G, twt.g),
+                        b: convertInputValue(FieldType.B, twt.b),
                         ratedU1: twt.ratedU1,
                         ratedU2: twt.ratedU2,
                         ratedS: twt.ratedS,
@@ -497,8 +502,9 @@ const TwoWindingsTransformerCreationDialog = ({
             const characteristics = twt[CHARACTERISTICS];
             const limits = twt[LIMITS];
 
-            characteristics[G] = microUnitToUnit(characteristics[G]);
-            characteristics[B] = microUnitToUnit(characteristics[B]);
+            characteristics[G] = convertOutputValue(FieldType.G, characteristics[G]);
+            characteristics[B] = convertOutputValue(FieldType.B, characteristics[B]);
+
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
