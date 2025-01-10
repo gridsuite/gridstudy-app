@@ -92,11 +92,11 @@ const EventModificationScenarioEditor = () => {
 
     const doFetchEvents = useCallback(() => {
         // Do not fetch modifications on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+        if (currentNode?.type !== 'NETWORK_MODIFICATION' || !studyUuid) {
             return;
         }
         setLaunchLoader(true);
-        fetchDynamicSimulationEvents(studyUuid ?? '', currentNode.id)
+        fetchDynamicSimulationEvents(studyUuid, currentNode.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -164,13 +164,11 @@ const EventModificationScenarioEditor = () => {
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const doDeleteEvent = useCallback(() => {
+        if (!studyUuid || !currentNode?.id) {
+            return;
+        }
         const selectedEvents = [...selectedItems];
-        deleteDynamicSimulationEvents(
-            studyUuid ?? '',
-            // @ts-expect-error TODO: manage null case
-            currentNode?.id,
-            selectedEvents
-        ).catch((errMsg) => {
+        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((errMsg) => {
             snackError({
                 messageTxt: errMsg,
                 headerId: 'DynamicSimulationEventDeleteError',
@@ -342,9 +340,6 @@ const EventModificationScenarioEditor = () => {
 
             {editDialogOpen && (
                 <DynamicSimulationEventDialog
-                    studyUuid={studyUuid ?? ''}
-                    // @ts-expect-error TODO: manage null case
-                    currentNodeId={currentNode?.id}
                     equipmentId={editDialogOpen.equipmentId}
                     equipmentType={editDialogOpen.equipmentType}
                     onClose={() => handleCloseDialog()}

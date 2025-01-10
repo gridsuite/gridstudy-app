@@ -38,9 +38,7 @@ import {
     AddSortForNewSpreadsheetAction,
     AddToRecentGlobalFiltersAction,
     AppActions,
-    CENTER_LABEL,
     CENTER_ON_SUBSTATION,
-    CenterLabelAction,
     CenterOnSubstationAction,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
@@ -54,18 +52,16 @@ import {
     CloseDiagramAction,
     CloseDiagramsAction,
     CloseStudyAction,
-    COMPONENT_LIBRARY,
-    ComponentLibraryAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
-    CUSTOM_COLUMNS_DEFINITIONS,
-    CustomColumnsDefinitionsAction,
+    UPDATE_CUSTOM_COLUMNS_DEFINITION,
+    REMOVE_CUSTOM_COLUMNS_DEFINITION,
+    UpdateCustomColumnsDefinitionsAction,
+    RemoveCustomColumnsDefinitionsAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
     DeleteEquipmentsAction,
-    DIAGONAL_LABEL,
-    DiagonalLabelAction,
     DYNAMIC_SIMULATION_RESULT_FILTER,
     DynamicSimulationResultFilterAction,
     ENABLE_DEVELOPER_MODE,
@@ -76,22 +72,10 @@ import {
     FluxConventionAction,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     IncrementNetworkAreaDiagramDepthAction,
-    INIT_NAD_WITH_GEO_DATA,
-    InitNadWithGeoDataAction,
     LIMIT_REDUCTION,
     LIMIT_REDUCTION_MODIFIED,
     LimitReductionAction,
     LimitReductionModifiedAction,
-    LINE_FLOW_ALERT_THRESHOLD,
-    LINE_FLOW_COLOR_MODE,
-    LINE_FLOW_MODE,
-    LINE_FULL_PATH,
-    LINE_PARALLEL_PATH,
-    LineFlowAlertThresholdAction,
-    LineFlowColorModeAction,
-    LineFlowModeAction,
-    LineFullPathAction,
-    LineParallelPathAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
@@ -100,16 +84,12 @@ import {
     LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LogsFilterAction,
-    MAP_BASEMAP,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
     MAP_EQUIPMENTS_INITIALIZED,
-    MAP_MANUAL_REFRESH,
-    MapBasemapAction,
     MapDataLoadingAction,
     MapEquipmentsCreatedAction,
     MapEquipmentsInitializedAction,
-    MapManualRefreshAction,
     MINIMIZE_DIAGRAM,
     MinimizeDiagramAction,
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
@@ -118,12 +98,14 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
+    NETWORK_MODIFICATION_TREE_NODES_REORDER,
     NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
     NetworkModificationTreeNodesRemovedAction,
     NetworkModificationTreeNodesUpdatedAction,
+    NetworkModificationTreeNodesReorderAction,
     OPEN_DIAGRAM,
     OPEN_NAD_LIST,
     OPEN_STUDY,
@@ -150,8 +132,8 @@ import {
     SELECT_LANGUAGE,
     SELECT_THEME,
     SelectComputedLanguageAction,
-    SELECTION_FOR_COPY,
-    SelectionForCopyAction,
+    NODE_SELECTION_FOR_COPY,
+    NodeSelectionForCopyAction,
     SelectLanguageAction,
     SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
@@ -190,8 +172,6 @@ import {
     StoreNetworkAreaDiagramNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
-    SUBSTATION_LAYOUT,
-    SubstationLayoutAction,
     TABLE_SORT,
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
@@ -202,6 +182,10 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    STATEESTIMATION_RESULT_FILTER,
+    StateEstimationResultFilterAction,
+    UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+    UpdateNetworkVisualizationParametersAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -289,6 +273,10 @@ import {
     SPREADSHEET_STORE_FIELD,
     TABLE_SORT_STORE,
     TIMELINE,
+    STATEESTIMATION_RESULT_STORE_FIELD,
+    STATEESTIMATION_RESULT_SORT_STORE,
+    STATEESTIMATION_QUALITY_CRITERION,
+    STATEESTIMATION_QUALITY_PER_REGION,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
@@ -303,10 +291,12 @@ import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.
 import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 
 export enum NotificationType {
     STUDY = 'study',
     COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
+    NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
 }
 
 export enum StudyIndexationStatus {
@@ -373,7 +363,6 @@ export type StudyUpdated = {
 
 type NodeCommonData = {
     label: string;
-    parentNodeUuid?: UUID;
     globalBuildStatus?: BUILD_STATUS;
     description?: string;
     readOnly?: boolean;
@@ -414,6 +403,7 @@ export type TableSort = {
     [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
     [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
     [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
+    [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
 };
 export type TableSortKeysType = keyof TableSort;
 
@@ -433,7 +423,10 @@ export type NadNodeMovement = {
     y: number;
 };
 
-export type SelectionForCopy = {
+/**
+ * Represent a node in the network modifications tree that is selected.
+ */
+export type NodeSelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: UUID | null;
     copyType: ValueOf<typeof CopyType> | null;
@@ -467,7 +460,7 @@ export interface AppState extends CommonStoreState {
     tables: TablesState;
 
     limitReductionModified: boolean;
-    selectionForCopy: SelectionForCopy;
+    nodeSelectionForCopy: NodeSelectionForCopy;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     mapDataLoading: boolean;
@@ -489,6 +482,7 @@ export interface AppState extends CommonStoreState {
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
+    networkVisualizationsParameters: NetworkVisualizationParameters;
 
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
@@ -536,7 +530,10 @@ export interface AppState extends CommonStoreState {
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: UnknownArray;
     };
-
+    [STATEESTIMATION_RESULT_STORE_FIELD]: {
+        [STATEESTIMATION_QUALITY_CRITERION]: UnknownArray;
+        [STATEESTIMATION_QUALITY_PER_REGION]: UnknownArray;
+    };
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
@@ -609,7 +606,7 @@ const initialTablesState: TablesState = {
 const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
-    selectionForCopy: {
+    nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
         copyType: null,
@@ -714,6 +711,10 @@ const initialState: AppState = {
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: [],
     },
+    [STATEESTIMATION_RESULT_STORE_FIELD]: {
+        [STATEESTIMATION_QUALITY_CRITERION]: [],
+        [STATEESTIMATION_QUALITY_PER_REGION]: [],
+    },
 
     // Spreadsheet filters
     [SPREADSHEET_STORE_FIELD]: Object.values(initialTablesState.definitions)
@@ -783,8 +784,21 @@ const initialState: AppState = {
             [ONE_BUS]: [{ colId: 'current', sort: SortWay.DESC }],
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
+        [STATEESTIMATION_RESULT_SORT_STORE]: {
+            [STATEESTIMATION_QUALITY_CRITERION]: [
+                {
+                    colId: 'type',
+                    sort: SortWay.ASC,
+                },
+            ],
+            [STATEESTIMATION_QUALITY_PER_REGION]: [
+                {
+                    colId: 'name',
+                    sort: SortWay.ASC,
+                },
+            ],
+        },
     },
-
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -799,7 +813,7 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(CLOSE_STUDY, (state, action: CloseStudyAction) => {
+    builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
         state.studyUuid = null;
         state.geoData = null;
         state.networkModificationTreeModel = null;
@@ -873,6 +887,18 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     );
 
+    builder.addCase(
+        NETWORK_MODIFICATION_TREE_NODES_REORDER,
+        (state, action: NetworkModificationTreeNodesReorderAction) => {
+            if (state.networkModificationTreeModel) {
+                let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+                if (newModel.reorderChildrenNodes(action.parentNodeId, action.nodeIds)) {
+                    state.networkModificationTreeModel = newModel;
+                }
+            }
+        }
+    );
+
     builder.addCase(NETWORK_MODIFICATION_TREE_NODE_ADDED, (state, action: NetworkModificationTreeNodeAddedAction) => {
         if (state.networkModificationTreeModel) {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
@@ -882,14 +908,13 @@ export const reducer = createReducer(initialState, (builder) => {
                 action.insertMode,
                 action.referenceNodeId
             );
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
                 state.currentTreeNode?.id &&
                 action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
-                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                // Then must overwrite currentTreeNode to set new parentId
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -905,14 +930,13 @@ export const reducer = createReducer(initialState, (builder) => {
                 action.insertMode,
                 action.referenceNodeId
             );
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
                 state.currentTreeNode?.id &&
                 action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
-                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                // Then must overwrite currentTreeNode to set new parentId
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -922,8 +946,6 @@ export const reducer = createReducer(initialState, (builder) => {
         if (state.networkModificationTreeModel) {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
             unravelSubTree(newModel, action.parentNodeId, action.networkModificationTreeNodes);
-
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
         }
     });
@@ -938,11 +960,10 @@ export const reducer = createReducer(initialState, (builder) => {
                 //in the future, if the deleted nodes are no longer contiguous we will need another implementation
                 const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
-                    .map((node) => node.data.parentNodeUuid)
-                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid!));
+                    .map((node) => node.parentId)
+                    .find((parentId) => !action.networkModificationTreeNodes.includes(parentId as UUID));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
-                newModel.updateLayout();
                 state.networkModificationTreeModel = newModel;
 
                 // check if current node is in the nodes deleted list
@@ -952,15 +973,15 @@ export const reducer = createReducer(initialState, (builder) => {
                         state.currentTreeNode?.id
                     )
                 ) {
-                    synchCurrentTreeNode(state, nextCurrentNodeUuid);
+                    synchCurrentTreeNode(state, nextCurrentNodeUuid as UUID);
                 } // check if parent node of the current node is in the nodes deleted list
                 else if (
                     action.networkModificationTreeNodes.includes(
                         // @ts-expect-error TODO: what to do if current node null?
-                        state.currentTreeNode?.data?.parentNodeUuid
+                        state.currentTreeNode?.parentId
                     )
                 ) {
-                    // Then must overwrite currentTreeNode to get new parentNodeUuid
+                    // Then must overwrite currentTreeNode to get new parentId
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                 }
             }
@@ -1016,32 +1037,19 @@ export const reducer = createReducer(initialState, (builder) => {
         state[PARAMS_LOADED] = action[PARAMS_LOADED];
     });
 
+    builder.addCase(
+        UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+        (state, action: UpdateNetworkVisualizationParametersAction) => {
+            state.networkVisualizationsParameters = action.parameters;
+        }
+    );
+
     builder.addCase(USE_NAME, (state, action: UseNameAction) => {
         state[PARAM_USE_NAME] = action[PARAM_USE_NAME];
     });
 
     builder.addCase(USER, (state, action: UserAction) => {
         state.user = action.user;
-    });
-
-    builder.addCase(CENTER_LABEL, (state, action: CenterLabelAction) => {
-        state[PARAM_CENTER_LABEL] = action[PARAM_CENTER_LABEL];
-    });
-
-    builder.addCase(DIAGONAL_LABEL, (state, action: DiagonalLabelAction) => {
-        state[PARAM_DIAGONAL_LABEL] = action[PARAM_DIAGONAL_LABEL];
-    });
-
-    builder.addCase(LINE_FULL_PATH, (state, action: LineFullPathAction) => {
-        state[PARAM_LINE_FULL_PATH] = action[PARAM_LINE_FULL_PATH];
-    });
-
-    builder.addCase(LINE_PARALLEL_PATH, (state, action: LineParallelPathAction) => {
-        state[PARAM_LINE_PARALLEL_PATH] = action[PARAM_LINE_PARALLEL_PATH];
-    });
-
-    builder.addCase(LINE_FLOW_MODE, (state, action: LineFlowModeAction) => {
-        state[PARAM_LINE_FLOW_MODE] = action[PARAM_LINE_FLOW_MODE];
     });
 
     builder.addCase(FLUX_CONVENTION, (state, action: FluxConventionAction) => {
@@ -1052,24 +1060,12 @@ export const reducer = createReducer(initialState, (builder) => {
         state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
     });
 
-    builder.addCase(INIT_NAD_WITH_GEO_DATA, (state, action: InitNadWithGeoDataAction) => {
-        state[PARAM_INIT_NAD_WITH_GEO_DATA] = action[PARAM_INIT_NAD_WITH_GEO_DATA];
-    });
-
-    builder.addCase(LINE_FLOW_COLOR_MODE, (state, action: LineFlowColorModeAction) => {
-        state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
-    });
-
     builder.addCase(LIMIT_REDUCTION, (state, action: LimitReductionAction) => {
         state[PARAM_LIMIT_REDUCTION] = action[PARAM_LIMIT_REDUCTION];
     });
 
     builder.addCase(LIMIT_REDUCTION_MODIFIED, (state, action: LimitReductionModifiedAction) => {
         state.limitReductionModified = action.limitReductionModified;
-    });
-
-    builder.addCase(LINE_FLOW_ALERT_THRESHOLD, (state, action: LineFlowAlertThresholdAction) => {
-        state[PARAM_LINE_FLOW_ALERT_THRESHOLD] = action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
     });
 
     builder.addCase(UNAUTHORIZED_USER_INFO, (state, action: UnauthorizedUserAction) => {
@@ -1084,7 +1080,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.authenticationRouterError = action.authenticationRouterError;
     });
 
-    builder.addCase(RESET_AUTHENTICATION_ROUTER_ERROR, (state, action: AuthenticationRouterErrorAction) => {
+    builder.addCase(RESET_AUTHENTICATION_ROUTER_ERROR, (state, _action: AuthenticationRouterErrorAction) => {
         state.authenticationRouterError = null;
     });
 
@@ -1092,28 +1088,12 @@ export const reducer = createReducer(initialState, (builder) => {
         state.showAuthenticationRouterLogin = action.showAuthenticationRouterLogin;
     });
 
-    builder.addCase(MAP_MANUAL_REFRESH, (state, action: MapManualRefreshAction) => {
-        state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
-    });
-
-    builder.addCase(MAP_BASEMAP, (state, action: MapBasemapAction) => {
-        state[PARAM_MAP_BASEMAP] = action[PARAM_MAP_BASEMAP];
-    });
-
-    builder.addCase(RESET_MAP_RELOADED, (state, action: ResetMapReloadedAction) => {
+    builder.addCase(RESET_MAP_RELOADED, (state, _action: ResetMapReloadedAction) => {
         state.reloadMap = false;
     });
 
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {
         state.isMapEquipmentsInitialized = action.newValue;
-    });
-
-    builder.addCase(SUBSTATION_LAYOUT, (state, action: SubstationLayoutAction) => {
-        state[PARAM_SUBSTATION_LAYOUT] = action[PARAM_SUBSTATION_LAYOUT];
-    });
-
-    builder.addCase(COMPONENT_LIBRARY, (state, action: ComponentLibraryAction) => {
-        state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
     });
 
     builder.addCase(SET_FULLSCREEN_DIAGRAM, (state, action: SetFullscreenDiagramAction) => {
@@ -1164,19 +1144,20 @@ export const reducer = createReducer(initialState, (builder) => {
         state.reloadMap = true;
     });
 
-    builder.addCase(SELECTION_FOR_COPY, (state, action: SelectionForCopyAction) => {
-        const selectionForCopy = action.selectionForCopy;
+    builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
+        const nodeSelectionForCopy = action.nodeSelectionForCopy;
         if (
-            selectionForCopy.sourceStudyUuid === state.studyUuid &&
-            selectionForCopy.nodeId &&
-            (selectionForCopy.copyType === CopyType.SUBTREE_COPY || selectionForCopy.copyType === CopyType.SUBTREE_CUT)
+            nodeSelectionForCopy.sourceStudyUuid === state.studyUuid &&
+            nodeSelectionForCopy.nodeId &&
+            (nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT)
         ) {
-            selectionForCopy.allChildrenIds = getAllChildren(
+            nodeSelectionForCopy.allChildrenIds = getAllChildren(
                 state.networkModificationTreeModel,
-                selectionForCopy.nodeId
+                nodeSelectionForCopy.nodeId
             ).map((child) => child.id);
         }
-        state.selectionForCopy = selectionForCopy;
+        state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
 
     builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, action: SetModificationsDrawerOpenAction) => {
@@ -1456,7 +1437,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
     });
 
-    builder.addCase(STOP_DIAGRAM_BLINK, (state, action: StopDiagramBlinkAction) => {
+    builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {
         state.diagramStates.forEach((diagram) => {
             if (diagram.needsToBlink) {
                 diagram.needsToBlink = undefined;
@@ -1464,15 +1445,15 @@ export const reducer = createReducer(initialState, (builder) => {
         });
     });
 
-    builder.addCase(RESET_NETWORK_AREA_DIAGRAM_DEPTH, (state, action: ResetNetworkAreaDiagramDepthAction) => {
+    builder.addCase(RESET_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: ResetNetworkAreaDiagramDepthAction) => {
         state.networkAreaDiagramDepth = 0;
     });
 
-    builder.addCase(INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, action: IncrementNetworkAreaDiagramDepthAction) => {
+    builder.addCase(INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: IncrementNetworkAreaDiagramDepthAction) => {
         state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
     });
 
-    builder.addCase(DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, action: DecrementNetworkAreaDiagramDepthAction) => {
+    builder.addCase(DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: DecrementNetworkAreaDiagramDepthAction) => {
         if (state.networkAreaDiagramDepth > 0) {
             state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
         }
@@ -1535,7 +1516,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
             if (currentEquipment != null) {
-                //since substations data contains voltage level ones, they have to be treated separatly
+                //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
                         state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] as Substation[],
@@ -1579,7 +1560,7 @@ export const reducer = createReducer(initialState, (builder) => {
         });
     });
 
-    builder.addCase(RESET_EQUIPMENTS, (state, action: ResetEquipmentsAction) => {
+    builder.addCase(RESET_EQUIPMENTS, (state, _action: ResetEquipmentsAction) => {
         state.spreadsheetNetwork = {
             ...initialSpreadsheetNetworkState,
         };
@@ -1590,7 +1571,7 @@ export const reducer = createReducer(initialState, (builder) => {
         });
     });
 
-    builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state, action: ResetEquipmentsPostLoadflowAction) => {
+    builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state, _action: ResetEquipmentsPostLoadflowAction) => {
         state.spreadsheetNetwork = {
             ...initialSpreadsheetNetworkState,
             [EQUIPMENT_TYPES.SUBSTATION]: state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
@@ -1667,6 +1648,10 @@ export const reducer = createReducer(initialState, (builder) => {
         state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
     });
 
+    builder.addCase(STATEESTIMATION_RESULT_FILTER, (state, action: StateEstimationResultFilterAction) => {
+        state[STATEESTIMATION_RESULT_STORE_FIELD][action.filterTab] = action[STATEESTIMATION_RESULT_STORE_FIELD];
+    });
+
     builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
     });
@@ -1680,7 +1665,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state[LOGS_STORE_FIELD][action.filterTab] = action[LOGS_STORE_FIELD];
     });
 
-    builder.addCase(RESET_LOGS_FILTER, (state, action: ResetLogsFilterAction) => {
+    builder.addCase(RESET_LOGS_FILTER, (state, _action: ResetLogsFilterAction) => {
         state[LOGS_STORE_FIELD] = {
             ...initialLogsFilterState,
         };
@@ -1695,8 +1680,20 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableSort[SPREADSHEET_SORT_STORE][newTabName] = value;
     });
 
-    builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.table].columns = action.definitions;
+    builder.addCase(UPDATE_CUSTOM_COLUMNS_DEFINITION, (state, action: UpdateCustomColumnsDefinitionsAction) => {
+        state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
+            action.table
+        ].columns.some((column) => column.id === action.definition.id)
+            ? state.tables.allCustomColumnsDefinitions[action.table].columns.map((column) =>
+                  column.id === action.definition.id ? action.definition : column
+              )
+            : [...state.tables.allCustomColumnsDefinitions[action.table].columns, action.definition];
+    });
+
+    builder.addCase(REMOVE_CUSTOM_COLUMNS_DEFINITION, (state, action: RemoveCustomColumnsDefinitionsAction) => {
+        state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
+            action.table
+        ].columns.filter((column) => column.id !== action.definitionId);
     });
 });
 
@@ -1731,6 +1728,47 @@ export enum EquipmentUpdateType {
     SUBSTATIONS = 'substations',
     BUSES = 'buses',
     BUSBAR_SECTIONS = 'busbarSections',
+}
+
+export function getUpdateTypeFromEquipmentType(equipmentType: EQUIPMENT_TYPES): EquipmentUpdateType | undefined {
+    switch (equipmentType) {
+        case EQUIPMENT_TYPES.LINE:
+            return EquipmentUpdateType.LINES;
+        case EQUIPMENT_TYPES.TIE_LINE:
+            return EquipmentUpdateType.TIE_LINES;
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+            return EquipmentUpdateType.TWO_WINDINGS_TRANSFORMERS;
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
+            return EquipmentUpdateType.THREE_WINDINGS_TRANSFORMERS;
+        case EQUIPMENT_TYPES.GENERATOR:
+            return EquipmentUpdateType.GENERATORS;
+        case EQUIPMENT_TYPES.LOAD:
+            return EquipmentUpdateType.LOADS;
+        case EQUIPMENT_TYPES.BATTERY:
+            return EquipmentUpdateType.BATTERIES;
+        case EQUIPMENT_TYPES.DANGLING_LINE:
+            return EquipmentUpdateType.DANGLING_LINES;
+        case EQUIPMENT_TYPES.HVDC_LINE:
+            return EquipmentUpdateType.HVDC_LINES;
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
+            return EquipmentUpdateType.LCC_CONVERTER_STATIONS;
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
+            return EquipmentUpdateType.VSC_CONVERTER_STATIONS;
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+            return EquipmentUpdateType.SHUNT_COMPENSATORS;
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
+            return EquipmentUpdateType.STATIC_VAR_COMPENSATORS;
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+            return EquipmentUpdateType.VOLTAGE_LEVELS;
+        case EQUIPMENT_TYPES.SUBSTATION:
+            return EquipmentUpdateType.SUBSTATIONS;
+        case EQUIPMENT_TYPES.BUS:
+            return EquipmentUpdateType.BUSES;
+        case EQUIPMENT_TYPES.BUSBAR_SECTION:
+            return EquipmentUpdateType.BUSBAR_SECTIONS;
+        default:
+            return;
+    }
 }
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPMENT_TYPES | undefined {
@@ -1841,7 +1879,7 @@ function unravelSubTree(
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
-        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After);
+        treeModel.addChild(node, subtreeParentId, NodeInsertModes.NewBranch, subtreeParentId, true);
 
         if (node.children.length > 0) {
             node.children.forEach((child) => {

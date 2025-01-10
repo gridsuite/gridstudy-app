@@ -29,7 +29,6 @@ import { mergeSx } from '../../utils/functions';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
-import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params';
 import { getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
@@ -144,9 +143,10 @@ type NetworkAreaDiagramContentProps = {
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
+    visible: boolean;
 };
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter } = props;
+    const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
 
@@ -155,7 +155,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
-    const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
+    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
@@ -163,8 +163,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const nadIdentifier = useMemo(() => {
-        return getNadIdentifier(diagramStates, initNadWithGeoData);
-    }, [diagramStates, initNadWithGeoData]);
+        return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
+    }, [diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
@@ -265,7 +265,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     return (
         <>
             <Box height={2}>{props.loadingState && <LinearProgress />}</Box>
-            {shouldDisplayTooltip && (
+            {visible && shouldDisplayTooltip && (
                 <EquipmentPopover
                     studyUuid={studyUuid}
                     anchorPosition={anchorPosition}

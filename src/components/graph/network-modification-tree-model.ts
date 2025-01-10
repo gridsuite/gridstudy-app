@@ -5,20 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } from './util/model-functions';
 import { NodeInsertModes } from './nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
 import { CurrentTreeNode, isReactFlowRootNodeData } from '../../redux/reducer';
 import { Edge } from '@xyflow/react';
-import { NetworkModificationNodeData, RootNodeData } from './tree-node.type';
+import { AbstractNode, NetworkModificationNodeData, RootNodeData } from './tree-node.type';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
-const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
+export const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
     return nodes.reduce((acc, n) => {
-        if (n.data.parentNodeUuid === parentId) {
+        if (n.parentId === parentId) {
             acc += 1 + countNodes(nodes, n.id); // this node + its children
         }
         return acc;
@@ -31,19 +30,77 @@ export default class NetworkModificationTreeModel {
 
     isAnyNodeBuilding = false;
 
-    updateLayout() {
-        this.treeNodes = getLayoutedNodes(this.treeNodes, this.treeEdges);
-        this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
+    // Will sort if columnPosition is defined, and not move the nodes if undefined
+    childrenNodeSorter(a: AbstractNode, b: AbstractNode) {
+        if (a.columnPosition !== undefined && b.columnPosition !== undefined) {
+            return a.columnPosition - b.columnPosition;
+        }
+        return 0;
     }
+
+    getChildren(parentNodeId: string): CurrentTreeNode[] {
+        return this.treeNodes.filter((n) => n.parentId === parentNodeId);
+    }
+
+    needReorder(parentNodeId: string, orderedNodeIds: string[]): boolean {
+        return (
+            this.getChildren(parentNodeId)
+                .map((child) => child.id)
+                .join(',') !== orderedNodeIds.join(',')
+        );
+    }
+
+    /**
+     * Will reorganize treeNodes and put the children of parentNodeId in the order provided in nodeIds array.
+     * @param parentNodeId parent ID of the to be reordered children nodes
+     * @param orderedNodeIds array of children ID in the order we want
+     * @returns true if the order was changed
+     */
+    reorderChildrenNodes(parentNodeId: string, orderedNodeIds: string[]) {
+        if (!this.needReorder(parentNodeId, orderedNodeIds)) {
+            return false;
+        }
+
+        // Let's reorder the children :
+        // In orderedNodeIds order, we cut and paste the corresponding number of nodes in treeNodes.
+        const justAfterParentIndex = 1 + this.treeNodes.findIndex((n) => n.id === parentNodeId); // we add 1 here to set the index just after the parent node
+        let insertedNodes = 0;
+
+        orderedNodeIds.forEach((nodeId) => {
+            const nodesToMoveIndex = this.treeNodes.findIndex((n) => n.id === nodeId);
+            const subTreeSize = 1 + countNodes(this.treeNodes, nodeId as UUID); // We add 1 here to include the current node in its subtree size
+
+            // We remove from treeNodes the nodes that we want to move, (...)
+            const nodesToMove = this.treeNodes.splice(nodesToMoveIndex, subTreeSize);
+
+            // (...) and now we put them in their new position in the array
+            this.treeNodes.splice(justAfterParentIndex + insertedNodes, 0, ...nodesToMove);
+            insertedNodes += subTreeSize;
+        });
+
+        return true;
+    }
+
     addChild(
         newNode: NetworkModificationNodeData | RootNodeData,
         parentId: UUID,
         insertMode?: NodeInsertModes,
-        referenceNodeId?: UUID
+        referenceNodeId?: UUID,
+        skipChildren: boolean = false
     ) {
-        // we have to keep a precise order of nodes in the array to avoid gettings children
-        // nodes before their parents when building graph in dagre library which have uncontrolled results
-        // We also need to do this to keep a correct order when inserting nodes and not loose the user.
+        /**
+         * The layout algorithm used to draw the graph is dependant on the order of nodes in the array.
+         * We have to keep a precise order of nodes in the array to always have a child node after its parent.
+         *
+         * Example tree :
+         *     A
+         *    / \
+         *   B   D
+         *  /   / \
+         * C   E   F
+         *
+         * This tree should have its nodes in the array in this order : [A, B, C, D, E, F]
+         */
         const referenceNodeIndex = this.treeNodes.findIndex((node) => node.id === referenceNodeId);
         switch (insertMode) {
             case NodeInsertModes.Before: {
@@ -83,7 +140,6 @@ export default class NetworkModificationTreeModel {
                 id: 'e' + parentId + '-' + newNode.id,
                 source: parentId,
                 target: newNode.id,
-                type: 'smoothstep',
             });
         }
         if (insertMode === NodeInsertModes.Before || insertMode === NodeInsertModes.After) {
@@ -100,33 +156,30 @@ export default class NetworkModificationTreeModel {
                     id: 'e' + newNode.id + '-' + childId,
                     source: newNode.id,
                     target: childId,
-                    type: 'smoothstep',
                 });
             });
 
             // overwrite old children nodes parentUuid when inserting new nodes
-            const nextNodes = this.treeNodes.map((node) => {
+            this.treeNodes = this.treeNodes.map((node) => {
                 if (newNode.childrenIds.includes(node.id)) {
                     return {
                         ...node,
-                        data: {
-                            ...node.data,
-                            parentNodeUuid: newNode.id,
-                        },
+                        parentId: newNode.id,
                     };
                 }
                 return node;
             });
-
-            this.treeNodes = nextNodes;
             this.treeEdges = filteredEdges;
         }
 
-        // Add children of this node recursively
-        if (newNode.children) {
-            newNode.children.forEach((child) => {
-                this.addChild(child, newNode.id);
-            });
+        if (!skipChildren) {
+            // Add children of this node recursively
+            if (newNode.children) {
+                newNode.children.sort(this.childrenNodeSorter);
+                newNode.children.forEach((child) => {
+                    this.addChild(child, newNode.id, undefined, undefined);
+                });
+            }
         }
     }
 
@@ -151,31 +204,25 @@ export default class NetworkModificationTreeModel {
                         id: 'e' + edgeOfTarget.source + '-' + edgeOfSource.target,
                         source: edgeOfTarget.source,
                         target: edgeOfSource.target,
-                        type: 'smoothstep',
                     });
                 });
             });
             this.treeEdges = filteredEdges;
 
-            // fix parentNodeUuid of children
+            // fixes the parentId of children
             const nodeToDelete = this.treeNodes.find((el) => el.id === nodeId);
             if (!nodeToDelete) {
                 return;
             }
-            const nextTreeNodes = filteredNodes.map((node) => {
-                if (node.data?.parentNodeUuid === nodeId) {
+            this.treeNodes = filteredNodes.map((node) => {
+                if (node.parentId === nodeId) {
                     return {
                         ...node,
-                        data: {
-                            ...node.data,
-                            parentNodeUuid: nodeToDelete.data?.parentNodeUuid,
-                        },
+                        parentId: nodeToDelete.parentId,
                     };
                 }
                 return node;
             });
-
-            this.treeNodes = nextTreeNodes;
         });
     }
 
@@ -207,6 +254,7 @@ export default class NetworkModificationTreeModel {
         // handle root node
         this.treeNodes.push(convertNodetoReactFlowModelNode(elements));
         // handle root children
+        elements.children.sort(this.childrenNodeSorter);
         elements.children.forEach((child) => {
             this.addChild(child, elements.id);
         });
@@ -215,8 +263,7 @@ export default class NetworkModificationTreeModel {
 
     newSharedForUpdate() {
         /* shallow clone of the network https://stackoverflow.com/a/44782052 */
-        let newTreeModel = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
-        return newTreeModel;
+        return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
     }
 
     setBuildingStatus() {

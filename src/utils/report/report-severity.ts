@@ -80,19 +80,13 @@ export const getDefaultSeverityFilter = (severityList: string[]): string[] => {
     return severityFilter;
 };
 
+export function sortSeverityList(severityList: SeverityLevel[]): SeverityLevel[] {
+    return severityList.sort((a, b) => REPORT_SEVERITY[b].level - REPORT_SEVERITY[a].level);
+}
+
 export function getContainerDefaultSeverityList(): string[] {
     // return name list like ['WARN', 'INFO']
     return Object.values(REPORT_SEVERITY)
         .filter((s) => s.displayedByDefaultForReportContainer)
         .map((s) => s.name);
-}
-
-export function getHighestSeverity(severityList: string[]) {
-    // We have a un-ordered list of existing severities, like ['INFO', 'ERROR', 'DEBUG'].
-    // Lets find out the highest level corresponding SEVERITY object, like SEVERITY.ERROR:
-    let reduceFct = (p: ReportSeverity, c: ReportSeverity) => (c.level > p.level ? c : p);
-    let highestSeverity = REPORT_SEVERITY.UNKNOWN;
-    return Object.values(REPORT_SEVERITY)
-        .filter((s) => severityList.includes(s.name))
-        .reduce(reduceFct, highestSeverity);
 }
