@@ -146,7 +146,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'report_viewer/severity' }),
                 width: SEVERITY_COLUMN_FIXED_WIDTH,
-                id: 'severity',
+                colId: 'severity',
                 field: 'severity',
                 cellStyle: (params) => ({
                     backgroundColor: params.data.backgroundColor,
@@ -155,16 +155,19 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'report_viewer/message' }),
-                id: 'message',
+                colId: 'message',
                 field: 'message',
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        updateFilter,
-                        filterSelector,
-                        filterDataType: FILTER_DATA_TYPES.TEXT,
-                        filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                context: {
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            updateFilter,
+                            filterSelector,
+                            filterDataType: FILTER_DATA_TYPES.TEXT,
+                            filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                        },
                     },
+                    forceDisplayFilterIcon: true,
                 },
                 flex: 1,
                 cellRenderer: (param: ICellRendererParams) =>
@@ -176,7 +179,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                         currentResultIndex: currentResultIndex,
                         searchResults: searchResults,
                     }),
-                forceDisplayFilterIcon: true,
             }),
         ],
         [

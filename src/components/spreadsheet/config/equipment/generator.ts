@@ -68,65 +68,77 @@ export const GENERATOR_TAB_DEF = {
     ...typeAndFetchers(EQUIPMENT_TYPES.GENERATOR),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
             ...defaultTextFilterConfig,
+            context: {
+                ...defaultTextFilterConfig.context,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                isDefaultSort: true,
+            },
         },
         {
-            id: 'Name',
+            colId: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
             ...editableColumnConfig,
         },
         {
-            id: 'VoltageLevelId',
+            colId: 'VoltageLevelId',
             field: 'voltageLevelId',
             ...defaultTextFilterConfig,
         },
         {
-            id: 'Country',
+            colId: 'Country',
             field: 'country',
             ...countryEnumFilterConfig,
             cellRenderer: CountryCellRenderer,
         },
         {
-            id: 'NominalV',
+            colId: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 0,
+            },
         },
         {
-            id: 'energySource',
+            colId: 'energySource',
             field: 'energySource',
             ...getDefaultEnumConfig(ENERGY_SOURCES),
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.energySource, ENERGY_SOURCES),
         },
         {
-            id: 'activePower',
+            colId: 'activePower',
             field: 'p',
-            numeric: true,
-            fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                canBeInvalidated: true,
+                withFluxConvention: true,
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
-            id: 'ReactivePower',
+            colId: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            fractionDigits: 1,
             ...defaultNumericFilterConfig,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                canBeInvalidated: true,
+                withFluxConvention: true,
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
-            id: 'ActivePowerControl',
+            colId: 'ActivePowerControl',
             field: 'activePowerControl.participate',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
@@ -143,11 +155,9 @@ export const GENERATOR_TAB_DEF = {
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
-            id: 'ActivePowerRegulationDroop',
+            colId: 'ActivePowerRegulationDroop',
             field: 'activePowerControl.droop',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
             valueGetter: (params) => params.data?.activePowerControl?.droop,
@@ -158,73 +168,90 @@ export const GENERATOR_TAB_DEF = {
                 };
                 return true;
             },
-            crossValidation: {
-                requiredOn: {
-                    dependencyColumn: 'activePowerControl.participate',
-                    columnValue: true,
+            getQuickFilterText: excludeFromGlobalFilter,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'activePowerControl.participate',
+                        columnValue: true,
+                    },
                 },
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
-            id: 'minP',
+            colId: 'minP',
             field: 'minP',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.minP),
             getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                maxExpression: 'maxP',
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    maxExpression: 'maxP',
+                },
             },
         },
         {
-            id: 'maxP',
+            colId: 'maxP',
             field: 'maxP',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.maxP),
             getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                minExpression: 'minP',
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    minExpression: 'minP',
+                },
             },
         },
         {
-            id: 'activePowerSetpoint',
+            colId: 'activePowerSetpoint',
             field: 'targetP',
-            numeric: true,
             ...defaultNumericFilterConfig,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetP),
-            fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                minExpression: 'minP',
-                maxExpression: 'maxP',
-                allowZero: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    minExpression: 'minP',
+                    maxExpression: 'maxP',
+                    allowZero: true,
+                },
             },
         },
         {
-            id: 'reactivePowerSetpoint',
+            colId: 'reactivePowerSetpoint',
             field: 'targetQ',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetQ),
-            crossValidation: {
-                requiredOn: {
-                    dependencyColumn: 'voltageRegulatorOn',
-                    columnValue: false,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'voltageRegulatorOn',
+                        columnValue: false,
+                    },
                 },
             },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
-            id: 'voltageRegulationOn',
+            colId: 'voltageRegulationOn',
             field: 'voltageRegulatorOn',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
@@ -233,29 +260,30 @@ export const GENERATOR_TAB_DEF = {
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
-            id: 'voltageSetpoint',
+            colId: 'voltageSetpoint',
             field: 'targetV',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetV),
-            crossValidation: {
-                requiredOn: {
-                    dependencyColumn: 'voltageRegulatorOn',
-                    columnValue: true,
+            getQuickFilterText: excludeFromGlobalFilter,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'voltageRegulatorOn',
+                        columnValue: true,
+                    },
                 },
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
-            id: 'ReactivePercentageVoltageRegulation',
+            colId: 'ReactivePercentageVoltageRegulation',
             field: 'coordinatedReactiveControl.qPercent',
             ...defaultNumericFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
-            numeric: true,
-            fractionDigits: 1,
             ...numericalCellEditorConfig((params) => {
                 const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
                 return isNaN(qPercent) ? 0 : qPercent;
@@ -271,16 +299,19 @@ export const GENERATOR_TAB_DEF = {
                 };
                 return true;
             },
-            crossValidation: {
-                optional: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    optional: true,
+                },
             },
         },
         {
-            id: 'directTransX',
+            colId: 'directTransX',
             field: 'generatorShortCircuit.directTransX',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data?.generatorShortCircuit?.directTransX || 0),
@@ -292,16 +323,19 @@ export const GENERATOR_TAB_DEF = {
                 };
                 return true;
             },
-            crossValidation: {
-                optional: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    optional: true,
+                },
             },
         },
         {
-            id: 'stepUpTransformerX',
+            colId: 'stepUpTransformerX',
             field: 'generatorShortCircuit.stepUpTransformerX',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data?.generatorShortCircuit?.stepUpTransformerX || 0),
@@ -313,16 +347,19 @@ export const GENERATOR_TAB_DEF = {
                 };
                 return true;
             },
-            crossValidation: {
-                optional: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    optional: true,
+                },
             },
         },
         {
-            id: 'plannedActivePowerSetPoint',
+            colId: 'plannedActivePowerSetPoint',
             field: 'generatorStartup.plannedActivePowerSetPoint',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data?.generatorStartup?.plannedActivePowerSetPoint),
@@ -334,18 +371,21 @@ export const GENERATOR_TAB_DEF = {
                 };
                 return true;
             },
-            crossValidation: {
-                optional: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    optional: true,
+                },
             },
         },
         {
-            id: 'marginalCost',
+            colId: 'marginalCost',
             field: 'generatorStartup.marginalCost',
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data?.generatorStartup?.marginalCost),
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             valueGetter: (params) => params.data?.generatorStartup?.marginalCost,
             valueSetter: (params) => {
@@ -355,23 +395,31 @@ export const GENERATOR_TAB_DEF = {
                 };
                 return true;
             },
-            crossValidation: {
-                optional: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    optional: true,
+                },
             },
         },
         {
-            id: 'plannedOutageRate',
+            colId: 'plannedOutageRate',
             field: 'generatorStartup.plannedOutageRate',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 2,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data?.generatorStartup?.plannedOutageRate || 0),
-            crossValidation: {
-                optional: true,
-                maxExpression: 1,
-                minExpression: 0,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 2,
+                crossValidation: {
+                    optional: true,
+                    maxExpression: 1,
+                    minExpression: 0,
+                },
             },
             valueGetter: (params) => params.data?.generatorStartup?.plannedOutageRate,
             valueSetter: (params) => {
@@ -383,18 +431,21 @@ export const GENERATOR_TAB_DEF = {
             },
         },
         {
-            id: 'forcedOutageRate',
+            colId: 'forcedOutageRate',
             field: 'generatorStartup.forcedOutageRate',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 2,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.generatorStartup?.forcedOutageRate),
-            crossValidation: {
-                optional: true,
-                maxExpression: 1,
-                minExpression: 0,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 2,
+                crossValidation: {
+                    optional: true,
+                    maxExpression: 1,
+                    minExpression: 0,
+                },
             },
             valueGetter: (params) => params.data?.generatorStartup?.forcedOutageRate,
             valueSetter: (params) => {
@@ -406,31 +457,37 @@ export const GENERATOR_TAB_DEF = {
             },
         },
         {
-            id: 'connected',
+            colId: 'connected',
             field: 'terminalConnected',
-            boolean: true,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
+            context: {
+                ...defaultBooleanFilterConfig.context,
+                boolean: true,
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
-            id: 'RegulationTypeText',
+            colId: 'RegulationTypeText',
             field: 'RegulationTypeText',
             ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.RegulationTypeText, Object.values(REGULATION_TYPES)),
         },
         {
-            id: 'RegulatingTerminalGenerator',
+            colId: 'RegulatingTerminalGenerator',
             field: 'RegulatingTerminalGenerator',
             ...defaultTextFilterConfig,
             valueGetter: RegulatingTerminalCellGetter,
             cellStyle: (params) => (isEditableRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
             editable: isEditableRegulatingTerminalCell,
-            crossValidation: {
-                requiredOn: {
-                    dependencyColumn: 'RegulationTypeText',
-                    columnValue: REGULATION_TYPES.DISTANT.id,
+            context: {
+                ...defaultTextFilterConfig.context,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'RegulationTypeText',
+                        columnValue: REGULATION_TYPES.DISTANT.id,
+                    },
                 },
             },
             cellEditor: GeneratorRegulatingTerminalEditor,
