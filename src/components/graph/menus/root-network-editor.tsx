@@ -6,11 +6,8 @@
  */
 
 import PropTypes from 'prop-types';
-import { EditableTitle } from './editable-title';
 import { Box, Theme } from '@mui/material';
-import { AppState } from '../../../redux/reducer';
 import RootNetworkNodeEditor from './root-network-node-editor';
-import { useSelector } from 'react-redux';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 

@@ -142,7 +142,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
     const renderNonEvacuatedEnergyResult = useMemo(() => {
-        console.log('ùùùùùù renderNonEvacuatedEnergyResult ', currentRootNetworkUuid);
         return (
             <Paper sx={styles.analysisResult}>
                 <NonEvacuatedEnergyResultTab

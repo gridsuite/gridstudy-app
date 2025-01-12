@@ -51,7 +51,6 @@ export const styles = {
     },
     rootNetworksTitle: (theme: Theme) => ({
         display: 'flex',
-        marginLeft: 2,
         padding: theme.spacing(1),
         overflow: 'hidden',
         borderTop: `1px solid ${theme.palette.divider}`,
@@ -118,7 +117,7 @@ export function isPartial(s1: number, s2: number) {
 const RootNetworkNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const { snackInfo, snackError, snackWarning } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
     const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
     const [createInProgress, setCreateInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
@@ -181,16 +180,19 @@ const RootNetworkNodeEditor = () => {
 
     const doDeleteRootNetwork = useCallback(() => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
-        const itemsToDelete = selectedRootNetworksUuid.filter((uuid) => uuid !== currentRootNetwork);
-
-        // If there are no items to delete, show warning
-        if (itemsToDelete.length === 0) {
-            snackWarning({ headerId: 'warnDeleteCurrentRootNetwork' });
-            return;
-        }
 
         if (studyUuid && currentRootNetwork) {
-            deleteRootNetworks(studyUuid, itemsToDelete)
+            if (selectedRootNetworksUuid.length === 1) {
+                // Find the first root network in the list that is not being deleted
+                const newRootNetwork = rootNetworks.find(
+                    (network) => network.rootNetworkUuid !== selectedRootNetworksUuid[0]
+                );
+                if (newRootNetwork) {
+                    dispatch(setCurrentRootNetwork(newRootNetwork.rootNetworkUuid));
+                }
+            }
+
+            deleteRootNetworks(studyUuid, selectedRootNetworksUuid)
                 .then(() => {
                     setDeleteInProgress(true);
                 })
@@ -202,14 +204,9 @@ const RootNetworkNodeEditor = () => {
                 })
                 .finally(() => {
                     setDeleteInProgress(false);
-                    if (selectedRootNetworksUuid.includes(currentRootNetwork)) {
-                        snackWarning({
-                            headerId: 'warnDeleteCurrentRootNetwork',
-                        });
-                    }
                 });
         }
-    }, [selectedItems, snackError, snackWarning, studyUuid, currentRootNetwork]);
+    }, [selectedItems, dispatch, rootNetworks, snackError, studyUuid, currentRootNetwork]);
 
     const toggleSelectAllRootNetworks = useCallback(() => {
         setSelectedItems((oldVal) => (oldVal.length === 0 ? rootNetworks : []));
