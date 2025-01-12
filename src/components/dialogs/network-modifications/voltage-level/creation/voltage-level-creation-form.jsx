@@ -19,7 +19,7 @@ import {
     SUBSTATION_ID,
     SUBSTATION_NAME,
 } from 'components/utils/field-constants';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { filledTextField, KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
 import { AutocompleteInput, FloatInput, IntegerInput, TextInput } from '@gridsuite/commons-ui';
 import { getObjectId } from 'components/utils/utils';
@@ -33,8 +33,6 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import IconButton from '@mui/material/IconButton';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selection-input.jsx';
 import DeleteIcon from '@mui/icons-material/Delete.js';
@@ -72,12 +70,34 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCrea
             //setting null programatically when freesolo is enable wont empty the field
             name={SUBSTATION_ID}
             label="SUBSTATION"
-            options={substations}
+            options={[...substations, { id: 'CreateSubstation' }]}
             getOptionLabel={getObjectId}
             inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) => value}
             size={'small'}
             formProps={{ margin: 'normal' }}
+            renderOption={(props, option) => {
+                if (option.id === 'CreateSubstation') {
+                    return (
+                        <>
+                            <LineSeparator />
+                            <li {...props} style={{ bottom: 0 }} onClick={handleAddButton}>
+                                {intl.formatMessage({
+                                    id: 'CreateSubstation',
+                                })}
+                            </li>
+                        </>
+                    );
+                } else {
+                    return <li {...props}>{getObjectId(option)}</li>;
+                }
+            }}
+            ListboxProps={{
+                style: {
+                    maxHeight: '200px',
+                    overflow: 'auto',
+                },
+            }}
         />
     );
 
@@ -146,19 +166,8 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCrea
 
             {isWithSubstationCreation ? (
                 <Grid>
-                    <Grid item xs={12} paddingTop={2}>
-                        <LineSeparator />
-                    </Grid>
-                    <Grid item xs={12} container spacing={2}>
-                        <Grid item xs={11}>
-                            <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />
-                        </Grid>
-                        <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'right' }}>
-                            <IconButton onClick={handleCloseButton}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </Grid>
-                    </Grid>
+                    <Grid item xs={12} container spacing={2}></Grid>
+                    <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />
                     <Grid container spacing={2}>
                         <Grid item xs={4}>
                             {substationIdField}
@@ -166,8 +175,13 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCrea
                         <Grid item xs={4}>
                             {substationNameField}
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={3}>
                             {substationCountryField}
+                        </Grid>
+                        <Grid item xs={1}>
+                            <IconButton onClick={handleCloseButton}>
+                                <DeleteIcon />
+                            </IconButton>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -175,16 +189,6 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCrea
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
                         {substationField}
-                    </Grid>
-                    <Grid item xs={12} sm={6} container alignItems="center" spacing={2}>
-                        <Grid item>
-                            <IconButton onClick={handleAddButton}>
-                                <AddCircleIcon />
-                            </IconButton>
-                        </Grid>
-                        <Grid item>
-                            <Typography>{intl.formatMessage({ id: 'CreateSubstation' })}</Typography>
-                        </Grid>
                     </Grid>
                 </Grid>
             )}
