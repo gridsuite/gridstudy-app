@@ -95,7 +95,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
 
     result?.forEach(({ contingencies = [], subjectId, locationId }) => {
         if (!rows.find((row) => row.subjectId === subjectId)) {
-            rows.push({ subjectId: subjectId, locationId: locationId });
+            rows.push({ locationId: locationId });
 
             contingencies.forEach(({ contingency = {}, limitViolation = {} }) => {
                 rows.push({
@@ -621,7 +621,7 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
     const isFromContingency = !params.nodes.find((node) => Object.keys(node.data).length === 1);
 
     const agGridRows = params.nodes;
-    const idField = isFromContingency ? 'contingencyId' : 'subjectId';
+    const idField = isFromContingency ? 'contingencyId' : 'locationId';
     const linkedElementId = 'linkedElementId';
     const isContingency = !isFromContingency;
 

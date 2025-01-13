@@ -64,7 +64,7 @@ export interface Constraint {
 }
 
 export interface ContingenciesFromConstraintItem {
-    subjectId: string;
+    subjectId?: string;
     locationId: string;
     contingencies?: Contingency[];
 }
