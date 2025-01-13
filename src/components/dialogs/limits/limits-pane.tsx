@@ -7,25 +7,19 @@
 
 import { Box, Grid } from '@mui/material';
 import {
-    CURRENT_LIMITS,
-    ID,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS_1,
     OPERATIONAL_LIMITS_GROUPS_2,
-    PERMANENT_LIMIT,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
-    TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
 import { CurrentTreeNode } from '../../../redux/reducer';
-import React, { useCallback, useState } from 'react';
-import { useFieldArray, useWatch } from 'react-hook-form';
+import React, { useState } from 'react';
+import { useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from './limits-type';
-import IconButton from '@mui/material/IconButton';
 import { TemporaryLimit } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 
@@ -51,32 +45,9 @@ export function LimitsPane({
     const limitsGroups2: OperationalLimitsGroup[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
-    const { append: appendToLimitsGroups1 } = useFieldArray({
-        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
-    });
-    const { append: appendToLimitsGroups2 } = useFieldArray({
-        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
-    });
-
-    const addNewLimitSet = useCallback(() => {
-        const newIndex: number = limitsGroups1.length;
-        let newName: string = `LIMIT_SET`;
-        if (newIndex > 0) {
-            newName += `(${limitsGroups1.length > 0 ? newIndex : ''})`;
-        }
-        const newLimitsGroup: OperationalLimitsGroup = {
-            [ID]: newName,
-            [CURRENT_LIMITS]: {
-                [TEMPORARY_LIMITS]: [],
-                [PERMANENT_LIMIT]: undefined,
-            },
-        };
-        appendToLimitsGroups1(newLimitsGroup);
-        appendToLimitsGroups2(newLimitsGroup);
-    }, [appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1.length]);
 
     const renderTitle = (id: string) => (
-        <Grid item xs={5}>
+        <Grid item xs={4}>
             <Box component="h3">
                 <FormattedMessage id={id} />
             </Box>
@@ -107,39 +78,21 @@ export function LimitsPane({
 
     return (
         <Grid container spacing={2}>
-            <Grid container item xs={12} columns={11} spacing={2}>
-                <Grid item xs={1} />
+            <Grid container item xs={12} columns={10} spacing={2}>
+                <Grid item xs={2} />
                 {renderTitle('Side1')}
                 {renderTitle('Side2')}
             </Grid>
             {/* active limit set */}
-            <Grid container item xs={12} columns={11} spacing={2}>
-                <Grid item xs={1}>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            width: '100%',
-                            flexGrow: 1,
-                        }}
-                    >
-                        <IconButton
-                            onClick={() => addNewLimitSet()}
-                            sx={{
-                                align: 'right',
-                                marginLeft: 'auto',
-                            }}
-                        >
-                            <AddCircleIcon />
-                        </IconButton>
-                    </Box>
-                </Grid>
-                <Grid item xs={5}>
+            <Grid container item xs={12} columns={10} spacing={2}>
+                <Grid item xs={1.8} />
+                <Grid item xs={4}>
                     <SelectedOperationalLimitGroup
                         selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
                         optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`}
                     />
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={4}>
                     <SelectedOperationalLimitGroup
                         selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
                         optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_2}`}
@@ -147,8 +100,8 @@ export function LimitsPane({
                 </Grid>
             </Grid>
             {/* limits */}
-            <Grid container item xs={12} columns={11}>
-                <Grid item xs={1}>
+            <Grid container item xs={12} columns={10}>
+                <Grid item xs={1.8}>
                     <OperationalLimitsGroupsTabs
                         limitsGroups1={limitsGroups1}
                         limitsGroups2={limitsGroups2}
@@ -156,7 +109,7 @@ export function LimitsPane({
                         setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
                     />
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={4}>
                     {renderSidePane(
                         limitsGroups1,
                         indexSelectedLimitSet1,
@@ -165,7 +118,7 @@ export function LimitsPane({
                         equipmentToModify?.currentLimits1?.permanentLimit
                     )}
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={4}>
                     {renderSidePane(
                         limitsGroups2,
                         indexSelectedLimitSet2,

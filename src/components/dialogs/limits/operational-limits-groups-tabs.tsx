@@ -22,6 +22,7 @@ import {
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const styles = {
     limitsBackground: {
@@ -189,6 +190,24 @@ export function OperationalLimitsGroupsTabs({
         [finishEditingLimitsGroup]
     );
 
+    const addNewLimitSet = useCallback(() => {
+        const newIndex: number = limitsGroups1.length;
+        let newName: string = `LIMIT_SET`;
+        if (newIndex > 0) {
+            newName += `(${limitsGroups1.length > 0 ? newIndex : ''})`;
+        }
+        const newLimitsGroup: OperationalLimitsGroup = {
+            [ID]: newName,
+            [CURRENT_LIMITS]: {
+                [TEMPORARY_LIMITS]: [],
+                [PERMANENT_LIMIT]: undefined,
+            },
+        };
+        appendToLimitsGroups1(newLimitsGroup);
+        appendToLimitsGroups2(newLimitsGroup);
+        startEditingLimitsGroup(newIndex, newName);
+    }, [appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1, startEditingLimitsGroup]);
+
     return (
         <Tabs
             orientation="vertical"
@@ -237,6 +256,27 @@ export function OperationalLimitsGroupsTabs({
                     sx={styles.limitsBackground}
                 />
             ))}
+            <Tab
+                label={
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            width: '100%',
+                            flexGrow: 1,
+                        }}
+                    >
+                        <IconButton
+                            onClick={() => addNewLimitSet()}
+                            sx={{
+                                align: 'right',
+                                marginLeft: 'auto',
+                            }}
+                        >
+                            <AddCircleIcon />
+                        </IconButton>
+                    </Box>
+                }
+            />
         </Tabs>
     );
 }
