@@ -13,6 +13,7 @@ import { mergeSx } from '../../utils/functions';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { IntlShape } from 'react-intl';
 import { ICellRendererParams } from 'ag-grid-community';
+import { CustomCellRendererProps } from 'ag-grid-react';
 
 const styles = {
     tableCell: (theme: Theme) => ({
@@ -64,6 +65,13 @@ export const BooleanNullableCellRenderer = (props: any) => {
     );
 };
 
+const formatNumericCell = (value: number, fractionDigits?: number) => {
+    if (value === null || isNaN(value)) {
+        return { value: null };
+    }
+    return { value: value.toFixed(fractionDigits ?? 2), tooltip: value };
+};
+
 export const formatCell = (props: any) => {
     let value = props?.valueFormatted || props.value;
     let tooltipValue = undefined;
@@ -102,8 +110,12 @@ export const convertDuration = (duration: number) => {
     return `${minutes}' ${seconds}"`;
 };
 
-export const DefaultCellRenderer = (props: any) => {
-    const cellValue = formatCell(props);
+export interface NumericCellRendererProps extends CustomCellRendererProps {
+    fractionDigits?: number;
+}
+
+export const NumericCellRenderer = (props: NumericCellRendererProps) => {
+    const cellValue = formatNumericCell(props.value, props.fractionDigits);
     return (
         <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip
@@ -112,6 +124,16 @@ export const DefaultCellRenderer = (props: any) => {
                 title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
             >
                 <Box sx={styles.overflow} children={cellValue.value} />
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
+    return (
+        <Box sx={mergeSx(styles.tableCell)}>
+            <Tooltip disableFocusListener disableTouchListener title={props.value}>
+                <Box sx={styles.overflow} children={props.value} />
             </Tooltip>
         </Box>
     );

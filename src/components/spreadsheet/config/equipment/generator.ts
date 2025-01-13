@@ -5,19 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import type { ValueGetterFunc } from 'ag-grid-community';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
 const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
@@ -35,7 +28,7 @@ const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     return null;
 };
 
-export const GENERATOR_TAB_DEF = {
+export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 5,
     name: 'Generators',
     ...typeAndFetchers(EQUIPMENT_TYPES.GENERATOR),
@@ -43,182 +36,152 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            initialSort: 'asc',
+            ...textColumnDefinition('id', 'ID', 'Generators'),
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('name', 'Name', 'Generators'),
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('voltageLevelId', 'VoltageLevelId', 'Generators'),
         },
         {
             id: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('country', 'Country', 'Generators'),
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberColumnDefinition('nominalVoltage', 'NominalV', 'Generators', 0),
         },
         {
             id: 'energySource',
             field: 'energySource',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('energySource', 'energySource', 'Generators'),
         },
         {
             id: 'activePower',
             field: 'p',
-            numeric: true,
-            fractionDigits: 1,
-            ...defaultNumericFilterConfig,
+            ...numberColumnDefinition('p', 'activePower', 'Generators', 1),
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            fractionDigits: 1,
-            ...defaultNumericFilterConfig,
+            ...numberColumnDefinition('nominalVoltage', 'NominalV', 'Generators', 1),
         },
         {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanColumnDefinition('activePowerControl.participate', 'ActivePowerControl', 'Generators'),
         },
         {
             id: 'ActivePowerRegulationDroop',
             field: 'activePowerControl.droop',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            valueGetter: (params) => params.data?.activePowerControl?.droop,
+            ...numberColumnDefinition('activePowerControl.droop', 'ActivePowerRegulationDroop', 'Generators', 1),
         },
         {
             id: 'minP',
             field: 'minP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberColumnDefinition('minP', 'minP', 'Generators', 1),
         },
         {
             id: 'maxP',
             field: 'maxP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberColumnDefinition('maxP', 'maxP', 'Generators', 1),
         },
         {
             id: 'activePowerSetpoint',
             field: 'targetP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberColumnDefinition('targetP', 'activePowerSetpoint', 'Generators', 1),
         },
         {
             id: 'reactivePowerSetpoint',
             field: 'targetQ',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberColumnDefinition('targetQ', 'reactivePowerSetpoint', 'Generators', 1),
         },
         {
             id: 'voltageRegulationOn',
             field: 'voltageRegulatorOn',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanColumnDefinition('voltageRegulatorOn', 'voltageRegulationOn', 'Generators'),
         },
         {
             id: 'voltageSetpoint',
             field: 'targetV',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberColumnDefinition('targetV', 'voltageSetpoint', 'Generators', 1),
         },
         {
             id: 'ReactivePercentageVoltageRegulation',
-            field: 'coordinatedReactiveControl.qPercent',
-            ...defaultNumericFilterConfig,
-            numeric: true,
-            fractionDigits: 1,
             valueGetter: (params) => {
                 const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
                 return isNaN(qPercent) ? 0 : qPercent;
             },
+            ...numberColumnDefinition(
+                'ReactivePercentageVoltageRegulation',
+                'ReactivePercentageVoltageRegulation',
+                'Generators',
+                1
+            ),
         },
         {
             id: 'directTransX',
             field: 'generatorShortCircuit.directTransX',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            valueGetter: (params) => params.data?.generatorShortCircuit?.directTransX,
+            ...numberColumnDefinition('generatorShortCircuit.directTransX', 'directTransX', 'Generators', 1),
         },
         {
             id: 'stepUpTransformerX',
             field: 'generatorShortCircuit.stepUpTransformerX',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            valueGetter: (params) => params.data?.generatorShortCircuit?.stepUpTransformerX,
+            ...numberColumnDefinition(
+                'generatorShortCircuit.stepUpTransformerX',
+                'stepUpTransformerX',
+                'Generators',
+                1
+            ),
         },
         {
             id: 'plannedActivePowerSetPoint',
             field: 'generatorStartup.plannedActivePowerSetPoint',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            valueGetter: (params) => params.data?.generatorStartup?.plannedActivePowerSetPoint,
+            ...numberColumnDefinition(
+                'generatorStartup.plannedActivePowerSetPoint',
+                'plannedActivePowerSetPoint',
+                'Generators',
+                1
+            ),
         },
         {
             id: 'marginalCost',
             field: 'generatorStartup.marginalCost',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            valueGetter: (params) => params.data?.generatorStartup?.marginalCost,
+            ...numberColumnDefinition('generatorStartup.marginalCost', 'marginalCost', 'Generators', 1),
         },
         {
             id: 'plannedOutageRate',
             field: 'generatorStartup.plannedOutageRate',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 2,
-            valueGetter: (params) => params.data?.generatorStartup?.plannedOutageRate,
+            ...numberColumnDefinition('generatorStartup.plannedOutageRate', 'plannedOutageRate', 'Generators', 2),
         },
         {
             id: 'forcedOutageRate',
             field: 'generatorStartup.forcedOutageRate',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 2,
-            valueGetter: (params) => params.data?.generatorStartup?.forcedOutageRate,
+            ...numberColumnDefinition('generatorStartup.forcedOutageRate', 'forcedOutageRate', 'Generators', 2),
         },
         {
             id: 'connected',
             field: 'terminalConnected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanColumnDefinition('terminalConnected', 'connected', 'Generators'),
         },
         {
             id: 'RegulationTypeText',
             field: 'RegulationTypeText',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('RegulationTypeText', 'RegulationTypeText', 'Generators'),
         },
         {
             id: 'RegulatingTerminalGenerator',
-            field: 'RegulatingTerminalGenerator',
-            ...defaultTextFilterConfig,
             valueGetter: RegulatingTerminalCellGetter,
+            ...textColumnDefinition('RegulatingTerminalGenerator', 'RegulatingTerminalGenerator', 'Generators'),
         },
         genericColumnOfPropertiesReadonly,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

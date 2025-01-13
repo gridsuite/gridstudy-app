@@ -5,20 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
+import { typeAndFetchers } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import {
+    booleanAgGridColumnDefinition,
+    textAgGridColumnDefinition,
+    numberAgGridColumnDefinition,
+} from '../common-column-definitions';
 
-export const DANGLING_LINE_TAB_DEF = {
+export const DANGLING_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 13,
     name: 'DanglingLines',
     ...typeAndFetchers(EQUIPMENT_TYPES.DANGLING_LINE),
@@ -26,70 +24,59 @@ export const DANGLING_LINE_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            initialSort: 'asc',
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'NominalV',
             field: NOMINAL_V,
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberAgGridColumnDefinition(0),
         },
         {
             id: 'PairingKey',
             field: 'pairingKey',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'activePower',
             field: 'p',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'p0',
             field: 'p0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'q0',
             field: 'q0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'connected',
             field: 'terminalConnected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanAgGridColumnDefinition,
         },
         genericColumnOfPropertiesReadonly,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

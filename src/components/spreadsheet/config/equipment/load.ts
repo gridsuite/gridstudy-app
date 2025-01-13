@@ -5,20 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import {
+    booleanAgGridColumnDefinition,
+    textAgGridColumnDefinition,
+    numberAgGridColumnDefinition,
+} from '../common-column-definitions';
 
-export const LOAD_TAB_DEF = {
+export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
     index: 6,
     name: 'Loads',
     ...typeAndFetchers(EQUIPMENT_TYPES.LOAD),
@@ -26,72 +23,59 @@ export const LOAD_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            initialSort: 'asc',
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
-            columnWidth: MEDIUM_COLUMN_WIDTH,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'loadType',
             field: 'type',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberAgGridColumnDefinition(0),
         },
         {
             id: 'activePower',
             field: 'p',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'p0',
             field: 'p0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'q0',
             field: 'q0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'connected',
             field: 'terminalConnected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanAgGridColumnDefinition,
         },
         genericColumnOfPropertiesReadonly,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

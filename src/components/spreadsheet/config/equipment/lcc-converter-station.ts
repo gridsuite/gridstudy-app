@@ -5,19 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import {
+    booleanAgGridColumnDefinition,
+    textAgGridColumnDefinition,
+    numberAgGridColumnDefinition,
+} from '../common-column-definitions';
 
-export const LCC_CONVERTER_STATION_TAB_DEF = {
+export const LCC_CONVERTER_STATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 11,
     name: 'LccConverterStations',
     ...typeAndFetchers(EQUIPMENT_TYPES.LCC_CONVERTER_STATION),
@@ -25,70 +23,59 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            initialSort: 'asc',
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'NominalV',
             field: 'nominalV',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberAgGridColumnDefinition(0),
         },
         {
             id: 'HvdcLineId',
             field: 'hvdcLineId',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'activePower',
             field: 'p',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'PowerFactor',
             field: 'powerFactor',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'LossFactor',
             field: 'lossFactor',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'connected',
             field: 'terminalConnected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanAgGridColumnDefinition,
         },
         genericColumnOfPropertiesReadonly,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

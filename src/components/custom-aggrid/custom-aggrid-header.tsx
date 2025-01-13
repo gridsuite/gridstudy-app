@@ -7,11 +7,12 @@
 
 import React, { ComponentType, useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
-import { CustomAggridFilterParams, CustomHeaderMenuParams, CustomHeaderSortParams } from './custom-aggrid-header.type';
+import { CustomAggridFilterParams, CustomHeaderSortParams } from './custom-aggrid-header.type';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort';
 import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
-import { CustomMenu } from './custom-menu';
+import { CustomMenu, CustomMenuProps } from './custom-aggrid-menu';
+import { CustomHeaderProps } from 'ag-grid-react';
 
 const styles = {
     displayName: {
@@ -20,25 +21,25 @@ const styles = {
     },
 };
 
-interface CustomHeaderComponentProps<F extends CustomAggridFilterParams> {
+interface CustomHeaderComponentProps<F extends CustomAggridFilterParams, T> extends CustomHeaderProps {
     field: string;
     displayName: string;
     sortParams: CustomHeaderSortParams;
-    customMenuParams: CustomHeaderMenuParams;
+    menu?: CustomMenuProps<T>;
     forceDisplayFilterIcon: boolean;
     filterComponent: ComponentType<F>;
     filterComponentParams: F;
 }
 
-const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
+const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
     field,
     displayName,
     sortParams,
-    customMenuParams,
+    menu,
     forceDisplayFilterIcon,
     filterComponent,
     filterComponentParams,
-}: CustomHeaderComponentProps<F>) => {
+}: CustomHeaderComponentProps<F, T>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
     const { handleSortChange } = useCustomAggridSort(field, sortParams);
@@ -97,7 +98,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
                             handleCloseFilter={handleCloseFilter}
                         />
                     )}
-                    {customMenuParams && <CustomMenu field={field} customMenuParams={customMenuParams} />}
+                    {menu && <CustomMenu {...menu} />}
                 </Grid>
             </Grid>
         </Grid>

@@ -11,32 +11,27 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { Alert, Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/constants';
+import { REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/constants';
 import { EquipmentTable } from './equipment-table';
 import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
-import { DefaultCellRenderer } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentTabs } from './equipment-tabs';
 import { EquipmentProps, useSpreadsheetEquipments } from './use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import { formatFetchedEquipments } from './utils/equipment-table-utils';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
-import { setSpreadsheetFilter } from 'redux/actions';
-import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ColumnMovedEvent, ColumnState } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
-import { CustomAggridFilterParams, CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
+import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
-import { CustomAggridAutocompleteFilterParams } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -160,13 +155,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
     }, [tabIndex, tablesDefinitionIndexes]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentTabName());
-
-    const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
-        filterType: SPREADSHEET_STORE_FIELD,
-        filterTab: currentTabName(),
-        filterStoreAction: setSpreadsheetFilter,
-    });
+    const { sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentTabName());
 
     const equipmentDefinition = useMemo(
         () => ({
@@ -189,41 +178,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         formatFetchedEquipmentsHandler
     );
 
-    const enrichColumn = useCallback(
-        (column: CustomColDef<any, any, CustomAggridAutocompleteFilterParams & CustomAggridFilterParams>) => {
-            const columnExtended = { ...column };
-            columnExtended.headerName = intl.formatMessage({ id: columnExtended.id });
-
-            if (columnExtended.cellRenderer == null) {
-                columnExtended.cellRenderer = DefaultCellRenderer;
-            }
-
-            columnExtended.width = columnExtended.columnWidth || MIN_COLUMN_WIDTH;
-
-            //if it is not the first render the column might already have a pinned value so we need to handle the case where it needs to be reseted to undefined
-            //we reuse and mutate the column objects so we need to clear to undefined
-            columnExtended.pinned = lockedColumnsNames.has(columnExtended.id) ? 'left' : undefined;
-
-            columnExtended.filterComponentParams = {
-                filterParams: {
-                    updateFilter,
-                    filterSelector,
-                    ...columnExtended?.filterComponentParams?.filterParams,
-                },
-            };
-
-            return makeAgGridCustomHeaderColumn({
-                headerName: columnExtended.headerName,
-                field: columnExtended.field,
-                sortProps: {
-                    onSortChanged,
-                    sortConfig,
-                },
-                ...columnExtended,
-            });
-        },
-        [intl, lockedColumnsNames, updateFilter, filterSelector, onSortChanged, sortConfig]
-    );
     useEffect(() => {
         if (errorMessage) {
             snackError({
@@ -399,7 +353,12 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             .filter((c) => {
                 return selectedColumnsNames.has(c.id);
             })
-            .map((column) => enrichColumn(column));
+            .map((column) => {
+                return {
+                    ...column,
+                    headerName: intl.formatMessage({ id: column.id }),
+                };
+            });
 
         function sortByIndex(a: any, b: any) {
             return reorderedTableDefinitionIndexes.indexOf(a.id) - reorderedTableDefinitionIndexes.indexOf(b.id);
@@ -408,7 +367,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         selectedTableColumns.sort(sortByIndex);
 
         return selectedTableColumns;
-    }, [enrichColumn, reorderedTableDefinitionIndexes, selectedColumnsNames, currentColumns]);
+    }, [currentColumns, selectedColumnsNames, intl, reorderedTableDefinitionIndexes]);
 
     useEffect(() => {
         setColumnData(generateTableColumns());

@@ -5,13 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
-import {
-    type CustomColDef,
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-} from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     fetchBatteries,
@@ -33,11 +26,6 @@ import {
     fetchVscConverterStations,
 } from '../../../../services/study/network';
 import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
-import {
-    BooleanFilterValue,
-    CustomAggridBooleanFilter,
-} from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
-import { CustomAggridComparatorFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 
 export const getFetchers = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher[] => {
     switch (equipmentType) {
@@ -83,60 +71,3 @@ export const typeAndFetchers = <TEquipType extends SpreadsheetEquipmentType>(equ
         type: equipmentType,
         fetchers: getFetchers(equipmentType),
     } as const);
-
-export const defaultTextFilterConfig = {
-    filter: 'agTextColumnFilter',
-    filterComponent: CustomAggridComparatorFilter,
-    filterComponentParams: {
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-        },
-    },
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
-
-/**
- * Default configuration for a boolean filter
- */
-export const defaultBooleanFilterConfig = {
-    filter: 'agTextColumnFilter',
-    agGridFilterParams: {
-        filterOptions: [
-            {
-                displayKey: 'booleanMatches',
-                displayName: 'booleanMatches',
-                predicate: (filterValues: string[], cellValue: boolean) => {
-                    const filterValue = filterValues.at(0);
-                    if (filterValue === undefined) {
-                        return false;
-                    }
-                    // We receive here the filter boolean value as a string (filterValue)
-                    // we check if the cellValue is not null neither undefined
-                    if (cellValue != null) {
-                        return filterValue === cellValue.toString();
-                    }
-
-                    // we return true if the filter chosen is undefinedValue
-                    return filterValue === BooleanFilterValue.UNDEFINED;
-                },
-            },
-        ],
-    },
-    filterComponent: CustomAggridBooleanFilter,
-    filterComponentParams: {
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.BOOLEAN,
-        },
-    },
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
-
-export const defaultNumericFilterConfig = {
-    filter: 'agNumberColumnFilter',
-    filterComponent: CustomAggridComparatorFilter,
-    filterComponentParams: {
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-        },
-    },
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
