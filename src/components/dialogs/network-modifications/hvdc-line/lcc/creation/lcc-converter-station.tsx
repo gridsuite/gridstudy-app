@@ -83,14 +83,14 @@ export const getLccConverterStationSchema = () =>
         [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
     });
 
-export const getEmptyShuntCompensatorOnSideFormData = () => ({
+const getEmptyShuntCompensatorOnSideFormData = () => ({
     [SHUNT_COMPENSATOR_ID]: null,
     [SHUNT_COMPENSATOR_NAME]: '',
     [MAX_Q_AT_NOMINAL_V]: null,
     [SHUNT_COMPENSATOR_SELECTED]: true,
 });
 
-export const getEmptyFiltersShuntCompensatorTableFormData = (count = 0) =>
+const getEmptyFiltersShuntCompensatorTableFormData = (count = 0) =>
     Array.from({ length: count }, () => getEmptyShuntCompensatorOnSideFormData());
 
 export function getLccConverterStationEmptyFormData() {
@@ -130,7 +130,7 @@ const getShuntCompensatorOnSideCreateData = (
     );
 };
 
-export const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos?: ShuntCompensatorInfos[]) => {
+const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos?: ShuntCompensatorInfos[]) => {
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
             [SHUNT_COMPENSATOR_ID]: shuntCp.id + '(1)',

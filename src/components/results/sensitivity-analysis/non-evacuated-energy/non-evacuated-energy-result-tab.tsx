@@ -39,7 +39,7 @@ const styles = {
     },
 };
 
-export const NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS = ['nonEvacuatedEnergyResult'];
+const NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS = ['nonEvacuatedEnergyResult'];
 
 export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTabProps> = ({ studyUuid, nodeUuid }) => {
     const [tabIndex, setTabIndex] = useState(0);
