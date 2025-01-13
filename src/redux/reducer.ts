@@ -589,8 +589,7 @@ export type AdditionalEquipmentsByNodesForCustomColumnsState = Record<
     string,
     Record<SpreadsheetEquipmentType, Identifiable[]>
 >;
-const initialAdditionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState =
-    [] as AdditionalEquipmentsByNodesForCustomColumnsState;
+const initialAdditionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState = {};
 const initialCustomColumnsNodesAliases: NodeAlias[] = [];
 
 export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;

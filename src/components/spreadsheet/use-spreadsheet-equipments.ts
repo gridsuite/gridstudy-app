@@ -170,7 +170,7 @@ export const useSpreadsheetEquipments = (
     ]);
 
     useEffect(() => {
-        if (equipments != null && Object.keys(customColumnsDefinitions).length > 0) {
+        if (studyUuid && equipments != null && Object.keys(customColumnsDefinitions).length > 0) {
             const aliases = customColumnsNodesAliases.map((nodeAlias) => nodeAlias.alias);
             const aliasesAlreadyFound: string[] = [];
             const currentTabCustomColumnsDef = customColumnsDefinitions[tablesNames[tabIndex]];
@@ -196,7 +196,7 @@ export const useSpreadsheetEquipments = (
                         )?.id;
                         if (nodeIdAssociatedToAlias) {
                             const fetcherPromises = getFetchers(spreadsheetEquipmentType).map((fetcher) =>
-                                fetcher(studyUuid, nodeIdAssociatedToAlias)
+                                fetcher(studyUuid, nodeIdAssociatedToAlias, [])
                             );
                             fetchers.push(fetcherPromises[0]);
                             fetcherPromises[0].then((res) => {

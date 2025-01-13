@@ -5,20 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { NODE_ALIAS, NODE_NAME, NODES_ALIASES } from './custom-columns-nodes-form-utils';
 import { useSelector } from 'react-redux';
 import DndTable from '../../utils/dnd-table/dnd-table';
 import { SELECTED } from '../../utils/field-constants';
 import { useFieldArray } from 'react-hook-form';
 import { useIntl } from 'react-intl';
+import { AppState, CurrentTreeNode } from '../../../redux/reducer';
+
+// TODO: to fix when either migrating DndTable to typescript or using something else than DndTable
+const DndTableTyped = DndTable as React.ComponentType<any>;
 
 const NodeAliasTable = () => {
-    const treeModel = useSelector((state) => state.networkModificationTreeModel);
+    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const nodeNames: string[] = useMemo(
         () =>
-            treeModel?.treeNodes.map((o) => {
-                return o.data.label;
+            treeModel?.treeNodes.map((currentTreeNode: CurrentTreeNode) => {
+                return currentTreeNode.data.label;
             }) ?? [],
         [treeModel]
     );
@@ -53,7 +57,7 @@ const NodeAliasTable = () => {
     }, [intl, nodeNames]);
 
     const newAliasRowData = useMemo(() => {
-        const newRowData = {};
+        const newRowData: any = {};
         newRowData[SELECTED] = false;
         NODES_ALIASES_COLUMNS_DEFINITIONS.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
@@ -65,7 +69,7 @@ const NodeAliasTable = () => {
 
     return (
         <>
-            <DndTable
+            <DndTableTyped
                 arrayFormName={`${NODES_ALIASES}`}
                 columnsDefinition={NODES_ALIASES_COLUMNS_DEFINITIONS}
                 useFieldArrayOutput={useNodesAliasesFieldArrayOutput}

@@ -515,7 +515,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         let equipmentsWithCustomColumnInfo = [...equipments];
 
         Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach((value) => {
-            const nodeAlias = value[0];
+            const nodeAlias: string = value[0];
             const equipmentsToAdd = value[1][equipmentType];
             if (equipmentsToAdd) {
                 equipmentsToAdd.forEach((equipmentToAdd) => {
@@ -524,7 +524,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     );
                     let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
                     if (matchingEquipment) {
-                        let equipmentWithAddedInfo = { ...matchingEquipment };
+                        let equipmentWithAddedInfo: any = { ...matchingEquipment };
                         equipmentWithAddedInfo[nodeAlias] = equipmentToAdd;
                         equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
                     }

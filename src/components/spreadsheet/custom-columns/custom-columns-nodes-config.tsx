@@ -7,8 +7,6 @@
 
 import { FormattedMessage } from 'react-intl';
 import { Button } from '@mui/material';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnNodesDialog from './custom-columns-nodes-dialog';
 import BuildIcon from '@mui/icons-material/Build';
@@ -16,7 +14,6 @@ import { spreadsheetStyles } from '../utils/style';
 
 export default function CustomColumnsNodesConfig() {
     const dialogOpen = useStateBoolean(false);
-    const customColumnsDefinitions = useSelector((state: AppState) => state.tables.allCustomColumnsDefinitions);
 
     return (
         <>
@@ -25,7 +22,7 @@ export default function CustomColumnsNodesConfig() {
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
             </Button>
 
-            <CustomColumnNodesDialog open={dialogOpen} customColumnsDefinitions={customColumnsDefinitions} />
+            <CustomColumnNodesDialog open={dialogOpen} />
         </>
     );
 }

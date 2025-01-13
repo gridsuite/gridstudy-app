@@ -14,8 +14,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
-import { ColumnWithFormula } from 'types/custom-columns.types';
-import { AppState } from 'redux/reducer';
+import { AppState, NodeAlias } from 'redux/reducer';
 import {
     customColumnNodesFormSchema,
     initialCustomColumnNodesForm,
@@ -26,7 +25,6 @@ import { updateCustomColumnsNodesAliases } from '../../../redux/actions';
 
 export type CustomColumnNodesDialogProps = {
     open: UseStateBooleanReturn;
-    customColumnsDefinitions?: ColumnWithFormula[];
 };
 
 const styles = {
@@ -53,9 +51,9 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
     });
     const { reset } = formMethods;
 
-    const onValidate = (data) => {
+    const onValidate = (data: any) => {
         onClose();
-        const nodesAliases = data.nodesAliases.map((nodeAlias) => {
+        const nodesAliases: NodeAlias[] = data.nodesAliases.map((nodeAlias: NodeAlias) => {
             return { name: nodeAlias.name, alias: nodeAlias.alias };
         });
         dispatch(updateCustomColumnsNodesAliases(nodesAliases));
