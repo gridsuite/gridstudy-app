@@ -64,7 +64,7 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
     );
 
     const toTreeNodes = useCallback(
-        (item: ReportTree, depth: number): ReportItem[] => {
+        (item: ReportTree, depth: number, expandedTreeReports: string[]): ReportItem[] => {
             const result: ReportItem[] = [];
             const collapsed = !expandedTreeReports.includes(item.id);
             if (item.id) {
@@ -79,16 +79,19 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
                 });
                 if (!collapsed) {
                     for (let subReports of item.subReports) {
-                        result.push(...toTreeNodes(subReports, depth + 1));
+                        result.push(...toTreeNodes(subReports, depth + 1, expandedTreeReports));
                     }
                 }
             }
             return result;
         },
-        [expandedTreeReports, selectedReportId]
+        [selectedReportId]
     );
 
-    const nodes = useMemo(() => toTreeNodes(reportTree, 0), [reportTree, toTreeNodes]);
+    const nodes = useMemo(
+        () => toTreeNodes(reportTree, 0, expandedTreeReports),
+        [reportTree, toTreeNodes, expandedTreeReports]
+    );
 
     useTreeViewScroll(highlightedReportId, nodes, listRef);
 
@@ -114,14 +117,16 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
 
             expandIfMatch(reportTree, searchTerm, newExpandedTreeReports);
 
-            const expandedNodes = toTreeNodes(reportTree, 0);
+            const updatedExpandedTreeReports = Array.from(newExpandedTreeReports);
+            setExpandedTreeReports(updatedExpandedTreeReports);
+
+            const expandedNodes = toTreeNodes(reportTree, 0, updatedExpandedTreeReports);
             expandedNodes.forEach((node, index) => {
                 if (node.label.toLowerCase().includes(searchTerm.toLowerCase())) {
                     matches.push(index);
                 }
             });
 
-            setExpandedTreeReports(Array.from(newExpandedTreeReports));
             setSearchResults(matches);
             setCurrentResultIndex(matches.length > 0 ? 0 : -1);
         },
@@ -169,7 +174,7 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
                     onNavigate={handleNavigate}
                     resultCount={searchResults.length}
                     resetSearch={resetSearch}
-                    placeholder="searchPlaceholderLogsContainers"
+                    placeholder="searchPlaceholderLogsTreeStructure"
                     style={{ minWidth: '80%' }}
                 />
             </Box>
