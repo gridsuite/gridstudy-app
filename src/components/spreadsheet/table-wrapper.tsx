@@ -1323,18 +1323,14 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         />
                     </Grid>
                     {developerMode && (
-                        <>
-                            <Grid item>
-                                <CustomColumnsConfig tabIndex={tabIndex} />
-                            </Grid>
-                        </>
+                        <Grid item>
+                            <CustomColumnsConfig tabIndex={tabIndex} />
+                        </Grid>
                     )}
                     {developerMode && (
-                        <>
-                            <Grid item>
-                                <CustomColumnsNodesConfig />
-                            </Grid>
-                        </>
+                        <Grid item>
+                            <CustomColumnsNodesConfig />
+                        </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item sx={styles.save}>

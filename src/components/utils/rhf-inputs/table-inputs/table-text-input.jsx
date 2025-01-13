@@ -26,26 +26,24 @@ export const TableTextInput = ({ name, style, showErrorMsg, inputProps, ...props
     };
 
     return (
-        <>
-            <TextField
-                value={value}
-                onChange={handleInputChange}
-                error={!!error?.message}
-                helperText={showErrorMsg ? (error?.message ? intl.formatMessage({ id: error.message }) : '') : ''}
-                size={'small'}
-                fullWidth
-                inputRef={ref}
-                inputProps={{
-                    style: {
-                        fontSize: 'small',
-                    },
-                    ...inputProps,
-                }}
-                InputProps={{
-                    disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
-                }}
-                {...props}
-            />
-        </>
+        <TextField
+            value={value}
+            onChange={handleInputChange}
+            error={!!error?.message}
+            helperText={showErrorMsg ? (error?.message ? intl.formatMessage({ id: error.message }) : '') : ''}
+            size={'small'}
+            fullWidth
+            inputRef={ref}
+            inputProps={{
+                style: {
+                    fontSize: 'small',
+                },
+                ...inputProps,
+            }}
+            InputProps={{
+                disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
+            }}
+            {...props}
+        />
     );
 };

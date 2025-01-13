@@ -68,16 +68,14 @@ const NodeAliasTable = () => {
     };
 
     return (
-        <>
-            <DndTableTyped
-                arrayFormName={`${NODES_ALIASES}`}
-                columnsDefinition={NODES_ALIASES_COLUMNS_DEFINITIONS}
-                useFieldArrayOutput={useNodesAliasesFieldArrayOutput}
-                createRows={createNodeAliasRows}
-                withAddRowsDialog={false}
-                withLeftButtons={false}
-            />
-        </>
+        <DndTableTyped
+            arrayFormName={`${NODES_ALIASES}`}
+            columnsDefinition={NODES_ALIASES_COLUMNS_DEFINITIONS}
+            useFieldArrayOutput={useNodesAliasesFieldArrayOutput}
+            createRows={createNodeAliasRows}
+            withAddRowsDialog={false}
+            withLeftButtons={false}
+        />
     );
 };
 
