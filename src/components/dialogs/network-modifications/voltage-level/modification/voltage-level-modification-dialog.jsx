@@ -21,10 +21,15 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    convertOutputValue,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { kiloUnitToUnit, unitToKiloUnit } from 'utils/unit-converter';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
@@ -106,8 +111,10 @@ const VoltageLevelModificationDialog = ({
                 [NOMINAL_V]: editData?.nominalV?.value ?? null,
                 [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value ?? null,
                 [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value ?? null,
-                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(editData?.ipMin?.value) ?? null,
-                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(editData?.ipMax?.value) ?? null,
+                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
+                    convertInputValue(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, editData?.ipMin?.value) ?? null,
+                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
+                    convertInputValue(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, editData?.ipMax?.value) ?? null,
                 ...getPropertiesFromModification(editData.properties),
             });
         }
@@ -130,10 +137,12 @@ const VoltageLevelModificationDialog = ({
                         if (voltageLevel) {
                             //We convert values of low short circuit current limit and high short circuit current limit from A to KA
                             if (voltageLevel.identifiableShortCircuit) {
-                                voltageLevel.identifiableShortCircuit.ipMax = unitToKiloUnit(
+                                voltageLevel.identifiableShortCircuit.ipMax = convertInputValue(
+                                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                                     voltageLevel.identifiableShortCircuit?.ipMax
                                 );
-                                voltageLevel.identifiableShortCircuit.ipMin = unitToKiloUnit(
+                                voltageLevel.identifiableShortCircuit.ipMin = convertInputValue(
+                                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                                     voltageLevel.identifiableShortCircuit?.ipMin
                                 );
                             }
@@ -178,8 +187,14 @@ const VoltageLevelModificationDialog = ({
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                lowShortCircuitCurrentLimit: kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
-                highShortCircuitCurrentLimit: kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
+                lowShortCircuitCurrentLimit: convertOutputValue(
+                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
+                ),
+                highShortCircuitCurrentLimit: convertOutputValue(
+                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
+                ),
                 properties: toModificationProperties(voltageLevel),
             }).catch((error) => {
                 snackError({

@@ -16,8 +16,7 @@ import { RunningStatus } from '../utils/running-status';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { mergeSx } from '../utils/functions';
-import { unitToMicroUnit } from 'utils/unit-converter';
-import { useDebounce } from '@gridsuite/commons-ui';
+import { convertInputValue, FieldType, useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
     tableCells: {
@@ -222,12 +221,12 @@ const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, eq
     };
 
     const renderVoltageLevelCharacteristics = (equipmentInfo, equipmentType) => {
-        const renderShuntSusceptanceRow = (voltageLevelId, susceptanceValue) => (
+        const renderShuntSusceptanceRow = (voltageLevelId, susceptanceValue, fieldType) => (
             <TableRow>
                 {renderTableCell({ value: voltageLevelId, isLabel: false })}
                 {renderTableCell({ label: 'shuntSusceptance', isLabel: true })}
                 {renderTableCell({
-                    value: unitToMicroUnit(susceptanceValue)?.toFixed(2),
+                    value: convertInputValue(fieldType, susceptanceValue)?.toFixed(2),
                     isLabel: false,
                 })}
             </TableRow>
@@ -236,11 +235,11 @@ const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, eq
         return (
             <>
                 {equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ? (
-                    renderShuntSusceptanceRow(equipmentInfo.voltageLevelId2, equipmentInfo?.b)
+                    renderShuntSusceptanceRow(equipmentInfo.voltageLevelId2, equipmentInfo?.b, FieldType.B)
                 ) : (
                     <>
-                        {renderShuntSusceptanceRow(equipmentInfo.voltageLevelId1, equipmentInfo.b1)}
-                        {renderShuntSusceptanceRow(equipmentInfo.voltageLevelId2, equipmentInfo?.b2)}
+                        {renderShuntSusceptanceRow(equipmentInfo.voltageLevelId1, equipmentInfo.b1, FieldType.B1)}
+                        {renderShuntSusceptanceRow(equipmentInfo.voltageLevelId2, equipmentInfo?.b2, FieldType.B2)}
                     </>
                 )}
             </>

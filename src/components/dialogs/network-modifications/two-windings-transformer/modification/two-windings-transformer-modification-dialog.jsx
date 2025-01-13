@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    convertOutputValue,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
@@ -54,7 +60,6 @@ import {
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { sanitizeString } from '../../../dialog-utils';
 import {
     FORM_LOADING_DELAY,
@@ -238,8 +243,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getCharacteristicsFormData({
                     r: twt.r?.value,
                     x: twt.x?.value,
-                    g: unitToMicroUnit(twt.g?.value),
-                    b: unitToMicroUnit(twt.b?.value),
+                    g: convertInputValue(FieldType.G, twt.g?.value),
+                    b: convertInputValue(FieldType.B, twt.b?.value),
                     ratedU1: twt.ratedU1?.value,
                     ratedU2: twt.ratedU2?.value,
                     ratedS: twt.ratedS?.value,
@@ -492,8 +497,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 twoWindingsTransformerName: toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
                 r: toModificationOperation(characteristics[R]),
                 x: toModificationOperation(characteristics[X]),
-                g: toModificationOperation(microUnitToUnit(characteristics[G])),
-                b: toModificationOperation(microUnitToUnit(characteristics[B])),
+                g: toModificationOperation(convertOutputValue(FieldType.G, characteristics[G])),
+                b: toModificationOperation(convertOutputValue(FieldType.B, characteristics[B])),
                 ratedS: toModificationOperation(characteristics[RATED_S]),
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
