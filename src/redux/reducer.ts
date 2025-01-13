@@ -455,7 +455,6 @@ export type SelectionForCopy = {
 };
 
 export type NodeAlias = {
-    id: string;
     name: string;
     alias: string;
 };

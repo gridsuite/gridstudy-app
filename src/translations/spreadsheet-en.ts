@@ -44,6 +44,10 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/error_loading_model': 'Error while retrieving spreadsheet model',
     'spreadsheet/parameter_aliases/node_name': 'Node name',
     'spreadsheet/parameter_aliases/node_alias': 'Node alias',
+    'spreadsheet/parameter_aliases/max_characters_reached': 'Cannot exceed 10 characters',
+    'spreadsheet/parameter_aliases/no_special_characters': 'No special characters allowed',
+    'spreadsheet/parameter_aliases/node_doesnt_exist': 'No node with this name',
+    'spreadsheet/parameter_aliases/unique_aliases': 'Aliases should be unique',
 };
 
 export default spreadsheetEn;

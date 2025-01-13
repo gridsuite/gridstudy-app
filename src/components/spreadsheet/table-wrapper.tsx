@@ -87,7 +87,6 @@ import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
-import { TABLES_DEFINITIONS } from './config/config-tables';
 import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
@@ -185,6 +184,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const tablesDefinitionTypes = useSelector((state: AppState) => state.tables.definitionTypes);
+    const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
 
     const [selectedColumnsNames, setSelectedColumnsNames] = useState<Set<string>>(new Set());
@@ -481,6 +481,15 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         });
     }, [sortConfig, mergedColumnData]);
 
+    const toSpreadsheetEquipmentType = useCallback(
+        (tableName: string): SpreadsheetEquipmentType => {
+            return tablesDefinitions.filter(
+                (spreadsheetTabDefinition) => spreadsheetTabDefinition.name === tableName
+            )[0].type;
+        },
+        [tablesDefinitions]
+    );
+
     useEffect(() => {
         if (disabled || !equipments) {
             return;
@@ -491,12 +500,12 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             gridRef.current.api.setGridOption('rowData', equipments);
         }
 
-        const equipmentType = TABLES_DEFINITIONS.filter((eq) => eq.name === tablesNames[tabIndex])[0].type;
+        const equipmentType = toSpreadsheetEquipmentType(tablesNames[tabIndex]);
 
         let equipmentsWithCustomColumnInfo = [...equipments];
 
         Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach((value) => {
-            const nodeName = value[0];
+            const nodeAlias = value[0];
             const equipmentsToAdd = value[1][equipmentType];
             if (equipmentsToAdd) {
                 equipmentsToAdd.forEach((equipmentToAdd) => {
@@ -506,15 +515,21 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
                     if (matchingEquipment) {
                         let equipmentWithAddedInfo = { ...matchingEquipment };
-                        equipmentWithAddedInfo[nodeName] = equipmentToAdd;
+                        equipmentWithAddedInfo[nodeAlias] = equipmentToAdd;
                         equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
                     }
                 });
             }
         });
-
         setRowData(equipmentsWithCustomColumnInfo);
-    }, [tabIndex, disabled, equipments, additionalEquipmentsByNodesForCustomColumns, tablesNames]);
+    }, [
+        tabIndex,
+        disabled,
+        equipments,
+        additionalEquipmentsByNodesForCustomColumns,
+        tablesNames,
+        toSpreadsheetEquipmentType,
+    ]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {

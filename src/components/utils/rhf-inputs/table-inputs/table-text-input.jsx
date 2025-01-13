@@ -7,12 +7,15 @@
 
 import { TextField } from '@mui/material';
 import { useController } from 'react-hook-form';
+import { useIntl } from 'react-intl';
 
-export const TableTextInput = ({ name, style, inputProps, ...props }) => {
+export const TableTextInput = ({ name, style, showErrorMsg, inputProps, ...props }) => {
     const {
         field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
+
+    const intl = useIntl();
 
     const outputTransform = (value) => {
         return value?.trim() === '' ? '' : value;
@@ -23,23 +26,26 @@ export const TableTextInput = ({ name, style, inputProps, ...props }) => {
     };
 
     return (
-        <TextField
-            value={value}
-            onChange={handleInputChange}
-            error={!!error?.message}
-            size={'small'}
-            fullWidth
-            inputRef={ref}
-            inputProps={{
-                style: {
-                    fontSize: 'small',
-                },
-                ...inputProps,
-            }}
-            InputProps={{
-                disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
-            }}
-            {...props}
-        />
+        <>
+            <TextField
+                value={value}
+                onChange={handleInputChange}
+                error={!!error?.message}
+                helperText={showErrorMsg ? (error?.message ? intl.formatMessage({ id: error.message }) : '') : ''}
+                size={'small'}
+                fullWidth
+                inputRef={ref}
+                inputProps={{
+                    style: {
+                        fontSize: 'small',
+                    },
+                    ...inputProps,
+                }}
+                InputProps={{
+                    disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
+                }}
+                {...props}
+            />
+        </>
     );
 };

@@ -79,7 +79,6 @@ export default function CustomColumnDialog({
     const { setError, control } = formMethods;
     const columnName = useWatch({ control, name: COLUMN_NAME });
     const hasColumnNameChanged = columnName !== customColumnsDefinition?.[COLUMN_NAME];
-    const customColumnsNodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
 
     const { handleSubmit, reset } = formMethods;
     const dispatch = useDispatch<AppDispatch>();
@@ -115,23 +114,11 @@ export default function CustomColumnDialog({
                     return;
                 }
             }
-            let formulaForEval: string | null = null;
-            const nodesAliases: string[] = customColumnsNodesAliases.map((nodeAlias) => nodeAlias.alias);
-            const pattern: string = nodesAliases.map((nodeAlias) => `\\b${nodeAlias}\\b\\.`).join('|'); // pattern to find the aliases in the expression
-            const regex = new RegExp(pattern, 'g');
-
-            // Replace each matched alias with the corresponding nodeId
-            formulaForEval = newParams.formula.replace(regex, (match) => {
-                // Find the corresponding alias and return its replacement
-                const matchedAlias = customColumnsNodesAliases.find((nodeAlias) => match.startsWith(nodeAlias.alias));
-                return matchedAlias ? matchedAlias.name + '.' : match;
-            });
             dispatch(
                 setUpdateCustomColumDefinitions(tablesNames[tabIndex], {
                     id: customColumnsDefinition?.id || crypto.randomUUID(),
                     name: newParams.name,
                     formula: newParams.formula,
-                    formulaForEval: formulaForEval,
                 })
             );
             reset(initialCustomColumnForm);
@@ -148,7 +135,6 @@ export default function CustomColumnDialog({
             isCreate,
             hasColumnNameChanged,
             setError,
-            customColumnsNodesAliases,
         ]
     );
 

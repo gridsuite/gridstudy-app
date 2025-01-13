@@ -13,7 +13,6 @@ export type ColumnWithFormula = {
     id: string;
     name: string;
     formula: string;
-    formulaForEval: string | null;
 };
 
 export type FormulaFilter = {
