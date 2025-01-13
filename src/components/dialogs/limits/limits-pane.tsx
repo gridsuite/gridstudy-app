@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import {
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS_1,
@@ -46,12 +46,17 @@ export function LimitsPane({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
 
-    const renderTitle = (id: string) => (
-        <Grid item xs={4}>
-            <Box component="h3">
-                <FormattedMessage id={id} />
-            </Box>
-        </Grid>
+    const renderTitle = (id: string, selectedFormName: string, optionsFormName: string) => (
+        <>
+            <Grid item xs={1}>
+                <Typography variant="h5">
+                    <FormattedMessage id={id} />
+                </Typography>
+            </Grid>
+            <Grid item xs={3}>
+                <SelectedOperationalLimitGroup selectedFormName={selectedFormName} optionsFormName={optionsFormName} />
+            </Grid>
+        </>
     );
 
     const renderSidePane = (
@@ -79,25 +84,9 @@ export function LimitsPane({
     return (
         <Grid container spacing={2}>
             <Grid container item xs={12} columns={10} spacing={2}>
-                <Grid item xs={2} />
-                {renderTitle('Side1')}
-                {renderTitle('Side2')}
-            </Grid>
-            {/* active limit set */}
-            <Grid container item xs={12} columns={10} spacing={2}>
-                <Grid item xs={1.8} />
-                <Grid item xs={4}>
-                    <SelectedOperationalLimitGroup
-                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
-                        optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`}
-                    />
-                </Grid>
-                <Grid item xs={4}>
-                    <SelectedOperationalLimitGroup
-                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
-                        optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_2}`}
-                    />
-                </Grid>
+                <Grid item xs={1.9} />
+                {renderTitle('Side1', `${id}.${SELECTED_LIMITS_GROUP_1}`, `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`)}
+                {renderTitle('Side2', `${id}.${SELECTED_LIMITS_GROUP_2}`, `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`)}
             </Grid>
             {/* limits */}
             <Grid container item xs={12} columns={10}>
