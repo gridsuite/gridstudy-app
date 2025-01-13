@@ -26,6 +26,8 @@ import {
     NAME,
     NOMINAL_V,
     SECTION_COUNT,
+    SUBSTATION_CREATION,
+    SUBSTATION_CREATION_ID,
     SUBSTATION_ID,
     SUBSTATION_NAME,
     SWITCH_KIND,
@@ -81,8 +83,12 @@ const emptyFormData = {
     [SWITCHES_BETWEEN_SECTIONS]: '',
     [COUPLING_OMNIBUS]: [],
     [SWITCH_KINDS]: [],
-    [SUBSTATION_NAME]: null,
-    [COUNTRY]: null,
+    [SUBSTATION_CREATION]: {
+        [SUBSTATION_CREATION_ID]: null,
+        [SUBSTATION_NAME]: null,
+        [COUNTRY]: null,
+        ...emptyProperties,
+    },
     ...emptyProperties,
 };
 
@@ -91,7 +97,13 @@ const formSchema = yup
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string().nullable(),
-        [SUBSTATION_ID]: yup.string().nullable().required(),
+        [SUBSTATION_ID]: yup
+            .string()
+            .nullable()
+            .when([SUBSTATION_CREATION_ID], {
+                is: (substationCreationId) => substationCreationId === null,
+                then: (schema) => schema.required(),
+            }),
         [NOMINAL_V]: yup.number().nullable().required(),
         [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
         [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
@@ -128,8 +140,21 @@ const formSchema = yup
             .test('coupling-omnibus-between-sections', (values) =>
                 controlCouplingOmnibusBetweenSections(values, 'CouplingOmnibusBetweenSameBusbar')
             ),
-        [SUBSTATION_NAME]: yup.string(),
-        [COUNTRY]: yup.string().nullable(),
+        [SUBSTATION_CREATION]: yup
+            .object()
+            .nullable()
+            .shape({
+                [SUBSTATION_CREATION_ID]: yup
+                    .string()
+                    .nullable()
+                    .when([SUBSTATION_ID], {
+                        is: (substationId) => substationId === null,
+                        then: (schema) => schema.required(),
+                    }),
+                [SUBSTATION_NAME]: yup.string().nullable(),
+                [COUNTRY]: yup.string().nullable(),
+            })
+            .concat(creationPropertiesSchema),
     })
     .concat(creationPropertiesSchema);
 const VoltageLevelCreationDialog = ({
@@ -154,39 +179,49 @@ const VoltageLevelCreationDialog = ({
     const [isSubstationCreation, setIsSubstationCreation] = useState(false);
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
+            !fromCopy && voltageLevel?.substationCreation !== null
+                ? setIsSubstationCreation(true)
+                : setIsSubstationCreation(false);
             const properties = fromCopy
                 ? copyEquipmentPropertiesForCreation(voltageLevel)
                 : getPropertiesFromModification(voltageLevel.properties);
-            reset({
-                [EQUIPMENT_ID]: (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : ''),
-                [EQUIPMENT_NAME]: voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
-                [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
-                [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
-                [NOMINAL_V]: voltageLevel[NOMINAL_V],
-                [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
-                [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
-                    fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
-                ),
-                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
-                    fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
-                ),
-                [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
-                [SECTION_COUNT]: voltageLevel[SECTION_COUNT] ?? 1,
-                [SWITCHES_BETWEEN_SECTIONS]: voltageLevel.switchKinds
-                    ?.map((switchKind) => {
-                        return intl.formatMessage({ id: switchKind });
-                    })
-                    .join(' / '),
-                [COUPLING_OMNIBUS]: voltageLevel.couplingDevices ?? [],
-                [SWITCH_KINDS]:
-                    voltageLevel.switchKinds != null
-                        ? voltageLevel.switchKinds?.map((switchKind) => ({
-                              [SWITCH_KIND]: switchKind,
-                          }))
-                        : [],
-                ...properties,
-            });
+            reset(
+                {
+                    [EQUIPMENT_ID]: (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : ''),
+                    [EQUIPMENT_NAME]: voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
+                    [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
+                    [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID] ?? null,
+                    [SUBSTATION_CREATION]: !fromCopy ? voltageLevel?.substationCreation : null,
+                    [SUBSTATION_CREATION_ID]: !fromCopy ? voltageLevel?.substationCreation?.equipmentId : null,
+                    [SUBSTATION_NAME]: !fromCopy ? voltageLevel?.substationCreation?.substationName : null,
+                    [COUNTRY]: !fromCopy ? voltageLevel?.substationCreation?.country : null,
+                    [NOMINAL_V]: voltageLevel[NOMINAL_V],
+                    [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
+                    [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
+                    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
+                        fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
+                    ),
+                    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
+                        fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
+                    ),
+                    [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
+                    [SECTION_COUNT]: voltageLevel[SECTION_COUNT] ?? 1,
+                    [SWITCHES_BETWEEN_SECTIONS]: voltageLevel.switchKinds
+                        ?.map((switchKind) => {
+                            return intl.formatMessage({ id: switchKind });
+                        })
+                        .join(' / '),
+                    [COUPLING_OMNIBUS]: voltageLevel.couplingDevices ?? [],
+                    [SWITCH_KINDS]:
+                        voltageLevel.switchKinds != null
+                            ? voltageLevel.switchKinds?.map((switchKind) => ({
+                                  [SWITCH_KIND]: switchKind,
+                              }))
+                            : [],
+                    ...properties,
+                },
+                { keepDefaultValues: true }
+            );
             if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
@@ -215,9 +250,10 @@ const VoltageLevelCreationDialog = ({
             const substationCreation = isSubstationCreation
                 ? {
                       type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
-                      equipmentId: voltageLevel[SUBSTATION_ID],
-                      equipmentName: voltageLevel[SUBSTATION_NAME],
-                      country: voltageLevel[COUNTRY],
+                      equipmentId: voltageLevel[SUBSTATION_CREATION][SUBSTATION_CREATION_ID],
+                      equipmentName: voltageLevel[SUBSTATION_CREATION][SUBSTATION_NAME],
+                      country: voltageLevel[SUBSTATION_CREATION][COUNTRY],
+                      properties: toModificationProperties(voltageLevel[SUBSTATION_CREATION]),
                   }
                 : null;
             onCreateVoltageLevel({
