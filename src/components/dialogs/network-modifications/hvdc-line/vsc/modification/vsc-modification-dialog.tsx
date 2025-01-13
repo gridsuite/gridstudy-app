@@ -91,7 +91,7 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-export const VSC_MODIFICATION_TABS = {
+const VSC_MODIFICATION_TABS = {
     HVDC_LINE_TAB: 0,
     CONVERTER_STATION_1: 1,
     CONVERTER_STATION_2: 2,
