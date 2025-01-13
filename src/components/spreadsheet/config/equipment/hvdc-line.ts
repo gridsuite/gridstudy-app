@@ -5,20 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
-import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import {
+    booleanAgGridColumnDefinition,
+    textAgGridColumnDefinition,
+    numberAgGridColumnDefinition,
+} from '../common-column-definitions';
 
-export const HVDC_LINE_TAB_DEF = {
+export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 10,
     name: 'HvdcLines',
     ...typeAndFetchers(EQUIPMENT_TYPES.HVDC_LINE),
@@ -26,111 +23,89 @@ export const HVDC_LINE_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            initialSort: 'asc',
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Name',
             field: 'name',
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'VoltageLevelIdSide1',
             field: 'voltageLevelId1',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'VoltageLevelIdSide2',
             field: 'voltageLevelId2',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'ConvertersMode',
             field: 'convertersMode',
-            columnWidth: LARGE_COLUMN_WIDTH,
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'ConverterStationId1',
             field: 'converterStationId1',
-            columnWidth: LARGE_COLUMN_WIDTH,
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'ConverterStationId2',
             field: 'converterStationId2',
-            columnWidth: LARGE_COLUMN_WIDTH,
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Country1',
             field: 'country1',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Country2',
             field: 'country2',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'R',
             field: 'r',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'ActivePowerSetpoint',
             field: 'activePowerSetpoint',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'maxActivePower',
             field: 'maxP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'OprFromCS1toCS2',
             field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            columnWidth: LARGE_COLUMN_WIDTH,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'OprFromCS2toCS1',
             field: 'hvdcOperatorActivePowerRange.oprFromCS2toCS1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            columnWidth: LARGE_COLUMN_WIDTH,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'AcEmulation',
             field: 'hvdcAngleDroopActivePowerControl.isEnabled',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanAgGridColumnDefinition,
         },
         {
             id: 'K',
             field: 'hvdcAngleDroopActivePowerControl.droop',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'P0',
             field: 'hvdcAngleDroopActivePowerControl.p0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         genericColumnOfPropertiesReadonly,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

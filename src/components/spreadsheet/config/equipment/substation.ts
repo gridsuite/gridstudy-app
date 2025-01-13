@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { textAgGridColumnDefinition } from '../common-column-definitions';
 
-export const SUBSTATION_TAB_DEF = {
+export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 0,
     name: 'Substations',
     ...typeAndFetchers(EQUIPMENT_TYPES.SUBSTATION),
@@ -19,19 +19,21 @@ export const SUBSTATION_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            ...defaultTextFilterConfig,
-            isDefaultSort: true,
+            ...textAgGridColumnDefinition,
+            initialSort: 'asc',
+            headerComponent: 'agColumnHeader',
+            menuTabs: ['filterMenuTab', 'generalMenuTab', 'columnsMenuTab'],
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         genericColumnOfPropertiesReadonly,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

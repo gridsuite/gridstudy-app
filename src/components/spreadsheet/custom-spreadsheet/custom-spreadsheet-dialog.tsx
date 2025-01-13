@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { WritableDeep } from 'type-fest';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, SxProps, Theme } from '@mui/material';
 import {
@@ -33,7 +32,7 @@ import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
 import { NEW_SPREADSHEET_CREATION_OPTIONS } from '../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
-import { TABLES_DEFINITIONS, TABLES_TYPES, type TablesDefinitionsType } from '../config/config-tables';
+import { TABLES_DEFINITIONS, TABLES_TYPES } from '../config/config-tables';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
@@ -88,9 +87,7 @@ export default function CustomSpreadsheetConfigDialog({
     const { handleSubmit, reset, setValue, getValues } = formMethods;
 
     const getTableColumns = useCallback((type: SpreadsheetEquipmentType) => {
-        const tableDef = (TABLES_DEFINITIONS as WritableDeep<TablesDefinitionsType>).find(
-            (tabDef) => tabDef.type === type
-        );
+        const tableDef = TABLES_DEFINITIONS.find((tabDef) => tabDef.type === type);
         return tableDef ? tableDef.columns : [];
     }, []);
 

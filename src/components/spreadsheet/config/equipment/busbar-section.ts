@@ -7,10 +7,10 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultTextFilterConfig, typeAndFetchers } from './common-config';
-import type { ReadonlyDeep } from 'type-fest';
+import { typeAndFetchers } from './common-config';
+import { textAgGridColumnDefinition } from '../common-column-definitions';
 
-export const BUSBAR_SECTION_TAB_DEF = {
+export const BUSBAR_SECTION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 16,
     name: 'BusBarSections',
     ...typeAndFetchers(EQUIPMENT_TYPES.BUSBAR_SECTION),
@@ -18,13 +18,13 @@ export const BUSBAR_SECTION_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            initialSort: 'asc',
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

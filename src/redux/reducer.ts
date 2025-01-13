@@ -54,10 +54,6 @@ import {
     CloseStudyAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
-    UPDATE_CUSTOM_COLUMNS_DEFINITION,
-    REMOVE_CUSTOM_COLUMNS_DEFINITION,
-    UpdateCustomColumnsDefinitionsAction,
-    RemoveCustomColumnsDefinitionsAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
@@ -95,22 +91,26 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
-    NETWORK_MODIFICATION_TREE_NODES_UPDATED,
     NETWORK_MODIFICATION_TREE_NODES_REORDER,
+    NETWORK_MODIFICATION_TREE_NODES_UPDATED,
     NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
     NetworkModificationTreeNodesRemovedAction,
-    NetworkModificationTreeNodesUpdatedAction,
     NetworkModificationTreeNodesReorderAction,
+    NetworkModificationTreeNodesUpdatedAction,
+    NODE_SELECTION_FOR_COPY,
+    NodeSelectionForCopyAction,
     OPEN_DIAGRAM,
     OPEN_NAD_LIST,
     OPEN_STUDY,
     OpenDiagramAction,
     OpenNadListAction,
     OpenStudyAction,
+    REMOVE_CUSTOM_COLUMNS_DEFINITION,
     REMOVE_NOTIFICATION_BY_NODE,
+    RemoveCustomColumnsDefinitionsAction,
     RemoveNotificationByNodeAction,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
@@ -130,8 +130,6 @@ import {
     SELECT_LANGUAGE,
     SELECT_THEME,
     SelectComputedLanguageAction,
-    NODE_SELECTION_FOR_COPY,
-    NodeSelectionForCopyAction,
     SelectLanguageAction,
     SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
@@ -164,6 +162,8 @@ import {
     ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
     SpreadsheetFilterAction,
+    STATEESTIMATION_RESULT_FILTER,
+    StateEstimationResultFilterAction,
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
     STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
@@ -174,16 +174,16 @@ import {
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
+    UPDATE_CUSTOM_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
+    UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UPDATE_TABLE_DEFINITION,
+    UpdateCustomColumnsDefinitionsAction,
     UpdateEquipmentsAction,
+    UpdateNetworkVisualizationParametersAction,
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    STATEESTIMATION_RESULT_FILTER,
-    StateEstimationResultFilterAction,
-    UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
-    UpdateNetworkVisualizationParametersAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -204,7 +204,6 @@ import {
     TABLES_DEFINITIONS,
     TABLES_NAMES,
     type TablesDefinitionsNames,
-    type TablesDefinitionsType,
 } from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
@@ -267,12 +266,12 @@ import {
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_SORT_STORE,
     SPREADSHEET_STORE_FIELD,
-    TABLE_SORT_STORE,
-    TIMELINE,
-    STATEESTIMATION_RESULT_STORE_FIELD,
-    STATEESTIMATION_RESULT_SORT_STORE,
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
+    STATEESTIMATION_RESULT_SORT_STORE,
+    STATEESTIMATION_RESULT_STORE_FIELD,
+    TABLE_SORT_STORE,
+    TIMELINE,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
@@ -281,7 +280,7 @@ import {
     LineFlowMode,
     EQUIPMENT_TYPES as NetworkViewerEquipmentType,
 } from '@powsybl/network-viewer';
-import type { UnknownArray, ValueOf, WritableDeep } from 'type-fest';
+import type { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
@@ -587,13 +586,13 @@ interface TablesState {
 const TableDefinitionIndexes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.index, tabDef]));
 const TableDefinitionTypes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.type, tabDef]));
 const initialTablesState: TablesState = {
-    definitions: TABLES_DEFINITIONS as WritableDeep<TablesDefinitionsType>,
+    definitions: TABLES_DEFINITIONS,
     columnsNames: TABLES_COLUMNS_NAMES,
     columnsNamesJson: TABLES_COLUMNS_NAMES.map((cols) => JSON.stringify([...cols])),
     names: TABLES_NAMES,
     namesIndexes: new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.name, tabDef.index])),
-    definitionTypes: TableDefinitionTypes as WritableDeep<typeof TableDefinitionTypes>,
-    definitionIndexes: TableDefinitionIndexes as WritableDeep<typeof TableDefinitionIndexes>,
+    definitionTypes: TableDefinitionTypes,
+    definitionIndexes: TableDefinitionIndexes,
     allCustomColumnsDefinitions: TABLES_NAMES.reduce(
         (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
         {} as Record<TablesDefinitionsNames, CustomEntry>

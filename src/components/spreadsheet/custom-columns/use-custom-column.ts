@@ -4,26 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
-import { create, all, bignumber } from 'mathjs';
+import { all, bignumber, create } from 'mathjs';
 import { useSelector } from 'react-redux';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { useAgGridSort } from 'hooks/use-aggrid-sort';
-import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import CustomColumnMenu from './custom-column-menu';
+import { DefaultCellRenderer } from '../utils/cell-renderers';
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
+import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 
 export function useCustomColumn(tabIndex: number) {
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
-    );
-    const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
-
-    const { onSortChanged, sortConfig } = useAgGridSort(
-        SPREADSHEET_SORT_STORE,
-        tablesDefinitionIndexes.get(tabIndex)!.name
     );
 
     const math = useMemo(() => {
@@ -83,24 +77,27 @@ export function useCustomColumn(tabIndex: number) {
     );
 
     const createCustomColumn = useCallback(() => {
-        return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula) => {
-            return makeAgGridCustomHeaderColumn({
-                headerName: colWithFormula.name,
-                id: colWithFormula.name,
-                field: colWithFormula.name,
-                sortProps: {
-                    onSortChanged,
-                    sortConfig,
+        return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula): CustomColDef => {
+            return {
+                id: colWithFormula.id,
+                headerTooltip: colWithFormula.name,
+                headerComponent: CustomHeaderComponent,
+                headerComponentParams: {
+                    field: colWithFormula.name,
+                    tabIndex,
+                    customMenuParams: {
+                        Menu: CustomColumnMenu,
+                        menuParams: {
+                            field: colWithFormula.id,
+                            tabIndex,
+                        },
+                    },
                 },
+                cellRenderer: DefaultCellRenderer,
                 valueGetter: createValueGetter(colWithFormula),
-                editable: false,
-                suppressMovable: true,
-                tabIndex,
-                isCustomColumn: true,
-                Menu: CustomColumnMenu,
-            });
+            };
         });
-    }, [customColumnsDefinitions, onSortChanged, sortConfig, createValueGetter, tabIndex]);
+    }, [createValueGetter, customColumnsDefinitions, tabIndex]);
 
     return { createCustomColumn };
 }

@@ -5,20 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import {
+    booleanAgGridColumnDefinition,
+    textAgGridColumnDefinition,
+    numberAgGridColumnDefinition,
+} from '../common-column-definitions';
 
-export const SHUNT_COMPENSATOR_TAB_DEF = {
+export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 7,
     name: 'ShuntCompensators',
     ...typeAndFetchers(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
@@ -26,102 +23,81 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            initialSort: 'asc',
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
-            columnWidth: MIN_COLUMN_WIDTH,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberAgGridColumnDefinition(0),
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            fractionDigits: 1,
-            ...defaultNumericFilterConfig,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'maximumSectionCount',
             field: 'maximumSectionCount',
-            numeric: true,
-            ...defaultNumericFilterConfig,
+            ...numberAgGridColumnDefinition(),
         },
         {
             id: 'sectionCount',
             field: 'sectionCount',
-            numeric: true,
-            ...defaultNumericFilterConfig,
+            ...numberAgGridColumnDefinition(),
         },
         {
             id: 'Type',
             field: 'type',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'SwitchedOnMaxQAtNominalV',
-            field: 'switchedOnQAtNominalV',
-            numeric: true,
             valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'maxSusceptance',
             field: 'maxSusceptance',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 5,
+            ...numberAgGridColumnDefinition(5),
         },
         {
             id: 'SwitchedOnMaxSusceptance',
-            field: 'switchedOnSusceptance',
-            numeric: true,
             valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 5,
+            ...numberAgGridColumnDefinition(5),
         },
         {
             id: 'voltageSetpoint',
             field: 'targetV',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'connected',
             field: 'terminalConnected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanAgGridColumnDefinition,
         },
         genericColumnOfPropertiesReadonly,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

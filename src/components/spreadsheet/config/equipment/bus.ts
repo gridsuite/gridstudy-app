@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { textAgGridColumnDefinition, numberAgGridColumnDefinition } from '../common-column-definitions';
 
-export const BUS_TAB_DEF = {
+export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
     index: 14,
     name: 'Buses',
     ...typeAndFetchers(EQUIPMENT_TYPES.BUS),
@@ -19,50 +19,44 @@ export const BUS_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            initialSort: 'asc',
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Magnitude',
             field: 'v',
-            numeric: true,
-            fractionDigits: 1,
-            ...defaultNumericFilterConfig,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'Angle',
             field: 'angle',
-            numeric: true,
-            fractionDigits: 1,
-            ...defaultNumericFilterConfig,
+            ...numberAgGridColumnDefinition(1),
         },
         {
             id: 'ConnectedComponent',
             field: 'connectedComponentNum',
-            ...defaultNumericFilterConfig,
+            ...numberAgGridColumnDefinition(),
         },
         {
             id: 'SynchronousComponent',
             field: 'synchronousComponentNum',
-            ...defaultNumericFilterConfig,
+            ...numberAgGridColumnDefinition(),
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textAgGridColumnDefinition,
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            fractionDigits: 0,
-            ...defaultNumericFilterConfig,
+            ...numberAgGridColumnDefinition(0),
         },
         genericColumnOfPropertiesReadonly,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

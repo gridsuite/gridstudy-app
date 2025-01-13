@@ -7,7 +7,7 @@
 import { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
-import { CustomColumnConfigProps } from 'components/spreadsheet/custom-columns/custom-column-menu';
+import { CustomColumnConfigProps } from 'components/custom-aggrid/custom-column-menu';
 import React, { ComponentType } from 'react';
 
 export enum FILTER_DATA_TYPES {
@@ -48,12 +48,6 @@ export interface CustomAggridFilterParams {
     field: string;
     filterParams: FilterParams;
 }
-
-export type CustomHeaderMenuParams = {
-    tabIndex: number;
-    isCustomColumn: boolean;
-    Menu: React.FC<CustomColumnConfigProps>;
-};
 
 export type CustomHeaderSortParams = {
     isSortable?: boolean;
