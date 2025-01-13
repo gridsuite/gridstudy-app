@@ -23,46 +23,6 @@ import { useCSVReader } from 'react-papaparse';
 import { isNodeExists } from '../../../services/study';
 import { mergeSx } from '../functions';
 
-export const useInputForm = () => {
-    const validationMap = useRef(new Map());
-    const [toggleClear, setToggleClear] = useState(false);
-    const [hasChanged, setHasChanged] = useState(false);
-    const validate = useCallback(() => {
-        // Check if error list contains an error
-        return Array.from(validationMap.current.values())
-            .map((e) => e())
-            .every((res) => res);
-    }, []);
-
-    const addValidation = useCallback((id, validate) => {
-        validationMap.current.set(id, validate);
-    }, []);
-
-    const removeValidation = useCallback((id) => {
-        validationMap.current.delete(id);
-    }, []);
-
-    const clear = useCallback(() => {
-        setToggleClear((oldValue) => !oldValue);
-    }, []);
-    const reset = useCallback((label, validate) => {
-        validationMap.current = new Map();
-    }, []);
-
-    return useMemo(() => {
-        return {
-            toggleClear,
-            clear,
-            validate,
-            addValidation,
-            reset,
-            hasChanged,
-            setHasChanged,
-            removeValidation,
-        };
-    }, [toggleClear, clear, validate, addValidation, reset, hasChanged, removeValidation]);
-};
-
 export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
     return useMemo(() => {
         return (
@@ -88,7 +48,7 @@ export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
     }, [label, handleClick, icon]);
 };
 
-export const useSimpleTextValue = ({ defaultValue, adornment, error, triggerReset }) => {
+const useSimpleTextValue = ({ defaultValue, adornment, error, triggerReset }) => {
     const [value, setValue] = useState(defaultValue);
 
     const handleChangeValue = useCallback((event) => {
@@ -190,137 +150,6 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     }, [studyUuid, name, debouncedValidName, triggerReset]);
 
     return [error, field, isValidName, name];
-};
-
-export const useDirectoryElements = ({
-    label,
-    initialValues,
-    elementType,
-    equipmentTypes,
-    titleId,
-    elementStyle,
-    itemFilter = undefined,
-    errorMsg = undefined,
-    inputForm = undefined,
-}) => {
-    const [values, setValues] = useState(initialValues);
-    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
-    const intl = useIntl();
-    const { snackError } = useSnackMessage();
-    const refInitialValues = useRef();
-    refInitialValues.current = initialValues;
-    const types = useMemo(() => [elementType], [elementType]);
-
-    useEffect(() => {
-        if (refInitialValues.current) {
-            setValues(refInitialValues.current);
-        }
-    }, []);
-
-    const handleDelete = useCallback(
-        (item, index) => {
-            let arr = [...values];
-            arr.splice(index, 1);
-            inputForm?.setHasChanged(arr.length > 0);
-            setValues(arr);
-        },
-        [inputForm, values]
-    );
-
-    const addElements = useCallback(
-        (elements) => {
-            let elementsToAdd = [];
-            elements.forEach((element) => {
-                const { icon, children, ...elementRest } = element;
-                // check if element is already present
-                if (values.find((v) => v.id === elementRest.id) !== undefined) {
-                    snackError({
-                        messageTxt: '',
-                        headerId: 'directory_items_input/ElementAlreadyUsed',
-                    });
-                } else {
-                    elementsToAdd.push(elementRest);
-                }
-            });
-            if (elementsToAdd.length > 0) {
-                inputForm?.setHasChanged(true);
-                setValues(values.concat(elementsToAdd));
-            }
-
-            setDirectoryItemSelectorOpen(false);
-        },
-        [values, snackError, inputForm]
-    );
-
-    const field = useMemo(() => {
-        return (
-            <>
-                <FormControl
-                    sx={mergeSx(styles.formDirectoryElements1, errorMsg && styles.formDirectoryElementsError)}
-                    error={!!errorMsg}
-                    aria-errormessage={errorMsg}
-                >
-                    {values?.length === 0 && (
-                        <Grid container>
-                            <Grid item>
-                                <InputLabel id="elements" sx={styles.labelDirectoryElements} error={!!errorMsg}>
-                                    <FieldLabel label={label} optional={false} />
-                                </InputLabel>
-                            </Grid>
-                        </Grid>
-                    )}
-                    {values?.length > 0 && (
-                        <FormControl sx={styles.formDirectoryElements2}>
-                            <div>
-                                {values.map((item, index) => (
-                                    <Chip
-                                        sx={elementStyle}
-                                        key={label + '_' + index}
-                                        size="small"
-                                        onDelete={() => handleDelete(item, index)}
-                                        label={<OverflowableText text={item.name} sx={{ width: '100%' }} />}
-                                    />
-                                ))}
-                            </div>
-                        </FormControl>
-                    )}
-                    <Grid item xs>
-                        <Grid container direction="row-reverse">
-                            <IconButton
-                                sx={styles.addDirectoryElements}
-                                size={'small'}
-                                onClick={() => setDirectoryItemSelectorOpen(true)}
-                            >
-                                <FolderIcon />
-                            </IconButton>
-                        </Grid>
-                    </Grid>
-                </FormControl>
-                <DirectoryItemSelector
-                    open={directoryItemSelectorOpen}
-                    onClose={addElements}
-                    types={types}
-                    equipmentTypes={equipmentTypes}
-                    title={intl.formatMessage({ id: titleId })}
-                    itemFilter={itemFilter}
-                />
-            </>
-        );
-    }, [
-        errorMsg,
-        values,
-        label,
-        directoryItemSelectorOpen,
-        addElements,
-        equipmentTypes,
-        intl,
-        titleId,
-        itemFilter,
-        elementStyle,
-        handleDelete,
-        types,
-    ]);
-    return [values, field];
 };
 
 export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber, disabled = false }) => {

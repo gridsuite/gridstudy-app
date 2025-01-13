@@ -62,7 +62,7 @@ export const makeComponents = (defParams: Record<string, DefParam>, path: string
     ));
 };
 
-export const makeComponent = (defParam: DefParam, path: string, key: string) => {
+const makeComponent = (defParam: DefParam, path: string, key: string) => {
     const render = defParam?.render ?? defaultParamRender;
     return (
         <>
@@ -75,7 +75,3 @@ export const makeComponent = (defParam: DefParam, path: string, key: string) => 
         </>
     );
 };
-
-export const inputAdornment = (content: ReactElement) => ({
-    endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
-});

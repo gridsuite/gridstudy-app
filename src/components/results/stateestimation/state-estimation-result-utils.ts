@@ -13,17 +13,6 @@ import {
     STATEESTIMATION_QUALITY_PER_REGION,
 } from '../../../utils/store-sort-filter-fields';
 
-export const mappingTabs = (index: number): string => {
-    switch (index) {
-        case 1:
-            return STATEESTIMATION_QUALITY_CRITERION;
-        case 2:
-            return STATEESTIMATION_QUALITY_PER_REGION;
-        default:
-            return '';
-    }
-};
-
 export const stateEstimationQualityCriterionColumnsDefinition = (intl: IntlShape): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({

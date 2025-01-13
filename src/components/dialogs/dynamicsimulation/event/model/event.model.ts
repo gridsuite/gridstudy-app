@@ -9,7 +9,7 @@ import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
 const BRANCH_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER];
 
-export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
+const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
     startTime: {
         type: PrimitiveTypes.FLOAT,
         label: 'DynamicSimulationEventPropertyTEvent',
@@ -36,7 +36,7 @@ export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
     },
 };
 
-export const NODE_FAULT_EVENT_DEFINITION: EventDefinition = {
+const NODE_FAULT_EVENT_DEFINITION: EventDefinition = {
     startTime: {
         type: PrimitiveTypes.FLOAT,
         label: 'DynamicSimulationEventPropertyTEvent',

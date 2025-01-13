@@ -18,7 +18,7 @@ const createSwitchesEmptyFormData = () => ({
     [SWITCH_KIND]: '',
 });
 
-export const getSwitchTypeSchema = () =>
+const getSwitchTypeSchema = () =>
     yup.object().shape({
         [SWITCH_KIND]: yup.string().nullable().required(),
     });

@@ -10,7 +10,7 @@ import { UUID } from 'crypto';
 
 const PREFIX_LOADFLOW_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/loadflow';
 
-export function getLoadFlowUrl() {
+function getLoadFlowUrl() {
     return `${PREFIX_LOADFLOW_SERVER_QUERIES}/v1/`;
 }
 

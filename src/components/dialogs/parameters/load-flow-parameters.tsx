@@ -103,7 +103,7 @@ interface DoubleEditorProps {
     lt?: number;
 }
 
-export const DoubleEditor: FunctionComponent<DoubleEditorProps> = ({
+const DoubleEditor: FunctionComponent<DoubleEditorProps> = ({
     initValue,
     label,
     callback,

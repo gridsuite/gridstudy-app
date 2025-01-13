@@ -38,10 +38,6 @@ const regulatingTerminalValidationSchema = () => ({
         }),
 });
 
-export const getRegulatingTerminalValidationSchema = () => {
-    return regulatingTerminalValidationSchema();
-};
-
 const regulatingTerminalEmptyFormData = () => ({
     [VOLTAGE_LEVEL]: null,
     [EQUIPMENT]: null,
@@ -51,7 +47,7 @@ export const getRegulatingTerminalEmptyFormData = () => {
     return regulatingTerminalEmptyFormData();
 };
 
-export const getRegulatingTerminalVoltageLevelData = ({
+const getRegulatingTerminalVoltageLevelData = ({
     voltageLevelId,
     voltageLevelName = '',
     voltageLevelSubstationId = '',
@@ -71,7 +67,7 @@ export const getRegulatingTerminalVoltageLevelData = ({
     };
 };
 
-export const getRegulatingTerminalEquipmentData = ({ equipmentId, equipmentName = '', equipmentType = '' }) => {
+const getRegulatingTerminalEquipmentData = ({ equipmentId, equipmentName = '', equipmentType = '' }) => {
     if (!equipmentId) {
         return null;
     }

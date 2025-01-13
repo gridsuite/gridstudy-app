@@ -314,7 +314,7 @@ export const getPhaseTapRegulationSideId = (twt) => {
     }
 };
 
-export const getComputedPhaseRegulationType = (twt) => {
+const getComputedPhaseRegulationType = (twt) => {
     if (!twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId) {
         return null;
     }

@@ -55,8 +55,6 @@ export const CONNECTIVITY_2 = 'connectivity2';
 export const ENERGY_SOURCE = 'energySource';
 export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
 export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
-export const MAX_ACTIVE_POWER = 'maxActivePower';
-export const MIN_ACTIVE_POWER = 'minActivePower';
 export const MAX_P = 'maxP';
 export const MIN_P = 'minP';
 export const RATED_NOMINAL_POWER = 'ratedNominalPower';
@@ -170,7 +168,6 @@ export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
 export const SEGMENTS = 'segments';
 
 // Voltage level
-export const BUS_BAR_SECTIONS = 'busbarSections';
 export const BUS_BAR_SECTION_ID1 = 'busbarSectionId1';
 export const BUS_BAR_SECTION_ID2 = 'busbarSectionId2';
 export const SWITCH_KIND = 'switchKind';
@@ -193,13 +190,9 @@ export const ACTIVATED = 'activated';
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
 export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerX';
-export const REGULATING_TERMINAL = 'regulatingTerminal';
-export const REGULATING_TERMINAL_ID = 'regulatingTerminalId';
 export const REGULATING_TERMINAL_VOLTAGE_LEVEL_ID = 'regulatingTerminalVlId';
 export const REGULATING_TERMINAL_TYPE = 'regulatingTerminalType';
 
-export const ACTIVE_POWER_CONTROL_ON = 'activePowerControlOn';
-export const GENERATOR = 'generator';
 //line-attach-to-voltage-level
 export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';
@@ -211,7 +204,6 @@ export const LINE1_ID = 'Line1Id';
 export const LINE2_ID = 'Line2Id';
 
 //percentage-area
-export const PERCENTAGE_AREA = 'percentageArea';
 export const LEFT_SIDE_PERCENTAGE = 'leftSidePercentage';
 export const RIGHT_SIDE_PERCENTAGE = 'rightSidePercentage';
 export const SLIDER_PERCENTAGE = 'sliderPercentage';
@@ -227,7 +219,6 @@ export const VARIATION_TYPE = 'variationType';
 export const VARIATION_VALUE = 'variationValue';
 export const REACTIVE_VARIATION_MODE = 'reactiveVariationMode';
 
-export const MONITORED_BRANCHES_EQUIPMENT = 'monitoredBranchesEquipment';
 // elements and directories
 export const SPECIFIC_METADATA = 'specificMetadata';
 
@@ -292,7 +283,6 @@ export const ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'angleFlowSensitivityValue
 export const FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD = 'flowVoltageSensitivityValueThreshold';
 export const PARAMETER_SENSI_INJECTIONS_SET = 'sensitivityInjectionsSet';
 export const SENSI_INJECTIONS_SET = 'sensitivityInjectionsSet';
-export const SENSI_INJECTION = 'sensiInjection';
 export const PARAMETER_SENSI_INJECTION = 'sensitivityInjection';
 export const PARAMETER_SENSI_HVDC = 'sensitivityHVDC';
 export const PARAMETER_SENSI_PST = 'sensitivityPST';

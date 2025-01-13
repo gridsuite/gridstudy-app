@@ -101,12 +101,12 @@ const guidancePopupStyle = {
 };
 
 // define the guidancePopup title and content
-export const Title = () => (
+const Title = () => (
     <Typography variant="h6" component="div" sx={styles.title}>
         <FormattedMessage id="guidancePopUp.title" />
     </Typography>
 );
-export const Content = () => (
+const Content = () => (
     <>
         <Typography variant="body2" sx={styles.popUpContent}>
             <FormattedMessage

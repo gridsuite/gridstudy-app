@@ -5,6 +5,5 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 export const TOOLTIP_DELAY = 1000;
 export const DRAWER_NODE_EDITOR_WIDTH = 400;

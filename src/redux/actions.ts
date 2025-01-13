@@ -408,12 +408,6 @@ export function closeStudy(): CloseStudyAction {
     return { type: CLOSE_STUDY };
 }
 
-export const REMOVE_SELECTED_CASE = 'REMOVE_SELECTED_CASE';
-export type RemoveSelectedCaseAction = Readonly<Action<typeof REMOVE_SELECTED_CASE>>;
-export function removeSelectedCase(): RemoveSelectedCaseAction {
-    return { type: REMOVE_SELECTED_CASE };
-}
-
 export const USE_NAME = 'USE_NAME';
 export type UseNameAction = Readonly<Action<typeof USE_NAME>> & {
     [PARAM_USE_NAME]: boolean;
@@ -1156,19 +1150,3 @@ export const addSortForNewSpreadsheet = (
         value,
     },
 });
-
-export const STATEESTIMATION_RESULT_FILTER = 'STATEESTIMATION_RESULT_FILTER';
-export type StateEstimationResultFilterAction = Readonly<Action<typeof STATEESTIMATION_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD];
-    [STATEESTIMATION_RESULT_STORE_FIELD]: MutableUnknownArray;
-};
-export function setStateEstimationResultFilter(
-    filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD],
-    stateEstimationResultFilter: MutableUnknownArray
-): StateEstimationResultFilterAction {
-    return {
-        type: STATEESTIMATION_RESULT_FILTER,
-        filterTab: filterTab,
-        [STATEESTIMATION_RESULT_STORE_FIELD]: stateEstimationResultFilter,
-    };
-}

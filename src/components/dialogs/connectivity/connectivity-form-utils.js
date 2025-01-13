@@ -20,7 +20,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
 
-export const getConnectivityPropertiesValidationSchema = (isEquipmentModification = false) => {
+const getConnectivityPropertiesValidationSchema = (isEquipmentModification = false) => {
     return {
         [VOLTAGE_LEVEL]: yup
             .object()
@@ -78,7 +78,7 @@ export const getConnectivityWithoutPositionValidationSchema = (id = CONNECTIVITY
     };
 };
 
-export const getConnectivityPropertiesEmptyFormData = (isEquipmentModification = false) => {
+const getConnectivityPropertiesEmptyFormData = (isEquipmentModification = false) => {
     return {
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
@@ -127,7 +127,7 @@ export const getConnectivityBusBarSectionData = ({ busbarSectionId, busbarSectio
     };
 };
 
-export const getConnectivityPropertiesData = ({ voltageLevelId, busbarSectionId, busbarSectionName }) => {
+const getConnectivityPropertiesData = ({ voltageLevelId, busbarSectionId, busbarSectionName }) => {
     return {
         [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
             voltageLevelId,

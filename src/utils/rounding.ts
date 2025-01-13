@@ -10,7 +10,7 @@
 // in exchange for getting nicer shorter numbers more often, we choose to drop all precision beyond this limit to have uniform precision.
 // The number of significant digits, e.g. 12345.67890123 or 1.234567890123 or 1234567890123 or 0.00000001234567890123
 // note: this is not the digits after the decimal point, this is the total number of digits after the first non zero digit
-export const GRIDSUITE_DEFAULT_PRECISION = 13;
+const GRIDSUITE_DEFAULT_PRECISION = 13;
 
 // convert to rounded decimal string and reparse to get a nicer number
 // example: with precision=13,
@@ -25,7 +25,7 @@ export const GRIDSUITE_DEFAULT_PRECISION = 13;
 // Note: this is not guaranteed to always round in the same direction:
 // roundToPrecision(300000.00000365, 13) => 300000.0000037
 // roundToPrecision(900000.00000365, 13) => 900000.0000036
-export const roundToPrecision = (num: number, precision: number) => Number(num.toPrecision(precision));
+const roundToPrecision = (num: number, precision: number) => Number(num.toPrecision(precision));
 export const roundToDefaultPrecision = (num: number) => roundToPrecision(num, GRIDSUITE_DEFAULT_PRECISION);
 
 /**
@@ -51,17 +51,4 @@ export const countDecimalPlacesFromString = (numberAsString: string) => {
 
     // If the number does not have a decimal part, return 0
     return 0;
-};
-
-export const truncateNumber = (value: number, decimalPrecision: number) => {
-    // Calculate the factor based on the decimal precision (e.g., 100 for two decimal places)
-    let factor = Math.pow(10, decimalPrecision);
-
-    // Truncate the number to maintain precision
-    // Here, 'value' is multiplied by a factor before being floored.
-    // This truncation helps in eliminating floating point arithmetic issues like 0.1 + 0.2 not exactly equaling 0.3.
-    // After flooring, the value is divided by the same factor to revert it to its original scale but truncated.
-    let truncatedNumber = Math.floor(value * factor) / factor;
-
-    return truncatedNumber;
 };

@@ -29,13 +29,6 @@ export const getStudyUrl = (studyUuid: UUID | null) =>
 export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: string | undefined) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
-export const fetchStudy = (studyUuid: UUID) => {
-    console.info(`Fetching study '${studyUuid}' ...`);
-    const fetchStudiesUrl = getStudyUrl(studyUuid);
-    console.debug(fetchStudiesUrl);
-    return backendFetchJson(fetchStudiesUrl);
-};
-
 export const fetchStudyExists = (studyUuid: UUID) => {
     console.info(`Fetching study '${studyUuid}' existence ...`);
     const fetchStudiesUrl = getStudyUrl(studyUuid);

@@ -18,7 +18,7 @@ import {
 import { VARIATION_MODES } from 'components/network/constants';
 
 export const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
-export const getVariationSchema = () =>
+const getVariationSchema = () =>
     yup
         .object()
         .nullable()

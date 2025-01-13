@@ -37,23 +37,6 @@ import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 
-export const convertMillisecondsToMinutesSeconds = (durationInMilliseconds: number): string => {
-    const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
-
-    const minutes = Math.floor(durationInSeconds / 60);
-    const seconds = durationInSeconds % 60;
-
-    if (seconds === 0) {
-        return minutes + "'";
-    }
-
-    if (minutes === 0) {
-        return seconds + '"';
-    }
-
-    return minutes + "' " + seconds + '"';
-};
-
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
         ? intl.formatMessage({ id: 'Side1' })
@@ -77,7 +60,7 @@ export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string>
     upComingOverloadDuration: 'upComingOverload',
     overload: 'overload',
 };
-export const FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT: Record<string, string> = {
+const FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT: Record<string, string> = {
     connectedComponentNum: 'connectedComponentNum',
     status: 'status',
     synchronousComponentNum: 'synchronousComponentNum',
@@ -100,19 +83,6 @@ const translatedFilterParams = {
 const numericFilterParams = {
     filterDataType: FILTER_DATA_TYPES.NUMBER,
     filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-};
-
-export const getIdType = (index: number): string => {
-    switch (index) {
-        case 0:
-            return 'overload';
-        case 1:
-            return 'subjectId';
-        case 2:
-            return 'connectedComponentNum';
-        default:
-            return '';
-    }
 };
 
 export const mappingFields = (index: number): Record<string, string> => {
@@ -334,7 +304,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     ];
 };
 
-export const formatLimitType = (limitType: string, intl: IntlShape) => {
+const formatLimitType = (limitType: string, intl: IntlShape) => {
     return limitType in LimitTypes ? intl.formatMessage({ id: limitType }) : limitType;
 };
 export const loadFlowVoltageViolationsColumnsDefinition = (

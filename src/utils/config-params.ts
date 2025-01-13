@@ -53,7 +53,3 @@ const PARAM_SA_PROPORTIONAL_THRESHOLD = new Set([
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
 ]);
-
-export const isProportionalSAParam = (param: string) => {
-    return PARAM_SA_PROPORTIONAL_THRESHOLD.has(param);
-};

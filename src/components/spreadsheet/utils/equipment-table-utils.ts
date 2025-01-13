@@ -148,7 +148,7 @@ const formatPhaseTapChanger = (twt: any) => {
     };
 };
 
-export const formatTwtDataForTable = (twt: any) => {
+const formatTwtDataForTable = (twt: any) => {
     let formattedTwt = formatRatioTapChanger(twt);
     formattedTwt = formatPhaseTapChanger(formattedTwt);
 

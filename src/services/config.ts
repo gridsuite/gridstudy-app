@@ -29,15 +29,3 @@ export function updateConfigParameter(name: string, value: string) {
         PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters/${name}?value=` + encodeURIComponent(value);
     return backendFetch(updateParams, { method: 'put' });
 }
-
-export function updateConfigParameters(parameters: Record<string, string | number | boolean>) {
-    const updateParams = PREFIX_CONFIG_QUERIES + `/v1/applications/${APP_NAME}/parameters`;
-    return backendFetch(updateParams, {
-        method: 'put',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(parameters),
-    });
-}

@@ -18,19 +18,6 @@ import { fetchVoltageLevelEquipments } from '../../../services/study/network-map
 // option filter behaviour of the Autocomplete component
 const filter = createFilterOptions();
 
-export const REGULATING_VOLTAGE_LEVEL = 'regulating-voltage-level';
-export const REGULATING_EQUIPMENT = 'regulating-equipment';
-
-export function makeRefreshRegulatingTerminalSectionsCallback() {
-    return (voltageLevel, putter) => {
-        if (voltageLevel?.equipments) {
-            putter(voltageLevel.equipments);
-        } else {
-            putter([]);
-        }
-    };
-}
-
 // Specific Popper component to be used with Autocomplete
 // This allows the popper to fit its content, which is not the case by default
 const FittingPopper = (props) => {

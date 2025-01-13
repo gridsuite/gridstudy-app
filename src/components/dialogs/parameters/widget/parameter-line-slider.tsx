@@ -6,7 +6,7 @@
  */
 
 import { mergeSx } from '@gridsuite/commons-ui';
-import { Mark } from '@mui/base/useSlider';
+import type { Mark } from '@mui/base/useSlider';
 import { Grid, Slider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';

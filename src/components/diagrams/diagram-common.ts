@@ -185,44 +185,6 @@ export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): 
     }
 }
 
-export function getFeederTypeFromEquipmentType(equipmentType: EQUIPMENT_TYPES) {
-    switch (equipmentType) {
-        case EQUIPMENT_TYPES.SUBSTATION:
-            return FEEDER_TYPES.SUBSTATION;
-        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
-            return FEEDER_TYPES.VOLTAGE_LEVEL;
-        case EQUIPMENT_TYPES.LINE:
-            return FEEDER_TYPES.LINE;
-        case EQUIPMENT_TYPES.LOAD:
-            return FEEDER_TYPES.LOAD;
-        case EQUIPMENT_TYPES.BATTERY:
-            return FEEDER_TYPES.BATTERY;
-        case FEEDER_TYPES.TIE_LINE:
-            return EQUIPMENT_TYPES.TIE_LINE;
-        case EQUIPMENT_TYPES.DANGLING_LINE:
-            return FEEDER_TYPES.DANGLING_LINE;
-        case EQUIPMENT_TYPES.GENERATOR:
-            return FEEDER_TYPES.GENERATOR;
-        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
-        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
-            return FEEDER_TYPES.HVDC_CONVERTER_STATION;
-        case EQUIPMENT_TYPES.HVDC_LINE:
-            return FEEDER_TYPES.HVDC_LINE;
-        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-            return FEEDER_TYPES.SHUNT_COMPENSATOR;
-        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
-            return FEEDER_TYPES.STATIC_VAR_COMPENSATOR;
-        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-            return FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER;
-        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
-            return FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER;
-        default: {
-            console.info('Unrecognized equipment type encountered ', equipmentType);
-            return null;
-        }
-    }
-}
-
 export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentType | null {
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:

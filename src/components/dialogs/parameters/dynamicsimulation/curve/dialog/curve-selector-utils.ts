@@ -23,7 +23,7 @@ export const getReferencedEquipmentTypeForModel = (equipmentType: EQUIPMENT_TYPE
 };
 
 // this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EQUIPMENT_TYPES.BUS
-export const getTopologyKindIfNecessary = (equipmentType: string) => {
+const getTopologyKindIfNecessary = (equipmentType: string) => {
     return equipmentType === EQUIPMENT_TYPES.BUS
         ? {
               topologyKind: 'BUS_BREAKER',
@@ -31,7 +31,7 @@ export const getTopologyKindIfNecessary = (equipmentType: string) => {
         : {};
 };
 
-export const buildExpertRules = (
+const buildExpertRules = (
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined
