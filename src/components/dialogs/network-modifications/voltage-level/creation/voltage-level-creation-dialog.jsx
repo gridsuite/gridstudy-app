@@ -100,8 +100,8 @@ const formSchema = yup
         [SUBSTATION_ID]: yup
             .string()
             .nullable()
-            .when([SUBSTATION_CREATION_ID], {
-                is: (substationCreationId) => substationCreationId === null,
+            .when([SUBSTATION_CREATION], {
+                is: (substationCreation) => !substationCreation?.substationCreationId,
                 then: (schema) => schema.required(),
             }),
         [NOMINAL_V]: yup.number().nullable().required(),
@@ -148,8 +148,8 @@ const formSchema = yup
                     .string()
                     .nullable()
                     .when([SUBSTATION_ID], {
-                        is: (substationId) => substationId === null,
-                        then: (schema) => schema.required(),
+                        is: (substationId) => !substationId,
+                        then: (schema) => schema.notRequired(),
                     }),
                 [SUBSTATION_NAME]: yup.string().nullable(),
                 [COUNTRY]: yup.string().nullable(),
@@ -179,9 +179,6 @@ const VoltageLevelCreationDialog = ({
     const [isSubstationCreation, setIsSubstationCreation] = useState(false);
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
-            !fromCopy && voltageLevel?.substationCreation !== null
-                ? setIsSubstationCreation(true)
-                : setIsSubstationCreation(false);
             const properties = fromCopy
                 ? copyEquipmentPropertiesForCreation(voltageLevel)
                 : getPropertiesFromModification(voltageLevel.properties);
@@ -190,11 +187,13 @@ const VoltageLevelCreationDialog = ({
                     [EQUIPMENT_ID]: (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : ''),
                     [EQUIPMENT_NAME]: voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
                     [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
-                    [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID] ?? null,
-                    [SUBSTATION_CREATION]: !fromCopy ? voltageLevel?.substationCreation : null,
-                    [SUBSTATION_CREATION_ID]: !fromCopy ? voltageLevel?.substationCreation?.equipmentId : null,
-                    [SUBSTATION_NAME]: !fromCopy ? voltageLevel?.substationCreation?.substationName : null,
-                    [COUNTRY]: !fromCopy ? voltageLevel?.substationCreation?.country : null,
+                    [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
+                    [SUBSTATION_CREATION]: {
+                        [SUBSTATION_CREATION_ID]: voltageLevel.substationCreation?.equipmentId,
+                        [SUBSTATION_NAME]: voltageLevel.substationCreation?.equipmentName,
+                        [COUNTRY]: voltageLevel.substationCreation?.country,
+                        ...getPropertiesFromModification(voltageLevel.substationCreation?.properties),
+                    },
                     [NOMINAL_V]: voltageLevel[NOMINAL_V],
                     [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                     [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
@@ -261,7 +260,7 @@ const VoltageLevelCreationDialog = ({
                 nodeUuid: currentNodeUuid,
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
-                substationId: voltageLevel[SUBSTATION_ID],
+                substationId: substationCreation ? null : voltageLevel[SUBSTATION_ID],
                 substationCreation,
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
@@ -320,6 +319,7 @@ const VoltageLevelCreationDialog = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     handleSubstationCreation={handleSubstationCreation}
+                    addSubstationCreation={isSubstationCreation}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

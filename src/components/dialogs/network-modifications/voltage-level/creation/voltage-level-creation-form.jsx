@@ -40,7 +40,7 @@ import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selectio
 import DeleteIcon from '@mui/icons-material/Delete.js';
 import LineSeparator from '../../../commons/line-separator';
 
-const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCreation }) => {
+const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCreation, addSubstationCreation }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
     const { setValue } = useFormContext();
@@ -153,14 +153,12 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCrea
         handleSubstationCreation(true);
         setIsWithSubstationCreation(true);
         setValue(SUBSTATION_ID, null);
-    }, [handleSubstationCreation, setValue]);
-
-    const handleCloseButton = useCallback(() => {
+    }, [setValue, handleSubstationCreation]);
+    const handleDeleteButton = useCallback(() => {
         handleSubstationCreation(false);
         setIsWithSubstationCreation(false);
-        setValue(SUBSTATION_ID, null);
-    }, [handleSubstationCreation, setValue]);
-
+        setValue(`${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`, null);
+    }, [setValue, handleSubstationCreation]);
     return (
         <>
             <Grid container spacing={2}>
@@ -168,7 +166,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCrea
                 <GridItem>{voltageLevelNameField}</GridItem>
             </Grid>
 
-            {isWithSubstationCreation ? (
+            {isWithSubstationCreation || addSubstationCreation ? (
                 <Grid>
                     <Grid item xs={12} container spacing={2}></Grid>
                     <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />
@@ -183,7 +181,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCrea
                             {substationCreationCountryField}
                         </Grid>
                         <Grid item xs={1}>
-                            <IconButton onClick={handleCloseButton}>
+                            <IconButton onClick={handleDeleteButton}>
                                 <DeleteIcon />
                             </IconButton>
                         </Grid>
