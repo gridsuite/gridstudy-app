@@ -23,7 +23,7 @@ export const SelectedOperationalLimitGroup = ({
         name: optionsFormName,
     });
 
-    const limitSets: string[] = useMemo(
+    const opLimitsGroupsNames: string[] = useMemo(
         () => (optionsValues ? optionsValues.map((optionObj: OperationalLimitsGroup) => optionObj.id) : []),
         [optionsValues]
     );
@@ -32,7 +32,7 @@ export const SelectedOperationalLimitGroup = ({
         <Box sx={{ maxWidth: 300 }}>
             <AutocompleteInput
                 name={selectedFormName}
-                options={limitSets}
+                options={opLimitsGroupsNames}
                 label={'SelectedOperationalLimitGroup'}
                 size={'small'}
                 allowNewValue

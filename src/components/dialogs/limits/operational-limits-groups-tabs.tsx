@@ -21,16 +21,10 @@ import {
     SELECTED_LIMITS_GROUP_2,
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
-import { useFieldArray, useWatch } from 'react-hook-form';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 
 const styles = {
     limitsBackground: {
-        backgroundColor: '#1a1919', // TODO : those colors may be found in the theme see with Stephane ??
-        p: 1,
-        '&.Mui-selected': { backgroundColor: '#383838' },
-    },
-    limitsBackgroundUnselected: {
-        backgroundColor: '#1a1919',
         p: 1,
     },
 };
@@ -54,6 +48,7 @@ export function OperationalLimitsGroupsTabs({
     const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
     const editLimitGroupRef = useRef<HTMLInputElement>(null);
+    const { setValue } = useForm();
     const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
     });
@@ -61,15 +56,9 @@ export function OperationalLimitsGroupsTabs({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
     const selectedLimitsGroups1: string = useWatch({
-        name: `${id}.${SELECTED_LIMITS_GROUP_1}.`,
-    });
-    const { replace: replaceSelectedLimitsGroups1 } = useFieldArray({
         name: `${id}.${SELECTED_LIMITS_GROUP_1}`,
     });
     const selectedLimitsGroups2: string = useWatch({
-        name: `${id}.${SELECTED_LIMITS_GROUP_2}.`,
-    });
-    const { replace: replaceSelectedLimitsGroups2 } = useFieldArray({
         name: `${id}.${SELECTED_LIMITS_GROUP_2}`,
     });
 
@@ -159,7 +148,7 @@ export function OperationalLimitsGroupsTabs({
                     [ID]: editedLimitGroupName,
                 });
                 if (selectedLimitsGroups1 === oldName) {
-                    replaceSelectedLimitsGroups1(editedLimitGroupName);
+                    setValue(`${id}.${SELECTED_LIMITS_GROUP_1}`, editedLimitGroupName);
                 }
             }
 
@@ -172,14 +161,14 @@ export function OperationalLimitsGroupsTabs({
                     [ID]: editedLimitGroupName,
                 });
                 if (selectedLimitsGroups2 === oldName) {
-                    replaceSelectedLimitsGroups2(editedLimitGroupName);
+                    setValue(`${id}.${SELECTED_LIMITS_GROUP_2}`, editedLimitGroupName);
                 }
             }
             setEditingTabIndex(null);
         }
     }, [
-        replaceSelectedLimitsGroups1,
-        replaceSelectedLimitsGroups2,
+        id,
+        setValue,
         selectedLimitsGroups1,
         selectedLimitsGroups2,
         editingTabIndex,
@@ -245,11 +234,7 @@ export function OperationalLimitsGroupsTabs({
                             </Box>
                         )
                     }
-                    sx={
-                        index === selectedLimitGroupTabIndex
-                            ? styles.limitsBackground
-                            : styles.limitsBackgroundUnselected
-                    }
+                    sx={styles.limitsBackground}
                 />
             ))}
         </Tabs>
