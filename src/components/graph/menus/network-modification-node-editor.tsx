@@ -7,10 +7,10 @@
 
 import {
     CheckBoxList,
-    useSnackMessage,
-    useModificationLabelComputer,
-    MODIFICATION_TYPES,
     ElementType,
+    MODIFICATION_TYPES,
+    useModificationLabelComputer,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -49,8 +49,8 @@ import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-mod
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
-import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
-import VscModificationDialog from 'components/dialogs/network-modifications/vsc/modification/vsc-modification-dialog';
+import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/creation/vsc-creation-dialog';
+import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
 import { UPDATE_TYPE } from 'components/network/constants';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -95,6 +95,7 @@ import StaticVarCompensatorCreationDialog from '../../dialogs/network-modificati
 import ModificationByAssignmentDialog from '../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
 import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
+import { LccCreationDialog } from '../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 
 export const styles = {
     listContainer: (theme: Theme) => ({
@@ -323,6 +324,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.VSC_CREATION.type,
                     label: 'VSC',
                     action: () => withDefaultParams(VscCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LCC_CREATION.type,
+                    label: 'LCC',
+                    action: () => withDefaultParams(LccCreationDialog),
                 },
             ],
         },
@@ -758,18 +764,18 @@ const NetworkModificationNodeEditor = () => {
     }, [currentNode?.id, selectedModificationsIds]);
 
     const doPasteModifications = useCallback(() => {
-        if (!copyInfos) {
+        if (!copyInfos || !studyUuid || !currentNode?.id) {
             return;
         }
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
-            copyOrMoveModifications(studyUuid, currentNode?.id, copiedModifications, copyInfos).catch((errmsg) => {
+            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errCutModificationMsg',
                 });
             });
         } else {
-            copyOrMoveModifications(studyUuid, currentNode?.id, copiedModifications, copyInfos).catch((errmsg) => {
+            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errDuplicateModificationMsg',
@@ -919,7 +925,7 @@ const NetworkModificationNodeEditor = () => {
                 getItemId={(val) => val.uuid}
                 getItemLabel={getModificationLabel}
                 isDndDragAndDropActive
-                isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading || deleteInProgress}
+                isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading}
                 secondaryAction={handleSecondaryAction}
                 onDragEnd={commit}
                 onDragStart={() => setIsDragging(true)}
@@ -1024,7 +1030,7 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
-                    disabled={isAnyNodeBuilding || mapDataLoading || deleteInProgress}
+                    disabled={isAnyNodeBuilding || mapDataLoading}
                 >
                     <AddIcon />
                 </IconButton>
@@ -1034,7 +1040,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openImportModificationsDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={isAnyNodeBuilding || mapDataLoading || deleteInProgress}
+                            disabled={isAnyNodeBuilding || mapDataLoading}
                         >
                             <CreateNewFolderIcon />
                         </IconButton>
@@ -1085,11 +1091,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             sx={styles.toolbarIcon}
                             disabled={
-                                !(copiedModifications.length > 0) ||
-                                isAnyNodeBuilding ||
-                                mapDataLoading ||
-                                deleteInProgress ||
-                                !currentNode
+                                !(copiedModifications.length > 0) || isAnyNodeBuilding || mapDataLoading || !currentNode
                             }
                         >
                             <ContentPasteIcon />

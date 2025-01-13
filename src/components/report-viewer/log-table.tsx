@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { memo, useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
@@ -15,8 +15,7 @@ import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-f
 import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
-import { getDefaultSeverityFilter, orderSeverityList, REPORT_SEVERITY } from '../../utils/report/report-severity';
-import PropTypes from 'prop-types';
+import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
@@ -26,6 +25,7 @@ import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.con
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { MessageLogCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 
 const styles = {
     chip: (severity: string, severityFilter: string[], theme: Theme) => ({
@@ -62,7 +62,7 @@ type LogTableProps = {
     selectedReportId: string;
     reportType: string;
     reportNature: ReportType;
-    severities: SeverityLevel[];
+    severities: SeverityLevel[] | undefined;
     onRowClick: (data: ReportLog) => void;
 };
 
@@ -73,7 +73,9 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
 
     const dispatch = useDispatch();
 
-    const [, , fetchReportLogs] = useReportFetcher(reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE);
+    const [, , fetchReportLogs, fetchNodeSeverities] = useReportFetcher(
+        reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
+    );
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: LOGS_STORE_FIELD,
         filterTab: reportType,
@@ -89,7 +91,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
 
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
-    const orderedSeverities = useMemo(() => orderSeverityList(severities), [severities]);
 
     const resetSearch = useCallback(() => {
         setSearchResults([]);
@@ -103,7 +104,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             resetSearch();
             return;
         }
-        fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter).then((reportLogs) => {
+        fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter)?.then((reportLogs) => {
             const transformedLogs = reportLogs.map(
                 (log) =>
                     ({
@@ -117,11 +118,10 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             setRowData(transformedLogs);
             resetSearch();
         });
-    }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId, resetSearch]);
+    }, [severityFilter, fetchReportLogs, selectedReportId, reportNature, messageFilter, resetSearch]);
 
     useEffect(() => {
-        // initialize the filter with the severities
-        if (filterSelector?.length === 0 && severities?.length > 0) {
+        if (filterSelector?.length === 0 && severities && severities.length > 0) {
             dispatch(
                 setLogsFilter(reportType, [
                     {
@@ -133,19 +133,13 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 ])
             );
         }
+    }, [severities, dispatch, reportType, filterSelector, fetchNodeSeverities, selectedReportId, reportNature]);
+
+    useEffect(() => {
         if (selectedReportId && reportNature) {
             refreshLogsOnSelectedReport();
         }
-    }, [
-        dispatch,
-        filterSelector?.length,
-        refreshLogsOnSelectedReport,
-        reportNature,
-        reportType,
-        selectedReportId,
-        severities,
-        updateFilter,
-    ]);
+    }, [refreshLogsOnSelectedReport, reportNature, selectedReportId]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
@@ -163,13 +157,14 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 headerName: intl.formatMessage({ id: 'report_viewer/message' }),
                 id: 'message',
                 field: 'message',
-                filterProps: {
-                    updateFilter,
-                    filterSelector,
-                },
-                filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        updateFilter,
+                        filterSelector,
+                        filterDataType: FILTER_DATA_TYPES.TEXT,
+                        filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                    },
                 },
                 flex: 1,
                 cellRenderer: (param: ICellRendererParams) =>
@@ -323,10 +318,11 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                     onNavigate={handleNavigate}
                     resultCount={searchResults.length}
                     resetSearch={resetSearch}
+                    placeholder="searchPlaceholderLog"
                 />
             </Box>
             <Box sx={styles.chipContainer}>
-                {orderedSeverities.map((severity, index) => (
+                {severities?.map((severity, index) => (
                     <Chip
                         key={severity}
                         label={severity}
@@ -350,14 +346,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             </Box>
         </Box>
     );
-};
-
-LogTable.propTypes = {
-    selectedReportId: PropTypes.string,
-    reportType: PropTypes.string,
-    reportNature: PropTypes.string,
-    severities: PropTypes.arrayOf(PropTypes.string),
-    onRowClick: PropTypes.func,
 };
 
 export default memo(LogTable);

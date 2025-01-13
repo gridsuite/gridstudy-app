@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    convertOutputValue,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid } from '@mui/material';
 import {
@@ -55,7 +61,6 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
@@ -218,8 +223,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 ...getTwoWindingsTransformerFormData({
                     r: twt.r,
                     x: twt.x,
-                    g: unitToMicroUnit(twt.g),
-                    b: unitToMicroUnit(twt.b),
+                    g: convertInputValue(FieldType.G, twt.g),
+                    b: convertInputValue(FieldType.B, twt.b),
                     ratedU1: twt.ratedU1,
                     ratedU2: twt.ratedU2,
                     ratedS: twt.ratedS,
@@ -311,8 +316,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getTwoWindingsTransformerFormData({
                         r: twt.r,
                         x: twt.x,
-                        g: unitToMicroUnit(twt.g),
-                        b: unitToMicroUnit(twt.b),
+                        g: convertInputValue(FieldType.G, twt.g),
+                        b: convertInputValue(FieldType.B, twt.b),
                         ratedU1: twt.ratedU1,
                         ratedU2: twt.ratedU2,
                         ratedS: twt.ratedS,
@@ -503,8 +508,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 temporaryLimits: sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
             };
 
-            characteristics[G] = microUnitToUnit(characteristics[G]);
-            characteristics[B] = microUnitToUnit(characteristics[B]);
+            characteristics[G] = convertOutputValue(FieldType.G, characteristics[G]);
+            characteristics[B] = convertOutputValue(FieldType.B, characteristics[B]);
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
@@ -559,38 +564,40 @@ const TwoWindingsTransformerCreationDialog = ({
                 };
             }
 
-            createTwoWindingsTransformer(
-                studyUuid,
-                currentNodeUuid,
-                twt[EQUIPMENT_ID],
-                sanitizeString(twt[EQUIPMENT_NAME]),
-                characteristics[R],
-                characteristics[X],
-                characteristics[G],
-                characteristics[B],
-                characteristics[RATED_S] ?? '',
-                characteristics[RATED_U1],
-                characteristics[RATED_U2],
-                currentLimits1,
-                currentLimits2,
-                characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
-                characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[ID],
-                characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                ratioTap,
-                phaseTap,
-                !!editData,
-                editData ? editData.uuid : undefined,
-                sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-                sanitizeString(characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]),
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
-                characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
-                characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
-                toModificationProperties(twt)
-            ).catch((error) => {
+            createTwoWindingsTransformer({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                twoWindingsTransformerId: twt[EQUIPMENT_ID],
+                twoWindingsTransformerName: sanitizeString(twt[EQUIPMENT_NAME]),
+                r: characteristics[R],
+                x: characteristics[X],
+                g: characteristics[G],
+                b: characteristics[B],
+                ratedS: characteristics[RATED_S] ?? '',
+                ratedU1: characteristics[RATED_U1],
+                ratedU2: characteristics[RATED_U2],
+                currentLimit1: currentLimits1,
+                currentLimit2: currentLimits2,
+                voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
+                busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[ID],
+                busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                ratioTapChanger: ratioTap,
+                phaseTapChanger: phaseTap,
+                isUpdate: !!editData,
+                modificationUuid: editData ? editData.uuid : undefined,
+                connectionName1: sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),
+                connectionDirection1:
+                    characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectionName2: sanitizeString(characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]),
+                connectionDirection2:
+                    characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectionPosition1: characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
+                connectionPosition2: characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
+                connected1: characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
+                connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
+                properties: toModificationProperties(twt),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'TwoWindingsTransformerCreationError',
@@ -600,26 +607,33 @@ const TwoWindingsTransformerCreationDialog = ({
         [editData, studyUuid, currentNodeUuid, snackError]
     );
 
-    const onValidationError = (errors) => {
-        let tabsInError = [];
-        if (errors?.[PHASE_TAP_CHANGER] !== undefined) {
-            tabsInError.push(TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB);
-        }
-        if (errors?.[RATIO_TAP_CHANGER] !== undefined) {
-            tabsInError.push(TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB);
-        }
-        if (errors?.[CHARACTERISTICS] !== undefined) {
-            tabsInError.push(TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB);
-        }
-        if (errors?.[LIMITS] !== undefined) {
-            tabsInError.push(TwoWindingsTransformerCreationDialogTab.LIMITS_TAB);
-        }
+    const onValidationError = useCallback(
+        (errors) => {
+            const tabsInError = [];
+            if (errors?.[PHASE_TAP_CHANGER] !== undefined) {
+                tabsInError.push(TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB);
+            }
+            if (errors?.[RATIO_TAP_CHANGER] !== undefined) {
+                tabsInError.push(TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB);
+            }
+            if (errors?.[CHARACTERISTICS] !== undefined) {
+                tabsInError.push(TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB);
+            }
+            if (errors?.[LIMITS] !== undefined) {
+                tabsInError.push(TwoWindingsTransformerCreationDialogTab.LIMITS_TAB);
+            }
 
-        if (tabsInError.length > 0) {
-            setTabIndex(tabsInError[0]);
-        }
-        setTabIndexesWithError(tabsInError);
-    };
+            if (tabsInError.includes(tabIndex)) {
+                // error in current tab => do not change tab systematically but remove current tab in error list
+                setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
+            } else if (tabsInError.length > 0) {
+                // switch to the first tab in the list then remove the tab in the error list
+                setTabIndex(tabsInError[0]);
+                setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
+            }
+        },
+        [tabIndex]
+    );
 
     const clear = useCallback(() => {
         reset(emptyFormData);

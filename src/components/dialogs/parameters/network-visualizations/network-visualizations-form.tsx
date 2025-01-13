@@ -49,7 +49,7 @@ export const networkVisualizationParametersSchema = yup.object().shape({
         [PARAM_LINE_PARALLEL_PATH]: yup.boolean(),
         [PARAM_LINE_FLOW_MODE]: yup.string(),
         [PARAM_LINE_FLOW_COLOR_MODE]: yup.string(),
-        [PARAM_LINE_FLOW_ALERT_THRESHOLD]: yup.number().positive(),
+        [PARAM_LINE_FLOW_ALERT_THRESHOLD]: yup.number().positive().max(100),
         [PARAM_MAP_MANUAL_REFRESH]: yup.boolean(),
         [PARAM_MAP_BASEMAP]: yup.string(),
     }),
@@ -57,7 +57,7 @@ export const networkVisualizationParametersSchema = yup.object().shape({
         [PARAM_DIAGONAL_LABEL]: yup.boolean(),
         [PARAM_CENTER_LABEL]: yup.boolean(),
         [PARAM_SUBSTATION_LAYOUT]: yup.string(),
-        [PARAM_COMPONENT_LIBRARY]: yup.string().nullable(),
+        [PARAM_COMPONENT_LIBRARY]: yup.string(),
     }),
     [TabValue.NETWORK_AREA_DIAGRAM]: yup.object().shape({
         [PARAM_INIT_NAD_WITH_GEO_DATA]: yup.boolean(),

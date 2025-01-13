@@ -21,19 +21,20 @@ export enum ReportType {
     NODE = 'NodeReport',
 }
 
-export type ReportTree = Report & {
-    type: ReportType;
-    highestSeverity: ReportSeverity;
-    subReports: ReportTree[];
-};
-
-export type Report = {
+interface BaseReport<T> {
     message: string;
-    severities: SeverityLevel[];
+    severity: SeverityLevel;
     parentId: string | null;
     id: string;
-    subReports: Report[];
-};
+    subReports: T[];
+}
+
+export interface ReportTree extends Omit<BaseReport<ReportTree>, 'severity'> {
+    type: ReportType;
+    severity: ReportSeverity;
+}
+
+export interface Report extends BaseReport<Report> {}
 
 export type Log = {
     message: string;
@@ -43,7 +44,7 @@ export type Log = {
 
 export type ReportLog = {
     message: string;
-    severity: SeverityLevel[];
+    severity: SeverityLevel;
     parentId: string;
     backgroundColor?: string;
 };

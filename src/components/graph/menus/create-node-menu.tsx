@@ -15,7 +15,7 @@ import { NodeInsertModes } from '../nodes/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 import { BUILD_STATUS } from '../../network/constants';
-import { AppState, CurrentTreeNode } from 'redux/reducer';
+import { type AppState, type CurrentTreeNode, type NodeSelectionForCopy } from 'redux/reducer';
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
@@ -47,7 +47,7 @@ interface CreateNodeMenuProps {
     handleUnbuildNode: (element: CurrentTreeNode) => void;
     handleExportCaseOnNode: (node: CurrentTreeNode) => void;
     activeNode: CurrentTreeNode;
-    selectionForCopy: { sourceStudyUuid: string; nodeId: UUID; copyType: CopyType; allChildrenIds: string[] };
+    nodeSelectionForCopy: NodeSelectionForCopy;
     handleCopyNode: (nodeId: string) => void;
     handleCutNode: (nodeId: UUID | null) => void;
     handlePasteNode: (activeNode: string, insertMode: NodeInsertModes) => void;
@@ -104,7 +104,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     handleNodeRemoval,
     handleExportCaseOnNode,
     activeNode,
-    selectionForCopy,
+    nodeSelectionForCopy,
     handleCopyNode,
     handleCutNode,
     handlePasteNode,
@@ -199,18 +199,18 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     function isNodePastingAllowed() {
         return (
             !mapDataLoading &&
-            ((selectionForCopy.nodeId !== activeNode.id && selectionForCopy.copyType === CopyType.NODE_CUT) ||
-                selectionForCopy.copyType === CopyType.NODE_COPY)
+            ((nodeSelectionForCopy.nodeId !== activeNode.id && nodeSelectionForCopy.copyType === CopyType.NODE_CUT) ||
+                nodeSelectionForCopy.copyType === CopyType.NODE_COPY)
         );
     }
 
     function isSubtreePastingAllowed() {
         return (
             !mapDataLoading &&
-            ((selectionForCopy.nodeId !== activeNode.id &&
-                !selectionForCopy.allChildrenIds?.includes(activeNode.id) &&
-                selectionForCopy.copyType === CopyType.SUBTREE_CUT) ||
-                selectionForCopy.copyType === CopyType.SUBTREE_COPY)
+            ((nodeSelectionForCopy.nodeId !== activeNode.id &&
+                !nodeSelectionForCopy.allChildrenIds?.includes(activeNode.id) &&
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT) ||
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY)
         );
     }
 
@@ -227,11 +227,13 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     }
 
     function isNodeAlreadySelectedForCut() {
-        return selectionForCopy?.nodeId === activeNode.id && selectionForCopy?.copyType === CopyType.NODE_CUT;
+        return nodeSelectionForCopy?.nodeId === activeNode.id && nodeSelectionForCopy?.copyType === CopyType.NODE_CUT;
     }
 
     function isSubtreeAlreadySelectedForCut() {
-        return selectionForCopy?.nodeId === activeNode.id && selectionForCopy?.copyType === CopyType.SUBTREE_CUT;
+        return (
+            nodeSelectionForCopy?.nodeId === activeNode.id && nodeSelectionForCopy?.copyType === CopyType.SUBTREE_CUT
+        );
     }
     function isNodeHasChildren(node: CurrentTreeNode, treeModel: NetworkModificationTreeModel | null): boolean {
         return treeModel?.treeNodes.some((item) => item.parentId === node.id) ?? false;
