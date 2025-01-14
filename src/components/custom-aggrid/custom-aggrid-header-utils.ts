@@ -39,7 +39,6 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
     return {
         headerTooltip: headerName,
         minWidth,
-        fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             colId,
@@ -61,6 +60,10 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
         },
         filterParams: context?.agGridFilterParams || undefined,
         ...props,
+        context: {
+            ...context,
+            fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
+        },
     };
 };
 

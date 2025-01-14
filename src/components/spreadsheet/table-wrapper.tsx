@@ -366,33 +366,36 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         return 0;
                     };
                     // redefine agGrid predicates to possibly invert sign depending on flux convention (called when we use useAggridLocalRowFilter).
-                    columnExtended.context.agGridFilterParams = {
-                        filterOptions: [
-                            {
-                                displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                predicate: (filterValues: number[], cellValue: number) => {
-                                    const filterValue = filterValues.at(0);
-                                    if (filterValue === undefined) {
-                                        return false;
-                                    }
-                                    const transformedValue = applyFluxConvention(cellValue);
-                                    return transformedValue != null ? transformedValue >= filterValue : false;
+                    columnExtended.context = {
+                        ...columnExtended.context,
+                        agGridFilterParams: {
+                            filterOptions: [
+                                {
+                                    displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                    displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                    predicate: (filterValues: number[], cellValue: number) => {
+                                        const filterValue = filterValues.at(0);
+                                        if (filterValue === undefined) {
+                                            return false;
+                                        }
+                                        const transformedValue = applyFluxConvention(cellValue);
+                                        return transformedValue != null ? transformedValue >= filterValue : false;
+                                    },
                                 },
-                            },
-                            {
-                                displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                predicate: (filterValues: number[], cellValue: number) => {
-                                    const filterValue = filterValues.at(0);
-                                    if (filterValue === undefined) {
-                                        return false;
-                                    }
-                                    const transformedValue = applyFluxConvention(cellValue);
-                                    return transformedValue != null ? transformedValue <= filterValue : false;
+                                {
+                                    displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                                    displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                                    predicate: (filterValues: number[], cellValue: number) => {
+                                        const filterValue = filterValues.at(0);
+                                        if (filterValue === undefined) {
+                                            return false;
+                                        }
+                                        const transformedValue = applyFluxConvention(cellValue);
+                                        return transformedValue != null ? transformedValue <= filterValue : false;
+                                    },
                                 },
-                            },
-                        ],
+                            ],
+                        },
                     };
                 }
             }
@@ -449,7 +452,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     getEnumLabel: getTranslatedOrOriginalValue,
                 };
             }
-
             return makeAgGridCustomHeaderColumn({
                 headerName: columnExtended.headerName,
                 field: columnExtended.field,
@@ -515,7 +517,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     useEffect(() => {
-        gridRef.current?.api?.showLoadingOverlay();
         return () => clearTimeout(timerRef.current);
     }, [tabIndex]);
 

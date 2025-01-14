@@ -12,8 +12,6 @@ import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    ColumnContext,
-    CustomAggridFilterParams,
 } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EnumOption } from '../../../utils/utils-type';
 import type { CellStyleFunc, EditableCallback } from 'ag-grid-community';

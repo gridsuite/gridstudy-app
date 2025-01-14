@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep, WritableDeep } from 'type-fest';
+import type { WritableDeep } from 'type-fest';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, SxProps, Theme } from '@mui/material';
 import {
@@ -42,7 +42,6 @@ import { getSpreadsheetModel } from 'services/spreadsheet';
 import { SortWay } from 'hooks/use-aggrid-sort';
 import { typeAndFetchers } from '../config/equipment/common-config';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
-import { CustomAggridFilterParams, CustomColDef } from 'components/custom-aggrid/custom-aggrid-header.type';
 
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
