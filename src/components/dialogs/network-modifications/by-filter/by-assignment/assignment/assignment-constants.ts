@@ -198,13 +198,13 @@ export const FIELD_OPTIONS = {
     RATED_U1: {
         id: FieldType.RATED_U1,
         label: 'RatedU1',
-        unit: MEGA_VAR,
+        unit: KILO_VOLT,
         dataType: DataType.DOUBLE,
     },
     RATED_U2: {
         id: FieldType.RATED_U2,
         label: 'RatedU2',
-        unit: MEGA_VAR,
+        unit: KILO_VOLT,
         dataType: DataType.DOUBLE,
     },
     RATED_S: {
