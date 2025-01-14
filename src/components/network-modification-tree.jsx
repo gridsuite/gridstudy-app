@@ -358,7 +358,7 @@ const NetworkModificationTree = ({
                 {isMinimapOpen && <MiniMap nodeColor={nodeColor} pannable zoomable zoomStep={1} nodeStrokeWidth={0} />}
 
                 {/* root Network Panel */}
-                <RootNetworkPanel studyUuid={studyUuid}></RootNetworkPanel>
+                <RootNetworkPanel />
             </ReactFlow>
         </Box>
     );
