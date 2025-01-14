@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from './spreadsheet.type';
 import { SUBSTATION_TAB_DEF } from './equipment/substation';
 import { VOLTAGE_LEVEL_TAB_DEF } from './equipment/voltage-level';
@@ -24,8 +23,15 @@ import { DANGLING_LINE_TAB_DEF } from './equipment/dangling-line';
 import { BUS_TAB_DEF } from './equipment/bus';
 import { TIE_LINE_TAB_DEF } from './equipment/tie-line';
 import { BUSBAR_SECTION_TAB_DEF } from './equipment/busbar-section';
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 
-export const TABLES_DEFINITIONS = [
+export type Table = {
+    index: number;
+    name: string;
+    columns: CustomColDef[];
+};
+
+export const TABLES_DEFINITIONS: SpreadsheetTabDefinition[] = [
     SUBSTATION_TAB_DEF,
     VOLTAGE_LEVEL_TAB_DEF,
     LINE_TAB_DEF,
@@ -43,7 +49,7 @@ export const TABLES_DEFINITIONS = [
     BUS_TAB_DEF,
     TIE_LINE_TAB_DEF,
     BUSBAR_SECTION_TAB_DEF,
-] as const satisfies ReadonlyDeep<SpreadsheetTabDefinition[]>;
+];
 
 export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
 export type TablesDefinitionsNames = TablesDefinitionsType[number]['name'];

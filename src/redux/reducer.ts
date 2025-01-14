@@ -206,7 +206,6 @@ import {
     TABLES_DEFINITIONS,
     TABLES_NAMES,
     type TablesDefinitionsNames,
-    type TablesDefinitionsType,
 } from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
@@ -285,9 +284,9 @@ import {
     LineFlowMode,
     EQUIPMENT_TYPES as NetworkViewerEquipmentType,
 } from '@powsybl/network-viewer';
-import type { UnknownArray, ValueOf, WritableDeep } from 'type-fest';
+import type { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
-import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
+import { SortConfigType, SortWay } from '../components/custom-aggrid/hooks/use-custom-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
@@ -296,6 +295,7 @@ import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
+import { FilterSelectorType } from '../components/custom-aggrid/custom-aggrid-header.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -411,7 +411,7 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetFilterState = Record<string, UnknownArray>;
+export type SpreadsheetFilterState = Record<string, FilterSelectorType[]>;
 
 export type DiagramState = {
     id: UUID;
@@ -509,39 +509,39 @@ export interface AppState extends CommonStoreState {
     [PARAMS_LOADED]: boolean;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: UnknownArray;
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: UnknownArray;
-        [LOADFLOW_RESULT]: UnknownArray;
+        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterSelectorType[];
+        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: FilterSelectorType[];
+        [LOADFLOW_RESULT]: FilterSelectorType[];
     };
     [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SECURITY_ANALYSIS_RESULT_N]: UnknownArray;
-        [SECURITY_ANALYSIS_RESULT_N_K]: UnknownArray;
+        [SECURITY_ANALYSIS_RESULT_N]: FilterSelectorType[];
+        [SECURITY_ANALYSIS_RESULT_N_K]: FilterSelectorType[];
     };
     [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SENSITIVITY_IN_DELTA_MW_N]: UnknownArray;
-        [SENSITIVITY_IN_DELTA_MW_N_K]: UnknownArray;
-        [SENSITIVITY_IN_DELTA_A_N]: UnknownArray;
-        [SENSITIVITY_IN_DELTA_A_N_K]: UnknownArray;
-        [SENSITIVITY_AT_NODE_N]: UnknownArray;
-        [SENSITIVITY_AT_NODE_N_K]: UnknownArray;
+        [SENSITIVITY_IN_DELTA_MW_N]: FilterSelectorType[];
+        [SENSITIVITY_IN_DELTA_MW_N_K]: FilterSelectorType[];
+        [SENSITIVITY_IN_DELTA_A_N]: FilterSelectorType[];
+        [SENSITIVITY_IN_DELTA_A_N_K]: FilterSelectorType[];
+        [SENSITIVITY_AT_NODE_N]: FilterSelectorType[];
+        [SENSITIVITY_AT_NODE_N_K]: FilterSelectorType[];
     };
     [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
-        [ONE_BUS]: UnknownArray;
-        [ALL_BUSES]: UnknownArray;
+        [ONE_BUS]: FilterSelectorType[];
+        [ALL_BUSES]: FilterSelectorType[];
     };
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
-        [TIMELINE]: UnknownArray;
+        [TIMELINE]: FilterSelectorType[];
     };
     [STATEESTIMATION_RESULT_STORE_FIELD]: {
-        [STATEESTIMATION_QUALITY_CRITERION]: UnknownArray;
-        [STATEESTIMATION_QUALITY_PER_REGION]: UnknownArray;
+        [STATEESTIMATION_QUALITY_CRITERION]: FilterSelectorType[];
+        [STATEESTIMATION_QUALITY_PER_REGION]: FilterSelectorType[];
     };
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
 }
 
-export type LogsFilterState = Record<string, unknown[]>;
+export type LogsFilterState = Record<string, FilterSelectorType[]>;
 const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
@@ -592,13 +592,13 @@ interface TablesState {
 const TableDefinitionIndexes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.index, tabDef]));
 const TableDefinitionTypes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.type, tabDef]));
 const initialTablesState: TablesState = {
-    definitions: TABLES_DEFINITIONS as WritableDeep<TablesDefinitionsType>,
+    definitions: TABLES_DEFINITIONS,
     columnsNames: TABLES_COLUMNS_NAMES,
     columnsNamesJson: TABLES_COLUMNS_NAMES.map((cols) => JSON.stringify([...cols])),
     names: TABLES_NAMES,
     namesIndexes: new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.name, tabDef.index])),
-    definitionTypes: TableDefinitionTypes as WritableDeep<typeof TableDefinitionTypes>,
-    definitionIndexes: TableDefinitionIndexes as WritableDeep<typeof TableDefinitionIndexes>,
+    definitionTypes: TableDefinitionTypes,
+    definitionIndexes: TableDefinitionIndexes,
     allCustomColumnsDefinitions: TABLES_NAMES.reduce(
         (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
         {} as Record<TablesDefinitionsNames, CustomEntry>

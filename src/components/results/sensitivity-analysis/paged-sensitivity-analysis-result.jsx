@@ -12,10 +12,11 @@ import {
     DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
+    mappingTabs,
     PAGE_OPTIONS,
     SENSITIVITY_AT_NODE,
 } from './sensitivity-analysis-result-utils';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
@@ -27,19 +28,11 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
-import { SortWay } from 'hooks/use-aggrid-sort';
+import { SortWay } from 'components/custom-aggrid/hooks/use-custom-aggrid-sort';
+import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { FILTER_PARAMS, FilterType as AgGridFilterType } from '../../custom-aggrid/hooks/use-aggrid-row-filter';
 
-const PagedSensitivityAnalysisResult = ({
-    nOrNkIndex,
-    sensiKind,
-    studyUuid,
-    nodeUuid,
-    page,
-    setPage,
-    sortProps,
-    filterProps,
-    ...props
-}) => {
+const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, nodeUuid, page, setPage, ...props }) => {
     const intl = useIntl();
 
     const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_COUNT);
@@ -49,8 +42,14 @@ const PagedSensitivityAnalysisResult = ({
     const [isLoading, setIsLoading] = useState(false);
     const sensiStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
 
-    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
-    const { updateFilter, filterSelector } = filterProps || {};
+    const sortConfig = useSelector(
+        (state) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
+    );
+
+    const filterSelector = useSelector(
+        (state) =>
+            state[FILTER_PARAMS[AgGridFilterType.ShortcircuitAnalysis].filterType][mappingTabs(sensiKind, nOrNkIndex)]
+    );
 
     const filtersDef = useMemo(() => {
         const baseFilters = [
@@ -96,13 +95,9 @@ const PagedSensitivityAnalysisResult = ({
         [setPage]
     );
 
-    const handleUpdateFilter = useCallback(
-        (field, value) => {
-            setPage(0);
-            updateFilter(field, value);
-        },
-        [setPage, updateFilter]
-    );
+    const onFilter = useCallback(() => {
+        setPage(0);
+    }, [setPage]);
 
     const fetchFilterOptions = useCallback(() => {
         const selector = {
@@ -186,14 +181,7 @@ const PagedSensitivityAnalysisResult = ({
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
                 sensiKind={sensiKind}
-                sortProps={{
-                    onSortChanged,
-                    sortConfig,
-                }}
-                filterProps={{
-                    updateFilter: handleUpdateFilter,
-                    filterSelector,
-                }}
+                onFilter={onFilter}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
                 {...props}
@@ -215,8 +203,6 @@ PagedSensitivityAnalysisResult.propTypes = {
     sensiKind: PropTypes.string.isRequired,
     studyUuid: PropTypes.string.isRequired,
     nodeUuid: PropTypes.string.isRequired,
-    filterProps: PropTypes.object,
-    sortProps: PropTypes.object,
     page: PropTypes.number.isRequired,
     setPage: PropTypes.func.isRequired,
 };

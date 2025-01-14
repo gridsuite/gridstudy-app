@@ -4,12 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ColDef, IFilterOptionDef } from 'ag-grid-community';
-import { SortPropsType } from '../../hooks/use-aggrid-sort';
-import { AnyAction } from 'redux';
+import { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
+import { SortParams } from './hooks/use-custom-aggrid-sort';
 import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
 import { CustomColumnConfigProps } from 'components/spreadsheet/custom-columns/custom-column-menu';
 import React, { ComponentType } from 'react';
+import { FilterType } from './hooks/use-aggrid-row-filter';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -41,13 +41,15 @@ export type FilterParams = {
     filterDataType?: string;
     filterComparators?: string[];
     debounceMs?: number;
-    updateFilter?: (field: string, value: FilterDataType) => void;
-    filterSelector?: FilterSelectorType[] | null;
 };
 
 export interface CustomAggridFilterParams {
+    api: GridApi;
     field: string;
     filterParams: FilterParams;
+    filterType: FilterType;
+    filterTab: string;
+    updateFilterCallback?: (api?: GridApi, filters?: FilterSelectorType[]) => void;
 }
 
 export type CustomHeaderMenuParams = {
@@ -55,10 +57,6 @@ export type CustomHeaderMenuParams = {
     isCustomColumn: boolean;
     Menu: React.FC<CustomColumnConfigProps>;
 };
-
-export type CustomHeaderSortParams = {
-    isSortable?: boolean;
-} & SortPropsType;
 
 export type FilterDataType = {
     dataType?: string;
@@ -69,12 +67,6 @@ export type FilterDataType = {
 
 export type FilterSelectorType = FilterDataType & {
     column: string;
-};
-
-export type FilterStorePropsType = {
-    filterType: string;
-    filterTab: string;
-    filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
 };
 
 export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
@@ -95,7 +87,6 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     isDefaultSort?: boolean;
     isEnum?: boolean;
     numeric?: boolean;
-    sortProps?: SortPropsType;
     withFluxConvention?: boolean;
     forceDisplayFilterIcon?: boolean;
     tabIndex?: number;
@@ -103,5 +94,6 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     Menu?: React.FC<CustomColumnConfigProps>;
     filterComponent?: ComponentType<F>;
     //We omit field here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
-    filterComponentParams?: Omit<F, 'field'>;
+    filterComponentParams?: Omit<F, 'field' | 'api'>;
+    sortParams?: SortParams;
 }

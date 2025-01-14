@@ -17,13 +17,24 @@ export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilter
 }
 
 export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutocompleteFilterParams> = ({
+    api,
     field,
     filterParams,
+    filterType,
+    filterTab,
+    updateFilterCallback,
     filterEnums,
     getEnumLabel,
 }) => {
     const intl = useIntl();
-    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(field, filterParams);
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(
+        api,
+        field,
+        filterParams,
+        filterType,
+        filterTab,
+        updateFilterCallback
+    );
 
     const handleFilterAutoCompleteChange = (_: SyntheticEvent, data: string[]) => {
         handleChangeFilterValue({ value: data, type: FILTER_TEXT_COMPARATORS.EQUALS });

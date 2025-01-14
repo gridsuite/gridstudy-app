@@ -4,12 +4,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FILTER_DATA_TYPES, FilterDataType, FilterParams } from '../custom-aggrid-header.type';
+import { FILTER_DATA_TYPES, FilterDataType, FilterParams, FilterSelectorType } from '../custom-aggrid-header.type';
 import { useCallback, useEffect, useState } from 'react';
 import { debounce } from '@mui/material';
+import { FilterType, useAggridRowFilter } from './use-aggrid-row-filter';
+import { GridApi } from 'ag-grid-community';
 
-export const useCustomAggridFilter = (field: string, filterParams: FilterParams) => {
-    const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
+export const useCustomAggridFilter = (
+    api: GridApi,
+    field: string,
+    filterParams: FilterParams,
+    filterType: FilterType,
+    filterTab: string,
+    updateFilterCallback?: (api?: GridApi, filters?: FilterSelectorType[]) => void
+) => {
+    const { updateFilter, filterSelector } = useAggridRowFilter(api, filterType, filterTab, updateFilterCallback);
+    const [selectedFilterComparator, setSelectedFilterComparator] = useState<string>('');
     const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
     const [tolerance, setTolerance] = useState<number | undefined>();
 
@@ -17,8 +27,6 @@ export const useCustomAggridFilter = (field: string, filterParams: FilterParams)
         filterDataType = FILTER_DATA_TYPES.TEXT,
         filterComparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
         debounceMs = 1000, // used to debounce the api call to not fetch the back end too fast
-        filterSelector, // used to detect a tab change on the agGrid table
-        updateFilter = () => {}, // used to update the filter and fetch the new data corresponding to the filter
     } = filterParams;
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,6 +60,12 @@ export const useCustomAggridFilter = (field: string, filterParams: FilterParams)
             setSelectedFilterComparator(filterComparators[0]);
         }
     }, [selectedFilterComparator, filterComparators]);
+
+    useEffect(() => {
+        if (filterSelector && filterSelector.length !== 0) {
+            updateFilterCallback && updateFilterCallback(api, filterSelector);
+        }
+    }, [api, filterSelector, updateFilterCallback]);
 
     useEffect(() => {
         if (!filterSelector?.length) {

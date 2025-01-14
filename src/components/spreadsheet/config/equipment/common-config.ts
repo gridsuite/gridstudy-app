@@ -15,7 +15,7 @@ import {
 } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EnumOption } from '../../../utils/utils-type';
 import type { CellStyleFunc, EditableCallback } from 'ag-grid-community';
-import EnumCellRenderer, { type EnumCellRendererProps } from '../../utils/enum-cell-renderer';
+import EnumCellRenderer from '../../utils/enum-cell-renderer';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     fetchBatteries,
@@ -43,6 +43,7 @@ import {
 } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { CustomAggridAutocompleteFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { CustomAggridComparatorFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
 
 type TapPositionsType = {
     lowTapPosition: number;
@@ -121,103 +122,120 @@ export const editableColumnConfig = {
 // All the others should be excluded.
 export const excludeFromGlobalFilter = () => '' as const;
 
-export const defaultTextFilterConfig = {
-    filter: 'agTextColumnFilter',
-    filterComponent: CustomAggridComparatorFilter,
-    filterComponentParams: {
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+export const defaultTextFilterConfig = (filterParams: { filterType: FilterType; filterTab: string }) => {
+    return {
+        filter: 'agTextColumnFilter',
+        filterComponent: CustomAggridComparatorFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+            },
+            ...filterParams,
         },
-    },
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+    };
+};
 
 /**
  * Default configuration for an enum filter
  * a new filter option is added to the default ag-grid filter
  */
-export const defaultEnumFilterConfig = {
-    filter: 'agTextColumnFilter',
-    agGridFilterParams: {
-        filterOptions: [
-            {
-                displayKey: 'customInRange',
-                displayName: 'customInRange',
-                predicate: (filterValues: string[], cellValue: string) =>
-                    // We receive here the filter enum values as a string (filterValue)
-                    filterValues.at(0)?.includes(cellValue) ?? false,
-            },
-        ],
-    },
-    filterComponent: CustomAggridAutocompleteFilter,
-    filterComponentParams: {
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.TEXT,
+export const defaultEnumFilterConfig = (filterParams: { filterType: FilterType; filterTab: string }) => {
+    return {
+        filter: 'agTextColumnFilter',
+        agGridFilterParams: {
+            filterOptions: [
+                {
+                    displayKey: 'customInRange',
+                    displayName: 'customInRange',
+                    predicate: (filterValues: string[], cellValue: string) =>
+                        // We receive here the filter enum values as a string (filterValue)
+                        filterValues.at(0)?.includes(cellValue) ?? false,
+                },
+            ],
         },
-    },
-    isEnum: true,
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+        filterComponent: CustomAggridAutocompleteFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+            },
+            ...filterParams,
+        },
+        isEnum: true,
+    } satisfies Partial<CustomColDef>;
+};
 
 /**
  * Default configuration for a boolean filter
  */
-export const defaultBooleanFilterConfig = {
-    filter: 'agTextColumnFilter',
-    agGridFilterParams: {
-        filterOptions: [
-            {
-                displayKey: 'booleanMatches',
-                displayName: 'booleanMatches',
-                predicate: (filterValues: string[], cellValue: boolean) => {
-                    const filterValue = filterValues.at(0);
-                    if (filterValue === undefined) {
-                        return false;
-                    }
-                    // We receive here the filter boolean value as a string (filterValue)
-                    // we check if the cellValue is not null neither undefined
-                    if (cellValue != null) {
-                        return filterValue === cellValue.toString();
-                    }
+export const defaultBooleanFilterConfig = (filterParams: { filterType: FilterType; filterTab: string }) => {
+    return {
+        filter: 'agTextColumnFilter',
+        agGridFilterParams: {
+            filterOptions: [
+                {
+                    displayKey: 'booleanMatches',
+                    displayName: 'booleanMatches',
+                    predicate: (filterValues: string[], cellValue: boolean) => {
+                        const filterValue = filterValues.at(0);
+                        if (filterValue === undefined) {
+                            return false;
+                        }
+                        // We receive here the filter boolean value as a string (filterValue)
+                        // we check if the cellValue is not null neither undefined
+                        if (cellValue != null) {
+                            return filterValue === cellValue.toString();
+                        }
 
-                    // we return true if the filter chosen is undefinedValue
-                    return filterValue === BooleanFilterValue.UNDEFINED;
+                        // we return true if the filter chosen is undefinedValue
+                        return filterValue === BooleanFilterValue.UNDEFINED;
+                    },
                 },
-            },
-        ],
-    },
-    filterComponent: CustomAggridBooleanFilter,
-    filterComponentParams: {
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.BOOLEAN,
+            ],
         },
-    },
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+        filterComponent: CustomAggridBooleanFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.BOOLEAN,
+            },
+            ...filterParams,
+        },
+    } satisfies Partial<CustomColDef>;
+};
 
 // This function is used to generate the default configuration for an enum filter
 // It generates configuration for filtering, sorting and rendering
-export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
-    ({
-        ...defaultEnumFilterConfig,
+export const getDefaultEnumConfig = (
+    enumOptions: Readonly<EnumOption[]>,
+    filterParams: { filterType: FilterType; filterTab: string }
+) => {
+    return {
+        ...defaultEnumFilterConfig(filterParams),
         cellRenderer: EnumCellRenderer,
         cellRendererParams: {
             enumOptions: enumOptions as Writable<typeof enumOptions>,
-            // @ts-expect-error TODO TS1360: Property value is missing in type
-        } satisfies EnumCellRendererProps,
-        getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
-    } as const satisfies Partial<ReadonlyDeep<CustomColDef>>);
-
-export const countryEnumFilterConfig = {
-    ...defaultEnumFilterConfig,
-    isCountry: true,
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
-
-export const defaultNumericFilterConfig = {
-    filter: 'agNumberColumnFilter',
-    filterComponent: CustomAggridComparatorFilter,
-    filterComponentParams: {
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
-    },
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+        getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
+    };
+};
+
+export const countryEnumFilterConfig = (filterParams: { filterType: FilterType; filterTab: string }) => {
+    return {
+        ...defaultEnumFilterConfig(filterParams),
+        isCountry: true,
+    } satisfies Partial<CustomColDef>;
+};
+
+export const defaultNumericFilterConfig = (filterParams: { filterType: FilterType; filterTab: string }) => {
+    return {
+        filter: 'agNumberColumnFilter',
+        filterComponent: CustomAggridComparatorFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            },
+            ...filterParams,
+        },
+    } satisfies Partial<CustomColDef>;
+};

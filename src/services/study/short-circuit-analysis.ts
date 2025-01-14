@@ -13,7 +13,7 @@ import {
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { FilterSelectorType } from '../../components/custom-aggrid/custom-aggrid-header.type';
-import { SortConfigType } from '../../hooks/use-aggrid-sort';
+import { SortConfigType } from '../../components/custom-aggrid/hooks/use-custom-aggrid-sort';
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../components/utils/constants';
 
 const PREFIX_SHORT_CIRCUIT_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/shortcircuit';

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
@@ -24,6 +23,12 @@ import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+
+const filterParams = {
+    filterType: FilterType.Spreadsheet,
+    filterTab: 'ShuntCompensators',
+};
 
 export const SHUNT_COMPENSATOR_TAB_DEF = {
     index: 7,
@@ -35,19 +40,19 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
             ...editableColumnConfig,
             columnWidth: MIN_COLUMN_WIDTH,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Country',
@@ -59,7 +64,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             id: 'NominalV',
             field: 'nominalVoltage',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 0,
         },
         {
@@ -67,7 +72,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             field: 'q',
             numeric: true,
             fractionDigits: 1,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             canBeInvalidated: true,
             withFluxConvention: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -78,7 +83,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             ...editableColumnConfig,
             numeric: true,
             ...numericalCellEditorConfig((params) => params.data.maximumSectionCount),
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
                 minExpression: 1,
@@ -90,7 +95,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             ...editableColumnConfig,
             numeric: true,
             ...numericalCellEditorConfig((params) => params.data.sectionCount),
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
                 minExpression: 0,
@@ -100,7 +105,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'Type',
             field: 'type',
-            ...getDefaultEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
+            ...getDefaultEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES), filterParams),
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
         },
@@ -110,7 +115,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             ...editableColumnConfig,
             numeric: true,
             ...numericalCellEditorConfig((params) => params.data.maxQAtNominalV),
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
@@ -123,7 +128,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             numeric: true,
             valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -133,7 +138,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             field: 'maxSusceptance',
             numeric: true,
             ...numericalCellEditorConfig((params) => params.data.maxSusceptance),
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 5,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -143,7 +148,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             numeric: true,
             valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 5,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -151,7 +156,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             id: 'voltageSetpoint',
             field: 'targetV',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -160,9 +165,9 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesEditPopup,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+} satisfies SpreadsheetTabDefinition;

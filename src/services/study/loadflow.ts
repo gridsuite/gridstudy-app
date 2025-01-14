@@ -9,7 +9,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './in
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { SortConfigType } from 'hooks/use-aggrid-sort';
+import { SortConfigType } from 'components/custom-aggrid/hooks/use-custom-aggrid-sort';
 import { GlobalFilter } from '../../components/results/loadflow/load-flow-result-tab';
 
 interface QueryParams {

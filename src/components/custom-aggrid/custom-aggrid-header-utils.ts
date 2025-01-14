@@ -9,7 +9,7 @@ import { CustomAggridFilterParams, CustomColDef, FilterSelectorType } from './cu
 import CustomHeaderComponent from './custom-aggrid-header';
 
 export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
-    sortProps, // sortProps: contains useAgGridSort params
+    sortParams,
     filterTab,
     forceDisplayFilterIcon,
     filterComponent,
@@ -20,12 +20,10 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
     ...props // agGrid column props
 }: CustomColDef<any, any, F>) => {
     const { headerName, field = '', fractionDigits, numeric } = props;
-    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
-    const isSortable = !!sortProps;
-    const isCurrentColumnSorted = !!sortConfig?.find((value) => value.colId === field);
+    const isSortable = !!sortParams;
 
     let minWidth = 75;
-    if (isSortable && isCurrentColumnSorted) {
+    if (isSortable) {
         minWidth += 30;
     }
     if (!!filterComponent) {
@@ -40,11 +38,7 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
         headerComponentParams: {
             field,
             displayName: headerName,
-            sortParams: {
-                isSortable,
-                sortConfig,
-                onSortChanged,
-            },
+            sortParams,
             customMenuParams: {
                 tabIndex: tabIndex,
                 isCustomColumn: isCustomColumn,

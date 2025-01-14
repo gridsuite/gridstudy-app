@@ -5,9 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
-import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
-import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import {
@@ -21,6 +18,13 @@ import {
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { numericalCellEditorConfig } from '../common/cell-editors';
 import { convertInputValue, convertOutputValue, FieldType } from '@gridsuite/commons-ui';
+import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+
+const filterParams = {
+    filterType: FilterType.Spreadsheet,
+    filterTab: 'VoltageLevels',
+};
 
 function generateEditableNumericColumnDefinition<
     TId extends string,
@@ -32,7 +36,7 @@ function generateEditableNumericColumnDefinition<
         id: id,
         field: field,
         numeric: true,
-        ...defaultNumericFilterConfig,
+        ...defaultNumericFilterConfig(filterParams),
         fractionDigits: 1,
         ...editableColumnConfig,
         ...numericalCellEditorConfig((params) => params.data[field]),
@@ -42,7 +46,7 @@ function generateEditableNumericColumnDefinition<
             maxExpression: maxExpression,
         },
         getQuickFilterText: excludeFromGlobalFilter,
-    } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+    };
 }
 
 export const VOLTAGE_LEVEL_TAB_DEF = {
@@ -54,18 +58,18 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Name',
             field: 'name',
             ...editableColumnConfig,
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'SubstationId',
             field: 'substationId',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Country',
@@ -77,7 +81,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             id: 'NominalV',
             field: 'nominalV',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 0,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.nominalV),
@@ -87,7 +91,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'IpMin',
             field: 'identifiableShortCircuit.ipMin',
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             ...editableColumnConfig,
             numeric: true,
@@ -117,7 +121,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'IpMax',
             field: 'identifiableShortCircuit.ipMax',
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             ...editableColumnConfig,
             numeric: true,
@@ -148,4 +152,4 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         },
         genericColumnOfPropertiesEditPopup,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+} satisfies SpreadsheetTabDefinition;

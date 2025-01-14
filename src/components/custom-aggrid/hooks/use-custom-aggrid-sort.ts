@@ -5,18 +5,42 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback } from 'react';
-import { SortPropsType, SortWay } from '../../../hooks/use-aggrid-sort';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState, TableSortKeysType } from '../../../redux/reducer';
+import { setTableSort } from '../../../redux/actions';
 
-export const useCustomAggridSort = (field: string, sortParams: SortPropsType) => {
-    const {
-        sortConfig, // used to get sort data
-        onSortChanged = () => {}, // used to handle sort change
-    } = sortParams;
+export type SortConfigType = {
+    colId: string;
+    sort: SortWay;
+    children?: boolean;
+};
+
+export enum SortWay {
+    ASC = 'asc',
+    DESC = 'desc',
+}
+
+export type SortParams = {
+    table: TableSortKeysType;
+    tab: string;
+    isChildren?: boolean;
+};
+
+export const useCustomAggridSort = (field: string, sortParams?: SortParams) => {
+    const sortConfig = useSelector((state: AppState) =>
+        sortParams ? state.tableSort[sortParams.table][sortParams.tab] : undefined
+    );
+
+    const dispatch = useDispatch();
 
     const columnSort = sortConfig?.find((value) => value.colId === field);
     const isColumnSorted = !!columnSort;
 
     const handleSortChange = useCallback(() => {
+        if (!sortParams || !sortConfig) {
+            return;
+        }
+
         let newSort;
         if (!isColumnSorted) {
             newSort = SortWay.ASC;
@@ -26,10 +50,12 @@ export const useCustomAggridSort = (field: string, sortParams: SortPropsType) =>
             newSort = SortWay.DESC;
         }
 
-        if (typeof onSortChanged === 'function') {
-            onSortChanged({ colId: field, sort: newSort, children: columnSort?.children });
-        }
-    }, [isColumnSorted, onSortChanged, columnSort?.sort, columnSort?.children, field]);
+        const updatedSortConfig = sortConfig
+            .filter((sort) => (sort.children ?? false) !== (sortParams.isChildren ?? false))
+            .concat({ colId: field, sort: newSort, children: sortParams.isChildren });
+
+        dispatch(setTableSort(sortParams.table, sortParams.tab, updatedSortConfig));
+    }, [sortParams, sortConfig, isColumnSorted, columnSort?.sort, field, dispatch]);
 
     return { columnSort, handleSortChange };
 };
