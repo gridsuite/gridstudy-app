@@ -21,20 +21,13 @@ import { UUID } from 'crypto';
 import type { LiteralUnion, UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import {
-    LineFlowColorMode,
-    LineFlowMode,
-    type MapHvdcLine,
-    type MapLine,
-    type MapSubstation,
-    type MapTieLine,
-} from '@powsybl/network-viewer';
-import {
+import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
+import type {
     AppState,
     CurrentTreeNode,
     EquipmentUpdateType,
-    OneBusShortCircuitAnalysisDiagram,
     NodeSelectionForCopy,
+    OneBusShortCircuitAnalysisDiagram,
     StudyIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,

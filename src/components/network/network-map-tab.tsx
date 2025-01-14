@@ -31,8 +31,8 @@ import withEquipmentMenu from '../menus/equipment-menu';
 import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter, { type NominalVoltageFilterProps } from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
-import { PARAM_MAP_BASEMAP, PARAM_MAP_MANUAL_REFRESH, PARAM_USE_NAME } from '../../utils/config-params';
-import { Equipment, EquipmentType, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { PARAM_USE_NAME } from '../../utils/config-params';
+import { type Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNode, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
@@ -318,9 +318,7 @@ export const NetworkMapTab = ({
     }
 
     function closeEquipmentMenu() {
-        setEquipmentMenu({
-            display: false,
-        });
+        setEquipmentMenu({ display: false });
     }
 
     function handleViewInSpreadsheet(equipmentType: EquipmentType, equipmentId: string) {

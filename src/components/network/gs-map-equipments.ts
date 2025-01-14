@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
-import { Dispatch } from 'redux';
-import { UseSnackMessageReturn } from '@gridsuite/commons-ui';
-import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
+import type { UUID } from 'crypto';
+import { type UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { MapEquipments } from '@powsybl/network-viewer';
+import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
 import type { AppDispatch } from '../../redux/store';
 import {
     fetchHvdcLinesMapInfos,
@@ -100,7 +99,7 @@ export default class GSMapEquipments extends MapEquipments {
         studyUuid: UUID,
         currentNodeUuid: UUID,
         errHandler: UseSnackMessageReturn['snackError'],
-        dispatch: Dispatch
+        dispatch: AppDispatch
     ) {
         super();
         this.dispatch = dispatch;

@@ -6,10 +6,10 @@
  */
 
 import type { UUID } from 'crypto';
-import { EquipmentType, GsLang } from '@gridsuite/commons-ui';
+import { EquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
 
 interface VoltageLevelSingleLineDiagram {
@@ -130,25 +130,29 @@ export function getSubstationSingleLineDiagram({
     console.info(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
+    const queryParams = new URLSearchParams({
+        useName: String(useName),
+        centerLabel: String(centerLabel),
+        diagonalLabel: String(diagonalLabel),
+        topologicalColoring: 'true',
+        substationLayout: substationLayout,
+        language: language,
+    });
+    if (componentLibrary !== null) {
+        queryParams.append('componentLibrary', String(componentLibrary));
+    }
     return (
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/substations/' +
         encodeURIComponent(substationId) +
         '/svg-and-metadata?' +
-        new URLSearchParams({
-            useName: String(useName),
-            centerLabel: String(centerLabel),
-            diagonalLabel: String(diagonalLabel),
-            topologicalColoring: 'true',
-            ...(componentLibrary !== null && { componentLibrary }),
-            substationLayout: substationLayout,
-            language: language,
-        }).toString()
+        queryParams.toString()
     );
 }
 
 /* elements */
-export async function fetchNetworkElementsInfos<T = unknown>(
+// TODO: remove default generics once fetchers typed
+export async function fetchNetworkElementsInfos<T extends Identifiable[] = Identifiable[]>(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     substationsIds: string[] | undefined,
@@ -157,27 +161,28 @@ export async function fetchNetworkElementsInfos<T = unknown>(
     inUpstreamBuiltParentNode?: boolean,
     nominalVoltages?: number[]
 ): Promise<T> {
-    const substationsCount = substationsIds ? substationsIds.length : 0;
-    const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
-
     console.info(
-        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
+        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with ${
+            substationsIds?.length ?? 0
+        } substations ids and [${nominalVoltages ?? ''}] nominal voltages.`
     );
 
-    const nominalVoltagesParamsList =
-        (nominalVoltages?.length ?? 0) > 0 ? '&' + getQueryParamsList(nominalVoltages, 'nominalVoltages') : '';
+    const nominalVoltagesParams = getQueryParamsList(nominalVoltages, 'nominalVoltages');
+
+    const nominalVoltagesParamsList = nominalVoltages && nominalVoltages?.length > 0 ? '&' + nominalVoltagesParams : '';
+
+    const urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append('inUpstreamBuiltParentNode', String(inUpstreamBuiltParentNode));
+    }
+    urlSearchParams.append('infoType', infoType);
+    urlSearchParams.append('elementType', elementType);
 
     const fetchElementsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/elements' +
         '?' +
-        new URLSearchParams({
-            ...(inUpstreamBuiltParentNode !== undefined && {
-                inUpstreamBuiltParentNode: String(inUpstreamBuiltParentNode),
-            }),
-            infoType,
-            elementType,
-        }) +
+        urlSearchParams +
         nominalVoltagesParamsList;
     console.debug(fetchElementsUrl);
 
@@ -326,7 +331,7 @@ export function fetchVoltageLevelsListInfos(studyUuid: UUID, currentNodeUuid: UU
 }
 
 export function fetchVoltageLevelsMapInfos(studyUuid: UUID, currentNodeUuid: UUID, substationsIds?: string[]) {
-    return fetchNetworkElementsInfos(
+    return fetchNetworkElementsInfos<VoltageLevel[]>(
         studyUuid,
         currentNodeUuid,
         substationsIds,
@@ -470,6 +475,16 @@ export function fetchBusbarSections(studyUuid: UUID, currentNodeUuid: UUID, subs
     );
 }
 
+export function fetchTieLines(studyUuid: UUID, currentNodeUuid: UUID, substationsIds?: string[]) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.TIE_LINE,
+        EQUIPMENT_INFOS_TYPES.TAB.type
+    );
+}
+
 export const fetchNetworkExistence = (studyUuid: UUID) => {
     const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network`;
 
@@ -489,14 +504,4 @@ export const fetchStudyIndexationStatus = (studyUuid: UUID) => {
 export function getExportUrl(studyUuid: UUID, nodeUuid: UUID, exportFormat: string) {
     const url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/export-network/' + exportFormat;
     return getUrlWithToken(url);
-}
-
-export function fetchTieLines(studyUuid: UUID, currentNodeUuid: UUID, substationsIds?: string[]) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.TIE_LINE,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
 }
