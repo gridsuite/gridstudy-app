@@ -6,42 +6,49 @@
  */
 
 import React, { FunctionComponent } from 'react';
-import { Paper, Box } from '@mui/material';
-import RootNetworkEditor from './graph/menus/root-network-editor';
-import { Theme } from '@mui/material/styles';
+import { Paper, Box, Theme } from '@mui/material';
+import { OverflowableText } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
+import RootNetworkNodeEditor from './graph/menus/root-network-node-editor';
 
-type RootNetworkPanelProps = {
-    studyId: string;
-};
-
-const styles = (theme: Theme) => ({
+const styles = {
     paper: {
         position: 'absolute',
         top: 16,
         left: 16,
-        width: '40%',
-        height: '40%',
-        display: 'flex',
+        width: '300px',
+        height: '300px',
         flexDirection: 'column',
         borderRadius: '8px',
-        boxShadow: '0 6px 15px rgba(0,0,0,0.15)', // Softer shadow
+        boxShadow: '0 6px 15px rgba(0,0,0,0.15)',
         zIndex: 10,
-        overflow: 'hidden', // Ensure no overflow
+        overflow: 'hidden',
     },
     contentBox: {
-        flex: 1, // Take up all available space
         display: 'flex',
         flexDirection: 'column',
-        position: 'relative', // Enable absolute positioning for child elements
+        position: 'relative',
     },
-});
+    header: (theme: Theme) => ({
+        padding: theme.spacing(1),
+        display: 'flex',
+        alignItems: 'center',
+    }),
+    rootNameTitle: (theme: Theme) => ({
+        flexGrow: 1,
+        fontWeight: 'bold',
+        marginLeft: theme.spacing(2),
+    }),
+};
+const RootNetworkPanel: FunctionComponent = () => {
+    const intl = useIntl();
 
-const RootNetworkPanel: FunctionComponent<RootNetworkPanelProps> = ({ studyId }) => {
     return (
-        <Paper elevation={3} sx={(theme) => styles(theme).paper}>
-            <Box sx={(theme) => styles(theme).contentBox}>
-                <RootNetworkEditor />
+        <Paper elevation={3} sx={styles.paper}>
+            <Box sx={styles.header}>
+                <OverflowableText text={intl.formatMessage({ id: 'root' })} sx={styles.rootNameTitle} />
             </Box>
+            <RootNetworkNodeEditor />
         </Paper>
     );
 };
