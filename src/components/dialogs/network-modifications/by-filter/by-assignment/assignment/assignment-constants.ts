@@ -212,7 +212,7 @@ export const FIELD_OPTIONS = {
     RATED_S: {
         id: FieldType.RATED_S,
         label: 'RatedNominalPowerText',
-        unit: MEGA_VAR,
+        unit: MEGA_VOLT_AMPERE,
         dataType: DataType.DOUBLE,
     },
     TARGET_V: {

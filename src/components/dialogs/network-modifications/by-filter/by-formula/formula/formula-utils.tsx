@@ -20,7 +20,16 @@ import {
 } from '../../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { AnyObject, TestContext, TestFunction } from 'yup';
-import { KILO_AMPERE, KILO_VOLT, MEGA_VAR, MEGA_WATT, MICRO_SIEMENS, OHM, SIEMENS } from '@gridsuite/commons-ui';
+import {
+    KILO_AMPERE,
+    KILO_VOLT,
+    MEGA_VAR,
+    MEGA_VOLT_AMPERE,
+    MEGA_WATT,
+    MICRO_SIEMENS,
+    OHM,
+    SIEMENS,
+} from '@gridsuite/commons-ui';
 
 export type EquipmentField = {
     id: string;
@@ -40,7 +49,7 @@ type EquipmentFields = {
 
 export const EQUIPMENTS_FIELDS: EquipmentFields = {
     [EQUIPMENT_TYPES.GENERATOR]: [
-        { id: 'RATED_NOMINAL_POWER', label: 'RatedNominalPowerText', unit: MEGA_VAR },
+        { id: 'RATED_NOMINAL_POWER', label: 'RatedNominalPowerText', unit: MEGA_WATT },
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText', unit: MEGA_WATT },
         { id: 'MAXIMUM_ACTIVE_POWER', label: 'MaximumActivePowerText', unit: MEGA_WATT },
         { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerText', unit: MEGA_WATT },
@@ -101,7 +110,7 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         { id: 'B', label: 'B', unit: MICRO_SIEMENS },
         { id: 'RATED_U1', label: 'RatedU1', unit: KILO_VOLT },
         { id: 'RATED_U2', label: 'RatedU2', unit: KILO_VOLT },
-        { id: 'RATED_S', label: 'RatedNominalPowerText', unit: MEGA_VAR },
+        { id: 'RATED_S', label: 'RatedNominalPowerText', unit: MEGA_VOLT_AMPERE },
         { id: 'TARGET_V', label: 'RatioTargetV', unit: KILO_VOLT },
         { id: 'RATIO_LOW_TAP_POSITION', label: 'RatioLowTapPosition' },
         { id: 'RATIO_TAP_POSITION', label: 'RatioTapPosition' },
