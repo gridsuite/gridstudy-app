@@ -6,6 +6,19 @@
  */
 
 import { FilledTextFieldProps, Theme } from '@mui/material';
+import {
+    AMPERE,
+    KILO_AMPERE,
+    KILO_METER,
+    KILO_VOLT,
+    MEGA_VAR,
+    MEGA_VOLT_AMPERE,
+    MEGA_WATT,
+    MICRO_SIEMENS,
+    OHM,
+    PERCENTAGE,
+    SIEMENS,
+} from '@gridsuite/commons-ui';
 
 export const styles = {
     helperText: {
@@ -56,46 +69,46 @@ export const styles = {
 
 export const MicroSusceptanceAdornment = {
     position: 'end',
-    text: 'µS',
+    text: MICRO_SIEMENS,
 };
 
 export const SusceptanceAdornment = {
     position: 'end',
-    text: 'S',
+    text: SIEMENS,
 };
 export const OhmAdornment = {
     position: 'end',
-    text: 'Ω',
+    text: OHM,
 };
 export const AmpereAdornment = {
     position: 'end',
-    text: 'A',
+    text: AMPERE,
 };
 
 export const KiloAmpereAdornment = {
     position: 'end',
-    text: 'kA',
+    text: KILO_AMPERE,
 };
 
 export const ActivePowerAdornment = {
     position: 'end',
-    text: 'MW',
+    text: MEGA_WATT,
 };
 export const ReactivePowerAdornment = {
     position: 'end',
-    text: 'MVar',
+    text: MEGA_VAR,
 };
 export const MVAPowerAdornment = {
     position: 'end',
-    text: 'MVA',
+    text: MEGA_VOLT_AMPERE,
 };
 export const VoltageAdornment = {
     position: 'end',
-    text: 'kV',
+    text: KILO_VOLT,
 };
 export const KilometerAdornment = {
     position: 'end',
-    text: 'km',
+    text: KILO_METER,
 };
 export const filledTextField: FilledTextFieldProps = {
     variant: 'filled',
@@ -111,7 +124,7 @@ export const italicFontTextField = {
 
 export const percentageTextField = {
     position: 'end',
-    text: '%',
+    text: PERCENTAGE,
 };
 
 export function parseIntData(val: string, defaultValue: string) {
