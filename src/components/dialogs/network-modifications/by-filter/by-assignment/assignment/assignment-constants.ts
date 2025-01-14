@@ -13,7 +13,7 @@ import { KILO_AMPERE, MEGA_VAR, MICRO_SIEMENS, SIEMENS } from '../../../../../ut
 
 export const FIELD_OPTIONS = {
     PROPERTY: {
-        id: FieldType.PROPERTY,
+        id: FieldType.FREE_PROPERTIES,
         label: 'Property',
         dataType: DataType.PROPERTY,
     },
