@@ -7,11 +7,14 @@
 
 import { CheckBoxList, ElementType, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
 
-import FileUpload from '@mui/icons-material/FileUpload';
+import {
+    FileUpload,
+    Delete as DeleteIcon,
+    RemoveRedEye as RemoveRedEyeIcon,
+    VisibilityOff as VisibilityOffIcon,
+} from '@mui/icons-material';
 
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography, Badge } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography, Badge, IconButton } from '@mui/material';
 
 import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -27,8 +30,6 @@ import {
     getCaseImportParameters,
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks } from 'services/root-network';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { setCurrentRootNetwork } from 'redux/actions';
 import RootNetworkCreationDialog, { FormData } from 'components/dialogs/root-network-creation-dialog';
 
