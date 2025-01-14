@@ -8,16 +8,18 @@
 import type { ReadonlyDeep } from 'type-fest';
 import { DataType, FieldOptionType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
-import { EquipmentType, FieldType } from '@gridsuite/commons-ui';
 import {
+    EquipmentType,
+    FieldType,
     KILO_AMPERE,
     KILO_VOLT,
     MEGA_VAR,
+    MEGA_VOLT_AMPERE,
     MEGA_WATT,
     MICRO_SIEMENS,
     OHM,
     SIEMENS,
-} from '../../../../../utils/field-constants';
+} from '@gridsuite/commons-ui';
 
 export const FIELD_OPTIONS = {
     PROPERTY: {
@@ -28,7 +30,7 @@ export const FIELD_OPTIONS = {
     RATED_NOMINAL_POWER: {
         id: FieldType.RATED_NOMINAL_POWER,
         label: 'RatedNominalPowerText',
-        unit: MEGA_VAR,
+        unit: MEGA_VOLT_AMPERE,
         dataType: DataType.DOUBLE,
     },
     MINIMUM_ACTIVE_POWER: {

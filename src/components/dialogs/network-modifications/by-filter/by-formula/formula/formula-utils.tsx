@@ -11,22 +11,16 @@ import {
     EQUIPMENT_TYPE_FIELD,
     FILTERS,
     ID,
-    KILO_AMPERE,
-    KILO_VOLT,
-    MEGA_VAR,
-    MEGA_WATT,
-    MICRO_SIEMENS,
     NAME,
-    OHM,
     OPERATOR,
     REFERENCE_FIELD_OR_VALUE_1,
     REFERENCE_FIELD_OR_VALUE_2,
-    SIEMENS,
     SPECIFIC_METADATA,
     TYPE,
 } from '../../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { AnyObject, TestContext, TestFunction } from 'yup';
+import { KILO_AMPERE, KILO_VOLT, MEGA_VAR, MEGA_WATT, MICRO_SIEMENS, OHM, SIEMENS } from '@gridsuite/commons-ui';
 
 export type EquipmentField = {
     id: string;
