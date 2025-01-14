@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
@@ -16,6 +15,12 @@ import {
     typeAndFetchers,
 } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
+import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+
+const filterParams = {
+    filterType: FilterType.Spreadsheet,
+    filterTab: 'Buses',
+};
 
 export const BUS_TAB_DEF = {
     index: 14,
@@ -26,7 +31,7 @@ export const BUS_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Magnitude',
@@ -34,7 +39,7 @@ export const BUS_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             canBeInvalidated: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
         },
         {
             id: 'Angle',
@@ -42,27 +47,27 @@ export const BUS_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             canBeInvalidated: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
         },
         {
             id: 'ConnectedComponent',
             field: 'connectedComponentNum',
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
         },
         {
             id: 'SynchronousComponent',
             field: 'synchronousComponentNum',
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
+            ...countryEnumFilterConfig(filterParams),
             cellRenderer: CountryCellRenderer,
         },
         {
@@ -70,8 +75,8 @@ export const BUS_TAB_DEF = {
             field: 'nominalVoltage',
             numeric: true,
             fractionDigits: 0,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
         },
         genericColumnOfProperties,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+} satisfies SpreadsheetTabDefinition;

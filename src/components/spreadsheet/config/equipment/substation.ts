@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
-import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { SelectCountryField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
@@ -17,6 +15,13 @@ import {
     typeAndFetchers,
 } from './common-config';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+
+const filterParams = {
+    filterType: FilterType.Spreadsheet,
+    filterTab: 'Substations',
+};
 
 export const SUBSTATION_TAB_DEF = {
     index: 0,
@@ -26,14 +31,14 @@ export const SUBSTATION_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
             isDefaultSort: true,
         },
         {
             id: 'Name',
             field: 'name',
             ...editableColumnConfig,
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Country',
@@ -45,8 +50,8 @@ export const SUBSTATION_TAB_DEF = {
                 params.data.country = params?.newValue;
                 return true;
             },
-            ...countryEnumFilterConfig,
+            ...countryEnumFilterConfig(filterParams),
         },
         genericColumnOfPropertiesEditPopup, // FIXME try valueFormatter?
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+} satisfies SpreadsheetTabDefinition;

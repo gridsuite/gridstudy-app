@@ -39,8 +39,12 @@ export const CustomAggridFilter = <F extends CustomAggridFilterParams>({
     const [filterAnchorElement, setFilterAnchorElement] = useState<HTMLElement | null>(null);
 
     const { selectedFilterData } = useCustomAggridFilter(
+        filterComponentParams.api,
         filterComponentParams.field,
-        filterComponentParams.filterParams
+        filterComponentParams.filterParams,
+        filterComponentParams.filterType,
+        filterComponentParams.filterTab,
+        filterComponentParams.updateFilterCallback
     );
 
     const handleShowFilter = (event: MouseEvent<HTMLElement>) => {

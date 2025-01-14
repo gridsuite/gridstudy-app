@@ -11,10 +11,9 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
-import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { FILTER_PARAMS, FilterType, getColumnFilterValue } from 'components/custom-aggrid/hooks/use-aggrid-row-filter';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
@@ -26,6 +25,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { MessageLogCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { AppState } from '../../redux/reducer';
 
 const styles = {
     chip: (severity: string, severityFilter: string[], theme: Theme) => ({
@@ -76,11 +76,10 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const [, , fetchReportLogs, fetchNodeSeverities] = useReportFetcher(
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
-    const { updateFilter, filterSelector } = useAggridRowFilter({
-        filterType: LOGS_STORE_FIELD,
-        filterTab: reportType,
-        filterStoreAction: setLogsFilter,
-    });
+    const filterSelector = useSelector(
+        // @ts-expect-error TODO: found a better way to go into state
+        (state: AppState) => state[FILTER_PARAMS[FilterType.Logs].filterType][reportType]
+    );
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
     const [rowData, setRowData] = useState<ReportLog[] | null>(null);
@@ -160,11 +159,11 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
-                        updateFilter,
-                        filterSelector,
                         filterDataType: FILTER_DATA_TYPES.TEXT,
                         filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
                     },
+                    filterType: FilterType.Logs,
+                    filterTab: reportType,
                 },
                 flex: 1,
                 cellRenderer: (param: ICellRendererParams) =>
@@ -181,13 +180,12 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         ],
         [
             intl,
-            updateFilter,
-            filterSelector,
-            searchTerm,
-            searchResults,
-            currentResultIndex,
-            theme.searchedText.currentHighlightColor,
+            reportType,
             theme.searchedText.highlightColor,
+            theme.searchedText.currentHighlightColor,
+            searchTerm,
+            currentResultIndex,
+            searchResults,
         ]
     );
 

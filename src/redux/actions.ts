@@ -48,13 +48,14 @@ import {
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
-import { SortConfigType } from '../hooks/use-aggrid-sort';
+import { SortConfigType } from '../components/custom-aggrid/hooks/use-custom-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
+import { FilterSelectorType } from '../components/custom-aggrid/custom-aggrid-header.type';
 
 type MutableUnknownArray = unknown[];
 
@@ -942,11 +943,11 @@ export function setLastCompletedComputation(
 export const LOADFLOW_RESULT_FILTER = 'LOADFLOW_RESULT_FILTER';
 export type LoadflowResultFilterAction = Readonly<Action<typeof LOADFLOW_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD];
-    [LOADFLOW_RESULT_STORE_FIELD]: MutableUnknownArray;
+    [LOADFLOW_RESULT_STORE_FIELD]: FilterSelectorType[];
 };
 export function setLoadflowResultFilter(
     filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD],
-    loadflowResultFilter: MutableUnknownArray
+    loadflowResultFilter: FilterSelectorType[]
 ): LoadflowResultFilterAction {
     return {
         type: LOADFLOW_RESULT_FILTER,
@@ -958,11 +959,11 @@ export function setLoadflowResultFilter(
 export const SECURITY_ANALYSIS_RESULT_FILTER = 'SECURITY_ANALYSIS_RESULT_FILTER';
 export type SecurityAnalysisResultFilterAction = Readonly<Action<typeof SECURITY_ANALYSIS_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof SECURITY_ANALYSIS_RESULT_STORE_FIELD];
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: MutableUnknownArray;
+    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: FilterSelectorType[];
 };
 export function setSecurityAnalysisResultFilter(
     filterTab: keyof AppState[typeof SECURITY_ANALYSIS_RESULT_STORE_FIELD],
-    securityAnalysisResultFilter: MutableUnknownArray
+    securityAnalysisResultFilter: FilterSelectorType[]
 ): SecurityAnalysisResultFilterAction {
     return {
         type: SECURITY_ANALYSIS_RESULT_FILTER,
@@ -974,11 +975,11 @@ export function setSecurityAnalysisResultFilter(
 export const SENSITIVITY_ANALYSIS_RESULT_FILTER = 'SENSITIVITY_ANALYSIS_RESULT_FILTER';
 export type SensitivityAnalysisResultFilterAction = Readonly<Action<typeof SENSITIVITY_ANALYSIS_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: MutableUnknownArray;
+    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: FilterSelectorType[];
 };
 export function setSensitivityAnalysisResultFilter(
     filterTab: keyof AppState[typeof SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD],
-    sensitivityAnalysisResultFilter: MutableUnknownArray
+    sensitivityAnalysisResultFilter: FilterSelectorType[]
 ): SensitivityAnalysisResultFilterAction {
     return {
         type: SENSITIVITY_ANALYSIS_RESULT_FILTER,
@@ -990,11 +991,11 @@ export function setSensitivityAnalysisResultFilter(
 export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER = 'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
 export type ShortcircuitAnalysisResultFilterAction = Readonly<Action<typeof SHORTCIRCUIT_ANALYSIS_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: MutableUnknownArray;
+    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: FilterSelectorType[];
 };
 export function setShortcircuitAnalysisResultFilter(
     filterTab: keyof AppState[typeof SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD],
-    shortcircuitAnalysisResultFilter: MutableUnknownArray
+    shortcircuitAnalysisResultFilter: FilterSelectorType[]
 ): ShortcircuitAnalysisResultFilterAction {
     return {
         type: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
@@ -1006,11 +1007,11 @@ export function setShortcircuitAnalysisResultFilter(
 export const DYNAMIC_SIMULATION_RESULT_FILTER = 'DYNAMIC_SIMULATION_RESULT_FILTER';
 export type DynamicSimulationResultFilterAction = Readonly<Action<typeof DYNAMIC_SIMULATION_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: MutableUnknownArray;
+    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: FilterSelectorType[];
 };
 export function setDynamicSimulationResultFilter(
     filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD],
-    dynamicSimulationResultFilter: MutableUnknownArray
+    dynamicSimulationResultFilter: FilterSelectorType[]
 ): DynamicSimulationResultFilterAction {
     return {
         type: DYNAMIC_SIMULATION_RESULT_FILTER,
@@ -1022,11 +1023,11 @@ export function setDynamicSimulationResultFilter(
 export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
 export type SpreadsheetFilterAction = Readonly<Action<typeof SPREADSHEET_FILTER>> & {
     filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD];
-    [SPREADSHEET_STORE_FIELD]: MutableUnknownArray;
+    [SPREADSHEET_STORE_FIELD]: FilterSelectorType[];
 };
 export function setSpreadsheetFilter(
     filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD],
-    spreadsheetFilter: MutableUnknownArray
+    spreadsheetFilter: FilterSelectorType[]
 ): SpreadsheetFilterAction {
     return {
         type: SPREADSHEET_FILTER,
@@ -1038,11 +1039,11 @@ export function setSpreadsheetFilter(
 export const LOGS_FILTER = 'LOGS_FILTER';
 export type LogsFilterAction = Readonly<Action<typeof LOGS_FILTER>> & {
     filterTab: keyof AppState[typeof LOGS_STORE_FIELD];
-    [LOGS_STORE_FIELD]: MutableUnknownArray;
+    [LOGS_STORE_FIELD]: FilterSelectorType[];
 };
 export function setLogsFilter(
     filterTab: keyof AppState[typeof LOGS_STORE_FIELD],
-    logsFilter: MutableUnknownArray
+    logsFilter: FilterSelectorType[]
 ): LogsFilterAction {
     return {
         type: LOGS_FILTER,
@@ -1125,12 +1126,12 @@ export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
 
 export type AddFilterForNewSpreadsheetAction = {
     type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: MutableUnknownArray };
+    payload: { newTabName: string; value: FilterSelectorType[] };
 };
 
 export const addFilterForNewSpreadsheet = (
     newTabName: string,
-    value: MutableUnknownArray
+    value: FilterSelectorType[]
 ): AddFilterForNewSpreadsheetAction => ({
     type: ADD_FILTER_FOR_NEW_SPREADSHEET,
     payload: {
@@ -1160,11 +1161,11 @@ export const addSortForNewSpreadsheet = (
 export const STATEESTIMATION_RESULT_FILTER = 'STATEESTIMATION_RESULT_FILTER';
 export type StateEstimationResultFilterAction = Readonly<Action<typeof STATEESTIMATION_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD];
-    [STATEESTIMATION_RESULT_STORE_FIELD]: MutableUnknownArray;
+    [STATEESTIMATION_RESULT_STORE_FIELD]: FilterSelectorType[];
 };
 export function setStateEstimationResultFilter(
     filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD],
-    stateEstimationResultFilter: MutableUnknownArray
+    stateEstimationResultFilter: FilterSelectorType[]
 ): StateEstimationResultFilterAction {
     return {
         type: STATEESTIMATION_RESULT_FILTER,

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
@@ -24,6 +23,7 @@ import {
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
 import { standardSelectCellEditorConfig } from '../common/cell-editors';
+import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
 
 function generateTapRequest(tapType: string, legNumber: number) {
     return (
@@ -38,6 +38,11 @@ function generateTapRequest(tapType: string, legNumber: number) {
     );
 }
 
+const filterParams = {
+    filterType: FilterType.Spreadsheet,
+    filterTab: 'ThreeWindingsTransformers',
+};
+
 export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
     index: 4,
     name: 'ThreeWindingsTransformers',
@@ -48,27 +53,27 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'VoltageLevelIdT3WSide1',
             field: 'voltageLevelId1',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'VoltageLevelIdT3WSide2',
             field: 'voltageLevelId2',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'VoltageLevelIdT3WSide3',
             field: 'voltageLevelId3',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Country',
@@ -80,28 +85,28 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'NominalVT3WSide1',
             field: 'nominalV1',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 0,
         },
         {
             id: 'NominalVT3WSide2',
             field: 'nominalV2',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 0,
         },
         {
             id: 'NominalVT3WSide3',
             field: 'nominalV3',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 0,
         },
         {
             id: 'ActivePowerT3WSide1',
             field: 'p1',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -110,7 +115,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'ActivePowerT3WSide2',
             field: 'p2',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -119,7 +124,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'ActivePowerT3WSide3',
             field: 'p3',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -128,7 +133,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'ReactivePowerT3WSide1',
             field: 'q1',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -137,7 +142,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'ReactivePowerT3WSide2',
             field: 'q2',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -146,7 +151,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'ReactivePowerT3WSide3',
             field: 'q3',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -156,7 +161,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'hasLoadTapChanging1Capabilities',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -164,21 +169,21 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingRatio1',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'TargetVPoint1',
             field: 'targetV1',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RatioTap1',
             field: 'ratioTapChanger1',
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             changeCmd: generateTapRequest('Ratio', 1),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.ratioTapChanger1?.tapPosition,
@@ -198,7 +203,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'hasLoadTapChanging2Capabilities',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -206,21 +211,21 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingRatio2',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'TargetVPoint2',
             field: 'targetV2',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RatioTap2',
             field: 'ratioTapChanger2',
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             changeCmd: generateTapRequest('Ratio', 2),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.ratioTapChanger2?.tapPosition,
@@ -240,7 +245,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'hasLoadTapChanging3Capabilities',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -248,21 +253,21 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingRatio3',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'TargetVPoint3',
             field: 'targetV3',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RatioTap3',
             field: 'ratioTapChanger3',
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             changeCmd: generateTapRequest('Ratio', 3),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.ratioTapChanger3?.tapPosition,
@@ -289,13 +294,13 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingPhase1',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'PhaseTap1',
             field: 'phaseTapChanger1',
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             changeCmd: generateTapRequest('Phase', 1),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.phaseTapChanger1?.tapPosition,
@@ -314,7 +319,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'RegulatingValue1',
             field: 'regulatingValue1',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             columnWidth: MEDIUM_COLUMN_WIDTH,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -331,13 +336,13 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingPhase2',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'PhaseTap2',
             field: 'phaseTapChanger2',
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             changeCmd: generateTapRequest('Phase', 2),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.phaseTapChanger2?.tapPosition,
@@ -356,7 +361,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'RegulatingValue2',
             field: 'regulatingValue2',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             columnWidth: MEDIUM_COLUMN_WIDTH,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -373,13 +378,13 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingPhase3',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'PhaseTap3',
             field: 'phaseTapChanger3',
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             changeCmd: generateTapRequest('Phase', 3),
             fractionDigits: 0,
             valueGetter: (params) => params?.data?.phaseTapChanger3?.tapPosition,
@@ -398,7 +403,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'RegulatingValue3',
             field: 'regulatingValue3',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             columnWidth: MEDIUM_COLUMN_WIDTH,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -408,7 +413,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'terminal1Connected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -416,7 +421,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'terminal2Connected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -424,9 +429,9 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'terminal3Connected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+} satisfies SpreadsheetTabDefinition;

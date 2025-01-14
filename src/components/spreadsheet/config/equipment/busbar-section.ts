@@ -8,7 +8,12 @@
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { defaultTextFilterConfig, typeAndFetchers } from './common-config';
-import type { ReadonlyDeep } from 'type-fest';
+import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+
+const filterParams = {
+    filterType: FilterType.Spreadsheet,
+    filterTab: 'BusBarSections',
+};
 
 export const BUSBAR_SECTION_TAB_DEF = {
     index: 16,
@@ -19,12 +24,12 @@ export const BUSBAR_SECTION_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+} satisfies SpreadsheetTabDefinition;

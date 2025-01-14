@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
-import { SortConfigType } from '../../../hooks/use-aggrid-sort';
+import { SortConfigType } from '../../custom-aggrid/hooks/use-custom-aggrid-sort';
 import { UUID } from 'crypto';
 import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
 

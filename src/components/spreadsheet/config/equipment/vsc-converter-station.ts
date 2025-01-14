@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
@@ -20,6 +19,12 @@ import {
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
+import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+
+const filterParams = {
+    filterType: FilterType.Spreadsheet,
+    filterTab: 'VscConverterStations',
+};
 
 export const VSC_CONVERTER_STATION_TAB_DEF = {
     index: 12,
@@ -31,17 +36,17 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Country',
@@ -53,19 +58,19 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             id: 'NominalV',
             field: 'nominalV',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 0,
         },
         {
             id: 'HvdcLineId',
             field: 'hvdcLineId',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'activePower',
             field: 'p',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -74,7 +79,7 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             id: 'ReactivePower',
             field: 'q',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -83,7 +88,7 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             id: 'LossFactor',
             field: 'lossFactor',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -92,14 +97,14 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             field: 'voltageRegulatorOn',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'VoltageSetpointKV',
             field: 'voltageSetpoint',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -107,7 +112,7 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             id: 'ReactivePowerSetpointMVAR',
             field: 'reactivePowerSetpoint',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -116,9 +121,9 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+} satisfies SpreadsheetTabDefinition;

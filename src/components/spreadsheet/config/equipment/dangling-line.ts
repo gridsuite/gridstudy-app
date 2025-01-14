@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
@@ -20,6 +19,12 @@ import {
 } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfProperties } from '../common/column-properties';
+import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+
+const filterParams = {
+    filterType: FilterType.Spreadsheet,
+    filterTab: 'DanglingLines',
+};
 
 export const DANGLING_LINE_TAB_DEF = {
     index: 13,
@@ -30,42 +35,42 @@ export const DANGLING_LINE_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
+            ...countryEnumFilterConfig(filterParams),
             cellRenderer: CountryCellRenderer,
         },
         {
             id: 'NominalV',
             field: NOMINAL_V,
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 0,
         },
         {
             id: 'PairingKey',
             field: 'pairingKey',
             getQuickFilterText: excludeFromGlobalFilter,
-            ...defaultTextFilterConfig,
+            ...defaultTextFilterConfig(filterParams),
         },
         {
             id: 'activePower',
             field: 'p',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -74,7 +79,7 @@ export const DANGLING_LINE_TAB_DEF = {
             id: 'ReactivePower',
             field: 'q',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -83,7 +88,7 @@ export const DANGLING_LINE_TAB_DEF = {
             id: 'p0',
             field: 'p0',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -91,7 +96,7 @@ export const DANGLING_LINE_TAB_DEF = {
             id: 'q0',
             field: 'q0',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            ...defaultNumericFilterConfig(filterParams),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -100,9 +105,9 @@ export const DANGLING_LINE_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...defaultBooleanFilterConfig(filterParams),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+} satisfies SpreadsheetTabDefinition;

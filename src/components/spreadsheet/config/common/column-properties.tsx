@@ -9,6 +9,8 @@ import { PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import type { ValueGetterFunc, ValueSetterParams } from 'ag-grid-community';
 import { defaultTextFilterConfig, editableColumnConfig, excludeFromGlobalFilter } from '../equipment/common-config';
+import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 
 const propertiesGetter: ValueGetterFunc = (params) => {
     const properties = params?.data?.properties;
@@ -21,6 +23,11 @@ const propertiesGetter: ValueGetterFunc = (params) => {
     }
 };
 
+const filterParams = {
+    filterType: FilterType.Spreadsheet,
+    filterTab: 'properties',
+};
+
 //TODO only used in tie-line config, is "valueSetter" forgotten?
 export const genericColumnOfPropertiesReadonly = {
     id: 'Properties',
@@ -29,7 +36,7 @@ export const genericColumnOfPropertiesReadonly = {
     cellRenderer: PropertiesCellRenderer,
     minWidth: 300,
     getQuickFilterText: excludeFromGlobalFilter,
-    ...defaultTextFilterConfig,
+    ...defaultTextFilterConfig(filterParams),
 };
 
 export const genericColumnOfProperties = {
@@ -45,4 +52,4 @@ export const genericColumnOfPropertiesEditPopup = {
     ...genericColumnOfProperties,
     cellEditor: SitePropertiesEditor,
     cellEditorPopup: true,
-};
+} satisfies Partial<CustomColDef>;

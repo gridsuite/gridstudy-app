@@ -65,11 +65,10 @@ import { sanitizeString } from 'components/dialogs/dialog-utils';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
-import { useAgGridSort } from 'hooks/use-aggrid-sort';
-import { setSpreadsheetFilter, updateEquipments } from 'redux/actions';
+import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/aggrid-filters-utils';
+import { updateEquipments } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode, EquipmentUpdateType, getUpdateTypeFromEquipmentType } from '../../redux/reducer';
@@ -92,6 +91,7 @@ import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import { CustomAggridAutocompleteFilterParams } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import { FilterType } from '../custom-aggrid/hooks/use-aggrid-row-filter';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -156,7 +156,7 @@ interface TableWrapperProps {
     disabled: boolean;
 }
 
-const TableWrapper: FunctionComponent<TableWrapperProps> = ({
+export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     studyUuid,
     currentNode,
     equipmentId,
@@ -273,13 +273,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         );
     }, [disabled, selectedColumnsNames, currentTabType, currentColumns]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentTabName());
-
-    const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
-        filterType: SPREADSHEET_STORE_FIELD,
-        filterTab: currentTabName(),
-        filterStoreAction: setSpreadsheetFilter,
-    });
+    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][currentTabName()]);
 
     const equipmentDefinition = useMemo(
         () => ({
@@ -407,10 +401,11 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
             columnExtended.filterComponentParams = {
                 filterParams: {
-                    updateFilter,
-                    filterSelector,
                     ...columnExtended?.filterComponentParams?.filterParams,
                 },
+                filterType: FilterType.Spreadsheet,
+                filterTab: currentTabName(),
+                updateFilterCallback: updateFilters,
             };
 
             //Set sorting comparator for enum columns so it sorts the translated values instead of the enum values
@@ -448,25 +443,14 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             return makeAgGridCustomHeaderColumn({
                 headerName: columnExtended.headerName,
                 field: columnExtended.field,
-                sortProps: {
-                    onSortChanged,
-                    sortConfig,
+                sortParams: {
+                    table: SPREADSHEET_SORT_STORE,
+                    tab: currentTabName(),
                 },
                 ...columnExtended,
             });
         },
-        [
-            intl,
-            lockedColumnsNames,
-            updateFilter,
-            filterSelector,
-            filterEnums,
-            translate,
-            onSortChanged,
-            sortConfig,
-            loadFlowStatus,
-            applyFluxConvention,
-        ]
+        [intl, lockedColumnsNames, currentTabName, loadFlowStatus, applyFluxConvention, filterEnums, translate]
     );
     useEffect(() => {
         if (errorMessage) {
@@ -1321,4 +1305,3 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         </>
     );
 };
-export default TableWrapper;
