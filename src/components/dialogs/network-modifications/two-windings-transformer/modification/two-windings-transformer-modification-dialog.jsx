@@ -211,20 +211,20 @@ const TwoWindingsTransformerModificationDialog = ({
         (twtEditData) => {
             const ratioTapEnabledInEditData = twtEditData?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value;
             const ratioTapFormHasBeenEdited = Object.keys(twtEditData?.[RATIO_TAP_CHANGER] ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
-            const ratioTapEnabledInTwtToModify = !!twtToModify?.ratioTapChanger; // used when we have twt element (built node)
+            const ratioTapEnabledInTwtToModify = !!getValues(RATIO_TAP_CHANGER); // used when we have twt element (built node)
             return ratioTapEnabledInEditData ?? (ratioTapFormHasBeenEdited || ratioTapEnabledInTwtToModify);
         },
-        [twtToModify]
+        [getValues]
     );
 
     const isPhaseTapChangerEnabled = useCallback(
         (twtEditData) => {
             const phaseTapEnabledInEditData = twtEditData?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value;
             const phaseTapFormHasBeenEdited = Object.keys(twtEditData?.[PHASE_TAP_CHANGER] ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
-            const phaseTapEnabledInTwtToModify = !!twtToModify?.phaseTapChanger; // used when we have twt element (built node)
+            const phaseTapEnabledInTwtToModify = !!getValues(PHASE_TAP_CHANGER); // used when we have twt element (built node)
             return phaseTapEnabledInEditData ?? (phaseTapFormHasBeenEdited || phaseTapEnabledInTwtToModify);
         },
-        [twtToModify]
+        [getValues]
     );
 
     const fromEditDataToFormValues = useCallback(
@@ -269,9 +269,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     lowTapPosition: twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION]?.value,
                     highTapPosition: computeHighTapPosition(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION]?.value,
-                    steps: addSelectedFieldToRows(
-                        twt?.[RATIO_TAP_CHANGER]?.[STEPS] ?? twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
-                    ),
+                    steps: addSelectedFieldToRows(twt?.[RATIO_TAP_CHANGER]?.[STEPS] ?? undefined),
                     equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId?.value,
                     equipmentType: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalType?.value,
                     voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId?.value,
@@ -294,9 +292,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     lowTapPosition: twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION]?.value,
                     highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION]?.value,
-                    steps: addSelectedFieldToRows(
-                        twt?.[PHASE_TAP_CHANGER]?.[STEPS] ?? twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
-                    ),
+                    steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS] ?? undefined),
                     equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId?.value,
                     equipmentType: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalType?.value,
                     voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId?.value,
@@ -304,7 +300,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getPropertiesFromModification(twt.properties),
             });
         },
-        [reset, twtToModify, isRatioTapChangerEnabled, isPhaseTapChangerEnabled]
+        [reset, isRatioTapChangerEnabled, isPhaseTapChangerEnabled]
     );
 
     useEffect(() => {
@@ -641,7 +637,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, editData, reset, getValues, setConnectivityValue]
+        [reset, studyUuid, currentNodeUuid, setConnectivityValue, getValues, editData?.equipmentId]
     );
 
     useEffect(() => {
