@@ -21,7 +21,7 @@ import {
     SELECTED_LIMITS_GROUP_2,
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
-import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { tabStyles } from '../../parameters-tabs';
 
@@ -51,7 +51,7 @@ export function OperationalLimitsGroupsTabs({
     const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
     const editLimitGroupRef = useRef<HTMLInputElement>(null);
-    const { setValue } = useForm();
+    const { setValue } = useFormContext();
     const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
     });
