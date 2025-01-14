@@ -248,8 +248,12 @@ const TwoWindingsTransformerModificationDialog = ({
                     ratedS: twt.ratedS?.value,
                 }),
                 ...getSelectedLimitsFormData({
-                    permanentLimit1: twt.currentLimits1?.permanentLimit,
-                    permanentLimit2: twt.currentLimits2?.permanentLimit,
+                    permanentLimit1:
+                        twt.currentLimits1?.permanentLimit ??
+                        getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
+                    permanentLimit2:
+                        twt.currentLimits2?.permanentLimit ??
+                        getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
                     temporaryLimits1: addSelectedFieldToRows(
                         updatedTemporaryLimits1 || formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
                     ),
@@ -304,7 +308,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getPropertiesFromModification(twt.properties),
             });
         },
-        [reset, twtToModify, isRatioTapChangerEnabled, isPhaseTapChangerEnabled]
+        [reset, twtToModify, isRatioTapChangerEnabled, isPhaseTapChangerEnabled, getValues]
     );
 
     useEffect(() => {
@@ -714,7 +718,12 @@ const TwoWindingsTransformerModificationDialog = ({
                         </Box>
 
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.LIMITS_TAB} p={1}>
-                            <LimitsPane currentNode={currentNode} equipmentToModify={twtToModify} clearableFields />
+                            <LimitsPane
+                                currentNode={currentNode}
+                                equipmentToModify={twtToModify}
+                                clearableFields
+                                onlySelectedLimitsGroup
+                            />
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB} p={1}>
                             <RatioTapChangerPane

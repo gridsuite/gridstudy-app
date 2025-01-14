@@ -35,7 +35,12 @@ const LineModificationDialogTabs = ({ studyUuid, currentNode, lineToModify, tabI
             </Box>
 
             <Box hidden={tabIndex !== LineModificationDialogTab.LIMITS_TAB} p={1}>
-                <LimitsPane currentNode={currentNode} equipmentToModify={lineToModify} clearableFields={true} />
+                <LimitsPane
+                    currentNode={currentNode}
+                    equipmentToModify={lineToModify}
+                    clearableFields={true}
+                    onlySelectedLimitsGroup
+                />
             </Box>
         </>
     );

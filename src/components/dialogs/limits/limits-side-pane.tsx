@@ -8,7 +8,6 @@ import { Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { FloatInput } from '@gridsuite/commons-ui';
 import {
-    CURRENT_LIMITS,
     PERMANENT_LIMIT,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
@@ -25,12 +24,12 @@ import { TemporaryLimitData } from './limits-type';
 import DndTable from '../../utils/dnd-table/dnd-table';
 
 export interface LimitsSidePaneProps {
-    indexLimitGroup: number;
     limitsGroupFormName: string;
     permanentCurrentLimitPreviousValue: any;
     previousValues: any;
     clearableFields: any;
     currentNode: any;
+    onlySelectedLimitsGroup: boolean;
 }
 
 export interface ILimitColumnDef {
@@ -42,19 +41,18 @@ export interface ILimitColumnDef {
 }
 
 export function LimitsSidePane({
-    indexLimitGroup,
     limitsGroupFormName,
     permanentCurrentLimitPreviousValue,
     previousValues,
     clearableFields,
     currentNode,
+    onlySelectedLimitsGroup,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { getValues } = useFormContext();
     const useFieldArrayOutputTemporaryLimits = useFieldArray({
-        name: `${limitsGroupFormName}[${indexLimitGroup}].${CURRENT_LIMITS}.${TEMPORARY_LIMITS}`,
+        name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}`,
     });
-
     const columnsDefinition: ILimitColumnDef[] = useMemo(() => {
         return [
             {
@@ -162,7 +160,7 @@ export function LimitsSidePane({
         () => (
             <Box sx={{ maxWidth: 300, paddingTop: 2 }}>
                 <FloatInput
-                    name={`${limitsGroupFormName}[${indexLimitGroup}].${CURRENT_LIMITS}.${PERMANENT_LIMIT}`}
+                    name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
                     label="PermanentCurrentLimitText"
                     adornment={AmpereAdornment}
                     previousValue={permanentCurrentLimitPreviousValue}
@@ -170,7 +168,7 @@ export function LimitsSidePane({
                 />
             </Box>
         ),
-        [limitsGroupFormName, indexLimitGroup, clearableFields, permanentCurrentLimitPreviousValue]
+        [limitsGroupFormName, clearableFields, permanentCurrentLimitPreviousValue]
     );
 
     const isValueModified = useCallback(
@@ -190,29 +188,29 @@ export function LimitsSidePane({
 
     return (
         <Box sx={{ p: 2 }}>
-            {indexLimitGroup !== undefined && permanentCurrentLimitField}
+            {permanentCurrentLimitField}
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
-            {indexLimitGroup !== undefined && (
+            {
                 <DndTable
-                    arrayFormName={`${limitsGroupFormName}[${indexLimitGroup}].${CURRENT_LIMITS}.${TEMPORARY_LIMITS}`}
+                    arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
                     useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
                     createRows={createRows}
                     columnsDefinition={columnsDefinition}
                     withLeftButtons={false}
                     withAddRowsDialog={false}
-                    withBottomButtons={false}
-                    withCheckboxes={false}
-                    withButtonOnTheRight
+                    withBottomButtons={onlySelectedLimitsGroup}
+                    withCheckboxes={onlySelectedLimitsGroup}
+                    withButtonOnTheRight={!onlySelectedLimitsGroup}
                     previousValues={previousValues}
                     disableTableCell={disableTableCell}
                     getPreviousValue={getPreviousValue}
                     isValueModified={isValueModified}
-                    minRowsNumber={5}
-                    tableHeight={400}
+                    minRowsNumber={onlySelectedLimitsGroup ? 0 : 5}
+                    tableHeight={onlySelectedLimitsGroup ? 270 : 400}
                 />
-            )}
+            }
         </Box>
     );
 }

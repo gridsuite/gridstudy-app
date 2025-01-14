@@ -298,17 +298,27 @@ const LineModificationDialog = ({
                             setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
                             setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
                             const updatedTemporaryLimits1 = updateTemporaryLimits(
-                                formatTemporaryLimits(getValues(`${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
                                 formatTemporaryLimits(line?.currentLimits1?.temporaryLimits)
                             );
                             const updatedTemporaryLimits2 = updateTemporaryLimits(
-                                formatTemporaryLimits(getValues(`${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
                                 formatTemporaryLimits(line?.currentLimits2?.temporaryLimits)
+                            );
+                            const previousPermanentLimit1 = getValues(
+                                `${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`
+                            );
+                            const previousPermanentLimit2 = getValues(
+                                `${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`
                             );
                             reset(
                                 (formValues) => ({
                                     ...formValues,
                                     ...getSelectedLimitsFormData({
+                                        permanentLimit1:
+                                            line.currentLimits1?.permanentLimit1 ?? previousPermanentLimit1,
+                                        permanentLimit2:
+                                            line.currentLimits1?.permanentLimit2 ?? previousPermanentLimit2,
                                         temporaryLimits1: addSelectedFieldToRows(
                                             updatedTemporaryLimits1
                                                 ? updatedTemporaryLimits1
