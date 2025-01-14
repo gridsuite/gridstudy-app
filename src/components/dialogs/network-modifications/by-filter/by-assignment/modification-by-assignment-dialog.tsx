@@ -7,7 +7,13 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    convertOutputValue,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { FC, useCallback, useEffect } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
@@ -18,8 +24,6 @@ import ModificationByAssignmentForm from './modification-by-assignment-form';
 import { ASSIGNMENTS, EDITED_FIELD, EQUIPMENT_TYPE_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
 import { modifyByAssignment } from '../../../../../services/study/network-modifications';
 import {
-    convertInputValue,
-    convertOutputValue,
     getAssignmentFromEditData,
     getAssignmentInitialValue,
     getAssignmentsSchema,
@@ -72,7 +76,10 @@ const ModificationByAssignmentDialog: FC<any> = ({
             const assignments: Assignment[] =
                 editData.assignmentInfosList?.map((info: Assignment) => {
                     const assignment = getAssignmentFromEditData(info);
-                    const valueConverted = convertInputValue(assignment[EDITED_FIELD], assignment[VALUE_FIELD]);
+                    const fieldKey = assignment[EDITED_FIELD] as keyof typeof FieldType;
+                    const field = FieldType[fieldKey];
+                    const value = assignment[VALUE_FIELD];
+                    const valueConverted = convertInputValue(field, value);
                     return {
                         ...assignment,
                         [VALUE_FIELD]: valueConverted,
@@ -93,7 +100,10 @@ const ModificationByAssignmentDialog: FC<any> = ({
         (formData: ModificationByAssignment) => {
             const assignmentsList = formData[ASSIGNMENTS].map((assignment) => {
                 const dataType = getDataType(assignment[EDITED_FIELD]);
-                const valueConverted = convertOutputValue(assignment[EDITED_FIELD], assignment[VALUE_FIELD]);
+                const fieldKey = assignment[EDITED_FIELD] as keyof typeof FieldType;
+                const field = FieldType[fieldKey];
+                const value = assignment[VALUE_FIELD];
+                const valueConverted = convertOutputValue(field, value);
                 return {
                     ...assignment,
                     dataType,

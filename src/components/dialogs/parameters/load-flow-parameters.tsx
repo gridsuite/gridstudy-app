@@ -29,11 +29,11 @@ import ParameterLineSlider from './widget/parameter-line-slider';
 import {
     ILimitReductionsByVoltageLevel,
     IST_FORM,
-    LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
     TAB_INFO,
     TAB_VALUES,
     getLimitReductionsFormSchema,
+    LIMIT_DURATION_FORM,
 } from './common/limitreductions/columns-definitions';
 import LimitReductionsTableForm from './common/limitreductions/limit-reductions-table-form';
 import { useForm } from 'react-hook-form';
@@ -627,7 +627,8 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
                 vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
                     vlLNewLimits.temporaryLimitReductions[index] = {
                         ...temporaryLimit,
-                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM][index],
+                        // @ts-expect-error type issue with yup schema , see columns-definitions.ts:getLimitDurationsFormSchema
+                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
                     };
                 });
                 return vlLNewLimits;
@@ -725,7 +726,6 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
                                                 sx={{
                                                     fontSize: 17,
                                                     fontWeight: 'bold',
-                                                    textTransform: 'capitalize',
                                                 }}
                                             />
                                         )

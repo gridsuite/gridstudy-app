@@ -925,7 +925,7 @@ const NetworkModificationNodeEditor = () => {
                 getItemId={(val) => val.uuid}
                 getItemLabel={getModificationLabel}
                 isDndDragAndDropActive
-                isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading || deleteInProgress}
+                isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading}
                 secondaryAction={handleSecondaryAction}
                 onDragEnd={commit}
                 onDragStart={() => setIsDragging(true)}
@@ -1030,7 +1030,7 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
-                    disabled={isAnyNodeBuilding || mapDataLoading || deleteInProgress}
+                    disabled={isAnyNodeBuilding || mapDataLoading}
                 >
                     <AddIcon />
                 </IconButton>
@@ -1040,7 +1040,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openImportModificationsDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={isAnyNodeBuilding || mapDataLoading || deleteInProgress}
+                            disabled={isAnyNodeBuilding || mapDataLoading}
                         >
                             <CreateNewFolderIcon />
                         </IconButton>
@@ -1091,11 +1091,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             sx={styles.toolbarIcon}
                             disabled={
-                                !(copiedModifications.length > 0) ||
-                                isAnyNodeBuilding ||
-                                mapDataLoading ||
-                                deleteInProgress ||
-                                !currentNode
+                                !(copiedModifications.length > 0) || isAnyNodeBuilding || mapDataLoading || !currentNode
                             }
                         >
                             <ContentPasteIcon />

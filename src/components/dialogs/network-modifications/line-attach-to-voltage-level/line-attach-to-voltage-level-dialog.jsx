@@ -164,23 +164,23 @@ const LineAttachToVoltageLevelDialog = ({
         (lineAttach) => {
             const currentVoltageLevelId = lineAttach[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
             const isNewVoltageLevel = newVoltageLevel?.equipmentId === currentVoltageLevelId;
-            attachLine(
-                studyUuid,
-                currentNodeUuid,
-                editData?.uuid,
-                lineAttach[LINE_TO_ATTACH_OR_SPLIT_ID],
-                parseFloat(lineAttach[SLIDER_PERCENTAGE]),
-                lineAttach[ATTACHMENT_POINT_ID],
-                sanitizeString(lineAttach[ATTACHMENT_POINT_NAME]),
-                isNewVoltageLevel ? newVoltageLevel : null,
-                currentVoltageLevelId,
-                lineAttach[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                attachmentLine,
-                lineAttach[LINE1_ID],
-                sanitizeString(lineAttach[LINE1_NAME]),
-                lineAttach[LINE2_ID],
-                sanitizeString(lineAttach[LINE2_NAME])
-            ).catch((error) => {
+            attachLine({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                lineToAttachToId: lineAttach[LINE_TO_ATTACH_OR_SPLIT_ID],
+                percent: parseFloat(lineAttach[SLIDER_PERCENTAGE]),
+                attachmentPointId: lineAttach[ATTACHMENT_POINT_ID],
+                attachmentPointName: sanitizeString(lineAttach[ATTACHMENT_POINT_NAME]),
+                mayNewVoltageLevelInfos: isNewVoltageLevel ? newVoltageLevel : null,
+                existingVoltageLevelId: currentVoltageLevelId,
+                bbsOrBusId: lineAttach[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                attachmentLine: attachmentLine,
+                newLine1Id: lineAttach[LINE1_ID],
+                newLine1Name: sanitizeString(lineAttach[LINE1_NAME]),
+                newLine2Id: lineAttach[LINE2_ID],
+                newLine2Name: sanitizeString(lineAttach[LINE2_NAME]),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LineAttachmentError',
