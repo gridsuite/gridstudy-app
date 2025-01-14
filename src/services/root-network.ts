@@ -12,30 +12,32 @@ export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
 export function fetchRootNetworks(studyUuid: UUID) {
     console.info('Fetching root network for studyUuid : ', studyUuid);
-    const urlSearchParams = new URLSearchParams();
-    const rootNetworkssGetUrl =
-        `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/root-networks` +
-        urlSearchParams.toString();
+    const rootNetworksGetUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/root-networks`;
 
-    console.debug(rootNetworkssGetUrl);
-    return backendFetchJson(rootNetworkssGetUrl);
+    console.debug(rootNetworksGetUrl);
+    return backendFetchJson(rootNetworksGetUrl);
 }
 
 export const createRootNetwork = (
     caseUuid: UUID | undefined,
     caseFormat: string,
+    rootNetworkName: string,
     studyUuid: UUID | null,
     importParameters: Record<string, any>
 ) => {
-    if (!studyUuid || !caseUuid) {
-        throw new Error('studyUuid and caseUuid are required parameters.');
+    if (!studyUuid || !caseUuid || !rootNetworkName) {
+        throw new Error('rootNetworkName, studyUuid and caseUuid are required parameters.');
     }
+
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('caseUuid', caseUuid);
+    urlSearchParams.append('caseFormat', caseFormat);
+    urlSearchParams.append('name', rootNetworkName);
 
     const createRootNetworkUrl =
         PREFIX_STUDY_QUERIES +
         `/v1/studies/${encodeURIComponent(studyUuid)}/root-networks?` +
-        `caseUuid=${encodeURIComponent(caseUuid)}&` +
-        `caseFormat=${encodeURIComponent(caseFormat)}`;
+        urlSearchParams.toString();
 
     console.debug(createRootNetworkUrl);
     return backendFetch(createRootNetworkUrl, {

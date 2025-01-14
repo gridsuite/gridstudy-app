@@ -222,7 +222,7 @@ const RootNetworkNodeEditor = () => {
         if (!rootNetwork) {
             return '';
         }
-        return intl.formatMessage({ id: 'RootNetwork' }) + ': ' + rootNetwork.rootNetworkUuid;
+        return intl.formatMessage({ id: 'RootNetwork' }) + ': ' + rootNetwork.name;
     };
 
     const handleSecondaryAction = useCallback(
@@ -367,7 +367,13 @@ const RootNetworkNodeEditor = () => {
                 const formattedParams = formatCaseImportParameters(params.parameters);
                 const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
                 // Call createRootNetwork with formatted parameters
-                return createRootNetwork(caseId as UUID, params.formatName, studyUuid, customizedCurrentParameters);
+                return createRootNetwork(
+                    caseId as UUID,
+                    params.formatName,
+                    name,
+                    studyUuid,
+                    customizedCurrentParameters
+                );
             })
             .then(() => {
                 snackInfo({
