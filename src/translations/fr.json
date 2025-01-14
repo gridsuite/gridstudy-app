@@ -1434,7 +1434,7 @@
     "NoFilter": "Aucun filtre",
     "searchPlaceholder": "Recherche",
     "searchPlaceholderLog": "Rechercher dans les Logs",
-    "searchPlaceholderLogsContainers": "Rechercher dans les conteneurs de Logs",
+    "searchPlaceholderLogsTreeStructure": "Rechercher dans l'arborescence",
     "GeneratedModification": "Modification-générée",
     "guidancePopUp.title": "Sélection sur la carte",
     "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
