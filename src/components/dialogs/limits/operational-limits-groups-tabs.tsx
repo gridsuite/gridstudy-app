@@ -23,6 +23,7 @@ import {
 } from '../../utils/field-constants';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { tabStyles } from '../../parameters-tabs';
 
 const styles = {
     limitsBackground: {
@@ -46,6 +47,7 @@ export function OperationalLimitsGroupsTabs({
     setIndexSelectedLimitSet2,
 }: Readonly<OperationalLimitsGroupsTabsProps>) {
     const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number>(0);
+    const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
     const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
     const editLimitGroupRef = useRef<HTMLInputElement>(null);
@@ -214,10 +216,12 @@ export function OperationalLimitsGroupsTabs({
             variant="scrollable"
             value={selectedLimitGroupTabIndex}
             onChange={handleTabChange}
-            sx={{ flexGrow: 1 }}
+            sx={tabStyles.listDisplay}
         >
             {limitsGroups1.map((set: OperationalLimitsGroup, index: number) => (
                 <Tab
+                    onMouseEnter={() => setHoveredRowIndex(index)}
+                    onMouseLeave={() => setHoveredRowIndex(-1)}
                     key={set.id + index}
                     label={
                         editingTabIndex === index ? (
@@ -241,15 +245,18 @@ export function OperationalLimitsGroupsTabs({
                                 }}
                             >
                                 {set.id}
-                                <IconButton
-                                    size="small"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        startEditingLimitsGroup(index, set.id);
-                                    }}
-                                >
-                                    <Edit fontSize="small" />
-                                </IconButton>
+                                {index === hoveredRowIndex && (
+                                    <IconButton
+                                        size="small"
+                                        hidden
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            startEditingLimitsGroup(index, set.id);
+                                        }}
+                                    >
+                                        <Edit fontSize="small" />
+                                    </IconButton>
+                                )}
                             </Box>
                         )
                     }

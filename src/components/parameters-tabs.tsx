@@ -74,7 +74,7 @@ const stylesLayout = {
         height: '100%',
     },
 };
-const styles = {
+export const tabStyles = {
     listTitleDisplay: (theme: Theme) => ({
         paddingTop: 1,
         paddingBottom: 1,
@@ -316,7 +316,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             <Grid container spacing={0} sx={stylesLayout.rootContainer}>
                 <Grid container item xs={2} direction="column" sx={stylesLayout.columnContainer}>
                     <Grid item>
-                        <Typography variant="subtitle1" sx={styles.listTitleDisplay}>
+                        <Typography variant="subtitle1" sx={tabStyles.listTitleDisplay}>
                             <FormattedMessage id="parameters" />
                         </Typography>
                     </Grid>
@@ -327,7 +327,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                             onChange={(event, newValue) => handleChangeTab(newValue)}
                             aria-label="parameters"
                             orientation="vertical"
-                            sx={styles.listDisplay}
+                            sx={tabStyles.listDisplay}
                         >
                             <Tab
                                 label={<FormattedMessage id="LoadFlow" />}
@@ -369,7 +369,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
                             {/*In order to insert a Divider under a Tabs collection it need to be nested in a dedicated Tab to prevent console warnings*/}
-                            <Tab sx={styles.dividerTab} label="" icon={<Divider sx={{ flexGrow: 1 }} />} disabled />
+                            <Tab sx={tabStyles.dividerTab} label="" icon={<Divider sx={{ flexGrow: 1 }} />} disabled />
                             <Tab
                                 label={<FormattedMessage id="NetworkVisualizations" />}
                                 value={TAB_VALUES.networkVisualizationsParams}
@@ -378,11 +378,11 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                         </Tabs>
                     </Grid>
                 </Grid>
-                <Grid item xs={10} sx={styles.parametersBox}>
+                <Grid item xs={10} sx={tabStyles.parametersBox}>
                     <GlassPane
                         active={loadFlowStatus === RunningStatus.RUNNING && tabValue === TAB_VALUES.lfParamsTabValue}
                     >
-                        <Box sx={styles.contentBox}>{displayTab()}</Box>
+                        <Box sx={tabStyles.contentBox}>{displayTab()}</Box>
                     </GlassPane>
                 </Grid>
             </Grid>

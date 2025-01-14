@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Paper } from '@mui/material';
+import { Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { FloatInput } from '@gridsuite/commons-ui';
 import {
@@ -23,16 +23,6 @@ import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimitData } from './limits-type';
 import DndTable from '../../utils/dnd-table/dnd-table';
-
-const styles = {
-    limitsBackground: {
-        backgroundColor: '#383838',
-        padding: 2,
-    },
-    limitsBackgroundUnselected: {
-        backgroundColor: '#1a1919',
-    },
-};
 
 export interface LimitsSidePaneProps {
     indexLimitGroup: number;
@@ -170,7 +160,7 @@ export function LimitsSidePane({
 
     const permanentCurrentLimitField = useMemo(
         () => (
-            <Box sx={{ maxWidth: 300 }}>
+            <Box sx={{ maxWidth: 300, paddingTop: 2 }}>
                 <FloatInput
                     name={`${limitsGroupFormName}[${indexLimitGroup}].${CURRENT_LIMITS}.${PERMANENT_LIMIT}`}
                     label="PermanentCurrentLimitText"
@@ -199,7 +189,7 @@ export function LimitsSidePane({
     );
 
     return (
-        <Paper sx={styles.limitsBackground}>
+        <Box sx={{ p: 2 }}>
             {indexLimitGroup !== undefined && permanentCurrentLimitField}
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
@@ -223,6 +213,6 @@ export function LimitsSidePane({
                     tableHeight={400}
                 />
             )}
-        </Paper>
+        </Box>
     );
 }

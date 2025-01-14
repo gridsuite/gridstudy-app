@@ -22,6 +22,7 @@ import { useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from './limits-type';
 import { TemporaryLimit } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
+import { tabStyles } from '../../parameters-tabs';
 
 export interface LimitsPaneProps {
     id?: string;
@@ -98,7 +99,7 @@ export function LimitsPane({
                         setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
                     />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={4} sx={tabStyles.parametersBox}>
                     {renderSidePane(
                         limitsGroups1,
                         indexSelectedLimitSet1,
@@ -107,7 +108,7 @@ export function LimitsPane({
                         equipmentToModify?.currentLimits1?.permanentLimit
                     )}
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={4} sx={tabStyles.parametersBox}>
                     {renderSidePane(
                         limitsGroups2,
                         indexSelectedLimitSet2,
