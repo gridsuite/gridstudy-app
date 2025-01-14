@@ -11,10 +11,14 @@ import {
     EQUIPMENT_TYPE_FIELD,
     FILTERS,
     ID,
+    KILO_AMPERE,
+    MEGA_VAR,
+    MICRO_SIEMENS,
     NAME,
     OPERATOR,
     REFERENCE_FIELD_OR_VALUE_1,
     REFERENCE_FIELD_OR_VALUE_2,
+    SIEMENS,
     SPECIFIC_METADATA,
     TYPE,
 } from '../../../../../utils/field-constants';
@@ -24,6 +28,7 @@ import { AnyObject, TestContext, TestFunction } from 'yup';
 export type EquipmentField = {
     id: string;
     label: string;
+    unit?: string;
 };
 type EquipmentFieldsKeys =
     | EQUIPMENT_TYPES.GENERATOR
@@ -69,8 +74,8 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [
         { id: 'MAXIMUM_SECTION_COUNT', label: 'maximumSectionCount' },
         { id: 'SECTION_COUNT', label: 'sectionCount' },
-        { id: 'MAXIMUM_SUSCEPTANCE', label: 'maxSusceptance' },
-        { id: 'MAXIMUM_Q_AT_NOMINAL_VOLTAGE', label: 'maxQAtNominalV' },
+        { id: 'MAX_SUSCEPTANCE', label: 'maxSusceptance', unit: SIEMENS },
+        { id: 'MAX_Q_AT_NOMINAL_V', label: 'maxQAtNominalV', unit: MEGA_VAR },
     ],
     [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [
         { id: 'NOMINAL_VOLTAGE', label: 'NominalVoltage' },
@@ -79,10 +84,12 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         {
             id: 'LOW_SHORT_CIRCUIT_CURRENT_LIMIT',
             label: 'LowShortCircuitCurrentLimit',
+            unit: KILO_AMPERE,
         },
         {
             id: 'HIGH_SHORT_CIRCUIT_CURRENT_LIMIT',
             label: 'HighShortCircuitCurrentLimit',
+            unit: KILO_AMPERE,
         },
     ],
     [EQUIPMENT_TYPES.LOAD]: [
@@ -92,8 +99,8 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
     [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [
         { id: 'R', label: 'SeriesResistanceText' },
         { id: 'X', label: 'SeriesReactanceText' },
-        { id: 'G', label: 'G' },
-        { id: 'B', label: 'B' },
+        { id: 'G', label: 'G', unit: MICRO_SIEMENS },
+        { id: 'B', label: 'B', unit: MICRO_SIEMENS },
         { id: 'RATED_U1', label: 'RatedU1' },
         { id: 'RATED_U2', label: 'RatedU2' },
         { id: 'RATED_S', label: 'RatedNominalPowerText' },

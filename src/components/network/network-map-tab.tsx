@@ -32,7 +32,7 @@ import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter, { type NominalVoltageFilterProps } from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_MAP_BASEMAP, PARAM_MAP_MANUAL_REFRESH, PARAM_USE_NAME } from '../../utils/config-params';
-import { Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { Equipment, EquipmentType, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNode, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
@@ -123,11 +123,11 @@ export const NetworkMapTab = ({
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
     const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
-    const basemap = useSelector((state: AppState) => state[PARAM_MAP_BASEMAP]);
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const centerOnSubstation = useSelector((state: AppState) => state.centerOnSubstation);
+    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
     const theme = useTheme();
 
@@ -166,13 +166,10 @@ export const NetworkMapTab = ({
     const disabled = !isNodeBuilt(currentNode);
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
-    const mapManualRefresh = useSelector((state: AppState) => state[PARAM_MAP_MANUAL_REFRESH]);
-    const refIsMapManualRefreshEnabled = useRef<boolean>();
-    refIsMapManualRefreshEnabled.current = mapManualRefresh;
-
     const reloadMapNeeded = useSelector((state: AppState) => state.reloadMap);
-
     const isMapEquipmentsInitialized = useSelector((state: AppState) => state.isMapEquipmentsInitialized);
+    const refIsMapManualRefreshEnabled = useRef<boolean>();
+    refIsMapManualRefreshEnabled.current = networkVisuParams.mapParameters.mapManualRefresh;
 
     type EquipmentMenuProps = {
         position?: [number, number] | null;
@@ -658,7 +655,11 @@ export const NetworkMapTab = ({
     const reloadMapEquipments = useCallback(
         (currentNodeAtReloadCalling: CurrentTreeNode | null, substationsIds: UUID[] | undefined) => {
             if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
-                return Promise.reject();
+                return Promise.reject(
+                    new Error(
+                        'reloadMapEquipments error: currentNode not build or studyUuid undefined or mapEquipments not initialized'
+                    )
+                );
             }
 
             const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } = mapEquipments
@@ -704,11 +705,6 @@ export const NetworkMapTab = ({
 
     const updateMapEquipments = useCallback(
         (currentNodeAtReloadCalling: CurrentTreeNode | null) => {
-            if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
-                dispatch(resetMapReloaded());
-                return Promise.reject();
-            }
-
             const mapEquipmentsTypes = [
                 EquipmentType.SUBSTATION,
                 EquipmentType.LINE,
@@ -737,37 +733,48 @@ export const NetworkMapTab = ({
             dispatch(resetMapReloaded());
             resetImpactedElementTypes();
             resetImpactedSubstationsIds();
-            return reloadMapEquipments(currentNodeAtReloadCalling, updatedSubstationsToSend);
+            return reloadMapEquipments(currentNodeAtReloadCalling, updatedSubstationsToSend).catch((e) =>
+                snackError({
+                    messageTxt: e.message,
+                })
+            );
         },
         [
-            currentNode,
-            studyUuid,
-            mapEquipments,
             impactedElementTypes,
             impactedSubstationsIds,
             dispatch,
             resetImpactedElementTypes,
             resetImpactedSubstationsIds,
             reloadMapEquipments,
+            snackError,
         ]
     );
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
         const currentNodeAtReloadCalling = currentNodeRef.current;
-        updateMapEquipments(currentNodeAtReloadCalling)?.then(() => {
+        if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
+            dispatch(resetMapReloaded());
+            return;
+        }
+
+        updateMapEquipments(currentNodeAtReloadCalling).then(() => {
             if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                 loadGeoData();
             }
         });
-    }, [loadGeoData, updateMapEquipments]);
+    }, [currentNode, dispatch, loadGeoData, mapEquipments, studyUuid, updateMapEquipments]);
 
     useEffect(() => {
         if (isInitialized && studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult') {
-                reloadMapEquipments(currentNodeRef.current, undefined);
+                reloadMapEquipments(currentNodeRef.current, undefined).catch((e) =>
+                    snackError({
+                        messageTxt: e.message,
+                    })
+                );
             }
         }
-    }, [isInitialized, studyUpdatedForce, reloadMapEquipments]);
+    }, [isInitialized, studyUpdatedForce, reloadMapEquipments, snackError]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
@@ -963,7 +970,9 @@ export const NetworkMapTab = ({
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
             centerOnSubstation={centerOnSubstation}
-            isManualRefreshBackdropDisplayed={mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)}
+            isManualRefreshBackdropDisplayed={
+                networkVisuParams.mapParameters.mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
+            }
             // only 2 things need this to ensure the map keeps the correct size:
             // - changing study display mode because it changes the map container size
             //   programmatically
@@ -972,7 +981,7 @@ export const NetworkMapTab = ({
             onManualRefreshClick={updateMapEquipmentsAndGeoData}
             triggerMapResizeOnChange={[studyDisplayMode, visible]}
             renderPopover={renderLinePopover}
-            mapLibrary={basemap}
+            mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
             onDrawPolygonModeActive={(active: DRAW_MODES) => {

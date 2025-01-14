@@ -16,7 +16,7 @@ import {
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
     fetchTieLinesMapInfos,
-} from '../../services/study/network-ts';
+} from '../../services/study/network';
 
 export default class GSMapEquipments extends MapEquipments {
     dispatch: AppDispatch;

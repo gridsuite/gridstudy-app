@@ -6,19 +6,17 @@
  */
 
 import { FloatInput } from '@gridsuite/commons-ui';
-import { P, MAX_Q, MIN_Q } from 'components/utils/field-constants';
+import { MAX_Q, MIN_Q, P } from 'components/utils/field-constants';
 import { ActivePowerAdornment, ReactivePowerAdornment } from '../../dialog-utils';
 import GridItem from '../../commons/grid-item';
 
-const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix, previousValues }) => {
+const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix }) => {
     const pField = (
         <FloatInput
             name={`${id}.${index}.${P}`}
             label={'P'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ActivePowerAdornment}
-            previousValue={previousValues?.p}
-            clearable={true}
         />
     );
 
@@ -28,8 +26,6 @@ const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix, previousValues
             label={'QminP'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.minQ}
-            clearable={true}
         />
     );
 
@@ -39,8 +35,6 @@ const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix, previousValues
             label={'QmaxP'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.maxQ}
-            clearable={true}
         />
     );
 

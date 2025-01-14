@@ -7,13 +7,6 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAM_LINE_FLOW_COLOR_MODE,
-    PARAM_LINE_FLOW_MODE,
-    PARAM_LINE_FULL_PATH,
-    PARAM_LINE_PARALLEL_PATH,
-} from '../utils/config-params';
 import { setStudyDisplayMode } from '../redux/actions';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/network-viewer';
 import { DiagramType } from './diagrams/diagram-common';
@@ -146,22 +139,13 @@ const MapViewer = ({
     const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-network-viewer)
     const dispatch = useDispatch();
     const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
-    const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
-    const lineParallelPath = useSelector((state) => state[PARAM_LINE_PARALLEL_PATH]);
     const [shouldOpenSelectionCreationPanel, setShouldOpenSelectionCreationPanel] = useState(false);
-
-    const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
-
-    const lineFlowColorMode = useSelector((state) => state[PARAM_LINE_FLOW_COLOR_MODE]);
-
-    const lineFlowAlertThreshold = useSelector((state) => Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD]));
-
-    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
-
-    const previousStudyDisplayMode = useRef(undefined);
-
     const [nominalVoltages, setNominalVoltages] = useState();
     const [isInDrawingMode, setIsInDrawingMode] = useState(false);
+
+    const networkVisuParams = useSelector((state) => state.networkVisualizationsParameters);
+    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+    const previousStudyDisplayMode = useRef(undefined);
 
     const openVoltageLevel = useCallback(
         (vlId) => {
@@ -313,11 +297,11 @@ const MapViewer = ({
                                     networkMapRef={networkMapref}
                                     studyUuid={studyUuid}
                                     visible={view === StudyView.MAP && studyDisplayMode !== StudyDisplayMode.TREE}
-                                    lineFullPath={lineFullPath}
-                                    lineParallelPath={lineParallelPath}
-                                    lineFlowMode={lineFlowMode}
-                                    lineFlowColorMode={lineFlowColorMode}
-                                    lineFlowAlertThreshold={lineFlowAlertThreshold}
+                                    lineFullPath={networkVisuParams.mapParameters.lineFullPath}
+                                    lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
+                                    lineFlowMode={networkVisuParams.mapParameters.lineFlowMode}
+                                    lineFlowColorMode={networkVisuParams.mapParameters.lineFlowColorMode}
+                                    lineFlowAlertThreshold={networkVisuParams.mapParameters.lineFlowAlertThreshold}
                                     openVoltageLevel={openVoltageLevel}
                                     currentNode={currentNode}
                                     onChangeTab={onChangeTab}

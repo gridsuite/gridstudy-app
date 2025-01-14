@@ -146,6 +146,7 @@ const hasValidationTabs = [
     TAB_VALUES.dynamicSimulationParamsTabValue,
     TAB_VALUES.voltageInitParamsTabValue,
     TAB_VALUES.lfParamsTabValue,
+    TAB_VALUES.networkVisualizationsParams,
 ];
 
 type OwnProps = {
@@ -297,7 +298,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             case TAB_VALUES.advancedParamsTabValue:
                 return <NetworkParameters />;
             case TAB_VALUES.networkVisualizationsParams:
-                return <NetworkVisualizationsParameters />;
+                return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
         }
     }, [
         loadFlowParametersBackend,

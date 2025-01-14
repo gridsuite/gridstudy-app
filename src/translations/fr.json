@@ -1,9 +1,11 @@
 {
     "General": "General",
 
-    "LimitReductions" : "Abattements de limites",
+    "LimitReductions" : "Abattements",
     "IST" : "IST",
-    "LimitDuration" : "Surcharge {sign} {value}min",
+    "LimitDurationInterval" : "Entre {highBound} et {lowBound}",
+    "LimitDurationAfterIST": "Au-delà de IT{value}",
+    "voltageRange": "Niveau de tension",
 
     "button.delete": "Supprimer",
     "filter": "Filtre",
@@ -80,6 +82,8 @@
     "CBNone": "Aucun",
     "Map": "Carte",
     "NetworkVisualizations": "Images réseau",
+    "getNetworkVisualizationsParametersError": "Une erreur est survenue lors de la récupération des paramètres des images réseau",
+    "updateNetworkVisualizationsParametersError": "Une erreur est survenue lors de la mise a jour des paramètres des images réseau",
     "lineFullPath": "Afficher le chemin complet des lignes",
     "lineParallelPath": "Écarter les lignes superposées",
     "LineFlowMode": "Mode de représentation des flux sur les lignes",
@@ -414,6 +418,7 @@
     "CalculatedValue": "Valeur calculée (A ou kV)",
     "OverloadedEquipment": "Ouvrage",
     "PermanentLimitName": "IST",
+    "Permanent":"Permanent",
     "LimitAcceptableDuration": "Durée",
     "Overload": "Surcharge",
 
@@ -597,6 +602,7 @@
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
     "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
+    "NodeUpdateColumnPositions": "Une erreur est survenue lors de la mise à jour de la position des nœuds dans l'arbre",
     "NodeBuildingError": "Une erreur est survenue lors de la réalisation du nœud",
     "NodeUnbuildingError": "Une erreur est survenue lors de la déréalisation du nœud",
     "NetworkModifications": "Modifications de réseau",
@@ -911,7 +917,13 @@
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
-    "powerFactorNormalizedPercentage": "La valeur de Coefficient Q/P doit être inférieur à 1",
+    "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
+    "powerFactorMinValueError": "La valeur du coefficient Q/P doit être supérieure à -1",
+    "nominalVMustBeGreaterOrEqualToZero": "La valeur de la tension nominale DC doit être supérieure à 0",
+    "dcResistanceMustBeGreaterOrEqualToZero": "La valeur de la résistance DC doit être supérieure à 0",
+    "maxPMustBeGreaterOrEqualToZero": "La valeur de la puissance active max doit être supérieure à 0",
+    "activePowerSetpointMinValueError": "La valeur de la puissance active doit être supérieure à 0",
+    "activePowerSetpointMaxValueError": "La valeur de la puissance active doit être inférieure à la valeur de la puissance active max",
     "PermanentCurrentLimitText1": "IST 1",
     "PermanentCurrentLimitText2": "IST 2",
 
@@ -1054,6 +1066,7 @@
     "restoreNodes": "Restaurer des nœuds",
     "restoreNodesText": "Veuillez sélectionner les nœuds à restaurer\u00a0:",
     "deleteNodesText": "{numberToDelete, plural, =0 {Veuillez sélectionner un nœuds à supprimer} =1 {Un nœud ou sous-arbre va être définitivement supprimé.} other {# nœuds ou sous-arbres vont être définitivement supprimés.}}",
+    "ReorderSubtreeInvalidNotifInfo": "Mise à jour de l'ordre d'un sous arbre annulée (infos de notification invalides) !",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
@@ -1323,7 +1336,7 @@
     "ShortCircuitCharacteristics": "Caractéristiques prises en compte",
     "ShortCircuitVoltageProfileMode": "Plan de tension initial",
     "shortCircuitLoads": "Charges",
-    "shortCircuitHvdc": "HVDC(VSC)",
+    "shortCircuitHvdc": "HVDC (VSC)",
     "shortCircuitShuntCompensators": "MCS",
     "shortCircuitNeutralPosition": "Prises courantes des régleurs en charge",
     "shortCircuitNominalVoltage": "Tension nominale (kV)",
@@ -1410,6 +1423,7 @@
     "NoFilter": "Aucun filtre",
     "searchPlaceholder": "Recherche",
     "searchPlaceholderLog": "Rechercher dans les Logs",
+    "searchPlaceholderLogsTreeStructure": "Rechercher dans l'arborescence",
     "GeneratedModification": "Modification-générée",
     "guidancePopUp.title": "Sélection sur la carte",
     "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
@@ -1432,5 +1446,6 @@
     "qualityCriterionResults": "Critères qualité",
     "qualityPerRegionResults": "Qualité par région",
     "StateEstimationStatus": "Statut : ",
-    "StateEstimationQuality": "Qualité: "
+    "StateEstimationQuality": "Qualité: ",
+    "Or": "ou"
 }
