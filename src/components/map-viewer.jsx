@@ -135,7 +135,6 @@ const MapViewer = ({
     tableEquipment,
     onTableEquipementChanged,
     onChangeTab,
-    setErrorMessage,
 }) => {
     const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-network-viewer)
     const dispatch = useDispatch();
@@ -307,7 +306,6 @@ const MapViewer = ({
                                     currentNode={currentNode}
                                     onChangeTab={onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    setErrorMessage={setErrorMessage}
                                     onDrawPolygonModeActive={onDrawingModeEnter}
                                     onPolygonChanged={() => {}}
                                     onDrawEvent={onDrawEvent}
