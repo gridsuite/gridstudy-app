@@ -15,11 +15,11 @@ import {
     typeAndFetchers,
 } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'Buses',
+    type: FilterType.Spreadsheet,
+    tab: 'Buses',
 };
 
 export const BUS_TAB_DEF = {

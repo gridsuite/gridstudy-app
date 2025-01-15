@@ -4,30 +4,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FILTER_DATA_TYPES, FilterParams, FilterSelectorType } from '../custom-aggrid-header.type';
+import { FILTER_DATA_TYPES } from '../../custom-aggrid-header.type';
 import { ChangeEvent, useMemo } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { computeTolerance } from '../custom-aggrid-filters/aggrid-filters-utils';
-import { countDecimalPlacesFromString } from '../../../utils/rounding';
+import { countDecimalPlacesFromString } from '../../../../utils/rounding';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
-import { FilterType } from './use-aggrid-row-filter';
 import { GridApi } from 'ag-grid-community';
+import { computeTolerance } from '../utils/filter-tolerance-utils';
+import { FilterParams } from '../types/custom-aggrid-filter-types';
 
-export const useCustomAggridComparatorFilter = (
-    api: GridApi,
-    field: string,
-    filterParams: FilterParams,
-    filterType: FilterType,
-    filterTab: string,
-    updateFilterCallback?: (api?: GridApi, filters?: FilterSelectorType[]) => void
-) => {
-    const { filterDataType = FILTER_DATA_TYPES.TEXT } = filterParams;
+export const useCustomAggridComparatorFilter = (api: GridApi, field: string, filterParams: FilterParams) => {
+    const { dataType = FILTER_DATA_TYPES.TEXT } = filterParams;
 
-    const isNumberInput = filterDataType === FILTER_DATA_TYPES.NUMBER;
+    const isNumberInput = dataType === FILTER_DATA_TYPES.NUMBER;
 
     const { selectedFilterData, selectedFilterComparator, handleChangeFilterValue, handleChangeComparator } =
-        useCustomAggridFilter(api, field, filterParams, filterType, filterTab, updateFilterCallback);
+        useCustomAggridFilter(api, field, filterParams);
 
     const { snackWarning } = useSnackMessage();
 

@@ -8,11 +8,11 @@
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { defaultTextFilterConfig, typeAndFetchers } from './common-config';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'BusBarSections',
+    type: FilterType.Spreadsheet,
+    tab: 'BusBarSections',
 };
 
 export const BUSBAR_SECTION_TAB_DEF = {

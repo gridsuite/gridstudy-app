@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { IconButton } from '@mui/material';
-import { SortParams, SortWay } from './hooks/use-custom-aggrid-sort';
+import { SortParams } from './hooks/use-custom-aggrid-sort';
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import React from 'react';
 import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
+import { SortWay } from '../../redux/reducer';
 
 const styles = {
     iconSize: {

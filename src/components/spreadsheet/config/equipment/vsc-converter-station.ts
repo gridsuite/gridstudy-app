@@ -19,11 +19,11 @@ import {
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'VscConverterStations',
+    type: FilterType.Spreadsheet,
+    tab: 'VscConverterStations',
 };
 
 export const VSC_CONVERTER_STATION_TAB_DEF = {

@@ -20,11 +20,11 @@ import {
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'ShuntCompensators',
+    type: FilterType.Spreadsheet,
+    tab: 'ShuntCompensators',
 };
 
 export const STATIC_VAR_COMPENSATOR_TAB_DEF = {

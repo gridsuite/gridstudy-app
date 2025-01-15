@@ -6,19 +6,8 @@
  */
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, TableSortKeysType } from '../../../redux/reducer';
+import { AppState, SortWay, TableSortKeysType } from '../../../redux/reducer';
 import { setTableSort } from '../../../redux/actions';
-
-export type SortConfigType = {
-    colId: string;
-    sort: SortWay;
-    children?: boolean;
-};
-
-export enum SortWay {
-    ASC = 'asc',
-    DESC = 'desc',
-}
 
 export type SortParams = {
     table: TableSortKeysType;

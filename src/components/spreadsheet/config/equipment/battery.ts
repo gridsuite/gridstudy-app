@@ -20,11 +20,11 @@ import {
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'Batteries',
+    type: FilterType.Spreadsheet,
+    tab: 'Batteries',
 };
 
 export const BATTERY_TAB_DEF = {

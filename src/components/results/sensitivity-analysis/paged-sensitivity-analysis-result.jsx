@@ -30,7 +30,7 @@ import { RunningStatus } from '../../utils/running-status';
 import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
 import { SortWay } from 'components/custom-aggrid/hooks/use-custom-aggrid-sort';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FILTER_PARAMS, FilterType as AgGridFilterType } from '../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType as AgGridFilterType, useFilterSelector } from '../../../hooks/use-filter-selector';
 
 const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, nodeUuid, page, setPage, ...props }) => {
     const intl = useIntl();
@@ -46,10 +46,7 @@ const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, node
         (state) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
-    const filterSelector = useSelector(
-        (state) =>
-            state[FILTER_PARAMS[AgGridFilterType.ShortcircuitAnalysis].filterType][mappingTabs(sensiKind, nOrNkIndex)]
-    );
+    const { filters } = useFilterSelector(AgGridFilterType.ShortcircuitAnalysis, mappingTabs(sensiKind, nOrNkIndex));
 
     const filtersDef = useMemo(() => {
         const baseFilters = [
@@ -138,7 +135,7 @@ const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, node
             offset: page * rowsPerPage,
             pageSize: rowsPerPage,
             pageNumber: page,
-            ...filterSelector?.reduce((acc, curr) => {
+            ...filters?.reduce((acc, curr) => {
                 acc[DATA_KEY_TO_FILTER_KEY[curr.column]] = curr.value;
                 return acc;
             }, {}),
@@ -163,7 +160,7 @@ const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, node
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [nOrNkIndex, sensiKind, page, rowsPerPage, filterSelector, sortConfig, studyUuid, nodeUuid, snackError, intl]);
+    }, [nOrNkIndex, sensiKind, page, rowsPerPage, filters, sortConfig, studyUuid, nodeUuid, snackError, intl]);
 
     useEffect(() => {
         if (sensiStatus === RunningStatus.RUNNING) {

@@ -23,11 +23,11 @@ import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { LOAD_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'Lines',
+    type: FilterType.Spreadsheet,
+    tab: 'Lines',
 };
 
 export const LOAD_TAB_DEF = {

@@ -65,7 +65,7 @@ import { sanitizeString } from 'components/dialogs/dialog-utils';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/aggrid-filters-utils';
+import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { updateEquipments } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -91,6 +91,7 @@ import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import { CustomAggridAutocompleteFilterParams } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import { FilterType } from '../../hooks/use-filter-selector';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -401,10 +402,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             columnExtended.filterComponentParams = {
                 filterParams: {
                     ...columnExtended?.filterComponentParams?.filterParams,
+                    updateFilterCallback: updateFilters,
                 },
-                filterType: FilterType.Spreadsheet,
-                filterTab: currentTabName(),
-                updateFilterCallback: updateFilters,
             };
 
             //Set sorting comparator for enum columns so it sorts the translated values instead of the enum values

@@ -23,7 +23,7 @@ import {
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
 import { standardSelectCellEditorConfig } from '../common/cell-editors';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 function generateTapRequest(tapType: string, legNumber: number) {
     return (
@@ -39,8 +39,8 @@ function generateTapRequest(tapType: string, legNumber: number) {
 }
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'ThreeWindingsTransformers',
+    type: FilterType.Spreadsheet,
+    tab: 'ThreeWindingsTransformers',
 };
 
 export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {

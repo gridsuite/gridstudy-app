@@ -20,11 +20,11 @@ import {
 } from './common-config';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'HvdcLines',
+    type: FilterType.Spreadsheet,
+    tab: 'HvdcLines',
 };
 
 export const HVDC_LINE_TAB_DEF = {

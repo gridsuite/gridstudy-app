@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SortWay } from 'components/custom-aggrid/hooks/use-custom-aggrid-sort';
 
 export interface SCAFault {
     id: string;
@@ -82,18 +81,6 @@ interface Page<ResultType> {
     numberOfElements: number;
     empty: boolean;
 }
-
-export type ColumnFilter = {
-    dataType: string;
-    type: string;
-    value: any;
-    field: string;
-};
-
-export type ColumnSort = {
-    colId: string;
-    sort: SortWay | null | undefined;
-};
 
 export enum ShortCircuitAnalysisResultTabs {
     ALL_BUSES = 0,

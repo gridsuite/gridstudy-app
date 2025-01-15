@@ -28,6 +28,7 @@ import type {
     EquipmentUpdateType,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
+    SortConfig,
     StudyIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
@@ -49,14 +50,13 @@ import {
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
-import { SortConfigType } from '../components/custom-aggrid/hooks/use-custom-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
-import { FilterSelectorType } from '../components/custom-aggrid/custom-aggrid-header.type';
+import { FilterConfig } from '../components/custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
 
 type MutableUnknownArray = unknown[];
 
@@ -161,6 +161,7 @@ export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
     equipments: Record<EquipmentUpdateType, Identifiable[]>;
 };
+
 export function updateEquipments(equipments: Record<EquipmentUpdateType, Identifiable[]>): UpdateEquipmentsAction {
     return {
         type: UPDATE_EQUIPMENTS,
@@ -176,6 +177,7 @@ export const DELETE_EQUIPMENTS = 'DELETE_EQUIPMENTS';
 export type DeleteEquipmentsAction = Readonly<Action<typeof DELETE_EQUIPMENTS>> & {
     equipments: EquipmentToDelete[];
 };
+
 export function deleteEquipments(equipments: EquipmentToDelete[]): DeleteEquipmentsAction {
     return {
         type: DELETE_EQUIPMENTS,
@@ -185,6 +187,7 @@ export function deleteEquipments(equipments: EquipmentToDelete[]): DeleteEquipme
 
 export const RESET_EQUIPMENTS = 'RESET_EQUIPMENTS';
 export type ResetEquipmentsAction = Readonly<Action<typeof RESET_EQUIPMENTS>>;
+
 export function resetEquipments(): ResetEquipmentsAction {
     return {
         type: RESET_EQUIPMENTS,
@@ -195,6 +198,7 @@ export const RESET_EQUIPMENTS_BY_TYPES = 'RESET_EQUIPMENTS_BY_TYPES';
 export type ResetEquipmentsByTypesAction = Readonly<Action<typeof RESET_EQUIPMENTS_BY_TYPES>> & {
     equipmentTypes: SpreadsheetEquipmentType[];
 };
+
 export function resetEquipmentsByTypes(equipmentTypes: SpreadsheetEquipmentType[]): ResetEquipmentsByTypesAction {
     return {
         type: RESET_EQUIPMENTS_BY_TYPES,
@@ -204,6 +208,7 @@ export function resetEquipmentsByTypes(equipmentTypes: SpreadsheetEquipmentType[
 
 export const RESET_EQUIPMENTS_POST_LOADFLOW = 'RESET_EQUIPMENTS_POST_LOADFLOW';
 export type ResetEquipmentsPostLoadflowAction = Readonly<Action<typeof RESET_EQUIPMENTS_POST_LOADFLOW>>;
+
 export function resetEquipmentsPostLoadflow(): ResetEquipmentsPostLoadflowAction {
     return {
         type: RESET_EQUIPMENTS_POST_LOADFLOW,
@@ -218,6 +223,7 @@ export type MapEquipmentsCreatedAction = Readonly<Action<typeof MAP_EQUIPMENTS_C
     newSubstations?: MapSubstation[];
     newHvdcLines?: MapHvdcLine[];
 };
+
 export function mapEquipmentsCreated(
     mapEquipments: GSMapEquipments,
     newLines?: MapLine[],
@@ -241,6 +247,7 @@ export type LoadNetworkModificationTreeSuccessAction = Readonly<
 > & {
     networkModificationTreeModel: NetworkModificationTreeModel;
 };
+
 export function loadNetworkModificationTreeSuccess(
     networkModificationTreeModel: NetworkModificationTreeModel
 ): LoadNetworkModificationTreeSuccessAction {
@@ -257,6 +264,7 @@ export type NetworkModificationTreeNodeAddedAction = Readonly<Action<typeof NETW
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
+
 export function networkModificationTreeNodeAdded(
     networkModificationTreeNode: NetworkModificationNodeData | RootNodeData,
     parentNodeId: string,
@@ -279,6 +287,7 @@ export type NetworkModificationTreeNodeMovedAction = Readonly<Action<typeof NETW
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
+
 export function networkModificationTreeNodeMoved(
     networkModificationTreeNode: RootNodeData | NetworkModificationNodeData,
     parentNodeId: string,
@@ -301,6 +310,7 @@ export type NetworkModificationTreeNodesReorderAction = Readonly<
     parentNodeId: string;
     nodeIds: string[];
 };
+
 export function reorderNetworkModificationTreeNodes(
     parentNodeId: string,
     nodeIds: string[]
@@ -317,6 +327,7 @@ export type NetworkModificationHandleSubtreeAction = Readonly<Action<typeof NETW
     networkModificationTreeNodes: NetworkModificationNodeData | RootNodeData;
     parentNodeId: UUID;
 };
+
 export function networkModificationHandleSubtree(
     networkModificationTreeNodes: NetworkModificationNodeData | RootNodeData,
     parentNodeId: UUID
@@ -334,6 +345,7 @@ export type NetworkModificationTreeNodesRemovedAction = Readonly<
 > & {
     networkModificationTreeNodes: UUID[];
 };
+
 export function networkModificationTreeNodesRemoved(
     networkModificationTreeNodes: UUID[]
 ): NetworkModificationTreeNodesRemovedAction {
@@ -349,6 +361,7 @@ export type NetworkModificationTreeNodesUpdatedAction = Readonly<
 > & {
     networkModificationTreeNodes: CurrentTreeNode[];
 };
+
 export function networkModificationTreeNodesUpdated(
     networkModificationTreeNodes: CurrentTreeNode[]
 ): NetworkModificationTreeNodesUpdatedAction {
@@ -362,6 +375,7 @@ export const SELECT_THEME = 'SELECT_THEME';
 export type SelectThemeAction = Readonly<Action<typeof SELECT_THEME>> & {
     [PARAM_THEME]: GsTheme;
 };
+
 export function selectTheme(theme: GsTheme): SelectThemeAction {
     return { type: SELECT_THEME, [PARAM_THEME]: theme };
 }
@@ -370,6 +384,7 @@ export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
 export type SelectLanguageAction = Readonly<Action<typeof SELECT_LANGUAGE>> & {
     [PARAM_LANGUAGE]: GsLang;
 };
+
 export function selectLanguage(language: GsLang): SelectLanguageAction {
     return { type: SELECT_LANGUAGE, [PARAM_LANGUAGE]: language };
 }
@@ -378,6 +393,7 @@ export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';
 export type SelectComputedLanguageAction = Readonly<Action<typeof SELECT_COMPUTED_LANGUAGE>> & {
     computedLanguage: GsLangUser;
 };
+
 export function selectComputedLanguage(computedLanguage: GsLangUser): SelectComputedLanguageAction {
     return {
         type: SELECT_COMPUTED_LANGUAGE,
@@ -389,6 +405,7 @@ export const SET_PARAMS_LOADED = 'SET_PARAMS_LOADED';
 export type SetParamsLoadedAction = Readonly<Action<typeof SET_PARAMS_LOADED>> & {
     [PARAMS_LOADED]: true;
 };
+
 export function setParamsLoaded(): SetParamsLoadedAction {
     return {
         type: SET_PARAMS_LOADED,
@@ -400,18 +417,21 @@ export const OPEN_STUDY = 'OPEN_STUDY';
 export type OpenStudyAction = Readonly<Action<typeof OPEN_STUDY>> & {
     studyRef: [UUID];
 };
+
 export function openStudy(studyUuid: UUID): OpenStudyAction {
     return { type: OPEN_STUDY, studyRef: [studyUuid] };
 }
 
 export const CLOSE_STUDY = 'CLOSE_STUDY';
 export type CloseStudyAction = Readonly<Action<typeof CLOSE_STUDY>>;
+
 export function closeStudy(): CloseStudyAction {
     return { type: CLOSE_STUDY };
 }
 
 export const REMOVE_SELECTED_CASE = 'REMOVE_SELECTED_CASE';
 export type RemoveSelectedCaseAction = Readonly<Action<typeof REMOVE_SELECTED_CASE>>;
+
 export function removeSelectedCase(): RemoveSelectedCaseAction {
     return { type: REMOVE_SELECTED_CASE };
 }
@@ -420,6 +440,7 @@ export const USE_NAME = 'USE_NAME';
 export type UseNameAction = Readonly<Action<typeof USE_NAME>> & {
     [PARAM_USE_NAME]: boolean;
 };
+
 export function selectUseName(useName: boolean): UseNameAction {
     return { type: USE_NAME, [PARAM_USE_NAME]: useName };
 }
@@ -430,6 +451,7 @@ export type UpdateNetworkVisualizationParametersAction = Readonly<
 > & {
     parameters: NetworkVisualizationParameters;
 };
+
 export function setUpdateNetworkVisualizationParameters(
     parameters: NetworkVisualizationParameters
 ): UpdateNetworkVisualizationParametersAction {
@@ -443,6 +465,7 @@ export const FLUX_CONVENTION = 'FLUX_CONVENTION';
 export type FluxConventionAction = Readonly<Action<typeof FLUX_CONVENTION>> & {
     [PARAM_FLUX_CONVENTION]: FluxConventions;
 };
+
 export function selectFluxConvention(fluxConvention: FluxConventions): FluxConventionAction {
     return { type: FLUX_CONVENTION, [PARAM_FLUX_CONVENTION]: fluxConvention };
 }
@@ -451,6 +474,7 @@ export const ENABLE_DEVELOPER_MODE = 'ENABLE_DEVELOPER_MODE';
 export type EnableDeveloperModeAction = Readonly<Action<typeof ENABLE_DEVELOPER_MODE>> & {
     [PARAM_DEVELOPER_MODE]: boolean;
 };
+
 export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
@@ -462,6 +486,7 @@ export const LIMIT_REDUCTION = 'LIMIT_REDUCTION';
 export type LimitReductionAction = Readonly<Action<typeof LIMIT_REDUCTION>> & {
     [PARAM_LIMIT_REDUCTION]: number;
 };
+
 export function selectLimitReduction(limitReduction: number): LimitReductionAction {
     return {
         type: LIMIT_REDUCTION,
@@ -473,6 +498,7 @@ export const LIMIT_REDUCTION_MODIFIED = 'LIMIT_REDUCTION_MODIFIED';
 export type LimitReductionModifiedAction = Readonly<Action<typeof LIMIT_REDUCTION_MODIFIED>> & {
     limitReductionModified: boolean;
 };
+
 export function limitReductionModified(limitReductionModified: boolean): LimitReductionModifiedAction {
     return {
         type: LIMIT_REDUCTION_MODIFIED,
@@ -484,6 +510,7 @@ export const STUDY_UPDATED = 'STUDY_UPDATED';
 export type StudyUpdatedAction = Readonly<Action<typeof STUDY_UPDATED>> & {
     eventData: StudyUpdatedEventData;
 };
+
 /*
 export type StudyUpdated = {
     force: IntRange<0, 1>;
@@ -497,6 +524,7 @@ export const MAP_DATA_LOADING = 'MAP_DATA_LOADING';
 export type MapDataLoadingAction = Readonly<Action<typeof MAP_DATA_LOADING>> & {
     mapDataLoading: boolean;
 };
+
 export function setMapDataLoading(mapDataLoading: boolean): MapDataLoadingAction {
     return {
         type: MAP_DATA_LOADING,
@@ -506,6 +534,7 @@ export function setMapDataLoading(mapDataLoading: boolean): MapDataLoadingAction
 
 export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
 export type ResetMapReloadedAction = Readonly<Action<typeof RESET_MAP_RELOADED>>;
+
 export function resetMapReloaded(): ResetMapReloadedAction {
     return {
         type: RESET_MAP_RELOADED,
@@ -516,6 +545,7 @@ export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
 export type MapEquipmentsInitializedAction = Readonly<Action<typeof MAP_EQUIPMENTS_INITIALIZED>> & {
     newValue: boolean;
 };
+
 export function setMapEquipementsInitialized(newValue: boolean): MapEquipmentsInitializedAction {
     return {
         type: MAP_EQUIPMENTS_INITIALIZED,
@@ -532,6 +562,7 @@ export type SetFullscreenDiagramAction = Readonly<Action<typeof SET_FULLSCREEN_D
               svgType: DiagramType;
           }
     );
+
 export function setFullScreenDiagram(diagramIdParam: null): SetFullscreenDiagramAction;
 export function setFullScreenDiagram(diagramIdParam: string, svgTypeParam: DiagramType): SetFullscreenDiagramAction;
 export function setFullScreenDiagram(
@@ -556,6 +587,7 @@ export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
 export type ChangeDisplayedColumnsNamesAction = Readonly<Action<typeof CHANGE_DISPLAYED_COLUMNS_NAMES>> & {
     displayedColumnsNamesParams: ColumnName<string>[];
 };
+
 export function changeDisplayedColumns(
     displayedColumnsParams: ColumnName<string>[]
 ): ChangeDisplayedColumnsNamesAction {
@@ -569,6 +601,7 @@ export const CHANGE_LOCKED_COLUMNS_NAMES = 'CHANGE_LOCKED_COLUMNS_NAMES';
 export type ChangeLockedColumnsNamesAction = Readonly<Action<typeof CHANGE_LOCKED_COLUMNS_NAMES>> & {
     lockedColumnsNamesParams: ColumnName<string>[];
 };
+
 export function changeLockedColumns(lockedColumnsParams: ColumnName<string>[]): ChangeLockedColumnsNamesAction {
     return {
         type: CHANGE_LOCKED_COLUMNS_NAMES,
@@ -580,6 +613,7 @@ export const CHANGE_REORDERED_COLUMNS = 'CHANGE_REORDERED_COLUMNS';
 export type ChangeReorderedColumnsAction = Readonly<Action<typeof CHANGE_REORDERED_COLUMNS>> & {
     reorderedColumnsParams: ColumnName<string>[];
 };
+
 export function changeReorderedColumns(reorderedColumnsParams: ColumnName<string>[]): ChangeReorderedColumnsAction {
     return {
         type: CHANGE_REORDERED_COLUMNS,
@@ -591,6 +625,7 @@ export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
 export type FavoriteContingencyListsAction = Readonly<Action<typeof FAVORITE_CONTINGENCY_LISTS>> & {
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: MutableUnknownArray;
 };
+
 export function selectFavoriteContingencyLists(
     favoriteContingencyLists: MutableUnknownArray
 ): FavoriteContingencyListsAction {
@@ -604,6 +639,7 @@ export const CURRENT_TREE_NODE = 'CURRENT_TREE_NODE';
 export type CurrentTreeNodeAction = Readonly<Action<typeof CURRENT_TREE_NODE>> & {
     currentTreeNode: CurrentTreeNode;
 };
+
 export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTreeNodeAction {
     return {
         type: CURRENT_TREE_NODE,
@@ -615,6 +651,7 @@ export const NODE_SELECTION_FOR_COPY = 'NODE_SELECTION_FOR_COPY';
 export type NodeSelectionForCopyAction = Readonly<Action<typeof NODE_SELECTION_FOR_COPY>> & {
     nodeSelectionForCopy: NonNullable<NodeSelectionForCopy>;
 };
+
 export function setNodeSelectionForCopy(
     nodeSelectionForCopy: NonNullable<NodeSelectionForCopy>
 ): NodeSelectionForCopyAction {
@@ -628,6 +665,7 @@ export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
 export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>> & {
     isModificationsDrawerOpen: boolean;
 };
+
 export function setModificationsDrawerOpen(isModificationsDrawerOpen: boolean): SetModificationsDrawerOpenAction {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
@@ -639,6 +677,7 @@ export const SET_EVENT_SCENARIO_DRAWER_OPEN = 'SET_EVENT_SCENARIO_DRAWER_OPEN';
 export type SetEventScenarioDrawerOpenAction = Readonly<Action<typeof SET_EVENT_SCENARIO_DRAWER_OPEN>> & {
     isEventScenarioDrawerOpen: boolean;
 };
+
 export function setEventScenarioDrawerOpen(isEventScenarioDrawerOpen: boolean): SetEventScenarioDrawerOpenAction {
     return {
         type: SET_EVENT_SCENARIO_DRAWER_OPEN,
@@ -650,6 +689,7 @@ export const CENTER_ON_SUBSTATION = 'CENTER_ON_SUBSTATION';
 export type CenterOnSubstationAction = Readonly<Action<typeof CENTER_ON_SUBSTATION>> & {
     centerOnSubstation: { to: string };
 };
+
 export function centerOnSubstation(substationId: string): CenterOnSubstationAction {
     return {
         type: CENTER_ON_SUBSTATION,
@@ -661,6 +701,7 @@ export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 export type AddNotificationAction = Readonly<Action<typeof ADD_NOTIFICATION>> & {
     notificationIds: UUID[];
 };
+
 export function addNotification(notificationIds: UUID[]): AddNotificationAction {
     return {
         type: ADD_NOTIFICATION,
@@ -672,6 +713,7 @@ export const REMOVE_NOTIFICATION_BY_NODE = 'REMOVE_NOTIFICATION_BY_NODE';
 export type RemoveNotificationByNodeAction = Readonly<Action<typeof REMOVE_NOTIFICATION_BY_NODE>> & {
     notificationIds: UnknownArray;
 };
+
 export function removeNotificationByNode(notificationIds: UnknownArray): RemoveNotificationByNodeAction {
     return {
         type: REMOVE_NOTIFICATION_BY_NODE,
@@ -683,6 +725,7 @@ export const SET_MODIFICATIONS_IN_PROGRESS = 'SET_MODIFICATIONS_IN_PROGRESS';
 export type SetModificationsInProgressAction = Readonly<Action<typeof SET_MODIFICATIONS_IN_PROGRESS>> & {
     isModificationsInProgress: boolean;
 };
+
 export function setModificationsInProgress(isModificationsInProgress: boolean): SetModificationsInProgressAction {
     return {
         type: SET_MODIFICATIONS_IN_PROGRESS,
@@ -694,6 +737,7 @@ export const SET_STUDY_DISPLAY_MODE = 'SET_STUDY_DISPLAY_MODE';
 export type SetStudyDisplayModeAction = Readonly<Action<typeof SET_STUDY_DISPLAY_MODE>> & {
     studyDisplayMode: StudyDisplayMode;
 };
+
 export function setStudyDisplayMode(studyDisplayMode: StudyDisplayMode): SetStudyDisplayModeAction {
     return {
         type: SET_STUDY_DISPLAY_MODE,
@@ -706,6 +750,7 @@ export type OpenDiagramAction = Readonly<Action<typeof OPEN_DIAGRAM>> & {
     id: string;
     svgType: DiagramType;
 };
+
 export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction {
     return {
         type: OPEN_DIAGRAM,
@@ -731,6 +776,7 @@ export type MinimizeDiagramAction = Readonly<Action<typeof MINIMIZE_DIAGRAM>> & 
     id: string;
     svgType: DiagramType;
 };
+
 export function minimizeDiagram(id: string, svgType: DiagramType): MinimizeDiagramAction {
     return {
         type: MINIMIZE_DIAGRAM,
@@ -744,6 +790,7 @@ export type TogglePinDiagramAction = Readonly<Action<typeof TOGGLE_PIN_DIAGRAM>>
     id: string;
     svgType: DiagramType;
 };
+
 export function togglePinDiagram(id: string, svgType: DiagramType): TogglePinDiagramAction {
     return {
         type: TOGGLE_PIN_DIAGRAM,
@@ -757,6 +804,7 @@ export type CloseDiagramAction = Readonly<Action<typeof CLOSE_DIAGRAM>> & {
     id: string;
     svgType: DiagramType;
 };
+
 export function closeDiagram(id: string, svgType: DiagramType): CloseDiagramAction {
     return {
         type: CLOSE_DIAGRAM,
@@ -769,6 +817,7 @@ export const CLOSE_DIAGRAMS = 'CLOSE_DIAGRAMS';
 export type CloseDiagramsAction = Readonly<Action<typeof CLOSE_DIAGRAMS>> & {
     ids: string[];
 };
+
 export function closeDiagrams(ids: string[]): CloseDiagramsAction {
     return {
         type: CLOSE_DIAGRAMS,
@@ -778,6 +827,7 @@ export function closeDiagrams(ids: string[]): CloseDiagramsAction {
 
 export const STOP_DIAGRAM_BLINK = 'STOP_DIAGRAM_BLINK';
 export type StopDiagramBlinkAction = Readonly<Action<typeof STOP_DIAGRAM_BLINK>>;
+
 export function stopDiagramBlink(): StopDiagramBlinkAction {
     return {
         type: STOP_DIAGRAM_BLINK,
@@ -786,6 +836,7 @@ export function stopDiagramBlink(): StopDiagramBlinkAction {
 
 export const RESET_NETWORK_AREA_DIAGRAM_DEPTH = 'RESET_NETWORK_AREA_DIAGRAM_DEPTH';
 export type ResetNetworkAreaDiagramDepthAction = Readonly<Action<typeof RESET_NETWORK_AREA_DIAGRAM_DEPTH>>;
+
 export function resetNetworkAreaDiagramDepth(): ResetNetworkAreaDiagramDepthAction {
     return {
         type: RESET_NETWORK_AREA_DIAGRAM_DEPTH,
@@ -794,6 +845,7 @@ export function resetNetworkAreaDiagramDepth(): ResetNetworkAreaDiagramDepthActi
 
 export const INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH = 'INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
 export type IncrementNetworkAreaDiagramDepthAction = Readonly<Action<typeof INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH>>;
+
 export function incrementNetworkAreaDiagramDepth(): IncrementNetworkAreaDiagramDepthAction {
     return {
         type: INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
@@ -802,6 +854,7 @@ export function incrementNetworkAreaDiagramDepth(): IncrementNetworkAreaDiagramD
 
 export const DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH = 'DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
 export type DecrementNetworkAreaDiagramDepthAction = Readonly<Action<typeof DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH>>;
+
 export function decrementNetworkAreaDiagramDepth(): DecrementNetworkAreaDiagramDepthAction {
     return {
         type: DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
@@ -817,6 +870,7 @@ export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
     x: number;
     y: number;
 };
+
 export function storeNetworkAreaDiagramNodeMovement(
     nadIdentifier: string,
     equipmentId: string,
@@ -838,6 +892,7 @@ export type NetworkAreaDiagramNbVoltageLevelsAction = Readonly<
 > & {
     nbVoltageLevels: number;
 };
+
 export function setNetworkAreaDiagramNbVoltageLevels(nbVoltageLevels: number): NetworkAreaDiagramNbVoltageLevelsAction {
     return {
         type: NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
@@ -850,6 +905,7 @@ export type SetComputingStatusAction = Readonly<Action<typeof SET_COMPUTING_STAT
     computingType: ComputingType;
     runningStatus: RunningStatus;
 };
+
 export function setComputingStatus(
     computingType: ComputingType,
     runningStatus: RunningStatus
@@ -865,6 +921,7 @@ export const SET_COMPUTATION_STARTING = 'SET_COMPUTATION_STARTING';
 export type SetComputationStartingAction = Readonly<Action<typeof SET_COMPUTATION_STARTING>> & {
     computationStarting: boolean;
 };
+
 export function setComputationStarting(computationStarting: boolean): SetComputationStartingAction {
     return {
         type: SET_COMPUTATION_STARTING,
@@ -876,6 +933,7 @@ export const SET_STUDY_INDEXATION_STATUS = 'SET_STUDY_INDEXATION_STATUS';
 export type SetStudyIndexationStatusAction = Readonly<Action<typeof SET_STUDY_INDEXATION_STATUS>> & {
     studyIndexationStatus: StudyIndexationStatus;
 };
+
 export function setStudyIndexationStatus(studyIndexationStatus: StudyIndexationStatus): SetStudyIndexationStatusAction {
     return {
         type: SET_STUDY_INDEXATION_STATUS,
@@ -887,6 +945,7 @@ export const SET_OPTIONAL_SERVICES = 'SET_OPTIONAL_SERVICES';
 export type SetOptionalServicesAction = Readonly<Action<typeof SET_OPTIONAL_SERVICES>> & {
     optionalServices: IOptionalService[];
 };
+
 export function setOptionalServices(optionalServices: IOptionalService[]): SetOptionalServicesAction {
     return {
         type: SET_OPTIONAL_SERVICES,
@@ -921,6 +980,7 @@ export const ADD_TO_RECENT_GLOBAL_FILTERS = 'ADD_TO_RECENT_GLOBAL_FILTERS';
 export type AddToRecentGlobalFiltersAction = Readonly<Action<typeof ADD_TO_RECENT_GLOBAL_FILTERS>> & {
     globalFilters: Filter[];
 };
+
 export function addToRecentGlobalFilters(globalFilters: Filter[]): AddToRecentGlobalFiltersAction {
     return {
         type: ADD_TO_RECENT_GLOBAL_FILTERS,
@@ -932,6 +992,7 @@ export const SET_LAST_COMPLETED_COMPUTATION = 'SET_LAST_COMPLETED_COMPUTATION';
 export type SetLastCompletedComputationAction = Readonly<Action<typeof SET_LAST_COMPLETED_COMPUTATION>> & {
     lastCompletedComputation: ComputingType | null;
 };
+
 export function setLastCompletedComputation(
     lastCompletedComputation?: ComputingType
 ): SetLastCompletedComputationAction {
@@ -944,11 +1005,12 @@ export function setLastCompletedComputation(
 export const LOADFLOW_RESULT_FILTER = 'LOADFLOW_RESULT_FILTER';
 export type LoadflowResultFilterAction = Readonly<Action<typeof LOADFLOW_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD];
-    [LOADFLOW_RESULT_STORE_FIELD]: FilterSelectorType[];
+    [LOADFLOW_RESULT_STORE_FIELD]: FilterConfig[];
 };
+
 export function setLoadflowResultFilter(
     filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD],
-    loadflowResultFilter: FilterSelectorType[]
+    loadflowResultFilter: FilterConfig[]
 ): LoadflowResultFilterAction {
     return {
         type: LOADFLOW_RESULT_FILTER,
@@ -960,11 +1022,12 @@ export function setLoadflowResultFilter(
 export const SECURITY_ANALYSIS_RESULT_FILTER = 'SECURITY_ANALYSIS_RESULT_FILTER';
 export type SecurityAnalysisResultFilterAction = Readonly<Action<typeof SECURITY_ANALYSIS_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof SECURITY_ANALYSIS_RESULT_STORE_FIELD];
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: FilterSelectorType[];
+    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
 };
+
 export function setSecurityAnalysisResultFilter(
     filterTab: keyof AppState[typeof SECURITY_ANALYSIS_RESULT_STORE_FIELD],
-    securityAnalysisResultFilter: FilterSelectorType[]
+    securityAnalysisResultFilter: FilterConfig[]
 ): SecurityAnalysisResultFilterAction {
     return {
         type: SECURITY_ANALYSIS_RESULT_FILTER,
@@ -976,11 +1039,12 @@ export function setSecurityAnalysisResultFilter(
 export const SENSITIVITY_ANALYSIS_RESULT_FILTER = 'SENSITIVITY_ANALYSIS_RESULT_FILTER';
 export type SensitivityAnalysisResultFilterAction = Readonly<Action<typeof SENSITIVITY_ANALYSIS_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: FilterSelectorType[];
+    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
 };
+
 export function setSensitivityAnalysisResultFilter(
     filterTab: keyof AppState[typeof SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD],
-    sensitivityAnalysisResultFilter: FilterSelectorType[]
+    sensitivityAnalysisResultFilter: FilterConfig[]
 ): SensitivityAnalysisResultFilterAction {
     return {
         type: SENSITIVITY_ANALYSIS_RESULT_FILTER,
@@ -992,11 +1056,12 @@ export function setSensitivityAnalysisResultFilter(
 export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER = 'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
 export type ShortcircuitAnalysisResultFilterAction = Readonly<Action<typeof SHORTCIRCUIT_ANALYSIS_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: FilterSelectorType[];
+    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
 };
+
 export function setShortcircuitAnalysisResultFilter(
     filterTab: keyof AppState[typeof SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD],
-    shortcircuitAnalysisResultFilter: FilterSelectorType[]
+    shortcircuitAnalysisResultFilter: FilterConfig[]
 ): ShortcircuitAnalysisResultFilterAction {
     return {
         type: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
@@ -1008,11 +1073,12 @@ export function setShortcircuitAnalysisResultFilter(
 export const DYNAMIC_SIMULATION_RESULT_FILTER = 'DYNAMIC_SIMULATION_RESULT_FILTER';
 export type DynamicSimulationResultFilterAction = Readonly<Action<typeof DYNAMIC_SIMULATION_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: FilterSelectorType[];
+    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: FilterConfig[];
 };
+
 export function setDynamicSimulationResultFilter(
     filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD],
-    dynamicSimulationResultFilter: FilterSelectorType[]
+    dynamicSimulationResultFilter: FilterConfig[]
 ): DynamicSimulationResultFilterAction {
     return {
         type: DYNAMIC_SIMULATION_RESULT_FILTER,
@@ -1024,11 +1090,12 @@ export function setDynamicSimulationResultFilter(
 export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
 export type SpreadsheetFilterAction = Readonly<Action<typeof SPREADSHEET_FILTER>> & {
     filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD];
-    [SPREADSHEET_STORE_FIELD]: FilterSelectorType[];
+    [SPREADSHEET_STORE_FIELD]: FilterConfig[];
 };
+
 export function setSpreadsheetFilter(
     filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD],
-    spreadsheetFilter: FilterSelectorType[]
+    spreadsheetFilter: FilterConfig[]
 ): SpreadsheetFilterAction {
     return {
         type: SPREADSHEET_FILTER,
@@ -1040,11 +1107,12 @@ export function setSpreadsheetFilter(
 export const LOGS_FILTER = 'LOGS_FILTER';
 export type LogsFilterAction = Readonly<Action<typeof LOGS_FILTER>> & {
     filterTab: keyof AppState[typeof LOGS_STORE_FIELD];
-    [LOGS_STORE_FIELD]: FilterSelectorType[];
+    [LOGS_STORE_FIELD]: FilterConfig[];
 };
+
 export function setLogsFilter(
     filterTab: keyof AppState[typeof LOGS_STORE_FIELD],
-    logsFilter: FilterSelectorType[]
+    logsFilter: FilterConfig[]
 ): LogsFilterAction {
     return {
         type: LOGS_FILTER,
@@ -1055,6 +1123,7 @@ export function setLogsFilter(
 
 export const RESET_LOGS_FILTER = 'RESET_LOGS_FILTER';
 export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
+
 export function resetLogsFilter(): ResetLogsFilterAction {
     return {
         type: RESET_LOGS_FILTER,
@@ -1065,9 +1134,10 @@ export const TABLE_SORT = 'TABLE_SORT';
 export type TableSortAction = Readonly<Action<typeof TABLE_SORT>> & {
     table: TableSortKeysType;
     tab: string; //AppState['tableSort'][T];
-    sort: SortConfigType[];
+    sort: SortConfig[];
 };
-export function setTableSort(table: TableSortKeysType, tab: string, sort: SortConfigType[]): TableSortAction {
+
+export function setTableSort(table: TableSortKeysType, tab: string, sort: SortConfig[]): TableSortAction {
     return {
         type: TABLE_SORT,
         table,
@@ -1081,6 +1151,7 @@ export type UpdateCustomColumnsDefinitionsAction = Readonly<Action<typeof UPDATE
     table: LiteralUnion<TablesDefinitionsNames, string>;
     definition: ColumnWithFormula;
 };
+
 export function setUpdateCustomColumDefinitions(
     table: LiteralUnion<TablesDefinitionsNames, string>,
     customColumn: ColumnWithFormula
@@ -1097,6 +1168,7 @@ export type RemoveCustomColumnsDefinitionsAction = Readonly<Action<typeof REMOVE
     table: LiteralUnion<TablesDefinitionsNames, string>;
     definitionId: string;
 };
+
 export function setRemoveCustomColumDefinitions(
     table: LiteralUnion<TablesDefinitionsNames, string>,
     definitionId: string
@@ -1127,12 +1199,12 @@ export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
 
 export type AddFilterForNewSpreadsheetAction = {
     type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: FilterSelectorType[] };
+    payload: { newTabName: string; value: FilterConfig[] };
 };
 
 export const addFilterForNewSpreadsheet = (
     newTabName: string,
-    value: FilterSelectorType[]
+    value: FilterConfig[]
 ): AddFilterForNewSpreadsheetAction => ({
     type: ADD_FILTER_FOR_NEW_SPREADSHEET,
     payload: {
@@ -1145,13 +1217,10 @@ export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
 
 export type AddSortForNewSpreadsheetAction = {
     type: typeof ADD_SORT_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: SortConfigType[] };
+    payload: { newTabName: string; value: SortConfig[] };
 };
 
-export const addSortForNewSpreadsheet = (
-    newTabName: string,
-    value: SortConfigType[]
-): AddSortForNewSpreadsheetAction => ({
+export const addSortForNewSpreadsheet = (newTabName: string, value: SortConfig[]): AddSortForNewSpreadsheetAction => ({
     type: ADD_SORT_FOR_NEW_SPREADSHEET,
     payload: {
         newTabName,
@@ -1162,11 +1231,12 @@ export const addSortForNewSpreadsheet = (
 export const STATEESTIMATION_RESULT_FILTER = 'STATEESTIMATION_RESULT_FILTER';
 export type StateEstimationResultFilterAction = Readonly<Action<typeof STATEESTIMATION_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD];
-    [STATEESTIMATION_RESULT_STORE_FIELD]: FilterSelectorType[];
+    [STATEESTIMATION_RESULT_STORE_FIELD]: FilterConfig[];
 };
+
 export function setStateEstimationResultFilter(
     filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD],
-    stateEstimationResultFilter: FilterSelectorType[]
+    stateEstimationResultFilter: FilterConfig[]
 ): StateEstimationResultFilterAction {
     return {
         type: STATEESTIMATION_RESULT_FILTER,

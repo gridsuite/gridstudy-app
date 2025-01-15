@@ -7,17 +7,10 @@
 import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
 import { Grid } from '@mui/material';
-import { useCustomAggridComparatorFilter } from '../hooks/use-custom-aggrid-comparator-filter';
+import { useCustomAggridComparatorFilter } from './hooks/use-custom-aggrid-comparator-filter';
 import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
 
-export const CustomAggridComparatorFilter = ({
-    api,
-    field,
-    filterParams,
-    filterType,
-    filterTab,
-    updateFilterCallback,
-}: CustomAggridFilterParams) => {
+export const CustomAggridComparatorFilter = ({ api, field, filterParams }: CustomAggridFilterParams) => {
     const {
         selectedFilterData,
         selectedFilterComparator,
@@ -26,10 +19,10 @@ export const CustomAggridComparatorFilter = ({
         handleFilterComparatorChange,
         handleFilterTextChange,
         handleClearFilter,
-    } = useCustomAggridComparatorFilter(api, field, filterParams, filterType, filterTab, updateFilterCallback);
+    } = useCustomAggridComparatorFilter(api, field, filterParams);
 
     const {
-        filterComparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
+        comparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
     } = filterParams;
 
     return (
@@ -37,7 +30,7 @@ export const CustomAggridComparatorFilter = ({
             <CustomAggridComparatorSelector
                 value={selectedFilterComparator}
                 onChange={handleFilterComparatorChange}
-                options={filterComparators}
+                options={comparators}
             />
             <CustomAggridTextFilter
                 value={selectedFilterData}

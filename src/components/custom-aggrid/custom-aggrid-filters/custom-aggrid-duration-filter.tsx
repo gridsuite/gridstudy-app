@@ -11,7 +11,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
 import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { useCustomAggridFilter } from '../hooks/use-custom-aggrid-filter';
+import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 
 const styles = {
     containerStyle: {
@@ -35,21 +35,14 @@ const styles = {
     },
 };
 
-const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({
-    api,
-    field,
-    filterParams,
-    filterType,
-    filterTab,
-    updateFilterCallback,
-}) => {
+const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({ api, field, filterParams }) => {
     const intl = useIntl();
 
     const { selectedFilterData, selectedFilterComparator, handleChangeFilterValue, handleChangeComparator } =
-        useCustomAggridFilter(api, field, filterParams, filterType, filterTab, updateFilterCallback);
+        useCustomAggridFilter(api, field, filterParams);
 
     const {
-        filterComparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
+        comparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
     } = filterParams;
 
     const handleFilterComparatorChange = useCallback(
@@ -144,7 +137,7 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
             <CustomAggridComparatorSelector
                 value={selectedFilterComparator}
                 onChange={handleFilterComparatorChange}
-                options={filterComparators}
+                options={comparators}
             />
             <Grid item container columns={12} sx={styles.containerStyle}>
                 <Grid item flex={1}>

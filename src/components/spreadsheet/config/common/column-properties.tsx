@@ -9,7 +9,7 @@ import { PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import type { ValueGetterFunc, ValueSetterParams } from 'ag-grid-community';
 import { defaultTextFilterConfig, editableColumnConfig, excludeFromGlobalFilter } from '../equipment/common-config';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 import { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 
 const propertiesGetter: ValueGetterFunc = (params) => {
@@ -24,8 +24,8 @@ const propertiesGetter: ValueGetterFunc = (params) => {
 };
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'properties',
+    type: FilterType.Spreadsheet,
+    tab: 'properties',
 };
 
 //TODO only used in tie-line config, is "valueSetter" forgotten?

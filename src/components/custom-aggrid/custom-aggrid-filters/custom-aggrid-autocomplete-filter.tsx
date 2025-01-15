@@ -7,7 +7,7 @@
 import React, { FunctionComponent, SyntheticEvent, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { useCustomAggridFilter } from '../hooks/use-custom-aggrid-filter';
+import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
 import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS, FilterEnumsType } from '../custom-aggrid-header.type';
 
@@ -20,21 +20,11 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
     api,
     field,
     filterParams,
-    filterType,
-    filterTab,
-    updateFilterCallback,
     filterEnums,
     getEnumLabel,
 }) => {
     const intl = useIntl();
-    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(
-        api,
-        field,
-        filterParams,
-        filterType,
-        filterTab,
-        updateFilterCallback
-    );
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, field, filterParams);
 
     const handleFilterAutoCompleteChange = (_: SyntheticEvent, data: string[]) => {
         handleChangeFilterValue({ value: data, type: FILTER_TEXT_COMPARATORS.EQUALS });

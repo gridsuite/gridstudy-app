@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep, Writable } from 'type-fest';
+import type { Writable } from 'type-fest';
 import { getEnumLabelById } from '../../../utils/utils';
 import {
     type CustomColDef,
@@ -43,7 +43,7 @@ import {
 } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { CustomAggridAutocompleteFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { CustomAggridComparatorFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterParams } from '../../../custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
 
 type TapPositionsType = {
     lowTapPosition: number;
@@ -115,32 +115,32 @@ export const editableCellStyle: CellStyleFunc = (params) => {
 export const editableColumnConfig = {
     editable: isEditable,
     cellStyle: editableCellStyle,
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+} as const satisfies Partial<CustomColDef>;
 
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter
 // The columns we want to include in the global filter at the date of this comment: ID (all), Name, Country, Type and Nominal Voltage (all).
 // All the others should be excluded.
 export const excludeFromGlobalFilter = () => '' as const;
 
-export const defaultTextFilterConfig = (filterParams: { filterType: FilterType; filterTab: string }) => {
+export const defaultTextFilterConfig = (filterParams: Pick<FilterParams, 'type' | 'tab'>) => {
     return {
         filter: 'agTextColumnFilter',
         filterComponent: CustomAggridComparatorFilter,
         filterComponentParams: {
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                ...filterParams,
+                dataType: FILTER_DATA_TYPES.TEXT,
+                comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
             },
-            ...filterParams,
         },
-    };
+    } satisfies Partial<CustomColDef>;
 };
 
 /**
  * Default configuration for an enum filter
  * a new filter option is added to the default ag-grid filter
  */
-export const defaultEnumFilterConfig = (filterParams: { filterType: FilterType; filterTab: string }) => {
+export const defaultEnumFilterConfig = (filterParams: Pick<FilterParams, 'type' | 'tab'>) => {
     return {
         filter: 'agTextColumnFilter',
         agGridFilterParams: {
@@ -157,9 +157,9 @@ export const defaultEnumFilterConfig = (filterParams: { filterType: FilterType; 
         filterComponent: CustomAggridAutocompleteFilter,
         filterComponentParams: {
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
+                ...filterParams,
+                dataType: FILTER_DATA_TYPES.TEXT,
             },
-            ...filterParams,
         },
         isEnum: true,
     } satisfies Partial<CustomColDef>;
@@ -168,7 +168,7 @@ export const defaultEnumFilterConfig = (filterParams: { filterType: FilterType; 
 /**
  * Default configuration for a boolean filter
  */
-export const defaultBooleanFilterConfig = (filterParams: { filterType: FilterType; filterTab: string }) => {
+export const defaultBooleanFilterConfig = (filterParams: Pick<FilterParams, 'type' | 'tab'>) => {
     return {
         filter: 'agTextColumnFilter',
         agGridFilterParams: {
@@ -196,9 +196,9 @@ export const defaultBooleanFilterConfig = (filterParams: { filterType: FilterTyp
         filterComponent: CustomAggridBooleanFilter,
         filterComponentParams: {
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.BOOLEAN,
+                ...filterParams,
+                dataType: FILTER_DATA_TYPES.BOOLEAN,
             },
-            ...filterParams,
         },
     } satisfies Partial<CustomColDef>;
 };
@@ -207,7 +207,7 @@ export const defaultBooleanFilterConfig = (filterParams: { filterType: FilterTyp
 // It generates configuration for filtering, sorting and rendering
 export const getDefaultEnumConfig = (
     enumOptions: Readonly<EnumOption[]>,
-    filterParams: { filterType: FilterType; filterTab: string }
+    filterParams: Pick<FilterParams, 'type' | 'tab'>
 ) => {
     return {
         ...defaultEnumFilterConfig(filterParams),
@@ -216,26 +216,26 @@ export const getDefaultEnumConfig = (
             enumOptions: enumOptions as Writable<typeof enumOptions>,
         },
         getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
-    };
+    } satisfies Partial<CustomColDef>;
 };
 
-export const countryEnumFilterConfig = (filterParams: { filterType: FilterType; filterTab: string }) => {
+export const countryEnumFilterConfig = (filterParams: Pick<FilterParams, 'type' | 'tab'>) => {
     return {
         ...defaultEnumFilterConfig(filterParams),
         isCountry: true,
     } satisfies Partial<CustomColDef>;
 };
 
-export const defaultNumericFilterConfig = (filterParams: { filterType: FilterType; filterTab: string }) => {
+export const defaultNumericFilterConfig = (filterParams: Pick<FilterParams, 'type' | 'tab'>) => {
     return {
         filter: 'agNumberColumnFilter',
         filterComponent: CustomAggridComparatorFilter,
         filterComponentParams: {
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                ...filterParams,
+                dataType: FILTER_DATA_TYPES.NUMBER,
+                comparators: Object.values(FILTER_NUMBER_COMPARATORS),
             },
-            ...filterParams,
         },
     } satisfies Partial<CustomColDef>;
 };
