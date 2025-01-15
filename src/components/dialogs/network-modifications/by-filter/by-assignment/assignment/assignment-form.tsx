@@ -14,6 +14,7 @@ import {
     IntegerInput,
     SelectInput,
     SwitchInput,
+    useFormatLabelWithUnit,
     usePrevious,
 } from '@gridsuite/commons-ui';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
@@ -24,7 +25,6 @@ import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 import { PredefinedProperties } from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
-import useFormatLabelWithUnit from '../../../../../../hooks/use-format-label-with-unit';
 
 interface AssignmentFormProps {
     name: string;
