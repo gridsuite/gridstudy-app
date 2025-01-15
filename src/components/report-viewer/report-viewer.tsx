@@ -4,11 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
-import { useDispatch } from 'react-redux';
 import { VirtualizedTreeview } from './virtualized-treeview';
 import { ReportItem } from './treeview-item';
 import { Report, ReportLog, ReportTree, ReportType, SeverityLevel } from 'utils/report/report.type';
@@ -16,8 +15,6 @@ import { Report, ReportLog, ReportTree, ReportType, SeverityLevel } from 'utils/
 type ReportViewerProps = { report: Report; reportType: string; severities: SeverityLevel[] | undefined };
 
 export default function ReportViewer({ report, reportType, severities }: ReportViewerProps) {
-    const dispatch = useDispatch();
-
     const [expandedTreeReports, setExpandedTreeReports] = useState<string[]>([]);
     const [highlightedReportId, setHighlightedReportId] = useState<string>();
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number | undefined>(undefined);
@@ -26,47 +23,56 @@ export default function ReportViewer({ report, reportType, severities }: ReportV
     const [selectedReportType, setSelectedReportType] = useState<ReportType>();
 
     const reportTree = useMemo(() => mapReportsTree(report), [report]);
-    const reportTreeMap = useRef<Record<string, ReportTree>>({});
 
-    const mapReportsById = useCallback((item: ReportTree) => {
-        reportTreeMap.current[item.id] = item;
-        for (let subReport of item.subReports) {
-            mapReportsById(subReport);
-        }
-    }, []);
+    const reportTreeMap = useMemo(() => {
+        const map: Record<string, ReportTree> = {};
+        const mapReports = (item: ReportTree) => {
+            map[item.id] = item;
+            for (let subReport of item.subReports) {
+                mapReports(subReport);
+            }
+        };
+        mapReports(reportTree);
+        return map;
+    }, [reportTree]);
 
     useEffect(() => {
-        mapReportsById(reportTree);
         setExpandedTreeReports([reportTree.id]);
         setSelectedReportId(reportTree.id);
-        setSelectedReportType(reportTreeMap.current[reportTree.id]?.type);
-    }, [reportTree, dispatch, mapReportsById]);
+        setSelectedReportType(reportTreeMap[reportTree.id]?.type);
+    }, [reportTree, reportTreeMap]);
 
     const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
     }, []);
 
-    const onLogRowClick = (data: ReportLog) => {
-        setExpandedTreeReports((previouslyExpandedTreeReports) => {
-            let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
-            let parentId = data.parentId;
-            while (reportTreeMap.current[parentId]?.parentId) {
-                parentId = reportTreeMap.current[parentId].parentId as string;
-                treeReportsToExpand.add(parentId);
-            }
-            return Array.from(treeReportsToExpand);
-        });
-        setHighlightedReportId(data.parentId);
-    };
+    const onLogRowClick = useCallback(
+        (data: ReportLog) => {
+            setExpandedTreeReports((previouslyExpandedTreeReports) => {
+                let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
+                let parentId = data.parentId;
+                while (reportTreeMap[parentId]?.parentId) {
+                    parentId = reportTreeMap[parentId].parentId as string;
+                    treeReportsToExpand.add(parentId);
+                }
+                return Array.from(treeReportsToExpand);
+            });
+            setHighlightedReportId(data.parentId);
+        },
+        [reportTreeMap]
+    );
 
     const handleSelectedItem = useCallback(
         (report: ReportItem) => {
-            if (selectedReportId !== report.id) {
-                setSelectedReportId(report.id);
-                setSelectedReportType(reportTreeMap.current[report.id].type);
-            }
+            setSelectedReportId((prevId) => {
+                if (prevId !== report.id) {
+                    setSelectedReportType(reportTreeMap[report.id].type);
+                    return report.id;
+                }
+                return prevId;
+            });
         },
-        [selectedReportId]
+        [reportTreeMap]
     );
 
     return (
