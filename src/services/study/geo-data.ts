@@ -5,11 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { UUID } from 'crypto';
+import type { GeoDataLine, GeoDataSubstation } from '@powsybl/network-viewer';
 import { backendFetchJson, getQueryParamsList } from '../utils';
 import { getStudyUrlWithNodeUuid } from './index';
-import { UUID } from 'crypto';
 
-export function fetchSubstationPositions(studyUuid: UUID, currentNodeUuid?: UUID, substationsIds?: string[]) {
+export function fetchSubstationPositions(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    substationsIds?: string[]
+): Promise<GeoDataSubstation[]> {
     console.info(
         `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
@@ -23,7 +28,11 @@ export function fetchSubstationPositions(studyUuid: UUID, currentNodeUuid?: UUID
     return backendFetchJson(fetchSubstationPositionsUrl);
 }
 
-export function fetchLinePositions(studyUuid: UUID, currentNodeUuid: UUID | undefined, linesIds?: string[]) {
+export function fetchLinePositions(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    linesIds?: string[]
+): Promise<GeoDataLine[]> {
     console.info(
         `Fetching line positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
     );
