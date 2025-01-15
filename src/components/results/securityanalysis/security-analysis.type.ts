@@ -9,8 +9,7 @@ import * as React from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
 import { UUID } from 'crypto';
-import { FilterConfig } from '../../custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
-import { SortConfig } from '../../../redux/reducer';
+import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 
 export interface LimitViolation {
     subjectId?: string;

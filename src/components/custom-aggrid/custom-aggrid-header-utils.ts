@@ -7,11 +7,9 @@
 
 import { CustomAggridFilterParams, CustomColDef } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
-import { FilterConfig } from './custom-aggrid-filters/types/custom-aggrid-filter-types';
 
 export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
     sortParams,
-    filterTab,
     forceDisplayFilterIcon,
     filterComponent,
     filterComponentParams,
@@ -52,21 +50,4 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
         filterParams: props?.agGridFilterParams || undefined,
         ...props,
     };
-};
-
-export const mapFieldsToColumnsFilter = (
-    filterSelector: FilterConfig[],
-    columnToFieldMapping: Record<string, string>
-) => {
-    return filterSelector.map((filter) => ({
-        ...filter,
-        column: columnToFieldMapping[filter.column],
-    }));
-};
-
-export const isStringOrNonEmptyArray = (value: unknown): value is string | unknown[] => {
-    if (typeof value === 'string' && value.length > 0) {
-        return true;
-    }
-    return Array.isArray(value) && value.length > 0;
 };

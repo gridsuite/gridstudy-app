@@ -31,17 +31,17 @@ import {
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { FilterType as AgGridFilterType } from '../../../hooks/use-filter-selector';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
-import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useIntl } from 'react-intl/lib';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { usePrevious } from 'components/utils/utils';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 
 const styles = {
     tabsAndToolboxContainer: {

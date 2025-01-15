@@ -9,11 +9,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import {
-    booleanAgGridColumnDefinition,
-    numberAgGridColumnDefinition,
-    textAgGridColumnDefinition,
-} from '../common-column-definitions';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
 export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
     index: 9,
@@ -24,73 +20,73 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', 'Batteries'),
         },
         {
             id: 'Name',
             field: 'name',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('name', 'Name', 'Batteries'),
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId', 'VoltageLevelId', 'Batteries'),
         },
         {
             id: 'Country',
             field: 'country',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country', 'Country', 'Batteries'),
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('nominalVoltage', 'NominalV', 'Batteries', 0),
         },
         {
             id: 'activePower',
             field: 'p',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('p', 'activePower', 'Batteries', 1),
             fractionDigits: 1,
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('q', 'ReactivePower', 'Batteries', 1),
         },
         {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('activePowerControl.participate', 'ActivePowerControl', 'Batteries'),
         },
         {
             id: 'DroopColumnName',
             field: 'activePowerControl.droop',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('activePowerControl.droop', 'DroopColumnName', 'Batteries', 1),
         },
         {
             id: 'minP',
             field: 'minP',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('minP', 'minP', 'Batteries', 1),
         },
         {
             id: 'maxP',
             field: 'maxP',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('maxP', 'maxP', 'Batteries', 1),
         },
         {
             id: 'activePowerSetpoint',
             field: 'targetP',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('targetP', 'activePowerSetpoint', 'Batteries', 1),
         },
         {
             id: 'reactivePowerSetpoint',
             field: 'targetQ',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('targetQ', 'reactivePowerSetpoint', 'Batteries', 1),
         },
         {
             id: 'connected',
             field: 'terminalConnected',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('terminalConnected', 'connected', 'Batteries'),
         },
         genericColumnOfPropertiesReadonly,
     ],

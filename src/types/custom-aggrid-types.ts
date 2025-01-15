@@ -1,5 +1,26 @@
-import { FilterType } from '../../../../hooks/use-filter-selector';
 import { GridApi } from 'ag-grid-community';
+
+export type SortConfig = {
+    colId: string;
+    sort: SortWay;
+    children?: boolean;
+};
+
+export enum SortWay {
+    ASC = 'asc',
+    DESC = 'desc',
+}
+
+export enum FilterType {
+    Loadflow = 'Loadflow',
+    SecurityAnalysis = 'SecurityAnalysis',
+    SensitivityAnalysis = 'SensitivityAnalysis',
+    ShortcircuitAnalysis = 'ShortcircuitAnalysis',
+    DynamicSimulation = 'DynamicSimulation',
+    Spreadsheet = 'Spreadsheet',
+    Logs = 'Logs',
+    StateEstimation = 'StateEstimation',
+}
 
 export type FilterData = {
     dataType?: string;

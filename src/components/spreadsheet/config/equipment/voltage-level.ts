@@ -8,9 +8,9 @@
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
-import { unitToKiloUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 import { textAgGridColumnDefinition, numberAgGridColumnDefinition } from '../common-column-definitions';
+import { unitToKiloUnit } from '@gridsuite/commons-ui';
 
 export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
     index: 1,

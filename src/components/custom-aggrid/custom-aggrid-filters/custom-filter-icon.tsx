@@ -7,7 +7,7 @@
 import React, { MouseEventHandler } from 'react';
 import { Badge, Grid, IconButton } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
-import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
+import { isStringOrNonEmptyArray } from '../../../utils/types';
 
 const styles = {
     iconSize: {

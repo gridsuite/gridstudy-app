@@ -72,12 +72,12 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'ReactivePower',
             field: 'q',
-            ...numberColumnDefinition('nominalVoltage', 'NominalV', 'Generators', 1),
+            ...numberColumnDefinition('q', 'ReactivePower', 'Generators', 1),
         },
         {
             id: 'ActivePowerControl',
-            field: 'activePowerControl.participate',
-            ...booleanColumnDefinition('activePowerControl.participate', 'ActivePowerControl', 'Generators'),
+            valueGetter: (params) => params.data?.activePowerControl?.participate?.toString(),
+            ...booleanColumnDefinition('ActivePowerControl', 'ActivePowerControl', 'Generators'),
         },
         {
             id: 'ActivePowerRegulationDroop',
@@ -106,7 +106,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             id: 'voltageRegulationOn',
-            field: 'voltageRegulatorOn',
+            valueGetter: (params) => params.data?.voltageRegulatorOn?.toString(),
             ...booleanColumnDefinition('voltageRegulatorOn', 'voltageRegulationOn', 'Generators'),
         },
         {
@@ -169,7 +169,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             id: 'connected',
-            field: 'terminalConnected',
+            valueGetter: (params) => params.data?.terminalConnected?.toString(),
             ...booleanColumnDefinition('terminalConnected', 'connected', 'Generators'),
         },
         {

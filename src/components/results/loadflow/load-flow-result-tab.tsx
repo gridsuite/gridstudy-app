@@ -32,7 +32,6 @@ import {
 } from './load-flow-result-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
-import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
 import ResultsGlobalFilter, { Filter, FilterType } from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -40,8 +39,9 @@ import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/st
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
-import { FilterType as AgGridFilterType } from '../../../hooks/use-filter-selector';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 
 const styles = {
     flexWrapper: {

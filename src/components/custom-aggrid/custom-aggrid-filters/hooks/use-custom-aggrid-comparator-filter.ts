@@ -12,7 +12,7 @@ import { countDecimalPlacesFromString } from '../../../../utils/rounding';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
 import { GridApi } from 'ag-grid-community';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
-import { FilterParams } from '../types/custom-aggrid-filter-types';
+import { FilterParams } from '../../../../types/custom-aggrid-types';
 
 export const useCustomAggridComparatorFilter = (api: GridApi, field: string, filterParams: FilterParams) => {
     const { dataType = FILTER_DATA_TYPES.TEXT } = filterParams;

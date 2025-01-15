@@ -24,8 +24,8 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { MessageLogCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { FilterType, useFilterSelector } from '../../hooks/use-filter-selector';
-import { FilterConfig } from '../custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
+import { useFilterSelector } from '../../hooks/use-filter-selector';
+import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;

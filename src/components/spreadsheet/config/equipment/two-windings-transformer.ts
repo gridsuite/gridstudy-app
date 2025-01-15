@@ -9,13 +9,13 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { computeHighTapPosition } from '../../../utils/utils';
-import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 import {
     booleanAgGridColumnDefinition,
     textAgGridColumnDefinition,
     numberAgGridColumnDefinition,
 } from '../common-column-definitions';
+import { unitToMicroUnit } from '@gridsuite/commons-ui';
 
 export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
     index: 3,

@@ -21,7 +21,7 @@ import { Box, LinearProgress } from '@mui/material';
 import { mappingTabs, SENSITIVITY_AT_NODE, SUFFIX_TYPES } from './sensitivity-analysis-result-utils';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterType as AgGridFilterType } from '../../../hooks/use-filter-selector.js';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string

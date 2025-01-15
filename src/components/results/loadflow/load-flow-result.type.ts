@@ -8,8 +8,7 @@
 import { ColDef } from 'ag-grid-community';
 import { UUID } from 'crypto';
 import { BranchSide } from '../../utils/constants';
-import { FilterConfig } from '../../custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
-import { SortConfig } from '../../../redux/reducer';
+import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 
 export interface ComponentResult {
     componentResultUuid: UUID;

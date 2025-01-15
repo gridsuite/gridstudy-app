@@ -41,10 +41,11 @@ const styles = {
 export const NA_Value = 'N/A';
 
 export const BooleanCellRenderer = (props: any) => {
-    const isChecked = Boolean(props.value);
+    const isChecked = props.value === 'true';
+    console.log(`boxed value: ${isChecked} when value is ${props.value} typeof ${typeof props.value}`);
     return (
         <div>
-            {isChecked !== undefined && (
+            {props.value !== undefined && (
                 <Checkbox style={{ padding: 0 }} color="default" checked={isChecked} disableRipple={true} />
             )}
         </div>

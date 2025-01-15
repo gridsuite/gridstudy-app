@@ -31,6 +31,9 @@ import { mergeSx } from '../utils/functions';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
+import { useFilterSelector } from '../../hooks/use-filter-selector';
+import { FilterType } from '../../types/custom-aggrid-types';
+import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -155,6 +158,12 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][currentTabName()]);
+
+    const { filters } = useFilterSelector(FilterType.Spreadsheet, currentTabName());
+
+    useEffect(() => {
+        updateFilters(gridRef.current?.api, filters);
+    });
 
     const equipmentDefinition = useMemo(
         () => ({
