@@ -25,6 +25,7 @@ import { useSelector } from 'react-redux';
 import BasicModificationDialog from './commons/basicModificationDialog';
 import { AppState } from 'redux/reducer';
 import ImportCaseDialog from './import-case-dialog';
+import ModificationDialog from './commons/modificationDialog';
 
 export interface FormData {
     [NAME]: string;
@@ -184,7 +185,7 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <BasicModificationDialog
+            <ModificationDialog
                 fullWidth
                 maxWidth={'md'}
                 open={open}
@@ -214,7 +215,7 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
                     onClose={() => setCaseSelectorOpen(false)}
                     onSelectCase={onSelectCase}
                 />
-            </BasicModificationDialog>
+            </ModificationDialog>
         </CustomFormProvider>
     );
 };
