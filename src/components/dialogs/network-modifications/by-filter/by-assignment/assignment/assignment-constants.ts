@@ -18,6 +18,7 @@ import {
     MEGA_WATT,
     MICRO_SIEMENS,
     OHM,
+    PERCENTAGE,
     SIEMENS,
 } from '@gridsuite/commons-ui';
 
@@ -87,21 +88,25 @@ export const FIELD_OPTIONS = {
     DROOP: {
         id: FieldType.DROOP,
         label: 'ActivePowerRegulationDroop',
+        unit: PERCENTAGE,
         dataType: DataType.DOUBLE,
     },
     TRANSIENT_REACTANCE: {
         id: FieldType.TRANSIENT_REACTANCE,
         label: 'TransientReactanceForm',
+        unit: OHM,
         dataType: DataType.DOUBLE,
     },
     STEP_UP_TRANSFORMER_REACTANCE: {
         id: FieldType.STEP_UP_TRANSFORMER_REACTANCE,
         label: 'TransformerReactanceForm',
+        unit: OHM,
         dataType: DataType.DOUBLE,
     },
     Q_PERCENT: {
         id: FieldType.Q_PERCENT,
         label: 'ReactivePercentageVoltageRegulation',
+        unit: PERCENTAGE,
         dataType: DataType.DOUBLE,
     },
     VOLTAGE_REGULATOR_ON: {
@@ -233,6 +238,7 @@ export const FIELD_OPTIONS = {
     },
     RATIO_TARGET_DEADBAND: {
         id: FieldType.RATIO_TARGET_DEADBAND,
+        unit: KILO_VOLT,
         label: 'RatioDeadBand',
         dataType: DataType.DOUBLE,
     },

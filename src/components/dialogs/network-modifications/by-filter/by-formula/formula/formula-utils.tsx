@@ -28,6 +28,7 @@ import {
     MEGA_WATT,
     MICRO_SIEMENS,
     OHM,
+    PERCENTAGE,
     SIEMENS,
 } from '@gridsuite/commons-ui';
 
@@ -63,20 +64,21 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         { id: 'MARGINAL_COST', label: 'marginalCost' },
         { id: 'PLANNED_OUTAGE_RATE', label: 'plannedOutageRate' },
         { id: 'FORCED_OUTAGE_RATE', label: 'forcedOutageRate' },
-        { id: 'DROOP', label: 'ActivePowerRegulationDroop' },
-        { id: 'TRANSIENT_REACTANCE', label: 'TransientReactanceForm' },
+        { id: 'DROOP', label: 'ActivePowerRegulationDroop', unit: PERCENTAGE },
+        { id: 'TRANSIENT_REACTANCE', label: 'TransientReactanceForm', unit: OHM },
         {
             id: 'STEP_UP_TRANSFORMER_REACTANCE',
             label: 'TransformerReactanceForm',
+            unit: OHM,
         },
-        { id: 'Q_PERCENT', label: 'ReactivePercentageVoltageRegulation' },
+        { id: 'Q_PERCENT', label: 'ReactivePercentageVoltageRegulation', unit: PERCENTAGE },
     ],
     [EQUIPMENT_TYPES.BATTERY]: [
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText', unit: MEGA_WATT },
         { id: 'MAXIMUM_ACTIVE_POWER', label: 'MaximumActivePowerText', unit: MEGA_WATT },
         { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerText', unit: MEGA_WATT },
         { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerText', unit: MEGA_VAR },
-        { id: 'DROOP', label: 'Droop' },
+        { id: 'DROOP', label: 'Droop', unit: PERCENTAGE },
     ],
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [
         { id: 'MAXIMUM_SECTION_COUNT', label: 'maximumSectionCount' },
@@ -114,7 +116,7 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         { id: 'TARGET_V', label: 'RatioTargetV', unit: KILO_VOLT },
         { id: 'RATIO_LOW_TAP_POSITION', label: 'RatioLowTapPosition' },
         { id: 'RATIO_TAP_POSITION', label: 'RatioTapPosition' },
-        { id: 'RATIO_TARGET_DEADBAND', label: 'RatioDeadBand' },
+        { id: 'RATIO_TARGET_DEADBAND', label: 'RatioDeadBand', unit: KILO_VOLT },
         { id: 'REGULATION_VALUE', label: 'PhaseRegulatingValue' },
         { id: 'PHASE_LOW_TAP_POSITION', label: 'PhaseLowTapPosition' },
         { id: 'PHASE_TAP_POSITION', label: 'PhaseTapPosition' },
