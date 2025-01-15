@@ -18,6 +18,7 @@ import { sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import {
+    ADDITIONAL_PROPERTIES,
     BUS_BAR_COUNT,
     BUS_BAR_SECTION_ID1,
     BUS_BAR_SECTION_ID2,
@@ -184,64 +185,75 @@ const VoltageLevelCreationDialog = ({
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
+            const isSubstationCreation = fromCopy && voltageLevel.substationCreation;
+            const substationCreation = isSubstationCreation
+                ? {
+                      [SUBSTATION_CREATION_ID]: voltageLevel.substationCreation?.equipmentId,
+                      [SUBSTATION_NAME]: voltageLevel.substationCreation?.equipmentName,
+                      [COUNTRY]: voltageLevel.substationCreation?.country,
+                      ...getPropertiesFromModification(voltageLevel.substationCreation?.properties),
+                  }
+                : {
+                      [SUBSTATION_CREATION_ID]: null,
+                      [SUBSTATION_NAME]: null,
+                      [COUNTRY]: null,
+                  };
+            const shortCircuitLimits = {
+                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
+                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
+                ),
+                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
+                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
+                ),
+            };
+            const switchKinds =
+                voltageLevel.switchKinds?.map((switchKind) => ({
+                    [SWITCH_KIND]: switchKind,
+                })) || [];
+
+            const switchesBetweenSections =
+                voltageLevel.switchKinds?.map((switchKind) => intl.formatMessage({ id: switchKind })).join(' / ') || '';
+
+            const equipmentId = voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID];
+            const equipmentName = voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME];
+            const substationId = isSubstationCreation ? null : voltageLevel[SUBSTATION_ID];
+
             const properties = fromCopy
                 ? copyEquipmentPropertiesForCreation(voltageLevel)
                 : getPropertiesFromModification(voltageLevel.properties);
             reset(
                 {
-                    [EQUIPMENT_ID]: (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : ''),
-                    [EQUIPMENT_NAME]: voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
+                    [EQUIPMENT_ID]: equipmentId,
+                    [EQUIPMENT_NAME]: equipmentName,
                     [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
-                    [SUBSTATION_ID]: fromCopy && voltageLevel.substationCreation ? null : voltageLevel[SUBSTATION_ID],
-                    [SUBSTATION_CREATION]:
-                        fromCopy && voltageLevel.substationCreation
-                            ? {
-                                  [SUBSTATION_CREATION_ID]: voltageLevel.substationCreation?.equipmentId,
-                                  [SUBSTATION_NAME]: voltageLevel.substationCreation?.equipmentName,
-                                  [COUNTRY]: voltageLevel.substationCreation?.country,
-                                  ...getPropertiesFromModification(voltageLevel.substationCreation?.properties),
-                              }
-                            : {
-                                  [SUBSTATION_CREATION_ID]: null,
-                                  [SUBSTATION_NAME]: null,
-                                  [COUNTRY]: null,
-                              },
+                    [SUBSTATION_ID]: substationId,
+                    [SUBSTATION_CREATION]: substationCreation,
                     [NOMINAL_V]: voltageLevel[NOMINAL_V],
                     [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                     [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
-                        FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-                        fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
-                    ),
-                    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
-                        FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-                        fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
-                    ),
+                    [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
+                    [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
+                    ...shortCircuitLimits,
                     [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
                     [SECTION_COUNT]: voltageLevel[SECTION_COUNT] ?? 1,
-                    [SWITCHES_BETWEEN_SECTIONS]: voltageLevel.switchKinds
-                        ?.map((switchKind) => {
-                            return intl.formatMessage({ id: switchKind });
-                        })
-                        .join(' / '),
+                    [SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
                     [COUPLING_OMNIBUS]: voltageLevel.couplingDevices ?? [],
-                    [SWITCH_KINDS]:
-                        voltageLevel.switchKinds != null
-                            ? voltageLevel.switchKinds?.map((switchKind) => ({
-                                  [SWITCH_KIND]: switchKind,
-                              }))
-                            : [],
+                    [SWITCH_KINDS]: switchKinds,
                     ...properties,
                 },
                 { keepDefaultValues: true }
             );
-            setValue(
-                `${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`,
-                !fromCopy && voltageLevel.substationCreation?.equipmentId
-                    ? voltageLevel.substationCreation?.equipmentId
-                    : null
-            );
-
+            const substationKeys = [
+                [SUBSTATION_CREATION_ID, voltageLevel.substationCreation?.equipmentId],
+                [SUBSTATION_NAME, voltageLevel.substationCreation?.equipmentName],
+                [COUNTRY, voltageLevel.substationCreation?.country],
+                [ADDITIONAL_PROPERTIES, voltageLevel.substationCreation?.properties],
+            ];
+            substationKeys.forEach(([key, value]) => {
+                setValue(`${SUBSTATION_CREATION}.${key}`, fromCopy ? null : value);
+            });
             if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
