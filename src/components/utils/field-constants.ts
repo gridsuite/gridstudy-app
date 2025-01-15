@@ -384,7 +384,3 @@ export const MIN_S_AUTOMATON = 'minSAutomaton';
 export const MAX_S_AUTOMATON = 'maxSAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
-export const MICRO_SIEMENS = '(µS)';
-export const SIEMENS = '(S)';
-export const KILO_AMPERE = '(kA)';
-export const MEGA_VAR = '(MVar)';
