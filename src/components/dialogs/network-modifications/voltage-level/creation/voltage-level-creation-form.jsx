@@ -21,7 +21,7 @@ import {
     SUBSTATION_ID,
     SUBSTATION_NAME,
 } from 'components/utils/field-constants';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
 import { AutocompleteInput, FloatInput, IntegerInput, TextInput } from '@gridsuite/commons-ui';
 import { getObjectId } from 'components/utils/utils';
@@ -40,10 +40,10 @@ import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selectio
 import DeleteIcon from '@mui/icons-material/Delete.js';
 import LineSeparator from '../../../commons/line-separator';
 
-const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCreation, addSubstationCreation }) => {
+const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-    const { setValue } = useFormContext();
+    const { setValue, getValues } = useFormContext();
     const [substations, setSubstations] = useState([]);
     const [isWithSubstationCreation, setIsWithSubstationCreation] = useState(false);
 
@@ -57,6 +57,26 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCrea
             });
         }
     }, [studyUuid, currentNodeUuid]);
+
+    const watchSubstationId = useWatch({
+        name: `${SUBSTATION_ID}`,
+    });
+    const watchSubstationCreationId = useWatch({
+        name: `${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`,
+    });
+
+    useEffect(() => {
+        const currentSubstationId = getValues(`${SUBSTATION_ID}`);
+        const currentSubstationCreationId = getValues(`${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`);
+        if (currentSubstationId !== null && currentSubstationId !== undefined) {
+            setValue(`${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`, null);
+            setIsWithSubstationCreation(false);
+        }
+        if (currentSubstationCreationId !== null && currentSubstationCreationId !== undefined) {
+            setValue(`${SUBSTATION_ID}`, null);
+            setIsWithSubstationCreation(true);
+        }
+    }, [getValues, watchSubstationId, watchSubstationCreationId, setValue]);
 
     const voltageLevelIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
@@ -150,15 +170,11 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCrea
     );
 
     const handleAddButton = useCallback(() => {
-        handleSubstationCreation(true);
         setIsWithSubstationCreation(true);
-        setValue(SUBSTATION_ID, null);
-    }, [setValue, handleSubstationCreation]);
+    }, []);
     const handleDeleteButton = useCallback(() => {
-        handleSubstationCreation(false);
         setIsWithSubstationCreation(false);
-        setValue(`${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`, null);
-    }, [setValue, handleSubstationCreation]);
+    }, []);
     return (
         <>
             <Grid container spacing={2}>
@@ -166,7 +182,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCrea
                 <GridItem>{voltageLevelNameField}</GridItem>
             </Grid>
 
-            {isWithSubstationCreation || addSubstationCreation ? (
+            {isWithSubstationCreation ? (
                 <Grid>
                     <Grid item xs={12} container spacing={2}></Grid>
                     <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />

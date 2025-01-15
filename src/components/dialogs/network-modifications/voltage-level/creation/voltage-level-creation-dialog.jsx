@@ -44,7 +44,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
@@ -154,8 +154,8 @@ const formSchema = yup
                     .string()
                     .nullable()
                     .when([SUBSTATION_ID], {
-                        is: (substationId) => !substationId,
-                        then: (schema) => schema.notRequired(),
+                        is: (substationId) => substationId === null,
+                        then: (schema) => schema.required(),
                     }),
                 [SUBSTATION_NAME]: yup.string().nullable(),
                 [COUNTRY]: yup.string().nullable(),
@@ -180,9 +180,8 @@ const VoltageLevelCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, setValue, getValues } = formMethods;
     const intl = useIntl();
-    const [isSubstationCreation, setIsSubstationCreation] = useState(false);
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
             const properties = fromCopy
@@ -193,13 +192,20 @@ const VoltageLevelCreationDialog = ({
                     [EQUIPMENT_ID]: (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : ''),
                     [EQUIPMENT_NAME]: voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
                     [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
-                    [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
-                    [SUBSTATION_CREATION]: {
-                        [SUBSTATION_CREATION_ID]: voltageLevel.substationCreation?.equipmentId,
-                        [SUBSTATION_NAME]: voltageLevel.substationCreation?.equipmentName,
-                        [COUNTRY]: voltageLevel.substationCreation?.country,
-                        ...getPropertiesFromModification(voltageLevel.substationCreation?.properties),
-                    },
+                    [SUBSTATION_ID]: fromCopy && voltageLevel.substationCreation ? null : voltageLevel[SUBSTATION_ID],
+                    [SUBSTATION_CREATION]:
+                        fromCopy && voltageLevel.substationCreation
+                            ? {
+                                  [SUBSTATION_CREATION_ID]: voltageLevel.substationCreation?.equipmentId,
+                                  [SUBSTATION_NAME]: voltageLevel.substationCreation?.equipmentName,
+                                  [COUNTRY]: voltageLevel.substationCreation?.country,
+                                  ...getPropertiesFromModification(voltageLevel.substationCreation?.properties),
+                              }
+                            : {
+                                  [SUBSTATION_CREATION_ID]: null,
+                                  [SUBSTATION_NAME]: null,
+                                  [COUNTRY]: null,
+                              },
                     [NOMINAL_V]: voltageLevel[NOMINAL_V],
                     [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                     [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
@@ -229,13 +235,20 @@ const VoltageLevelCreationDialog = ({
                 },
                 { keepDefaultValues: true }
             );
+            setValue(
+                `${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`,
+                !fromCopy && voltageLevel.substationCreation?.equipmentId
+                    ? voltageLevel.substationCreation?.equipmentId
+                    : null
+            );
+
             if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
                 });
             }
         },
-        [intl, reset, snackWarning]
+        [setValue, intl, reset, snackWarning]
     );
 
     const searchCopy = useFormSearchCopy({
@@ -254,7 +267,7 @@ const VoltageLevelCreationDialog = ({
 
     const onSubmit = useCallback(
         (voltageLevel) => {
-            const substationCreation = isSubstationCreation
+            const substationCreation = getValues(`${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`)
                 ? {
                       type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
                       equipmentId: voltageLevel[SUBSTATION_CREATION][SUBSTATION_CREATION_ID],
@@ -298,12 +311,8 @@ const VoltageLevelCreationDialog = ({
                 });
             });
         },
-        [onCreateVoltageLevel, isSubstationCreation, studyUuid, currentNodeUuid, editData, snackError]
+        [getValues, onCreateVoltageLevel, studyUuid, currentNodeUuid, editData, snackError]
     );
-
-    const handleSubstationCreation = (isWithSubstationCreation) => {
-        setIsSubstationCreation(isWithSubstationCreation);
-    };
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -329,12 +338,7 @@ const VoltageLevelCreationDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <VoltageLevelCreationForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                    handleSubstationCreation={handleSubstationCreation}
-                    addSubstationCreation={isSubstationCreation}
-                />
+                <VoltageLevelCreationForm currentNode={currentNode} studyUuid={studyUuid} />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
