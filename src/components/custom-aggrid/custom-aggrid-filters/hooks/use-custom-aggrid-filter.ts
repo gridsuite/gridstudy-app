@@ -10,7 +10,7 @@ import { debounce } from '@mui/material';
 import { GridApi } from 'ag-grid-community';
 import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
-import { FilterConfig, FilterData, FilterParams } from '../types/custom-aggrid-filter-types';
+import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f: FilterConfig) => f.column !== field);
@@ -58,6 +58,8 @@ export const useCustomAggridFilter = (
             } else {
                 updatedFilters = changeValueFromArrayWithFieldValue(filters, field, newFilter);
             }
+
+            console.log(`hahahaha ${JSON.stringify(updatedFilters)}`);
 
             updateFilterCallback && updateFilterCallback(api, updatedFilters);
             dispatchFilters(updatedFilters);

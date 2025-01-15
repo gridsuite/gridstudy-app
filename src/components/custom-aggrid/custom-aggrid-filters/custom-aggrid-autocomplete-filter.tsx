@@ -8,8 +8,8 @@ import React, { FunctionComponent, SyntheticEvent, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
-import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
 import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS, FilterEnumsType } from '../custom-aggrid-header.type';
+import { isStringOrNonEmptyArray } from '../../../utils/types';
 
 export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilterParams {
     filterEnums?: FilterEnumsType;

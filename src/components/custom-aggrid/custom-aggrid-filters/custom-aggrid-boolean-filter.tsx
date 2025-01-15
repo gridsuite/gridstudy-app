@@ -12,8 +12,8 @@ import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { mergeSx } from 'components/utils/functions';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
-import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
-import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
+import { CustomAggridFilterParams, FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
+import { isStringOrNonEmptyArray } from '../../../utils/types';
 
 export enum BooleanFilterValue {
     TRUE = 'true',
@@ -40,7 +40,11 @@ export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterPara
 
     const handleValueChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value;
-        handleChangeFilterValue({ value: newValue, type: FILTER_TEXT_COMPARATORS.EQUALS });
+        handleChangeFilterValue({
+            value: newValue,
+            type: FILTER_TEXT_COMPARATORS.EQUALS,
+            dataType: FILTER_DATA_TYPES.BOOLEAN,
+        });
     };
 
     const handleClearFilter = () => {

@@ -28,7 +28,7 @@ import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterType as AgGridFilterType } from '../../../hooks/use-filter-selector';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
 
 interface ShortCircuitAnalysisResultProps {

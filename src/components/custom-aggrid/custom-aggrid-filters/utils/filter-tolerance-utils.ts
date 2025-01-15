@@ -1,7 +1,7 @@
 import { isNumber } from 'mathjs';
 import { countDecimalPlaces, countDecimalPlacesFromString } from '../../../../utils/rounding';
 import { FILTER_NUMBER_COMPARATORS, UNDISPLAYED_FILTER_NUMBER_COMPARATORS } from '../../custom-aggrid-header.type';
-import { FilterConfig } from '../types/custom-aggrid-filter-types';
+import { FilterConfig } from '../../../../types/custom-aggrid-types';
 
 /**
  * Compute the tolerance that should be applied when comparing filter values to database values

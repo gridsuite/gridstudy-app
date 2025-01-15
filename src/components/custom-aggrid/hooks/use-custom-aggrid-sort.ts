@@ -6,8 +6,9 @@
  */
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, SortWay, TableSortKeysType } from '../../../redux/reducer';
+import { AppState, TableSortKeysType } from '../../../redux/reducer';
 import { setTableSort } from '../../../redux/actions';
+import { SortWay } from '../../../types/custom-aggrid-types';
 
 export type SortParams = {
     table: TableSortKeysType;

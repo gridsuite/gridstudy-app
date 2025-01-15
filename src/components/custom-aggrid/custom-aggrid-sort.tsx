@@ -9,7 +9,7 @@ import { SortParams } from './hooks/use-custom-aggrid-sort';
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import React from 'react';
 import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
-import { SortWay } from '../../redux/reducer';
+import { SortWay } from '../../types/custom-aggrid-types';
 
 const styles = {
     iconSize: {

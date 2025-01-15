@@ -35,7 +35,7 @@ import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { AgGridReact } from 'ag-grid-react';
-import { FilterType } from '../../../hooks/use-filter-selector';
+import { FilterType } from '../../../types/custom-aggrid-types';
 
 const styles = {
     loader: {

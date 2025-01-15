@@ -27,7 +27,6 @@ import type {
     EquipmentUpdateType,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
-    SortConfig,
     StudyIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
@@ -54,7 +53,7 @@ import { NetworkModificationNodeData, RootNodeData } from '../components/graph/t
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
-import { FilterConfig } from '../components/custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
+import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 
 type MutableUnknownArray = unknown[];
 

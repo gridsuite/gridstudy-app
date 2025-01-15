@@ -28,9 +28,9 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
-import { SortWay } from 'components/custom-aggrid/hooks/use-custom-aggrid-sort';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterType as AgGridFilterType, useFilterSelector } from '../../../hooks/use-filter-selector';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
 
 const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, nodeUuid, page, setPage, ...props }) => {
     const intl = useIntl();

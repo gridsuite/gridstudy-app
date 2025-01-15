@@ -21,18 +21,7 @@ import {
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
-import { FilterConfig } from '../components/custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
-
-export enum FilterType {
-    Loadflow = 'Loadflow',
-    SecurityAnalysis = 'SecurityAnalysis',
-    SensitivityAnalysis = 'SensitivityAnalysis',
-    ShortcircuitAnalysis = 'ShortcircuitAnalysis',
-    DynamicSimulation = 'DynamicSimulation',
-    Spreadsheet = 'Spreadsheet',
-    Logs = 'Logs',
-    StateEstimation = 'StateEstimation',
-}
+import { FilterConfig, FilterType } from '../types/custom-aggrid-types';
 
 const FILTER_PARAMS: Record<
     FilterType,

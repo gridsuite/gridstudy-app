@@ -8,7 +8,7 @@
 import { ALL_BUSES, ONE_BUS } from 'utils/store-sort-filter-fields';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import { kiloUnitToUnit } from '@gridsuite/commons-ui';
-import { FilterConfig } from '../../custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
+import { FilterConfig } from '../../../types/custom-aggrid-types';
 
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 

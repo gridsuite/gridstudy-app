@@ -1,4 +1,8 @@
-import { FILTER_NUMBER_COMPARATORS, FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header.type';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+} from '../../custom-aggrid/custom-aggrid-header.type';
 import {
     BooleanFilterValue,
     CustomAggridBooleanFilter,
@@ -8,7 +12,8 @@ import { ColDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterType } from '../../../hooks/use-aggrid-row-filter';
+import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { FilterType } from '../../../types/custom-aggrid-types';
 
 export const textAgGridColumnDefinition: ColDef = {
     cellDataType: 'text',
@@ -31,20 +36,23 @@ export const textColumnDefinition = (field: string, displayName: string, sortTab
         headerComponentParams: {
             field,
             displayName,
-            sortTableName: SPREADSHEET_SORT_STORE,
-            sortTab,
-            filterTab: sortTab,
-            filterType: FilterType.Spreadsheet,
+            sortParams: {
+                table: SPREADSHEET_SORT_STORE,
+                tab: sortTab,
+            },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 field,
                 filterParams: {
-                    filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    type: FilterType.Spreadsheet,
+                    tab: sortTab,
+                    updateFilterCallback: updateFilters,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                     debounceMs: 200,
                 },
             },
         },
-        sortable: true,
         resizable: true,
         cellRenderer: DefaultCellRenderer,
     };
@@ -80,20 +88,23 @@ export const numberColumnDefinition = (
         headerComponentParams: {
             field,
             displayName,
-            sortTableName: SPREADSHEET_SORT_STORE,
-            sortTab,
-            filterTab: sortTab,
-            filterType: FilterType.Spreadsheet,
+            sortParams: {
+                table: SPREADSHEET_SORT_STORE,
+                tab: sortTab,
+            },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 field,
                 filterParams: {
-                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    type: FilterType.Spreadsheet,
+                    tab: sortTab,
+                    updateFilterCallback: updateFilters,
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
                     debounceMs: 200,
                 },
             },
         },
-        sortable: true,
         resizable: true,
         cellRenderer: NumericCellRenderer,
         cellRendererParams: {
@@ -137,20 +148,23 @@ export const booleanColumnDefinition = (field: string, displayName: string, sort
         headerComponentParams: {
             field,
             displayName,
-            sortTableName: SPREADSHEET_SORT_STORE,
-            sortTab,
-            filterTab: sortTab,
-            filterType: FilterType.Spreadsheet,
+            sortParams: {
+                table: SPREADSHEET_SORT_STORE,
+                tab: sortTab,
+            },
             filterComponent: CustomAggridBooleanFilter,
             filterComponentParams: {
                 field,
                 filterParams: {
+                    type: FilterType.Spreadsheet,
+                    tab: sortTab,
+                    dataType: FILTER_DATA_TYPES.BOOLEAN,
+                    updateFilterCallback: updateFilters,
                     debounceMs: 200,
                 },
             },
         },
         cellRenderer: BooleanCellRenderer,
-        sortable: true,
         resizable: true,
     };
 };
