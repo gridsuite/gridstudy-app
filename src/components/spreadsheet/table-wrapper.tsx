@@ -21,7 +21,6 @@ import { EquipmentTabs } from './equipment-tabs';
 import { EquipmentProps, useSpreadsheetEquipments } from './use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import { formatFetchedEquipments } from './utils/equipment-table-utils';
-import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
@@ -78,7 +77,7 @@ interface TableWrapperProps {
     disabled: boolean;
 }
 
-const TableWrapper: FunctionComponent<TableWrapperProps> = ({
+export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     studyUuid,
     currentNode,
     equipmentId,
@@ -155,7 +154,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
     }, [tabIndex, tablesDefinitionIndexes]);
 
-    const { sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentTabName());
+    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][currentTabName()]);
 
     const equipmentDefinition = useMemo(
         () => ({
@@ -429,4 +428,3 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         </>
     );
 };
-export default TableWrapper;

@@ -18,17 +18,19 @@ import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { ContingencyCellRenderer, convertDuration, formatNAValue } from 'components/spreadsheet/utils/cell-renderers';
 import {
+    CustomColDef,
+    FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    FILTER_DATA_TYPES,
-    FilterSelectorType,
     FilterEnumsType,
-    FilterParams,
 } from '../../custom-aggrid/custom-aggrid-header.type';
-import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { translateLimitNameFrontToBack, translateLimitNameBackToFront } from '../common/utils';
-import { SECURITY_ANALYSIS_RESULT_N, SECURITY_ANALYSIS_RESULT_N_K } from 'utils/store-sort-filter-fields';
+import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
+import {
+    SECURITY_ANALYSIS_RESULT_N,
+    SECURITY_ANALYSIS_RESULT_N_K,
+    SECURITY_ANALYSIS_RESULT_SORT_STORE,
+} from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType, { ComputingType } from '../../computing-status/computing-type';
 import { useSelector } from 'react-redux';
@@ -38,6 +40,8 @@ import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
+import { FilterType as AgGridFilterType } from '../../../hooks/use-filter-selector';
+import { FilterConfig } from '../../custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -129,152 +133,174 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
 
 export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
-    sortProps: SortPropsType,
-    filterProps: FilterParams,
     filterEnums: FilterEnumsType,
-    getEnumLabel: (value: string) => string // Used for translation of enum values in the filter
-): ColDef[] => [
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'Equipment' }),
-        id: 'subjectId',
-        field: 'subjectId',
-        sortProps,
-        filterComponent: CustomAggridComparatorFilter,
-        filterComponentParams: {
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                ...filterProps,
+    getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
+    tabIndex: number,
+    onFilter: () => void
+): ColDef[] => {
+    const sortParams: CustomColDef['sortParams'] = {
+        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
+        tab: getStoreFields(tabIndex),
+    };
+    const filterParams = {
+        type: AgGridFilterType.SecurityAnalysis,
+        tab: getStoreFields(tabIndex),
+        updateFilterCallback: onFilter,
+    };
+    return [
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'Equipment' }),
+            id: 'subjectId',
+            field: 'subjectId',
+            sortParams,
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    ...filterParams,
+                },
             },
-        },
-    }),
-
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'ViolationType' }),
-        id: 'limitType',
-        field: 'limitType',
-        sortProps,
-        filterComponent: CustomAggridAutocompleteFilter,
-        filterComponentParams: {
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                ...filterProps,
-            },
-            filterEnums,
-            getEnumLabel,
-        },
-    }),
-
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'LimitName' }),
-        id: 'limitName',
-        field: 'limitName',
-        valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
-        sortProps,
-        filterComponent: CustomAggridComparatorFilter,
-        filterComponentParams: {
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
-                ...filterProps,
-            },
-        },
-    }),
-
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'Limit' }),
-        id: 'limit',
-        field: 'limit',
-        numeric: true,
-        fractionDigits: 2,
-        sortProps,
-        filterComponent: CustomAggridComparatorFilter,
-        filterComponentParams: {
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                ...filterProps,
-            },
-        },
-    }),
-
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'CalculatedValue' }),
-        id: 'value',
-        field: 'value',
-        numeric: true,
-        fractionDigits: 2,
-        sortProps,
-        filterComponent: CustomAggridComparatorFilter,
-        filterComponentParams: {
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                ...filterProps,
-            },
-        },
-    }),
-
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'Loading' }),
-        id: 'loading',
-        field: 'loading',
-        numeric: true,
-        fractionDigits: 2,
-        sortProps,
-        filterComponent: CustomAggridComparatorFilter,
-        filterComponentParams: {
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                ...filterProps,
-            },
-        },
-    }),
-
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({
-            id: 'Overload',
         }),
-        id: 'acceptableDuration',
-        field: 'acceptableDuration',
-        valueFormatter: (value: any) => convertDuration(value.data.acceptableDuration),
-        sortProps,
-        filterComponent: CustomAggridDurationFilter,
-        filterComponentParams: {
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                ...filterProps,
-            },
-        },
-    }),
 
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'LimitSide' }),
-        id: 'side',
-        field: 'side',
-        sortProps,
-        filterComponent: CustomAggridAutocompleteFilter,
-        filterComponentParams: {
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                ...filterProps,
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'ViolationType' }),
+            id: 'limitType',
+            field: 'limitType',
+            sortParams,
+            filterComponent: CustomAggridAutocompleteFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterParams,
+                },
+
+                filterEnums,
+                getEnumLabel,
             },
-            filterEnums,
-            getEnumLabel,
-        },
-    }),
-];
+        }),
+
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'LimitName' }),
+            id: 'limitName',
+            field: 'limitName',
+            valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
+            sortParams,
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    comparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+                    ...filterParams,
+                },
+            },
+        }),
+
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'Limit' }),
+            id: 'limit',
+            field: 'limit',
+            numeric: true,
+            fractionDigits: 2,
+            sortParams,
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
+                },
+            },
+        }),
+
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
+            id: 'value',
+            field: 'value',
+            numeric: true,
+            fractionDigits: 2,
+            sortParams,
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
+                },
+            },
+        }),
+
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'Loading' }),
+            id: 'loading',
+            field: 'loading',
+            numeric: true,
+            fractionDigits: 2,
+            sortParams,
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
+                },
+            },
+        }),
+
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({
+                id: 'Overload',
+            }),
+            id: 'acceptableDuration',
+            field: 'acceptableDuration',
+            valueFormatter: (value: any) => convertDuration(value.data.acceptableDuration),
+            sortParams,
+            filterComponent: CustomAggridDurationFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
+                },
+            },
+        }),
+
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            id: 'side',
+            field: 'side',
+            sortParams,
+            filterComponent: CustomAggridAutocompleteFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterParams,
+                },
+
+                filterEnums,
+                getEnumLabel,
+            },
+        }),
+    ];
+};
 
 export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: SubjectIdRendererType,
-    filterProps: FilterParams,
-    sortProps: SortPropsType,
     filterEnums: FilterEnumsType,
-    getEnumLabel: (value: string) => string // Used for translation of enum values in the filter
+    getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
+    tabIndex: number,
+    onFilter: () => void
 ): ColDef[] => {
+    const sortParams: CustomColDef['sortParams'] = {
+        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
+        tab: getStoreFields(tabIndex),
+    };
+    const filterParams = {
+        type: AgGridFilterType.SecurityAnalysis,
+        tab: getStoreFields(tabIndex),
+        updateFilterCallback: onFilter,
+    };
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
@@ -282,13 +308,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-            sortProps,
+            sortParams,
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    ...filterParams,
                 },
             },
         }),
@@ -296,13 +322,14 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             id: 'status',
             field: 'status',
-            sortProps,
+            sortParams,
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterParams,
                 },
+
                 filterEnums,
                 getEnumLabel,
             },
@@ -312,13 +339,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             id: 'subjectId',
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    ...filterParams,
                 },
             },
         }),
@@ -326,13 +353,14 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             id: 'limitType',
             field: 'limitType',
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterParams,
                 },
+
                 filterEnums,
                 getEnumLabel,
             },
@@ -342,13 +370,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             id: 'limitName',
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    comparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+                    ...filterParams,
                 },
             },
         }),
@@ -358,13 +386,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
                 },
             },
         }),
@@ -374,13 +402,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'value',
             numeric: true,
             fractionDigits: 2,
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
                 },
             },
         }),
@@ -390,13 +418,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'loading',
             numeric: true,
             fractionDigits: 2,
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
                 },
             },
         }),
@@ -407,13 +435,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             id: 'acceptableDuration',
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridDurationFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
                 },
             },
         }),
@@ -421,13 +449,14 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             id: 'side',
             field: 'side',
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterParams,
                 },
+
                 filterEnums,
                 getEnumLabel,
             },
@@ -445,24 +474,33 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
 export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: SubjectIdRendererType,
-    filterProps: FilterParams,
-    sortProps: SortPropsType,
     filterEnums: FilterEnumsType,
-    getEnumLabel: (value: string) => string // Used for translation of enum values in the filter
+    getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
+    tabIndex: number,
+    onFilter: () => void
 ): ColDef[] => {
+    const sortParams: CustomColDef['sortParams'] = {
+        table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
+        tab: getStoreFields(tabIndex),
+    };
+    const filterParams = {
+        type: AgGridFilterType.SecurityAnalysis,
+        tab: getStoreFields(tabIndex),
+        updateFilterCallback: onFilter,
+    };
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
             id: 'subjectId',
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-            sortProps,
+            sortParams,
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    ...filterParams,
                 },
             },
         }),
@@ -472,13 +510,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    ...filterParams,
                 },
             },
         }),
@@ -486,13 +524,14 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             id: 'status',
             field: 'status',
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterParams,
                 },
+
                 filterEnums,
                 getEnumLabel,
             },
@@ -501,12 +540,14 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             id: 'limitType',
             field: 'limitType',
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterParams,
                 },
+
                 filterEnums,
                 getEnumLabel,
             },
@@ -516,13 +557,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             id: 'limitName',
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    comparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+                    ...filterParams,
                 },
             },
         }),
@@ -532,13 +573,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
                 },
             },
         }),
@@ -548,13 +589,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'value',
             numeric: true,
             fractionDigits: 2,
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
                 },
             },
         }),
@@ -564,13 +605,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'loading',
             numeric: true,
             fractionDigits: 2,
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
                 },
             },
         }),
@@ -581,13 +622,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             id: 'acceptableDuration',
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridDurationFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
                 },
             },
         }),
@@ -595,13 +636,14 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             id: 'side',
             field: 'side',
-            sortProps: { ...sortProps, children: true },
+            sortParams: { ...sortParams, isChildren: true },
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
                 filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterProps,
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterParams,
                 },
+
                 filterEnums,
                 getEnumLabel,
             },
@@ -793,7 +835,7 @@ export const mappingColumnToField = (resultType: RESULT_TYPE) => {
     }
 };
 
-export const convertFilterValues = (intl: IntlShape, filterSelector: FilterSelectorType[]) => {
+export const convertFilterValues = (intl: IntlShape, filterSelector: FilterConfig[]) => {
     return filterSelector.map((filter) => {
         switch (filter.column) {
             case 'limitName':

@@ -5,11 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomAggridFilterParams, CustomColDef, FilterSelectorType } from './custom-aggrid-header.type';
+import { CustomAggridFilterParams, CustomColDef } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
+import { FilterConfig } from './custom-aggrid-filters/types/custom-aggrid-filter-types';
 
 export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
-    sortProps, // sortProps: contains useAgGridSort params
+    sortParams,
+    filterTab,
     forceDisplayFilterIcon,
     filterComponent,
     filterComponentParams,
@@ -19,12 +21,10 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
     ...props // agGrid column props
 }: CustomColDef<any, any, F>) => {
     const { headerName, field = '', fractionDigits, numeric } = props;
-    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
-    const isSortable = !!sortProps;
-    const isCurrentColumnSorted = !!sortConfig?.find((value) => value.colId === field);
+    const isSortable = !!sortParams;
 
     let minWidth = 75;
-    if (isSortable && isCurrentColumnSorted) {
+    if (isSortable) {
         minWidth += 30;
     }
     if (!!filterComponent) {
@@ -39,11 +39,7 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
         headerComponentParams: {
             field,
             displayName: headerName,
-            sortParams: {
-                isSortable,
-                sortConfig,
-                onSortChanged,
-            },
+            sortParams,
             customMenuParams: {
                 tabIndex: tabIndex,
                 isCustomColumn: isCustomColumn,
@@ -59,7 +55,7 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
 };
 
 export const mapFieldsToColumnsFilter = (
-    filterSelector: FilterSelectorType[],
+    filterSelector: FilterConfig[],
     columnToFieldMapping: Record<string, string>
 ) => {
     return filterSelector.map((filter) => ({

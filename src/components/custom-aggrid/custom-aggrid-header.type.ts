@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ColDef, IFilterOptionDef } from 'ag-grid-community';
-import { SortPropsType } from '../../hooks/use-aggrid-sort';
-import { AnyAction } from 'redux';
+import { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
+import { SortParams } from './hooks/use-custom-aggrid-sort';
 import { CustomColumnConfigProps } from 'components/custom-aggrid/custom-column-menu';
 import React, { ComponentType } from 'react';
+import { FilterParams } from './custom-aggrid-filters/types/custom-aggrid-filter-types';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -36,39 +36,11 @@ export enum UNDISPLAYED_FILTER_NUMBER_COMPARATORS {
 
 export type FilterEnumsType = Record<string, string[] | null>;
 
-export type FilterParams = {
-    filterDataType?: string;
-    filterComparators?: string[];
-    debounceMs?: number;
-    updateFilter?: (field: string, value: FilterDataType) => void;
-    filterSelector?: FilterSelectorType[] | null;
-};
-
 export interface CustomAggridFilterParams {
+    api: GridApi;
     field: string;
     filterParams: FilterParams;
 }
-
-export type CustomHeaderSortParams = {
-    isSortable?: boolean;
-} & SortPropsType;
-
-export type FilterDataType = {
-    dataType?: string;
-    type?: string;
-    value: unknown;
-    tolerance?: number; // tolerance when comparing values. Only useful for the number type
-};
-
-export type FilterSelectorType = FilterDataType & {
-    column: string;
-};
-
-export type FilterStorePropsType = {
-    filterType: string;
-    filterTab: string;
-    filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
-};
 
 export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
     extends ColDef<TData, TValue> {
@@ -80,12 +52,12 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     id: string;
     isDefaultSort?: boolean;
     numeric?: boolean;
-    sortProps?: SortPropsType;
     forceDisplayFilterIcon?: boolean;
     tabIndex?: number;
     isCustomColumn?: boolean;
     Menu?: React.FC<CustomColumnConfigProps>;
     filterComponent?: ComponentType<F>;
     //We omit field here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
-    filterComponentParams?: Omit<F, 'field'>;
+    filterComponentParams?: Omit<F, 'field' | 'api'>;
+    sortParams?: SortParams;
 }

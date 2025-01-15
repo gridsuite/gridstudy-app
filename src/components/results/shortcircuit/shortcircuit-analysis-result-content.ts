@@ -7,8 +7,8 @@
 
 import { ALL_BUSES, ONE_BUS } from 'utils/store-sort-filter-fields';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
-import { FilterSelectorType } from '../../custom-aggrid/custom-aggrid-header.type';
-import { kiloUnitToUnit } from '../../../utils/unit-converter';
+import { kiloUnitToUnit } from '@gridsuite/commons-ui';
+import { FilterConfig } from '../../custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
 
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
@@ -47,7 +47,7 @@ export const mappingTabs = (analysisType: ShortCircuitAnalysisType): string => {
     }
 };
 
-export const convertFilterValues = (filterSelector: FilterSelectorType[]) => {
+export const convertFilterValues = (filterSelector: FilterConfig[]) => {
     return filterSelector.map((filter) => {
         switch (filter.column) {
             case 'current':
@@ -57,8 +57,8 @@ export const convertFilterValues = (filterSelector: FilterSelectorType[]) => {
             case 'limitMax':
                 return {
                     ...filter,
-                    value: kiloUnitToUnit(filter.value),
-                    tolerance: kiloUnitToUnit(filter.tolerance),
+                    value: kiloUnitToUnit(Number(filter.value)),
+                    tolerance: kiloUnitToUnit(Number(filter.tolerance)),
                 };
             default:
                 return filter;

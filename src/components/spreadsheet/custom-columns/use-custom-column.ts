@@ -8,6 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
 import { all, bignumber, create } from 'mathjs';
 import { useSelector } from 'react-redux';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { DefaultCellRenderer } from '../utils/cell-renderers';
 import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
@@ -19,6 +20,7 @@ export function useCustomColumn(tabIndex: number) {
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
+    const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
 
     const math = useMemo(() => {
         const instance = create(all, {
@@ -84,6 +86,10 @@ export function useCustomColumn(tabIndex: number) {
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
                     field: colWithFormula.name,
+                    sortParams: {
+                        table: SPREADSHEET_SORT_STORE,
+                        tab: tablesDefinitionIndexes.get(tabIndex)!.name,
+                    },
                     tabIndex,
                     customMenuParams: {
                         Menu: CustomColumnMenu,
@@ -97,7 +103,7 @@ export function useCustomColumn(tabIndex: number) {
                 valueGetter: createValueGetter(colWithFormula),
             };
         });
-    }, [createValueGetter, customColumnsDefinitions, tabIndex]);
+    }, [customColumnsDefinitions, tablesDefinitionIndexes, tabIndex, createValueGetter]);
 
     return { createCustomColumn };
 }
