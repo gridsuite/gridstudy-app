@@ -42,7 +42,6 @@ export const NA_Value = 'N/A';
 
 export const BooleanCellRenderer = (props: any) => {
     const isChecked = props.value === 'true';
-    console.log(`boxed value: ${isChecked} when value is ${props.value} typeof ${typeof props.value}`);
     return (
         <div>
             {props.value !== undefined && (
@@ -131,10 +130,11 @@ export const NumericCellRenderer = (props: NumericCellRendererProps) => {
 };
 
 export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
+    const cellValue = formatCell(props);
     return (
         <Box sx={mergeSx(styles.tableCell)}>
-            <Tooltip disableFocusListener disableTouchListener title={props.value}>
-                <Box sx={styles.overflow} children={props.value} />
+            <Tooltip disableFocusListener disableTouchListener title={cellValue.value}>
+                <Box sx={styles.overflow} children={cellValue.value?.toString()} />
             </Tooltip>
         </Box>
     );

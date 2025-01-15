@@ -8,23 +8,23 @@
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
-import { textAgGridColumnDefinition } from '../common-column-definitions';
+import { textColumnDefinition } from '../common-column-definitions';
+
+const tab = 'BusBarSections';
 
 export const BUSBAR_SECTION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 16,
-    name: 'BusBarSections',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.BUSBAR_SECTION),
     columns: [
         {
-            id: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
-            id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
         },
     ],
 };

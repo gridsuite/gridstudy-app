@@ -9,95 +9,78 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import {
-    booleanAgGridColumnDefinition,
-    textAgGridColumnDefinition,
-    numberAgGridColumnDefinition,
-} from '../common-column-definitions';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+
+const tab = 'ShuntCompensators';
 
 export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 7,
-    name: 'ShuntCompensators',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
     columns: [
         {
-            id: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
-            id: 'Name',
             field: 'name',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('name', 'Name', tab),
         },
         {
-            id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
         },
         {
-            id: 'Country',
             field: 'country',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country', 'Country', tab),
         },
         {
-            id: 'NominalV',
             field: 'nominalVoltage',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('nominalVoltage', 'Nominal V', tab, 0),
         },
         {
-            id: 'ReactivePower',
             field: 'q',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ReactivePower', 'Reactive Power', tab, 1),
         },
         {
-            id: 'maximumSectionCount',
             field: 'maximumSectionCount',
-            ...numberAgGridColumnDefinition(),
+            ...numberColumnDefinition('maximumSectionCount', 'Maximum Section Count', tab),
         },
         {
-            id: 'sectionCount',
             field: 'sectionCount',
-            ...numberAgGridColumnDefinition(),
+            ...numberColumnDefinition('sectionCount', 'Section Count', tab),
         },
         {
-            id: 'Type',
             field: 'type',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('type', 'Type', tab),
         },
         {
-            id: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('maxQAtNominalV', 'Max Q at Nominal V', tab, 1),
         },
         {
-            id: 'SwitchedOnMaxQAtNominalV',
             valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('SwitchedOnMaxQAtNominalV', 'Switch-on Q at nominal voltage', tab, 1),
         },
         {
-            id: 'maxSusceptance',
             field: 'maxSusceptance',
-            ...numberAgGridColumnDefinition(5),
+            ...numberColumnDefinition('maxSusceptance', 'Maximal susceptance available', tab, 5),
         },
         {
-            id: 'SwitchedOnMaxSusceptance',
             valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...numberAgGridColumnDefinition(5),
+            ...numberColumnDefinition('SwitchedOnMaxSusceptance', 'Switch-on susceptance', tab, 5),
         },
         {
-            id: 'voltageSetpoint',
             field: 'targetV',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('targetV', 'Target V (kV)', tab, 1),
         },
         {
-            id: 'connected',
             field: 'terminalConnected',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('terminalConnected', 'Connected', tab),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
 };

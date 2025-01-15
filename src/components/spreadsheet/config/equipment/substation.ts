@@ -9,31 +9,28 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { textAgGridColumnDefinition } from '../common-column-definitions';
+import { textColumnDefinition } from '../common-column-definitions';
+
+const tab = 'Substations';
 
 export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 0,
-    name: 'Substations',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.SUBSTATION),
     columns: [
         {
-            id: 'ID',
             field: 'id',
-            ...textAgGridColumnDefinition,
             initialSort: 'asc',
-            headerComponent: 'agColumnHeader',
-            menuTabs: ['filterMenuTab', 'generalMenuTab', 'columnsMenuTab'],
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
-            id: 'Name',
             field: 'name',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('name', 'Name', tab),
         },
         {
-            id: 'Country',
             field: 'country',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country', 'Country', tab),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
 };

@@ -22,7 +22,6 @@ const styles = {
 };
 
 interface CustomHeaderComponentProps<F extends CustomAggridFilterParams, T> extends CustomHeaderProps {
-    field: string;
     displayName: string;
     sortParams?: SortParams;
     menu?: CustomMenuProps<T>;
@@ -32,7 +31,7 @@ interface CustomHeaderComponentProps<F extends CustomAggridFilterParams, T> exte
 }
 
 const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
-    field,
+    column,
     displayName,
     sortParams,
     menu,
@@ -43,7 +42,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
 }: CustomHeaderComponentProps<F, T>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
-    const { handleSortChange } = useCustomAggridSort(field, sortParams);
+    const { handleSortChange } = useCustomAggridSort(column.getId(), sortParams);
     const isSortable = !!sortParams;
     const handleClickHeader = () => {
         handleSortChange && handleSortChange();
@@ -83,7 +82,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
                             <Grid item>{displayName}</Grid>
                             {sortParams && (
                                 <Grid item>
-                                    <CustomAggridSort field={field} sortParams={sortParams} />
+                                    <CustomAggridSort colId={column.getId()} sortParams={sortParams} />
                                 </Grid>
                             )}
                         </Grid>
@@ -93,7 +92,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
                     {filterComponent && (
                         <CustomAggridFilter
                             filterComponent={filterComponent}
-                            filterComponentParams={{ ...filterComponentParams, field, api }}
+                            filterComponentParams={{ ...filterComponentParams, colId: column.getId(), api }}
                             isHoveringColumnHeader={isHoveringColumnHeader}
                             forceDisplayFilterIcon={forceDisplayFilterIcon}
                             handleCloseFilter={handleCloseFilter}

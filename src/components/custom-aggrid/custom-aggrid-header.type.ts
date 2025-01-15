@@ -38,7 +38,7 @@ export type FilterEnumsType = Record<string, string[] | null>;
 
 export interface CustomAggridFilterParams {
     api: GridApi;
-    field: string;
+    colId: string;
     filterParams: FilterParams;
 }
 
@@ -49,7 +49,7 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     };
     columnWidth?: number;
     fractionDigits?: number;
-    id: string;
+    id?: string;
     isDefaultSort?: boolean;
     numeric?: boolean;
     forceDisplayFilterIcon?: boolean;
@@ -58,6 +58,6 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     Menu?: React.FC<CustomColumnConfigProps>;
     filterComponent?: ComponentType<F>;
     //We omit field here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
-    filterComponentParams?: Omit<F, 'field' | 'api'>;
+    filterComponentParams?: Omit<F, 'colId' | 'api'>;
     sortParams?: SortParams;
 }

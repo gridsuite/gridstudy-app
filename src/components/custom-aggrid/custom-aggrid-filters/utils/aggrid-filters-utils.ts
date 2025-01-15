@@ -6,7 +6,7 @@
  */
 
 import { FILTER_DATA_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { GridApi } from 'ag-grid-community';
+import { ColDef, ColGroupDef, GridApi } from 'ag-grid-community';
 import { addToleranceToFilter } from './filter-tolerance-utils';
 import { FilterConfig } from '../../../../types/custom-aggrid-types';
 
@@ -45,24 +45,24 @@ const formatCustomFiltersForAgGrid = (filters: FilterConfig[]): FilterModel => {
                 agGridFilterModel[column] = generateEnumFilterModel(filter);
             } else {
                 agGridFilterModel[column] = {
-                    type: filter.dataType,
+                    type: filter.type,
                     tolerance: filter.tolerance,
-                    filterType: filter.type,
+                    filterType: filter.dataType,
                     filter: filter.dataType === FILTER_DATA_TYPES.NUMBER ? Number(filter.value) : filter.value,
                 };
             }
         } else {
             // Multiple filters on the same column
             const conditions = filters.map((filter) => ({
-                type: filter.dataType,
+                type: filter.type,
                 tolerance: filter.tolerance,
-                filterType: filter.type,
+                filterType: filter.dataType,
                 filter: filter.dataType === FILTER_DATA_TYPES.NUMBER ? Number(filter.value) : filter.value,
             }));
 
             // Create a combined filter model with 'OR' for all conditions
             agGridFilterModel[column] = {
-                type: filters[0].dataType,
+                type: filters[0].type,
                 tolerance: filters[0].tolerance,
                 operator: 'OR',
                 // Dynamically add additional conditions
@@ -78,6 +78,10 @@ const formatCustomFiltersForAgGrid = (filters: FilterConfig[]): FilterModel => {
     return agGridFilterModel;
 };
 
+function isColDef(colDef: ColDef | ColGroupDef): colDef is ColDef {
+    return 'colId' in colDef;
+}
+
 export const updateFilters = (api: GridApi | undefined, filters: FilterConfig[] | undefined) => {
     // Check if filters are provided and if the AG Grid API is accessible
     if (!filters || !api) {
@@ -85,26 +89,24 @@ export const updateFilters = (api: GridApi | undefined, filters: FilterConfig[] 
     }
 
     // Retrieve the current column definitions from AG Grid
-    const currentColumnDefs = api.getColumnDefs();
+    const currentColumnDefs = api.getColumnDefs()?.filter(isColDef);
 
     // Check if all filters' columns exist in the current column definitions
-    const allColumnsExist = true;
-    //     filters.every((filter) =>
-    //     currentColumnDefs?.some((colDef) => {
-    //         return (
-    //             // Ensure the column definition has a 'field' property
-    //             // and it matches the filter's column field
-    //             'field' in colDef && filter && colDef?.field === filter.column
-    //         );
-    //     })
-    // );
+    const allColumnsExist = filters.every((filter) =>
+        currentColumnDefs?.some((colDef) => {
+            return (
+                // Ensure the column definition has a 'field' property
+                // and it matches the filter's column field
+                colDef.colId === filter.column
+            );
+        })
+    );
 
     // If all columns referenced by the filters exist, apply the filters
     if (allColumnsExist) {
         const filterWithTolerance = addToleranceToFilter(filters);
         // Format the filters for AG Grid and apply them using setFilterModel
         const formattedFilters = formatCustomFiltersForAgGrid(filterWithTolerance);
-        console.log(`formatted filters ${JSON.stringify(formattedFilters)}`);
         api.setFilterModel(formattedFilters);
     }
 };
