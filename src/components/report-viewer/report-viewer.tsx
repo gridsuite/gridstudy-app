@@ -64,12 +64,12 @@ export default function ReportViewer({ report, reportType, severities }: ReportV
 
     const handleSelectedItem = useCallback(
         (report: ReportItem) => {
-            setSelectedReportId((prevId) => {
-                if (prevId !== report.id) {
+            setSelectedReportId((prevSelectedReportId) => {
+                if (prevSelectedReportId !== report.id) {
                     setSelectedReportType(reportTreeMap[report.id].type);
                     return report.id;
                 }
-                return prevId;
+                return prevSelectedReportId;
             });
         },
         [reportTreeMap]
