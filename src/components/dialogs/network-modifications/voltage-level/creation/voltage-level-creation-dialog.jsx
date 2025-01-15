@@ -282,7 +282,7 @@ const VoltageLevelCreationDialog = ({
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
                 substationId: substationCreation ? null : voltageLevel[SUBSTATION_ID],
-                substationCreation,
+                substationCreation: substationCreation,
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
