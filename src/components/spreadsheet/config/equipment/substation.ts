@@ -16,11 +16,11 @@ import {
 } from './common-config';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'Substations',
+    type: FilterType.Spreadsheet,
+    tab: 'Substations',
 };
 
 export const SUBSTATION_TAB_DEF = {

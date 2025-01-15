@@ -8,7 +8,7 @@ import React, { ComponentType, MouseEvent, useMemo, useState } from 'react';
 import { Popover } from '@mui/material';
 import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
 import { CustomFilterIcon } from './custom-filter-icon';
-import { useCustomAggridFilter } from '../hooks/use-custom-aggrid-filter';
+import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { CustomAggridAutocompleteFilterParams } from './custom-aggrid-autocomplete-filter';
 
 const styles = {
@@ -41,10 +41,7 @@ export const CustomAggridFilter = <F extends CustomAggridFilterParams>({
     const { selectedFilterData } = useCustomAggridFilter(
         filterComponentParams.api,
         filterComponentParams.field,
-        filterComponentParams.filterParams,
-        filterComponentParams.filterType,
-        filterComponentParams.filterTab,
-        filterComponentParams.updateFilterCallback
+        filterComponentParams.filterParams
     );
 
     const handleShowFilter = (event: MouseEvent<HTMLElement>) => {

@@ -39,7 +39,7 @@ import {
     standardSelectCellEditorConfig,
 } from '../common/cell-editors';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 function getTwtRatioRegulationModeId(twt: any) {
     //regulationMode is set by the user (in edit mode)
@@ -102,8 +102,8 @@ const TWTRegulatingTerminalCellEditorConfig = {
 } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'TwoWindingsTransformers',
+    type: FilterType.Spreadsheet,
+    tab: 'TwoWindingsTransformers',
 };
 
 export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {

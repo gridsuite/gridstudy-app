@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomAggridFilterParams, CustomColDef, FilterSelectorType } from './custom-aggrid-header.type';
+import { CustomAggridFilterParams, CustomColDef } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
+import { FilterConfig } from './custom-aggrid-filters/types/custom-aggrid-filter-types';
 
 export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
     sortParams,
@@ -48,13 +49,12 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
             filterComponent: filterComponent,
             filterComponentParams,
         },
-        filterParams: props?.agGridFilterParams || undefined,
         ...props,
     };
 };
 
 export const mapFieldsToColumnsFilter = (
-    filterSelector: FilterSelectorType[],
+    filterSelector: FilterConfig[],
     columnToFieldMapping: Record<string, string>
 ) => {
     return filterSelector.map((filter) => ({

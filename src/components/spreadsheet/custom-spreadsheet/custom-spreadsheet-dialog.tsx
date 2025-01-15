@@ -33,12 +33,11 @@ import { NEW_SPREADSHEET_CREATION_OPTIONS } from '../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
 import { TABLES_DEFINITIONS, TABLES_TYPES } from '../config/config-tables';
-import { AppState } from 'redux/reducer';
+import { AppState, SortWay } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { getSpreadsheetModel } from 'services/spreadsheet';
-import { SortWay } from 'components/custom-aggrid/hooks/use-custom-aggrid-sort';
 import { typeAndFetchers } from '../config/equipment/common-config';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 

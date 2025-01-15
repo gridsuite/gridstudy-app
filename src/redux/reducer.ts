@@ -282,7 +282,6 @@ import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import type { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
-import { SortConfigType, SortWay } from '../components/custom-aggrid/hooks/use-custom-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
@@ -291,7 +290,7 @@ import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
-import { FilterSelectorType } from '../components/custom-aggrid/custom-aggrid-header.type';
+import { FilterConfig } from '../components/custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -395,7 +394,18 @@ export interface ComputingStatus {
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
 
-export type TableSortConfig = Record<string, SortConfigType[]>;
+export type SortConfig = {
+    colId: string;
+    sort: SortWay;
+    children?: boolean;
+};
+
+export enum SortWay {
+    ASC = 'asc',
+    DESC = 'desc',
+}
+
+export type TableSortConfig = Record<string, SortConfig[]>;
 export type TableSort = {
     [SPREADSHEET_SORT_STORE]: TableSortConfig;
     [LOADFLOW_RESULT_SORT_STORE]: TableSortConfig;
@@ -407,7 +417,7 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetFilterState = Record<string, FilterSelectorType[]>;
+export type SpreadsheetFilterState = Record<string, FilterConfig[]>;
 
 export type DiagramState = {
     id: UUID;
@@ -507,39 +517,39 @@ export interface AppState extends CommonStoreState {
     [PARAMS_LOADED]: boolean;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterSelectorType[];
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: FilterSelectorType[];
-        [LOADFLOW_RESULT]: FilterSelectorType[];
+        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
+        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: FilterConfig[];
+        [LOADFLOW_RESULT]: FilterConfig[];
     };
     [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SECURITY_ANALYSIS_RESULT_N]: FilterSelectorType[];
-        [SECURITY_ANALYSIS_RESULT_N_K]: FilterSelectorType[];
+        [SECURITY_ANALYSIS_RESULT_N]: FilterConfig[];
+        [SECURITY_ANALYSIS_RESULT_N_K]: FilterConfig[];
     };
     [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SENSITIVITY_IN_DELTA_MW_N]: FilterSelectorType[];
-        [SENSITIVITY_IN_DELTA_MW_N_K]: FilterSelectorType[];
-        [SENSITIVITY_IN_DELTA_A_N]: FilterSelectorType[];
-        [SENSITIVITY_IN_DELTA_A_N_K]: FilterSelectorType[];
-        [SENSITIVITY_AT_NODE_N]: FilterSelectorType[];
-        [SENSITIVITY_AT_NODE_N_K]: FilterSelectorType[];
+        [SENSITIVITY_IN_DELTA_MW_N]: FilterConfig[];
+        [SENSITIVITY_IN_DELTA_MW_N_K]: FilterConfig[];
+        [SENSITIVITY_IN_DELTA_A_N]: FilterConfig[];
+        [SENSITIVITY_IN_DELTA_A_N_K]: FilterConfig[];
+        [SENSITIVITY_AT_NODE_N]: FilterConfig[];
+        [SENSITIVITY_AT_NODE_N_K]: FilterConfig[];
     };
     [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
-        [ONE_BUS]: FilterSelectorType[];
-        [ALL_BUSES]: FilterSelectorType[];
+        [ONE_BUS]: FilterConfig[];
+        [ALL_BUSES]: FilterConfig[];
     };
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
-        [TIMELINE]: FilterSelectorType[];
+        [TIMELINE]: FilterConfig[];
     };
     [STATEESTIMATION_RESULT_STORE_FIELD]: {
-        [STATEESTIMATION_QUALITY_CRITERION]: FilterSelectorType[];
-        [STATEESTIMATION_QUALITY_PER_REGION]: FilterSelectorType[];
+        [STATEESTIMATION_QUALITY_CRITERION]: FilterConfig[];
+        [STATEESTIMATION_QUALITY_PER_REGION]: FilterConfig[];
     };
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
 }
 
-export type LogsFilterState = Record<string, FilterSelectorType[]>;
+export type LogsFilterState = Record<string, FilterConfig[]>;
 const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
@@ -1611,11 +1621,7 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ADD_TO_RECENT_GLOBAL_FILTERS, (state, action: AddToRecentGlobalFiltersAction) => {
         let newRecentGlobalFilters = [...state.recentGlobalFilters];
         action.globalFilters.forEach((filter) => {
-            if (
-                !newRecentGlobalFilters.some(
-                    (obj) => obj.label === filter.label && obj.filterType === filter.filterType
-                )
-            ) {
+            if (!newRecentGlobalFilters.some((obj) => obj.label === filter.label && obj.type === filter.type)) {
                 newRecentGlobalFilters.push(filter);
             }
         });

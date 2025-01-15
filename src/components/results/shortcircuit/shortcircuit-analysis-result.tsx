@@ -31,13 +31,13 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { FilterEnumsType, FilterSelectorType } from '../../custom-aggrid/custom-aggrid-header.type';
-import { FILTER_PARAMS, FilterType as AgGridFilterType } from '../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-header.type';
 import { GridReadyEvent } from 'ag-grid-community';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType from '../../computing-status/computing-type';
+import { FilterType, useFilterSelector } from '../../../hooks/use-filter-selector';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -84,11 +84,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(analysisType)]
     );
 
-    const filterSelector = useSelector<AppState, FilterSelectorType[]>(
-        (state: AppState) =>
-            // @ts-expect-error TODO: found a better way to go into state
-            state[FILTER_PARAMS[AgGridFilterType.ShortcircuitAnalysis].filterType][mappingTabs(analysisType)]
-    );
+    const { filters } = useFilterSelector(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -120,7 +116,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));
 
-        const updatedFilters = filterSelector ? convertFilterValues(filterSelector) : null;
+        const updatedFilters = filters ? convertFilterValues(filters) : null;
 
         const selector = {
             page,
@@ -167,7 +163,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         studyUuid,
         currentNode?.id,
         intl,
-        filterSelector,
+        filters,
         sortConfig,
         fromFrontColumnToBackKeys,
     ]);

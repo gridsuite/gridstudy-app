@@ -20,11 +20,11 @@ import {
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { genericColumnOfPropertiesReadonly } from '../common/column-properties';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'TieLines',
+    type: FilterType.Spreadsheet,
+    tab: 'TieLines',
 };
 
 export const TIE_LINE_TAB_DEF = {

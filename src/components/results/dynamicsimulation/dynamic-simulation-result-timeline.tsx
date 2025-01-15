@@ -19,7 +19,7 @@ import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggri
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import ComputingType from '../../computing-status/computing-type';
-import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/aggrid-filters-utils';
+import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import {
@@ -34,8 +34,8 @@ import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { FilterType } from '../../custom-aggrid/hooks/use-aggrid-row-filter';
 import { AgGridReact } from 'ag-grid-react';
+import { FilterType } from '../../../hooks/use-filter-selector';
 
 const styles = {
     loader: {
@@ -90,12 +90,12 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
-                        filterDataType: FILTER_DATA_TYPES.NUMBER,
-                        filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        type: FilterType.DynamicSimulation,
+                        tab: TIMELINE,
+                        updateFilterCallback: updateFilters,
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
                     },
-                    filterType: FilterType.DynamicSimulation,
-                    filterTab: TIMELINE,
-                    updateFilterCallback: updateFilters,
                 },
                 cellRenderer: NumberCellRenderer,
                 sortParams: {
@@ -113,12 +113,12 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
-                        filterDataType: FILTER_DATA_TYPES.TEXT,
-                        filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        type: FilterType.DynamicSimulation,
+                        tab: TIMELINE,
+                        updateFilterCallback: updateFilters,
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                     },
-                    filterType: FilterType.DynamicSimulation,
-                    filterTab: TIMELINE,
-                    updateFilterCallback: updateFilters,
                 },
                 sortParams: {
                     table: DYNAMIC_SIMULATION_RESULT_SORT_STORE,
@@ -135,12 +135,12 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
-                        filterDataType: FILTER_DATA_TYPES.TEXT,
-                        filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        type: FilterType.DynamicSimulation,
+                        tab: TIMELINE,
+                        updateFilterCallback: updateFilters,
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                     },
-                    filterType: FilterType.DynamicSimulation,
-                    filterTab: TIMELINE,
-                    updateFilterCallback: updateFilters,
                 },
                 sortParams: {
                     table: DYNAMIC_SIMULATION_RESULT_SORT_STORE,

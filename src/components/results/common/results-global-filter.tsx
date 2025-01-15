@@ -105,7 +105,7 @@ export enum FilterType {
 
 export interface Filter {
     label: string;
-    filterType: string;
+    type: string;
     recent?: boolean;
 }
 
@@ -123,16 +123,13 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
     const recentGlobalFilters = useSelector((state: AppState) => state.recentGlobalFilters);
 
     const getOptionLabel = useCallback(
-        (option: Filter) => (option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label + ' kV'),
+        (option: Filter) => (option.type === FilterType.COUNTRY ? translate(option.label) : option.label + ' kV'),
         [translate]
     );
 
     const getChipStyle = useCallback(
         (filter: Filter) =>
-            mergeSx(
-                styles.chip,
-                filter.filterType === FilterType.COUNTRY ? styles.chipCountry : styles.chipVoltageLevel
-            ),
+            mergeSx(styles.chip, filter.type === FilterType.COUNTRY ? styles.chipCountry : styles.chipVoltageLevel),
         []
     );
 
@@ -159,8 +156,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                         let isRecent = false;
                         if (recentGlobalFilters && recentGlobalFilters.length > 0) {
                             isRecent = recentGlobalFilters.some(
-                                (recent: Filter) =>
-                                    recent.label === filter.label && recent.filterType === filter.filterType
+                                (recent: Filter) => recent.label === filter.label && recent.type === filter.type
                             );
                         }
                         return { ...filter, recent: isRecent };
@@ -232,13 +228,13 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 }}
                 // Allows to find the corresponding chips without taking into account the recent status
                 isOptionEqualToValue={(option: Filter, value: Filter) =>
-                    option.label === value.label && option.filterType === value.filterType
+                    option.label === value.label && option.type === value.type
                 }
                 // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
                 filterOptions={(options: Filter[], state: FilterOptionsState<Filter>) =>
                     options.filter((option) => {
                         const labelToMatch =
-                            option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
+                            option.type === FilterType.COUNTRY ? translate(option.label) : option.label;
                         return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
                     })
                 }

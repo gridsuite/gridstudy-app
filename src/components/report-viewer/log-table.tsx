@@ -11,9 +11,8 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { FILTER_PARAMS, FilterType, getColumnFilterValue } from 'components/custom-aggrid/hooks/use-aggrid-row-filter';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
@@ -25,7 +24,12 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { MessageLogCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { AppState } from '../../redux/reducer';
+import { FilterType, useFilterSelector } from '../../hooks/use-filter-selector';
+import { FilterConfig } from '../custom-aggrid/custom-aggrid-filters/types/custom-aggrid-filter-types';
+
+const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
+    return array?.find((item) => item.column === columnName)?.value ?? null;
+};
 
 const styles = {
     chip: (severity: string, severityFilter: string[], theme: Theme) => ({
@@ -76,10 +80,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const [, , fetchReportLogs, fetchNodeSeverities] = useReportFetcher(
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
-    const filterSelector = useSelector(
-        // @ts-expect-error TODO: found a better way to go into state
-        (state: AppState) => state[FILTER_PARAMS[FilterType.Logs].filterType][reportType]
-    );
+    const { filters } = useFilterSelector(FilterType.Logs, reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
     const [rowData, setRowData] = useState<ReportLog[] | null>(null);
@@ -88,8 +89,8 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const [searchTerm, setSearchTerm] = useState<string>('');
     const gridRef = useRef<AgGridReact>(null);
 
-    const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
-    const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
+    const severityFilter = useMemo(() => getColumnFilterValue(filters, 'severity') ?? [], [filters]);
+    const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);
 
     const resetSearch = useCallback(() => {
         setSearchResults([]);
@@ -120,7 +121,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     }, [severityFilter, fetchReportLogs, selectedReportId, reportNature, messageFilter, resetSearch]);
 
     useEffect(() => {
-        if (filterSelector?.length === 0 && severities && severities.length > 0) {
+        if (filters?.length === 0 && severities && severities.length > 0) {
             dispatch(
                 setLogsFilter(reportType, [
                     {
@@ -132,7 +133,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 ])
             );
         }
-    }, [severities, dispatch, reportType, filterSelector, fetchNodeSeverities, selectedReportId, reportNature]);
+    }, [severities, dispatch, reportType, filters, fetchNodeSeverities, selectedReportId, reportNature]);
 
     useEffect(() => {
         if (selectedReportId && reportNature) {
@@ -159,11 +160,11 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
-                        filterDataType: FILTER_DATA_TYPES.TEXT,
-                        filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                        type: FilterType.Logs,
+                        tab: reportType,
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
                     },
-                    filterType: FilterType.Logs,
-                    filterTab: reportType,
                 },
                 flex: 1,
                 cellRenderer: (param: ICellRendererParams) =>

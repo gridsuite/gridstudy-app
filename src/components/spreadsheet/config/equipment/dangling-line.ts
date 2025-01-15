@@ -19,11 +19,11 @@ import {
 } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'DanglingLines',
+    type: FilterType.Spreadsheet,
+    tab: 'DanglingLines',
 };
 
 export const DANGLING_LINE_TAB_DEF = {

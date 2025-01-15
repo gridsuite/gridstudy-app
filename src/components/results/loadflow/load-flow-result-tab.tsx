@@ -19,7 +19,6 @@ import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { FILTER_PARAMS } from 'components/custom-aggrid/hooks/use-aggrid-row-filter';
 import {
     convertFilterValues,
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
@@ -31,11 +30,7 @@ import {
     mappingTabs,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
-import {
-    FILTER_DATA_TYPES,
-    FILTER_TEXT_COMPARATORS,
-    FilterSelectorType,
-} from 'components/custom-aggrid/custom-aggrid-header.type';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
@@ -45,7 +40,8 @@ import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/st
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
-import { FilterType as AgGridFilterType } from '../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType as AgGridFilterType } from '../../../hooks/use-filter-selector';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 const styles = {
     flexWrapper: {
@@ -83,10 +79,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
     );
 
-    const filterSelector = useSelector<AppState, FilterSelectorType[]>(
-        // @ts-expect-error TODO: found a better way to go into state
-        (state: AppState) => state[FILTER_PARAMS[AgGridFilterType.Loadflow].filterType][mappingTabs(tabIndex)]
-    );
+    const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const [countriesFilter, setCountriesFilter] = useState<Filter[]>([]);
     const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<Filter[]>([]);
@@ -102,7 +95,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                 setCountriesFilter(
                     countryCodes.map((countryCode: string) => ({
                         label: countryCode,
-                        filterType: FilterType.COUNTRY,
+                        type: FilterType.COUNTRY,
                     }))
                 );
             })
@@ -117,7 +110,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                 setVoltageLevelsFilter(
                     nominalVoltages.map((nominalV: number) => ({
                         label: nominalV.toString(),
-                        filterType: FilterType.VOLTAGE_LEVEL,
+                        type: FilterType.VOLTAGE_LEVEL,
                     }))
                 );
             })
@@ -164,7 +157,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
     const fetchLimitViolationsWithParameters = useCallback(() => {
         const limitTypeValues =
             tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE];
-        const initialFilters = filterSelector || [];
+        const initialFilters = filters || [];
         let updatedFilters = convertFilterValues(initialFilters, intl);
         let limitTypeFilter = initialFilters.find((f) => f.column === 'limitType');
 
@@ -185,14 +178,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
             filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
             globalFilters: getGlobalFilterParameter(globalFilter),
         });
-    }, [tabIndex, filterSelector, intl, studyUuid, nodeUuid, sortConfig, getGlobalFilterParameter, globalFilter]);
+    }, [tabIndex, filters, intl, studyUuid, nodeUuid, sortConfig, getGlobalFilterParameter, globalFilter]);
 
     const fetchloadflowResultWithParameters = useCallback(() => {
         return fetchLoadFlowResult(studyUuid, nodeUuid, {
             sort: sortConfig,
-            filters: filterSelector,
+            filters,
         });
-    }, [studyUuid, nodeUuid, sortConfig, filterSelector]);
+    }, [studyUuid, nodeUuid, sortConfig, filters]);
 
     const fetchResult = useMemo(() => {
         if (tabIndex === 0 || tabIndex === 1) {
@@ -244,12 +237,12 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
         if (value) {
             const nominalVs = new Set(
                 value
-                    .filter((filter: Filter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
+                    .filter((filter: Filter) => filter.type === FilterType.VOLTAGE_LEVEL)
                     .map((filter: Filter) => filter.label)
             );
             const countryCodes = new Set(
                 value
-                    .filter((filter: Filter) => filter.filterType === FilterType.COUNTRY)
+                    .filter((filter: Filter) => filter.type === FilterType.COUNTRY)
                     .map((filter: Filter) => filter.label)
             );
             newGlobalFilter.nominalV = [...nominalVs];

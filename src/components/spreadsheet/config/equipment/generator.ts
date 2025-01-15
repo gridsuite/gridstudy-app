@@ -34,7 +34,7 @@ import {
     type ICustomCellEditorParams,
     numericalCellEditorConfig,
 } from '../common/cell-editors';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 
 const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
@@ -63,8 +63,8 @@ const isEditableRegulatingTerminalCell: EditableCallback = (params) => {
 };
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'Generators',
+    type: FilterType.Spreadsheet,
+    tab: 'Generators',
 };
 
 export const GENERATOR_TAB_DEF = {

@@ -18,12 +18,12 @@ import {
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { numericalCellEditorConfig } from '../common/cell-editors';
 import { convertInputValue, convertOutputValue, FieldType } from '@gridsuite/commons-ui';
-import { FilterType } from '../../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType } from '../../../../hooks/use-filter-selector';
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 
 const filterParams = {
-    filterType: FilterType.Spreadsheet,
-    filterTab: 'VoltageLevels',
+    type: FilterType.Spreadsheet,
+    tab: 'VoltageLevels',
 };
 
 function generateEditableNumericColumnDefinition<

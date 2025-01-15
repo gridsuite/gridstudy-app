@@ -31,7 +31,7 @@ import {
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { FILTER_PARAMS, FilterType as AgGridFilterType } from '../../custom-aggrid/hooks/use-aggrid-row-filter';
+import { FilterType as AgGridFilterType } from '../../../hooks/use-filter-selector';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
@@ -41,7 +41,7 @@ import { useIntl } from 'react-intl/lib';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { usePrevious } from 'components/utils/utils';
-import { FilterSelectorType } from '../../custom-aggrid/custom-aggrid-header.type';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -119,11 +119,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         (state: AppState) => state.tableSort[SECURITY_ANALYSIS_RESULT_SORT_STORE][getStoreFields(tabIndex)]
     );
 
-    const filterSelector = useSelector<AppState, FilterSelectorType[]>(
-        (state: AppState) =>
-            // @ts-expect-error TODO: found a better way to go into state
-            state[FILTER_PARAMS[AgGridFilterType.SecurityAnalysis].filterType][getStoreFields(tabIndex)]
-    );
+    const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
 
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
@@ -152,15 +148,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 }));
             }
 
-            if (filterSelector) {
-                const updatedFilters = convertFilterValues(intl, filterSelector);
+            if (filters) {
+                const updatedFilters = convertFilterValues(intl, filters);
                 const columnToFieldMapping = mappingColumnToField(resultType);
                 queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
             }
 
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, queryParams);
         },
-        [page, tabIndex, rowsPerPage, sortConfig, filterSelector, resultType, intl, enableDeveloperMode]
+        [page, tabIndex, rowsPerPage, sortConfig, filters, resultType, intl, enableDeveloperMode]
     );
 
     const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(

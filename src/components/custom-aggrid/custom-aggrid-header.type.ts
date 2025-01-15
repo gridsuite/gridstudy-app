@@ -9,7 +9,7 @@ import { SortParams } from './hooks/use-custom-aggrid-sort';
 import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
 import { CustomColumnConfigProps } from 'components/spreadsheet/custom-columns/custom-column-menu';
 import React, { ComponentType } from 'react';
-import { FilterType } from './hooks/use-aggrid-row-filter';
+import { FilterParams } from './custom-aggrid-filters/types/custom-aggrid-filter-types';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -37,36 +37,16 @@ export enum UNDISPLAYED_FILTER_NUMBER_COMPARATORS {
 
 export type FilterEnumsType = Record<string, string[] | null>;
 
-export type FilterParams = {
-    filterDataType?: string;
-    filterComparators?: string[];
-    debounceMs?: number;
-};
-
 export interface CustomAggridFilterParams {
     api: GridApi;
     field: string;
     filterParams: FilterParams;
-    filterType: FilterType;
-    filterTab: string;
-    updateFilterCallback?: (api?: GridApi, filters?: FilterSelectorType[]) => void;
 }
 
 export type CustomHeaderMenuParams = {
     tabIndex: number;
     isCustomColumn: boolean;
     Menu: React.FC<CustomColumnConfigProps>;
-};
-
-export type FilterDataType = {
-    dataType?: string;
-    type?: string;
-    value: unknown;
-    tolerance?: number; // tolerance when comparing values. Only useful for the number type
-};
-
-export type FilterSelectorType = FilterDataType & {
-    column: string;
 };
 
 export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>

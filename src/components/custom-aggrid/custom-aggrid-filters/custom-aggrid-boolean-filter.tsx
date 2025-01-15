@@ -11,7 +11,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { mergeSx } from 'components/utils/functions';
-import { useCustomAggridFilter } from '../hooks/use-custom-aggrid-filter';
+import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
 import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
 
@@ -33,20 +33,10 @@ export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterPara
     api,
     field,
     filterParams,
-    filterType,
-    filterTab,
-    updateFilterCallback,
 }) => {
     const intl = useIntl();
 
-    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(
-        api,
-        field,
-        filterParams,
-        filterType,
-        filterTab,
-        updateFilterCallback
-    );
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, field, filterParams);
 
     const handleValueChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value;
