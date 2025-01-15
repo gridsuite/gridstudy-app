@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    convertOutputValue,
+    CustomFormProvider,
+    FieldType,
+    MODIFICATION_TYPES,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -45,7 +52,6 @@ import VoltageLevelCreationForm from './voltage-level-creation-form';
 import { controlCouplingOmnibusBetweenSections } from '../voltage-level-creation-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
-import { kiloUnitToUnit, unitToKiloUnit } from 'utils/unit-converter';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
@@ -197,10 +203,12 @@ const VoltageLevelCreationDialog = ({
                     [NOMINAL_V]: voltageLevel[NOMINAL_V],
                     [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                     [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
+                    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
+                        FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                         fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
                     ),
-                    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
+                    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
+                        FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                         fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
                     ),
                     [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
@@ -265,8 +273,14 @@ const VoltageLevelCreationDialog = ({
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                ipMin: kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
-                ipMax: kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
+                ipMin: convertOutputValue(
+                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
+                ),
+                ipMax: convertOutputValue(
+                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
+                ),
                 busbarCount: voltageLevel[BUS_BAR_COUNT],
                 sectionCount: voltageLevel[SECTION_COUNT],
                 switchKinds: voltageLevel[SWITCH_KINDS].map((e) => {

@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    convertOutputValue,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
@@ -54,7 +60,6 @@ import {
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { sanitizeString } from '../../../dialog-utils';
 import {
     FORM_LOADING_DELAY,
@@ -206,24 +211,24 @@ const TwoWindingsTransformerModificationDialog = ({
         (twtEditData) => {
             const ratioTapEnabledInEditData = twtEditData?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value;
             const ratioTapFormHasBeenEdited = Object.keys(twtEditData?.[RATIO_TAP_CHANGER] ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
-            const ratioTapEnabledInTwtToModify = !!twtToModify?.ratioTapChanger; // used when we have twt element (built node)
+            const ratioTapEnabledInTwtToModify = !!getValues(RATIO_TAP_CHANGER); // used when we have twt element (built node)
             return ratioTapEnabledInEditData ?? (ratioTapFormHasBeenEdited || ratioTapEnabledInTwtToModify);
         },
-        [twtToModify]
+        [getValues]
     );
 
     const isPhaseTapChangerEnabled = useCallback(
         (twtEditData) => {
             const phaseTapEnabledInEditData = twtEditData?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value;
             const phaseTapFormHasBeenEdited = Object.keys(twtEditData?.[PHASE_TAP_CHANGER] ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
-            const phaseTapEnabledInTwtToModify = !!twtToModify?.phaseTapChanger; // used when we have twt element (built node)
+            const phaseTapEnabledInTwtToModify = !!getValues(PHASE_TAP_CHANGER); // used when we have twt element (built node)
             return phaseTapEnabledInEditData ?? (phaseTapFormHasBeenEdited || phaseTapEnabledInTwtToModify);
         },
-        [twtToModify]
+        [getValues]
     );
 
     const fromEditDataToFormValues = useCallback(
-        (twt, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
+        (twt) => {
             if (twt?.equipmentId) {
                 setSelectedId(twt.equipmentId);
             }
@@ -236,8 +241,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getCharacteristicsFormData({
                     r: twt.r?.value,
                     x: twt.x?.value,
-                    g: unitToMicroUnit(twt.g?.value),
-                    b: unitToMicroUnit(twt.b?.value),
+                    g: convertInputValue(FieldType.G, twt.g?.value),
+                    b: convertInputValue(FieldType.B, twt.b?.value),
                     ratedU1: twt.ratedU1?.value,
                     ratedU2: twt.ratedU2?.value,
                     ratedS: twt.ratedS?.value,
@@ -246,10 +251,10 @@ const TwoWindingsTransformerModificationDialog = ({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        updatedTemporaryLimits1 || formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
+                        formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        updatedTemporaryLimits2 || formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
+                        formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
                     ),
                 }),
                 ...getRatioTapChangerFormData({
@@ -264,9 +269,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     lowTapPosition: twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION]?.value,
                     highTapPosition: computeHighTapPosition(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION]?.value,
-                    steps: addSelectedFieldToRows(
-                        twt?.[RATIO_TAP_CHANGER]?.[STEPS] ?? twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
-                    ),
+                    steps: addSelectedFieldToRows(twt?.[RATIO_TAP_CHANGER]?.[STEPS] ?? undefined),
                     equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId?.value,
                     equipmentType: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalType?.value,
                     voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId?.value,
@@ -289,9 +292,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     lowTapPosition: twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION]?.value,
                     highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION]?.value,
-                    steps: addSelectedFieldToRows(
-                        twt?.[PHASE_TAP_CHANGER]?.[STEPS] ?? twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
-                    ),
+                    steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS] ?? undefined),
                     equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId?.value,
                     equipmentType: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalType?.value,
                     voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId?.value,
@@ -299,24 +300,14 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getPropertiesFromModification(twt.properties),
             });
         },
-        [reset, twtToModify, isRatioTapChangerEnabled, isPhaseTapChangerEnabled]
+        [reset, isRatioTapChangerEnabled, isPhaseTapChangerEnabled]
     );
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(
-                editData,
-                updateTemporaryLimits(
-                    formatTemporaryLimits(editData.currentLimits1?.temporaryLimits),
-                    formatTemporaryLimits(twtToModify?.currentLimits1?.temporaryLimits)
-                ),
-                updateTemporaryLimits(
-                    formatTemporaryLimits(editData.currentLimits2?.temporaryLimits),
-                    formatTemporaryLimits(twtToModify?.currentLimits2?.temporaryLimits)
-                )
-            );
+            fromEditDataToFormValues(editData);
         }
-    }, [fromEditDataToFormValues, editData, twtToModify]);
+    }, [fromEditDataToFormValues, editData]);
 
     const computeRatioTapChangerRegulating = (ratioTapChangerFormValues) => {
         return ratioTapChangerFormValues?.[REGULATION_MODE] === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id;
@@ -490,8 +481,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 twoWindingsTransformerName: toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
                 r: toModificationOperation(characteristics[R]),
                 x: toModificationOperation(characteristics[X]),
-                g: toModificationOperation(microUnitToUnit(characteristics[G])),
-                b: toModificationOperation(microUnitToUnit(characteristics[B])),
+                g: toModificationOperation(convertOutputValue(FieldType.G, characteristics[G])),
+                b: toModificationOperation(convertOutputValue(FieldType.B, characteristics[B])),
                 ratedS: toModificationOperation(characteristics[RATED_S]),
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
@@ -576,7 +567,10 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
-            if (equipmentId) {
+            if (!equipmentId) {
+                setTwtToModify(null);
+                reset(emptyFormData, { keepDefaultValues: true });
+            } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
@@ -593,15 +587,27 @@ const TwoWindingsTransformerModificationDialog = ({
                             setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, twt?.voltageLevelId2);
                             setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, twt?.busOrBusbarSectionId1);
                             setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, twt?.busOrBusbarSectionId2);
-                            if (editData?.equipmentId !== selectedId) {
-                                reset((formValues) => ({
+                            const updatedTemporaryLimits1 = updateTemporaryLimits(
+                                formatTemporaryLimits(getValues(`${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(twt?.currentLimits1?.temporaryLimits)
+                            );
+                            const updatedTemporaryLimits2 = updateTemporaryLimits(
+                                formatTemporaryLimits(getValues(`${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(twt?.currentLimits2?.temporaryLimits)
+                            );
+                            reset(
+                                (formValues) => ({
                                     ...formValues,
                                     ...getLimitsFormData({
                                         temporaryLimits1: addSelectedFieldToRows(
-                                            formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
+                                            updatedTemporaryLimits1
+                                                ? updatedTemporaryLimits1
+                                                : formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
                                         ),
                                         temporaryLimits2: addSelectedFieldToRows(
-                                            formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
+                                            updatedTemporaryLimits2
+                                                ? updatedTemporaryLimits2
+                                                : formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
                                         ),
                                     }),
                                     ...getRatioTapChangerFormData({
@@ -616,8 +622,9 @@ const TwoWindingsTransformerModificationDialog = ({
                                         steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
                                     }),
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(twt, getValues),
-                                }));
-                            }
+                                }),
+                                { keepDefaultValues: true }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -628,12 +635,9 @@ const TwoWindingsTransformerModificationDialog = ({
                             reset(emptyFormData);
                         }
                     });
-            } else {
-                setTwtToModify(null);
-                reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset, getValues, setConnectivityValue]
+        [reset, studyUuid, currentNodeUuid, setConnectivityValue, getValues, editData?.equipmentId]
     );
 
     useEffect(() => {

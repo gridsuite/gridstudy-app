@@ -104,15 +104,15 @@ export const useGetShortCircuitParameters = (): UseGetShortCircuitParametersProp
 const formSchema = yup
     .object()
     .shape({
-        [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: yup.boolean(),
+        [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: yup.boolean().required(),
         [SHORT_CIRCUIT_PREDEFINED_PARAMS]: yup
             .mixed<PREDEFINED_PARAMETERS>()
             .oneOf(Object.values(PREDEFINED_PARAMETERS))
             .required(),
-        [SHORT_CIRCUIT_WITH_LOADS]: yup.boolean(),
-        [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: yup.boolean(),
-        [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: yup.boolean(),
-        [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: yup.boolean(),
+        [SHORT_CIRCUIT_WITH_LOADS]: yup.boolean().required(),
+        [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: yup.boolean().required(),
+        [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: yup.boolean().required(),
+        [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: yup.boolean().required(),
         [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: yup
             .mixed<INITIAL_VOLTAGE>()
             .oneOf(Object.values(INITIAL_VOLTAGE))

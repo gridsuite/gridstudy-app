@@ -7,7 +7,13 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValue,
+    convertOutputValue,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
@@ -29,11 +35,11 @@ import {
 import { modifyByFormula } from '../../../../../services/study/network-modifications';
 import { getFormulaInitialValue, getFormulaSchema } from './formula/formula-utils';
 
-function getFieldOrValue(input) {
+function getFieldOrConvertedUnitValue(input, fieldType) {
     const value = input.replace(',', '.');
     const isNumber = !isNaN(parseFloat(value));
     return {
-        [VALUE]: isNumber ? value : null,
+        [VALUE]: isNumber ? convertOutputValue(fieldType, value) : null,
         [EQUIPMENT_FIELD]: isNumber ? null : input,
     };
 }
@@ -71,8 +77,16 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
     useEffect(() => {
         if (editData) {
             const formulas = editData.formulaInfosList?.map((formula) => {
-                const ref1 = formula?.fieldOrValue1?.value?.toString() ?? formula?.fieldOrValue1?.equipmentField;
-                const ref2 = formula?.fieldOrValue2?.value?.toString() ?? formula?.fieldOrValue2?.equipmentField;
+                const valueConverted1 = convertInputValue(
+                    FieldType[formula[EDITED_FIELD]],
+                    formula?.fieldOrValue1?.value
+                );
+                const valueConverted2 = convertInputValue(
+                    FieldType[formula[EDITED_FIELD]],
+                    formula?.fieldOrValue2?.value
+                );
+                const ref1 = valueConverted1?.toString() ?? formula?.fieldOrValue1?.equipmentField;
+                const ref2 = valueConverted2?.toString() ?? formula?.fieldOrValue2?.equipmentField;
                 return {
                     [REFERENCE_FIELD_OR_VALUE_1]: ref1,
                     [REFERENCE_FIELD_OR_VALUE_2]: ref2,
@@ -95,8 +109,14 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
     const onSubmit = useCallback(
         (data) => {
             const formulas = data[FORMULAS].map((formula) => {
-                const fieldOrValue1 = getFieldOrValue(formula[REFERENCE_FIELD_OR_VALUE_1]);
-                const fieldOrValue2 = getFieldOrValue(formula[REFERENCE_FIELD_OR_VALUE_2]);
+                const fieldOrValue1 = getFieldOrConvertedUnitValue(
+                    formula[REFERENCE_FIELD_OR_VALUE_1],
+                    FieldType[formula[EDITED_FIELD]]
+                );
+                const fieldOrValue2 = getFieldOrConvertedUnitValue(
+                    formula[REFERENCE_FIELD_OR_VALUE_2],
+                    FieldType[formula[EDITED_FIELD]]
+                );
                 return {
                     fieldOrValue1,
                     fieldOrValue2,

@@ -67,11 +67,7 @@ export const getReactiveLimitsSchema = (
                     is: (minimumReactivePower) => !isEquipmentModification && minimumReactivePower != null,
                     then: (schema) => schema.required(),
                 }),
-            ...getReactiveCapabilityCurveValidationSchema(
-                REACTIVE_CAPABILITY_CURVE_TABLE,
-                isEquipmentModification,
-                positiveAndNegativePExist
-            ),
+            ...getReactiveCapabilityCurveValidationSchema(REACTIVE_CAPABILITY_CURVE_TABLE, positiveAndNegativePExist),
         },
         [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
     ),
