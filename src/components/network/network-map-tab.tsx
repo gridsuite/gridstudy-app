@@ -860,6 +860,10 @@ export const NetworkMapTab = ({
         isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
         // if only renaming, do not reload geo data
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
+             return;
+        }
+        if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid && currentNode !== null) {
+             loadRootNodeGeoData();
             return;
         }
         if (disabled) {

@@ -8,6 +8,7 @@
 import { UUID } from 'crypto';
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
+    name: string;
     isCreating: boolean;
 }
 export interface NetworkModificationMetadata {

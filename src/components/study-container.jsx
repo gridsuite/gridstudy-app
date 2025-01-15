@@ -506,6 +506,8 @@ export function StudyContainer({ view, onChangeTab }) {
         };
     }, [dispatch, fetchStudyPath]);
 
+    const previousCurrentRootNetwork = usePrevious(currentRootNetworkUuid);
+
     const loadTree = useCallback(
         (initIndexationStatus) => {
             console.info(`Loading network modification tree of study '${studyUuid}'...`);
@@ -529,6 +531,14 @@ export function StudyContainer({ view, onChangeTab }) {
                                 headerId: 'CaseNameLoadError',
                             });
                         });
+
+                    if (previousCurrentRootNetwork !== currentRootNetworkUuid && currentNode) {
+                        const ModelLastSelectedNode = {
+                            ...networkModificationTreeModel.treeNodes.find((node) => node.id === currentNode?.id),
+                        };
+                        dispatch(setCurrentTreeNode(ModelLastSelectedNode));
+                        return;
+                    }
 
                     // Select root node by default
                     let firstSelectedNode = getFirstNodeOfType(tree, NodeType.ROOT);
@@ -559,7 +569,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 .finally(() => console.debug('Network modification tree loading finished'));
             // Note: studyUuid and dispatch don't change
         },
-        [studyUuid, currentRootNetworkUuid, dispatch, snackError, snackWarning]
+        [studyUuid, currentRootNetworkUuid, currentNode, previousCurrentRootNetwork, dispatch, snackError, snackWarning]
     );
 
     const checkStudyIndexation = useCallback(() => {
@@ -703,7 +713,6 @@ export function StudyContainer({ view, onChangeTab }) {
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
 
-        let previousCurrentRootNetwork = currentRootNetworkRef.current;
         currentRootNetworkRef.current = currentRootNetworkUuid;
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
@@ -722,7 +731,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return;
         }
         dispatch(resetEquipments());
-    }, [currentNode, currentRootNetworkUuid, wsConnected, dispatch]);
+    }, [currentNode, currentRootNetworkUuid, previousCurrentRootNetwork, wsConnected, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {

@@ -22,7 +22,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../utils/yup-config';
 import { useSelector } from 'react-redux';
-import BasicModificationDialog from './commons/basicModificationDialog';
 import { AppState } from 'redux/reducer';
 import ImportCaseDialog from './import-case-dialog';
 import ModificationDialog from './commons/modificationDialog';
@@ -207,7 +206,7 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
                             autoFocus
                         />
                     </Grid>
-                    {type === ElementType.ROOT_NETWORK && caseSelection}
+                    {caseSelection}
                 </Grid>
 
                 <ImportCaseDialog
