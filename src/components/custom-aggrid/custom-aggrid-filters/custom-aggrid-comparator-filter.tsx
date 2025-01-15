@@ -10,7 +10,7 @@ import { Grid } from '@mui/material';
 import { useCustomAggridComparatorFilter } from './hooks/use-custom-aggrid-comparator-filter';
 import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
 
-export const CustomAggridComparatorFilter = ({ api, field, filterParams }: CustomAggridFilterParams) => {
+export const CustomAggridComparatorFilter = ({ api, colId, filterParams }: CustomAggridFilterParams) => {
     const {
         selectedFilterData,
         selectedFilterComparator,
@@ -19,7 +19,7 @@ export const CustomAggridComparatorFilter = ({ api, field, filterParams }: Custo
         handleFilterComparatorChange,
         handleFilterTextChange,
         handleClearFilter,
-    } = useCustomAggridComparatorFilter(api, field, filterParams);
+    } = useCustomAggridComparatorFilter(api, colId, filterParams);
 
     const {
         comparators = [], // used for text filter as a UI type (examples: contains, startsWith..)

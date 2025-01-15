@@ -9,103 +9,90 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import {
-    booleanAgGridColumnDefinition,
-    textAgGridColumnDefinition,
-    numberAgGridColumnDefinition,
-} from '../common-column-definitions';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+
+const tab = 'HvdcLines';
 
 export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 10,
-    name: 'HvdcLines',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.HVDC_LINE),
     columns: [
         {
-            id: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
-            id: 'Name',
             field: 'name',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('name', 'Name', tab),
         },
         {
-            id: 'VoltageLevelIdSide1',
             field: 'voltageLevelId1',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId1', 'Voltage Level ID 1', tab),
         },
         {
-            id: 'VoltageLevelIdSide2',
             field: 'voltageLevelId2',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId2', 'Voltage Level ID 2', tab),
         },
         {
             id: 'ConvertersMode',
             field: 'convertersMode',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('convertersMode', 'Converters Mode', tab),
         },
         {
             id: 'ConverterStationId1',
             field: 'converterStationId1',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('converterStationId1', 'Converter Station ID 1', tab),
         },
         {
             id: 'ConverterStationId2',
             field: 'converterStationId2',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('converterStationId2', 'Converter Station ID 2', tab),
         },
         {
             id: 'Country1',
             field: 'country1',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country1', 'Country 1', tab),
         },
         {
             id: 'Country2',
             field: 'country2',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country2', 'Country 2', tab),
         },
         {
             id: 'R',
             field: 'r',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('r', 'R', tab, 1),
         },
         {
-            id: 'ActivePowerSetpoint',
             field: 'activePowerSetpoint',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('activePowerSetpoint', 'Active Power Setpoint', tab, 1),
         },
         {
-            id: 'maxActivePower',
             field: 'maxP',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('maxP', 'Max P', tab, 1),
         },
         {
-            id: 'OprFromCS1toCS2',
             field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('oprLimit1to2', 'Operational Limit (1 to 2)', tab, 1),
         },
         {
-            id: 'OprFromCS2toCS1',
             field: 'hvdcOperatorActivePowerRange.oprFromCS2toCS1',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('oprLimit2to1', 'Operational Limit (1 to 2)', tab, 1),
         },
         {
-            id: 'AcEmulation',
             field: 'hvdcAngleDroopActivePowerControl.isEnabled',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('acEmulationEnabled', 'AC Emulation', tab),
         },
         {
-            id: 'K',
             field: 'hvdcAngleDroopActivePowerControl.droop',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('acEmulationDroop', 'K (MW/Deg)', tab, 1),
         },
         {
-            id: 'P0',
             field: 'hvdcAngleDroopActivePowerControl.p0',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('acEmulationp0', 'P0', tab, 1),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
 };

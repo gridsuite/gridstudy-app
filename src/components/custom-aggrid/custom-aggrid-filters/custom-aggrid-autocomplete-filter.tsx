@@ -18,19 +18,19 @@ export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilter
 
 export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutocompleteFilterParams> = ({
     api,
-    field,
+    colId,
     filterParams,
     filterEnums,
     getEnumLabel,
 }) => {
     const intl = useIntl();
-    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, field, filterParams);
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, colId, filterParams);
 
     const handleFilterAutoCompleteChange = (_: SyntheticEvent, data: string[]) => {
         handleChangeFilterValue({ value: data, type: FILTER_TEXT_COMPARATORS.EQUALS });
     };
 
-    const filterOption = useMemo(() => filterEnums?.[field] ?? [], [field, filterEnums]);
+    const filterOption = useMemo(() => filterEnums?.[colId] ?? [], [colId, filterEnums]);
 
     return (
         <Autocomplete

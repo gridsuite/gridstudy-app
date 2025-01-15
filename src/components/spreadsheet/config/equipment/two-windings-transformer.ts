@@ -11,213 +11,173 @@ import { typeAndFetchers } from './common-config';
 import { computeHighTapPosition } from '../../../utils/utils';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import {
-    booleanAgGridColumnDefinition,
-    textAgGridColumnDefinition,
-    numberAgGridColumnDefinition,
-} from '../common-column-definitions';
+import { booleanColumnDefinition, textColumnDefinition, numberColumnDefinition } from '../common-column-definitions';
+
+const tab = 'TwoWindingsTransformers';
 
 export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
     index: 3,
-    name: 'TwoWindingsTransformers',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
     columns: [
         {
-            id: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
             id: 'Name',
             field: 'name',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('name', 'Name', tab),
         },
         {
-            id: 'VoltageLevelIdSide1',
             field: 'voltageLevelId1',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId1', 'Voltage level ID 1', tab),
         },
         {
-            id: 'VoltageLevelIdSide2',
             field: 'voltageLevelId2',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId2', 'Voltage level ID 2', tab),
         },
         {
-            id: 'Country',
             field: 'country',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country', 'Country', tab),
         },
         {
-            id: 'nominalVoltage1KV',
             field: 'nominalVoltage1',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('nominalVoltage1', 'Nominal voltage 1 (kV)', tab, 0),
         },
         {
-            id: 'nominalVoltage2KV',
             field: 'nominalVoltage2',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('nominalVoltage2', 'Nominal voltage 2 (kV)', tab, 0),
         },
         {
-            id: 'ratedVoltage1KV',
             field: 'ratedU1',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('ratedU1', 'Rated voltage 1 (kV)', tab, 0),
         },
         {
-            id: 'ratedVoltage2KV',
             field: 'ratedU2',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('ratedU2', 'Rated voltage 2 (kV)', tab, 0),
         },
         {
-            id: 'ActivePowerSide1',
             field: 'p1',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ActivePowerSide1', 'p1 (MW)', tab, 1),
         },
         {
-            id: 'ActivePowerSide2',
             field: 'p2',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ActivePowerSide2', 'p2 (MW)', tab, 1),
         },
         {
-            id: 'ReactivePowerSide1',
             field: 'q1',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ReactivePowerSide1', 'q1 (MVar)', tab, 1),
         },
         {
-            id: 'ReactivePowerSide2',
             field: 'q2',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ReactivePowerSide2', 'q2 (MVar)', tab, 1),
         },
         {
-            id: 'HasLoadTapChangingCapabilities',
             field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('HasLoadTapChangingCapabilities', 'Ratio on-load', tab),
         },
         {
-            id: 'RatioRegulationMode',
             field: 'ratioTapChanger.regulationMode',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('RatioRegulationMode', 'Ratio regulation mode', tab),
         },
         {
-            id: 'TargetVPoint',
             field: 'ratioTapChanger.targetV',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('TargetVPoint', 'Voltage set point (kV)', tab, 1),
         },
         {
-            id: 'RatioDeadBand',
             field: 'ratioTapChanger.targetDeadband',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('RatioDeadBand', 'Ratio deadband', tab, 1),
         },
         {
-            id: 'RatioRegulationTypeText',
             field: 'ratioTapChanger.regulationType',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('RatioRegulationTypeText', 'Ratio regulation', tab),
         },
         {
-            id: 'RatioRegulatedSide',
             field: 'ratioTapChanger.regulationSide',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('RatioRegulatedSide', 'Ratio regulated side', tab),
         },
         {
-            id: 'RatioRegulatingTerminal',
             field: 'ratioTapChanger.ratioRegulatingTerminal',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('RatioRegulatingTerminal', 'Ratio regulated terminal', tab),
         },
         {
-            id: 'RatioLowTapPosition',
             field: 'ratioTapChanger.lowTapPosition',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('RatioLowTapPosition', 'Ratio low tap position', tab, 0),
         },
         {
-            id: 'RatioHighTapPosition',
             valueGetter: (params) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('RatioHighTapPosition', 'Ratio high tap position', tab, 0),
         },
         {
-            id: 'RatioTap',
             field: 'ratioTapChanger.tapPosition',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('RatioTap', 'Ratio tap', tab, 0),
         },
         {
-            id: 'RegulatingMode',
             field: 'phaseTapChanger.regulationMode',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('RegulatingMode', 'Phase regulation mode', tab),
         },
         {
-            id: 'RegulatingValue',
             field: 'phaseTapChanger.regulationValue',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('RegulatingValue', 'Current (A) or flow set point (MW)', tab, 1),
         },
         {
-            id: 'PhaseDeadBand',
             field: 'phaseTapChanger.targetDeadband',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('PhaseDeadBand', 'Phase deadband', tab, 1),
         },
         {
-            id: 'PhaseRegulationTypeText',
             field: 'phaseTapChanger.regulationType',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('PhaseRegulationTypeText', 'Phase regulation', tab),
         },
         {
-            id: 'PhaseRegulatedSide',
             field: 'phaseTapChanger.regulationSide',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('PhaseRegulatedSide', 'Phase regulated side', tab),
         },
         {
-            id: 'PhaseRegulatingTerminal',
             field: 'phaseTapChanger.phaseRegulatingTerminal',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('PhaseRegulatingTerminal', 'Phase regulated terminal', tab),
         },
         {
-            id: 'PhaseLowTapPosition',
             field: 'phaseTapChanger.lowTapPosition',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('PhaseLowTapPosition', 'Phase low tap position', tab, 0),
         },
         {
-            id: 'PhaseHighTapPosition',
             valueGetter: (params) => computeHighTapPosition(params?.data?.phaseTapChanger?.steps),
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('PhaseHighTapPosition', 'Phase high tap position', tab, 0),
         },
         {
-            id: 'PhaseTap',
             field: 'phaseTapChanger.tapPosition',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('PhaseTap', 'Phase tap', tab, 0),
         },
         {
-            id: 'r',
             field: 'r',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('r', 'Series resistance (Ω)', tab, 1),
         },
         {
-            id: 'x',
             field: 'x',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('x', 'Series reactance (Ω)', tab, 1),
         },
         {
-            id: 'g',
             valueGetter: (params) => convertInputValue(FieldType.G, params.data.g),
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('g', 'Magnetizing conductance (μS)', tab, 1),
         },
         {
-            id: 'b',
             valueGetter: (params) => convertInputValue(FieldType.B, params.data.b),
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('b', 'Magnetizing susceptance (μS)', tab, 1),
         },
         {
-            id: 'ratedNominalPower',
             field: 'ratedS',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ratedNominalPower', 'Rated nominal power (MVA)', tab, 1),
         },
         {
-            id: 'connected1',
             field: 'terminal1Connected',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('connected1', 'Connected 1', tab),
         },
         {
-            id: 'connected2',
             field: 'terminal2Connected',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('connected2', 'Connected 2', tab),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
 };

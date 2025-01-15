@@ -10,67 +10,60 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { textAgGridColumnDefinition, numberAgGridColumnDefinition } from '../common-column-definitions';
+import { textColumnDefinition, numberColumnDefinition } from '../common-column-definitions';
+
+const tab = 'VoltageLevels';
 
 export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
     index: 1,
-    name: 'VoltageLevels',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
     columns: [
         {
-            id: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
-            id: 'Name',
             field: 'name',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('name', 'Name', tab),
         },
         {
-            id: 'SubstationId',
             field: 'substationId',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('substationId', 'Substation ID', tab),
         },
         {
-            id: 'Country',
             field: 'country',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country', 'Country', tab),
         },
         {
-            id: 'NominalV',
             field: 'nominalV',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('nominalV', 'Nominal V', tab, 0),
         },
         {
-            id: 'LowVoltageLimitkV',
             field: 'lowVoltageLimit',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('lowVoltageLimit', 'Low voltage limit (kV)', tab, 1),
         },
         {
-            id: 'HighVoltageLimitkV',
             field: 'highVoltageLimit',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('highVoltageLimit', 'High voltage limit (kV)', tab, 1),
         },
         {
-            id: 'IpMin',
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMin
                 ),
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('IpMin', 'ISC min (kA)', tab, 1),
         },
         {
-            id: 'IpMax',
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMax
                 ),
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('IpMax', 'ISC max (kA)', tab, 1),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
 };

@@ -35,11 +35,11 @@ const styles = {
     },
 };
 
-const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({ api, field, filterParams }) => {
+const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = ({ api, colId, filterParams }) => {
     const intl = useIntl();
 
     const { selectedFilterData, selectedFilterComparator, handleChangeFilterValue, handleChangeComparator } =
-        useCustomAggridFilter(api, field, filterParams);
+        useCustomAggridFilter(api, colId, filterParams);
 
     const {
         comparators = [], // used for text filter as a UI type (examples: contains, startsWith..)

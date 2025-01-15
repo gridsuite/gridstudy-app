@@ -31,12 +31,12 @@ const styles = {
 
 export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterParams> = ({
     api,
-    field,
+    colId,
     filterParams,
 }) => {
     const intl = useIntl();
 
-    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, field, filterParams);
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, colId, filterParams);
 
     const handleValueChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value;

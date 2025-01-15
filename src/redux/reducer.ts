@@ -842,7 +842,7 @@ export const reducer = createReducer(initialState, (builder) => {
         updatedDefinitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
         const updatedColumnsNames = updatedDefinitions
             .map((tabDef) => tabDef.columns)
-            .map((cols) => new Set(cols.map((c) => c.id)));
+            .map((cols) => new Set(cols.map((c) => c.colId!)));
         const updatedColumnsNamesJson = updatedColumnsNames.map((cols) => JSON.stringify([...cols]));
         const updatedNames = updatedDefinitions.map((tabDef) => tabDef.name);
         const updatedNamesIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.name, tabDef.index]));

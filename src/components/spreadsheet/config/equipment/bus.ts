@@ -9,54 +9,48 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { textAgGridColumnDefinition, numberAgGridColumnDefinition } from '../common-column-definitions';
+import { numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+
+const tab = 'Buses';
 
 export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
     index: 14,
-    name: 'Buses',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.BUS),
     columns: [
         {
-            id: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
-            id: 'Magnitude',
             field: 'v',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('magnitude', 'Magnitude', tab, 1),
         },
         {
-            id: 'Angle',
             field: 'angle',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('angle', 'Angle', tab, 1),
         },
         {
-            id: 'ConnectedComponent',
             field: 'connectedComponentNum',
-            ...numberAgGridColumnDefinition(),
+            ...numberColumnDefinition('connectedComponentNum', 'CC Num', tab, 0),
         },
         {
-            id: 'SynchronousComponent',
             field: 'synchronousComponentNum',
-            ...numberAgGridColumnDefinition(),
+            ...numberColumnDefinition('synchronousComponentNum', 'SC Num', tab, 0),
         },
         {
-            id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
         },
         {
-            id: 'Country',
             field: 'country',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country', 'Country', tab),
         },
         {
-            id: 'NominalV',
             field: 'nominalVoltage',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('nominalVoltage', 'Nominal V', tab, 0),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
 };

@@ -33,7 +33,7 @@ const changeValueFromArrayWithFieldValue = (
 
 export const useCustomAggridFilter = (
     api: GridApi,
-    field: string,
+    colId: string,
     { type, tab, dataType, comparators = [], debounceMs = 1000, updateFilterCallback }: FilterParams
 ) => {
     const [selectedFilterComparator, setSelectedFilterComparator] = useState<string>('');
@@ -43,9 +43,9 @@ export const useCustomAggridFilter = (
     const { filters, dispatchFilters } = useFilterSelector(type, tab);
 
     const updateFilter = useCallback(
-        (field: string, data: FilterData): void => {
+        (colId: string, data: FilterData): void => {
             const newFilter = {
-                column: field,
+                column: colId,
                 dataType: data.dataType,
                 tolerance: data.dataType === FILTER_DATA_TYPES.NUMBER ? computeTolerance(data.value) : undefined,
                 type: data.type,
@@ -54,12 +54,10 @@ export const useCustomAggridFilter = (
 
             let updatedFilters: FilterConfig[];
             if (!data.value) {
-                updatedFilters = removeElementFromArrayWithFieldValue(filters, field);
+                updatedFilters = removeElementFromArrayWithFieldValue(filters, colId);
             } else {
-                updatedFilters = changeValueFromArrayWithFieldValue(filters, field, newFilter);
+                updatedFilters = changeValueFromArrayWithFieldValue(filters, colId, newFilter);
             }
-
-            console.log(`hahahaha ${JSON.stringify(updatedFilters)}`);
 
             updateFilterCallback && updateFilterCallback(api, updatedFilters);
             dispatchFilters(updatedFilters);
@@ -67,7 +65,7 @@ export const useCustomAggridFilter = (
         [updateFilterCallback, api, dispatchFilters, filters]
     );
 
-    const debouncedUpdateFilter = debounce((data) => updateFilter(field, data), debounceMs);
+    const debouncedUpdateFilter = debounce((data) => updateFilter(colId, data), debounceMs);
 
     const handleChangeFilterValue = (filterData: FilterData) => {
         setSelectedFilterData(filterData.value);
@@ -100,7 +98,7 @@ export const useCustomAggridFilter = (
         if (!filters?.length) {
             setSelectedFilterData(undefined);
         } else {
-            const filterObject = filters?.find((filter) => filter.column === field);
+            const filterObject = filters?.find((filter) => filter.column === colId);
             if (filterObject) {
                 setSelectedFilterData(filterObject.value);
                 setSelectedFilterComparator(filterObject.type ?? selectedFilterComparator);
@@ -108,7 +106,7 @@ export const useCustomAggridFilter = (
                 setSelectedFilterData(undefined);
             }
         }
-    }, [filters, field, selectedFilterComparator]);
+    }, [filters, colId, selectedFilterComparator]);
 
     return {
         selectedFilterData,

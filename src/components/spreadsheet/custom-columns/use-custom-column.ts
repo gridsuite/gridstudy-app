@@ -10,9 +10,9 @@ import { all, bignumber, create } from 'mathjs';
 import { useSelector } from 'react-redux';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { DefaultCellRenderer } from '../utils/cell-renderers';
-import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
+import { ColDef } from 'ag-grid-community';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 
 export function useCustomColumn(tabIndex: number) {
@@ -80,9 +80,10 @@ export function useCustomColumn(tabIndex: number) {
     );
 
     const createCustomColumn = useCallback(() => {
-        return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula): CustomColDef => {
+        return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula): ColDef => {
             return {
-                id: colWithFormula.id,
+                colId: colWithFormula.id,
+                headerName: colWithFormula.name,
                 headerTooltip: colWithFormula.name,
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
@@ -92,11 +93,11 @@ export function useCustomColumn(tabIndex: number) {
                     },
                     field: colWithFormula.name,
                     tabIndex,
-                    customMenuParams: {
+                    menu: {
                         Menu: CustomColumnMenu,
                         menuParams: {
-                            field: colWithFormula.id,
                             tabIndex,
+                            customColumnName: colWithFormula.name,
                         },
                     },
                 },

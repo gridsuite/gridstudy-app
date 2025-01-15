@@ -10,118 +10,97 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import {
-    booleanAgGridColumnDefinition,
-    textAgGridColumnDefinition,
-    numberAgGridColumnDefinition,
-} from '../common-column-definitions';
+import { textColumnDefinition, numberColumnDefinition, booleanColumnDefinition } from '../common-column-definitions';
+
+const tab = 'Lines';
 
 export const LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 2,
-    name: 'Lines',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.LINE),
     columns: [
         {
-            id: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
             id: 'Name',
             field: 'name',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
-            id: 'VoltageLevelIdSide1',
             field: 'voltageLevelId1',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId1', 'Voltage Level ID 1', tab),
         },
         {
-            id: 'VoltageLevelIdSide2',
             field: 'voltageLevelId2',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId2', 'Voltage Level ID 2', tab),
         },
         {
-            id: 'Country1',
             field: 'country1',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country1', 'Country 1', tab),
         },
         {
-            id: 'Country2',
             field: 'country2',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country2', 'Country 2', tab),
         },
         {
-            id: 'nominalVoltage1KV',
             field: 'nominalVoltage1',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('nominalVoltage1', 'Nominal V side 1', tab, 0),
         },
         {
-            id: 'nominalVoltage2KV',
             field: 'nominalVoltage2',
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition('nominalVoltage2', 'Nominal V side 2', tab, 0),
         },
         {
-            id: 'ActivePowerSide1',
             field: 'p1',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ActivePowerSide1', 'Active Power side 1', tab, 1),
         },
         {
-            id: 'ActivePowerSide2',
             field: 'p2',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ActivePowerSide2', 'Active Power side 2', tab, 1),
         },
         {
-            id: 'ReactivePowerSide1',
             field: 'q1',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ReactivePowerSide1', 'Reactive Power side 1', tab, 1),
         },
         {
-            id: 'ReactivePowerSide2',
             field: 'q2',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ReactivePowerSide2', 'Reactive Power side 2', tab, 1),
         },
         {
-            id: 'r',
             field: 'r',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('r', 'R', tab, 1),
         },
         {
-            id: 'x',
             field: 'x',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('x', 'X', tab, 1),
         },
         {
-            id: 'g1',
             valueGetter: (params) => convertInputValue(FieldType.G1, params.data.g1),
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('g1', 'G side 1', tab, 1),
         },
         {
-            id: 'g2',
             valueGetter: (params) => convertInputValue(FieldType.G2, params.data.g2),
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('g2', 'G side 2', tab, 1),
         },
         {
-            id: 'b1',
             valueGetter: (params) => convertInputValue(FieldType.B1, params.data.b1),
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('b1', 'B side 1', tab, 1),
         },
         {
-            id: 'b2',
             valueGetter: (params) => convertInputValue(FieldType.B2, params.data.b2),
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('b2', 'B side 2', tab, 1),
         },
         {
-            id: 'connected1',
             field: 'terminal1Connected',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('terminal1Connected', 'Connected side 1', tab),
         },
         {
-            id: 'connected2',
             field: 'terminal2Connected',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('terminal2Connected', 'Connected side 2', tab),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
 };

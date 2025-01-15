@@ -16,14 +16,14 @@ export type SortParams = {
     isChildren?: boolean;
 };
 
-export const useCustomAggridSort = (field: string, sortParams?: SortParams) => {
+export const useCustomAggridSort = (colId: string, sortParams?: SortParams) => {
     const sortConfig = useSelector((state: AppState) =>
         sortParams ? state.tableSort[sortParams.table][sortParams.tab] : undefined
     );
 
     const dispatch = useDispatch();
 
-    const columnSort = sortConfig?.find((value) => value.colId === field);
+    const columnSort = sortConfig?.find((value) => value.colId === colId);
     const isColumnSorted = !!columnSort;
 
     const handleSortChange = useCallback(() => {
@@ -42,10 +42,10 @@ export const useCustomAggridSort = (field: string, sortParams?: SortParams) => {
 
         const updatedSortConfig = sortConfig
             .filter((sort) => (sort.children ?? false) !== (sortParams.isChildren ?? false))
-            .concat({ colId: field, sort: newSort, children: sortParams.isChildren });
+            .concat({ colId, sort: newSort, children: sortParams.isChildren });
 
         dispatch(setTableSort(sortParams.table, sortParams.tab, updatedSortConfig));
-    }, [sortParams, sortConfig, isColumnSorted, columnSort?.sort, field, dispatch]);
+    }, [sortParams, sortConfig, isColumnSorted, columnSort?.sort, colId, dispatch]);
 
     return { columnSort, handleSortChange };
 };

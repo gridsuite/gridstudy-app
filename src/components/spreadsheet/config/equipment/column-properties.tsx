@@ -7,7 +7,7 @@
 
 import { PropertiesCellRenderer } from '../../utils/cell-renderers';
 import type { ValueGetterFunc } from 'ag-grid-community';
-import { textAgGridColumnDefinition } from '../common-column-definitions';
+import { textColumnDefinition } from '../common-column-definitions';
 
 const propertiesGetter: ValueGetterFunc = (params) => {
     const properties = params?.data?.properties;
@@ -21,10 +21,11 @@ const propertiesGetter: ValueGetterFunc = (params) => {
 };
 
 //TODO only used in tie-line config, is "valueSetter" forgotten?
-export const genericColumnOfPropertiesReadonly = {
-    id: 'Properties',
-    valueGetter: propertiesGetter,
-    ...textAgGridColumnDefinition,
-    cellRenderer: PropertiesCellRenderer,
-    minWidth: 300,
+export const genericColumnOfPropertiesReadonly = (tab: string) => {
+    return {
+        valueGetter: propertiesGetter,
+        ...textColumnDefinition('properties', 'Properties', tab),
+        cellRenderer: PropertiesCellRenderer,
+        minWidth: 300,
+    };
 };

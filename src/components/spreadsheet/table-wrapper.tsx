@@ -7,7 +7,7 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import { Alert, Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
@@ -90,7 +90,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 }) => {
     const gridRef = useRef<AgGridReact>(null);
     const timerRef = useRef<NodeJS.Timeout>();
-    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState<number>(0);
 
@@ -244,7 +243,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setReorderedTableDefinitionIndexes(
             allReorderedTemp
                 ? JSON.parse(allReorderedTemp)
-                : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.id)
+                : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.colId)
         );
     }, [allReorderedTableDefinitionIndexes, tabIndex, tablesDefinitionIndexes]);
 
@@ -301,7 +300,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     useEffect(() => {
         const lockedColumnsConfig = currentColumns()
-            .filter((column) => lockedColumnsNames.has(column.id))
+            .filter((column) => lockedColumnsNames.has(column.colId!))
             .map((column) => {
                 const s: ColumnState = {
                     colId: column.field ?? '',
@@ -318,7 +317,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
             // @ts-ignore FIXME how to properly retrieve column id here ?
-            const colId = event.column?.getUserProvidedColDef()?.id ?? '';
+            const colId = event.column?.getUserProvidedColDef()?.colId ?? '';
             if (event.finished && colId !== '' && event.toIndex !== undefined) {
                 let tmpIndexes = Object.assign([], reorderedTableDefinitionIndexes);
                 const colIdx = tmpIndexes.indexOf(colId);
@@ -343,7 +342,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         let tmpData = Object.assign([], columnData);
                         const [reorderedColDef] = tmpData.splice(
                             tmpData.findIndex((obj: any) => {
-                                return obj.id === colId;
+                                return obj.colId === colId;
                             }),
                             1
                         );
@@ -359,23 +358,22 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const generateTableColumns = useCallback(() => {
         let selectedTableColumns = currentColumns()
             .filter((c) => {
-                return selectedColumnsNames.has(c.id);
+                return selectedColumnsNames.has(c.colId!);
             })
             .map((column) => {
                 return {
                     ...column,
-                    headerName: intl.formatMessage({ id: column.id }),
                 };
             });
 
         function sortByIndex(a: any, b: any) {
-            return reorderedTableDefinitionIndexes.indexOf(a.id) - reorderedTableDefinitionIndexes.indexOf(b.id);
+            return reorderedTableDefinitionIndexes.indexOf(a.colId) - reorderedTableDefinitionIndexes.indexOf(b.colId);
         }
 
         selectedTableColumns.sort(sortByIndex);
 
         return selectedTableColumns;
-    }, [currentColumns, selectedColumnsNames, intl, reorderedTableDefinitionIndexes]);
+    }, [currentColumns, selectedColumnsNames, reorderedTableDefinitionIndexes]);
 
     useEffect(() => {
         setColumnData(generateTableColumns());

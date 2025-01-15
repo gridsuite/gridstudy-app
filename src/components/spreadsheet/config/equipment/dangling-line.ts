@@ -10,73 +10,62 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import {
-    booleanAgGridColumnDefinition,
-    textAgGridColumnDefinition,
-    numberAgGridColumnDefinition,
-} from '../common-column-definitions';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+
+const tab = 'DanglingLines';
 
 export const DANGLING_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 13,
-    name: 'DanglingLines',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.DANGLING_LINE),
     columns: [
         {
-            id: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
-            id: 'Name',
             field: 'name',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('name', 'Name', tab),
         },
         {
-            id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
         },
         {
             id: 'Country',
             field: 'country',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country', 'Country', tab),
         },
         {
             id: 'NominalV',
             field: NOMINAL_V,
-            ...numberAgGridColumnDefinition(0),
+            ...numberColumnDefinition(NOMINAL_V, 'Nominal V', tab, 0),
         },
         {
-            id: 'PairingKey',
             field: 'pairingKey',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('pairingKey', 'Pairing Key', tab),
         },
         {
-            id: 'activePower',
             field: 'p',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('activePower', 'Active Power', tab, 1),
         },
         {
-            id: 'ReactivePower',
             field: 'q',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('reactivePower', 'Reactive Power', tab, 1),
         },
         {
-            id: 'p0',
             field: 'p0',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('p0', 'p0', tab, 1),
         },
         {
-            id: 'q0',
             field: 'q0',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('q0', 'q0', tab, 1),
         },
         {
-            id: 'connected',
             field: 'terminalConnected',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('connected', 'Connected', tab),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
 };

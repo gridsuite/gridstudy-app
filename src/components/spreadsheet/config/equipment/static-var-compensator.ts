@@ -8,70 +8,57 @@
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
-import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import {
-    booleanAgGridColumnDefinition,
-    textAgGridColumnDefinition,
-    numberAgGridColumnDefinition,
-} from '../common-column-definitions';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+
+const tab = 'StaticVarCompensators';
 
 export const STATIC_VAR_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 8,
-    name: 'StaticVarCompensators',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR),
     columns: [
         {
-            id: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('id', 'ID', tab),
         },
         {
-            id: 'Name',
             field: 'name',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('name', 'Name', tab),
         },
         {
-            id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
         },
         {
-            id: 'Country',
             field: 'country',
-            ...textAgGridColumnDefinition,
+            ...textColumnDefinition('country', 'Country', tab),
         },
         {
-            id: 'NominalV',
-            field: NOMINAL_V,
-            ...numberAgGridColumnDefinition(0),
+            field: 'nominalV',
+            ...numberColumnDefinition('nominalV', 'Nominal V', tab, 0),
         },
         {
-            id: 'activePower',
             field: 'p',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('activePower', 'Active Power', tab, 1),
         },
         {
-            id: 'ReactivePower',
             field: 'q',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('ReactivePower', 'Reactive Power', tab, 1),
         },
         {
-            id: 'VoltageSetpointKV',
             field: 'voltageSetpoint',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('voltageSetpoint', 'Voltage Setpoint (kV)', tab, 1),
         },
         {
-            id: 'ReactivePowerSetpointMVAR',
             field: 'reactivePowerSetpoint',
-            ...numberAgGridColumnDefinition(1),
+            ...numberColumnDefinition('reactivePowerSetpoint', 'Reactive Power Setpoint', tab, 1),
         },
         {
-            id: 'connected',
             field: 'terminalConnected',
-            ...booleanAgGridColumnDefinition,
+            ...booleanColumnDefinition('terminalConnected', 'Connected', tab),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
 };

@@ -40,7 +40,7 @@ export const CustomAggridFilter = <F extends CustomAggridFilterParams>({
 
     const { selectedFilterData } = useCustomAggridFilter(
         filterComponentParams.api,
-        filterComponentParams.field,
+        filterComponentParams.colId,
         filterComponentParams.filterParams
     );
 
@@ -68,7 +68,7 @@ export const CustomAggridFilter = <F extends CustomAggridFilterParams>({
                 <CustomFilterIcon selectedFilterData={selectedFilterData} handleShowFilter={handleShowFilter} />
             )}
             <Popover
-                id={`${filterComponentParams.field}-filter-popover`}
+                id={`${filterComponentParams.colId}-filter-popover`}
                 open={!!filterAnchorElement}
                 anchorEl={filterAnchorElement}
                 onClose={onClose}
