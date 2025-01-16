@@ -425,6 +425,7 @@ export type NadNodeMovement = {
     equipmentId: string;
     x: number;
     y: number;
+    scalingFactor: number;
 };
 
 /**
@@ -1469,10 +1470,12 @@ export const reducer = createReducer(initialState, (builder) => {
                     equipmentId: action.equipmentId,
                     x: action.x,
                     y: action.y,
+                    scalingFactor: action.scalingFactor,
                 });
             } else {
                 correspondingMovement[0].x = action.x;
                 correspondingMovement[0].y = action.y;
+                correspondingMovement[0].scalingFactor = action.scalingFactor;
             }
         }
     );

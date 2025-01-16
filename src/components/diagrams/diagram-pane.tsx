@@ -251,6 +251,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
                             depth: depth,
                             substationIds: substationsIds,
                             nadMetadata: svg.metadata as DiagramMetadata,
+                            scalingFactor: svg.additionalMetadata?.scalingFactor,
                             ...svg,
                         };
                     });
@@ -1063,6 +1064,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                                         svg={diagramView.svg}
                                         svgType={diagramView.svgType}
                                         svgMetadata={diagramView.nadMetadata}
+                                        svgScalingFactor={diagramView.additionalMetadata?.scalingFactor}
                                         loadingState={diagramView.loadingState}
                                         diagramSizeSetter={setDiagramSize}
                                         visible={visible}

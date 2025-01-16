@@ -140,6 +140,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svgType: DiagramType;
     readonly svg?: string;
     readonly svgMetadata?: DiagramMetadata;
+    readonly svgScalingFactor?: number;
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
@@ -168,9 +169,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
-            dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y));
+            // It is possible to not have scalingFactors, so we only save the nodes movements if we have the needed value.
+            if (!!props.svgScalingFactor) {
+                dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y, props.svgScalingFactor));
+            }
         },
-        [dispatch, nadIdentifier]
+        [dispatch, nadIdentifier, props.svgScalingFactor]
     );
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
@@ -240,7 +244,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             );
             if (correspondingMovements.length > 0) {
                 correspondingMovements.forEach((movement) => {
-                    diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
+                    // It is possible to not have scalingFactors, so we only move the nodes if we have the needed value.
+                    if (!!movement.scalingFactor && !!props.svgScalingFactor) {
+                        let adjustedX = (movement.x / movement.scalingFactor) * props.svgScalingFactor;
+                        let adjustedY = (movement.y / movement.scalingFactor) * props.svgScalingFactor;
+                        diagramViewer.moveNodeToCoordinates(movement.equipmentId, adjustedX, adjustedY);
+                    }
                 });
             }
             diagramViewerRef.current = diagramViewer;
@@ -250,6 +259,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         props.svgType,
         props.svg,
         props.svgMetadata,
+        props.svgScalingFactor,
         currentNode,
         diagramSizeSetter,
         onMoveNodeCallback,
