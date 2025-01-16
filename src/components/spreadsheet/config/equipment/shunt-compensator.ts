@@ -19,67 +19,82 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
     columns: [
         {
+            colId: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textColumnDefinition('id', 'ID', tab),
+            ...textColumnDefinition('ID', tab),
         },
         {
+            colId: 'Name',
             field: 'name',
-            ...textColumnDefinition('name', 'Name', tab),
+            ...textColumnDefinition('Name', tab),
         },
         {
+            colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
+            ...textColumnDefinition('Voltage level ID', tab),
         },
         {
+            colId: 'Country',
             field: 'country',
-            ...textColumnDefinition('country', 'Country', tab),
+            ...textColumnDefinition('Country', tab),
         },
         {
+            colId: 'NominalV',
             field: 'nominalVoltage',
-            ...numberColumnDefinition('nominalVoltage', 'Nominal V', tab, 0),
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         {
+            colId: 'ReactivePower',
             field: 'q',
-            ...numberColumnDefinition('ReactivePower', 'q (MVar)', tab, 1),
+            ...numberColumnDefinition('q (MVar)', tab, 1),
         },
         {
+            colId: 'maximumSectionCount',
             field: 'maximumSectionCount',
-            ...numberColumnDefinition('maximumSectionCount', 'Maximum number of sections', tab),
+            ...numberColumnDefinition('Maximum number of sections', tab),
         },
         {
+            colId: 'sectionCount',
             field: 'sectionCount',
-            ...numberColumnDefinition('sectionCount', 'Current number of sections', tab),
+            ...numberColumnDefinition('Current number of sections', tab),
         },
         {
+            colId: 'Type',
             field: 'type',
-            ...textColumnDefinition('type', 'Type', tab),
+            ...textColumnDefinition('Type', tab),
         },
         {
+            colId: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
-            ...numberColumnDefinition('maxQAtNominalV', 'Qmax available at nominal voltage', tab, 1),
+            ...numberColumnDefinition('Qmax available at nominal voltage', tab, 1),
         },
         {
+            colId: 'SwitchedOnMaxQAtNominalV',
             valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...numberColumnDefinition('SwitchedOnMaxQAtNominalV', 'Switch-on Q at nominal voltage', tab, 1),
+            ...numberColumnDefinition('Switch-on Q at nominal voltage', tab, 1),
         },
         {
+            colId: 'maxSusceptance',
             field: 'maxSusceptance',
-            ...numberColumnDefinition('maxSusceptance', 'Maximal susceptance available', tab, 5),
+            ...numberColumnDefinition('Maximal susceptance available', tab, 5),
         },
         {
+            colId: 'SwitchedOnMaxSusceptance',
             valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...numberColumnDefinition('SwitchedOnMaxSusceptance', 'Switch-on susceptance', tab, 5),
+            ...numberColumnDefinition('Switch-on susceptance', tab, 5),
         },
         {
+            colId: 'voltageSetpoint',
             field: 'targetV',
-            ...numberColumnDefinition('targetV', 'Target V (kV)', tab, 1),
+            ...numberColumnDefinition('Target V (kV)', tab, 1),
         },
         {
+            colId: 'connected',
             field: 'terminalConnected',
-            ...booleanColumnDefinition('terminalConnected', 'Connected', tab),
+            ...booleanColumnDefinition('Connected', tab),
         },
         genericColumnOfPropertiesReadonly(tab),
     ],

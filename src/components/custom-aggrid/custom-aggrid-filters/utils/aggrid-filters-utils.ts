@@ -6,7 +6,7 @@
  */
 
 import { FILTER_DATA_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { ColDef, ColGroupDef, GridApi } from 'ag-grid-community';
+import { GridApi } from 'ag-grid-community';
 import { addToleranceToFilter } from './filter-tolerance-utils';
 import { FilterConfig } from '../../../../types/custom-aggrid-types';
 
@@ -78,10 +78,6 @@ const formatCustomFiltersForAgGrid = (filters: FilterConfig[]): FilterModel => {
     return agGridFilterModel;
 };
 
-function isColDef(colDef: ColDef | ColGroupDef): colDef is ColDef {
-    return 'colId' in colDef;
-}
-
 export const updateFilters = (api: GridApi | undefined, filters: FilterConfig[] | undefined) => {
     // Check if filters are provided and if the AG Grid API is accessible
     if (!filters || !api) {
@@ -89,15 +85,15 @@ export const updateFilters = (api: GridApi | undefined, filters: FilterConfig[] 
     }
 
     // Retrieve the current column definitions from AG Grid
-    const currentColumnDefs = api.getColumnDefs()?.filter(isColDef);
+    const currentColumnDefs = api.getColumns();
 
     // Check if all filters' columns exist in the current column definitions
     const allColumnsExist = filters.every((filter) =>
-        currentColumnDefs?.some((colDef) => {
+        currentColumnDefs?.some((col) => {
             return (
                 // Ensure the column definition has a 'field' property
                 // and it matches the filter's column field
-                colDef.colId === filter.column
+                col.getColId() === filter.column
             );
         })
     );

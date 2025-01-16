@@ -10,7 +10,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { textColumnDefinition, numberColumnDefinition } from '../common-column-definitions';
+import { numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
 const tab = 'VoltageLevels';
 
@@ -20,49 +20,58 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
     columns: [
         {
+            colId: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textColumnDefinition('id', 'ID', tab),
+            ...textColumnDefinition('ID', tab),
         },
         {
+            colId: 'Name',
             field: 'name',
-            ...textColumnDefinition('name', 'Name', tab),
+            ...textColumnDefinition('Name', tab),
         },
         {
+            colId: 'SubstationId',
             field: 'substationId',
-            ...textColumnDefinition('substationId', 'Substation ID', tab),
+            ...textColumnDefinition('Substation ID', tab),
         },
         {
+            colId: 'Country',
             field: 'country',
-            ...textColumnDefinition('country', 'Country', tab),
+            ...textColumnDefinition('Country', tab),
         },
         {
+            colId: 'NominalV',
             field: 'nominalV',
-            ...numberColumnDefinition('nominalV', 'Nominal V', tab, 0),
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         {
+            colId: 'lowVoltageLimit',
             field: 'lowVoltageLimit',
-            ...numberColumnDefinition('lowVoltageLimit', 'Low voltage limit (kV)', tab, 1),
+            ...numberColumnDefinition('Low voltage limit (kV)', tab, 1),
         },
         {
+            colId: 'highVoltageLimit',
             field: 'highVoltageLimit',
-            ...numberColumnDefinition('highVoltageLimit', 'High voltage limit (kV)', tab, 1),
+            ...numberColumnDefinition('High voltage limit (kV)', tab, 1),
         },
         {
+            colId: 'IpMin',
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMin
                 ),
-            ...numberColumnDefinition('IpMin', 'ISC min (kA)', tab, 1),
+            ...numberColumnDefinition('ISC min (kA)', tab, 1),
         },
         {
+            colId: 'IpMax',
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMax
                 ),
-            ...numberColumnDefinition('IpMax', 'ISC max (kA)', tab, 1),
+            ...numberColumnDefinition('ISC max (kA)', tab, 1),
         },
         genericColumnOfPropertiesReadonly(tab),
     ],

@@ -303,7 +303,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             .filter((column) => lockedColumnsNames.has(column.colId!))
             .map((column) => {
                 const s: ColumnState = {
-                    colId: column.field ?? '',
+                    colId: column.colId ?? '',
                     pinned: 'left',
                 };
                 return s;
@@ -356,15 +356,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const generateTableColumns = useCallback(() => {
-        let selectedTableColumns = currentColumns()
-            .filter((c) => {
-                return selectedColumnsNames.has(c.colId!);
-            })
-            .map((column) => {
-                return {
-                    ...column,
-                };
-            });
+        let selectedTableColumns = currentColumns().filter((c) => {
+            return selectedColumnsNames.has(c.colId!);
+        });
 
         function sortByIndex(a: any, b: any) {
             return reorderedTableDefinitionIndexes.indexOf(a.colId) - reorderedTableDefinitionIndexes.indexOf(b.colId);

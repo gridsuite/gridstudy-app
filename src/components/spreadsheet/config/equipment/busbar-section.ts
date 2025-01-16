@@ -18,13 +18,15 @@ export const BUSBAR_SECTION_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.BUSBAR_SECTION),
     columns: [
         {
+            colId: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textColumnDefinition('id', 'ID', tab),
+            ...textColumnDefinition('ID', tab),
         },
         {
+            colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
+            ...textColumnDefinition('Voltage level ID', tab),
         },
     ],
 };
