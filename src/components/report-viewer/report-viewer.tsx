@@ -91,26 +91,22 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
             }}
         >
             <Grid item sm={3} sx={{ borderRight: (theme) => `1px solid ${theme.palette.divider}` }}>
-                {reportTree && (
-                    <VirtualizedTreeview
-                        expandedTreeReports={expandedTreeReports}
-                        setExpandedTreeReports={setExpandedTreeReports}
-                        selectedReportId={selectedReport.id}
-                        reportTree={reportTree}
-                        onSelectedItem={handleSelectedItem}
-                        highlightedReportId={highlightedReportId}
-                    />
-                )}
+                <VirtualizedTreeview
+                    expandedTreeReports={expandedTreeReports}
+                    setExpandedTreeReports={setExpandedTreeReports}
+                    selectedReportId={selectedReport.id}
+                    reportTree={reportTree}
+                    onSelectedItem={handleSelectedItem}
+                    highlightedReportId={highlightedReportId}
+                />
             </Grid>
             <Grid item xs={12} sm={9}>
-                {selectedReport.id && selectedReport.type && (
-                    <LogTable
-                        selectedReport={selectedReport}
-                        reportType={reportType}
-                        severities={severities}
-                        onRowClick={onLogRowClick}
-                    />
-                )}
+                <LogTable
+                    selectedReport={selectedReport}
+                    reportType={reportType}
+                    severities={severities}
+                    onRowClick={onLogRowClick}
+                />
             </Grid>
         </Grid>
     );
