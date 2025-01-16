@@ -29,11 +29,11 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'type',
-            ...textColumnDefinition('type', 'Load Type', tab),
+            ...textColumnDefinition('type', 'Type', tab),
         },
         {
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
+            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
         },
         {
             field: 'country',
@@ -41,23 +41,23 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'nominalVoltage',
-            ...numberColumnDefinition('country', 'Country', tab, 0),
+            ...numberColumnDefinition('nominalVoltage', 'Nominal V', tab, 0),
         },
         {
             field: 'p',
-            ...numberColumnDefinition('activePower', 'Active Power', tab, 1),
+            ...numberColumnDefinition('activePower', 'p (MW)', tab, 1),
         },
         {
             field: 'q',
-            ...numberColumnDefinition('reactivePower', 'Reactive Power', tab, 1),
+            ...numberColumnDefinition('reactivePower', 'q (MVar)', tab, 1),
         },
         {
             field: 'p0',
-            ...numberColumnDefinition('p0', 'P0', tab, 1),
+            ...numberColumnDefinition('p0', 'Constant P (MW)', tab, 1),
         },
         {
             field: 'q0',
-            ...numberColumnDefinition('q0', 'Q0', tab, 1),
+            ...numberColumnDefinition('q0', 'Constant Q (MVar)', tab, 1),
         },
         {
             field: 'terminalConnected',

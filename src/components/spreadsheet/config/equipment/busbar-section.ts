@@ -24,7 +24,7 @@ export const BUSBAR_SECTION_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
+            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
         },
     ],
 };

@@ -30,7 +30,7 @@ export const LCC_CONVERTER_STATION_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
+            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
         },
         {
             field: 'country',
@@ -47,11 +47,11 @@ export const LCC_CONVERTER_STATION_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'p',
-            ...numberColumnDefinition('activePower', 'Active Power', tab, 1),
+            ...numberColumnDefinition('activePower', 'p (MW)', tab, 1),
         },
         {
             field: 'q',
-            ...numberColumnDefinition('reactivePower', 'Reactive Power', tab, 1),
+            ...numberColumnDefinition('reactivePower', 'q (MVar)', tab, 1),
         },
         {
             field: 'powerFactor',

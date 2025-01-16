@@ -19,7 +19,6 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.BATTERY),
     columns: [
         {
-            id: 'ID',
             field: 'id',
             initialSort: 'asc',
             ...textColumnDefinition('id', 'ID', tab),
@@ -30,9 +29,8 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             ...textColumnDefinition('name', 'Name', tab),
         },
         {
-            id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'VoltageLevelId', tab),
+            ...textColumnDefinition('voltageLevelId', '', tab),
         },
         {
             id: 'Country',
@@ -40,55 +38,44 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             ...textColumnDefinition('country', 'Country', tab),
         },
         {
-            id: 'NominalV',
             field: 'nominalVoltage',
-            ...numberColumnDefinition('nominalVoltage', 'NominalV', tab, 0),
+            ...numberColumnDefinition('nominalVoltage', 'Nominal V', tab, 0),
         },
         {
-            id: 'activePower',
             field: 'p',
-            ...numberColumnDefinition('p', 'activePower', tab, 1),
-            fractionDigits: 1,
+            ...numberColumnDefinition('p', 'p (MW)', tab, 1),
         },
         {
-            id: 'ReactivePower',
             field: 'q',
-            ...numberColumnDefinition('q', 'ReactivePower', tab, 1),
+            ...numberColumnDefinition('q', 'q (MVar)', tab, 1),
         },
         {
-            id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            ...booleanColumnDefinition('activePowerControl.participate', 'ActivePowerControl', tab),
+            ...booleanColumnDefinition('activePowerControlParticipate', 'Active power control', tab),
         },
         {
-            id: 'DroopColumnName',
             field: 'activePowerControl.droop',
-            ...numberColumnDefinition('activePowerControl.droop', 'DroopColumnName', tab, 1),
+            ...numberColumnDefinition('activePowerControlDroop', 'Droop (%)', tab, 1),
         },
         {
-            id: 'minP',
             field: 'minP',
-            ...numberColumnDefinition('minP', 'minP', tab, 1),
+            ...numberColumnDefinition('minP', 'Min P (MW)', tab, 1),
         },
         {
-            id: 'maxP',
             field: 'maxP',
-            ...numberColumnDefinition('maxP', 'maxP', tab, 1),
+            ...numberColumnDefinition('maxP', 'Max P (MW)', tab, 1),
         },
         {
-            id: 'activePowerSetpoint',
             field: 'targetP',
-            ...numberColumnDefinition('targetP', 'activePowerSetpoint', tab, 1),
+            ...numberColumnDefinition('activePowerSetpoint', 'Target P (MW)', tab, 1),
         },
         {
-            id: 'reactivePowerSetpoint',
             field: 'targetQ',
-            ...numberColumnDefinition('targetQ', 'reactivePowerSetpoint', tab, 1),
+            ...numberColumnDefinition('reactivePowerSetpoint', 'Target Q (MVar)', tab, 1),
         },
         {
-            id: 'connected',
             field: 'terminalConnected',
-            ...booleanColumnDefinition('terminalConnected', 'connected', tab),
+            ...booleanColumnDefinition('terminalConnected', 'Connected', tab),
         },
         genericColumnOfPropertiesReadonly(tab),
     ],

@@ -29,26 +29,26 @@ export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'voltageLevelId1',
-            ...textColumnDefinition('voltageLevelId1', 'Voltage Level ID 1', tab),
+            ...textColumnDefinition('voltageLevelId1', 'Voltage level ID 1', tab),
         },
         {
             field: 'voltageLevelId2',
-            ...textColumnDefinition('voltageLevelId2', 'Voltage Level ID 2', tab),
+            ...textColumnDefinition('voltageLevelId2', 'Voltage level ID 2', tab),
         },
         {
             id: 'ConvertersMode',
             field: 'convertersMode',
-            ...textColumnDefinition('convertersMode', 'Converters Mode', tab),
+            ...textColumnDefinition('convertersMode', 'Converters mode', tab),
         },
         {
             id: 'ConverterStationId1',
             field: 'converterStationId1',
-            ...textColumnDefinition('converterStationId1', 'Converter Station ID 1', tab),
+            ...textColumnDefinition('converterStationId1', 'Converter station ID 1', tab),
         },
         {
             id: 'ConverterStationId2',
             field: 'converterStationId2',
-            ...textColumnDefinition('converterStationId2', 'Converter Station ID 2', tab),
+            ...textColumnDefinition('converterStationId2', 'Converter station ID 2', tab),
         },
         {
             id: 'Country1',
@@ -63,27 +63,27 @@ export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'R',
             field: 'r',
-            ...numberColumnDefinition('r', 'R', tab, 1),
+            ...numberColumnDefinition('r', 'Resistance', tab, 1),
         },
         {
             field: 'activePowerSetpoint',
-            ...numberColumnDefinition('activePowerSetpoint', 'Active Power Setpoint', tab, 1),
+            ...numberColumnDefinition('activePowerSetpoint', 'Active power setpoint (MW)', tab, 1),
         },
         {
             field: 'maxP',
-            ...numberColumnDefinition('maxP', 'Max P', tab, 1),
+            ...numberColumnDefinition('maxP', 'Max P (MW)', tab, 1),
         },
         {
             field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
-            ...numberColumnDefinition('oprLimit1to2', 'Operational Limit (1 to 2)', tab, 1),
+            ...numberColumnDefinition('oprLimit1to2', 'Operational limit (side_1 to side_2) (MW)', tab, 1),
         },
         {
             field: 'hvdcOperatorActivePowerRange.oprFromCS2toCS1',
-            ...numberColumnDefinition('oprLimit2to1', 'Operational Limit (1 to 2)', tab, 1),
+            ...numberColumnDefinition('oprLimit2to1', 'Operational limit (side_2 to side_1) (MW)', tab, 1),
         },
         {
             field: 'hvdcAngleDroopActivePowerControl.isEnabled',
-            ...booleanColumnDefinition('acEmulationEnabled', 'AC Emulation', tab),
+            ...booleanColumnDefinition('acEmulationEnabled', 'AC emulation', tab),
         },
         {
             field: 'hvdcAngleDroopActivePowerControl.droop',
@@ -91,7 +91,7 @@ export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'hvdcAngleDroopActivePowerControl.p0',
-            ...numberColumnDefinition('acEmulationp0', 'P0', tab, 1),
+            ...numberColumnDefinition('acEmulationp0', 'P0 (side_1 to side_2) (MW)', tab, 1),
         },
         genericColumnOfPropertiesReadonly(tab),
     ],

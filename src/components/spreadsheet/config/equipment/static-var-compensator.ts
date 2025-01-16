@@ -29,7 +29,7 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
+            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
         },
         {
             field: 'country',
@@ -41,19 +41,19 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'p',
-            ...numberColumnDefinition('activePower', 'Active Power', tab, 1),
+            ...numberColumnDefinition('activePower', 'p (MW)', tab, 1),
         },
         {
             field: 'q',
-            ...numberColumnDefinition('ReactivePower', 'Reactive Power', tab, 1),
+            ...numberColumnDefinition('ReactivePower', 'q (MVar)', tab, 1),
         },
         {
             field: 'voltageSetpoint',
-            ...numberColumnDefinition('voltageSetpoint', 'Voltage Setpoint (kV)', tab, 1),
+            ...numberColumnDefinition('voltageSetpoint', 'Voltage set point (kV)', tab, 1),
         },
         {
             field: 'reactivePowerSetpoint',
-            ...numberColumnDefinition('reactivePowerSetpoint', 'Reactive Power Setpoint', tab, 1),
+            ...numberColumnDefinition('reactivePowerSetpoint', 'Reactive power set point (MVar)', tab, 1),
         },
         {
             field: 'terminalConnected',

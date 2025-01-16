@@ -25,17 +25,16 @@ export const LINE_TAB_DEF: SpreadsheetTabDefinition = {
             ...textColumnDefinition('id', 'ID', tab),
         },
         {
-            id: 'Name',
             field: 'name',
-            ...textColumnDefinition('id', 'ID', tab),
+            ...textColumnDefinition('id', 'Name', tab),
         },
         {
             field: 'voltageLevelId1',
-            ...textColumnDefinition('voltageLevelId1', 'Voltage Level ID 1', tab),
+            ...textColumnDefinition('voltageLevelId1', 'Voltage level ID 1', tab),
         },
         {
             field: 'voltageLevelId2',
-            ...textColumnDefinition('voltageLevelId2', 'Voltage Level ID 2', tab),
+            ...textColumnDefinition('voltageLevelId2', 'Voltage level ID 2', tab),
         },
         {
             field: 'country1',
@@ -47,59 +46,59 @@ export const LINE_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'nominalVoltage1',
-            ...numberColumnDefinition('nominalVoltage1', 'Nominal V side 1', tab, 0),
+            ...numberColumnDefinition('nominalVoltage1', 'Nominal voltage 1 (kV)', tab, 0),
         },
         {
             field: 'nominalVoltage2',
-            ...numberColumnDefinition('nominalVoltage2', 'Nominal V side 2', tab, 0),
+            ...numberColumnDefinition('nominalVoltage2', 'Nominal voltage 2 (kV)', tab, 0),
         },
         {
             field: 'p1',
-            ...numberColumnDefinition('ActivePowerSide1', 'Active Power side 1', tab, 1),
+            ...numberColumnDefinition('ActivePowerSide1', 'p1 (MW)', tab, 1),
         },
         {
             field: 'p2',
-            ...numberColumnDefinition('ActivePowerSide2', 'Active Power side 2', tab, 1),
+            ...numberColumnDefinition('ActivePowerSide2', 'p2 (MW)', tab, 1),
         },
         {
             field: 'q1',
-            ...numberColumnDefinition('ReactivePowerSide1', 'Reactive Power side 1', tab, 1),
+            ...numberColumnDefinition('ReactivePowerSide1', 'q1 (MVar)', tab, 1),
         },
         {
             field: 'q2',
-            ...numberColumnDefinition('ReactivePowerSide2', 'Reactive Power side 2', tab, 1),
+            ...numberColumnDefinition('ReactivePowerSide2', 'q2 (MVar)', tab, 1),
         },
         {
             field: 'r',
-            ...numberColumnDefinition('r', 'R', tab, 1),
+            ...numberColumnDefinition('r', 'Series resistance (Ω)', tab, 1),
         },
         {
             field: 'x',
-            ...numberColumnDefinition('x', 'X', tab, 1),
+            ...numberColumnDefinition('x', 'Series reactance (Ω)', tab, 1),
         },
         {
             valueGetter: (params) => convertInputValue(FieldType.G1, params.data.g1),
-            ...numberColumnDefinition('g1', 'G side 1', tab, 1),
+            ...numberColumnDefinition('g1', 'Shunt conductance 1 (μS)', tab, 1),
         },
         {
             valueGetter: (params) => convertInputValue(FieldType.G2, params.data.g2),
-            ...numberColumnDefinition('g2', 'G side 2', tab, 1),
+            ...numberColumnDefinition('g2', 'Shunt conductance 2 (μS)', tab, 1),
         },
         {
             valueGetter: (params) => convertInputValue(FieldType.B1, params.data.b1),
-            ...numberColumnDefinition('b1', 'B side 1', tab, 1),
+            ...numberColumnDefinition('b1', 'Shunt susceptance 1 (μS)', tab, 1),
         },
         {
             valueGetter: (params) => convertInputValue(FieldType.B2, params.data.b2),
-            ...numberColumnDefinition('b2', 'B side 2', tab, 1),
+            ...numberColumnDefinition('b2', 'Shunt susceptance 2 (μS)', tab, 1),
         },
         {
             field: 'terminal1Connected',
-            ...booleanColumnDefinition('terminal1Connected', 'Connected side 1', tab),
+            ...booleanColumnDefinition('terminal1Connected', 'Connected 1', tab),
         },
         {
             field: 'terminal2Connected',
-            ...booleanColumnDefinition('terminal2Connected', 'Connected side 2', tab),
+            ...booleanColumnDefinition('terminal2Connected', 'Connected 2', tab),
         },
         genericColumnOfPropertiesReadonly(tab),
     ],

@@ -29,7 +29,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
+            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
         },
         {
             field: 'country',
@@ -41,15 +41,15 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'q',
-            ...numberColumnDefinition('ReactivePower', 'Reactive Power', tab, 1),
+            ...numberColumnDefinition('ReactivePower', 'q (MVar)', tab, 1),
         },
         {
             field: 'maximumSectionCount',
-            ...numberColumnDefinition('maximumSectionCount', 'Maximum Section Count', tab),
+            ...numberColumnDefinition('maximumSectionCount', 'Maximum number of sections', tab),
         },
         {
             field: 'sectionCount',
-            ...numberColumnDefinition('sectionCount', 'Section Count', tab),
+            ...numberColumnDefinition('sectionCount', 'Current number of sections', tab),
         },
         {
             field: 'type',
@@ -57,7 +57,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'maxQAtNominalV',
-            ...numberColumnDefinition('maxQAtNominalV', 'Max Q at Nominal V', tab, 1),
+            ...numberColumnDefinition('maxQAtNominalV', 'Qmax available at nominal voltage', tab, 1),
         },
         {
             valueGetter: (params) =>
