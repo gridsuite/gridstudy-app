@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { getStudyUrl } from './study';
 import { backendFetch, backendFetchJson } from './utils';
 import { UUID } from 'crypto';
 
@@ -59,5 +60,32 @@ export function deleteRootNetworks(studyUuid: UUID, rootNetworkUuids: UUID[]) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(rootNetworkUuids),
+    });
+}
+// export function rootNetworkNameExists(studyUuid: UUID, name: string) {
+//     const existsElementUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/root-networks/${encodeURIComponent(name)}`;
+
+//     console.debug(existsElementUrl);
+//     return backendFetch(existsElementUrl, { method: 'head' }).then((response) => {
+//         return response.status !== 204; // HTTP 204 : No-content
+//     });
+// }
+
+export function rootNetworkNameExists(studyUuid: UUID, name: string): Promise<boolean> {
+    const existsElementUrl =
+        getStudyUrl(studyUuid) +
+        '/root-networks?' +
+        new URLSearchParams({
+            name: name,
+        });
+    return backendFetch(existsElementUrl, { method: 'head' });
+}
+
+export function rootNetworkNameExists1(studyUuid: UUID, rootNetworkName: string) {
+    const existsElementUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/elements/${rootNetworkName}`;
+
+    console.debug(existsElementUrl);
+    return backendFetch(existsElementUrl, { method: 'head' }).then((response) => {
+        return response.status !== 204; // HTTP 204 : No-content
     });
 }

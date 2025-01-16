@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, ElementType, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
 
 import {
     FileUpload,
@@ -331,7 +331,6 @@ const RootNetworkNodeEditor = () => {
                 open={rootNetworkCreationDialogOpen}
                 onClose={() => setRootNetworkCreationDialogOpen(false)}
                 onSave={doCreateRootNetwork}
-                type={ElementType.ROOT_NETWORK}
                 titleId={'CreateRootNetwork'}
                 dialogProps={undefined}
             />

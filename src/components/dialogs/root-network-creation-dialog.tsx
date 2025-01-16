@@ -5,18 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    CustomFormProvider,
-    ElementType,
-    fetchDirectoryElementPath,
-    TreeViewFinderNodeProps,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
-import { useCallback, useEffect, useState } from 'react';
-import { Grid, Button } from '@mui/material';
-import { UniqueNameInput } from './commons/unique-name-input';
+import { FormattedMessage } from 'react-intl';
+import { CustomFormProvider, isObjectEmpty, TreeViewFinderNodeProps, useSnackMessage } from '@gridsuite/commons-ui';
+import { useCallback, useState } from 'react';
+import { Grid, Button, Typography, Box } from '@mui/material';
 import { CASE_NAME, CASE_ID, NAME } from '../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -25,6 +17,8 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import ImportCaseDialog from './import-case-dialog';
 import ModificationDialog from './commons/modificationDialog';
+import { rootNetworkNameExists } from 'services/root-network';
+import { UniqueCheckNameInput } from './commons/unique-check--name-input';
 
 export interface FormData {
     [NAME]: string;
@@ -36,10 +30,8 @@ interface RootNetworkCreationDialogProps {
     open: boolean;
     onSave: (data: FormData) => void;
     onClose: () => void;
-    type: ElementType;
     titleId: string;
     dialogProps: any;
-    prefixIdForGeneratedName?: string;
 }
 
 const formSchema = yup
@@ -61,16 +53,12 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
     open,
     onSave,
     onClose,
-    type,
     titleId,
     dialogProps = undefined,
-    prefixIdForGeneratedName,
 }) => {
-    const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
 
-    const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
     const [selectedCase, setSelectedCase] = useState<TreeViewFinderNodeProps | null>(null);
     const [caseSelectorOpen, setCaseSelectorOpen] = useState(false);
 
@@ -79,63 +67,17 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
-    const disableSave =
-        // Form validation must pass
-        !selectedCase || // A case must be selected
-        !formMethods.getValues(NAME); // NAME must not be empty
+    const {
+        reset,
+        setValue,
+        formState: { errors },
+    } = formMethods;
 
     // Clear form and reset selected case
     const clear = useCallback(() => {
         reset(emptyFormData);
         setSelectedCase(null); // Reset the selected case on clear
     }, [reset]);
-
-    // Fetch default directory based on study UUID
-    const fetchDefaultDirectoryForStudy = useCallback(() => {
-        if (!studyUuid) {
-            return;
-        }
-        fetchDirectoryElementPath(studyUuid).then((res) => {
-            if (!res || res.length < 2) {
-                snackError({
-                    messageTxt: 'unknown study directory',
-                    headerId: 'studyDirectoryFetchingError',
-                });
-                return;
-            }
-            const parentFolderIndex = res.length - 2;
-            const { elementUuid, elementName } = res[parentFolderIndex];
-            setDestinationFolder({
-                id: elementUuid,
-                name: elementName,
-            });
-        });
-    }, [studyUuid, snackError]);
-
-    // Auto-generate a name with prefix and current date
-    useEffect(() => {
-        if (prefixIdForGeneratedName) {
-            const getCurrentDateTime = () => new Date().toISOString();
-            const formattedMessage = intl.formatMessage({
-                id: prefixIdForGeneratedName,
-            });
-            const dateTime = getCurrentDateTime();
-            reset(
-                {
-                    ...emptyFormData,
-                    [NAME]: `${formattedMessage}-${dateTime}`,
-                },
-                { keepDefaultValues: true }
-            );
-        }
-    }, [prefixIdForGeneratedName, intl, reset]);
-
-    useEffect(() => {
-        if (open && studyUuid) {
-            fetchDefaultDirectoryForStudy();
-        }
-    }, [fetchDefaultDirectoryForStudy, studyUuid, open]);
 
     // Open case selector
     const handleCaseSelection = () => {
@@ -145,9 +87,16 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
     // Set selected case when a case is selected
     const onSelectCase = (selectedCase: TreeViewFinderNodeProps) => {
         setSelectedCase(selectedCase);
-        setValue(NAME, selectedCase.name); // Set the name from the selected case
-        setValue(CASE_NAME, selectedCase.name);
-        setValue(CASE_ID, selectedCase.id as string);
+
+        setValue(NAME, selectedCase.name, {
+            shouldDirty: true,
+        }); // Set the name from the selected case
+        setValue(CASE_NAME, selectedCase.name, {
+            shouldDirty: true,
+        });
+        setValue(CASE_ID, selectedCase.id, {
+            shouldDirty: true,
+        });
         setCaseSelectorOpen(false);
     };
 
@@ -155,12 +104,8 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
         (values: FormData) => {
             if (selectedCase) {
                 // Save data, including CASE_NAME and CASE_ID
-                const creationData1: FormData = {
-                    ...values,
-                    [CASE_NAME]: selectedCase.name,
-                    [CASE_ID]: selectedCase.id as UUID,
-                };
-                onSave(creationData1);
+
+                onSave(values);
             } else {
                 snackError({
                     messageTxt: 'Please select a case before saving.',
@@ -179,8 +124,12 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
                     <FormattedMessage id={'selectCase'} />
                 </Button>
             </Grid>
+            <Typography m={1} component="span">
+                <Box fontWeight={'fontWeightBold'}>{selectedCase ? selectedCase.name : ''}</Box>
+            </Typography>
         </Grid>
     );
+    const isFormValid = isObjectEmpty(errors) && selectedCase;
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -194,16 +143,16 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
                 aria-labelledby="dialog-root-network-creation"
                 {...dialogProps}
                 titleId={titleId}
-                disabledSave={disableSave}
+                disabledSave={!isFormValid}
             >
                 <Grid container spacing={2} marginTop={'auto'} direction="column">
                     <Grid item>
-                        <UniqueNameInput
+                        <UniqueCheckNameInput
                             name={NAME}
                             label={'Name'}
-                            elementType={type}
-                            activeDirectory={destinationFolder?.id as UUID}
                             autoFocus
+                            studyUuid={studyUuid}
+                            elementExists={rootNetworkNameExists}
                         />
                     </Grid>
                     {caseSelection}

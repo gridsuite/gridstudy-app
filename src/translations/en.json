@@ -1462,7 +1462,8 @@
     "deletingRootNetwork": "Deleting root network ...",
     "creatingRootNetwork": "Creating root network ...",
     "rootNetworkCreated": "Root Network has been created successfully",
-    "errDeleteRootNetworkMsg": "Root Networks deletion error"
+    "errDeleteRootNetworkMsg": "Root Networks deletion error",
+    "rootNetworknameValidityCheckErrorMsg": "Error while checking name validity"
 
  
 }
