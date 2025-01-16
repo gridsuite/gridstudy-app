@@ -10,7 +10,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { computeHighTapPosition } from '../../../utils/utils';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { booleanColumnDefinition, textColumnDefinition, numberColumnDefinition } from '../common-column-definitions';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 import { unitToMicroUnit } from '@gridsuite/commons-ui';
 
 const tab = 'TwoWindingsTransformers';
@@ -20,163 +20,164 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
     name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
     columns: [
+        { colId: 'ID', field: 'id', initialSort: 'asc', ...textColumnDefinition('ID', tab) },
         {
-            field: 'id',
-            initialSort: 'asc',
-            ...textColumnDefinition('id', 'ID', tab),
-        },
-        {
-            id: 'Name',
+            colId: 'Name',
             field: 'name',
-            ...textColumnDefinition('name', 'Name', tab),
+            ...textColumnDefinition('Name', tab),
         },
         {
+            colId: 'VoltageLevelIdSide1',
             field: 'voltageLevelId1',
-            ...textColumnDefinition('voltageLevelId1', 'Voltage level ID 1', tab),
+            ...textColumnDefinition('Voltage level ID 1', tab),
         },
         {
+            colId: 'VoltageLevelIdSide2',
             field: 'voltageLevelId2',
-            ...textColumnDefinition('voltageLevelId2', 'Voltage level ID 2', tab),
+            ...textColumnDefinition('Voltage level ID 2', tab),
         },
+        { colId: 'Country', field: 'country', ...textColumnDefinition('Country', tab) },
         {
-            field: 'country',
-            ...textColumnDefinition('country', 'Country', tab),
-        },
-        {
+            colId: 'nominalVoltage1KV',
             field: 'nominalVoltage1',
-            ...numberColumnDefinition('nominalVoltage1', 'Nominal voltage 1 (kV)', tab, 0),
+            ...numberColumnDefinition('Nominal voltage 1 (kV)', tab, 0),
         },
         {
+            colId: 'nominalVoltage2KV',
             field: 'nominalVoltage2',
-            ...numberColumnDefinition('nominalVoltage2', 'Nominal voltage 2 (kV)', tab, 0),
+            ...numberColumnDefinition('Nominal voltage 2 (kV)', tab, 0),
         },
         {
+            colId: 'ratedVoltage1KV',
             field: 'ratedU1',
-            ...numberColumnDefinition('ratedU1', 'Rated voltage 1 (kV)', tab, 0),
+            ...numberColumnDefinition('Rated voltage 1 (kV)', tab, 0),
         },
         {
+            colId: 'ratedVoltage2KV',
             field: 'ratedU2',
-            ...numberColumnDefinition('ratedU2', 'Rated voltage 2 (kV)', tab, 0),
+            ...numberColumnDefinition('Rated voltage 2 (kV)', tab, 0),
         },
+        { colId: 'ActivePowerSide1', field: 'p1', ...numberColumnDefinition('p1 (MW)', tab, 1) },
+        { colId: 'ActivePowerSide2', field: 'p2', ...numberColumnDefinition('p2 (MW)', tab, 1) },
+        { colId: 'ReactivePowerSide1', field: 'q1', ...numberColumnDefinition('q1 (MVar)', tab, 1) },
+        { colId: 'ReactivePowerSide2', field: 'q2', ...numberColumnDefinition('q2 (MVar)', tab, 1) },
         {
-            field: 'p1',
-            ...numberColumnDefinition('ActivePowerSide1', 'p1 (MW)', tab, 1),
-        },
-        {
-            field: 'p2',
-            ...numberColumnDefinition('ActivePowerSide2', 'p2 (MW)', tab, 1),
-        },
-        {
-            field: 'q1',
-            ...numberColumnDefinition('ReactivePowerSide1', 'q1 (MVar)', tab, 1),
-        },
-        {
-            field: 'q2',
-            ...numberColumnDefinition('ReactivePowerSide2', 'q2 (MVar)', tab, 1),
-        },
-        {
+            colId: 'HasLoadTapChangingCapabilities',
             field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
-            ...booleanColumnDefinition('HasLoadTapChangingCapabilities', 'Ratio on-load', tab),
+            ...booleanColumnDefinition('Ratio on-load', tab),
         },
         {
+            colId: 'RatioRegulationMode',
             field: 'ratioTapChanger.regulationMode',
-            ...textColumnDefinition('RatioRegulationMode', 'Ratio regulation mode', tab),
+            ...textColumnDefinition('Ratio regulation mode', tab),
         },
         {
+            colId: 'TargetVPoint',
             field: 'ratioTapChanger.targetV',
-            ...numberColumnDefinition('TargetVPoint', 'Voltage set point (kV)', tab, 1),
+            ...numberColumnDefinition('Voltage set point (kV)', tab, 1),
         },
         {
+            colId: 'RatioDeadBand',
             field: 'ratioTapChanger.targetDeadband',
-            ...numberColumnDefinition('RatioDeadBand', 'Ratio deadband', tab, 1),
+            ...numberColumnDefinition('Ratio deadband', tab, 1),
         },
         {
+            colId: 'RatioRegulationTypeText',
             field: 'ratioTapChanger.regulationType',
-            ...textColumnDefinition('RatioRegulationTypeText', 'Ratio regulation', tab),
+            ...textColumnDefinition('Ratio regulation', tab),
         },
         {
+            colId: 'RatioRegulatedSide',
             field: 'ratioTapChanger.regulationSide',
-            ...textColumnDefinition('RatioRegulatedSide', 'Ratio regulated side', tab),
+            ...textColumnDefinition('Ratio regulated side', tab),
         },
         {
+            colId: 'RatioRegulatingTerminal',
             field: 'ratioTapChanger.ratioRegulatingTerminal',
-            ...textColumnDefinition('RatioRegulatingTerminal', 'Ratio regulated terminal', tab),
+            ...textColumnDefinition('Ratio regulated terminal', tab),
         },
         {
+            colId: 'RatioLowTapPosition',
             field: 'ratioTapChanger.lowTapPosition',
-            ...numberColumnDefinition('RatioLowTapPosition', 'Ratio low tap position', tab, 0),
+            ...numberColumnDefinition('Ratio low tap position', tab, 0),
         },
         {
+            colId: 'RatioHighTapPosition',
             valueGetter: (params) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
-            ...numberColumnDefinition('RatioHighTapPosition', 'Ratio high tap position', tab, 0),
+            ...numberColumnDefinition('Ratio high tap position', tab, 0),
         },
         {
+            colId: 'RatioTap',
             field: 'ratioTapChanger.tapPosition',
-            ...numberColumnDefinition('RatioTap', 'Ratio tap', tab, 0),
+            ...numberColumnDefinition('Ratio tap', tab, 0),
         },
         {
+            colId: 'RegulatingMode',
             field: 'phaseTapChanger.regulationMode',
-            ...textColumnDefinition('RegulatingMode', 'Phase regulation mode', tab),
+            ...textColumnDefinition('Phase regulation mode', tab),
         },
         {
+            colId: 'RegulatingValue',
             field: 'phaseTapChanger.regulationValue',
-            ...numberColumnDefinition('RegulatingValue', 'Current (A) or flow set point (MW)', tab, 1),
+            ...numberColumnDefinition('Current (A) or flow set point (MW)', tab, 1),
         },
         {
+            colId: 'PhaseDeadBand',
             field: 'phaseTapChanger.targetDeadband',
-            ...numberColumnDefinition('PhaseDeadBand', 'Phase deadband', tab, 1),
+            ...numberColumnDefinition('Phase deadband', tab, 1),
         },
         {
+            colId: 'PhaseRegulationTypeText',
             field: 'phaseTapChanger.regulationType',
-            ...textColumnDefinition('PhaseRegulationTypeText', 'Phase regulation', tab),
+            ...textColumnDefinition('Phase regulation', tab),
         },
         {
+            colId: 'PhaseRegulatedSide',
             field: 'phaseTapChanger.regulationSide',
-            ...textColumnDefinition('PhaseRegulatedSide', 'Phase regulated side', tab),
+            ...textColumnDefinition('Phase regulated side', tab),
         },
         {
+            colId: 'PhaseRegulatingTerminal',
             field: 'phaseTapChanger.phaseRegulatingTerminal',
-            ...textColumnDefinition('PhaseRegulatingTerminal', 'Phase regulated terminal', tab),
+            ...textColumnDefinition('Phase regulated terminal', tab),
         },
         {
+            colId: 'PhaseLowTapPosition',
             field: 'phaseTapChanger.lowTapPosition',
-            ...numberColumnDefinition('PhaseLowTapPosition', 'Phase low tap position', tab, 0),
+            ...numberColumnDefinition('Phase low tap position', tab, 0),
         },
         {
+            colId: 'PhaseHighTapPosition',
             valueGetter: (params) => computeHighTapPosition(params?.data?.phaseTapChanger?.steps),
-            ...numberColumnDefinition('PhaseHighTapPosition', 'Phase high tap position', tab, 0),
+            ...numberColumnDefinition('Phase high tap position', tab, 0),
         },
         {
+            colId: 'PhaseTap',
             field: 'phaseTapChanger.tapPosition',
-            ...numberColumnDefinition('PhaseTap', 'Phase tap', tab, 0),
+            ...numberColumnDefinition('Phase tap', tab, 0),
         },
+        { colId: 'r', field: 'r', ...numberColumnDefinition('Series resistance (Ω)', tab, 1) },
+        { colId: 'x', field: 'x', ...numberColumnDefinition('Series reactance (Ω)', tab, 1) },
         {
-            field: 'r',
-            ...numberColumnDefinition('r', 'Series resistance (Ω)', tab, 1),
-        },
-        {
-            field: 'x',
-            ...numberColumnDefinition('x', 'Series reactance (Ω)', tab, 1),
-        },
-        {
+            colId: 'g',
             valueGetter: (params) => unitToMicroUnit(params.data.g),
-            ...numberColumnDefinition('g', 'Magnetizing conductance (μS)', tab, 1),
+            ...numberColumnDefinition('Magnetizing conductance (μS)', tab, 1),
         },
         {
+            colId: 'b',
             valueGetter: (params) => unitToMicroUnit(params.data.b),
-            ...numberColumnDefinition('b', 'Magnetizing susceptance (μS)', tab, 1),
+            ...numberColumnDefinition('Magnetizing susceptance (μS)', tab, 1),
         },
         {
+            colId: 'ratedNominalPower',
             field: 'ratedS',
-            ...numberColumnDefinition('ratedNominalPower', 'Rated nominal power (MVA)', tab, 1),
+            ...numberColumnDefinition('Rated nominal power (MVA)', tab, 1),
         },
+        { colId: 'connected1', field: 'terminal1Connected', ...booleanColumnDefinition('Connected 1', tab) },
         {
-            field: 'terminal1Connected',
-            ...booleanColumnDefinition('connected1', 'Connected 1', tab),
-        },
-        {
+            colId: 'connected2',
             field: 'terminal2Connected',
-            ...booleanColumnDefinition('connected2', 'Connected 2', tab),
+            ...booleanColumnDefinition('Connected 2', tab),
         },
         genericColumnOfPropertiesReadonly(tab),
     ],

@@ -3,7 +3,10 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
-import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
+import {
+    BooleanFilterValue,
+    CustomAggridBooleanFilter,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '../utils/cell-renderers';
 import { ColDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
@@ -12,10 +15,8 @@ import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields'
 import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { FilterType } from '../../../types/custom-aggrid-types';
 
-export const textColumnDefinition = (colId: string, displayName: string, tab: string): ColDef => {
+export const textColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {
-        colId,
-        cellDataType: 'text',
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             displayName,
@@ -31,25 +32,15 @@ export const textColumnDefinition = (colId: string, displayName: string, tab: st
                     updateFilterCallback: updateFilters,
                     dataType: FILTER_DATA_TYPES.TEXT,
                     comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    debounceMs: 200,
                 },
             },
         },
-        resizable: true,
         cellRenderer: DefaultCellRenderer,
     };
 };
 
-export const numberColumnDefinition = (
-    colId: string,
-    displayName: string,
-    tab: string,
-    fractionDigits?: number
-): ColDef => {
+export const numberColumnDefinition = (displayName: string, tab: string, fractionDigits?: number): ColDef => {
     return {
-        colId,
-        cellDataType: 'number',
-        filter: 'agNumberColumnFilter',
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             displayName,
@@ -65,11 +56,9 @@ export const numberColumnDefinition = (
                     updateFilterCallback: updateFilters,
                     dataType: FILTER_DATA_TYPES.NUMBER,
                     comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    debounceMs: 200,
                 },
             },
         },
-        resizable: true,
         cellRenderer: NumericCellRenderer,
         cellRendererParams: {
             fractionDigits,
@@ -77,9 +66,30 @@ export const numberColumnDefinition = (
     };
 };
 
-export const booleanColumnDefinition = (colId: string, displayName: string, tab: string): ColDef => {
+export const booleanColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {
-        colId,
+        filterParams: {
+            filterOptions: [
+                {
+                    displayKey: 'booleanMatches',
+                    displayName: 'booleanMatches',
+                    predicate: (filterValues: string[], cellValue: boolean) => {
+                        const filterValue = filterValues.at(0);
+                        if (filterValue === undefined) {
+                            return false;
+                        }
+                        // We receive here the filter boolean value as a string (filterValue)
+                        // we check if the cellValue is not null neither undefined
+                        if (cellValue != null) {
+                            return filterValue === cellValue.toString();
+                        }
+
+                        // we return true if the filter chosen is undefinedValue
+                        return filterValue === BooleanFilterValue.UNDEFINED;
+                    },
+                },
+            ],
+        },
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             displayName,
@@ -94,11 +104,9 @@ export const booleanColumnDefinition = (colId: string, displayName: string, tab:
                     tab,
                     dataType: FILTER_DATA_TYPES.BOOLEAN,
                     updateFilterCallback: updateFilters,
-                    debounceMs: 200,
                 },
             },
         },
         cellRenderer: BooleanCellRenderer,
-        resizable: true,
     };
 };

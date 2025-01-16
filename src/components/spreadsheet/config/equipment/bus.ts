@@ -19,37 +19,45 @@ export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.BUS),
     columns: [
         {
+            colId: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textColumnDefinition('id', 'ID', tab),
+            ...textColumnDefinition('ID', tab),
         },
         {
+            colId: 'Magnitude',
             field: 'v',
-            ...numberColumnDefinition('magnitude', 'Voltage magnitude', tab, 1),
+            ...numberColumnDefinition('Voltage magnitude', tab, 1),
         },
         {
+            colId: 'Angle',
             field: 'angle',
-            ...numberColumnDefinition('angle', 'Voltage angle', tab, 1),
+            ...numberColumnDefinition('Voltage angle', tab, 1),
         },
         {
+            colId: 'ConnectedComponent',
             field: 'connectedComponentNum',
-            ...numberColumnDefinition('connectedComponentNum', 'connected component', tab, 0),
+            ...numberColumnDefinition('connected component', tab, 0),
         },
         {
+            colId: 'SynchronousComponent',
             field: 'synchronousComponentNum',
-            ...numberColumnDefinition('synchronousComponentNum', 'Synchronous component', tab, 0),
+            ...numberColumnDefinition('Synchronous component', tab, 0),
         },
         {
+            colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
+            ...textColumnDefinition('Voltage level ID', tab),
         },
         {
+            colId: 'Country',
             field: 'country',
-            ...textColumnDefinition('country', 'Country', tab),
+            ...textColumnDefinition('Country', tab),
         },
         {
+            colId: 'NominalV',
             field: 'nominalVoltage',
-            ...numberColumnDefinition('nominalVoltage', 'Nominal V', tab, 0),
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         genericColumnOfPropertiesReadonly(tab),
     ],

@@ -41,7 +41,7 @@ const styles = {
 export const NA_Value = 'N/A';
 
 export const BooleanCellRenderer = (props: any) => {
-    const isChecked = props.value === 'true';
+    const isChecked = props.value;
     return (
         <div>
             {props.value !== undefined && (

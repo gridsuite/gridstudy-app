@@ -9,7 +9,7 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { textColumnDefinition, numberColumnDefinition, booleanColumnDefinition } from '../common-column-definitions';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 import { unitToMicroUnit } from '@gridsuite/commons-ui';
 
 const tab = 'Lines';
@@ -20,85 +20,105 @@ export const LINE_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.LINE),
     columns: [
         {
+            colId: 'ID',
             field: 'id',
             initialSort: 'asc',
-            ...textColumnDefinition('id', 'ID', tab),
+            ...textColumnDefinition('ID', tab),
         },
         {
+            colId: 'Name',
             field: 'name',
-            ...textColumnDefinition('id', 'Name', tab),
+            ...textColumnDefinition('Name', tab),
         },
         {
+            colId: 'VoltageLevelIdSide1',
             field: 'voltageLevelId1',
-            ...textColumnDefinition('voltageLevelId1', 'Voltage level ID 1', tab),
+            ...textColumnDefinition('Voltage level ID 1', tab),
         },
         {
+            colId: 'VoltageLevelIdSide2',
             field: 'voltageLevelId2',
-            ...textColumnDefinition('voltageLevelId2', 'Voltage level ID 2', tab),
+            ...textColumnDefinition('Voltage level ID 2', tab),
         },
         {
+            colId: 'Country1',
             field: 'country1',
-            ...textColumnDefinition('country1', 'Country 1', tab),
+            ...textColumnDefinition('Country 1', tab),
         },
         {
+            colId: 'Country2',
             field: 'country2',
-            ...textColumnDefinition('country2', 'Country 2', tab),
+            ...textColumnDefinition('Country 2', tab),
         },
         {
+            colId: 'nominalVoltage1KV',
             field: 'nominalVoltage1',
-            ...numberColumnDefinition('nominalVoltage1', 'Nominal voltage 1 (kV)', tab, 0),
+            ...numberColumnDefinition('Nominal voltage 1 (kV)', tab, 0),
         },
         {
+            colId: 'nominalVoltage2KV',
             field: 'nominalVoltage2',
-            ...numberColumnDefinition('nominalVoltage2', 'Nominal voltage 2 (kV)', tab, 0),
+            ...numberColumnDefinition('Nominal voltage 2 (kV)', tab, 0),
         },
         {
+            colId: 'ActivePowerSide1',
             field: 'p1',
-            ...numberColumnDefinition('ActivePowerSide1', 'p1 (MW)', tab, 1),
+            ...numberColumnDefinition('p1 (MW)', tab, 1),
         },
         {
+            colId: 'ActivePowerSide2',
             field: 'p2',
-            ...numberColumnDefinition('ActivePowerSide2', 'p2 (MW)', tab, 1),
+            ...numberColumnDefinition('p2 (MW)', tab, 1),
         },
         {
+            colId: 'ReactivePowerSide1',
             field: 'q1',
-            ...numberColumnDefinition('ReactivePowerSide1', 'q1 (MVar)', tab, 1),
+            ...numberColumnDefinition('q1 (MVar)', tab, 1),
         },
         {
+            colId: 'ReactivePowerSide2',
             field: 'q2',
-            ...numberColumnDefinition('ReactivePowerSide2', 'q2 (MVar)', tab, 1),
+            ...numberColumnDefinition('q2 (MVar)', tab, 1),
         },
         {
+            colId: 'r',
             field: 'r',
-            ...numberColumnDefinition('r', 'Series resistance (Ω)', tab, 1),
+            ...numberColumnDefinition('Series resistance (Ω)', tab, 1),
         },
         {
+            colId: 'x',
             field: 'x',
-            ...numberColumnDefinition('x', 'Series reactance (Ω)', tab, 1),
+            ...numberColumnDefinition('Series reactance (Ω)', tab, 1),
         },
         {
+            colId: 'g1',
             valueGetter: (params) => unitToMicroUnit(params.data.g1),
-            ...numberColumnDefinition('g1', 'Shunt conductance 1 (μS)', tab, 1),
+            ...numberColumnDefinition('Shunt conductance 1 (μS)', tab, 1),
         },
         {
+            colId: 'g2',
             valueGetter: (params) => unitToMicroUnit(params.data.g2),
-            ...numberColumnDefinition('g2', 'Shunt conductance 2 (μS)', tab, 1),
+            ...numberColumnDefinition('Shunt conductance 2 (μS)', tab, 1),
         },
         {
+            colId: 'b1',
             valueGetter: (params) => unitToMicroUnit(params.data.b1),
-            ...numberColumnDefinition('b1', 'Shunt susceptance 1 (μS)', tab, 1),
+            ...numberColumnDefinition('Shunt susceptance 1 (μS)', tab, 1),
         },
         {
+            colId: 'b2',
             valueGetter: (params) => unitToMicroUnit(params.data.b2),
-            ...numberColumnDefinition('b2', 'Shunt susceptance 2 (μS)', tab, 1),
+            ...numberColumnDefinition('Shunt susceptance 2 (μS)', tab, 1),
         },
         {
+            colId: 'connected1',
             field: 'terminal1Connected',
-            ...booleanColumnDefinition('terminal1Connected', 'Connected 1', tab),
+            ...booleanColumnDefinition('Connected 1', tab),
         },
         {
+            colId: 'connected2',
             field: 'terminal2Connected',
-            ...booleanColumnDefinition('terminal2Connected', 'Connected 2', tab),
+            ...booleanColumnDefinition('Connected 2', tab),
         },
         genericColumnOfPropertiesReadonly(tab),
     ],
