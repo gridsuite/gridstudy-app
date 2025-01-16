@@ -10,20 +10,26 @@ import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { VirtualizedTreeview } from './virtualized-treeview';
 import { ReportItem } from './treeview-item';
-import { Report, ReportLog, ReportTree, ReportType, SeverityLevel } from 'utils/report/report.type';
+import { Report, ReportLog, ReportTree, ReportType, SelectedReportLog, SeverityLevel } from 'utils/report/report.type';
+import { GLOBAL_REPORT_NODE_LABEL } from '../../utils/report/report.constant';
 
 type ReportViewerProps = { report: Report; reportType: string; severities: SeverityLevel[] | undefined };
 
-export default function ReportViewer({ report, reportType, severities }: ReportViewerProps) {
+const DEFAULT_CONTAINER_HEIGHT_OFFSET = 170; // The value 170px is fine, but leaves a gap below the report.
+
+export default function ReportViewer({ report, reportType, severities = [] }: ReportViewerProps) {
     const [expandedTreeReports, setExpandedTreeReports] = useState<string[]>([]);
     const [highlightedReportId, setHighlightedReportId] = useState<string>();
-    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number | undefined>(undefined);
+    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number>(
+        DEFAULT_CONTAINER_HEIGHT_OFFSET
+    );
 
-    const [selectedReportId, setSelectedReportId] = useState(report?.id);
-    const [selectedReportType, setSelectedReportType] = useState<ReportType>();
+    const [selectedReport, setSelectedReport] = useState<SelectedReportLog>({
+        id: report.id,
+        type: report.message === GLOBAL_REPORT_NODE_LABEL ? ReportType.GLOBAL : ReportType.NODE,
+    });
 
     const reportTree = useMemo(() => mapReportsTree(report), [report]);
-
     const reportTreeMap = useMemo(() => {
         const map: Record<string, ReportTree> = {};
         const mapReports = (item: ReportTree) => {
@@ -38,22 +44,28 @@ export default function ReportViewer({ report, reportType, severities }: ReportV
 
     useEffect(() => {
         setExpandedTreeReports([reportTree.id]);
-        setSelectedReportId(reportTree.id);
-        setSelectedReportType(reportTreeMap[reportTree.id]?.type);
+        setSelectedReport({ id: reportTree.id, type: reportTreeMap[reportTree.id]?.type });
     }, [reportTree, reportTreeMap]);
 
     const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
-        setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
+        setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top ?? DEFAULT_CONTAINER_HEIGHT_OFFSET);
     }, []);
+
+    // We calculate the remaining height relative to the viewport and the top position of the report.
+    const reportContainerHeight = useMemo(
+        () => `calc(100vh - ${reportVerticalPositionFromTop}px)`,
+        [reportVerticalPositionFromTop]
+    );
 
     const onLogRowClick = useCallback(
         (data: ReportLog) => {
             setExpandedTreeReports((previouslyExpandedTreeReports) => {
                 let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
-                let parentId = data.parentId;
-                while (reportTreeMap[parentId]?.parentId) {
-                    parentId = reportTreeMap[parentId].parentId as string;
-                    treeReportsToExpand.add(parentId);
+                let parentId: string | null = data.parentId;
+                while (parentId && reportTreeMap[parentId]?.parentId) {
+                    if ((parentId = reportTreeMap[parentId].parentId)) {
+                        treeReportsToExpand.add(parentId);
+                    }
                 }
                 return Array.from(treeReportsToExpand);
             });
@@ -64,54 +76,46 @@ export default function ReportViewer({ report, reportType, severities }: ReportV
 
     const handleSelectedItem = useCallback(
         (report: ReportItem) => {
-            setSelectedReportId((prevSelectedReportId) => {
-                if (prevSelectedReportId !== report.id) {
-                    setSelectedReportType(reportTreeMap[report.id].type);
-                    return report.id;
+            setSelectedReport((prevSelectedReport) => {
+                if (prevSelectedReport.id !== report.id) {
+                    return { id: report.id, type: reportTreeMap[report.id].type };
                 }
-                return prevSelectedReportId;
+                return prevSelectedReport;
             });
         },
         [reportTreeMap]
     );
 
     return (
-        report && (
-            <Grid
-                container
-                ref={handleReportVerticalPositionFromTop}
-                sx={{
-                    // We calculate the remaining height relative to the viewport and the top position of the report.
-                    height:
-                        'calc(100vh - ' +
-                        (reportVerticalPositionFromTop || '160') + // The value 160 is fine, but leaves a gap below the report.
-                        'px)',
-                }}
-            >
-                <Grid item sm={3} sx={{ borderRight: (theme) => `1px solid ${theme.palette.divider}` }}>
-                    {reportTree && (
-                        <VirtualizedTreeview
-                            expandedTreeReports={expandedTreeReports}
-                            setExpandedTreeReports={setExpandedTreeReports}
-                            selectedReportId={selectedReportId}
-                            reportTree={reportTree}
-                            onSelectedItem={handleSelectedItem}
-                            highlightedReportId={highlightedReportId}
-                        />
-                    )}
-                </Grid>
-                <Grid item xs={12} sm={9}>
-                    {selectedReportId && selectedReportType && (
-                        <LogTable
-                            selectedReportId={selectedReportId}
-                            reportType={reportType}
-                            reportNature={selectedReportType} // GlobalReport or NodeReport
-                            severities={severities}
-                            onRowClick={onLogRowClick}
-                        />
-                    )}
-                </Grid>
+        <Grid
+            container
+            ref={handleReportVerticalPositionFromTop}
+            sx={{
+                height: reportContainerHeight,
+            }}
+        >
+            <Grid item sm={3} sx={{ borderRight: (theme) => `1px solid ${theme.palette.divider}` }}>
+                {reportTree && (
+                    <VirtualizedTreeview
+                        expandedTreeReports={expandedTreeReports}
+                        setExpandedTreeReports={setExpandedTreeReports}
+                        selectedReportId={selectedReport.id}
+                        reportTree={reportTree}
+                        onSelectedItem={handleSelectedItem}
+                        highlightedReportId={highlightedReportId}
+                    />
+                )}
             </Grid>
-        )
+            <Grid item xs={12} sm={9}>
+                {selectedReport.id && selectedReport.type && (
+                    <LogTable
+                        selectedReport={selectedReport}
+                        reportType={reportType}
+                        severities={severities}
+                        onRowClick={onLogRowClick}
+                    />
+                )}
+            </Grid>
+        </Grid>
     );
 }
