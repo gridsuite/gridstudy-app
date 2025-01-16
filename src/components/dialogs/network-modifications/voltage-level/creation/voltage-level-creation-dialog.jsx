@@ -18,6 +18,7 @@ import { sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import {
+    ADD_SUBSTATION_CREATION,
     ADDITIONAL_PROPERTIES,
     BUS_BAR_COUNT,
     BUS_BAR_SECTION_ID1,
@@ -90,12 +91,11 @@ const emptyFormData = {
     [SWITCHES_BETWEEN_SECTIONS]: '',
     [COUPLING_OMNIBUS]: [],
     [SWITCH_KINDS]: [],
-    [SUBSTATION_CREATION]: {
-        [SUBSTATION_CREATION_ID]: null,
-        [SUBSTATION_NAME]: null,
-        [COUNTRY]: null,
-        ...emptyProperties,
-    },
+    [ADD_SUBSTATION_CREATION]: false,
+    [SUBSTATION_CREATION_ID]: null,
+    [SUBSTATION_NAME]: null,
+    [COUNTRY]: null,
+    [SUBSTATION_CREATION]: emptyProperties,
     ...emptyProperties,
 };
 
@@ -107,10 +107,20 @@ const formSchema = yup
         [SUBSTATION_ID]: yup
             .string()
             .nullable()
-            .when([SUBSTATION_CREATION], {
-                is: (substationCreation) => !substationCreation?.substationCreationId,
+            .when([ADD_SUBSTATION_CREATION], {
+                is: (addSubstationCreation) => addSubstationCreation === false,
                 then: (schema) => schema.required(),
             }),
+        [SUBSTATION_CREATION_ID]: yup
+            .string()
+            .nullable()
+            .when([ADD_SUBSTATION_CREATION], {
+                is: (addSubstationCreation) => addSubstationCreation === true,
+                then: (schema) => schema.required(),
+            }),
+        [SUBSTATION_NAME]: yup.string().nullable(),
+        [COUNTRY]: yup.string().nullable(),
+        [SUBSTATION_CREATION]: creationPropertiesSchema,
         [NOMINAL_V]: yup.number().nullable().required(),
         [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
         [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
@@ -147,21 +157,6 @@ const formSchema = yup
             .test('coupling-omnibus-between-sections', (values) =>
                 controlCouplingOmnibusBetweenSections(values, 'CouplingOmnibusBetweenSameBusbar')
             ),
-        [SUBSTATION_CREATION]: yup
-            .object()
-            .nullable()
-            .shape({
-                [SUBSTATION_CREATION_ID]: yup
-                    .string()
-                    .nullable()
-                    .when([SUBSTATION_ID], {
-                        is: (substationId) => substationId === null,
-                        then: (schema) => schema.required(),
-                    }),
-                [SUBSTATION_NAME]: yup.string().nullable(),
-                [COUNTRY]: yup.string().nullable(),
-            })
-            .concat(creationPropertiesSchema),
     })
     .concat(creationPropertiesSchema);
 const VoltageLevelCreationDialog = ({
@@ -185,19 +180,7 @@ const VoltageLevelCreationDialog = ({
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
-            const isSubstationCreation = fromCopy && voltageLevel.substationCreation;
-            const substationCreation = isSubstationCreation
-                ? {
-                      [SUBSTATION_CREATION_ID]: voltageLevel.substationCreation?.equipmentId,
-                      [SUBSTATION_NAME]: voltageLevel.substationCreation?.equipmentName,
-                      [COUNTRY]: voltageLevel.substationCreation?.country,
-                      ...getPropertiesFromModification(voltageLevel.substationCreation?.properties),
-                  }
-                : {
-                      [SUBSTATION_CREATION_ID]: null,
-                      [SUBSTATION_NAME]: null,
-                      [COUNTRY]: null,
-                  };
+            const isSubstationCreation = !fromCopy && voltageLevel.substationCreation?.equipmentId != null;
             const shortCircuitLimits = {
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -218,7 +201,7 @@ const VoltageLevelCreationDialog = ({
 
             const equipmentId = (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : '');
             const equipmentName = voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME];
-            const substationId = isSubstationCreation ? null : voltageLevel[SUBSTATION_ID];
+            const substationId = isSubstationCreation ? null : voltageLevel[SUBSTATION_ID] ?? null;
 
             const properties = fromCopy
                 ? copyEquipmentPropertiesForCreation(voltageLevel)
@@ -229,7 +212,6 @@ const VoltageLevelCreationDialog = ({
                     [EQUIPMENT_NAME]: equipmentName,
                     [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
                     [SUBSTATION_ID]: substationId,
-                    [SUBSTATION_CREATION]: substationCreation,
                     [NOMINAL_V]: voltageLevel[NOMINAL_V],
                     [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                     [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
@@ -245,19 +227,23 @@ const VoltageLevelCreationDialog = ({
                 },
                 { keepDefaultValues: true }
             );
-            const substationKeys = [
-                [SUBSTATION_CREATION_ID, voltageLevel.substationCreation?.equipmentId],
-                [SUBSTATION_NAME, voltageLevel.substationCreation?.equipmentName],
-                [COUNTRY, voltageLevel.substationCreation?.country],
-            ];
-            substationKeys.forEach(([key, value]) => {
-                setValue(`${SUBSTATION_CREATION}.${key}`, fromCopy ? null : value);
-            });
-            setValue(
-                `${SUBSTATION_CREATION}.${ADDITIONAL_PROPERTIES}`,
-                fromCopy ? [] : voltageLevel.substationCreation?.properties
-            );
-
+            if (isSubstationCreation) {
+                const substationKeys = [
+                    [SUBSTATION_CREATION_ID, voltageLevel.substationCreation?.equipmentId],
+                    [SUBSTATION_NAME, voltageLevel.substationCreation?.equipmentName],
+                    [COUNTRY, voltageLevel.substationCreation?.country],
+                ];
+                substationKeys.forEach(([key, value]) => {
+                    setValue(key, value);
+                });
+                setValue(
+                    `${SUBSTATION_CREATION}.${ADDITIONAL_PROPERTIES}`,
+                    voltageLevel.substationCreation?.properties
+                );
+                setValue(ADD_SUBSTATION_CREATION, true);
+            } else {
+                setValue(ADD_SUBSTATION_CREATION, false);
+            }
             if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
@@ -283,12 +269,12 @@ const VoltageLevelCreationDialog = ({
 
     const onSubmit = useCallback(
         (voltageLevel) => {
-            const substationCreation = getValues(`${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`)
+            const substationCreation = getValues(ADD_SUBSTATION_CREATION)
                 ? {
                       type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
-                      equipmentId: voltageLevel[SUBSTATION_CREATION][SUBSTATION_CREATION_ID],
-                      equipmentName: voltageLevel[SUBSTATION_CREATION][SUBSTATION_NAME],
-                      country: voltageLevel[SUBSTATION_CREATION][COUNTRY],
+                      equipmentId: voltageLevel[SUBSTATION_CREATION_ID],
+                      equipmentName: voltageLevel[SUBSTATION_NAME],
+                      country: voltageLevel[COUNTRY],
                       properties: toModificationProperties(voltageLevel[SUBSTATION_CREATION]),
                   }
                 : null;
@@ -297,7 +283,7 @@ const VoltageLevelCreationDialog = ({
                 nodeUuid: currentNodeUuid,
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
-                substationId: substationCreation ? null : voltageLevel[SUBSTATION_ID],
+                substationId: substationCreation === null ? voltageLevel[SUBSTATION_ID] : null,
                 substationCreation: substationCreation,
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],

@@ -6,6 +6,7 @@
  */
 
 import {
+    ADD_SUBSTATION_CREATION,
     BUS_BAR_COUNT,
     COUNTRY,
     EQUIPMENT_ID,
@@ -43,12 +44,13 @@ import LineSeparator from '../../../commons/line-separator';
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-    const { setValue, getValues } = useFormContext();
+    const { setValue } = useFormContext();
     const [substations, setSubstations] = useState([]);
     const [isWithSubstationCreation, setIsWithSubstationCreation] = useState(false);
 
     const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
+    const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -57,26 +59,6 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             });
         }
     }, [studyUuid, currentNodeUuid]);
-
-    const watchSubstationId = useWatch({
-        name: `${SUBSTATION_ID}`,
-    });
-    const watchSubstationCreationId = useWatch({
-        name: `${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`,
-    });
-
-    useEffect(() => {
-        const currentSubstationId = getValues(`${SUBSTATION_ID}`);
-        const currentSubstationCreationId = getValues(`${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`);
-        if (currentSubstationId !== null && currentSubstationId !== undefined) {
-            setValue(`${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`, null);
-            setIsWithSubstationCreation(false);
-        }
-        if (currentSubstationCreationId !== null && currentSubstationCreationId !== undefined) {
-            setValue(`${SUBSTATION_ID}`, null);
-            setIsWithSubstationCreation(true);
-        }
-    }, [getValues, watchSubstationId, watchSubstationCreationId, setValue]);
 
     const voltageLevelIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
@@ -158,23 +140,19 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
 
     const couplingOmnibusForm = <CouplingOmnibusForm />;
 
-    const substationCreationIdField = (
-        <TextInput name={`${SUBSTATION_CREATION}.${SUBSTATION_CREATION_ID}`} label={'SubstationId'} />
-    );
-    const substationCreationNameField = (
-        <TextInput name={`${SUBSTATION_CREATION}.${SUBSTATION_NAME}`} label={'substationName'} />
-    );
+    const substationCreationIdField = <TextInput name={SUBSTATION_CREATION_ID} label={'SubstationId'} />;
+    const substationCreationNameField = <TextInput name={SUBSTATION_NAME} label={'substationName'} />;
 
-    const substationCreationCountryField = (
-        <CountrySelectionInput name={`${SUBSTATION_CREATION}.${COUNTRY}`} label={'Country'} size={'small'} />
-    );
+    const substationCreationCountryField = <CountrySelectionInput name={COUNTRY} label={'Country'} size={'small'} />;
 
     const handleAddButton = useCallback(() => {
+        setValue(ADD_SUBSTATION_CREATION, true);
         setIsWithSubstationCreation(true);
-    }, []);
+    }, [setValue]);
     const handleDeleteButton = useCallback(() => {
+        setValue(ADD_SUBSTATION_CREATION, false);
         setIsWithSubstationCreation(false);
-    }, []);
+    }, [setValue]);
     return (
         <>
             <Grid container spacing={2}>
@@ -182,7 +160,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
                 <GridItem>{voltageLevelNameField}</GridItem>
             </Grid>
 
-            {isWithSubstationCreation ? (
+            {isWithSubstationCreation || watchAddSubstationCreation ? (
                 <Grid>
                     <Grid item xs={12} container spacing={2}></Grid>
                     <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />
