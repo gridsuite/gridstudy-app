@@ -51,7 +51,7 @@ export const StudyView = {
     PARAMETERS: 'Parameters',
 };
 
-const StudyPane = ({ studyUuid, currentRootNetworkUuid, currentNode, setErrorMessage, ...props }) => {
+const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -88,7 +88,6 @@ const StudyPane = ({ studyUuid, currentRootNetworkUuid, currentNode, setErrorMes
                     tableEquipment={tableEquipment}
                     onTableEquipementChanged={(newTableEquipment) => setTableEquipment(newTableEquipment)}
                     onChangeTab={props.onChangeTab}
-                    setErrorMessage={setErrorMessage}
                 ></MapViewer>
             </div>
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}

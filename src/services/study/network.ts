@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { UUID } from 'crypto';
+import { EquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
+import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
-
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
-import { UUID } from 'crypto';
-import { EquipmentType, GsLang } from '@gridsuite/commons-ui';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
@@ -161,21 +161,21 @@ export function getSubstationSingleLineDiagram({
 }
 
 /* elements */
-export function fetchNetworkElementsInfos(
+// TODO: remove default generics once fetchers typed
+export async function fetchNetworkElementsInfos<T extends Identifiable[] = Identifiable[]>(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[] | undefined | null,
-    elementType: string,
-    infoType: string,
+    substationsIds: string[] | undefined,
+    elementType: string, //TODO found which EQUIPMENT_TYPES enum to use
+    infoType: string, // TODO migrate to EquipmentInfosTypes
     inUpstreamBuiltParentNode?: boolean,
     nominalVoltages?: number[]
-) {
-    const substationsCount = substationsIds ? substationsIds.length : 0;
-    const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
-
+): Promise<T> {
     console.info(
-        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' with ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
+        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' with ${
+            substationsIds?.length ?? 0
+        } substations ids and [${nominalVoltages ?? ''}] nominal voltages.`
     );
 
     const nominalVoltagesParams = getQueryParamsList(nominalVoltages, 'nominalVoltages');
@@ -197,7 +197,7 @@ export function fetchNetworkElementsInfos(
         nominalVoltagesParamsList;
     console.debug(fetchElementsUrl);
 
-    return backendFetchJson(fetchElementsUrl, {
+    return await backendFetchJson(fetchElementsUrl, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(substationsIds ?? null),
@@ -238,10 +238,10 @@ export function fetchSubstationsMapInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[] | null | undefined,
+    substationsIds: string[] | undefined,
     inUpstreamBuiltParentNode: boolean
 ) {
-    return fetchNetworkElementsInfos(
+    return fetchNetworkElementsInfos<MapSubstation[]>(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid,
@@ -256,10 +256,10 @@ export function fetchLinesMapInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[] | undefined | null,
+    substationsIds: string[] | undefined,
     inUpstreamBuiltParentNode: boolean
 ) {
-    return fetchNetworkElementsInfos(
+    return fetchNetworkElementsInfos<MapLine[]>(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid,
@@ -274,10 +274,10 @@ export function fetchTieLinesMapInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[] | undefined | null,
+    substationsIds: string[] | undefined,
     inUpstreamBuiltParentNode: boolean
 ) {
-    return fetchNetworkElementsInfos(
+    return fetchNetworkElementsInfos<MapTieLine[]>(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid,
@@ -292,10 +292,11 @@ export function fetchHvdcLinesMapInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[] | undefined | null,
+
+    substationsIds: string[] | undefined,
     inUpstreamBuiltParentNode: boolean
 ) {
-    return fetchNetworkElementsInfos(
+    return fetchNetworkElementsInfos<MapHvdcLine[]>(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid,
@@ -380,7 +381,7 @@ export function fetchVoltageLevelsMapInfos(
     currentRootNetworkUuid: UUID,
     substationsIds?: string[]
 ) {
-    return fetchNetworkElementsInfos(
+    return fetchNetworkElementsInfos<VoltageLevel[]>(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid,
@@ -602,6 +603,7 @@ export function fetchBusbarSections(
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
+
 export function fetchTieLines(
     studyUuid: UUID,
     currentNodeUuid: UUID,
@@ -617,6 +619,7 @@ export function fetchTieLines(
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
+
 export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID) => {
     const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/network`;
 
@@ -635,11 +638,6 @@ export const fetchStudyIndexationStatus = (studyUuid: UUID, rootNetworkUuid: UUI
 /* export-network */
 
 export function getExportUrl(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID, exportFormat: string) {
-    // getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-    // '/root-networks/' +
-    // rootNetworkUuid +
-    // '/export-network/' +
-    // exportFormat;
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
         '/export-network/' +
