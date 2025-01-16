@@ -368,6 +368,13 @@
     "DynamicSimulationTimelineEventModelName": "Equipment/Model",
     "DynamicSimulationTimelineEventModelMessage": "Message",
 
+    "startDynamicSecurityAnalysisError": "An error occurred while starting the dynamic security analysis",
+    "DynamicSecurityAnalysis": "Dynamic security analysis",
+    "DynamicSecurityAnalysisContingency": "Contingency",
+    "DynamicSecurityAnalysisScenario": "Scenario",
+    "DynamicSecurityAnalysisScenarioDuration": "Scenario duration",
+    "DynamicSecurityAnalysisContingenciesStartTime": "Contingencies start time",
+
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
 

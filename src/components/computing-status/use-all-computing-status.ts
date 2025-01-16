@@ -7,14 +7,15 @@
 
 import { useComputingStatus } from './use-computing-status';
 import {
+    getDynamicSecurityAnalysisRunningStatus,
+    getDynamicSimulationRunningStatus,
+    getLoadFlowRunningStatus,
+    getNonEvacuatedEnergyRunningStatus,
     getSecurityAnalysisRunningStatus,
     getSensitivityAnalysisRunningStatus,
     getShortCircuitAnalysisRunningStatus,
-    getDynamicSimulationRunningStatus,
-    getVoltageInitRunningStatus,
-    getLoadFlowRunningStatus,
-    getNonEvacuatedEnergyRunningStatus,
     getStateEstimationRunningStatus,
+    getVoltageInitRunningStatus,
 } from '../utils/running-status';
 
 import { UUID } from 'crypto';
@@ -32,6 +33,7 @@ import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
 import { fetchStateEstimationStatus } from '../../services/study/state-estimation';
+import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic-security-analysis';
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
@@ -44,6 +46,7 @@ const oneBusShortCircuitAnalysisStatusInvalidations = [
     'oneBusShortCircuitAnalysis_failed',
 ];
 const dynamicSimulationStatusInvalidations = ['dynamicSimulation_status', 'dynamicSimulation_failed'];
+const dynamicSecurityAnalysisStatusInvalidations = ['dynamicSecurityAnalysis_status', 'dynamicSecurityAnalysis_failed'];
 const voltageInitStatusInvalidations = ['voltageInit_status', 'voltageInit_failed'];
 const stateEstimationStatusInvalidations = ['stateEstimation_status', 'stateEstimation_failed'];
 const loadFlowStatusCompletions = ['loadflowResult', 'loadflow_failed'];
@@ -57,6 +60,7 @@ const oneBusShortCircuitAnalysisStatusCompletions = [
     'oneBusShortCircuitAnalysis_failed',
 ];
 const dynamicSimulationStatusCompletions = ['dynamicSimulationResult', 'dynamicSimulation_failed'];
+const dynamicSecurityAnalysisStatusCompletions = ['dynamicSecurityAnalysisResult', 'dynamicSecurityAnalysis_failed'];
 const voltageInitStatusCompletions = ['voltageInitResult', 'voltageInit_failed'];
 const stateEstimationStatusCompletions = ['stateEstimationResult', 'stateEstimation_failed'];
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
@@ -65,6 +69,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
@@ -143,6 +148,17 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
         getDynamicSimulationRunningStatus,
         ComputingType.DYNAMIC_SIMULATION,
         dynamicSimulationAvailability
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        fetchDynamicSecurityAnalysisStatus,
+        dynamicSecurityAnalysisStatusInvalidations,
+        dynamicSecurityAnalysisStatusCompletions,
+        getDynamicSecurityAnalysisRunningStatus,
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability
     );
 
     useComputingStatus(

@@ -18,7 +18,7 @@ import { computingTypeToRootTabRedirection, ResultTabIndexRedirection, useResult
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import { NonEvacuatedEnergyResultTab } from './results/sensitivity-analysis/non-evacuated-energy/non-evacuated-energy-result-tab';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { CurrentTreeNode, AppState } from '../redux/reducer';
+import { AppState, CurrentTreeNode } from '../redux/reducer';
 import { UUID } from 'crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
@@ -26,8 +26,9 @@ import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import ComputingType from './computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { usePrevious } from './utils/utils';
-import { Box, Tabs, Tab, Paper } from '@mui/material';
+import { Box, Paper, Tab, Tabs } from '@mui/material';
 import { StateEstimationResultTab } from './results/stateestimation/state-estimation-result-tab';
+import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysis/dynamic-security-analysis-result-tab';
 
 const styles = {
     table: {
@@ -85,6 +86,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const nonEvacuatedEnergyUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
@@ -149,6 +151,14 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     }, [studyUuid, currentNode]);
 
+    const renderDynamicSecurityAnalysisResult = useMemo(() => {
+        return (
+            <Paper sx={styles.analysisResult}>
+                <DynamicSecurityAnalysisResultTab studyUuid={studyUuid} nodeUuid={currentNode?.id} />
+            </Paper>
+        );
+    }, [studyUuid, currentNode]);
+
     const renderStateEstimationResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
@@ -196,6 +206,12 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 renderResult: renderDynamicSimulationResult,
             },
             {
+                id: 'DynamicSecurityAnalysis',
+                computingType: [ComputingType.DYNAMIC_SECURITY_ANALYSIS],
+                displayed: enableDeveloperMode && dynamicSecurityAnalysisAvailability === OptionalServicesStatus.Up,
+                renderResult: renderDynamicSecurityAnalysisResult,
+            },
+            {
                 id: 'VoltageInit',
                 computingType: [ComputingType.VOLTAGE_INITIALIZATION],
                 displayed: voltageInitAvailability === OptionalServicesStatus.Up,
@@ -213,11 +229,13 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         nonEvacuatedEnergyUnavailability,
         securityAnalysisAvailability,
         dynamicSimulationAvailability,
+        dynamicSecurityAnalysisAvailability,
         voltageInitAvailability,
         shortCircuitAvailability,
         stateEstimationAvailability,
         enableDeveloperMode,
         renderDynamicSimulationResult,
+        renderDynamicSecurityAnalysisResult,
         renderSecurityAnalysisResult,
         renderSensitivityAnalysisResult,
         renderNonEvacuatedEnergyResult,

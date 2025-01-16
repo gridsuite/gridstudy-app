@@ -395,6 +395,7 @@ export interface ComputingStatus {
     [ComputingType.SHORT_CIRCUIT]: RunningStatus;
     [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
+    [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
@@ -550,6 +551,7 @@ const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT_ONE_BUS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SIMULATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: [],
@@ -651,6 +653,7 @@ const initialState: AppState = {
         [ComputingType.SHORT_CIRCUIT]: RunningStatus.IDLE,
         [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
         [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
+        [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
     },

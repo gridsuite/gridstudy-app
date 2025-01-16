@@ -104,6 +104,21 @@ export function getDynamicSimulationRunningStatus(dynamicSimulationStatus: strin
     }
 }
 
+export function getDynamicSecurityAnalysisRunningStatus(dynamicSecurityAnalysisStatus: string): RunningStatus {
+    switch (dynamicSecurityAnalysisStatus) {
+        case 'SUCCEED':
+            return RunningStatus.SUCCEED;
+        case 'FAILED':
+            return RunningStatus.FAILED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
 export function getVoltageInitRunningStatus(voltageInitStatus: string): RunningStatus {
     switch (voltageInitStatus) {
         case 'OK':

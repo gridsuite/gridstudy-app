@@ -8,7 +8,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { setComputingStatus, setComputationStarting, setLogsFilter } from '../redux/actions';
+import { setComputationStarting, setComputingStatus, setLogsFilter } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
@@ -34,6 +34,7 @@ import { startVoltageInit, stopVoltageInit } from '../services/study/voltage-ini
 import { startStateEstimation, stopStateEstimation } from '../services/study/state-estimation';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
+import { startDynamicSecurityAnalysis, stopDynamicSecurityAnalysis } from '../services/study/dynamic-security-analysis';
 
 export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
@@ -50,6 +51,9 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     );
 
     const dynamicSimulationStatus = useSelector((state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]);
+    const dynamicSecurityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SECURITY_ANALYSIS]
+    );
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
     const stateEstimationStatus = useSelector((state) => state.computingStatus[ComputingType.STATE_ESTIMATION]);
 
@@ -74,6 +78,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const nonEvacuatedEnergyUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
 
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
@@ -255,6 +260,25 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     );
                 },
             },
+            [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: {
+                messageId: 'DynamicSecurityAnalysis',
+                startComputation() {
+                    startComputationAsync(
+                        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+                        null,
+                        () => startDynamicSecurityAnalysis(studyUuid, currentNode?.id),
+                        () => {},
+                        null,
+                        'startDynamicSecurityAnalysisError'
+                    );
+                },
+                actionOnRunnable() {
+                    actionOnRunnables(ComputingType.DYNAMIC_SECURITY_ANALYSIS, () =>
+                        stopDynamicSecurityAnalysis(studyUuid, currentNode?.id)
+                    );
+                },
+            },
+
             [ComputingType.VOLTAGE_INITIALIZATION]: {
                 messageId: 'VoltageInit',
                 startComputation() {
@@ -312,6 +336,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     return allBusesShortCircuitAnalysisStatus;
                 case ComputingType.DYNAMIC_SIMULATION:
                     return dynamicSimulationStatus;
+                case ComputingType.DYNAMIC_SECURITY_ANALYSIS:
+                    return dynamicSecurityAnalysisStatus;
                 case ComputingType.VOLTAGE_INITIALIZATION:
                     return voltageInitStatus;
                 case ComputingType.STATE_ESTIMATION:
@@ -327,6 +353,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             nonEvacuatedEnergyStatus,
             allBusesShortCircuitAnalysisStatus,
             dynamicSimulationStatus,
+            dynamicSecurityAnalysisStatus,
             voltageInitStatus,
             stateEstimationStatus,
         ]
@@ -347,6 +374,9 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             ...(dynamicSimulationAvailability === OptionalServicesStatus.Up && enableDeveloperMode
                 ? [ComputingType.DYNAMIC_SIMULATION]
                 : []),
+            ...(dynamicSecurityAnalysisAvailability === OptionalServicesStatus.Up && enableDeveloperMode
+                ? [ComputingType.DYNAMIC_SECURITY_ANALYSIS]
+                : []),
             ...(voltageInitAvailability === OptionalServicesStatus.Up ? [ComputingType.VOLTAGE_INITIALIZATION] : []),
             ...(stateEstimationAvailability === OptionalServicesStatus.Up && enableDeveloperMode
                 ? [ComputingType.STATE_ESTIMATION]
@@ -354,6 +384,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
         ];
     }, [
         dynamicSimulationAvailability,
+        dynamicSecurityAnalysisAvailability,
         securityAnalysisAvailability,
         sensitivityAnalysisUnavailability,
         nonEvacuatedEnergyUnavailability,

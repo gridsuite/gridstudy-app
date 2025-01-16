@@ -10,7 +10,7 @@ import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo } from 'react';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
-import { dynamicSimulationResultInvalidations, MEDIUM_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
+import { dynamicSimulationResultInvalidations } from './utils/dynamic-simulation-result-utils';
 import { useSelector } from 'react-redux';
 import ComputingType from '../../computing-status/computing-type';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
@@ -21,6 +21,7 @@ import { UUID } from 'crypto';
 import RunningStatus from '../../utils/running-status';
 import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { MEDIUM_COLUMN_WIDTH } from '../../spreadsheet/utils/constants';
 
 const styles = {
     loader: {

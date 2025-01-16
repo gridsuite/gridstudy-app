@@ -369,6 +369,13 @@
     "DynamicSimulationTimelineEventModelName": "Ouvrage/Modèle",
     "DynamicSimulationTimelineEventModelMessage": "Message",
 
+    "startDynamicSecurityAnalysisError": "Une erreur est survenue lors du lancement de l'analyse de sécurité dynamique",
+    "DynamicSecurityAnalysis": "Analyse de sécurité dynamique",
+    "DynamicSecurityAnalysisContingency": "Aléas",
+    "DynamicSecurityAnalysisScenario": "Scénario",
+    "DynamicSecurityAnalysisScenarioDuration": "Duration du scenario",
+    "DynamicSecurityAnalysisContingenciesStartTime": "Temps de début des aléas",
+
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
 

@@ -56,6 +56,7 @@ import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 import { NetworkVisualizationsParameters } from './dialogs/parameters/network-visualizations/network-visualizations-parameters';
+import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -133,6 +134,7 @@ enum TAB_VALUES {
     nonEvacuatedEnergyParamsTabValue = 'NonEvacuatedEnergyAnalysis',
     shortCircuitParamsTabValue = 'ShortCircuit',
     dynamicSimulationParamsTabValue = 'DynamicSimulation',
+    dynamicSecurityAnalysisParamsTabValue = 'DynamicSecurityAnalysis',
     advancedParamsTabValue = 'Advanced',
     voltageInitParamsTabValue = 'VoltageInit',
     networkVisualizationsParams = 'NetworkVisualizations',
@@ -293,6 +295,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
                 return <DynamicSimulationParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
+            case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
+                return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.voltageInitParamsTabValue:
                 return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.advancedParamsTabValue:

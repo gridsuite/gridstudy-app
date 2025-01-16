@@ -13,7 +13,7 @@ import { styles } from '../parameters';
 type DirectoryItemsInputLineProps = {
     label: string;
     name: string;
-    equipmentTypes: string[];
+    equipmentTypes?: string[];
     elementType: string;
     hideErrorMessage: boolean;
 };

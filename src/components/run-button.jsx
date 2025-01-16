@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
@@ -50,16 +50,26 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
         if (selectedRunnable === ComputingType.LOAD_FLOW) {
             // We run once loadflow analysis, as it will always return the same result for one hypothesis
             return getRunningStatus() !== RunningStatus.IDLE;
-        } else if (selectedRunnable === ComputingType.DYNAMIC_SIMULATION) {
+        }
+
+        if (selectedRunnable === ComputingType.DYNAMIC_SIMULATION) {
             // Load flow button's status must be "SUCCEED"
             return (
                 getRunningStatus() === RunningStatus.RUNNING ||
                 getStatus(ComputingType.LOAD_FLOW) !== RunningStatus.SUCCEED
             );
-        } else {
-            // We can run only 1 computation at a time
-            return getRunningStatus() === RunningStatus.RUNNING;
         }
+
+        if (selectedRunnable === ComputingType.DYNAMIC_SECURITY_ANALYSIS) {
+            // Dynamic simulation button's status must be "SUCCEED"
+            return (
+                getRunningStatus() === RunningStatus.RUNNING ||
+                getStatus(ComputingType.DYNAMIC_SIMULATION) !== RunningStatus.SUCCEED
+            );
+        }
+
+        // We can run only 1 computation at a time
+        return getRunningStatus() === RunningStatus.RUNNING;
     }
 
     return (
