@@ -17,7 +17,7 @@ type ReportViewerProps = { report: Report; reportType: string; severities: Sever
 
 const DEFAULT_CONTAINER_HEIGHT_OFFSET = 170; // The value 170px is fine, but leaves a gap below the report.
 
-export default function ReportViewer({ report, reportType, severities = [] }: ReportViewerProps) {
+export default function ReportViewer({ report, reportType, severities = [] }: Readonly<ReportViewerProps>) {
     const [expandedTreeReports, setExpandedTreeReports] = useState<string[]>([]);
     const [highlightedReportId, setHighlightedReportId] = useState<string>();
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number>(
@@ -64,7 +64,8 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
             let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
             let parentId: string | null = data.parentId;
             while (parentId && reportTreeMap.current[parentId]?.parentId) {
-                if ((parentId = reportTreeMap.current[parentId].parentId)) {
+                parentId = reportTreeMap.current[parentId].parentId;
+                if (parentId) {
                     treeReportsToExpand.add(parentId);
                 }
             }
