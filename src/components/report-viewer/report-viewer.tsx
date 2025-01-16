@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
@@ -30,22 +30,24 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
     });
 
     const reportTree = useMemo(() => mapReportsTree(report), [report]);
-    const reportTreeMap = useMemo(() => {
-        const map: Record<string, ReportTree> = {};
-        const mapReports = (item: ReportTree) => {
-            map[item.id] = item;
+    const reportTreeMap = useRef<Record<string, ReportTree>>({});
+
+    const computeReportTreeMap = useCallback(() => {
+        reportTreeMap.current = {};
+        const mapReportsById = (item: ReportTree) => {
+            reportTreeMap.current[item.id] = item;
             for (let subReport of item.subReports) {
-                mapReports(subReport);
+                mapReportsById(subReport);
             }
         };
-        mapReports(reportTree);
-        return map;
+        mapReportsById(reportTree);
     }, [reportTree]);
 
     useEffect(() => {
+        computeReportTreeMap();
         setExpandedTreeReports([reportTree.id]);
-        setSelectedReport({ id: reportTree.id, type: reportTreeMap[reportTree.id]?.type });
-    }, [reportTree, reportTreeMap]);
+        setSelectedReport({ id: reportTree.id, type: reportTreeMap.current[reportTree.id]?.type });
+    }, [computeReportTreeMap, reportTree]);
 
     const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top ?? DEFAULT_CONTAINER_HEIGHT_OFFSET);
@@ -57,34 +59,28 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
         [reportVerticalPositionFromTop]
     );
 
-    const onLogRowClick = useCallback(
-        (data: ReportLog) => {
-            setExpandedTreeReports((previouslyExpandedTreeReports) => {
-                let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
-                let parentId: string | null = data.parentId;
-                while (parentId && reportTreeMap[parentId]?.parentId) {
-                    if ((parentId = reportTreeMap[parentId].parentId)) {
-                        treeReportsToExpand.add(parentId);
-                    }
+    const onLogRowClick = useCallback((data: ReportLog) => {
+        setExpandedTreeReports((previouslyExpandedTreeReports) => {
+            let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
+            let parentId: string | null = data.parentId;
+            while (parentId && reportTreeMap.current[parentId]?.parentId) {
+                if ((parentId = reportTreeMap.current[parentId].parentId)) {
+                    treeReportsToExpand.add(parentId);
                 }
-                return Array.from(treeReportsToExpand);
-            });
-            setHighlightedReportId(data.parentId);
-        },
-        [reportTreeMap]
-    );
+            }
+            return Array.from(treeReportsToExpand);
+        });
+        setHighlightedReportId(data.parentId);
+    }, []);
 
-    const handleSelectedItem = useCallback(
-        (report: ReportItem) => {
-            setSelectedReport((prevSelectedReport) => {
-                if (prevSelectedReport.id !== report.id) {
-                    return { id: report.id, type: reportTreeMap[report.id].type };
-                }
-                return prevSelectedReport;
-            });
-        },
-        [reportTreeMap]
-    );
+    const handleSelectedItem = useCallback((report: ReportItem) => {
+        setSelectedReport((prevSelectedReport) => {
+            if (prevSelectedReport.id !== report.id) {
+                return { id: report.id, type: reportTreeMap.current[report.id].type };
+            }
+            return prevSelectedReport;
+        });
+    }, []);
 
     return (
         <Grid
