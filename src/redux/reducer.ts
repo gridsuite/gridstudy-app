@@ -1600,7 +1600,11 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(ADD_TO_RECENT_GLOBAL_FILTERS, (state, action: AddToRecentGlobalFiltersAction) => {
         let newRecentGlobalFilters = [...state.recentGlobalFilters];
         action.globalFilters.forEach((filter) => {
-            if (!newRecentGlobalFilters.some((obj) => obj.label === filter.label && obj.type === filter.type)) {
+            if (
+                !newRecentGlobalFilters.some(
+                    (obj) => obj.label === filter.label && obj.filterType === filter.filterType
+                )
+            ) {
                 newRecentGlobalFilters.push(filter);
             }
         });
