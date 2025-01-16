@@ -21,13 +21,14 @@ import { UUID } from 'crypto';
 import type { LiteralUnion, UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import {
+import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
+import type {
     AppState,
     CurrentTreeNode,
     EquipmentUpdateType,
     NodeAlias,
-    OneBusShortCircuitAnalysisDiagram,
     NodeSelectionForCopy,
+    OneBusShortCircuitAnalysisDiagram,
     StudyIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
@@ -243,17 +244,17 @@ export function resetEquipmentsPostLoadflow(): ResetEquipmentsPostLoadflowAction
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 export type MapEquipmentsCreatedAction = Readonly<Action<typeof MAP_EQUIPMENTS_CREATED>> & {
     mapEquipments: GSMapEquipments;
-    newLines?: MutableUnknownArray;
-    newTieLines?: MutableUnknownArray;
-    newSubstations?: MutableUnknownArray;
-    newHvdcLines?: MutableUnknownArray;
+    newLines?: MapLine[];
+    newTieLines?: MapTieLine[];
+    newSubstations?: MapSubstation[];
+    newHvdcLines?: MapHvdcLine[];
 };
 export function mapEquipmentsCreated(
     mapEquipments: GSMapEquipments,
-    newLines?: MutableUnknownArray,
-    newTieLines?: MutableUnknownArray,
-    newSubstations?: MutableUnknownArray,
-    newHvdcLines?: MutableUnknownArray
+    newLines?: MapLine[],
+    newTieLines?: MapTieLine[],
+    newSubstations?: MapSubstation[],
+    newHvdcLines?: MapHvdcLine[]
 ): MapEquipmentsCreatedAction {
     return {
         type: MAP_EQUIPMENTS_CREATED,
@@ -678,9 +679,9 @@ export function setEventScenarioDrawerOpen(isEventScenarioDrawerOpen: boolean): 
 
 export const CENTER_ON_SUBSTATION = 'CENTER_ON_SUBSTATION';
 export type CenterOnSubstationAction = Readonly<Action<typeof CENTER_ON_SUBSTATION>> & {
-    centerOnSubstation: { to: unknown };
+    centerOnSubstation: { to: string };
 };
-export function centerOnSubstation(substationId: unknown): CenterOnSubstationAction {
+export function centerOnSubstation(substationId: string): CenterOnSubstationAction {
     return {
         type: CENTER_ON_SUBSTATION,
         centerOnSubstation: { to: substationId },
