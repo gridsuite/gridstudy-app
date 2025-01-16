@@ -6,15 +6,13 @@
  */
 
 import { FunctionComponent, SyntheticEvent, useCallback } from 'react';
-import { Box, FilterOptionsState } from '@mui/material';
-import { Autocomplete, Chip, InputAdornment, TextField } from '@mui/material';
+import { Autocomplete, Box, Chip, FilterOptionsState, InputAdornment, TextField, Theme } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
-import { Theme } from '@mui/material';
 import { AppState } from '../../../redux/reducer';
 import { AppDispatch } from '../../../redux/store';
 
@@ -105,7 +103,7 @@ export enum FilterType {
 
 export interface Filter {
     label: string;
-    type: string;
+    filterType: string;
     recent?: boolean;
 }
 
@@ -123,13 +121,16 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
     const recentGlobalFilters = useSelector((state: AppState) => state.recentGlobalFilters);
 
     const getOptionLabel = useCallback(
-        (option: Filter) => (option.type === FilterType.COUNTRY ? translate(option.label) : option.label + ' kV'),
+        (option: Filter) => (option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label + ' kV'),
         [translate]
     );
 
     const getChipStyle = useCallback(
         (filter: Filter) =>
-            mergeSx(styles.chip, filter.type === FilterType.COUNTRY ? styles.chipCountry : styles.chipVoltageLevel),
+            mergeSx(
+                styles.chip,
+                filter.filterType === FilterType.COUNTRY ? styles.chipCountry : styles.chipVoltageLevel
+            ),
         []
     );
 
@@ -156,7 +157,8 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                         let isRecent = false;
                         if (recentGlobalFilters && recentGlobalFilters.length > 0) {
                             isRecent = recentGlobalFilters.some(
-                                (recent: Filter) => recent.label === filter.label && recent.type === filter.type
+                                (recent: Filter) =>
+                                    recent.label === filter.label && recent.filterType === filter.filterType
                             );
                         }
                         return { ...filter, recent: isRecent };
@@ -228,13 +230,13 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 }}
                 // Allows to find the corresponding chips without taking into account the recent status
                 isOptionEqualToValue={(option: Filter, value: Filter) =>
-                    option.label === value.label && option.type === value.type
+                    option.label === value.label && option.filterType === value.filterType
                 }
                 // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
                 filterOptions={(options: Filter[], state: FilterOptionsState<Filter>) =>
                     options.filter((option) => {
                         const labelToMatch =
-                            option.type === FilterType.COUNTRY ? translate(option.label) : option.label;
+                            option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
                         return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
                     })
                 }

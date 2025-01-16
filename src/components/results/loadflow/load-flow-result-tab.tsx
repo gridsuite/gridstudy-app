@@ -95,7 +95,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                 setCountriesFilter(
                     countryCodes.map((countryCode: string) => ({
                         label: countryCode,
-                        type: FilterType.COUNTRY,
+                        filterType: FilterType.COUNTRY,
                     }))
                 );
             })
@@ -110,7 +110,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                 setVoltageLevelsFilter(
                     nominalVoltages.map((nominalV: number) => ({
                         label: nominalV.toString(),
-                        type: FilterType.VOLTAGE_LEVEL,
+                        filterType: FilterType.VOLTAGE_LEVEL,
                     }))
                 );
             })
@@ -237,12 +237,12 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
         if (value) {
             const nominalVs = new Set(
                 value
-                    .filter((filter: Filter) => filter.type === FilterType.VOLTAGE_LEVEL)
+                    .filter((filter: Filter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
                     .map((filter: Filter) => filter.label)
             );
             const countryCodes = new Set(
                 value
-                    .filter((filter: Filter) => filter.type === FilterType.COUNTRY)
+                    .filter((filter: Filter) => filter.filterType === FilterType.COUNTRY)
                     .map((filter: Filter) => filter.label)
             );
             newGlobalFilter.nominalV = [...nominalVs];
