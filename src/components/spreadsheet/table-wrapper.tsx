@@ -496,16 +496,21 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [sortConfig, mergedColumnData]);
 
     const toSpreadsheetEquipmentType = useCallback(
-        (tableName: string): SpreadsheetEquipmentType => {
-            return tablesDefinitions.find(
-                (spreadsheetTabDefinition) => spreadsheetTabDefinition.name === tableName
-            )?.[0];
+        (tableName: string): SpreadsheetEquipmentType | undefined => {
+            return tablesDefinitions.find((spreadsheetTabDefinition) => spreadsheetTabDefinition.name === tableName)
+                ?.type;
         },
         [tablesDefinitions]
     );
 
-    const updateRowDataWithAdditionalEquipments = useCallback(
-        (equipmentsWithCustomColumnInfo) => {
+    useEffect(() => {
+        if (disabled || !equipments) {
+            return;
+        }
+
+        const equipmentType = toSpreadsheetEquipmentType(tablesNames[tabIndex]);
+        let equipmentsWithCustomColumnInfo = [...equipments];
+        if (equipmentType) {
             Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach((value) => {
                 const nodeAlias = value[0];
                 const equipmentsToAdd = value[1][equipmentType];
@@ -524,19 +529,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 }
             });
             setRowData(equipmentsWithCustomColumnInfo);
-        },
-        [additionalEquipmentsByNodesForCustomColumns, equipmentType]
-    );
-
-    useEffect(() => {
-        if (disabled || !equipments) {
-            return;
-        }
-
-        const equipmentType = toSpreadsheetEquipmentType(tablesNames[tabIndex]);
-        let equipmentsWithCustomColumnInfo = [...equipments];
-        if (equipmentType) {
-            updateRowDataWithAdditionalEquipments(equipmentsWithCustomColumnInfo);
         }
 
         // To handle cases where a "customSpreadsheet" tab is opened.
@@ -550,7 +542,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         equipments,
         tablesNames,
         toSpreadsheetEquipmentType,
-        updateRowDataWithAdditionalEquipments,
+        additionalEquipmentsByNodesForCustomColumns,
     ]);
 
     const handleSwitchTab = useCallback(

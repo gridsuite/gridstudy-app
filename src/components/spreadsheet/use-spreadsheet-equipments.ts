@@ -134,10 +134,9 @@ export const useSpreadsheetEquipments = (
     ]);
 
     const toSpreadsheetEquipmentType = useCallback(
-        (tableName: string): SpreadsheetEquipmentType => {
-            return tablesDefinitions.find(
-                (spreadsheetTabDefinition) => spreadsheetTabDefinition.name === tableName
-            )?.[0];
+        (tableName: string): SpreadsheetEquipmentType | undefined => {
+            return tablesDefinitions.find((spreadsheetTabDefinition) => spreadsheetTabDefinition.name === tableName)
+                ?.type;
         },
         [tablesDefinitions]
     );
@@ -153,6 +152,7 @@ export const useSpreadsheetEquipments = (
                         fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
                     }
                     dispatch(loadEquipments(equipment.type, fetchedEquipments));
+                    setIsFetching(false);
                 })
                 .catch((err) => {
                     setErrorMessage(err);
