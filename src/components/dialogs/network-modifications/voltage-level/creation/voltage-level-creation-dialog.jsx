@@ -216,7 +216,7 @@ const VoltageLevelCreationDialog = ({
             const switchesBetweenSections =
                 voltageLevel.switchKinds?.map((switchKind) => intl.formatMessage({ id: switchKind })).join(' / ') || '';
 
-            const equipmentId = voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID];
+            const equipmentId = (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : '');
             const equipmentName = voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME];
             const substationId = isSubstationCreation ? null : voltageLevel[SUBSTATION_ID];
 
@@ -249,11 +249,15 @@ const VoltageLevelCreationDialog = ({
                 [SUBSTATION_CREATION_ID, voltageLevel.substationCreation?.equipmentId],
                 [SUBSTATION_NAME, voltageLevel.substationCreation?.equipmentName],
                 [COUNTRY, voltageLevel.substationCreation?.country],
-                [ADDITIONAL_PROPERTIES, voltageLevel.substationCreation?.properties],
             ];
             substationKeys.forEach(([key, value]) => {
                 setValue(`${SUBSTATION_CREATION}.${key}`, fromCopy ? null : value);
             });
+            setValue(
+                `${SUBSTATION_CREATION}.${ADDITIONAL_PROPERTIES}`,
+                fromCopy ? [] : voltageLevel.substationCreation?.properties
+            );
+
             if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
