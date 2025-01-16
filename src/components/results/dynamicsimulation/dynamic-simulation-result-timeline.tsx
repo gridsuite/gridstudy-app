@@ -23,23 +23,19 @@ import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
 
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
-import {
-    dynamicSimulationResultInvalidations,
-    LARGE_COLUMN_WIDTH,
-    MEDIUM_COLUMN_WIDTH,
-    MIN_COLUMN_WIDTH,
-} from './utils/dynamic-simulation-result-utils';
+import { dynamicSimulationResultInvalidations } from './utils/dynamic-simulation-result-utils';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { setDynamicSimulationResultFilter } from 'redux/actions';
 import {
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     TIMELINE,
 } from 'utils/store-sort-filter-fields';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../spreadsheet/utils/constants';
 
 const styles = {
     loader: {
