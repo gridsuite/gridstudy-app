@@ -6,7 +6,13 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { CustomFormProvider, isObjectEmpty, TreeViewFinderNodeProps, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    isObjectEmpty,
+    TreeViewFinderNodeProps,
+    UniqueNameCheckInput,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { Grid, Button, Typography, Box } from '@mui/material';
 import { CASE_NAME, CASE_ID, NAME } from '../utils/field-constants';
@@ -18,7 +24,6 @@ import { AppState } from 'redux/reducer';
 import ImportCaseDialog from './import-case-dialog';
 import ModificationDialog from './commons/modificationDialog';
 import { rootNetworkNameExists } from 'services/root-network';
-import { UniqueCheckNameInput } from './commons/unique-check--name-input';
 
 export interface FormData {
     [NAME]: string;
@@ -147,7 +152,7 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
             >
                 <Grid container spacing={2} marginTop={'auto'} direction="column">
                     <Grid item>
-                        <UniqueCheckNameInput
+                        <UniqueNameCheckInput
                             name={NAME}
                             label={'Name'}
                             autoFocus

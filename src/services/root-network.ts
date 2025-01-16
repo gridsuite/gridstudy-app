@@ -62,30 +62,13 @@ export function deleteRootNetworks(studyUuid: UUID, rootNetworkUuids: UUID[]) {
         body: JSON.stringify(rootNetworkUuids),
     });
 }
-// export function rootNetworkNameExists(studyUuid: UUID, name: string) {
-//     const existsElementUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/root-networks/${encodeURIComponent(name)}`;
-
-//     console.debug(existsElementUrl);
-//     return backendFetch(existsElementUrl, { method: 'head' }).then((response) => {
-//         return response.status !== 204; // HTTP 204 : No-content
-//     });
-// }
 
 export function rootNetworkNameExists(studyUuid: UUID, name: string): Promise<boolean> {
-    const existsElementUrl =
+    const rootNetworkNameExistsUrl =
         getStudyUrl(studyUuid) +
         '/root-networks?' +
         new URLSearchParams({
             name: name,
         });
-    return backendFetch(existsElementUrl, { method: 'head' });
-}
-
-export function rootNetworkNameExists1(studyUuid: UUID, rootNetworkName: string) {
-    const existsElementUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/elements/${rootNetworkName}`;
-
-    console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'head' }).then((response) => {
-        return response.status !== 204; // HTTP 204 : No-content
-    });
+    return backendFetch(rootNetworkNameExistsUrl, { method: 'head' });
 }
