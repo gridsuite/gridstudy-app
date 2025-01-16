@@ -137,6 +137,7 @@ export type AppActions =
     | UpdateCustomColumnsDefinitionsAction
     | RemoveCustomColumnsDefinitionsAction
     | UpdateCustomColumnsNodesAliasesAction
+    | AddEquipmentsByNodesForCustomColumnsAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction;
 

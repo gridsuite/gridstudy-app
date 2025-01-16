@@ -157,6 +157,10 @@ interface TableWrapperProps {
     disabled: boolean;
 }
 
+interface RecursiveIdentifiable extends Identifiable {
+    [alias: string]: Identifiable | unknown;
+}
+
 const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     studyUuid,
     currentNode,
@@ -493,52 +497,60 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const toSpreadsheetEquipmentType = useCallback(
         (tableName: string): SpreadsheetEquipmentType => {
-            return tablesDefinitions.filter(
+            return tablesDefinitions.find(
                 (spreadsheetTabDefinition) => spreadsheetTabDefinition.name === tableName
-            )[0].type;
+            )?.[0];
         },
         [tablesDefinitions]
+    );
+
+    const updateRowDataWithAdditionalEquipments = useCallback(
+        (equipmentsWithCustomColumnInfo) => {
+            Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach((value) => {
+                const nodeAlias = value[0];
+                const equipmentsToAdd = value[1][equipmentType];
+                if (equipmentsToAdd) {
+                    equipmentsToAdd.forEach((equipmentToAdd) => {
+                        let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(
+                            (equipmentWithCustomColumnInfo) => equipmentWithCustomColumnInfo.id === equipmentToAdd.id
+                        );
+                        let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
+                        if (matchingEquipment) {
+                            let equipmentWithAddedInfo: RecursiveIdentifiable = { ...matchingEquipment };
+                            equipmentWithAddedInfo[nodeAlias] = equipmentToAdd;
+                            equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
+                        }
+                    });
+                }
+            });
+            setRowData(equipmentsWithCustomColumnInfo);
+        },
+        [additionalEquipmentsByNodesForCustomColumns, equipmentType]
     );
 
     useEffect(() => {
         if (disabled || !equipments) {
             return;
         }
+
+        const equipmentType = toSpreadsheetEquipmentType(tablesNames[tabIndex]);
+        let equipmentsWithCustomColumnInfo = [...equipments];
+        if (equipmentType) {
+            updateRowDataWithAdditionalEquipments(equipmentsWithCustomColumnInfo);
+        }
+
         // To handle cases where a "customSpreadsheet" tab is opened.
         // This ensures that the grid correctly displays data specific to the custom tab.
         if (gridRef.current?.api) {
-            gridRef.current.api.setGridOption('rowData', equipments);
+            gridRef.current.api.setGridOption('rowData', equipmentsWithCustomColumnInfo);
         }
-
-        const equipmentType = toSpreadsheetEquipmentType(tablesNames[tabIndex]);
-
-        let equipmentsWithCustomColumnInfo = [...equipments];
-
-        Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach((value) => {
-            const nodeAlias: string = value[0];
-            const equipmentsToAdd = value[1][equipmentType];
-            if (equipmentsToAdd) {
-                equipmentsToAdd.forEach((equipmentToAdd) => {
-                    let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(
-                        (equipmentWithCustomColumnInfo) => equipmentWithCustomColumnInfo.id === equipmentToAdd.id
-                    );
-                    let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
-                    if (matchingEquipment) {
-                        let equipmentWithAddedInfo: any = { ...matchingEquipment };
-                        equipmentWithAddedInfo[nodeAlias] = equipmentToAdd;
-                        equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
-                    }
-                });
-            }
-        });
-        setRowData(equipmentsWithCustomColumnInfo);
     }, [
         tabIndex,
         disabled,
         equipments,
-        additionalEquipmentsByNodesForCustomColumns,
         tablesNames,
         toSpreadsheetEquipmentType,
+        updateRowDataWithAdditionalEquipments,
     ]);
 
     const handleSwitchTab = useCallback(

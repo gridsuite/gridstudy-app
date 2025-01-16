@@ -30,7 +30,7 @@ export const TableTextInput = ({ name, style, showErrorMsg, inputProps, ...props
             value={value}
             onChange={handleInputChange}
             error={!!error?.message}
-            helperText={showErrorMsg ? (error?.message ? intl.formatMessage({ id: error.message }) : '') : ''}
+            helperText={showErrorMsg && (error?.message ? intl.formatMessage({ id: error.message }) : '')}
             size={'small'}
             fullWidth
             inputRef={ref}

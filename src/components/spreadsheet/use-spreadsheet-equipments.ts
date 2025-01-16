@@ -135,9 +135,9 @@ export const useSpreadsheetEquipments = (
 
     const toSpreadsheetEquipmentType = useCallback(
         (tableName: string): SpreadsheetEquipmentType => {
-            return tablesDefinitions.filter(
+            return tablesDefinitions.find(
                 (spreadsheetTabDefinition) => spreadsheetTabDefinition.name === tableName
-            )[0].type;
+            )?.[0];
         },
         [tablesDefinitions]
     );
@@ -178,47 +178,48 @@ export const useSpreadsheetEquipments = (
             const customColumns = currentTabCustomColumnsDef.columns;
             let fetchers: Promise<any>[] = [];
             let additionalEquipmentsByNodes: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>> = {};
-
-            customColumns.forEach((column) => {
-                const pattern: string = aliases.map((alias) => `\\b${alias}\\b\\.`).join('|'); // pattern to find the aliases in the expression
-                const regex = new RegExp(pattern, 'g');
-                const aliasesFoundInFormula = column.formula?.match(regex);
-                aliasesFoundInFormula?.forEach((aliasWithDot) => {
-                    const alias = aliasWithDot.slice(0, -1); //because we searched for "alias." with the regex
-                    //To avoid fetching multiple time the same data because it's used in multiple column
-                    if (!aliasesAlreadyFound.includes(alias)) {
-                        aliasesAlreadyFound.push(alias);
-                        const nodeNameAssociatedToAlias = customColumnsNodesAliases.find(
-                            (nodeAlias) => nodeAlias.alias === alias
-                        )?.name;
-                        const nodeIdAssociatedToAlias = treeModel?.treeNodes?.find(
-                            (treeNode) => treeNode.data.label === nodeNameAssociatedToAlias
-                        )?.id;
-                        if (nodeIdAssociatedToAlias) {
-                            const fetcherPromises = getFetchers(spreadsheetEquipmentType).map((fetcher) =>
-                                fetcher(studyUuid, nodeIdAssociatedToAlias, [])
-                            );
-                            fetchers.push(fetcherPromises[0]);
-                            fetcherPromises[0].then((res) => {
-                                let fetchedEquipments = res.flat();
-                                if (formatFetchedEquipments) {
-                                    fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
-                                    let fetchedEquipmentByType: Record<SpreadsheetEquipmentType, Identifiable[]> =
-                                        {} as Record<SpreadsheetEquipmentType, Identifiable[]>;
-                                    fetchedEquipmentByType[spreadsheetEquipmentType] = fetchedEquipments;
-                                    additionalEquipmentsByNodes = { ...additionalEquipmentsByNodes };
-                                    additionalEquipmentsByNodes[alias] = fetchedEquipmentByType;
-                                }
-                            });
+            if (spreadsheetEquipmentType) {
+                customColumns.forEach((column) => {
+                    const pattern: string = aliases.map((alias) => `\\b${alias}\\b\\.`).join('|'); // pattern to find the aliases in the expression
+                    const regex = new RegExp(pattern, 'g');
+                    const aliasesFoundInFormula = column.formula?.match(regex);
+                    aliasesFoundInFormula?.forEach((aliasWithDot) => {
+                        const alias = aliasWithDot.slice(0, -1); //because we searched for "alias." with the regex
+                        //To avoid fetching multiple time the same data because it's used in multiple column
+                        if (!aliasesAlreadyFound.includes(alias)) {
+                            aliasesAlreadyFound.push(alias);
+                            const nodeNameAssociatedToAlias = customColumnsNodesAliases.find(
+                                (nodeAlias) => nodeAlias.alias === alias
+                            )?.name;
+                            const nodeIdAssociatedToAlias = treeModel?.treeNodes?.find(
+                                (treeNode) => treeNode.data.label === nodeNameAssociatedToAlias
+                            )?.id;
+                            if (nodeIdAssociatedToAlias) {
+                                const fetcherPromises = getFetchers(spreadsheetEquipmentType).map((fetcher) =>
+                                    fetcher(studyUuid, nodeIdAssociatedToAlias, [])
+                                );
+                                fetchers.push(fetcherPromises[0]);
+                                fetcherPromises[0].then((res) => {
+                                    let fetchedEquipments = res.flat();
+                                    if (formatFetchedEquipments) {
+                                        fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
+                                        let fetchedEquipmentByType: Record<SpreadsheetEquipmentType, Identifiable[]> =
+                                            {} as Record<SpreadsheetEquipmentType, Identifiable[]>;
+                                        fetchedEquipmentByType[spreadsheetEquipmentType] = fetchedEquipments;
+                                        additionalEquipmentsByNodes = { ...additionalEquipmentsByNodes };
+                                        additionalEquipmentsByNodes[alias] = fetchedEquipmentByType;
+                                    }
+                                });
+                            }
                         }
-                    }
+                    });
                 });
-            });
 
-            //so we only dispatch once all the fetches are over
-            Promise.all(fetchers).then(() => {
-                dispatch(addAdditionalEquipmentsByNodesForCustomColumns(additionalEquipmentsByNodes));
-            });
+                //so we only dispatch once all the fetches are over
+                Promise.all(fetchers).then(() => {
+                    dispatch(addAdditionalEquipmentsByNodesForCustomColumns(additionalEquipmentsByNodes));
+                });
+            }
         }
     }, [
         dispatch,

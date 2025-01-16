@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect } from 'react';
 import { useIntl } from 'react-intl';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, SxProps, Theme } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
 import { CancelButton, CustomFormProvider, SubmitButton, UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 
@@ -36,7 +36,7 @@ const styles = {
     },
     field: { width: '70%' },
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
-} as const satisfies Record<string, SxProps<Theme>>;
+};
 
 export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnNodesDialogProps>) {
     const dispatch = useDispatch<AppDispatch>();
@@ -49,7 +49,7 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
         defaultValues: initialCustomColumnNodesForm,
         resolver: yupResolver(customColumnNodesFormSchema),
     });
-    const { reset } = formMethods;
+    const { reset, handleSubmit } = formMethods;
 
     const onValidate = (data: any) => {
         onClose();
@@ -101,8 +101,8 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
                     <Grid container spacing={0.5}>
                         <Grid item xs>
                             <Box sx={styles.actionButtons}>
-                                <CancelButton onClick={open.setFalse} />
-                                <SubmitButton onClick={formMethods.handleSubmit(onValidate)} variant="outlined" />
+                                <CancelButton onClick={onClose} />
+                                <SubmitButton onClick={handleSubmit(onValidate)} variant="outlined" />
                             </Box>
                         </Grid>
                     </Grid>
