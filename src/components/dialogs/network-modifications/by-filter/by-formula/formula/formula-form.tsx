@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent } from 'react';
-import { AutocompleteInput, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
+import { AutocompleteInput, DirectoryItemsInput, ElementType, useFormatLabelWithUnit } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
@@ -22,7 +22,6 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { Grid } from '@mui/material';
 import GridItem from '../../../../commons/grid-item';
-import useFormatLabelWithUnit from '../../../../../../hooks/use-format-label-with-unit';
 
 interface FormulaProps {
     name: string;

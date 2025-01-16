@@ -237,7 +237,7 @@ export async function createMapContingencyList(
             }
 
             const selectedEquipmentsIds = selectedEquipments.map((element) => element.id);
-            const elementsIds = await fetchNetworkElementsInfos(
+            const elementsIds = await fetchNetworkElementsInfos<EquipmentInfos[]>(
                 studyUuid,
                 currentNodeUuid,
                 selectedEquipmentsIds,
