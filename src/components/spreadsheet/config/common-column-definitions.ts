@@ -32,6 +32,7 @@ export const textColumnDefinition = (displayName: string, tab: string): ColDef =
                     updateFilterCallback: updateFilters,
                     dataType: FILTER_DATA_TYPES.TEXT,
                     comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    debounceMs: 200,
                 },
             },
         },
@@ -41,6 +42,7 @@ export const textColumnDefinition = (displayName: string, tab: string): ColDef =
 
 export const numberColumnDefinition = (displayName: string, tab: string, fractionDigits?: number): ColDef => {
     return {
+        filter: 'agNumberColumnFilter',
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             displayName,
@@ -56,6 +58,7 @@ export const numberColumnDefinition = (displayName: string, tab: string, fractio
                     updateFilterCallback: updateFilters,
                     dataType: FILTER_DATA_TYPES.NUMBER,
                     comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    debounceMs: 200,
                 },
             },
         },
@@ -104,6 +107,7 @@ export const booleanColumnDefinition = (displayName: string, tab: string): ColDe
                     tab,
                     dataType: FILTER_DATA_TYPES.BOOLEAN,
                     updateFilterCallback: updateFilters,
+                    debounceMs: 50,
                 },
             },
         },
