@@ -25,23 +25,23 @@ export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'v',
-            ...numberColumnDefinition('magnitude', 'Magnitude', tab, 1),
+            ...numberColumnDefinition('magnitude', 'Voltage magnitude', tab, 1),
         },
         {
             field: 'angle',
-            ...numberColumnDefinition('angle', 'Angle', tab, 1),
+            ...numberColumnDefinition('angle', 'Voltage angle', tab, 1),
         },
         {
             field: 'connectedComponentNum',
-            ...numberColumnDefinition('connectedComponentNum', 'CC Num', tab, 0),
+            ...numberColumnDefinition('connectedComponentNum', 'connected component', tab, 0),
         },
         {
             field: 'synchronousComponentNum',
-            ...numberColumnDefinition('synchronousComponentNum', 'SC Num', tab, 0),
+            ...numberColumnDefinition('synchronousComponentNum', 'Synchronous component', tab, 0),
         },
         {
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
+            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
         },
         {
             field: 'country',

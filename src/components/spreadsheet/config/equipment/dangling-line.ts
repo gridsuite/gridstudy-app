@@ -30,7 +30,7 @@ export const DANGLING_LINE_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
+            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
         },
         {
             id: 'Country',
@@ -44,23 +44,23 @@ export const DANGLING_LINE_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'pairingKey',
-            ...textColumnDefinition('pairingKey', 'Pairing Key', tab),
+            ...textColumnDefinition('pairingKey', 'UCTE Xnode', tab),
         },
         {
             field: 'p',
-            ...numberColumnDefinition('activePower', 'Active Power', tab, 1),
+            ...numberColumnDefinition('activePower', 'p (MW)', tab, 1),
         },
         {
             field: 'q',
-            ...numberColumnDefinition('reactivePower', 'Reactive Power', tab, 1),
+            ...numberColumnDefinition('reactivePower', 'q (MW)', tab, 1),
         },
         {
             field: 'p0',
-            ...numberColumnDefinition('p0', 'p0', tab, 1),
+            ...numberColumnDefinition('p0', 'Constant p (MW)', tab, 1),
         },
         {
             field: 'q0',
-            ...numberColumnDefinition('q0', 'q0', tab, 1),
+            ...numberColumnDefinition('q0', 'Constant q (MVar)', tab, 1),
         },
         {
             field: 'terminalConnected',

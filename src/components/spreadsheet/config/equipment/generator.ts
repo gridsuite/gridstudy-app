@@ -46,7 +46,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'voltageLevelId',
-            ...textColumnDefinition('voltageLevelId', 'Voltage Level ID', tab),
+            ...textColumnDefinition('voltageLevelId', 'Voltage level ID', tab),
         },
         {
             field: 'country',
@@ -62,84 +62,74 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'p',
-            ...numberColumnDefinition('activePower', 'Active Power', tab, 1),
+            ...numberColumnDefinition('activePower', 'p (MW)', tab, 1),
         },
         {
             field: 'q',
-            ...numberColumnDefinition('reactivePower', 'Reactive Power', tab, 1),
+            ...numberColumnDefinition('reactivePower', 'q (MVar)', tab, 1),
         },
         {
             valueGetter: (params) => params.data?.activePowerControl?.participate?.toString(),
-            ...booleanColumnDefinition('activePowerControl', 'Active Power Control', tab),
+            ...booleanColumnDefinition('activePowerControl', 'Active power control', tab),
         },
         {
             field: 'activePowerControl.droop',
-            ...numberColumnDefinition('activePowerRegulationDroop', 'Active Power Regulation Droop', tab, 1),
+            ...numberColumnDefinition('activePowerRegulationDroop', 'Active power regulation droop', tab, 1),
         },
         {
             field: 'minP',
-            ...numberColumnDefinition('minP', 'Min P', tab, 1),
+            ...numberColumnDefinition('minP', 'Min P (MW)', tab, 1),
         },
         {
             field: 'maxP',
-            ...numberColumnDefinition('maxP', 'Max P', tab, 1),
+            ...numberColumnDefinition('maxP', 'Max P (MW)', tab, 1),
         },
         {
             field: 'targetP',
-            ...numberColumnDefinition('targetP', 'Active Power Setpoint', tab, 1),
+            ...numberColumnDefinition('targetP', 'Target P (MW)', tab, 1),
         },
         {
             field: 'targetQ',
-            ...numberColumnDefinition('targetQ', 'Reactive Power Setpoint', tab, 1),
+            ...numberColumnDefinition('targetQ', 'Target Q (MVar)', tab, 1),
         },
         {
             valueGetter: (params) => params.data?.voltageRegulatorOn?.toString(),
-            ...booleanColumnDefinition('voltageRegulatorOn', 'voltageRegulationOn', tab),
+            ...booleanColumnDefinition('voltageRegulatorOn', 'Voltage regulation', tab),
         },
         {
             field: 'targetV',
-            ...numberColumnDefinition('targetV', 'Voltage Setpoint', tab, 1),
+            ...numberColumnDefinition('targetV', 'Target V (kV)', tab, 1),
         },
         {
             valueGetter: (params) => {
                 const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
                 return isNaN(qPercent) ? 0 : qPercent;
             },
-            ...numberColumnDefinition(
-                'ReactivePercentageVoltageRegulation',
-                'Reactive Percentage Voltage Regulation',
-                tab,
-                1
-            ),
+            ...numberColumnDefinition('ReactivePercentageVoltageRegulation', 'Reactive percentage', tab, 1),
         },
         {
             field: 'generatorShortCircuit.directTransX',
-            ...numberColumnDefinition('directTransX', 'Direct Transit X', tab, 1),
+            ...numberColumnDefinition('directTransX', 'Transient reactance (Ω)', tab, 1),
         },
         {
             field: 'generatorShortCircuit.stepUpTransformerX',
-            ...numberColumnDefinition('stepUpTransformerX', 'Step Up Transformer X', tab, 1),
+            ...numberColumnDefinition('stepUpTransformerX', 'Transformer reactance (Ω)', tab, 1),
         },
         {
             field: 'generatorStartup.plannedActivePowerSetPoint',
-            ...numberColumnDefinition(
-                'generatorStartup.plannedActivePowerSetPoint',
-                'plannedActivePowerSetPoint',
-                tab,
-                1
-            ),
+            ...numberColumnDefinition('plannedActivePowerSetPoint', 'Planning P (MW)', tab, 1),
         },
         {
             field: 'generatorStartup.marginalCost',
-            ...numberColumnDefinition('marginalCost', 'Marginal Cost', tab, 1),
+            ...numberColumnDefinition('marginalCost', 'Startup Cost', tab, 1),
         },
         {
             field: 'generatorStartup.plannedOutageRate',
-            ...numberColumnDefinition('plannedOutageRate', 'Planned Outage Rate', tab, 2),
+            ...numberColumnDefinition('plannedOutageRate', 'Planning outage rate', tab, 2),
         },
         {
             field: 'generatorStartup.forcedOutageRate',
-            ...numberColumnDefinition('forcedOutageRate', 'Forced Outage Rate', tab, 2),
+            ...numberColumnDefinition('forcedOutageRate', 'Forced outage rate', tab, 2),
         },
         {
             valueGetter: (params) => params.data?.terminalConnected?.toString(),
@@ -147,11 +137,11 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'RegulationTypeText',
-            ...textColumnDefinition('RegulationTypeText', 'Regulation Type', tab),
+            ...textColumnDefinition('RegulationTypeText', 'Regulation type', tab),
         },
         {
             valueGetter: RegulatingTerminalCellGetter,
-            ...textColumnDefinition('RegulatingTerminalGenerator', 'Regulating Terminal', tab),
+            ...textColumnDefinition('RegulatingTerminalGenerator', 'Regulated terminal', tab),
         },
         genericColumnOfPropertiesReadonly(tab),
     ],

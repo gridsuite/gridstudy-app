@@ -30,15 +30,15 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'voltageLevelId1',
-            ...textColumnDefinition('voltageLevelId1', 'Voltage Level ID side 1', tab),
+            ...textColumnDefinition('voltageLevelId1', 'Voltage level ID 1', tab),
         },
         {
             field: 'voltageLevelId2',
-            ...textColumnDefinition('voltageLevelId2', 'Voltage Level ID side 2', tab),
+            ...textColumnDefinition('voltageLevelId2', 'Voltage level ID 2', tab),
         },
         {
             field: 'voltageLevelId3',
-            ...textColumnDefinition('voltageLevelId3', 'Voltage Level ID side 3', tab),
+            ...textColumnDefinition('voltageLevelId3', 'Voltage level ID 3', tab),
         },
         {
             field: 'country',
@@ -46,39 +46,39 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             field: 'nominalV1',
-            ...numberColumnDefinition('nominalV1', 'Nominal V side 1', tab, 0),
+            ...numberColumnDefinition('nominalV1', 'Nominal voltage 1 (kV)', tab, 0),
         },
         {
             field: 'nominalV2',
-            ...numberColumnDefinition('nominalV2', 'Nominal V side 2', tab, 0),
+            ...numberColumnDefinition('nominalV2', 'Nominal voltage 2 (kV)', tab, 0),
         },
         {
             field: 'nominalV3',
-            ...numberColumnDefinition('nominalV3', 'Nominal V side 3', tab, 0),
+            ...numberColumnDefinition('nominalV3', 'Nominal voltage 3 (kV)', tab, 0),
         },
         {
             field: 'p1',
-            ...numberColumnDefinition('ActivePowerT3WSide1', 'Active Power side 1', tab, 1),
+            ...numberColumnDefinition('ActivePowerT3WSide1', 'p1 (MW)', tab, 1),
         },
         {
             field: 'p2',
-            ...numberColumnDefinition('ActivePowerT3WSide2', 'Active Power side 2', tab, 1),
+            ...numberColumnDefinition('ActivePowerT3WSide2', 'p2 (MW)', tab, 1),
         },
         {
             field: 'p3',
-            ...numberColumnDefinition('ActivePowerT3WSide3', 'Active Power side 3', tab, 1),
+            ...numberColumnDefinition('ActivePowerT3WSide3', 'p3 (MW)', tab, 1),
         },
         {
             field: 'q1',
-            ...numberColumnDefinition('ReactivePowerT3WSide1', 'Reactive Power side 1', tab, 1),
+            ...numberColumnDefinition('ReactivePowerT3WSide1', 'q1 (MW)', tab, 1),
         },
         {
             field: 'q2',
-            ...numberColumnDefinition('ReactivePowerT3WSide2', 'Reactive Power side 2', tab, 1),
+            ...numberColumnDefinition('ReactivePowerT3WSide2', 'q2 (MW)', tab, 1),
         },
         {
             field: 'q3',
-            ...numberColumnDefinition('ReactivePowerT3WSide3', 'Reactive Power side 3', tab, 1),
+            ...numberColumnDefinition('ReactivePowerT3WSide3', 'q3 (MW)', tab, 1),
         },
         {
             field: 'hasLoadTapChanging1Capabilities',
