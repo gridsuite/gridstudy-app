@@ -135,7 +135,7 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick }: LogTab
     }, [severities, dispatch, reportType, filterSelector, fetchNodeSeverities, selectedReport]);
 
     useEffect(() => {
-        if (selectedReport) {
+        if (selectedReport.id && selectedReport.type) {
             refreshLogsOnSelectedReport();
         }
     }, [refreshLogsOnSelectedReport, selectedReport]);
