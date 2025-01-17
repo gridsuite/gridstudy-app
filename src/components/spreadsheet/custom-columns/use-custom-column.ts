@@ -10,7 +10,6 @@ import { all, bignumber, create } from 'mathjs';
 import { useSelector } from 'react-redux';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import { DefaultCellRenderer } from '../utils/cell-renderers';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { ColDef } from 'ag-grid-community';
@@ -91,7 +90,6 @@ export function useCustomColumn(tabIndex: number) {
                         table: SPREADSHEET_SORT_STORE,
                         tab: tablesDefinitionIndexes.get(tabIndex)!.name,
                     },
-                    tabIndex,
                     menu: {
                         Menu: CustomColumnMenu,
                         menuParams: {
@@ -100,8 +98,9 @@ export function useCustomColumn(tabIndex: number) {
                         },
                     },
                 },
-                cellRenderer: DefaultCellRenderer,
                 valueGetter: createValueGetter(colWithFormula),
+                editable: false,
+                suppressMovable: true,
             };
         });
     }, [customColumnsDefinitions, tablesDefinitionIndexes, tabIndex, createValueGetter]);
