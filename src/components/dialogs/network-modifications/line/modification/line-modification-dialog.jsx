@@ -56,6 +56,7 @@ import {
     getLimitsValidationSchema,
     sanitizeLimitNames,
     updateTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -297,13 +298,21 @@ const LineModificationDialog = ({
                             setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, line?.voltageLevelId2);
                             setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
                             setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
+                            const selectedCurrentLimits1 = completeCurrentLimitsGroupsToOnlySelected(
+                                line?.currentLimits1,
+                                line?.selectedOperationalLimitsGroup1
+                            );
+                            const selectedCurrentLimits2 = completeCurrentLimitsGroupsToOnlySelected(
+                                line?.currentLimits2,
+                                line?.selectedOperationalLimitsGroup2
+                            );
                             const updatedTemporaryLimits1 = updateTemporaryLimits(
                                 formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
-                                formatTemporaryLimits(line?.currentLimits1?.temporaryLimits)
+                                formatTemporaryLimits(selectedCurrentLimits1?.temporaryLimits)
                             );
                             const updatedTemporaryLimits2 = updateTemporaryLimits(
                                 formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
-                                formatTemporaryLimits(line?.currentLimits2?.temporaryLimits)
+                                formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
                             );
                             const previousPermanentLimit1 = getValues(
                                 `${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`
@@ -316,18 +325,18 @@ const LineModificationDialog = ({
                                     ...formValues,
                                     ...getSelectedLimitsFormData({
                                         permanentLimit1:
-                                            line.currentLimits1?.permanentLimit1 ?? previousPermanentLimit1,
+                                            selectedCurrentLimits1?.permanentLimit ?? previousPermanentLimit1,
                                         permanentLimit2:
-                                            line.currentLimits1?.permanentLimit2 ?? previousPermanentLimit2,
+                                            selectedCurrentLimits2?.permanentLimit ?? previousPermanentLimit2,
                                         temporaryLimits1: addSelectedFieldToRows(
                                             updatedTemporaryLimits1
                                                 ? updatedTemporaryLimits1
-                                                : formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
+                                                : formatTemporaryLimits(selectedCurrentLimits1?.temporaryLimits)
                                         ),
                                         temporaryLimits2: addSelectedFieldToRows(
                                             updatedTemporaryLimits2
                                                 ? updatedTemporaryLimits2
-                                                : formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
+                                                : formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
                                         ),
                                     }),
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),

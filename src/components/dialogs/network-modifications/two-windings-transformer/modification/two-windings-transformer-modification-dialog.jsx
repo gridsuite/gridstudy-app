@@ -85,6 +85,7 @@ import {
     getLimitsValidationSchema,
     sanitizeLimitNames,
     updateTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -591,27 +592,45 @@ const TwoWindingsTransformerModificationDialog = ({
                             setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, twt?.voltageLevelId2);
                             setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, twt?.busOrBusbarSectionId1);
                             setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, twt?.busOrBusbarSectionId2);
+                            const selectedCurrentLimits1 = completeCurrentLimitsGroupsToOnlySelected(
+                                twt?.currentLimits1,
+                                twt?.selectedOperationalLimitsGroup1
+                            );
+                            const selectedCurrentLimits2 = completeCurrentLimitsGroupsToOnlySelected(
+                                twt?.currentLimits2,
+                                twt?.selectedOperationalLimitsGroup2
+                            );
                             const updatedTemporaryLimits1 = updateTemporaryLimits(
-                                formatTemporaryLimits(getValues(`${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
-                                formatTemporaryLimits(twt?.currentLimits1?.temporaryLimits)
+                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(selectedCurrentLimits1?.temporaryLimits)
                             );
                             const updatedTemporaryLimits2 = updateTemporaryLimits(
-                                formatTemporaryLimits(getValues(`${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
-                                formatTemporaryLimits(twt?.currentLimits2?.temporaryLimits)
+                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
+                            );
+                            const previousPermanentLimit1 = getValues(
+                                `${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`
+                            );
+                            const previousPermanentLimit2 = getValues(
+                                `${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`
                             );
                             reset(
                                 (formValues) => ({
                                     ...formValues,
                                     ...getSelectedLimitsFormData({
+                                        permanentLimit1:
+                                            selectedCurrentLimits1?.permanentLimit ?? previousPermanentLimit1,
+                                        permanentLimit2:
+                                            selectedCurrentLimits2?.permanentLimit ?? previousPermanentLimit2,
                                         temporaryLimits1: addSelectedFieldToRows(
                                             updatedTemporaryLimits1
                                                 ? updatedTemporaryLimits1
-                                                : formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
+                                                : formatTemporaryLimits(selectedCurrentLimits1?.temporaryLimits)
                                         ),
                                         temporaryLimits2: addSelectedFieldToRows(
                                             updatedTemporaryLimits2
                                                 ? updatedTemporaryLimits2
-                                                : formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
+                                                : formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
                                         ),
                                     }),
                                     ...getRatioTapChangerFormData({

@@ -274,3 +274,15 @@ export const addModificationTypeToTemporaryLimits = (
     });
     return updatedTemporaryLimits;
 };
+
+// temporary function to be removed once the migration from selected limits group to complete limits group is over :
+// necessary because the network map server return complete operational limits groups but the modification only uses the currently selected (for now)
+export const completeCurrentLimitsGroupsToOnlySelected = (
+    completeLimitsGroups /*: OperationalLimitsGroup[]*/,
+    selectedOperationalLimitsGroup /*: string*/
+) => {
+    if (selectedOperationalLimitsGroup && completeLimitsGroups) {
+        return completeLimitsGroups.find((limitsGroup) => selectedOperationalLimitsGroup === limitsGroup.id);
+    }
+    return getLimitsEmptyFormData();
+};
