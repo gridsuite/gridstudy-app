@@ -145,7 +145,7 @@ const ItemViewInForm = ({
     );
 };
 
-// Temporary type definition for VoltageLevel Equipment, pending a more comprehensive Equipment typing in diagramViewer
+// TODO: Temporary type definition for VoltageLevel Equipment, pending a more comprehensive Equipment typing in diagramViewer
 export type MapEquipment = Equipment & {
     substationId: string;
     substationName: string;

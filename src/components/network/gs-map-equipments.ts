@@ -5,24 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
-import { RefObject } from 'react';
-import { IntlShape } from 'react-intl';
-import { Dispatch } from 'redux';
-import { UseSnackMessageReturn } from '@gridsuite/commons-ui';
+import type { UUID } from 'crypto';
+import { type UseSnackMessageReturn } from '@gridsuite/commons-ui';
+import { MapEquipments } from '@powsybl/network-viewer';
 import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
+import type { AppDispatch } from '../../redux/store';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
     fetchTieLinesMapInfos,
 } from '../../services/study/network';
-import { MapEquipments } from '@powsybl/network-viewer';
 
 export default class GSMapEquipments extends MapEquipments {
-    dispatch: Dispatch;
+    dispatch: AppDispatch;
     errHandler?: UseSnackMessageReturn['snackError'];
-    intlRef: RefObject<IntlShape>;
 
     initEquipments(studyUuid: UUID, currentNodeUuid: UUID) {
         const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false);
@@ -102,17 +99,15 @@ export default class GSMapEquipments extends MapEquipments {
         studyUuid: UUID,
         currentNodeUuid: UUID,
         errHandler: UseSnackMessageReturn['snackError'],
-        dispatch: Dispatch,
-        intlRef: RefObject<IntlShape>
+        dispatch: AppDispatch
     ) {
         super();
         this.dispatch = dispatch;
         this.errHandler = errHandler;
-        this.intlRef = intlRef;
         this.initEquipments(studyUuid, currentNodeUuid);
     }
 
-    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[] | null) {
+    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[] | undefined) {
         const updatedSubstations = fetchSubstationsMapInfos(studyUuid, currentNode?.id, substationsIds, true);
         const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
         const updatedTieLines = fetchTieLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
