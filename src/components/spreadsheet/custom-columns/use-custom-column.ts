@@ -8,19 +8,17 @@ import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
 import { all, bignumber, create } from 'mathjs';
 import { useSelector } from 'react-redux';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import { DefaultCellRenderer } from '../utils/cell-renderers';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { ColDef } from 'ag-grid-community';
-import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 
 export function useCustomColumn(tabIndex: number) {
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
-
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
 
     const math = useMemo(() => {
@@ -87,12 +85,11 @@ export function useCustomColumn(tabIndex: number) {
                 headerTooltip: colWithFormula.name,
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
+                    field: colWithFormula.name,
                     sortParams: {
                         table: SPREADSHEET_SORT_STORE,
                         tab: tablesDefinitionIndexes.get(tabIndex)!.name,
                     },
-                    field: colWithFormula.name,
-                    tabIndex,
                     menu: {
                         Menu: CustomColumnMenu,
                         menuParams: {
@@ -101,8 +98,9 @@ export function useCustomColumn(tabIndex: number) {
                         },
                     },
                 },
-                cellRenderer: DefaultCellRenderer,
                 valueGetter: createValueGetter(colWithFormula),
+                editable: false,
+                suppressMovable: true,
             };
         });
     }, [customColumnsDefinitions, tablesDefinitionIndexes, tabIndex, createValueGetter]);
