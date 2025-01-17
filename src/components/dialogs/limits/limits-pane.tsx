@@ -25,6 +25,7 @@ import { useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from './limits-type';
 import { TemporaryLimit } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
+import { CopyLimits } from './copy-limits';
 import { tabStyles } from '../../parameters-tabs';
 
 export interface LimitsPaneProps {
@@ -42,7 +43,7 @@ export function LimitsPane({
     currentNode,
     equipmentToModify,
     clearableFields,
-    onlySelectedLimitsGroup,
+    onlySelectedLimitsGroup = false,
 }: Readonly<LimitsPaneProps>) {
     const [indexSelectedLimitSet1, setIndexSelectedLimitSet1] = useState<number>(0);
     const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number>(0);
@@ -110,13 +111,14 @@ export function LimitsPane({
 
     return (
         <Grid container spacing={2}>
-            <Grid container item xs={12} columns={onlySelectedLimitsGroup ? 8 : 10} spacing={2}>
+            <Grid container item xs={12} columns={onlySelectedLimitsGroup ? 8 : 10.25} spacing={2}>
                 {!onlySelectedLimitsGroup && <Grid item xs={1.9} />}
                 {renderTitle('Side1', `${id}.${SELECTED_LIMITS_GROUP_1}`, `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`)}
+                <Grid item xs={0.25} />
                 {renderTitle('Side2', `${id}.${SELECTED_LIMITS_GROUP_2}`, `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`)}
             </Grid>
             {/* limits */}
-            <Grid container item xs={12} columns={onlySelectedLimitsGroup ? 8 : 10}>
+            <Grid container item xs={12} columns={onlySelectedLimitsGroup ? 8 : 10.25}>
                 {!onlySelectedLimitsGroup && (
                     <Grid item xs={1.8}>
                         <OperationalLimitsGroupsTabs
@@ -143,6 +145,14 @@ export function LimitsPane({
                               equipmentToModify?.currentLimits1?.permanentLimit
                           )}
                 </Grid>
+                {!onlySelectedLimitsGroup && (
+                    <Grid item xs={0.25}>
+                        <CopyLimits
+                            indexSelectedLimitSet1={indexSelectedLimitSet1}
+                            indexSelectedLimitSet2={indexSelectedLimitSet2}
+                        />
+                    </Grid>
+                )}
                 <Grid item xs={4} sx={tabStyles.parametersBox}>
                     {onlySelectedLimitsGroup
                         ? renderSidePane(

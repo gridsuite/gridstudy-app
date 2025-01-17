@@ -25,9 +25,22 @@ import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { tabStyles } from '../../parameters-tabs';
 
-const styles = {
+export const limitsStyles = {
     limitsBackground: {
         p: 1,
+    },
+    copyLimitsToRightBackground: {
+        height: '50%',
+        display: 'flex',
+    },
+    copyLimitsToLeftBackground: {
+        height: '50%',
+    },
+    copyLimitsButtons: {
+        alignSelf: 'flex-end',
+        minWidth: '0px',
+        height: 'auto',
+        padding: '1',
     },
 };
 
@@ -260,7 +273,7 @@ export function OperationalLimitsGroupsTabs({
                             </Box>
                         )
                     }
-                    sx={styles.limitsBackground}
+                    sx={limitsStyles.limitsBackground}
                 />
             ))}
             <Tab
