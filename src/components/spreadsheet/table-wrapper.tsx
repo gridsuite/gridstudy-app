@@ -193,7 +193,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const tablesDefinitionTypes = useSelector((state: AppState) => state.tables.definitionTypes);
-    const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
 
     const [selectedColumnsNames, setSelectedColumnsNames] = useState<Set<string>>(new Set());
@@ -495,25 +494,15 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         });
     }, [sortConfig, mergedColumnData]);
 
-    const toSpreadsheetEquipmentType = useCallback(
-        (tableName: string): SpreadsheetEquipmentType | undefined => {
-            return tablesDefinitions.find((spreadsheetTabDefinition) => spreadsheetTabDefinition.name === tableName)
-                ?.type;
-        },
-        [tablesDefinitions]
-    );
-
     useEffect(() => {
         if (disabled || !equipments) {
             return;
         }
 
-        const equipmentType = toSpreadsheetEquipmentType(tablesNames[tabIndex]);
         let equipmentsWithCustomColumnInfo = [...equipments];
-        if (equipmentType) {
-            Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach((value) => {
-                const nodeAlias = value[0];
-                const equipmentsToAdd = value[1][equipmentType];
+        if (equipmentDefinition.type) {
+            Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach(([nodeAlias, equipments]) => {
+                const equipmentsToAdd = equipments[equipmentDefinition.type];
                 if (equipmentsToAdd) {
                     equipmentsToAdd.forEach((equipmentToAdd) => {
                         let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(
@@ -528,8 +517,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     });
                 }
             });
-            setRowData(equipmentsWithCustomColumnInfo);
         }
+        setRowData(equipmentsWithCustomColumnInfo);
 
         // To handle cases where a "customSpreadsheet" tab is opened.
         // This ensures that the grid correctly displays data specific to the custom tab.
@@ -541,8 +530,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         disabled,
         equipments,
         tablesNames,
-        toSpreadsheetEquipmentType,
         additionalEquipmentsByNodesForCustomColumns,
+        equipmentDefinition.type,
     ]);
 
     const handleSwitchTab = useCallback(

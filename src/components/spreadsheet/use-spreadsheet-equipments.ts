@@ -9,7 +9,7 @@ import { Identifiable } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { UUID } from 'crypto';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     addAdditionalEquipmentsByNodesForCustomColumns,
@@ -41,7 +41,6 @@ export const useSpreadsheetEquipments = (
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = allEquipments[equipment.type];
     const customColumnsDefinitions = useSelector((state: AppState) => state.tables.allCustomColumnsDefinitions);
-    const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const customColumnsNodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -133,14 +132,6 @@ export const useSpreadsheetEquipments = (
         resetImpactedElementTypes,
     ]);
 
-    const toSpreadsheetEquipmentType = useCallback(
-        (tableName: string): SpreadsheetEquipmentType | undefined => {
-            return tablesDefinitions.find((spreadsheetTabDefinition) => spreadsheetTabDefinition.name === tableName)
-                ?.type;
-        },
-        [tablesDefinitions]
-    );
-
     useEffect(() => {
         if (shouldFetchEquipments && studyUuid && currentNode?.id) {
             setErrorMessage(null);
@@ -174,11 +165,10 @@ export const useSpreadsheetEquipments = (
             const aliases = customColumnsNodesAliases.map((nodeAlias) => nodeAlias.alias);
             const aliasesAlreadyFound: string[] = [];
             const currentTabCustomColumnsDef = customColumnsDefinitions[tablesNames[tabIndex]];
-            const spreadsheetEquipmentType = toSpreadsheetEquipmentType(tablesNames[tabIndex]);
             const customColumns = currentTabCustomColumnsDef.columns;
             let fetchers: Promise<any>[] = [];
             let additionalEquipmentsByNodes: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>> = {};
-            if (spreadsheetEquipmentType) {
+            if (equipment.type) {
                 customColumns.forEach((column) => {
                     const pattern: string = aliases.map((alias) => `\\b${alias}\\b\\.`).join('|'); // pattern to find the aliases in the expression
                     const regex = new RegExp(pattern, 'g');
@@ -195,7 +185,7 @@ export const useSpreadsheetEquipments = (
                                 (treeNode) => treeNode.data.label === nodeNameAssociatedToAlias
                             )?.id;
                             if (nodeIdAssociatedToAlias) {
-                                const fetcherPromises = getFetchers(spreadsheetEquipmentType).map((fetcher) =>
+                                const fetcherPromises = getFetchers(equipment.type).map((fetcher) =>
                                     fetcher(studyUuid, nodeIdAssociatedToAlias, [])
                                 );
                                 fetchers.push(fetcherPromises[0]);
@@ -205,7 +195,7 @@ export const useSpreadsheetEquipments = (
                                         fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
                                         let fetchedEquipmentByType: Record<SpreadsheetEquipmentType, Identifiable[]> =
                                             {} as Record<SpreadsheetEquipmentType, Identifiable[]>;
-                                        fetchedEquipmentByType[spreadsheetEquipmentType] = fetchedEquipments;
+                                        fetchedEquipmentByType[equipment.type] = fetchedEquipments;
                                         additionalEquipmentsByNodes = { ...additionalEquipmentsByNodes };
                                         additionalEquipmentsByNodes[alias] = fetchedEquipmentByType;
                                     }
@@ -231,7 +221,7 @@ export const useSpreadsheetEquipments = (
         tabIndex,
         tablesNames,
         customColumnsNodesAliases,
-        toSpreadsheetEquipmentType,
+        equipment.type,
     ]);
 
     return { equipments, errorMessage, isFetching };

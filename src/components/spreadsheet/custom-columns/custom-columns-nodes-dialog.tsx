@@ -69,12 +69,10 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
     };
 
     useEffect(() => {
-        if (open.value && customColumnsNodesAliases) {
-            if (customColumnsNodesAliases && customColumnsNodesAliases.length > 0) {
-                reset({
-                    [NODES_ALIASES]: customColumnsNodesAliases,
-                });
-            }
+        if (open.value && customColumnsNodesAliases && customColumnsNodesAliases.length > 0) {
+            reset({
+                [NODES_ALIASES]: customColumnsNodesAliases,
+            });
         }
     }, [open, customColumnsNodesAliases, reset]);
 
