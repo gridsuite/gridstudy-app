@@ -378,7 +378,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'PhaseTap3',
-            field: 'phaseTapChanger2.tapPosition',
+            field: 'phaseTapChanger3.tapPosition',
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Phase', 3),
             fractionDigits: 0,
