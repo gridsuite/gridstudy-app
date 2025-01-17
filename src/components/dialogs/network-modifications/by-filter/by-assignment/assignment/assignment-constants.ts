@@ -6,10 +6,11 @@
  */
 
 import type { ReadonlyDeep } from 'type-fest';
-import { DataType, FieldOptionType, FieldType } from './assignment.type';
+import { DataType, FieldOptionType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
 import {
     EquipmentType,
+    FieldType,
     KILO_AMPERE,
     KILO_VOLT,
     MEGA_VAR,
