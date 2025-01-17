@@ -722,7 +722,7 @@ const initialState: AppState = {
             .reduce((acc, tabName) => {
                 acc[tabName] = [
                     {
-                        colId: 'id',
+                        colId: 'ID',
                         sort: SortWay.ASC,
                     },
                 ];

@@ -19,7 +19,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER),
     groovyEquipmentGetter: 'getThreeWindingsTransformer',
     columns: [
-        { colId: 'ID', field: 'id', initialSort: 'asc', ...textColumnDefinition('ID', tab) },
+        { colId: 'ID', field: 'id', ...textColumnDefinition('ID', tab) },
         { colId: 'Name', field: 'name', ...textColumnDefinition('Name', tab) },
         {
             colId: 'VoltageLevelIdT3WSide1',

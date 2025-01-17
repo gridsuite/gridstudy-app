@@ -20,7 +20,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
     name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
     columns: [
-        { colId: 'ID', field: 'id', initialSort: 'asc', ...textColumnDefinition('ID', tab) },
+        { colId: 'ID', field: 'id', ...textColumnDefinition('ID', tab) },
         {
             colId: 'Name',
             field: 'name',

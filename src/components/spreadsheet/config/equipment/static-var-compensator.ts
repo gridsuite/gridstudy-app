@@ -21,7 +21,6 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'ID',
             field: 'id',
-            initialSort: 'asc',
             ...textColumnDefinition('ID', tab),
         },
         {

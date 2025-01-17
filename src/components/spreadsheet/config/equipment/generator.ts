@@ -38,7 +38,6 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'ID',
             field: 'id',
-            initialSort: 'asc',
             ...textColumnDefinition('ID', tab),
         },
         {
