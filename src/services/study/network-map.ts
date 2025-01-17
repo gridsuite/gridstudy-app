@@ -157,6 +157,7 @@ export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID) {
  */
 function createEquipmentIdentifierList(equipmentType: EquipmentType, equipmentList: string[]) {
     return {
+        id: null,
         type: 'IDENTIFIER_LIST',
         equipmentType: equipmentType,
         filterEquipmentsAttributes: equipmentList.map((eqId) => {
@@ -175,12 +176,18 @@ export async function createMapFilter(
     nominalVoltages: number[]
 ) {
     let equipmentFilters: {
-        type?: string;
-        equipmentType?: EquipmentType;
+        id: string | null;
+        type: string;
+        equipmentType: string;
         filterEquipmentsAttributes?: {
             equipmentID: string;
         }[];
-    } = {};
+    } = {
+        id: null,
+        type: '',
+        equipmentType: '',
+    };
+
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:
         case EquipmentType.LINE:
