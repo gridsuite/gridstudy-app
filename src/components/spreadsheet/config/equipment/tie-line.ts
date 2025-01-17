@@ -21,7 +21,7 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     columns: [
         {
             colId: 'ID',
-            initialSort: 'asc',
+            field: 'id',
             ...textColumnDefinition('ID', tab),
         },
         { colId: 'Name', field: 'name', ...textColumnDefinition('Name', tab) },

@@ -122,25 +122,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { createCustomColumn } = useCustomColumn(tabIndex);
 
-    useEffect(() => {
-        setCustomColumnData(createCustomColumn());
-    }, [tabIndex, customColumnsDefinitions, createCustomColumn]);
-
-    useEffect(() => {
-        const mergedColumns = [...columnData, ...customColumnData];
-        setMergedColumnData(mergedColumns);
-        gridRef.current?.api?.setGridOption('columnDefs', mergedColumns);
-    }, [columnData, customColumnData]);
-
-    const cleanTableState = useCallback(() => {
-        gridRef?.current?.api.setFilterModel(null);
-        // reset aggrid column definitions
-        gridRef.current?.api.setGridOption('columnDefs', []);
-        gridRef?.current?.api.applyColumnState({
-            defaultState: { sort: null },
-        });
-    }, []);
-
     const currentColumns = useCallback(() => {
         const equipment = tablesDefinitionIndexes.get(tabIndex);
         return equipment ? equipment.columns : [];
@@ -155,8 +136,60 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         const equipment = tablesDefinitionIndexes.get(tabIndex);
         return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
     }, [tabIndex, tablesDefinitionIndexes]);
-
     const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][currentTabName()]);
+
+    const updateSortConfig = useCallback(() => {
+        gridRef.current?.api?.applyColumnState({
+            state: sortConfig,
+            defaultState: { sort: null },
+        });
+    }, [sortConfig]);
+
+    const updateLockedColumnsConfig = useCallback(() => {
+        const lockedColumnsConfig = currentColumns()
+            .filter((column) => lockedColumnsNames.has(column.colId!))
+            .map((column) => {
+                const s: ColumnState = {
+                    colId: column.colId ?? '',
+                    pinned: 'left',
+                };
+                return s;
+            });
+        gridRef.current?.api?.applyColumnState({
+            state: lockedColumnsConfig,
+            defaultState: { pinned: null },
+        });
+    }, [currentColumns, lockedColumnsNames]);
+
+    useEffect(() => {
+        setCustomColumnData(createCustomColumn());
+    }, [tabIndex, customColumnsDefinitions, createCustomColumn]);
+
+    useEffect(() => {
+        const mergedColumns = [...columnData, ...customColumnData];
+        setMergedColumnData(mergedColumns);
+        gridRef.current?.api?.setGridOption('columnDefs', mergedColumns);
+        updateSortConfig();
+        updateLockedColumnsConfig();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [columnData, customColumnData]);
+
+    useEffect(() => {
+        updateSortConfig();
+    }, [updateSortConfig]);
+
+    useEffect(() => {
+        updateLockedColumnsConfig();
+    }, [updateLockedColumnsConfig]);
+
+    const cleanTableState = useCallback(() => {
+        gridRef?.current?.api.setFilterModel(null);
+        // reset aggrid column definitions
+        gridRef.current?.api.setGridOption('columnDefs', []);
+        gridRef?.current?.api.applyColumnState({
+            defaultState: { sort: null },
+        });
+    }, []);
 
     const { filters } = useFilterSelector(FilterType.Spreadsheet, currentTabName());
 
@@ -193,14 +226,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             });
         }
     }, [errorMessage, snackError]);
-
-    // Ensure initial sort is applied by including mergedColumnData in dependencies
-    useEffect(() => {
-        gridRef.current?.api?.applyColumnState({
-            state: sortConfig,
-            defaultState: { sort: null },
-        });
-    }, [sortConfig, mergedColumnData]);
 
     useEffect(() => {
         if (disabled || !equipments) {
@@ -297,22 +322,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             }
         }, 50);
     }, [scrollToEquipmentIndex, isFetching, rowData]);
-
-    useEffect(() => {
-        const lockedColumnsConfig = currentColumns()
-            .filter((column) => lockedColumnsNames.has(column.colId!))
-            .map((column) => {
-                const s: ColumnState = {
-                    colId: column.colId ?? '',
-                    pinned: 'left',
-                };
-                return s;
-            });
-        gridRef.current?.api?.applyColumnState({
-            state: lockedColumnsConfig,
-            defaultState: { pinned: null },
-        });
-    }, [lockedColumnsNames, currentColumns]);
 
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
