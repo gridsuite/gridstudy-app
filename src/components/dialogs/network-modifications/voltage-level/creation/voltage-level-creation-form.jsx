@@ -53,6 +53,10 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
 
     useEffect(() => {
+        setIsWithSubstationCreation(watchAddSubstationCreation);
+    }, [watchAddSubstationCreation]);
+
+    useEffect(() => {
         if (studyUuid && currentNodeUuid) {
             fetchEquipmentsIds(studyUuid, currentNodeUuid, undefined, 'SUBSTATION', true).then((values) => {
                 setSubstations(values.sort((a, b) => a.localeCompare(b)));
@@ -160,7 +164,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
                 <GridItem>{voltageLevelNameField}</GridItem>
             </Grid>
 
-            {isWithSubstationCreation || watchAddSubstationCreation ? (
+            {isWithSubstationCreation ? (
                 <Grid>
                     <Grid item xs={12} container spacing={2}></Grid>
                     <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />
