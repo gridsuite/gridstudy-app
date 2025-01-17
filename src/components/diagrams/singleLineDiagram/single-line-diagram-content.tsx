@@ -64,7 +64,7 @@ type EquipmentMenuState = {
 };
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
-    readonly studyUuid: string;
+    readonly studyUuid: UUID;
     readonly svgType: DiagramType;
     readonly svg?: string;
     readonly svgMetadata?: SLDMetadata;
@@ -411,7 +411,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     currentNode={currentNode}
-                    studyUuid={studyUuid as UUID}
+                    studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
                     setModificationInProgress={setModificationInProgress}
                 />
@@ -430,11 +430,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             equipmentMenu.equipmentId &&
             equipmentMenu.equipmentType === equipmentType && (
                 <Menu
-                    equipment={
-                        {
-                            id: equipmentMenu.equipmentId,
-                        } as MapEquipment
-                    }
+                    equipment={{ id: equipmentMenu.equipmentId } as MapEquipment}
                     equipmentType={convertToEquipmentType(equipmentMenu.equipmentType)}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
@@ -656,8 +652,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             {equipmentToDelete && displayDeletionDialog()}
             {equipmentToConfigDynamicSimulationEvent && (
                 <DynamicSimulationEventDialog
-                    studyUuid={studyUuid}
-                    currentNodeId={currentNode?.id ?? ''}
                     equipmentId={equipmentToConfigDynamicSimulationEvent.equipmentId}
                     equipmentType={equipmentToConfigDynamicSimulationEvent.equipmentType}
                     onClose={() => handleCloseDynamicSimulationEventDialog()}

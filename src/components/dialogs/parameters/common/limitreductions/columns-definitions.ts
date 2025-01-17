@@ -65,20 +65,26 @@ export const TAB_INFO = [
 export interface IColumnsDef {
     label: string;
     dataKey: string;
+    tooltip: string;
     width?: string;
 }
 
-export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS = [
+export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS: IColumnsDef[] = [
     {
-        label: 'VoltageLevels',
+        label: 'voltageRange',
         dataKey: VOLTAGE_LEVELS_FORM,
+        tooltip: 'voltageRange',
     },
     {
         label: 'IST',
         dataKey: IST_FORM,
+        tooltip: 'IST',
     },
 ];
 
+//TODO: a cleaner solution can be done by using yup.array()
+// Instead of creating a schema for each limit duration individually,
+// we can use yup.array() to define an array of limit durations directly.
 const getLimitDurationsFormSchema = (nbLimits: number) => {
     let limitDurationsFormSchema: Record<string, NumberSchema> = {};
     for (let i = 0; i < nbLimits; i++) {
@@ -107,7 +113,7 @@ export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
         .required();
 };
 
-export const getSAParametersFromSchema = (limitReductions: ILimitReductionsByVoltageLevel[]) => {
+export const getSAParametersFromSchema = (limitReductions?: ILimitReductionsByVoltageLevel[]) => {
     const limitReductionsSchema = getLimitReductionsFormSchema(
         limitReductions ? limitReductions[0].temporaryLimitReductions.length : 0
     );

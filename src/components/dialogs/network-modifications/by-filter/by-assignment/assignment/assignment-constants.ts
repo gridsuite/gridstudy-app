@@ -6,50 +6,68 @@
  */
 
 import type { ReadonlyDeep } from 'type-fest';
-import { DataType, FieldOptionType, FieldType } from './assignment.type';
+import { DataType, FieldOptionType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
-import { EquipmentType, kiloUnitToUnit, microUnitToUnit, unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
-import { KILO_AMPERE, MICRO_SIEMENS } from '../../../../../utils/field-constants';
+import {
+    EquipmentType,
+    FieldType,
+    KILO_AMPERE,
+    KILO_VOLT,
+    MEGA_VAR,
+    MEGA_VOLT_AMPERE,
+    MEGA_WATT,
+    MICRO_SIEMENS,
+    OHM,
+    PERCENTAGE,
+    SIEMENS,
+} from '@gridsuite/commons-ui';
 
 export const FIELD_OPTIONS = {
     PROPERTY: {
-        id: FieldType.PROPERTY,
+        id: FieldType.FREE_PROPERTIES,
         label: 'Property',
         dataType: DataType.PROPERTY,
     },
     RATED_NOMINAL_POWER: {
         id: FieldType.RATED_NOMINAL_POWER,
         label: 'RatedNominalPowerText',
+        unit: MEGA_VOLT_AMPERE,
         dataType: DataType.DOUBLE,
     },
     MINIMUM_ACTIVE_POWER: {
         id: FieldType.MINIMUM_ACTIVE_POWER,
         label: 'MinimumActivePowerText',
+        unit: MEGA_WATT,
         dataType: DataType.DOUBLE,
     },
     MAXIMUM_ACTIVE_POWER: {
         id: FieldType.MAXIMUM_ACTIVE_POWER,
         label: 'MaximumActivePowerText',
+        unit: MEGA_WATT,
         dataType: DataType.DOUBLE,
     },
     ACTIVE_POWER_SET_POINT: {
         id: FieldType.ACTIVE_POWER_SET_POINT,
         label: 'ActivePowerText',
+        unit: MEGA_WATT,
         dataType: DataType.DOUBLE,
     },
     REACTIVE_POWER_SET_POINT: {
         id: FieldType.REACTIVE_POWER_SET_POINT,
         label: 'ReactivePowerText',
+        unit: MEGA_VAR,
         dataType: DataType.DOUBLE,
     },
     VOLTAGE_SET_POINT: {
         id: FieldType.VOLTAGE_SET_POINT,
         label: 'GeneratorTargetV',
+        unit: KILO_VOLT,
         dataType: DataType.DOUBLE,
     },
     PLANNED_ACTIVE_POWER_SET_POINT: {
         id: FieldType.PLANNED_ACTIVE_POWER_SET_POINT,
         label: 'PlannedActivePowerSetPointForm',
+        unit: MEGA_WATT,
         dataType: DataType.DOUBLE,
     },
     MARGINAL_COST: {
@@ -70,21 +88,25 @@ export const FIELD_OPTIONS = {
     DROOP: {
         id: FieldType.DROOP,
         label: 'ActivePowerRegulationDroop',
+        unit: PERCENTAGE,
         dataType: DataType.DOUBLE,
     },
     TRANSIENT_REACTANCE: {
         id: FieldType.TRANSIENT_REACTANCE,
         label: 'TransientReactanceForm',
+        unit: OHM,
         dataType: DataType.DOUBLE,
     },
     STEP_UP_TRANSFORMER_REACTANCE: {
         id: FieldType.STEP_UP_TRANSFORMER_REACTANCE,
         label: 'TransformerReactanceForm',
+        unit: OHM,
         dataType: DataType.DOUBLE,
     },
     Q_PERCENT: {
         id: FieldType.Q_PERCENT,
         label: 'ReactivePercentageVoltageRegulation',
+        unit: PERCENTAGE,
         dataType: DataType.DOUBLE,
     },
     VOLTAGE_REGULATOR_ON: {
@@ -102,35 +124,34 @@ export const FIELD_OPTIONS = {
         label: 'sectionCount',
         dataType: DataType.INTEGER,
     },
-    MAXIMUM_SUSCEPTANCE: {
-        id: FieldType.MAXIMUM_SUSCEPTANCE,
+    MAX_SUSCEPTANCE: {
+        id: FieldType.MAX_SUSCEPTANCE,
         label: 'maxSusceptance',
-        unit: MICRO_SIEMENS,
+        unit: SIEMENS,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => microUnitToUnit(value),
-        inputConverter: (value) => unitToMicroUnit(value),
     },
-    MAXIMUM_Q_AT_NOMINAL_VOLTAGE: {
-        id: FieldType.MAXIMUM_Q_AT_NOMINAL_VOLTAGE,
+    MAX_Q_AT_NOMINAL_V: {
+        id: FieldType.MAX_Q_AT_NOMINAL_V,
         label: 'maxQAtNominalV',
-        unit: MICRO_SIEMENS,
+        unit: MEGA_VAR,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => microUnitToUnit(value),
-        inputConverter: (value) => unitToMicroUnit(value),
     },
     NOMINAL_VOLTAGE: {
         id: FieldType.NOMINAL_VOLTAGE,
         label: 'NominalVoltage',
+        unit: KILO_VOLT,
         dataType: DataType.DOUBLE,
     },
     LOW_VOLTAGE_LIMIT: {
         id: FieldType.LOW_VOLTAGE_LIMIT,
         label: 'LowVoltageLimit',
+        unit: KILO_VOLT,
         dataType: DataType.DOUBLE,
     },
     HIGH_VOLTAGE_LIMIT: {
         id: FieldType.HIGH_VOLTAGE_LIMIT,
         label: 'HighVoltageLimit',
+        unit: KILO_VOLT,
         dataType: DataType.DOUBLE,
     },
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT: {
@@ -138,35 +159,35 @@ export const FIELD_OPTIONS = {
         label: 'LowShortCircuitCurrentLimit',
         unit: KILO_AMPERE,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => kiloUnitToUnit(value),
-        inputConverter: (value) => unitToKiloUnit(value),
     },
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'HighShortCircuitCurrentLimit',
         unit: KILO_AMPERE,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => kiloUnitToUnit(value),
-        inputConverter: (value) => unitToKiloUnit(value),
     },
     ACTIVE_POWER: {
         id: FieldType.ACTIVE_POWER,
         label: 'ActivePowerText',
+        unit: MEGA_WATT,
         dataType: DataType.DOUBLE,
     },
     REACTIVE_POWER: {
         id: FieldType.REACTIVE_POWER,
         label: 'ReactivePowerText',
+        unit: MEGA_VAR,
         dataType: DataType.DOUBLE,
     },
     R: {
         id: FieldType.R,
         label: 'SeriesResistanceText',
+        unit: OHM,
         dataType: DataType.DOUBLE,
     },
     X: {
         id: FieldType.X,
         label: 'SeriesReactanceText',
+        unit: OHM,
         dataType: DataType.DOUBLE,
     },
     G: {
@@ -174,35 +195,35 @@ export const FIELD_OPTIONS = {
         label: 'G',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => microUnitToUnit(value),
-        inputConverter: (value) => unitToMicroUnit(value),
     },
     B: {
         id: FieldType.B,
         label: 'B',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => microUnitToUnit(value),
-        inputConverter: (value) => unitToMicroUnit(value),
     },
     RATED_U1: {
         id: FieldType.RATED_U1,
         label: 'RatedU1',
+        unit: KILO_VOLT,
         dataType: DataType.DOUBLE,
     },
     RATED_U2: {
         id: FieldType.RATED_U2,
         label: 'RatedU2',
+        unit: KILO_VOLT,
         dataType: DataType.DOUBLE,
     },
     RATED_S: {
         id: FieldType.RATED_S,
         label: 'RatedNominalPowerText',
+        unit: MEGA_VOLT_AMPERE,
         dataType: DataType.DOUBLE,
     },
     TARGET_V: {
         id: FieldType.TARGET_V,
         label: 'RatioTargetV',
+        unit: KILO_VOLT,
         dataType: DataType.DOUBLE,
     },
     RATIO_LOW_TAP_POSITION: {
@@ -217,6 +238,7 @@ export const FIELD_OPTIONS = {
     },
     RATIO_TARGET_DEADBAND: {
         id: FieldType.RATIO_TARGET_DEADBAND,
+        unit: KILO_VOLT,
         label: 'RatioDeadBand',
         dataType: DataType.DOUBLE,
     },
@@ -314,8 +336,8 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.PROPERTY,
         FIELD_OPTIONS.MAXIMUM_SECTION_COUNT,
         FIELD_OPTIONS.SECTION_COUNT,
-        FIELD_OPTIONS.MAXIMUM_SUSCEPTANCE,
-        FIELD_OPTIONS.MAXIMUM_Q_AT_NOMINAL_VOLTAGE,
+        FIELD_OPTIONS.MAX_SUSCEPTANCE,
+        FIELD_OPTIONS.MAX_Q_AT_NOMINAL_V,
     ],
     [EquipmentType.STATIC_VAR_COMPENSATOR]: [FIELD_OPTIONS.PROPERTY],
     [EquipmentType.HVDC_LINE]: [FIELD_OPTIONS.PROPERTY],

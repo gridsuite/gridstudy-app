@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent } from 'react';
-import { AutocompleteInput, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
+import { AutocompleteInput, DirectoryItemsInput, ElementType, useFormatLabelWithUnit } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
@@ -20,7 +20,6 @@ import { EQUIPMENTS_FIELDS } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
-import { useIntl } from 'react-intl';
 import { Grid } from '@mui/material';
 import GridItem from '../../../../commons/grid-item';
 
@@ -40,12 +39,11 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
     const equipmentTypeWatch = useWatch({
         name: EQUIPMENT_TYPE_FIELD,
     });
-
-    const intl = useIntl();
-
-    const equipmentFields: { id: string; label: string }[] =
+    const equipmentFields: { id: string; label: string; unit: string }[] =
         // @ts-expect-error TODO: missing type in context
         EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
+
+    const formatLabelWithUnit = useFormatLabelWithUnit();
 
     const filtersField = (
         <DirectoryItemsInput
@@ -66,7 +64,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             size={'small'}
             inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) => intl.formatMessage({ id: getLabelOrValue(option) })}
+            getOptionLabel={(option: any) => formatLabelWithUnit(option)}
         />
     );
 

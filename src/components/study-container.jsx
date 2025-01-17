@@ -36,7 +36,7 @@ import {
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchCaseName, fetchStudyExists } from '../services/study';
+import { fetchCaseName, fetchStudyExists } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchStudyIndexationStatus } from '../services/study/network';
 import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
@@ -737,13 +737,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
                 message={'LoadingRemoteData'}
             >
-                <StudyPane
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    view={view}
-                    onChangeTab={onChangeTab}
-                    setErrorMessage={setErrorMessage}
-                />
+                <StudyPane studyUuid={studyUuid} currentNode={currentNode} view={view} onChangeTab={onChangeTab} />
             </WaitingLoader>
         </>
     );

@@ -14,13 +14,13 @@ import {
     IntegerInput,
     SelectInput,
     SwitchInput,
+    useFormatLabelWithUnit,
     usePrevious,
 } from '@gridsuite/commons-ui';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { getIdOrValue } from '../../../../commons/utils';
-import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 import { PredefinedProperties } from '../../../common/properties/property-utils';
@@ -41,8 +41,6 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     equipmentFields,
     equipmentType,
 }) => {
-    const intl = useIntl();
-
     const { setValue } = useFormContext();
 
     const watchEditedField = useWatch({
@@ -76,14 +74,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
 
-    const formatLabelWithUnit = useMemo(() => {
-        return (value: string | { label: string; unit?: string }) => {
-            if (typeof value === 'string') {
-                return value;
-            }
-            return `${intl.formatMessage({ id: value.label })} ${value.unit ?? ''}`;
-        };
-    }, [intl]);
+    const formatLabelWithUnit = useFormatLabelWithUnit();
 
     const filtersField = (
         <DirectoryItemsInput
