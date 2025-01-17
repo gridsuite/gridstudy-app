@@ -169,7 +169,9 @@ import {
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
     STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+    STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
     StoreNetworkAreaDiagramNodeMovementAction,
+    StoreNetworkAreaDiagramTextNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     TABLE_SORT,
@@ -428,6 +430,16 @@ export type NadNodeMovement = {
     scalingFactor: number;
 };
 
+export type NadTextMovement = {
+    nadIdentifier: string;
+    equipmentId: string;
+    shiftX: number;
+    shiftY: number;
+    connectionShiftX: number;
+    connectionShiftY: number; // TODO CHARLY ajouter le scalingFactor ici (2)
+};
+
+
 /**
  * Represent a node in the network modifications tree that is selected.
  */
@@ -471,6 +483,7 @@ export interface AppState extends CommonStoreState {
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
+    nadTextNodeMovements: NadTextMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -639,6 +652,7 @@ const initialState: AppState = {
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     nadNodeMovements: [],
+    nadTextNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -1476,6 +1490,31 @@ export const reducer = createReducer(initialState, (builder) => {
                 correspondingMovement[0].x = action.x;
                 correspondingMovement[0].y = action.y;
                 correspondingMovement[0].scalingFactor = action.scalingFactor;
+            }
+        }
+    );
+
+    builder.addCase(
+        STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
+        (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
+            const correspondingMovement: NadTextMovement[] = state.nadTextNodeMovements.filter(
+                (movement) =>
+                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+            );
+            if (correspondingMovement.length === 0) {
+                state.nadTextNodeMovements.push({
+                    nadIdentifier: action.nadIdentifier,
+                    equipmentId: action.equipmentId,
+                    shiftX: action.shiftX,
+                    shiftY: action.shiftY,
+                    connectionShiftX: action.connectionShiftX,
+                    connectionShiftY: action.connectionShiftY, // TODO CHARLY ajouter le scaling factor ici (3)
+                });
+            } else {
+                correspondingMovement[0].shiftX = action.shiftX;
+                correspondingMovement[0].shiftY = action.shiftY;
+                correspondingMovement[0].connectionShiftX = action.connectionShiftX;
+                correspondingMovement[0].connectionShiftY = action.connectionShiftY;
             }
         }
     );
