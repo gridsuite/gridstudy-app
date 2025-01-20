@@ -9,7 +9,6 @@ import {
     CustomFormProvider,
     isObjectEmpty,
     TreeViewFinderNodeProps,
-    UniqueNameCheckInput,
 } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { Grid } from '@mui/material';
@@ -22,7 +21,8 @@ import { AppState } from 'redux/reducer';
 import ModificationDialog from '../commons/modificationDialog';
 import { checkRootNetworkNameExistence } from 'services/root-network';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
-
+import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
+ 
 export interface FormData {
     [NAME]: string;
     [CASE_NAME]: string;
@@ -116,7 +116,7 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
             >
                 <Grid container spacing={2} marginTop={'auto'} direction="column">
                     <Grid item>
-                        <UniqueNameCheckInput
+                        <UniqueCheckNameInput
                             name={NAME}
                             label={'Name'}
                             autoFocus

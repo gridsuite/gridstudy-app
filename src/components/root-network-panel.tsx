@@ -16,7 +16,7 @@ const styles = {
         position: 'absolute',
         top: 16,
         left: 16,
-        width: '60%',
+        width: '40%',
         height: '35%',
         flexDirection: 'column',
         borderRadius: '8px',

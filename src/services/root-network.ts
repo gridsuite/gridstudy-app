@@ -65,7 +65,7 @@ export function checkRootNetworkNameExistence(studyUuid: UUID, name: string): Pr
             name: name,
         });
     console.debug(checkRootNetworkNameExistenceUrl);
-    return backendFetch(rootNetworkNameExistsUrl, { method: 'head' }).then((response) => {
+    return backendFetch(checkRootNetworkNameExistenceUrl, { method: 'head' }).then((response) => {
         return response.status !== 204;
     });
 }

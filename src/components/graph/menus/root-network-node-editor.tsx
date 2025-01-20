@@ -50,7 +50,8 @@ const styles = {
         overflow: 'hidden',
         borderTop: `1px solid ${theme.palette.divider}`,
         borderBottom: `1px solid ${theme.palette.divider}`,
-        marginRight: '8px',
+        marginRight: theme.spacing(1),
+        marginLeft: theme.spacing(1),
     }),
     toolbar: (theme: Theme) => ({
         '&': {
@@ -89,7 +90,7 @@ const styles = {
 
 const RootNetworkNodeEditor = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const { snackInfo, snackError } = useSnackMessage();
+    const { snackError } = useSnackMessage();
     const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -175,7 +176,7 @@ const RootNetworkNodeEditor = () => {
 
     const intl = useIntl();
     const getRootNetworkLabel = (rootNetwork: RootNetworkMetadata): string => {
-        return intl.formatMessage({ id: 'RootNetwork' }) + ': ' + rootNetwork.name;
+        return intl.formatMessage({ id: 'root' }) + ': ' + rootNetwork.name;
     };
 
     const handleSecondaryAction = useCallback(
@@ -224,7 +225,6 @@ const RootNetworkNodeEditor = () => {
                 items={rootNetworks}
                 getItemId={(val) => val.rootNetworkUuid}
                 getItemLabel={getRootNetworkLabel}
-                divider
                 secondaryAction={handleSecondaryAction}
             />
         );
