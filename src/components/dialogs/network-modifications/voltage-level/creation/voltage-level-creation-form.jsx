@@ -70,29 +70,35 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
 
     const voltageLevelNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />;
 
-    const getChildren = useCallback(
-        (children) => {
-            return (
-                <Paper>
-                    {children}
-                    <LineSeparator></LineSeparator>
-                    <Grid item>
-                        <IconButton
-                            color="primary"
-                            fullWidth
-                            sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
-                            onMouseDown={() => handleAddButton()}
-                        >
-                            {intl.formatMessage({
-                                id: 'CreateSubstation',
-                            })}
-                        </IconButton>
-                    </Grid>
-                </Paper>
-            );
-        },
-        [handleAddButton, intl]
-    );
+    const handleAddButton = useCallback(() => {
+        setValue(ADD_SUBSTATION_CREATION, true);
+        setIsWithSubstationCreation(true);
+    }, [setValue]);
+    const handleDeleteButton = useCallback(() => {
+        setValue(ADD_SUBSTATION_CREATION, false);
+        setIsWithSubstationCreation(false);
+    }, [setValue]);
+
+    function getChildren(children) {
+        return (
+            <Paper>
+                {children}
+                <LineSeparator></LineSeparator>
+                <Grid item>
+                    <IconButton
+                        color="primary"
+                        fullWidth
+                        sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
+                        onMouseDown={() => handleAddButton()}
+                    >
+                        {intl.formatMessage({
+                            id: 'CreateSubstation',
+                        })}
+                    </IconButton>
+                </Grid>
+            </Paper>
+        );
+    }
 
     const substationField = (
         <AutocompleteInput
@@ -111,7 +117,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             renderOption={(props, option) => {
                 return <li {...props}>{getObjectId(option)}</li>;
             }}
-            PaperComponent={getChildren}
+            PaperComponent={({ children }) => getChildren(children)}
         />
     );
 
@@ -154,14 +160,6 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
 
     const substationCreationCountryField = <CountrySelectionInput name={COUNTRY} label={'Country'} size={'small'} />;
 
-    const handleAddButton = useCallback(() => {
-        setValue(ADD_SUBSTATION_CREATION, true);
-        setIsWithSubstationCreation(true);
-    }, [setValue]);
-    const handleDeleteButton = useCallback(() => {
-        setValue(ADD_SUBSTATION_CREATION, false);
-        setIsWithSubstationCreation(false);
-    }, [setValue]);
     return (
         <>
             <Grid container spacing={2}>
