@@ -422,7 +422,7 @@ export const GENERATOR_TAB_DEF = {
         },
         {
             id: 'RegulatingTerminalGenerator',
-            field: 'RegulatingTerminalGenerator',
+            field: 'regulatingTerminalConnectableId',
             ...defaultTextFilterConfig,
             valueGetter: RegulatingTerminalCellGetter,
             cellStyle: (params) => (isEditableRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
