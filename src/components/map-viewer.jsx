@@ -31,6 +31,7 @@ import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlin
 const styles = {
     map: {
         display: 'flex',
+        position: 'relative',
         flexDirection: 'row',
         height: '100%',
     },
