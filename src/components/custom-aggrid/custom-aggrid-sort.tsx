@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { IconButton } from '@mui/material';
-import { SortWay } from '../../hooks/use-aggrid-sort';
+import { SortParams } from './hooks/use-custom-aggrid-sort';
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import React from 'react';
 import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
-import { CustomHeaderSortParams } from './custom-aggrid-header.type';
+import { SortWay } from '../../redux/reducer';
 
 const styles = {
     iconSize: {
@@ -19,19 +19,17 @@ const styles = {
 
 interface CustomAggridSortProps {
     field: string;
-    sortParams: CustomHeaderSortParams;
+    sortParams: SortParams;
 }
 
 export const CustomAggridSort = ({ field, sortParams }: CustomAggridSortProps) => {
     const { columnSort, handleSortChange } = useCustomAggridSort(field, sortParams);
-    const { isSortable } = sortParams;
     const handleClick = () => {
         handleSortChange();
     };
     const isColumnSorted = !!columnSort;
 
     return (
-        isSortable &&
         isColumnSorted && (
             <IconButton onClick={handleClick}>
                 {columnSort.sort === SortWay.ASC ? (

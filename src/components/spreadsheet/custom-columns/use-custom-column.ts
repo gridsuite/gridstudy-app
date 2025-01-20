@@ -13,12 +13,15 @@ import { DefaultCellRenderer } from '../utils/cell-renderers';
 import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 
 export function useCustomColumn(tabIndex: number) {
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
+
+    const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
 
     const math = useMemo(() => {
         const instance = create(all, {
@@ -83,6 +86,10 @@ export function useCustomColumn(tabIndex: number) {
                 headerTooltip: colWithFormula.name,
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
+                    sortParams: {
+                        table: SPREADSHEET_SORT_STORE,
+                        tab: tablesDefinitionIndexes.get(tabIndex)!.name,
+                    },
                     field: colWithFormula.name,
                     tabIndex,
                     customMenuParams: {
@@ -97,7 +104,7 @@ export function useCustomColumn(tabIndex: number) {
                 valueGetter: createValueGetter(colWithFormula),
             };
         });
-    }, [createValueGetter, customColumnsDefinitions, tabIndex]);
+    }, [customColumnsDefinitions, tablesDefinitionIndexes, tabIndex, createValueGetter]);
 
     return { createCustomColumn };
 }
