@@ -843,7 +843,7 @@ export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
     shiftX: number;
     shiftY: number;
     connectionShiftX: number;
-    connectionShiftY: number; // TODO CHARLY ajouter le scaling ici
+    connectionShiftY: number;
 };
 export function storeNetworkAreaDiagramTextNodeMovement(
     nadIdentifier: string,

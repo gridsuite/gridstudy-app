@@ -436,7 +436,7 @@ export type NadTextMovement = {
     shiftX: number;
     shiftY: number;
     connectionShiftX: number;
-    connectionShiftY: number; // TODO CHARLY ajouter le scalingFactor ici (2)
+    connectionShiftY: number;
 };
 
 
@@ -1508,7 +1508,7 @@ export const reducer = createReducer(initialState, (builder) => {
                     shiftX: action.shiftX,
                     shiftY: action.shiftY,
                     connectionShiftX: action.connectionShiftX,
-                    connectionShiftY: action.connectionShiftY, // TODO CHARLY ajouter le scaling factor ici (3)
+                    connectionShiftY: action.connectionShiftY,
                 });
             } else {
                 correspondingMovement[0].shiftX = action.shiftX;

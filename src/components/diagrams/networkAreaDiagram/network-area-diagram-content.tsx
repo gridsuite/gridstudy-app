@@ -184,7 +184,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [dispatch, nadIdentifier, props.svgScalingFactor]
     );
 
-    const onMoveTextNodeCallback = useCallback( // TODO CHARLY ajouter scaling (4)
+    const onMoveTextNodeCallback = useCallback(
         (
             equipmentId: string,
             vlNodeId: string,
@@ -289,7 +289,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 });
             }
 
-            // Repositioning the previously moved text nodes // TODO CHARLY traiter le scaling dans ce bloc de code ci-dessous
+            // Repositioning the previously moved text nodes
             const correspondingTextMovements = nadTextNodeMovementsRef.current.filter(
                 (movement) => movement.nadIdentifier === nadIdentifier
             );
