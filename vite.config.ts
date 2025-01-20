@@ -6,14 +6,10 @@
  */
 
 import react from '@vitejs/plugin-react';
-import { CommonServerOptions, defineConfig, PluginOption } from 'vite';
+import { CommonServerOptions, defineConfig } from 'vite';
 import eslint from 'vite-plugin-eslint';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import * as path from 'node:path';
-import * as fs from 'node:fs/promises';
-import * as url from 'node:url';
-import { createRequire } from 'node:module';
 
 const serverSettings: CommonServerOptions = {
     port: 3004,
