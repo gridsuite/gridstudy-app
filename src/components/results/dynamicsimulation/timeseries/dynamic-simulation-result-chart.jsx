@@ -24,6 +24,7 @@ import ResponsiveGridLayout from '../common/gridlayout/responsive-grid-layout';
 import { lighten } from '@mui/material/styles';
 import { useDebounce } from '@gridsuite/commons-ui';
 import { mergeSx } from '../../../utils/functions';
+import { arrayFrom } from '../../../utils/utils';
 
 const styles = {
     root: {
@@ -143,7 +144,15 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
                         index: elem.index,
                         name: metadata?.name,
                         data: {
-                            x: metadata?.irregularIndex,
+                            x: metadata?.irregularIndex
+                                ? metadata.irregularIndex
+                                : metadata?.regularIndex
+                                ? arrayFrom(
+                                      metadata.regularIndex.startTime,
+                                      metadata.regularIndex.endTime,
+                                      metadata.regularIndex.spacing
+                                  )
+                                : [],
                             y: values,
                         },
                     };
