@@ -10,7 +10,6 @@ import {
     isObjectEmpty,
     TreeViewFinderNodeProps,
     UniqueNameCheckInput,
-    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { Grid } from '@mui/material';
@@ -61,7 +60,6 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
     dialogProps,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const { snackError } = useSnackMessage();
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -97,7 +95,7 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
             // Save data, including CASE_NAME and CASE_ID
             onSave(values);
         },
-        [onSave, snackError]
+        [onSave]
     );
 
     const isFormValid = isObjectEmpty(errors);
