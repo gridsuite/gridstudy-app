@@ -84,29 +84,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             outputTransform={(value) => value}
             size={'small'}
             formProps={{ margin: 'normal' }}
-            renderOption={(props, option) => {
-                return <li {...props}>{getObjectId(option)}</li>;
-            }}
-            PaperComponent={({ children }) => {
-                return (
-                    <Paper>
-                        {children}
-                        <LineSeparator></LineSeparator>
-                        <Grid item>
-                            <IconButton
-                                color="primary"
-                                fullWidth
-                                sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
-                                onMouseDown={() => handleAddButton()}
-                            >
-                                {intl.formatMessage({
-                                    id: 'CreateSubstation',
-                                })}
-                            </IconButton>
-                        </Grid>
-                    </Paper>
-                );
-            }}
+            PaperComponent={({ children }) => getChildren(children)}
         />
     );
 
@@ -153,10 +131,35 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
         setValue(ADD_SUBSTATION_CREATION, true);
         setIsWithSubstationCreation(true);
     }, [setValue]);
+
     const handleDeleteButton = useCallback(() => {
         setValue(ADD_SUBSTATION_CREATION, false);
         setIsWithSubstationCreation(false);
     }, [setValue]);
+
+    const getChildren = useCallback(
+        (children) => {
+            return (
+                <Paper>
+                    <Box> {children} </Box>
+                    <LineSeparator />
+                    <Box>
+                        <IconButton
+                            color="primary"
+                            fullWidth
+                            sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
+                            onMouseDown={() => handleAddButton()}
+                        >
+                            {intl.formatMessage({
+                                id: 'CreateSubstation',
+                            })}
+                        </IconButton>
+                    </Box>
+                </Paper>
+            );
+        },
+        [handleAddButton, intl]
+    );
     return (
         <>
             <Grid container spacing={2}>
