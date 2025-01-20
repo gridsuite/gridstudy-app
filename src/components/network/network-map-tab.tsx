@@ -580,8 +580,7 @@ export const NetworkMapTab = ({
         studyUuid,
         getEquipmentsNotFoundIds,
         getMissingEquipmentsPositions,
-        mapEquipments?.substations,
-        mapEquipments?.lines,
+        mapEquipments,
         updateSubstationsTemporaryGeoData,
         updateLinesTemporaryGeoData,
     ]);
@@ -597,6 +596,7 @@ export const NetworkMapTab = ({
     const loadRootNodeGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         dispatch(setMapDataLoading(true));
+        setGeoData(undefined);
         geoDataRef.current = null;
 
         // @ts-expect-error TODO: manage rootNodeId undefined case
@@ -625,11 +625,6 @@ export const NetworkMapTab = ({
             .then(() => {
                 temporaryGeoDataIdsRef.current = new Set();
                 networkMapRef.current?.resetZoomAndPosition();
-                // when reloading root node map equipments (when switching of root network), nominal voltages are reloaded
-                // we check them all in NominalVoltageFilter by default
-                if (mapEquipments) {
-                    handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
-                }
                 setIsRootNodeGeoDataLoaded(true);
             })
             .catch(function (error) {
@@ -749,7 +744,7 @@ export const NetworkMapTab = ({
                 }
             });
             return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(() => {
-                if (mapEquipments) {
+                if (isFullReload) {
                     handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
                 }
                 dispatch(setMapDataLoading(false));
@@ -811,7 +806,6 @@ export const NetworkMapTab = ({
             dispatch(resetMapReloaded());
             return;
         }
-
         updateMapEquipments(currentNodeAtReloadCalling).then(() => {
             if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                 loadGeoData();
