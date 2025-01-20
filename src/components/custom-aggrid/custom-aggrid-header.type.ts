@@ -6,9 +6,9 @@
  */
 import { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
 import { SortParams } from './hooks/use-custom-aggrid-sort';
-import { CustomColumnConfigProps } from 'components/spreadsheet/custom-columns/custom-column-menu';
 import React, { ComponentType } from 'react';
 import { FilterParams } from '../../types/custom-aggrid-types';
+import { CustomColumnConfigProps } from './custom-column-menu';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
