@@ -9,7 +9,7 @@ import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
-import { convertInputValue, convertOutputValue, FieldType } from '@gridsuite/commons-ui';
+import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const VOLTAGE_LEVEL_TAB_DEF = {
