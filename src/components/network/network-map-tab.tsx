@@ -858,16 +858,16 @@ export const NetworkMapTab = ({
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
             return;
         }
-        // when root network has just been changed, we reload root node geodata to match its root node geodata
-        if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
-            loadRootNodeGeoData();
-            return;
-        }
         if (disabled) {
             return;
         }
         // as long as rootNodeId is not set, we don't fetch any geodata
         if (!rootNodeId) {
+            return;
+        }
+        // when root network has just been changed, we reload root node geodata to match its root node geodata
+        if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
+            loadRootNodeGeoData();
             return;
         }
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
