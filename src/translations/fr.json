@@ -56,7 +56,7 @@
     "NetworkAreaDiagram": "Image nodale de zone",
 
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
-    "RootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'ID \"{studyUuid}\"",
+    "RootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
 
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
     "svgLoadingFail": "L'image n'a pas pu être chargée",
@@ -1457,11 +1457,11 @@
     "StateEstimationStatus": "Statut : ",
     "StateEstimationQuality": "Qualité: ",
     "Or": "ou",
-    "rootNetworksCount":"{hide, select, false {{count, plural, =0 {aucun réseau} =1 {# Réseau} other {# Réseaux}}} other {...}}",
-    "updateRootNetworksList": "Mise à jour de la liste des réseaux racine cours ...",
+    "rootNetworksCount":"{count, plural, =1 {# réseau} other {# réseaux}}",
+    "updateRootNetworksList": "Mise à jour de la liste des réseaux racines cours ...",
     "deletingRootNetwork": "Suppression du réseau racine en cours ...",
     "creatingRootNetwork": "Création du réseau racine en cours ...",
     "rootNetworkCreated": "Le réseau racine a été créé avec succès",
-    "errDeleteRootNetworkMsg": "Une erreur est survenue lors de la suppression des réseaux racine",
-    "rootNetworknameValidityCheckErrorMsg": "Erreur à la vérification du nom de réseau racine"
+    "errDeleteRootNetworkMsg": "Une erreur est survenue lors de la suppression des réseaux racines",
+    "rootNetworknameValidityCheckErrorMsg": "Une erreur est survenue lors de la vérification du nom de réseau racine"
 }

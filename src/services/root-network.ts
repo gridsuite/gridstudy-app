@@ -5,14 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl } from './study';
+import { PREFIX_STUDY_QUERIES, getStudyUrl } from './study';
 import { backendFetch, backendFetchJson } from './utils';
 import { UUID } from 'crypto';
 
-export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
-
 export function fetchRootNetworks(studyUuid: UUID) {
-    console.info('Fetching root network for studyUuid : ', studyUuid);
+    console.info('Fetching root networks for studyUuid : ', studyUuid);
     const rootNetworksGetUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/root-networks`;
 
     console.debug(rootNetworksGetUrl);
@@ -20,16 +18,12 @@ export function fetchRootNetworks(studyUuid: UUID) {
 }
 
 export const createRootNetwork = (
-    caseUuid: UUID | undefined,
+    caseUuid: UUID,
     caseFormat: string,
     rootNetworkName: string,
-    studyUuid: UUID | null,
+    studyUuid: UUID,
     importParameters: Record<string, any>
 ) => {
-    if (!studyUuid || !caseUuid || !rootNetworkName) {
-        throw new Error('rootNetworkName, studyUuid and caseUuid are required parameters.');
-    }
-
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('caseUuid', caseUuid);
     urlSearchParams.append('caseFormat', caseFormat);
@@ -64,13 +58,13 @@ export function deleteRootNetworks(studyUuid: UUID, rootNetworkUuids: UUID[]) {
 }
 
 export function checkRootNetworkNameExistence(studyUuid: UUID, name: string): Promise<boolean> {
-    const rootNetworkNameExistsUrl =
+    const checkRootNetworkNameExistenceUrl =
         getStudyUrl(studyUuid) +
         '/root-networks?' +
         new URLSearchParams({
             name: name,
         });
-    console.debug(rootNetworkNameExistsUrl);
+    console.debug(checkRootNetworkNameExistenceUrl);
     return backendFetch(rootNetworkNameExistsUrl, { method: 'head' }).then((response) => {
         return response.status !== 204;
     });

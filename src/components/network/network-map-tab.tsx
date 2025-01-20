@@ -45,7 +45,6 @@ import LineModificationDialog from '../dialogs/network-modifications/line/modifi
 import { deleteEquipment } from '../../services/study/network-modifications';
 import EquipmentDeletionDialog from '../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
-
 import { useMapBoxToken } from './network-map/use-mapbox-token';
 import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
@@ -859,7 +858,8 @@ export const NetworkMapTab = ({
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
             return;
         }
-        if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid && currentNode !== null) {
+        // when root network has just been changed, we reload root node geodata to match its root node geodata
+        if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
             loadRootNodeGeoData();
             return;
         }
@@ -879,13 +879,9 @@ export const NetworkMapTab = ({
             // load default node map equipments
             loadMapEquipments();
         }
-        if (!isRootNodeGeoDataLoaded || previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
+        if (!isRootNodeGeoDataLoaded) {
             // load root node geodata
             loadRootNodeGeoData();
-            //TODO: kevin make it cleaner
-            if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
-                return;
-            }
         }
         // manual reload
         if (refIsMapManualRefreshEnabled.current && isInitialized) {

@@ -31,7 +31,7 @@ import {
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks } from 'services/root-network';
 import { setCurrentRootNetwork } from 'redux/actions';
-import RootNetworkCreationDialog, { FormData } from 'components/dialogs/root-network-creation-dialog';
+import RootNetworkCreationDialog, { FormData } from 'components/dialogs/root-network/root-network-creation-dialog';
 
 export const styles = {
     listContainer: (theme: Theme) => ({
@@ -370,7 +370,7 @@ const RootNetworkNodeEditor = () => {
                     caseId as UUID,
                     params.formatName,
                     name,
-                    studyUuid,
+                    studyUuid as UUID,
                     customizedCurrentParameters
                 );
             })

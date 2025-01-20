@@ -55,7 +55,7 @@
     "SingleLineDiagram": "Single line diagram",
     "NetworkAreaDiagram": "Network area diagram",
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
-    "rootNetworkNotFound": "No root network was not found for the study with ID \"{studyUuid}\"",
+    "rootNetworkNotFound": "No root network was found for the study with ID \"{studyUuid}\"",
 
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
@@ -1236,7 +1236,7 @@
     "SaveModificationTo": "Save to GridExplore",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
-    "errCreateRootNetworksMsg": "Root Networks creation error",
+    "errCreateRootNetworksMsg": "An error occurred while creating the root network",
     "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {studyDirectory}",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
@@ -1455,13 +1455,13 @@
     "StateEstimationStatus": "Status : ",
     "StateEstimationQuality": "Quality : ",
     "Or": "or",
-    "rootNetworksCount":"{hide, select, false {{count, plural, =0 {no root} =1 {{count} Root} other {{count} Roots}}} other {...}}",
+    "rootNetworksCount":"{count, plural, =1 {# network} other {# networks}}",
     "updateRootNetworksList": "Updating root network list ...",
     "deletingRootNetwork": "Deleting root network ...",
     "creatingRootNetwork": "Creating root network ...",
-    "rootNetworkCreated": "Root Network has been created successfully",
-    "errDeleteRootNetworkMsg": "Root Networks deletion error",
-    "rootNetworknameValidityCheckErrorMsg": "Error while checking name validity"
+    "rootNetworkCreated": "The root network has been created successfully",
+    "errDeleteRootNetworkMsg": "An error occurred while deleting root networks",
+    "rootNetworknameValidityCheckErrorMsg": "An error occurred while checking root network name"
 
  
 }

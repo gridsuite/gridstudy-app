@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage } from 'react-intl';
 import {
     CustomFormProvider,
     isObjectEmpty,
@@ -13,17 +12,17 @@ import {
     UniqueNameCheckInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useCallback, useState } from 'react';
-import { Grid, Button, Typography, Box } from '@mui/material';
-import { CASE_NAME, CASE_ID, NAME } from '../utils/field-constants';
+import { useCallback } from 'react';
+import { Grid } from '@mui/material';
+import { CASE_NAME, CASE_ID, NAME } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../utils/yup-config';
+import yup from '../../utils/yup-config';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import ImportCaseDialog from './import-case-dialog';
-import ModificationDialog from './commons/modificationDialog';
+import ModificationDialog from '../commons/modificationDialog';
 import { checkRootNetworkNameExistence } from 'services/root-network';
+import { RootNetworkCaseSelection } from './root-network-case-selection';
 
 export interface FormData {
     [NAME]: string;
@@ -36,7 +35,7 @@ interface RootNetworkCreationDialogProps {
     onSave: (data: FormData) => void;
     onClose: () => void;
     titleId: string;
-    dialogProps: any;
+    dialogProps?: any;
 }
 
 const formSchema = yup
@@ -59,13 +58,10 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
     onSave,
     onClose,
     titleId,
-    dialogProps = undefined,
+    dialogProps,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
-
-    const [selectedCase, setSelectedCase] = useState<TreeViewFinderNodeProps | null>(null);
-    const [caseSelectorOpen, setCaseSelectorOpen] = useState(false);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -81,18 +77,10 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
     // Clear form and reset selected case
     const clear = useCallback(() => {
         reset(emptyFormData);
-        setSelectedCase(null); // Reset the selected case on clear
     }, [reset]);
-
-    // Open case selector
-    const handleCaseSelection = () => {
-        setCaseSelectorOpen(true);
-    };
 
     // Set selected case when a case is selected
     const onSelectCase = (selectedCase: TreeViewFinderNodeProps) => {
-        setSelectedCase(selectedCase);
-
         setValue(NAME, selectedCase.name, {
             shouldDirty: true,
         }); // Set the name from the selected case
@@ -102,39 +90,17 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
         setValue(CASE_ID, selectedCase.id, {
             shouldDirty: true,
         });
-        setCaseSelectorOpen(false);
     };
 
     const handleSave = useCallback(
         (values: FormData) => {
-            if (selectedCase) {
-                // Save data, including CASE_NAME and CASE_ID
-
-                onSave(values);
-            } else {
-                snackError({
-                    messageTxt: 'Please select a case before saving.',
-                    headerId: 'caseNotSelectedError',
-                });
-            }
+            // Save data, including CASE_NAME and CASE_ID
+            onSave(values);
         },
-        [onSave, selectedCase, snackError]
+        [onSave, snackError]
     );
 
-    // Case selection component
-    const caseSelection = (
-        <Grid container item>
-            <Grid item>
-                <Button onClick={handleCaseSelection} variant="contained" size={'small'}>
-                    <FormattedMessage id={'ChooseCase'} />
-                </Button>
-            </Grid>
-            <Typography m={1} component="span">
-                <Box fontWeight={'fontWeightBold'}>{selectedCase ? selectedCase.name : ''}</Box>
-            </Typography>
-        </Grid>
-    );
-    const isFormValid = isObjectEmpty(errors) && selectedCase;
+    const isFormValid = isObjectEmpty(errors);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -160,14 +126,8 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
                             elementExists={checkRootNetworkNameExistence}
                         />
                     </Grid>
-                    {caseSelection}
+                    <RootNetworkCaseSelection onSelectCase={onSelectCase} />
                 </Grid>
-
-                <ImportCaseDialog
-                    open={caseSelectorOpen}
-                    onClose={() => setCaseSelectorOpen(false)}
-                    onSelectCase={onSelectCase}
-                />
             </ModificationDialog>
         </CustomFormProvider>
     );

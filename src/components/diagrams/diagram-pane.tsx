@@ -817,7 +817,6 @@ export function DiagramPane({
     }, [currentNode, updateDiagramsByIds]);
 
     // This effect will trigger the diagrams' forced update
-    // This effect will trigger the diagrams' forced update
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
@@ -828,11 +827,9 @@ export function DiagramPane({
             }
             if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult') {
                 //TODO reload data more intelligently
-
                 updateDiagramsByCurrentNode();
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
                 // FM if we want to reload data more precisely, we need more information from notifications
-
                 updateDiagramsByCurrentNode();
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'buildCompleted') {
                 if (studyUpdatedForce.eventData.headers['node'] === currentNodeRef.current?.id) {

@@ -51,7 +51,6 @@ const styles = {
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
-        //   backgroundColor: 'yellow',
     },
 };
 
