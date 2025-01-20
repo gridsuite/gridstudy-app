@@ -91,7 +91,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
                 </Paper>
             );
         },
-        [children]
+        [handleAddButton, intl]
     );
 
     const substationField = (
@@ -111,7 +111,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             renderOption={(props, option) => {
                 return <li {...props}>{getObjectId(option)}</li>;
             }}
-            PaperComponent={getChildren(children)}
+            PaperComponent={getChildren}
         />
     );
 
