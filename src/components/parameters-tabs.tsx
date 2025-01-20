@@ -169,6 +169,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
 
@@ -247,7 +248,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
                     oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
                     oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
-                    oldValue === TAB_VALUES.dynamicSimulationParamsTabValue)
+                    oldValue === TAB_VALUES.dynamicSimulationParamsTabValue ||
+                    oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue)
             ) {
                 return TAB_VALUES.securityAnalysisParamsTabValue;
             }
@@ -365,6 +367,13 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                     disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}
                                     label={<FormattedMessage id="DynamicSimulation" />}
                                     value={TAB_VALUES.dynamicSimulationParamsTabValue}
+                                />
+                            ) : null}
+                            {enableDeveloperMode ? (
+                                <Tab
+                                    disabled={dynamicSecurityAnalysisAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="DynamicSecurityAnalysis" />}
+                                    value={TAB_VALUES.dynamicSecurityAnalysisParamsTabValue}
                                 />
                             ) : null}
                             <Tab

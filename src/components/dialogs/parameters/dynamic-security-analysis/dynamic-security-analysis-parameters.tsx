@@ -28,7 +28,7 @@ import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service
 import { mergeSx } from '../../../utils/functions';
 import { CustomFormProvider, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 import LineSeparator from '../../commons/line-separator';
@@ -108,7 +108,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
     const { reset, handleSubmit, formState } = formMethods;
 
     const onError = useCallback(
-        (errors: /* Record<TAB_VALUES, any> */ any) => {
+        (errors: FieldErrors<DynamicSecurityAnalysisParametersForm>) => {
             // TODO: this does not work if formSchema keys does not match tab values
             const tabsInError = [];
             // do not show error when being in the current tab
@@ -130,13 +130,6 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
         },
         [tabIndex]
     );
-
-    // errors is a mutable object => convert to json to activate useEffect
-    // const errorsJSON = JSON.stringify(formState.errors);
-    //
-    // useEffect(() => {
-    //     onError(JSON.parse(errorsJSON));
-    // }, [errorsJSON, onError]);
 
     const onSubmit = useCallback(
         (newParams: DynamicSecurityAnalysisParametersForm) => {

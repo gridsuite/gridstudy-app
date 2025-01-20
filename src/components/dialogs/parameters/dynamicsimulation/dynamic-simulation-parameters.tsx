@@ -51,7 +51,7 @@ import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service
 import { mergeSx } from '../../../utils/functions';
 import { CustomFormProvider, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 import LineSeparator from '../../commons/line-separator';
@@ -134,7 +134,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     const { reset, handleSubmit, formState, clearErrors } = formMethods;
 
     const onError = useCallback(
-        (errors: Record<TAB_VALUES, any>) => {
+        (errors: FieldErrors<DynamicSimulationForm>) => {
             const tabsInError = [];
             // do not show error when being in the current tab
             if (errors?.[TAB_VALUES.TIME_DELAY] && TAB_VALUES.TIME_DELAY !== tabValue) {
@@ -156,13 +156,6 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
         },
         [tabValue]
     );
-
-    // errors is a mutable object => convert to json to activate useEffect
-    const errorsJSON = JSON.stringify(formState.errors);
-
-    useEffect(() => {
-        onError(JSON.parse(errorsJSON));
-    }, [errorsJSON, onError]);
 
     const onSubmit = useCallback(
         (newParams: DynamicSimulationForm) => {
@@ -325,7 +318,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
             </Grid>
             <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingTop: 4 })}>
                 <LabelledButton callback={handleResetParametersAndProvider} label="resetToDefault" />
-                <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit)}>
+                <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onError)}>
                     <FormattedMessage id={'validate'} />
                 </SubmitButton>
             </Grid>
