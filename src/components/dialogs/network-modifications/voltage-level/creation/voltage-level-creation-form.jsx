@@ -70,6 +70,27 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
 
     const voltageLevelNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />;
 
+    const getChildren = useCallback((children) => {
+        return (
+          <Paper>
+              {children}
+              <LineSeparator></LineSeparator>
+              <Grid item>
+                  <IconButton
+                    color="primary"
+                    fullWidth
+                    sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
+                    onMouseDown={() => handleAddButton()}
+                  >
+                      {intl.formatMessage({
+                          id: 'CreateSubstation',
+                      })}
+                  </IconButton>
+              </Grid>
+          </Paper>
+        );
+    }, [children]);
+
     const substationField = (
         <AutocompleteInput
             allowNewValue
@@ -87,26 +108,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             renderOption={(props, option) => {
                 return <li {...props}>{getObjectId(option)}</li>;
             }}
-            PaperComponent={({ children }) => {
-                return (
-                    <Paper>
-                        {children}
-                        <LineSeparator></LineSeparator>
-                        <Grid item>
-                            <IconButton
-                                color="primary"
-                                fullWidth
-                                sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
-                                onMouseDown={() => handleAddButton()}
-                            >
-                                {intl.formatMessage({
-                                    id: 'CreateSubstation',
-                                })}
-                            </IconButton>
-                        </Grid>
-                    </Paper>
-                );
-            }}
+            PaperComponent={getChildren(children)}
         />
     );
 
