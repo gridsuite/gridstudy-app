@@ -216,7 +216,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             colId: 'RatioTap1',
-            field: 'ratioTapChanger1',
+            field: 'ratioTapChanger1.tapPosition',
             ...defaultNumericFilterConfig,
             context: {
                 ...defaultNumericFilterConfig.context,
@@ -270,7 +270,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             colId: 'RatioTap2',
-            field: 'ratioTapChanger2',
+            field: 'ratioTapChanger2.tapPosition',
             ...defaultNumericFilterConfig,
             context: {
                 ...defaultNumericFilterConfig.context,
@@ -324,7 +324,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             colId: 'RatioTap3',
-            field: 'ratioTapChanger3',
+            field: 'ratioTapChanger3.tapPosition',
             ...defaultNumericFilterConfig,
             context: {
                 ...defaultNumericFilterConfig.context,
@@ -366,7 +366,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             colId: 'PhaseTap1',
-            field: 'phaseTapChanger1',
+            field: 'phaseTapChanger1.tapPosition',
             ...defaultNumericFilterConfig,
             context: {
                 ...defaultNumericFilterConfig.context,
@@ -420,7 +420,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             colId: 'PhaseTap2',
-            field: 'phaseTapChanger2',
+            field: 'phaseTapChanger2.tapPosition',
             ...defaultNumericFilterConfig,
             context: {
                 ...defaultNumericFilterConfig.context,
@@ -474,7 +474,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             colId: 'PhaseTap3',
-            field: 'phaseTapChanger3',
+            field: 'phaseTapChanger3.tapPosition',
             ...defaultNumericFilterConfig,
             context: {
                 ...defaultNumericFilterConfig.context,
