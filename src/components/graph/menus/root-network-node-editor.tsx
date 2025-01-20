@@ -127,7 +127,7 @@ const RootNetworkNodeEditor = () => {
     }, [studyUuid, updateSelectedItems, snackError]);
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers['updateType'] === 'rootNetworksUpdated') {
+        if (studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworksUpdated') {
             dofetchRootNetworks();
         }
     }, [studyUpdatedForce, dofetchRootNetworks]);
@@ -218,9 +218,6 @@ const RootNetworkNodeEditor = () => {
                         checkBoxIcon: styles.checkBoxIcon,
                         checkboxButton: styles.checkboxButton,
                     }),
-                }}
-                onItemClick={(rootNetwork) => {
-                    console.log(rootNetwork.rootNetworkUuid, 'on click');
                 }}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
