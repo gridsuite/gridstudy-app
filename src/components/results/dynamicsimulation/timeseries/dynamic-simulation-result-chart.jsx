@@ -79,6 +79,16 @@ const styles = {
     }),
 };
 
+function getTimeseriesIndex(metadata) {
+    if (metadata?.irregularIndex) {
+        return metadata.irregularIndex;
+    }
+
+    return metadata?.regularIndex
+        ? arrayFrom(metadata.regularIndex.startTime, metadata.regularIndex.endTime, metadata.regularIndex.spacing)
+        : [];
+}
+
 const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, loadTimeSeries }) => {
     const intl = useIntl();
 
@@ -140,19 +150,12 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
                 return selectedTimeSeries.map((elem) => {
                     const metadata = elem?.metadata;
                     const values = elem?.chunks && elem.chunks[0]?.values;
+                    const timeseriesIndex = getTimeseriesIndex(metadata);
                     return {
                         index: elem.index,
                         name: metadata?.name,
                         data: {
-                            x: metadata?.irregularIndex
-                                ? metadata.irregularIndex
-                                : metadata?.regularIndex
-                                ? arrayFrom(
-                                      metadata.regularIndex.startTime,
-                                      metadata.regularIndex.endTime,
-                                      metadata.regularIndex.spacing
-                                  )
-                                : [],
+                            x: timeseriesIndex,
                             y: values,
                         },
                     };
