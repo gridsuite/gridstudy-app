@@ -63,12 +63,15 @@ export function deleteRootNetworks(studyUuid: UUID, rootNetworkUuids: UUID[]) {
     });
 }
 
-export function rootNetworkNameExists(studyUuid: UUID, name: string): Promise<boolean> {
+export function checkRootNetworkNameExistence(studyUuid: UUID, name: string): Promise<boolean> {
     const rootNetworkNameExistsUrl =
         getStudyUrl(studyUuid) +
         '/root-networks?' +
         new URLSearchParams({
             name: name,
         });
-    return backendFetch(rootNetworkNameExistsUrl, { method: 'head' });
+    console.debug(rootNetworkNameExistsUrl);
+    return backendFetch(rootNetworkNameExistsUrl, { method: 'head' }).then((response) => {
+        return response.status !== 204;
+    });
 }

@@ -373,8 +373,7 @@
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
 
-    "selectCase": "Select case",
-    "ChooseSituation": "Select a case",
+    "ChooseCase": "Select a case",
     
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
@@ -610,7 +609,6 @@
     "NodeBuildingError": "An error occurred while building node",
     "NodeUnbuildingError": "An error occurred while unbuilding node",
     "NetworkModifications": "Network modifications",
-    "RootNetwork": "Root Network",
     "CreateLoad": "Create load",
     "ModifyLoad": "Modify load",
     "NameOptional": "Name (optional)",

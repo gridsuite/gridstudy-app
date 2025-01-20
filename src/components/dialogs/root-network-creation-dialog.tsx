@@ -23,7 +23,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import ImportCaseDialog from './import-case-dialog';
 import ModificationDialog from './commons/modificationDialog';
-import { rootNetworkNameExists } from 'services/root-network';
+import { checkRootNetworkNameExistence } from 'services/root-network';
 
 export interface FormData {
     [NAME]: string;
@@ -126,7 +126,7 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
         <Grid container item>
             <Grid item>
                 <Button onClick={handleCaseSelection} variant="contained" size={'small'}>
-                    <FormattedMessage id={'selectCase'} />
+                    <FormattedMessage id={'ChooseCase'} />
                 </Button>
             </Grid>
             <Typography m={1} component="span">
@@ -157,7 +157,7 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
                             label={'Name'}
                             autoFocus
                             studyUuid={studyUuid}
-                            elementExists={rootNetworkNameExists}
+                            elementExists={checkRootNetworkNameExistence}
                         />
                     </Grid>
                     {caseSelection}

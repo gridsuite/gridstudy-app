@@ -374,8 +374,7 @@
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
 
-    "selectCase": "Sélectionner une situation",
-    "ChooseSituation": "Choisir une situation",
+    "ChooseCase": "Choisir une situation",
     
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
@@ -613,7 +612,6 @@
     "NodeBuildingError": "Une erreur est survenue lors de la réalisation du nœud",
     "NodeUnbuildingError": "Une erreur est survenue lors de la déréalisation du nœud",
     "NetworkModifications": "Modifications de réseau",
-    "RootNetwork": "Réseau racine",
 
     "CreateLoad": "Créer une consommation",
     "ModifyLoad": "Modifier une consommation",
