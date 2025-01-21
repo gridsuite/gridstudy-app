@@ -257,6 +257,7 @@ export interface TemporaryLimit {
     selected: boolean;
     name: string;
 }
+
 export interface CurrentLimits {
     id?: string;
     permanentLimit: number | null;

@@ -35,7 +35,7 @@ export interface LimitsSidePaneProps {
 export interface ILimitColumnDef {
     label: string;
     dataKey: string;
-    initialValue: boolean | string | string[] | number | null;
+    initialValue: string | null;
     editable: boolean;
     numeric: boolean;
 }
@@ -82,15 +82,11 @@ export function LimitsSidePane({
         }));
     }, [intl]);
 
-    const newRowData: TemporaryLimit = useMemo(() => {
-        const newRowData: TemporaryLimit = {
-            name: '',
-            value: null,
-            acceptableDuration: null,
-            modificationType: null,
-            selected: false,
-        };
-        columnsDefinition.forEach((column: ILimitColumnDef) => (newRowData[column.dataKey] = column.initialValue));
+    const newRowData = useMemo(() => {
+        let newRowData: any = {};
+        columnsDefinition.forEach((column: ILimitColumnDef) => {
+            Object.keys(newRowData).forEach((key) => (newRowData[key] = column.initialValue));
+        });
         return newRowData;
     }, [columnsDefinition]);
     const createRows = () => [newRowData];
