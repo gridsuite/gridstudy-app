@@ -29,7 +29,8 @@ export interface UniqueCheckNameInputProps {
 }
 
 /**
- * Input component that constantly check if the field's value is available or not
+ * TODO: Update the component in commonsui to make it more generic by accepting `elementExists` as a prop.
+ * Create an Input component that continuously checks whether the field's value is valid or exists.
  */
 export function UniqueCheckNameInput({
     name,
@@ -59,7 +60,6 @@ export function UniqueCheckNameInput({
 
     const handleCheckName = useCallback(
         (nameValue: string) => {
-            console.log('here ',nameValue)
             if (nameValue && studyUuid) {
                 elementExists?.(studyUuid, nameValue)
                     .then((alreadyExist) => {

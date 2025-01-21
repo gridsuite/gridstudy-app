@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomFormProvider,
-    isObjectEmpty,
-    TreeViewFinderNodeProps,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { Grid } from '@mui/material';
 import { CASE_NAME, CASE_ID, NAME } from '../../utils/field-constants';
@@ -22,7 +18,7 @@ import ModificationDialog from '../commons/modificationDialog';
 import { checkRootNetworkNameExistence } from 'services/root-network';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
- 
+
 export interface FormData {
     [NAME]: string;
     [CASE_NAME]: string;
