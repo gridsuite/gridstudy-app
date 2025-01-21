@@ -47,8 +47,6 @@ export const useSpreadsheetEquipments = (
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
-
     const {
         impactedSubstationsIds,
         deletedEquipments,
@@ -161,48 +159,35 @@ export const useSpreadsheetEquipments = (
     ]);
 
     useEffect(() => {
-        if (studyUuid && equipments != null && Object.keys(customColumnsDefinitions).length > 0) {
+        if (studyUuid && equipments != null) {
             const aliases = customColumnsNodesAliases.map((nodeAlias) => nodeAlias.alias);
-            const aliasesAlreadyFound: string[] = [];
-            const currentTabCustomColumnsDef = customColumnsDefinitions[tablesNames[tabIndex]];
-            const customColumns = currentTabCustomColumnsDef.columns;
             let fetchers: Promise<any>[] = [];
             let additionalEquipmentsByNodes: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>> = {};
             if (equipment.type) {
-                customColumns.forEach((column) => {
-                    const pattern: string = aliases.map((alias) => `\\b${alias}\\b\\.`).join('|'); // pattern to find the aliases in the expression
-                    const regex = new RegExp(pattern, 'g');
-                    const aliasesFoundInFormula = column.formula?.match(regex);
-                    aliasesFoundInFormula?.forEach((aliasWithDot) => {
-                        const alias = aliasWithDot.slice(0, -1); //because we searched for "alias." with the regex
-                        //To avoid fetching multiple time the same data because it's used in multiple column
-                        if (!aliasesAlreadyFound.includes(alias)) {
-                            aliasesAlreadyFound.push(alias);
-                            const nodeNameAssociatedToAlias = customColumnsNodesAliases.find(
-                                (nodeAlias) => nodeAlias.alias === alias
-                            )?.name;
-                            const nodeIdAssociatedToAlias = treeModel?.treeNodes?.find(
-                                (treeNode) => treeNode.data.label === nodeNameAssociatedToAlias
-                            )?.id;
-                            if (nodeIdAssociatedToAlias) {
-                                const fetcherPromises = getFetchers(equipment.type).map((fetcher) =>
-                                    fetcher(studyUuid, nodeIdAssociatedToAlias, [])
-                                );
-                                fetchers.push(fetcherPromises[0]);
-                                fetcherPromises[0].then((res) => {
-                                    let fetchedEquipments = res.flat();
-                                    if (formatFetchedEquipments) {
-                                        fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
-                                        let fetchedEquipmentByType: Record<SpreadsheetEquipmentType, Identifiable[]> =
-                                            {} as Record<SpreadsheetEquipmentType, Identifiable[]>;
-                                        fetchedEquipmentByType[equipment.type] = fetchedEquipments;
-                                        additionalEquipmentsByNodes = { ...additionalEquipmentsByNodes };
-                                        additionalEquipmentsByNodes[alias] = fetchedEquipmentByType;
-                                    }
-                                });
+                aliases.forEach((alias) => {
+                    const nodeNameAssociatedToAlias = customColumnsNodesAliases.find(
+                        (nodeAlias) => nodeAlias.alias === alias
+                    )?.name;
+                    const nodeIdAssociatedToAlias = treeModel?.treeNodes?.find(
+                        (treeNode) => treeNode.data.label === nodeNameAssociatedToAlias
+                    )?.id;
+                    if (nodeIdAssociatedToAlias) {
+                        const fetcherPromises = getFetchers(equipment.type).map((fetcher) =>
+                            fetcher(studyUuid, nodeIdAssociatedToAlias, [])
+                        );
+                        fetchers.push(fetcherPromises[0]);
+                        fetcherPromises[0].then((res) => {
+                            let fetchedEquipments = res.flat();
+                            if (formatFetchedEquipments) {
+                                fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
+                                let fetchedEquipmentByType: Record<SpreadsheetEquipmentType, Identifiable[]> =
+                                    {} as Record<SpreadsheetEquipmentType, Identifiable[]>;
+                                fetchedEquipmentByType[equipment.type] = fetchedEquipments;
+                                additionalEquipmentsByNodes = { ...additionalEquipmentsByNodes };
+                                additionalEquipmentsByNodes[alias] = fetchedEquipmentByType;
                             }
-                        }
-                    });
+                        });
+                    }
                 });
 
                 //so we only dispatch once all the fetches are over
@@ -217,9 +202,6 @@ export const useSpreadsheetEquipments = (
         studyUuid,
         formatFetchedEquipments,
         treeModel,
-        customColumnsDefinitions,
-        tabIndex,
-        tablesNames,
         customColumnsNodesAliases,
         equipment.type,
     ]);
