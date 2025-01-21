@@ -6,8 +6,13 @@
         "build",
         "coverage"
     ],
+    "plugins": ["react-refresh"],
     "rules": {
         "prettier/prettier": "warn",
-        "curly": "error"
+        "curly": "error",
+        "react-refresh/only-export-components": [
+            "error",
+            { "allowConstantExport": true }
+        ]
     }
 }
