@@ -203,44 +203,25 @@ const LineAttachToVoltageLevelDialog = ({
     }, [reset]);
 
     const onLineCreationDo = useCallback(
-        (
-            studyUuid,
-            currentNodeUuid,
-            lineId,
-            lineName,
-            r,
-            x,
-            g1,
-            b1,
-            g2,
-            b2,
-            connectivity1VlId,
-            connectivity1BobbsId,
-            connectivity2VlId,
-            connectivity2BobbsId,
-            permanentCurrentLimit1,
-            permanentCurrentLimit2,
-            temporaryCurrentLimits1,
-            temporaryCurrentLimits2
-        ) => {
+        (lineCreationInfo) => {
             return new Promise(() => {
                 const preparedLine = {
                     type: MODIFICATION_TYPES.LINE_CREATION.type,
-                    equipmentId: lineId,
-                    equipmentName: lineName,
-                    r: r,
-                    x: x,
-                    g1: g1,
-                    b1: b1,
-                    g2: g2,
-                    b2: b2,
+                    equipmentId: lineCreationInfo.lineId,
+                    equipmentName: lineCreationInfo.lineName,
+                    r: lineCreationInfo.r,
+                    x: lineCreationInfo.x,
+                    g1: lineCreationInfo.g1,
+                    b1: lineCreationInfo.b1,
+                    g2: lineCreationInfo.g2,
+                    b2: lineCreationInfo.b2,
                     currentLimits1: {
-                        permanentLimit: permanentCurrentLimit1,
-                        temporaryLimits: temporaryCurrentLimits1,
+                        permanentLimit: lineCreationInfo.permanentCurrentLimit1,
+                        temporaryLimits: lineCreationInfo.temporaryCurrentLimits1,
                     },
                     currentLimits2: {
-                        permanentLimit: permanentCurrentLimit2,
-                        temporaryLimits: temporaryCurrentLimits2,
+                        permanentLimit: lineCreationInfo.permanentCurrentLimit2,
+                        temporaryLimits: lineCreationInfo.temporaryCurrentLimits2,
                     },
                 };
                 setAttachmentLine(preparedLine);
