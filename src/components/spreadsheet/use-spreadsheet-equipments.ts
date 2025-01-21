@@ -164,23 +164,23 @@ export const useSpreadsheetEquipments = (
             let additionalEquipmentsByNodes: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>> = {};
             if (equipment.type) {
                 customColumnsNodesAliases.forEach((aliasInfo) => {
-                    if (aliasInfo.id) {
-                        const fetcherPromises = getFetchers(equipment.type).map((fetcher) =>
-                            fetcher(studyUuid, aliasInfo.id, [])
-                        );
-                        fetchers.push(fetcherPromises[0]);
-                        fetcherPromises[0].then((res) => {
-                            let fetchedEquipments = res.flat();
-                            if (formatFetchedEquipments) {
-                                fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
-                                let fetchedEquipmentByType: Record<SpreadsheetEquipmentType, Identifiable[]> =
-                                    {} as Record<SpreadsheetEquipmentType, Identifiable[]>;
-                                fetchedEquipmentByType[equipment.type] = fetchedEquipments;
-                                additionalEquipmentsByNodes = { ...additionalEquipmentsByNodes };
-                                additionalEquipmentsByNodes[aliasInfo.alias] = fetchedEquipmentByType;
-                            }
-                        });
-                    }
+                    const fetcherPromises = getFetchers(equipment.type).map((fetcher) =>
+                        fetcher(studyUuid, aliasInfo.id, [])
+                    );
+                    fetchers.push(fetcherPromises[0]);
+                    fetcherPromises[0].then((res) => {
+                        let fetchedEquipments = res.flat();
+                        if (formatFetchedEquipments) {
+                            fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
+                            let fetchedEquipmentByType: Record<SpreadsheetEquipmentType, Identifiable[]> = {} as Record<
+                                SpreadsheetEquipmentType,
+                                Identifiable[]
+                            >;
+                            fetchedEquipmentByType[equipment.type] = fetchedEquipments;
+                            additionalEquipmentsByNodes = { ...additionalEquipmentsByNodes };
+                            additionalEquipmentsByNodes[aliasInfo.alias] = fetchedEquipmentByType;
+                        }
+                    });
                 });
 
                 //so we only dispatch once all the fetches are over
