@@ -160,20 +160,13 @@ export const useSpreadsheetEquipments = (
 
     useEffect(() => {
         if (studyUuid && equipments != null) {
-            const aliases = customColumnsNodesAliases.map((nodeAlias) => nodeAlias.alias);
             let fetchers: Promise<unknown>[] = [];
             let additionalEquipmentsByNodes: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>> = {};
             if (equipment.type) {
-                aliases.forEach((alias) => {
-                    const nodeNameAssociatedToAlias = customColumnsNodesAliases.find(
-                        (nodeAlias) => nodeAlias.alias === alias
-                    )?.name;
-                    const nodeIdAssociatedToAlias = treeModel?.treeNodes?.find(
-                        (treeNode) => treeNode.data.label === nodeNameAssociatedToAlias
-                    )?.id;
-                    if (nodeIdAssociatedToAlias) {
+                customColumnsNodesAliases.forEach((aliasInfo) => {
+                    if (aliasInfo.id) {
                         const fetcherPromises = getFetchers(equipment.type).map((fetcher) =>
-                            fetcher(studyUuid, nodeIdAssociatedToAlias, [])
+                            fetcher(studyUuid, aliasInfo.id, [])
                         );
                         fetchers.push(fetcherPromises[0]);
                         fetcherPromises[0].then((res) => {
@@ -184,7 +177,7 @@ export const useSpreadsheetEquipments = (
                                     {} as Record<SpreadsheetEquipmentType, Identifiable[]>;
                                 fetchedEquipmentByType[equipment.type] = fetchedEquipments;
                                 additionalEquipmentsByNodes = { ...additionalEquipmentsByNodes };
-                                additionalEquipmentsByNodes[alias] = fetchedEquipmentByType;
+                                additionalEquipmentsByNodes[aliasInfo.alias] = fetchedEquipmentByType;
                             }
                         });
                     }

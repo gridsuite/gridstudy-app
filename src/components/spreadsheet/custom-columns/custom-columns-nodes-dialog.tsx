@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
 import { CancelButton, CustomFormProvider, SubmitButton, UseStateBooleanReturn } from '@gridsuite/commons-ui';
@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
-import { AppState } from 'redux/reducer';
+import { AppState, CurrentTreeNode, NodeAlias } from 'redux/reducer';
 import {
     CustomColumnNodesForm,
     customColumnNodesFormSchema,
@@ -23,6 +23,7 @@ import {
 } from './custom-columns-nodes-form-utils';
 import NodeAliasTable from './node-alias-table';
 import { updateCustomColumnsNodesAliases } from '../../../redux/actions';
+import { UUID } from 'crypto';
 
 export type CustomColumnNodesDialogProps = {
     open: UseStateBooleanReturn;
@@ -50,11 +51,25 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
         defaultValues: initialCustomColumnNodesForm,
         resolver: yupResolver(customColumnNodesFormSchema),
     });
+
+    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
+    const nodes = useMemo(
+        () =>
+            treeModel?.treeNodes.map((currentTreeNode: CurrentTreeNode) => {
+                return { name: currentTreeNode.data.label, id: currentTreeNode.id };
+            }) ?? [],
+        [treeModel]
+    );
+
     const { reset, handleSubmit } = formMethods;
 
     const onValidate = (data: CustomColumnNodesForm) => {
         onClose();
-        dispatch(updateCustomColumnsNodesAliases(data.nodesAliases));
+        const completeData: NodeAlias[] = data.nodesAliases.map((nodeAlias) => {
+            const id: UUID = nodes.find((node) => node.name === nodeAlias.name)?.id as UUID;
+            return { id: id, name: nodeAlias.name, alias: nodeAlias.alias };
+        });
+        dispatch(updateCustomColumnsNodesAliases(completeData));
     };
 
     const onClose = () => {

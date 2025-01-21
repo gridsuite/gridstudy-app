@@ -442,6 +442,7 @@ export type NodeSelectionForCopy = {
 };
 
 export type NodeAlias = {
+    id: UUID | undefined;
     name: string;
     alias: string;
 };
