@@ -158,7 +158,7 @@ interface TableWrapperProps {
 }
 
 interface RecursiveIdentifiable extends Identifiable {
-    [alias: string]: Identifiable | string;
+    [alias: string]: Identifiable | string | undefined;
 }
 
 const TableWrapper: FunctionComponent<TableWrapperProps> = ({
