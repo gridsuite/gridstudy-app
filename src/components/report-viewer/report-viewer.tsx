@@ -30,24 +30,21 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
     });
 
     const reportTree = useMemo(() => mapReportsTree(report), [report]);
-    const reportTreeMap = useRef<Record<string, ReportTree>>({});
 
-    const computeReportTreeMap = useCallback(() => {
-        reportTreeMap.current = {};
+    const reportTreeMap = useMemo(() => {
+        const map: Record<string, ReportTree> = {};
         const mapReportsById = (item: ReportTree) => {
-            reportTreeMap.current[item.id] = item;
-            for (let subReport of item.subReports) {
-                mapReportsById(subReport);
-            }
+            map[item.id] = item;
+            item.subReports.forEach((subReport) => mapReportsById(subReport));
         };
         mapReportsById(reportTree);
+        return map;
     }, [reportTree]);
 
     useEffect(() => {
-        computeReportTreeMap();
         setExpandedTreeReports([reportTree.id]);
-        setSelectedReport({ id: reportTree.id, type: reportTreeMap.current[reportTree.id]?.type });
-    }, [computeReportTreeMap, reportTree]);
+        setSelectedReport({ id: reportTree.id, type: reportTreeMap[reportTree.id]?.type });
+    }, [reportTree, reportTreeMap]);
 
     const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top ?? DEFAULT_CONTAINER_HEIGHT_OFFSET);
@@ -59,29 +56,35 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
         [reportVerticalPositionFromTop]
     );
 
-    const onLogRowClick = useCallback((data: ReportLog) => {
-        setExpandedTreeReports((previouslyExpandedTreeReports) => {
-            let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
-            let parentId: string | null = data.parentId;
-            while (parentId && reportTreeMap.current[parentId]?.parentId) {
-                parentId = reportTreeMap.current[parentId].parentId;
-                if (parentId) {
-                    treeReportsToExpand.add(parentId);
+    const onLogRowClick = useCallback(
+        (data: ReportLog) => {
+            setExpandedTreeReports((previouslyExpandedTreeReports) => {
+                let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
+                let parentId: string | null = data.parentId;
+                while (parentId && reportTreeMap[parentId]?.parentId) {
+                    parentId = reportTreeMap[parentId].parentId;
+                    if (parentId) {
+                        treeReportsToExpand.add(parentId);
+                    }
                 }
-            }
-            return Array.from(treeReportsToExpand);
-        });
-        setHighlightedReportId(data.parentId);
-    }, []);
+                return Array.from(treeReportsToExpand);
+            });
+            setHighlightedReportId(data.parentId);
+        },
+        [reportTreeMap]
+    );
 
-    const handleSelectedItem = useCallback((report: ReportItem) => {
-        setSelectedReport((prevSelectedReport) => {
-            if (prevSelectedReport.id !== report.id) {
-                return { id: report.id, type: reportTreeMap.current[report.id].type };
-            }
-            return prevSelectedReport;
-        });
-    }, []);
+    const handleSelectedItem = useCallback(
+        (report: ReportItem) => {
+            setSelectedReport((prevSelectedReport) => {
+                if (prevSelectedReport.id !== report.id) {
+                    return { id: report.id, type: reportTreeMap[report.id].type };
+                }
+                return prevSelectedReport;
+            });
+        },
+        [reportTreeMap]
+    );
 
     return (
         <Grid
