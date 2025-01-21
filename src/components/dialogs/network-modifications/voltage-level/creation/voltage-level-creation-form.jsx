@@ -40,26 +40,6 @@ import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selectio
 import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
 
-const CustomPaper = ({ children, handleAction, value, actionLabelId }) => {
-    const intl = useIntl();
-    return (
-        <Paper>
-            <Box>
-                {children}
-                <LineSeparator />
-                <IconButton
-                    color="primary"
-                    fullWidth
-                    sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
-                    onMouseDown={handleAction}
-                >
-                    {`${intl.formatMessage({ id: actionLabelId })} : ${value}`}
-                </IconButton>
-            </Box>
-        </Paper>
-    );
-};
-
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
@@ -85,15 +65,32 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const voltageLevelIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
     );
+
+    const CustomPaper = ({ children }) => {
+        return (
+            <Paper>
+                <Box>
+                    {children}
+                    <LineSeparator />
+                    <IconButton
+                        color="primary"
+                        fullWidth
+                        sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
+                        onMouseDown={handleAddButton}
+                    >
+                        {`${intl.formatMessage({ id: 'CreateSubstation' })} : ${selectedNewSubstation}`}
+                    </IconButton>
+                </Box>
+            </Paper>
+        );
+    };
+
     const handleAddButton = useCallback(() => {
         setValue(SUBSTATION_CREATION_ID, selectedNewSubstation);
         setValue(ADD_SUBSTATION_CREATION, true);
         setIsWithSubstationCreation(true);
     }, [selectedNewSubstation, setValue]);
     const voltageLevelNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />;
-    const PaperComponent = ({ children, value, handleAction, actionLabelId }) => (
-        <CustomPaper children={children} value={value} handleAction={handleAction} actionLabelId={actionLabelId} />
-    );
 
     const substationField = (
         <AutocompleteInput
@@ -106,14 +103,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             outputTransform={(value) => value}
             size={'small'}
             formProps={{ margin: 'normal' }}
-            PaperComponent={(props) => (
-                <PaperComponent
-                    {...props}
-                    value={selectedNewSubstation}
-                    handleAction={handleAddButton}
-                    actionLabelId="CreateSubstation"
-                />
-            )}
+            PaperComponent={CustomPaper}
             onInputChange={(_, value) => {
                 if (typeof value === 'string') {
                     setSelectedNewSubstation(value);
