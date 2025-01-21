@@ -22,8 +22,7 @@ import { SelectedOperationalLimitGroup } from './selected-operational-limit-grou
 import { CurrentTreeNode } from '../../../redux/reducer';
 import React, { useState } from 'react';
 import { useWatch } from 'react-hook-form';
-import { OperationalLimitsGroup } from './limits-type';
-import { TemporaryLimit } from '../../../services/network-modification-types';
+import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { CopyLimits } from './copy-limits';
 import { tabStyles } from '../../parameters-tabs';
@@ -77,37 +76,45 @@ export function LimitsPane({
         limitsGroups: OperationalLimitsGroup[],
         selectedTabIndex: number,
         formName: string,
-        previousValues: TemporaryLimit[],
-        permanentCurrentLimitPreviousValue: number
+        currentLimits: CurrentLimits | null
     ) =>
         indexSelectedLimitSet1 !== -1 &&
         limitsGroups.map(
             (item: OperationalLimitsGroup, index: number) =>
                 index === selectedTabIndex &&
-                renderSidePane(
-                    item.id,
-                    `${formName}[${index}].${CURRENT_LIMITS}`,
-                    previousValues,
-                    permanentCurrentLimitPreviousValue
-                )
+                renderSidePane(item.id, `${formName}[${index}].${CURRENT_LIMITS}`, currentLimits)
         );
 
-    const renderSidePane = (
-        id: string,
-        formName: string,
-        previousValues: TemporaryLimit[],
-        permanentCurrentLimitPreviousValue: number
-    ) => (
-        <LimitsSidePane
-            key={id}
-            limitsGroupFormName={formName}
-            clearableFields={clearableFields}
-            permanentCurrentLimitPreviousValue={permanentCurrentLimitPreviousValue}
-            previousValues={previousValues}
-            currentNode={currentNode}
-            onlySelectedLimitsGroup={onlySelectedLimitsGroup}
-        />
-    );
+    const renderSidePane = (id: string, formName: string, currentLimits: CurrentLimits | null) => {
+        return (
+            <LimitsSidePane
+                key={id}
+                limitsGroupFormName={formName}
+                clearableFields={clearableFields}
+                permanentCurrentLimitPreviousValue={currentLimits?.permanentLimit}
+                previousValues={currentLimits?.temporaryLimits}
+                currentNode={currentNode}
+                onlySelectedLimitsGroup={onlySelectedLimitsGroup}
+            />
+        );
+    };
+
+    const getCurrentLimits1 = (equipmentToModify: any): CurrentLimits | null => {
+        if (!equipmentToModify || !equipmentToModify.currentLimits1) {
+            return null;
+        }
+        return equipmentToModify.currentLimits1.find(
+            (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup1
+        );
+    };
+    const getCurrentLimits2 = (equipmentToModify: any): CurrentLimits | null => {
+        if (!equipmentToModify || !equipmentToModify.currentLimits2) {
+            return null;
+        }
+        return equipmentToModify.currentLimits2.find(
+            (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup2
+        );
+    };
 
     return (
         <Grid container spacing={2}>
@@ -131,18 +138,12 @@ export function LimitsPane({
                 )}
                 <Grid item xs={4} sx={tabStyles.parametersBox}>
                     {onlySelectedLimitsGroup
-                        ? renderSidePane(
-                              'leftPanel',
-                              `${id}.${CURRENT_LIMITS_1}`,
-                              equipmentToModify?.currentLimits1?.temporaryLimits,
-                              equipmentToModify?.currentLimits1?.permanentLimit
-                          )
+                        ? renderSidePane('leftPanel', `${id}.${CURRENT_LIMITS_1}`, getCurrentLimits1(equipmentToModify))
                         : renderSidePaneAccordingToTabs(
                               limitsGroups1,
                               indexSelectedLimitSet1,
                               `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
-                              equipmentToModify?.currentLimits1?.temporaryLimits,
-                              equipmentToModify?.currentLimits1?.permanentLimit
+                              getCurrentLimits1(equipmentToModify)
                           )}
                 </Grid>
                 {!onlySelectedLimitsGroup && (
@@ -158,15 +159,13 @@ export function LimitsPane({
                         ? renderSidePane(
                               'rightPanel',
                               `${id}.${CURRENT_LIMITS_2}`,
-                              equipmentToModify?.currentLimits2?.temporaryLimits,
-                              equipmentToModify?.currentLimits2?.permanentLimit
+                              getCurrentLimits2(equipmentToModify)
                           )
                         : renderSidePaneAccordingToTabs(
                               limitsGroups2,
                               indexSelectedLimitSet2,
                               `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
-                              equipmentToModify?.currentLimits2?.temporaryLimits,
-                              equipmentToModify?.currentLimits2?.permanentLimit
+                              getCurrentLimits2(equipmentToModify)
                           )}
                 </Grid>
             </Grid>

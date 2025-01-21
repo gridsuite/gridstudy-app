@@ -20,8 +20,8 @@ import { useCallback, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
-import { TemporaryLimitData } from './limits-type';
 import DndTable from '../../utils/dnd-table/dnd-table';
+import { TemporaryLimit } from '../../../services/network-modification-types';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
@@ -82,18 +82,24 @@ export function LimitsSidePane({
         }));
     }, [intl]);
 
-    const newRowData: TemporaryLimitData = useMemo(() => {
-        const newRowData: TemporaryLimitData = { name: '' };
+    const newRowData: TemporaryLimit = useMemo(() => {
+        const newRowData: TemporaryLimit = {
+            name: '',
+            value: null,
+            acceptableDuration: null,
+            modificationType: null,
+            selected: false,
+        };
         columnsDefinition.forEach((column: ILimitColumnDef) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [columnsDefinition]);
     const createRows = () => [newRowData];
 
     const temporaryLimitHasPreviousValue = useCallback(
-        (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimitData[]) => {
+        (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
             return (
                 formatTemporaryLimits(temporaryLimits)?.filter(
-                    (l: TemporaryLimitData) =>
+                    (l: TemporaryLimit) =>
                         l.name === getValues(arrayFormName)[rowIndex]?.name &&
                         l.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
                 )?.length > 0
@@ -103,7 +109,7 @@ export function LimitsSidePane({
     );
 
     const shouldReturnPreviousValue = useCallback(
-        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimitData[]) => {
+        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
             return (
                 (temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
                     column.dataKey === TEMPORARY_LIMIT_VALUE) ||
@@ -114,9 +120,9 @@ export function LimitsSidePane({
     );
 
     const findTemporaryLimit = useCallback(
-        (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimitData[]) => {
+        (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
             return temporaryLimits?.find(
-                (e: TemporaryLimitData) =>
+                (e: TemporaryLimit) =>
                     e.name === getValues(arrayFormName)[rowIndex]?.name &&
                     e.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
             );
@@ -125,7 +131,7 @@ export function LimitsSidePane({
     );
 
     const getPreviousValue = useCallback(
-        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimitData[]) => {
+        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
             const formattedTemporaryLimits = formatTemporaryLimits(temporaryLimits);
             if (shouldReturnPreviousValue(rowIndex, column, arrayFormName, formattedTemporaryLimits)) {
                 const temporaryLimit = findTemporaryLimit(rowIndex, arrayFormName, formattedTemporaryLimits);
@@ -145,7 +151,7 @@ export function LimitsSidePane({
     );
 
     const disableTableCell = useCallback(
-        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimitData[]) => {
+        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
             return getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED

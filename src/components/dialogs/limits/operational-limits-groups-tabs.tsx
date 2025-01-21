@@ -6,7 +6,6 @@
  */
 
 import { Box, Tab, Tabs, TextField } from '@mui/material';
-import { OperationalLimitsGroup } from './limits-type';
 import IconButton from '@mui/material/IconButton';
 import { Edit } from '@mui/icons-material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -24,6 +23,7 @@ import {
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { tabStyles } from '../../parameters-tabs';
+import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 
 export const limitsStyles = {
     limitsBackground: {
@@ -215,7 +215,7 @@ export function OperationalLimitsGroupsTabs({
             [ID]: newName,
             [CURRENT_LIMITS]: {
                 [TEMPORARY_LIMITS]: [],
-                [PERMANENT_LIMIT]: undefined,
+                [PERMANENT_LIMIT]: null,
             },
         };
         appendToLimitsGroups1(newLimitsGroup);

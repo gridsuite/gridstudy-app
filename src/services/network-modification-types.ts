@@ -19,7 +19,6 @@ import {
     ReactiveCapabilityCurvePointsData,
 } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
 import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation.type';
-import { OperationalLimitsGroup } from '../components/dialogs/limits/limits-type';
 
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
@@ -246,6 +245,11 @@ export interface TwoWindingsTransformerModificationInfo {
     properties: Property[];
 }
 
+export interface OperationalLimitsGroup {
+    id: string;
+    currentLimits: CurrentLimits;
+}
+
 export interface TemporaryLimit {
     value: number | null;
     acceptableDuration: number | null;
@@ -254,7 +258,8 @@ export interface TemporaryLimit {
     name: string;
 }
 export interface CurrentLimits {
-    permanentLimit: number;
+    id?: string;
+    permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
 }
 

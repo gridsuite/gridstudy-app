@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
-import { OperationalLimitsGroup } from './limits-type';
+import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
