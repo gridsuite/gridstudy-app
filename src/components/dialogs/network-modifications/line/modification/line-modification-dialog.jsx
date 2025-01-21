@@ -310,12 +310,6 @@ const LineModificationDialog = ({
                                 (formValues) => ({
                                     ...formValues,
                                     ...getSelectedLimitsFormData({
-                                        permanentLimit1:
-                                            selectedCurrentLimits1?.permanentLimit ??
-                                            getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
-                                        permanentLimit2:
-                                            selectedCurrentLimits2?.permanentLimit ??
-                                            getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
                                         temporaryLimits1: addSelectedFieldToRows(
                                             updateTemporaryLimits(
                                                 formatTemporaryLimits(

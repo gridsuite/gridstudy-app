@@ -608,20 +608,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                 formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
                                 formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
                             );
-                            const previousPermanentLimit1 = getValues(
-                                `${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`
-                            );
-                            const previousPermanentLimit2 = getValues(
-                                `${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`
-                            );
                             reset(
                                 (formValues) => ({
                                     ...formValues,
                                     ...getSelectedLimitsFormData({
-                                        permanentLimit1:
-                                            selectedCurrentLimits1?.permanentLimit ?? previousPermanentLimit1,
-                                        permanentLimit2:
-                                            selectedCurrentLimits2?.permanentLimit ?? previousPermanentLimit2,
                                         temporaryLimits1: addSelectedFieldToRows(
                                             updatedTemporaryLimits1
                                                 ? updatedTemporaryLimits1
