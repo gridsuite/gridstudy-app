@@ -10,7 +10,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './in
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 
-export function getDynamicMappings(studyUuid: UUID) {
+function getDynamicMappings(studyUuid: UUID) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/mappings';
     console.debug(url);

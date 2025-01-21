@@ -18,13 +18,11 @@ export function getModificationNodeDataOrUndefined(node: NetworkModificationNode
 }
 
 // type guard to check if the node is a modification node
-export function isModificationNode(
-    node: NetworkModificationNodeData | RootNodeData
-): node is NetworkModificationNodeData {
+function isModificationNode(node: NetworkModificationNodeData | RootNodeData): node is NetworkModificationNodeData {
     return node.type === NodeType.NETWORK_MODIFICATION;
 }
 
-export function isRootNode(node: NetworkModificationNodeData | RootNodeData): node is NetworkModificationNodeData {
+function isRootNode(node: NetworkModificationNodeData | RootNodeData): node is NetworkModificationNodeData {
     return node.type === NodeType.ROOT;
 }
 
@@ -78,12 +76,8 @@ export function getFirstNodeOfType(
     );
 }
 
-export function isNetworkModificationNode(n: NetworkModificationNodeData | RootNodeData): boolean {
-    return 'nodeBuildStatus' in n;
-}
-
 // Recursive search of a node of type and buildStatus specified
-export function recursiveSearchFirstNodeOfType(
+function recursiveSearchFirstNodeOfType(
     element: NetworkModificationNodeData | RootNodeData,
     nodeType: string,
     parentId?: UUID,

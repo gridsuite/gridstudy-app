@@ -15,32 +15,6 @@ import {
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import yup from '../../utils/yup-config';
-
-const regulatingTerminalValidationSchema = () => ({
-    [VOLTAGE_LEVEL]: yup
-        .object()
-        .nullable()
-        .shape({
-            [ID]: yup.string(),
-            [NAME]: yup.string(),
-            [SUBSTATION_ID]: yup.string(),
-            [NOMINAL_VOLTAGE]: yup.string(),
-            [TOPOLOGY_KIND]: yup.string().nullable(),
-        }),
-    [EQUIPMENT]: yup
-        .object()
-        .nullable()
-        .shape({
-            [ID]: yup.string(),
-            [NAME]: yup.string().nullable(),
-            [TYPE]: yup.string(),
-        }),
-});
-
-export const getRegulatingTerminalValidationSchema = () => {
-    return regulatingTerminalValidationSchema();
-};
 
 const regulatingTerminalEmptyFormData = () => ({
     [VOLTAGE_LEVEL]: null,
@@ -51,7 +25,7 @@ export const getRegulatingTerminalEmptyFormData = () => {
     return regulatingTerminalEmptyFormData();
 };
 
-export const getRegulatingTerminalVoltageLevelData = ({
+const getRegulatingTerminalVoltageLevelData = ({
     voltageLevelId,
     voltageLevelName = '',
     voltageLevelSubstationId = '',
@@ -71,7 +45,7 @@ export const getRegulatingTerminalVoltageLevelData = ({
     };
 };
 
-export const getRegulatingTerminalEquipmentData = ({ equipmentId, equipmentName = '', equipmentType = '' }) => {
+const getRegulatingTerminalEquipmentData = ({ equipmentId, equipmentName = '', equipmentType = '' }) => {
     if (!equipmentId) {
         return null;
     }

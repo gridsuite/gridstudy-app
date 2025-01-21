@@ -100,7 +100,7 @@ export function getConcatenatedProperties(equipment: Equipment, getValues: (name
     we update the previousValue of this one, it means the modification change the network property value.
     If not we add it as an unmodified property. We will be able to delete it or modify its value, but not it's name.
  */
-export const mergeModificationAndEquipmentProperties = (
+const mergeModificationAndEquipmentProperties = (
     modificationProperties: Property[],
     equipment: Equipment
 ): Property[] => {

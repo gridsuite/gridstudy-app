@@ -9,7 +9,7 @@ import { GsLang, GsLangUser, LANG_ENGLISH, LANG_FRENCH, LANG_SYSTEM } from '@gri
 
 const supportedLanguages: readonly GsLangUser[] = [LANG_FRENCH, LANG_ENGLISH] as const;
 
-export const getSystemLanguage = () => {
+const getSystemLanguage = () => {
     const systemLanguage = navigator.language.split(/[-_]/)[0];
     return supportedLanguages.includes(systemLanguage as GsLangUser) ? (systemLanguage as GsLangUser) : LANG_ENGLISH;
 };

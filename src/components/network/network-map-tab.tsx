@@ -98,7 +98,7 @@ type NetworkMapTabProps = {
     onNominalVoltagesChange: (nominalVoltages: number[]) => void;
 };
 
-export const NetworkMapTab = ({
+const NetworkMapTab = ({
     networkMapRef,
     /* redux can be use as redux*/
     studyUuid,

@@ -182,8 +182,6 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    STATEESTIMATION_RESULT_FILTER,
-    StateEstimationResultFilterAction,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UpdateNetworkVisualizationParametersAction,
 } from './actions';
@@ -1643,10 +1641,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(DYNAMIC_SIMULATION_RESULT_FILTER, (state, action: DynamicSimulationResultFilterAction) => {
         state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
-    });
-
-    builder.addCase(STATEESTIMATION_RESULT_FILTER, (state, action: StateEstimationResultFilterAction) => {
-        state[STATEESTIMATION_RESULT_STORE_FIELD][action.filterTab] = action[STATEESTIMATION_RESULT_STORE_FIELD];
     });
 
     builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {

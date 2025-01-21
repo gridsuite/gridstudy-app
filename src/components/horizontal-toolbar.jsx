@@ -36,7 +36,7 @@ const styles = {
     },
 };
 
-export function HorizontalToolbar() {
+function HorizontalToolbar() {
     const intl = useIntl();
     const dispatch = useDispatch();
 

@@ -33,14 +33,6 @@ import { User } from 'oidc-client';
 import { ParametersInfos, SpecificParametersInfos, UseParametersBackendReturnProps } from './parameters.type';
 import { formatComputingTypeLabel } from '../../computing-status/computing-type';
 
-interface CloseButtonProps extends ButtonProps {
-    hideParameters: React.MouseEventHandler<HTMLButtonElement>;
-}
-
-export const CloseButton: FunctionComponent<CloseButtonProps> = ({ hideParameters, ...props }) => {
-    return <LabelledButton callback={hideParameters} label={'close'} {...props} />;
-};
-
 interface LabelledButtonProps extends ButtonProps {
     callback: React.MouseEventHandler<HTMLButtonElement>;
     label: string;

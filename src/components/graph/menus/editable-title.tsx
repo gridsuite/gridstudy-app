@@ -13,7 +13,7 @@ import AskTextDialog from '../../utils/ask-text-dialog';
 import { lighten, darken } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { Box, Theme } from '@mui/system';
+import { Box, type Theme } from '@mui/system';
 
 const styles = {
     header: (theme: Theme) => ({

@@ -71,7 +71,7 @@ export function validateValueIsLessThanOrEqualTo(value, valueToCompareTo) {
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is greater or equal to the second's
  */
-export function validateValueIsGreaterThanOrEqualTo(value, valueToCompareTo) {
+function validateValueIsGreaterThanOrEqualTo(value, valueToCompareTo) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -99,7 +99,7 @@ export function validateValueIsLessThan(value, valueToCompareTo) {
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is greater than the second's
  */
-export function validateValueIsGreaterThan(value, valueToCompareTo) {
+function validateValueIsGreaterThan(value, valueToCompareTo) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&

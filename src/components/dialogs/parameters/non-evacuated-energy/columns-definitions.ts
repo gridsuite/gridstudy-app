@@ -32,11 +32,11 @@ import { ElementType } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { ISensiParameters } from '../sensi/columns-definitions';
 
-export const MONITORED_BRANCHES_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER];
+const MONITORED_BRANCHES_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER];
 
-export const INJECTIONS_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.GENERATOR];
+const INJECTIONS_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.GENERATOR];
 
-export const GENERATION_KINDS = [
+const GENERATION_KINDS = [
     { id: 'WIND', label: 'Wind' },
     { id: 'SOLAR', label: 'Solar' },
     { id: 'HYDRO', label: 'Hydro' },

@@ -733,7 +733,7 @@ export const useFetchFiltersEnums = () => {
 
 export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = ['securityAnalysisResult'];
 
-export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
+const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     subjectId: 'subjectLimitViolation.subjectId',
     status: 'result.status',
     limitType: 'limitType',
@@ -745,7 +745,7 @@ export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     loading: 'loading',
 };
 
-export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
+const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
     subjectId: 'contingencyLimitViolations.subjectLimitViolation.subjectId',
     contingencyId: 'contingencyId',
     status: 'status',
@@ -758,7 +758,7 @@ export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
     loading: 'contingencyLimitViolations.loading',
 };
 
-export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> = {
+const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> = {
     subjectId: 'subjectId',
     contingencyId: 'contingencyLimitViolations.contingency.contingencyId',
     status: 'contingencyLimitViolations.contingency.status',
@@ -810,12 +810,6 @@ export const convertFilterValues = (intl: IntlShape, filterSelector: FilterSelec
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
-
-export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
-    return index === 0 || (index === 1 && nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS)
-        ? 'subjectId'
-        : 'contingencyId';
-};
 
 export const MAX_INT32: number = 2147483647;
 

@@ -99,7 +99,7 @@ export const BooleanNullableCellRenderer = (props: any) => {
     );
 };
 
-export const formatCell = (props: any) => {
+const formatCell = (props: any) => {
     let value = props?.valueFormatted || props.value;
     let tooltipValue = undefined;
     if (props.colDef.valueGetter) {

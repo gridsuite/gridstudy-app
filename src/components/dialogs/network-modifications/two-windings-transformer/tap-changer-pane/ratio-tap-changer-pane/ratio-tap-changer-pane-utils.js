@@ -294,7 +294,7 @@ export const getRatioTapChangerFormData = (
     },
 });
 
-export const getComputedRegulationType = (twt) => {
+const getComputedRegulationType = (twt) => {
     if (
         !twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES] ||
         !twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId

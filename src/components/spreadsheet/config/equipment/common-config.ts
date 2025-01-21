@@ -49,7 +49,7 @@ type TapPositionsType = {
     highTapPosition: number;
 };
 
-export const getFetchers = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher[] => {
+const getFetchers = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher[] => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
             return [fetchSubstations];

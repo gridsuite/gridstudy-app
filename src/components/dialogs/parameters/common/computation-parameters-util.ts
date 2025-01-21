@@ -9,7 +9,7 @@ import { NotificationType, StudyUpdated } from '../../../../redux/reducer';
 import { ComputingType, isValidComputingType } from '../../../computing-status/computing-type';
 
 export const UPDATE_TYPE_HEADER = 'updateType';
-export const COMPUTATION_TYPE_HEADER = 'computationType';
+const COMPUTATION_TYPE_HEADER = 'computationType';
 
 export const isComputationParametersUpdated = (type: ComputingType, studyUpdated: StudyUpdated) => {
     return (

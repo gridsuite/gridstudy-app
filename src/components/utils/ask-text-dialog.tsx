@@ -33,7 +33,7 @@ interface AskTextDialogProps {
  * @returns {JSX.Element}
  * @constructor
  */
-export const AskTextDialog: FunctionComponent<AskTextDialogProps> = ({ title, value, show, onValidate, onClose }) => {
+const AskTextDialog: FunctionComponent<AskTextDialogProps> = ({ title, value, show, onValidate, onClose }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [triggerReset, setTriggerReset] = useState(false);

@@ -15,7 +15,7 @@ import { AbstractNode, NetworkModificationNodeData, RootNodeData } from './tree-
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
-export const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
+const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
     return nodes.reduce((acc, n) => {
         if (n.parentId === parentId) {
             acc += 1 + countNodes(nodes, n.id); // this node + its children

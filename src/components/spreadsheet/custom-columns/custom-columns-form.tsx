@@ -7,7 +7,7 @@
 
 import yup from '../../../components/utils/yup-config';
 
-export const COLUMN_ID = 'id';
+const COLUMN_ID = 'id';
 export const COLUMN_NAME = 'name';
 export const FORMULA = 'formula';
 

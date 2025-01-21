@@ -22,7 +22,7 @@ export const getDataType = (fieldName?: string | null) => {
     return getFieldOption(fieldName)?.dataType;
 };
 
-export const getFieldOption = (fieldName?: string | null) => {
+const getFieldOption = (fieldName?: string | null) => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
 };
 

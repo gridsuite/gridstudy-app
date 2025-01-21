@@ -15,7 +15,7 @@ import TableRowComponent from './table-row';
 import { IColumnsDef } from './columns-definitions';
 import { ACTIVATED, COUNT, HVDC_LINES, INJECTIONS, MONITORED_BRANCHES, PSTS } from '../../../utils/field-constants';
 
-export const MAX_ROWS_NUMBER = 100;
+const MAX_ROWS_NUMBER = 100;
 
 interface SensitivityTableProps {
     arrayFormName: string;

@@ -23,7 +23,7 @@
     at src/redux/reducer.test.ts:10:1
  */
 
-import { User } from 'oidc-client';
+import type { User } from 'oidc-client';
 
 type UserStoreState = {
     user: User | null;
