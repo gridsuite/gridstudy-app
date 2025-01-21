@@ -637,17 +637,7 @@ export const NetworkMapTab = ({
             .finally(() => {
                 dispatch(setMapDataLoading(false));
             });
-    }, [
-        mapEquipments,
-        rootNodeId,
-        currentRootNetworkUuid,
-        lineFullPath,
-        studyUuid,
-        dispatch,
-        snackError,
-        networkMapRef,
-        handleFilteredNominalVoltagesChange,
-    ]);
+    }, [rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch, snackError, networkMapRef]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
