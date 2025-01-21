@@ -12,13 +12,20 @@ import CustomColumnNodesDialog from './custom-columns-nodes-dialog';
 import BuildIcon from '@mui/icons-material/Build';
 import { spreadsheetStyles } from '../utils/style';
 
+const styles = {
+    icon: {
+        height: '20px',
+        width: '20px',
+    },
+};
+
 export default function CustomColumnsNodesConfig() {
     const dialogOpen = useStateBoolean(false);
 
     return (
         <>
             <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={dialogOpen.setTrue}>
-                <BuildIcon />
+                <BuildIcon sx={styles.icon} />
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
             </Button>
 

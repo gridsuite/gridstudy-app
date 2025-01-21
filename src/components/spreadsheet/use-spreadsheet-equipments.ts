@@ -161,7 +161,7 @@ export const useSpreadsheetEquipments = (
     useEffect(() => {
         if (studyUuid && equipments != null) {
             const aliases = customColumnsNodesAliases.map((nodeAlias) => nodeAlias.alias);
-            let fetchers: Promise<any>[] = [];
+            let fetchers: Promise<unknown>[] = [];
             let additionalEquipmentsByNodes: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>> = {};
             if (equipment.type) {
                 aliases.forEach((alias) => {

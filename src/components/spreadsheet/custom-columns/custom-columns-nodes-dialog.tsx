@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
 import { CancelButton, CustomFormProvider, SubmitButton, UseStateBooleanReturn } from '@gridsuite/commons-ui';
@@ -14,8 +14,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
-import { AppState, NodeAlias } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import {
+    CustomColumnNodesForm,
     customColumnNodesFormSchema,
     initialCustomColumnNodesForm,
     NODES_ALIASES,
@@ -45,27 +46,20 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
 
     const customColumnsNodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
 
-    const formMethods = useForm({
+    const formMethods = useForm<CustomColumnNodesForm>({
         defaultValues: initialCustomColumnNodesForm,
         resolver: yupResolver(customColumnNodesFormSchema),
     });
     const { reset, handleSubmit } = formMethods;
 
-    const onValidate = (data: any) => {
+    const onValidate = (data: CustomColumnNodesForm) => {
         onClose();
-        const nodesAliases: NodeAlias[] = data.nodesAliases.map((nodeAlias: NodeAlias) => {
-            return { name: nodeAlias.name, alias: nodeAlias.alias };
-        });
-        dispatch(updateCustomColumnsNodesAliases(nodesAliases));
+        dispatch(updateCustomColumnsNodesAliases(data.nodesAliases));
     };
-
-    const clear = useCallback(() => {
-        reset(initialCustomColumnNodesForm);
-    }, [reset]);
 
     const onClose = () => {
         open.setFalse();
-        clear();
+        reset(initialCustomColumnNodesForm);
     };
 
     useEffect(() => {
