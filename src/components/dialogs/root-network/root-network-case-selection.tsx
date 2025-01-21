@@ -1,11 +1,18 @@
+/**
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { CASE_NAME } from 'components/utils/field-constants';
-import ReadOnlyInput from 'components/utils/rhf-inputs/read-only/read-only-input';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import ImportCaseDialog from '../import-case-dialog';
 import { TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { useWatch } from 'react-hook-form';
+import { FolderOutlined } from '@mui/icons-material';
 
 interface RootNetworkCaseSelectionProps {
     onSelectCase: (selectedCase: TreeViewFinderNodeProps) => void;
@@ -23,6 +30,15 @@ export const RootNetworkCaseSelection = ({ onSelectCase }: RootNetworkCaseSelect
     return (
         <>
             <Grid container item>
+                <Typography m={1} component="span">
+                    <Box fontWeight="fontWeightBold" display="flex" justifyContent="center" alignItems="center">
+                        <FolderOutlined />
+                        <span>
+                            &nbsp;
+                            {caseNameWatch ? caseNameWatch : ''}
+                        </span>
+                    </Box>
+                </Typography>
                 <Grid item>
                     <Button onClick={() => setIsDialogOpen(true)} variant="contained" size={'small'}>
                         {caseNameWatch ? (
@@ -32,11 +48,6 @@ export const RootNetworkCaseSelection = ({ onSelectCase }: RootNetworkCaseSelect
                         )}
                     </Button>
                 </Grid>
-                <Typography m={1} component="span">
-                    <Box fontWeight={'fontWeightBold'}>
-                        <ReadOnlyInput name={CASE_NAME} />
-                    </Box>
-                </Typography>
             </Grid>
             <ImportCaseDialog
                 open={isDialogOpen}
