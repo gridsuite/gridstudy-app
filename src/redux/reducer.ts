@@ -182,7 +182,6 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    StateEstimationResultFilterAction,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UpdateNetworkVisualizationParametersAction,
 } from './actions';
