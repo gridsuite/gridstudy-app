@@ -91,6 +91,9 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
         setIsWithSubstationCreation(true);
     }, [selectedNewSubstation, setValue]);
     const voltageLevelNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />;
+    const PaperComponent = ({ children, value, handleAction, actionLabelId }) => (
+        <CustomPaper children={children} value={value} handleAction={handleAction} actionLabelId={actionLabelId} />
+    );
 
     const substationField = (
         <AutocompleteInput
@@ -103,12 +106,12 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             outputTransform={(value) => value}
             size={'small'}
             formProps={{ margin: 'normal' }}
-            PaperComponent={({ children }) => (
-                <CustomPaper
-                    children={children}
+            PaperComponent={(props) => (
+                <PaperComponent
+                    {...props}
                     value={selectedNewSubstation}
                     handleAction={handleAddButton}
-                    actionLabelId={'CreateSubstation'}
+                    actionLabelId="CreateSubstation"
                 />
             )}
             onInputChange={(_, value) => {
