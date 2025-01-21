@@ -25,7 +25,6 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
 import { AutocompleteInput, FloatInput, IntegerInput, TextInput } from '@gridsuite/commons-ui';
-import { getObjectId } from 'components/utils/utils';
 import { Box, Grid, Paper } from '@mui/material';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
@@ -37,9 +36,29 @@ import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import IconButton from '@mui/material/IconButton';
 import { useIntl } from 'react-intl';
-import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selection-input.jsx';
-import DeleteIcon from '@mui/icons-material/Delete.js';
+import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selection-input';
+import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
+
+const CustomPaper = ({ children, handleAction, value, actionLabelId }) => {
+    const intl = useIntl();
+    return (
+        <Paper>
+            <Box>
+                {children}
+                <LineSeparator />
+                <IconButton
+                    color="primary"
+                    fullWidth
+                    sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
+                    onMouseDown={handleAction}
+                >
+                    {`${intl.formatMessage({ id: actionLabelId })} : ${value}`}
+                </IconButton>
+            </Box>
+        </Paper>
+    );
+};
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -47,11 +66,10 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const { setValue } = useFormContext();
     const [substations, setSubstations] = useState([]);
     const [isWithSubstationCreation, setIsWithSubstationCreation] = useState(false);
-
     const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
     const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
-
+    const [selectedNewSubstation, setSelectedNewSubstation] = useState('');
     useEffect(() => {
         setIsWithSubstationCreation(watchAddSubstationCreation);
     }, [watchAddSubstationCreation]);
@@ -67,24 +85,38 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const voltageLevelIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
     );
-
+    const handleAddButton = useCallback(() => {
+        setValue(SUBSTATION_CREATION_ID, selectedNewSubstation);
+        setValue(ADD_SUBSTATION_CREATION, true);
+        setIsWithSubstationCreation(true);
+    }, [selectedNewSubstation, setValue]);
     const voltageLevelNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />;
 
     const substationField = (
         <AutocompleteInput
-            allowNewValue
+            openOnFocus
             forcePopupIcon
-            //hack to work with freesolo autocomplete
-            //setting null programatically when freesolo is enable wont empty the field
             name={SUBSTATION_ID}
             label="SUBSTATION"
             options={substations}
-            getOptionLabel={getObjectId}
             inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) => value}
             size={'small'}
             formProps={{ margin: 'normal' }}
-            PaperComponent={({ children }) => getChildren(children)}
+            PaperComponent={({ children }) => (
+                <CustomPaper
+                    children={children}
+                    value={selectedNewSubstation}
+                    handleAction={handleAddButton}
+                    actionLabelId={'CreateSubstation'}
+                />
+            )}
+            onInputChange={(_, value) => {
+                if (typeof value === 'string') {
+                    setSelectedNewSubstation(value);
+                }
+            }}
+            noOptionsText={''}
         />
     );
 
@@ -127,39 +159,12 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
 
     const substationCreationCountryField = <CountrySelectionInput name={COUNTRY} label={'Country'} size={'small'} />;
 
-    const handleAddButton = useCallback(() => {
-        setValue(ADD_SUBSTATION_CREATION, true);
-        setIsWithSubstationCreation(true);
-    }, [setValue]);
-
     const handleDeleteButton = useCallback(() => {
+        setSelectedNewSubstation('');
         setValue(ADD_SUBSTATION_CREATION, false);
         setIsWithSubstationCreation(false);
     }, [setValue]);
 
-    const getChildren = useCallback(
-        (children) => {
-            return (
-                <Paper>
-                    <Box> {children} </Box>
-                    <LineSeparator />
-                    <Box>
-                        <IconButton
-                            color="primary"
-                            fullWidth
-                            sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
-                            onMouseDown={() => handleAddButton()}
-                        >
-                            {intl.formatMessage({
-                                id: 'CreateSubstation',
-                            })}
-                        </IconButton>
-                    </Box>
-                </Paper>
-            );
-        },
-        [handleAddButton, intl]
-    );
     return (
         <>
             <Grid container spacing={2}>
