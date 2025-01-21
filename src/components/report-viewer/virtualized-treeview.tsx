@@ -7,13 +7,13 @@
 import { FunctionComponent, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { FixedSizeList } from 'react-window';
 import { ReportItem, TreeviewItem } from './treeview-item';
-import { AutoSizer } from 'react-virtualized';
 import { ReportTree } from '../../utils/report/report.type';
 import Label from '@mui/icons-material/Label';
 import { Theme } from '@mui/system';
 import { useTreeViewScroll } from './use-treeview-scroll';
 import { QuickSearch } from './QuickSearch';
 import { Box } from '@mui/material';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 const styles = {
     container: {
