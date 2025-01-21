@@ -15,28 +15,6 @@ import {
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import yup from '../../utils/yup-config';
-
-const regulatingTerminalValidationSchema = () => ({
-    [VOLTAGE_LEVEL]: yup
-        .object()
-        .nullable()
-        .shape({
-            [ID]: yup.string(),
-            [NAME]: yup.string(),
-            [SUBSTATION_ID]: yup.string(),
-            [NOMINAL_VOLTAGE]: yup.string(),
-            [TOPOLOGY_KIND]: yup.string().nullable(),
-        }),
-    [EQUIPMENT]: yup
-        .object()
-        .nullable()
-        .shape({
-            [ID]: yup.string(),
-            [NAME]: yup.string().nullable(),
-            [TYPE]: yup.string(),
-        }),
-});
 
 const regulatingTerminalEmptyFormData = () => ({
     [VOLTAGE_LEVEL]: null,

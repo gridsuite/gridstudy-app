@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, InputAdornment } from '@mui/material';
+import { Grid } from '@mui/material';
 import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { FloatInput, IntegerInput, Option, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';

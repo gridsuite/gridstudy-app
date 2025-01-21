@@ -6,22 +6,17 @@
  */
 
 import InputAdornment from '@mui/material/InputAdornment';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { CircularProgress, InputLabel, TextField, Tooltip, Button, Grid } from '@mui/material';
+import { CircularProgress, TextField, Tooltip, Button, Grid } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import FolderIcon from '@mui/icons-material/Folder';
-import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 
 import { styles } from '../../dialogs/dialog-utils';
-import { useSnackMessage, OverflowableText, useDebounce, FieldLabel } from '@gridsuite/commons-ui';
+import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
-import Chip from '@mui/material/Chip';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { useCSVReader } from 'react-papaparse';
 import { isNodeExists } from '../../../services/study';
-import { mergeSx } from '../functions';
 
 export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
     return useMemo(() => {

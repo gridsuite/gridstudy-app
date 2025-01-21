@@ -46,7 +46,6 @@ import {
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_STORE_FIELD,
-    STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
@@ -85,7 +84,6 @@ export type AppActions =
     | SetParamsLoadedAction
     | OpenStudyAction
     | CloseStudyAction
-    | RemoveSelectedCaseAction
     | UseNameAction
     | FluxConventionAction
     | EnableDeveloperModeAction
@@ -136,8 +134,7 @@ export type AppActions =
     | LogsFilterAction
     | UpdateCustomColumnsDefinitionsAction
     | RemoveCustomColumnsDefinitionsAction
-    | UpdateNetworkVisualizationParametersAction
-    | StateEstimationResultFilterAction;
+    | UpdateNetworkVisualizationParametersAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
