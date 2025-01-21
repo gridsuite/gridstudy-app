@@ -322,49 +322,45 @@ const DndTable = ({
         );
     }
 
+    const renderTableRow = (row, provided, index) => (
+        <TableRow
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            onMouseEnter={() => setHoveredRowIndex(index)}
+            onMouseLeave={() => setHoveredRowIndex(-1)}
+        >
+            <Tooltip
+                title={intl.formatMessage({
+                    id: 'DragAndDrop',
+                })}
+                placement="right"
+            >
+                <TableCell sx={{ textAlign: 'center' }} {...(disabled ? {} : { ...provided.dragHandleProps })}>
+                    <DragIndicatorIcon />
+                </TableCell>
+            </Tooltip>
+            {withCheckboxes && (
+                <TableCell sx={{ textAlign: 'center' }}>
+                    <CheckboxInput name={`${arrayFormName}[${index}].${SELECTED}`} formProps={{ disabled }} />
+                </TableCell>
+            )}
+            {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
+            {withButtonOnTheRight && index === hoveredRowIndex && (
+                <TableCell>
+                    <IconButton color="primary" onClick={() => remove(index)}>
+                        <DeleteIcon />
+                    </IconButton>
+                </TableCell>
+            )}
+        </TableRow>
+    );
+
     function renderTableBody(providedDroppable) {
         return (
             <TableBody>
                 {currentRows.map((row, index) => (
                     <Draggable key={row.id} draggableId={row.id.toString()} index={index}>
-                        {(provided, snapshot) => (
-                            <TableRow
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                onMouseEnter={() => setHoveredRowIndex(index)}
-                                onMouseLeave={() => setHoveredRowIndex(-1)}
-                            >
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'DragAndDrop',
-                                    })}
-                                    placement="right"
-                                >
-                                    <TableCell
-                                        sx={{ textAlign: 'center' }}
-                                        {...(disabled ? {} : { ...provided.dragHandleProps })}
-                                    >
-                                        <DragIndicatorIcon />
-                                    </TableCell>
-                                </Tooltip>
-                                {withCheckboxes && (
-                                    <TableCell sx={{ textAlign: 'center' }}>
-                                        <CheckboxInput
-                                            name={`${arrayFormName}[${index}].${SELECTED}`}
-                                            formProps={{ disabled }}
-                                        />
-                                    </TableCell>
-                                )}
-                                {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
-                                {withButtonOnTheRight && index === hoveredRowIndex && (
-                                    <TableCell>
-                                        <IconButton color="primary" onClick={() => remove(index)}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                )}
-                            </TableRow>
-                        )}
+                        {(provided, snapshot) => renderTableRow(row, provided, index)}
                     </Draggable>
                 ))}
                 {providedDroppable.placeholder}
