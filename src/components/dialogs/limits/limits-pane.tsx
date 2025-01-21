@@ -73,6 +73,7 @@ export function LimitsPane({
     );
 
     const renderSidePaneAccordingToTabs = (
+        id: string,
         limitsGroups: OperationalLimitsGroup[],
         selectedTabIndex: number,
         formName: string,
@@ -80,9 +81,9 @@ export function LimitsPane({
     ) =>
         indexSelectedLimitSet1 !== -1 &&
         limitsGroups.map(
-            (item: OperationalLimitsGroup, index: number) =>
+            (operationalLimitsGroup: OperationalLimitsGroup, index: number) =>
                 index === selectedTabIndex &&
-                renderSidePane(item.id, `${formName}[${index}].${CURRENT_LIMITS}`, currentLimits)
+                renderSidePane(operationalLimitsGroup.id + id, `${formName}[${index}].${CURRENT_LIMITS}`, currentLimits)
         );
 
     const renderSidePane = (id: string, formName: string, currentLimits: CurrentLimits | null) => {
@@ -140,6 +141,7 @@ export function LimitsPane({
                     {onlySelectedLimitsGroup
                         ? renderSidePane('leftPanel', `${id}.${CURRENT_LIMITS_1}`, getCurrentLimits1(equipmentToModify))
                         : renderSidePaneAccordingToTabs(
+                              'leftPanel',
                               limitsGroups1,
                               indexSelectedLimitSet1,
                               `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
@@ -162,6 +164,7 @@ export function LimitsPane({
                               getCurrentLimits2(equipmentToModify)
                           )
                         : renderSidePaneAccordingToTabs(
+                              'rightPanel',
                               limitsGroups2,
                               indexSelectedLimitSet2,
                               `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
