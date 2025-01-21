@@ -114,7 +114,7 @@ export function LimitsPane({
             <Grid container item xs={12} columns={onlySelectedLimitsGroup ? 8 : 10.25} spacing={2}>
                 {!onlySelectedLimitsGroup && <Grid item xs={1.9} />}
                 {renderTitle('Side1', `${id}.${SELECTED_LIMITS_GROUP_1}`, `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`)}
-                <Grid item xs={0.25} />
+                {!onlySelectedLimitsGroup && <Grid item xs={0.25} />}
                 {renderTitle('Side2', `${id}.${SELECTED_LIMITS_GROUP_2}`, `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`)}
             </Grid>
             {/* limits */}
