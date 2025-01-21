@@ -66,7 +66,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
     );
 
-    const CustomPaper = ({ children }) => {
+    const getCustomPaper = ({ children }) => {
         return (
             <Paper>
                 <Box>
@@ -103,7 +103,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             outputTransform={(value) => value}
             size={'small'}
             formProps={{ margin: 'normal' }}
-            PaperComponent={CustomPaper}
+            PaperComponent={({ children }) => getCustomPaper({ children })}
             onInputChange={(_, value) => {
                 if (typeof value === 'string') {
                     setSelectedNewSubstation(value);
