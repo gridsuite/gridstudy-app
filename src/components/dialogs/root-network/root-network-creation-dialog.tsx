@@ -75,9 +75,11 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
 
     // Set selected case when a case is selected
     const onSelectCase = (selectedCase: TreeViewFinderNodeProps) => {
-        setValue(NAME, selectedCase.name, {
-            shouldDirty: true,
-        }); // Set the name from the selected case
+        if (!formMethods.getValues(NAME)) {
+            setValue(NAME, selectedCase.name, {
+                shouldDirty: true,
+            }); // Set the name from the selected case
+        }
         setValue(CASE_NAME, selectedCase.name, {
             shouldDirty: true,
         });
