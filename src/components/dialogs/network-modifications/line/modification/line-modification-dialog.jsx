@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     convertInputValue,
     convertOutputValue,
@@ -122,7 +122,8 @@ const LineModificationDialog = ({
     const [lineToModify, setLineToModify] = useState(null);
     const [tabIndex, setTabIndex] = useState(LineModificationDialogTab.CONNECTIVITY_TAB);
     const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
-
+    const twtToModifyRef = useRef(null);
+    const editDataRef = useRef(null);
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
@@ -153,10 +154,18 @@ const LineModificationDialog = ({
     const { reset, setValue, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (line, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
+        (line) => {
             if (line?.equipmentId) {
                 setSelectedId(line.equipmentId);
             }
+            const updatedTemporaryLimits1 = updateTemporaryLimits(
+                formatTemporaryLimits(line.currentLimits1?.temporaryLimits),
+                formatTemporaryLimits(twtToModifyRef.current?.currentLimits1?.temporaryLimits)
+            );
+            const updatedTemporaryLimits2 = updateTemporaryLimits(
+                formatTemporaryLimits(line.currentLimits2?.temporaryLimits),
+                formatTemporaryLimits(twtToModifyRef.current?.currentLimits2?.temporaryLimits)
+            );
             reset({
                 [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
                 [CONNECTIVITY]: {
@@ -193,19 +202,10 @@ const LineModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(
-                editData,
-                updateTemporaryLimits(
-                    formatTemporaryLimits(editData.currentLimits1?.temporaryLimits),
-                    formatTemporaryLimits(lineToModify?.currentLimits1?.temporaryLimits)
-                ),
-                updateTemporaryLimits(
-                    formatTemporaryLimits(editData.currentLimits2?.temporaryLimits),
-                    formatTemporaryLimits(lineToModify?.currentLimits2?.temporaryLimits)
-                )
-            );
+            editDataRef.current = editData;
+            fromEditDataToFormValues(editData);
         }
-    }, [fromEditDataToFormValues, editData, lineToModify]);
+    }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
         (line) => {
@@ -304,24 +304,35 @@ const LineModificationDialog = ({
                     .then((line) => {
                         if (line) {
                             setLineToModify(line);
+                            twtToModifyRef.current = line;
                             setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, line?.voltageLevelId1);
                             setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, line?.voltageLevelId2);
                             setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
                             setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
-                            if (editData?.equipmentId !== selectedId) {
-                                reset((formValues) => ({
-                                    ...formValues,
-                                    ...getLimitsFormData({
-                                        temporaryLimits1: addSelectedFieldToRows(
-                                            formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
-                                        ),
-                                        temporaryLimits2: addSelectedFieldToRows(
-                                            formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
-                                        ),
-                                    }),
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
-                                }));
-                            }
+                            const updatedTemporaryLimits1 = updateTemporaryLimits(
+                                formatTemporaryLimits(editDataRef.current?.currentLimits1?.temporaryLimits),
+                                formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
+                            );
+                            const updatedTemporaryLimits2 = updateTemporaryLimits(
+                                formatTemporaryLimits(editDataRef.current?.currentLimits2?.temporaryLimits),
+                                formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
+                            );
+                            reset((formValues) => ({
+                                ...formValues,
+                                ...getLimitsFormData({
+                                    temporaryLimits1: addSelectedFieldToRows(
+                                        updatedTemporaryLimits1
+                                            ? updatedTemporaryLimits1
+                                            : formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
+                                    ),
+                                    temporaryLimits2: addSelectedFieldToRows(
+                                        updatedTemporaryLimits2
+                                            ? updatedTemporaryLimits2
+                                            : formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
+                                    ),
+                                }),
+                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
+                            }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -329,15 +340,19 @@ const LineModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setLineToModify(null);
+                            twtToModifyRef.current = null;
+                            editDataRef.current = null;
                             reset(emptyFormData);
                         }
                     });
             } else {
                 setLineToModify(null);
+                twtToModifyRef.current = null;
+                editDataRef.current = null;
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData, getValues, setConnectivityValue]
+        [studyUuid, currentNodeUuid, editData?.equipmentId, reset, emptyFormData, getValues, setConnectivityValue]
     );
 
     useEffect(() => {
