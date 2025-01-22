@@ -87,6 +87,7 @@ import {
     CustomAggridFilterParams,
     CustomColDef,
     FILTER_NUMBER_COMPARATORS,
+    FilterEnumsType,
 } from '../custom-aggrid/custom-aggrid-header.type';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
@@ -277,7 +278,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             currentTabType() &&
             currentColumns()
                 .filter((c) => c.editable)
-                .filter((c) => selectedColumnsNames.has(c.id)).length > 0
+                .filter((c) => selectedColumnsNames.has(c.colId)).length > 0
         );
     }, [disabled, selectedColumnsNames, currentTabType, currentColumns]);
 
@@ -320,16 +321,16 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams
     const getEnumFilterColumns = useCallback(() => {
-        return currentColumns().filter((c) => c.isEnum);
+        return currentColumns().filter((c) => c?.context?.isEnum);
     }, [currentColumns]);
 
     const generateEquipmentsFilterEnums = useCallback(() => {
         if (!equipments) {
             return {};
         }
-        const filterEnums: any = {};
+        const filterEnums: FilterEnumsType = {};
         getEnumFilterColumns().forEach((column) => {
-            filterEnums[column.field ?? ''] = [
+            filterEnums[column.colId ?? ''] = [
                 ...new Set(
                     equipments
                         .map((equipment: any) => deepFindValue(equipment, column.field))
@@ -345,16 +346,17 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const enrichColumn = useCallback(
         (column: CustomColDef<any, any, CustomAggridAutocompleteFilterParams & CustomAggridFilterParams>) => {
             const columnExtended = { ...column };
-            columnExtended.headerName = intl.formatMessage({ id: columnExtended.id });
+            columnExtended.headerName = intl.formatMessage({ id: columnExtended.colId });
 
-            if (columnExtended.numeric) {
+            if (columnExtended?.context?.numeric) {
                 //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
-                const isValueInvalid = loadFlowStatus !== RunningStatus.SUCCEED && columnExtended.canBeInvalidated;
+                const isValueInvalid =
+                    loadFlowStatus !== RunningStatus.SUCCEED && columnExtended?.context?.canBeInvalidated;
 
                 columnExtended.cellRendererParams = {
                     isValueInvalid: isValueInvalid,
                 };
-                if (columnExtended.withFluxConvention) {
+                if (columnExtended?.context?.withFluxConvention) {
                     // We enrich "flux convention" properties here (and not in config-tables) because we use a hook
                     // to get the convention, which requires a component context.
                     columnExtended.cellRendererParams.applyFluxConvention = applyFluxConvention;
@@ -373,33 +375,36 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         return 0;
                     };
                     // redefine agGrid predicates to possibly invert sign depending on flux convention (called when we use useAggridLocalRowFilter).
-                    columnExtended.agGridFilterParams = {
-                        filterOptions: [
-                            {
-                                displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                predicate: (filterValues: number[], cellValue: number) => {
-                                    const filterValue = filterValues.at(0);
-                                    if (filterValue === undefined) {
-                                        return false;
-                                    }
-                                    const transformedValue = applyFluxConvention(cellValue);
-                                    return transformedValue != null ? transformedValue >= filterValue : false;
+                    columnExtended.context = {
+                        ...columnExtended.context,
+                        agGridFilterParams: {
+                            filterOptions: [
+                                {
+                                    displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                    displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                    predicate: (filterValues: number[], cellValue: number) => {
+                                        const filterValue = filterValues.at(0);
+                                        if (filterValue === undefined) {
+                                            return false;
+                                        }
+                                        const transformedValue = applyFluxConvention(cellValue);
+                                        return transformedValue != null ? transformedValue >= filterValue : false;
+                                    },
                                 },
-                            },
-                            {
-                                displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                predicate: (filterValues: number[], cellValue: number) => {
-                                    const filterValue = filterValues.at(0);
-                                    if (filterValue === undefined) {
-                                        return false;
-                                    }
-                                    const transformedValue = applyFluxConvention(cellValue);
-                                    return transformedValue != null ? transformedValue <= filterValue : false;
+                                {
+                                    displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                                    displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                                    predicate: (filterValues: number[], cellValue: number) => {
+                                        const filterValue = filterValues.at(0);
+                                        if (filterValue === undefined) {
+                                            return false;
+                                        }
+                                        const transformedValue = applyFluxConvention(cellValue);
+                                        return transformedValue != null ? transformedValue <= filterValue : false;
+                                    },
                                 },
-                            },
-                        ],
+                            ],
+                        },
                     };
                 }
             }
@@ -408,30 +413,33 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 columnExtended.cellRenderer = DefaultCellRenderer;
             }
 
-            columnExtended.width = columnExtended.columnWidth || MIN_COLUMN_WIDTH;
+            columnExtended.width = columnExtended?.context?.columnWidth || MIN_COLUMN_WIDTH;
 
             //if it is not the first render the column might already have a pinned value so we need to handle the case where it needs to be reseted to undefined
             //we reuse and mutate the column objects so we need to clear to undefined
-            columnExtended.pinned = lockedColumnsNames.has(columnExtended.id) ? 'left' : undefined;
+            columnExtended.pinned = lockedColumnsNames.has(columnExtended.colId) ? 'left' : undefined;
 
-            columnExtended.filterComponentParams = {
-                filterParams: {
-                    updateFilter,
-                    filterSelector,
-                    ...columnExtended?.filterComponentParams?.filterParams,
+            columnExtended.context = {
+                ...columnExtended?.context,
+                filterComponentParams: {
+                    filterParams: {
+                        updateFilter,
+                        filterSelector,
+                        ...columnExtended?.context?.filterComponentParams?.filterParams,
+                    },
                 },
             };
 
             //Set sorting comparator for enum columns so it sorts the translated values instead of the enum values
-            if (columnExtended?.isEnum) {
-                const getTranslatedOrOriginalValue = (value: string) => {
+            if (columnExtended?.context?.isEnum) {
+                const getTranslatedOrOriginalValue = (value: string): string => {
                     if (value === undefined || value === null) {
                         return '';
                     }
-                    if (columnExtended.isCountry) {
+                    if (columnExtended?.context?.isCountry) {
                         return translate(value);
-                    } else if (columnExtended.getEnumLabel) {
-                        const labelId = columnExtended.getEnumLabel(value);
+                    } else if (columnExtended?.context?.getEnumLabel) {
+                        const labelId = columnExtended?.context?.getEnumLabel(value);
                         return intl.formatMessage({
                             id: labelId || value,
                             defaultMessage: value,
@@ -447,21 +455,23 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     return translatedValueA.localeCompare(translatedValueB);
                 };
 
-                columnExtended.filterComponentParams = {
-                    ...columnExtended.filterComponentParams,
+                columnExtended.context.filterComponentParams = {
+                    ...(columnExtended.context?.filterComponentParams as CustomAggridFilterParams),
                     filterEnums: filterEnums,
                     getEnumLabel: getTranslatedOrOriginalValue,
                 };
             }
-
             return makeAgGridCustomHeaderColumn({
                 headerName: columnExtended.headerName,
                 field: columnExtended.field,
-                sortProps: {
-                    onSortChanged,
-                    sortConfig,
-                },
                 ...columnExtended,
+                context: {
+                    ...columnExtended.context,
+                    sortProps: {
+                        onSortChanged,
+                        sortConfig,
+                    },
+                },
             });
         },
         [
@@ -544,7 +554,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     useEffect(() => {
-        gridRef.current?.api?.showLoadingOverlay();
         return () => clearTimeout(timerRef.current);
     }, [tabIndex]);
 
@@ -563,7 +572,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setReorderedTableDefinitionIndexes(
             allReorderedTemp
                 ? JSON.parse(allReorderedTemp)
-                : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.id)
+                : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.colId)
         );
     }, [allReorderedTableDefinitionIndexes, tabIndex, tablesDefinitionIndexes]);
 
@@ -627,7 +636,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     useEffect(() => {
         const lockedColumnsConfig = currentColumns()
-            .filter((column) => lockedColumnsNames.has(column.id))
+            .filter((column) => lockedColumnsNames.has(column.colId))
             .map((column) => {
                 const s: ColumnState = {
                     colId: column.field ?? '',
@@ -1213,7 +1222,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const addEditColumn = useCallback(
         (equipmentType: EQUIPMENT_TYPES, columns: CustomColDef[]) => {
             columns.unshift({
-                id: EDIT_COLUMN,
+                colId: EDIT_COLUMN,
                 field: EDIT_COLUMN,
                 pinned: 'left',
                 lockPosition: 'left',
@@ -1254,15 +1263,13 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const generateTableColumns = useCallback(() => {
         let selectedTableColumns = currentColumns()
             .filter((c) => {
-                return selectedColumnsNames.has(c.id);
+                return selectedColumnsNames.has(c.colId);
             })
-            .map((column) => enrichColumn(column));
-
-        function sortByIndex(a: any, b: any) {
-            return reorderedTableDefinitionIndexes.indexOf(a.id) - reorderedTableDefinitionIndexes.indexOf(b.id);
-        }
-
-        selectedTableColumns.sort(sortByIndex);
+            .map((column) => enrichColumn(column))
+            .sort(
+                (a, b) =>
+                    reorderedTableDefinitionIndexes.indexOf(a.colId) - reorderedTableDefinitionIndexes.indexOf(b.colId)
+            );
 
         if (isEditColumnVisible()) {
             addEditColumn(currentTabType(), selectedTableColumns);

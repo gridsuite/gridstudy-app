@@ -41,12 +41,12 @@ export type FilterParams = {
     filterDataType?: string;
     filterComparators?: string[];
     debounceMs?: number;
-    updateFilter?: (field: string, value: FilterDataType) => void;
+    updateFilter?: (colId: string, value: FilterDataType) => void;
     filterSelector?: FilterSelectorType[] | null;
 };
 
 export interface CustomAggridFilterParams {
-    field: string;
+    colId: string;
     filterParams: FilterParams;
 }
 
@@ -77,8 +77,7 @@ export type FilterStorePropsType = {
     filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
 };
 
-export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
-    extends ColDef<TData, TValue> {
+export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggridFilterParams> {
     agGridFilterParams?: {
         filterOptions: IFilterOptionDef[];
     };
@@ -87,21 +86,26 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     changeCmd?: string;
     columnWidth?: number;
     crossValidation?: CrossValidationOptions;
+    forceDisplayFilterIcon?: boolean;
+    filterComponent?: ComponentType<F>;
+    //We omit colId here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
+    filterComponentParams?: Omit<F, 'colId'>;
     filterTab?: string[];
     fractionDigits?: number;
     getEnumLabel?: (value: string) => string | undefined;
-    id: string;
     isCountry?: boolean;
+    isCustomColumn?: boolean;
     isDefaultSort?: boolean;
     isEnum?: boolean;
+    Menu?: React.FC<CustomColumnConfigProps>;
     numeric?: boolean;
     sortProps?: SortPropsType;
-    withFluxConvention?: boolean;
-    forceDisplayFilterIcon?: boolean;
     tabIndex?: number;
-    isCustomColumn?: boolean;
-    Menu?: React.FC<CustomColumnConfigProps>;
-    filterComponent?: ComponentType<F>;
-    //We omit field here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
-    filterComponentParams?: Omit<F, 'field'>;
+    withFluxConvention?: boolean;
+}
+
+export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
+    extends ColDef<TData, TValue> {
+    colId: string;
+    context?: ColumnContext<F>;
 }

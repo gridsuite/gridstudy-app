@@ -29,20 +29,23 @@ function generateEditableNumericColumnDefinition<
     TMax extends string | undefined
 >(id: TId, field: TField, minExpression: TMin, maxExpression: TMax) {
     return {
-        id: id,
+        colId: id,
         field: field,
-        numeric: true,
         ...defaultNumericFilterConfig,
-        fractionDigits: 1,
+        context: {
+            ...defaultNumericFilterConfig.context,
+            numeric: true,
+            fractionDigits: 1,
+            crossValidation: {
+                optional: true,
+                minExpression: minExpression,
+                maxExpression: maxExpression,
+            },
+        },
         ...editableColumnConfig,
         ...numericalCellEditorConfig((params) => params.data[field]),
-        crossValidation: {
-            optional: true,
-            minExpression: minExpression,
-            maxExpression: maxExpression,
-        },
         getQuickFilterText: excludeFromGlobalFilter,
-    } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+    } as const satisfies ReadonlyDeep<CustomColDef>;
 }
 
 export const VOLTAGE_LEVEL_TAB_DEF = {
@@ -51,46 +54,58 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
     ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
-            isDefaultSort: true,
             ...defaultTextFilterConfig,
+            context: {
+                ...defaultTextFilterConfig.context,
+                isDefaultSort: true,
+            },
         },
         {
-            id: 'Name',
+            colId: 'Name',
             field: 'name',
             ...editableColumnConfig,
             ...defaultTextFilterConfig,
         },
         {
-            id: 'SubstationId',
+            colId: 'SubstationId',
             field: 'substationId',
             ...defaultTextFilterConfig,
         },
         {
-            id: 'Country',
+            colId: 'Country',
             field: 'country',
             ...countryEnumFilterConfig,
             cellRenderer: CountryCellRenderer,
         },
         {
-            id: 'NominalV',
+            colId: 'NominalV',
             field: 'nominalV',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 0,
+            },
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.nominalV),
         },
         generateEditableNumericColumnDefinition('LowVoltageLimitkV', 'lowVoltageLimit', undefined, 'highVoltageLimit'),
         generateEditableNumericColumnDefinition('HighVoltageLimitkV', 'highVoltageLimit', 'lowVoltageLimit', undefined),
         {
-            id: 'IpMin',
+            colId: 'IpMin',
             field: 'identifiableShortCircuit.ipMin',
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             ...editableColumnConfig,
-            numeric: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    optional: true,
+                },
+            },
             ...numericalCellEditorConfig((params) =>
                 convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -110,17 +125,22 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
                 return true;
             },
             getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                optional: true,
-            },
         },
         {
-            id: 'IpMax',
+            colId: 'IpMax',
             field: 'identifiableShortCircuit.ipMax',
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
             ...editableColumnConfig,
-            numeric: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'identifiableShortCircuit.ipMin',
+                    },
+                },
+            },
             ...numericalCellEditorConfig((params) =>
                 convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -140,11 +160,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
                 return true;
             },
             getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                requiredOn: {
-                    dependencyColumn: 'identifiableShortCircuit.ipMin',
-                },
-            },
         },
         genericColumnOfPropertiesEditPopup,
     ],
