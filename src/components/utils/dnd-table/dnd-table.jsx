@@ -26,7 +26,7 @@ import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
-import { CheckboxInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CheckboxInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
 import { ErrorInput } from '@gridsuite/commons-ui';
@@ -84,7 +84,7 @@ function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
 
 function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, valueModified, ...props }) {
     return (
-        <TableCell key={column.dataKey} sx={{ padding: 0.5 }}>
+        <TableCell key={column.dataKey} sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
             {column.numeric && (
                 <TableNumericalInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
@@ -98,8 +98,23 @@ function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, val
                     {...props}
                 />
             )}
-            {!column.numeric && !column.directoryItems && !column.chipItems && (
-                <TableTextInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
+            {!column.numeric && !column.directoryItems && !column.chipItems && !column.autocomplete && (
+                <TableTextInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    showErrorMsg={column.showErrorMsg}
+                    {...props}
+                />
+            )}
+            {column.autocomplete && (
+                <AutocompleteInput
+                    forcePopupIcon
+                    freeSolo
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    options={column.options}
+                    inputTransform={(value) => (value === null ? '' : value)}
+                    outputTransform={(value) => value}
+                    size={'small'}
+                />
             )}
             {column.directoryItems && (
                 <DirectoryItemsInput
@@ -300,7 +315,7 @@ const DndTable = ({
                         </TableCell>
                     )}
                     {columnsDefinition.map((column) => (
-                        <TableCell key={column.dataKey} sx={{ width: column.width }}>
+                        <TableCell key={column.dataKey} sx={{ width: column.width, maxWidth: column.maxWidth }}>
                             <Box sx={styles.columnsStyle}>
                                 {column.label}
                                 {column.extra}
