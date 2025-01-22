@@ -12,6 +12,7 @@ import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    addAdditionalEquipmentsByNodesForCustomColumns,
     deleteEquipments,
     EquipmentToDelete,
     loadEquipments,
@@ -22,6 +23,7 @@ import {
 import type { AppState } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
+import { getFetchers } from './config/equipment/common-config';
 
 export type EquipmentProps = {
     type: SpreadsheetEquipmentType;
@@ -32,17 +34,19 @@ type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 
 export const useSpreadsheetEquipments = (
     equipment: EquipmentProps,
-    formatFetchedEquipments: FormatFetchedEquipments
+    formatFetchedEquipments: FormatFetchedEquipments,
+    tabIndex: number
 ) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = allEquipments[equipment.type];
-
+    const customColumnsDefinitions = useSelector((state: AppState) => state.tables.allCustomColumnsDefinitions);
+    const customColumnsNodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
-
     const {
         impactedSubstationsIds,
         deletedEquipments,
@@ -144,7 +148,56 @@ export const useSpreadsheetEquipments = (
                     setIsFetching(false);
                 });
         }
-    }, [equipment, shouldFetchEquipments, studyUuid, currentNode?.id, dispatch, formatFetchedEquipments]);
+    }, [
+        equipment,
+        shouldFetchEquipments,
+        studyUuid,
+        currentNode?.id,
+        dispatch,
+        formatFetchedEquipments,
+        customColumnsDefinitions,
+    ]);
+
+    useEffect(() => {
+        if (studyUuid && equipments != null) {
+            let fetchers: Promise<unknown>[] = [];
+            let additionalEquipmentsByNodes: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>> = {};
+            if (equipment.type) {
+                customColumnsNodesAliases.forEach((aliasInfo) => {
+                    const fetcherPromises = getFetchers(equipment.type).map((fetcher) =>
+                        fetcher(studyUuid, aliasInfo.id, [])
+                    );
+                    fetchers.push(fetcherPromises[0]);
+                    fetcherPromises[0].then((res) => {
+                        let fetchedEquipments = res.flat();
+                        if (formatFetchedEquipments) {
+                            fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
+                            let fetchedEquipmentByType: Record<SpreadsheetEquipmentType, Identifiable[]> = {} as Record<
+                                SpreadsheetEquipmentType,
+                                Identifiable[]
+                            >;
+                            fetchedEquipmentByType[equipment.type] = fetchedEquipments;
+                            additionalEquipmentsByNodes = { ...additionalEquipmentsByNodes };
+                            additionalEquipmentsByNodes[aliasInfo.alias] = fetchedEquipmentByType;
+                        }
+                    });
+                });
+
+                //so we only dispatch once all the fetches are over
+                Promise.all(fetchers).then(() => {
+                    dispatch(addAdditionalEquipmentsByNodesForCustomColumns(additionalEquipmentsByNodes));
+                });
+            }
+        }
+    }, [
+        dispatch,
+        equipments,
+        studyUuid,
+        formatFetchedEquipments,
+        treeModel,
+        customColumnsNodesAliases,
+        equipment.type,
+    ]);
 
     return { equipments, errorMessage, isFetching };
 };
