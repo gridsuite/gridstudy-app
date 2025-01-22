@@ -40,7 +40,7 @@ export const RootNetworkCaseSelection = ({ onSelectCase }: RootNetworkCaseSelect
                     </Box>
                 </Typography>
                 <Grid item>
-                    <Button onClick={() => setIsDialogOpen(true)} variant="contained" size={'small'}>
+                    <Button onClick={() => setIsDialogOpen(true)}>
                         {caseNameWatch ? (
                             <FormattedMessage id={'ModifyFromMenu'} />
                         ) : (

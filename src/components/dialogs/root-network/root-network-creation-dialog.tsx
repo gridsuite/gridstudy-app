@@ -114,7 +114,7 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
                     <Grid item>
                         <UniqueCheckNameInput
                             name={NAME}
-                            label={'Name'}
+                            label={'rootName'}
                             autoFocus
                             studyUuid={studyUuid}
                             elementExists={checkRootNetworkNameExistence}

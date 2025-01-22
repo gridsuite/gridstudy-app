@@ -570,7 +570,6 @@
     "HideMinimap": "Hide minimap",
     "DisplayTheWholeTree": "Display the whole tree",
 
-    "CreateRootNetwork": "Configure root network",
 
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",
@@ -1455,6 +1454,9 @@
     "StateEstimationStatus": "Status : ",
     "StateEstimationQuality": "Quality : ",
     "Or": "or",
+
+    "addRoot": "Add a root",
+    "rootName": "Root name",
     "rootNetworksCount":"{count, plural, =1 {# network} other {# networks}}",
     "updateRootNetworksList": "Updating root network list ...",
     "deletingRootNetwork": "Deleting root network ...",

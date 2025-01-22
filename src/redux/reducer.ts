@@ -190,7 +190,6 @@ import {
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UpdateNetworkVisualizationParametersAction,
     RESET_MAP_EQUIPMENTS,
-    SET_IS_NETWORK_MODIFICATION_TREE_UP_TO_DATE,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,

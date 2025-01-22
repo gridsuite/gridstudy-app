@@ -142,7 +142,7 @@ const RootNetworkNodeEditor = () => {
             }
             setDeleteInProgress(true);
         }
-    }, [studyUpdatedForce, dofetchRootNetworks, dispatch]);
+    }, [studyUpdatedForce, dofetchRootNetworks, dispatch, rootNetworks]);
 
     useEffect(() => {
         dofetchRootNetworks();
@@ -163,7 +163,7 @@ const RootNetworkNodeEditor = () => {
                 });
             });
         }
-    }, [selectedItems, dispatch, rootNetworks, snackError, studyUuid]);
+    }, [selectedItems, snackError, studyUuid]);
 
     const toggleSelectAllRootNetworks = useCallback(() => {
         setSelectedItems((oldVal) => (oldVal.length === 0 ? rootNetworks : []));
@@ -259,7 +259,7 @@ const RootNetworkNodeEditor = () => {
                 open={rootNetworkCreationDialogOpen}
                 onClose={() => setRootNetworkCreationDialogOpen(false)}
                 onSave={doCreateRootNetwork}
-                titleId={'CreateRootNetwork'}
+                titleId={'addRoot'}
             />
         );
     };
@@ -337,7 +337,7 @@ const RootNetworkNodeEditor = () => {
                 />
                 <Box sx={styles.filler} />
 
-                <Tooltip title={<FormattedMessage id={'CreateRootNetwork'} />}>
+                <Tooltip title={<FormattedMessage id={'addRoot'} />}>
                     <span>
                         <IconButton
                             onClick={openRootNetworkCreationDialog}

@@ -572,8 +572,6 @@
     "HideMinimap": "Masquer la mini-carte",
     "DisplayTheWholeTree": "Visualiser l'arbre en entier",
 
-    "CreateRootNetwork": "Configurer un réseau racine",
-
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",
     "showReport": "Afficher logs",
@@ -1457,6 +1455,9 @@
     "StateEstimationStatus": "Statut : ",
     "StateEstimationQuality": "Qualité: ",
     "Or": "ou",
+
+    "addRoot": "Ajouter un réseau",
+    "rootName": "Nom du réseau",
     "rootNetworksCount":"{count, plural, =1 {# réseau} other {# réseaux}}",
     "updateRootNetworksList": "Mise à jour de la liste des réseaux racines cours ...",
     "deletingRootNetwork": "Suppression du réseau racine en cours ...",
