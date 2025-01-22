@@ -34,7 +34,7 @@ export interface LimitsPaneProps {
     clearableFields?: any;
     // temporary value because creation interfaces uses complete limits groups while modification still uses the old system with only the selected current limits
     // will become obsolete once the modification interfaces use complete limits groups
-    onlySelectedLimitsGroup: boolean;
+    onlySelectedLimitsGroup?: boolean;
 }
 
 export function LimitsPane({

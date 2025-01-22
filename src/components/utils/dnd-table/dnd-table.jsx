@@ -429,7 +429,7 @@ const DndTable = ({
 DndTable.propTypes = {
     arrayFormName: PropTypes.string.isRequired,
     useFieldArrayOutput: PropTypes.object.isRequired,
-    columnsDefinition: PropTypes.object.isRequired,
+    columnsDefinition: PropTypes.array.isRequired,
     tableHeight: PropTypes.number.isRequired,
     allowedToAddRows: PropTypes.func,
     createRows: PropTypes.func.isRequired,

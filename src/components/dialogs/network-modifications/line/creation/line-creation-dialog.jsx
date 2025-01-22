@@ -85,6 +85,7 @@ import {
 import GridItem from '../../../commons/grid-item';
 import { formatTemporaryLimits } from '../../../../utils/utils.js';
 import { addSelectedFieldToRows } from '../../../../utils/dnd-table/dnd-table.jsx';
+import { isBlankOrEmpty } from '../../../../utils/validation-functions.js';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -151,15 +152,17 @@ const LineCreationDialog = ({
     const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
         let formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
         if (completeLimitsGroups) {
-            completeLimitsGroups.forEach((elt) =>
-                formattedCompleteLimitsGroups.push({
-                    [ID]: elt.id,
-                    [CURRENT_LIMITS]: {
-                        permanentLimit: elt.permanentLimit,
-                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
-                    },
-                })
-            );
+            completeLimitsGroups.forEach((elt) => {
+                if (!isBlankOrEmpty(elt.id)) {
+                    formattedCompleteLimitsGroups.push({
+                        [ID]: elt.id,
+                        [CURRENT_LIMITS]: {
+                            permanentLimit: elt.permanentLimit,
+                            temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+                        },
+                    });
+                }
+            });
         }
         return formattedCompleteLimitsGroups;
     };

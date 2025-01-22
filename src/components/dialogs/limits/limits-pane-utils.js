@@ -28,7 +28,7 @@ import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 
 const limitsGroupValidationSchema = () => ({
-    [ID]: yup.string().nullable(),
+    [ID]: yup.string().nonNullable().required(),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema()),
 });
 

@@ -25,6 +25,7 @@ import { tabStyles } from '../../parameters-tabs';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import MenuIcon from '@mui/icons-material/Menu';
 import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
+import { isBlankOrEmpty } from '../../utils/validation-functions';
 
 export const limitsStyles = {
     limitsBackground: {
@@ -149,13 +150,13 @@ export function OperationalLimitsGroupsTabs({
     ]);
 
     // synchronizeOperationalLimitsGroups : all the limit sets from both sides have to be
-    // in both limitsGroups1 and limitsGroups2, even if they are empty
+    // in both limitsGroups1 and limitsGroups2, even if they don't contain any data
     useEffect(() => {
         // no synchronization while editing
         if (editingTabIndex === null) {
             limitsGroups1.forEach((limitsGroup1: OperationalLimitsGroup) => {
                 if (
-                    limitsGroup1.id &&
+                    !isBlankOrEmpty(limitsGroup1.id) &&
                     !limitsGroups2.find((limitsGroup2: OperationalLimitsGroup) => limitsGroup1.id === limitsGroup2.id)
                 ) {
                     appendToLimitsGroups2({
@@ -169,7 +170,7 @@ export function OperationalLimitsGroupsTabs({
             });
             limitsGroups2.forEach((limitsGroup2: OperationalLimitsGroup) => {
                 if (
-                    limitsGroup2.id &&
+                    !isBlankOrEmpty(limitsGroup2.id) &&
                     !limitsGroups1.find((limitsGroup1: OperationalLimitsGroup) => limitsGroup2.id === limitsGroup1.id)
                 ) {
                     appendToLimitsGroups1({
