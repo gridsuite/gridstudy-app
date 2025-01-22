@@ -234,6 +234,14 @@ export function mapEquipmentsCreated(
     };
 }
 
+export const RESET_MAP_EQUIPMENTS = 'RESET_MAP_EQUIPMENTS';
+export type ResetMapEquipmentsAction = Readonly<Action<typeof RESET_MAP_EQUIPMENTS>>;
+export function resetMapEquipment(): ResetMapEquipmentsAction {
+    return {
+        type: RESET_MAP_EQUIPMENTS,
+    };
+}
+
 export const LOAD_NETWORK_MODIFICATION_TREE_SUCCESS = 'LOAD_NETWORK_MODIFICATION_TREE_SUCCESS';
 export type LoadNetworkModificationTreeSuccessAction = Readonly<
     Action<typeof LOAD_NETWORK_MODIFICATION_TREE_SUCCESS>

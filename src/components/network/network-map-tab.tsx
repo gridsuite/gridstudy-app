@@ -34,7 +34,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { type Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNode, isSameNodeAndBuilt } from '../graph/util/model-functions';
-import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
+import { resetMapEquipment, resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, LinearProgress, useTheme } from '@mui/material';
 import { UPDATE_TYPE_HEADER } from '../study-container';
@@ -130,6 +130,9 @@ export const NetworkMapTab = ({
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const centerOnSubstation = useSelector((state: AppState) => state.centerOnSubstation);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const isNetworkModificationTreeUpToDate = useSelector(
+        (state: AppState) => state.isNetworkModificationTreeModelUpToDate
+    );
 
     const theme = useTheme();
 
@@ -838,20 +841,27 @@ export const NetworkMapTab = ({
         currentRootNetworkUuidRef.current = currentRootNetworkUuid;
         let previousNodeStatus = isCurrentNodeBuiltRef.current;
         isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
-        // if only renaming, do not reload geo data
-        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+        // as long as rootNodeId is not set, we don't fetch any geodata
+        if (!rootNodeId) {
+            return;
+        }
+        // when root network has just been changed, we reset map equipment and geo data, they will be loaded as if we were opening a new study
+        if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
+            setInitialized(false);
+            setIsRootNodeGeoDataLoaded(false);
+            dispatch(resetMapEquipment());
             return;
         }
         if (disabled) {
             return;
         }
-        // as long as rootNodeId is not set, we don't fetch any geodata
-        if (!rootNodeId) {
+        // if only renaming, do not reload geo data
+        if (isNodeRenamed(previousCurrentNode, currentNode)) {
             return;
         }
-        // when root network has just been changed, we reload root node geodata to match its root node geodata
-        if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
-            loadRootNodeGeoData();
+        // when switching of root network, networkModificationTree takes some time to load
+        // we need to wait for the request to respond to load data, in order to have up to date nodes build status
+        if (!isNetworkModificationTreeUpToDate) {
             return;
         }
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
@@ -891,8 +901,10 @@ export const NetworkMapTab = ({
         currentNode,
         currentRootNetworkUuid,
         loadMapEquipments,
+        dispatch,
         updateMapEquipmentsAndGeoData,
         loadRootNodeGeoData,
+        isNetworkModificationTreeUpToDate,
         isRootNodeGeoDataLoaded,
         isMapEquipmentsInitialized,
         isInitialized,
@@ -903,10 +915,21 @@ export const NetworkMapTab = ({
         // when root node geodata are loaded, we fetch current node missing geo-data
         // we check if equipments are done initializing because they are checked to fetch accurate missing geo data
         if (isRootNodeGeoDataLoaded && isMapEquipmentsInitialized && !isInitialized) {
+            // when root networks are changed, mapEquipments are recreated. when they are done recreating, the map is zoomed around the new network
+            if (mapEquipments) {
+                handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
+            }
             loadMissingGeoData();
             setInitialized(true);
         }
-    }, [isRootNodeGeoDataLoaded, isMapEquipmentsInitialized, isInitialized, loadMissingGeoData]);
+    }, [
+        handleFilteredNominalVoltagesChange,
+        mapEquipments,
+        isRootNodeGeoDataLoaded,
+        isMapEquipmentsInitialized,
+        isInitialized,
+        loadMissingGeoData,
+    ]);
 
     // Reload geo data (if necessary) when we switch on full path
     useEffect(() => {

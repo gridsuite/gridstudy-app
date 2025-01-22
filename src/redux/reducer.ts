@@ -125,6 +125,7 @@ import {
     ResetEquipmentsPostLoadflowAction,
     ResetLogsFilterAction,
     ResetMapReloadedAction,
+    ResetMapEquipmentsAction,
     ResetNetworkAreaDiagramDepthAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
     SecurityAnalysisResultFilterAction,
@@ -188,6 +189,8 @@ import {
     CurrentRootNetworkAction,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UpdateNetworkVisualizationParametersAction,
+    RESET_MAP_EQUIPMENTS,
+    SET_IS_NETWORK_MODIFICATION_TREE_UP_TO_DATE,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -321,6 +324,7 @@ export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
     parentNode: UUID;
     rootNetwork: UUID;
+    rootNetworks: UUID[];
     timestamp: number;
     updateType?: string;
     node?: UUID;
@@ -471,6 +475,7 @@ export interface AppState extends CommonStoreState {
     nodeSelectionForCopy: NodeSelectionForCopy;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
+    isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
@@ -623,6 +628,8 @@ const initialState: AppState = {
     mapEquipments: undefined,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
+    // used when switching root network, will be set to false as long as the tree has not been updated
+    isNetworkModificationTreeModelUpToDate: false,
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
@@ -848,6 +855,11 @@ export const reducer = createReducer(initialState, (builder) => {
         state.mapEquipments = newMapEquipments;
     });
 
+    builder.addCase(RESET_MAP_EQUIPMENTS, (state, action: ResetMapEquipmentsAction) => {
+        state.mapEquipments = undefined;
+        state.isMapEquipmentsInitialized = false;
+    });
+
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
         const { newTableDefinition, customColumns } = action.payload;
         const updatedDefinitions = [...state.tables.definitions];
@@ -886,6 +898,7 @@ export const reducer = createReducer(initialState, (builder) => {
         (state, action: LoadNetworkModificationTreeSuccessAction) => {
             state.networkModificationTreeModel = action.networkModificationTreeModel;
             state.networkModificationTreeModel.setBuildingStatus();
+            state.isNetworkModificationTreeModelUpToDate = true;
         }
     );
 
@@ -1149,6 +1162,7 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CURRENT_ROOT_NETWORK, (state, action: CurrentRootNetworkAction) => {
         state.currentRootNetwork = action.currentRootNetwork;
         state.reloadMap = true;
+        state.isNetworkModificationTreeModelUpToDate = false;
     });
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {

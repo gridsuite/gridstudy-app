@@ -130,8 +130,19 @@ const RootNetworkNodeEditor = () => {
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworksUpdated') {
             dofetchRootNetworks();
+            setDeleteInProgress(false);
+        } else if (studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworkDeletionStarted') {
+            // when node are being deleted, we select 1st node that won't be deleted
+            const deletingNodes = studyUpdatedForce.eventData.headers.rootNetworks;
+            const newSelectedRootNetwork = rootNetworks.find(
+                (rootNetwork) => !deletingNodes.includes(rootNetwork.rootNetworkUuid)
+            );
+            if (newSelectedRootNetwork) {
+                dispatch(setCurrentRootNetwork(newSelectedRootNetwork.rootNetworkUuid));
+            }
+            setDeleteInProgress(true);
         }
-    }, [studyUpdatedForce, dofetchRootNetworks]);
+    }, [studyUpdatedForce, dofetchRootNetworks, dispatch]);
 
     useEffect(() => {
         dofetchRootNetworks();
@@ -145,28 +156,12 @@ const RootNetworkNodeEditor = () => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
 
         if (studyUuid) {
-            if (selectedRootNetworksUuid.length === 1) {
-                // Find the first root network in the list that is not being deleted
-                const newRootNetwork = rootNetworks.find(
-                    (network) => network.rootNetworkUuid !== selectedRootNetworksUuid[0]
-                );
-                if (newRootNetwork) {
-                    dispatch(setCurrentRootNetwork(newRootNetwork.rootNetworkUuid));
-                }
-            }
-            setDeleteInProgress(true);
-
-            deleteRootNetworks(studyUuid, selectedRootNetworksUuid)
-                .then(() => {})
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'errDeleteRootNetworkMsg',
-                    });
-                })
-                .finally(() => {
-                    setDeleteInProgress(false);
+            deleteRootNetworks(studyUuid, selectedRootNetworksUuid).catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errDeleteRootNetworkMsg',
                 });
+            });
         }
     }, [selectedItems, dispatch, rootNetworks, snackError, studyUuid]);
 
