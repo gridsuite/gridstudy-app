@@ -55,8 +55,6 @@
     "SingleLineDiagram": "Single line diagram",
     "NetworkAreaDiagram": "Network area diagram",
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
-    "rootNetworkNotFound": "No root network was found for the study with ID \"{studyUuid}\"",
-
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
@@ -373,8 +371,6 @@
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
 
-    "ChooseCase": "Select a case",
-    
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
     "AddContingencyList": "Add",
@@ -569,7 +565,6 @@
     "DisplayMinimap": "Display minimap",
     "HideMinimap": "Hide minimap",
     "DisplayTheWholeTree": "Display the whole tree",
-
 
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",
@@ -1235,7 +1230,6 @@
     "SaveModificationTo": "Save to GridExplore",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
-    "errCreateRootNetworksMsg": "An error occurred while creating the root network",
     "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {studyDirectory}",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
@@ -1432,14 +1426,14 @@
     "searchPlaceholderLogsTreeStructure": "Search in tree structure",
     "GeneratedModification": "Generated-modification",
     "guidancePopUp.title": "Selection on the map",
-    "guidancePopUp.firstVariant":"{symbol} Click on the map to start drawing a polygon.",
-    "guidancePopUp.secondVariant":"Press {symbol} Enter to finish or Esc to cancel.",
-    "guidancePopUp.action":"Close editor",
+    "guidancePopUp.firstVariant": "{symbol} Click on the map to start drawing a polygon.",
+    "guidancePopUp.secondVariant": "Press {symbol} Enter to finish or Esc to cancel.",
+    "guidancePopUp.action": "Close editor",
     "generateNad": "Generate",
     "networkModificationActivationError": "An error occurred while enabling / disabling modification",
     "AddAutomaton": "Add an automaton",
-    "BusBarCountMustBeGreaterThanOrEqualToOne" : "Number of busbars must be greater than or equal to 1",
-    "SectionCountMustBeGreaterThanOrEqualToOne" : "Number of sections must be greater than or equal to 1",
+    "BusBarCountMustBeGreaterThanOrEqualToOne": "Number of busbars must be greater than or equal to 1",
+    "SectionCountMustBeGreaterThanOrEqualToOne": "Number of sections must be greater than or equal to 1",
 
     "StateEstimationQualityCriterionResults": "Criterion quality",
     "StateEstimationQualityPerRegionResults": "Quality per region",
@@ -1455,16 +1449,17 @@
     "StateEstimationQuality": "Quality : ",
     "Or": "or",
 
+    "chooseCase": "Select a case",
     "addRoot": "Add a root",
     "rootName": "Root name",
-    "rootNetworksCount":"{count, plural, =1 {# network} other {# networks}}",
+    "rootNetworksCount": "{count, plural, =1 {# network} other {# networks}}",
     "updateRootNetworksList": "Updating root network list ...",
     "deletingRootNetwork": "Deleting root network ...",
     "creatingRootNetwork": "Creating root network ...",
     "rootNetworkCreated": "The root network has been created successfully",
     "errDeleteRootNetworkMsg": "An error occurred while deleting root networks",
     "rootNetworknameValidityCheckErrorMsg": "An error occurred while checking root network name",
-    "rootNetworkDirectoryFetchingError": "An error occurred while fetching root directory"
-
- 
+    "rootNetworkDirectoryFetchingError": "An error occurred while fetching root directory",
+    "rootNetworkNotFound": "No root network was found for the study with ID \"{studyUuid}\"",
+    "errCreateRootNetworksMsg": "An error occurred while creating the root network"
 }

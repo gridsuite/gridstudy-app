@@ -56,8 +56,6 @@
     "NetworkAreaDiagram": "Image nodale de zone",
 
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
-    "RootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
-
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
     "svgLoadingFail": "L'image n'a pas pu être chargée",
     "networkLoadingFail": "Le réseau de l'étude avec l'identifiant \"{studyUuid}\" n'a pas pu être chargé",
@@ -374,8 +372,6 @@
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
 
-    "ChooseCase": "Choisir une situation",
-    
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
     "AddContingencyList": "Ajouter",
@@ -583,7 +579,7 @@
     "FluxConvention.target": "Métier",
     "Advanced": "Avancés",
     "EnableDeveloperMode": "Activer mode développeur",
-    "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques", 
+    "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques",
     "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
     "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
 
@@ -610,7 +606,6 @@
     "NodeBuildingError": "Une erreur est survenue lors de la réalisation du nœud",
     "NodeUnbuildingError": "Une erreur est survenue lors de la déréalisation du nœud",
     "NetworkModifications": "Modifications de réseau",
-
     "CreateLoad": "Créer une consommation",
     "ModifyLoad": "Modifier une consommation",
     "NameOptional": "Nom (optionnel)",
@@ -1235,8 +1230,6 @@
     "SaveModificationTo": "Enregistrer dans GridExplore",
     "ModificationsSelection": "Sélection des modifications",
     "errCreateModificationsMsg": "Une erreur est survenue lors de la création des modifications",
-    "errCreateRootNetworksMsg": "Une erreur est survenue lors de la création du réseau racine",
-
     "infoCreateModificationsMsg": "Création d'une modification composite de {nbModifications} modifications unitaires dans {studyDirectory}",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
@@ -1433,14 +1426,14 @@
     "searchPlaceholderLogsTreeStructure": "Rechercher dans l'arborescence",
     "GeneratedModification": "Modification-générée",
     "guidancePopUp.title": "Sélection sur la carte",
-    "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
-    "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
-    "guidancePopUp.action":"Fermer l'éditeur",
+    "guidancePopUp.firstVariant": "{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
+    "guidancePopUp.secondVariant": "Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
+    "guidancePopUp.action": "Fermer l'éditeur",
     "generateNad": "Générer",
     "networkModificationActivationError": "Une erreur est survenue lors de l'activation / désactivation de la modification",
     "AddAutomaton": "Ajouter un automate",
-    "BusBarCountMustBeGreaterThanOrEqualToOne" : "Un nombre de barres doit être supérieur ou égal à 1",
-    "SectionCountMustBeGreaterThanOrEqualToOne" : "Un nombre de sections doit être supérieur ou égal à 1",
+    "BusBarCountMustBeGreaterThanOrEqualToOne": "Un nombre de barres doit être supérieur ou égal à 1",
+    "SectionCountMustBeGreaterThanOrEqualToOne": "Un nombre de sections doit être supérieur ou égal à 1",
 
     "StateEstimationQualityCriterionResults": "Qualité critères",
     "StateEstimationQualityPerRegionResults": "Qualité régions",
@@ -1456,16 +1449,17 @@
     "StateEstimationQuality": "Qualité: ",
     "Or": "ou",
 
+    "chooseCase": "Choisir une situation",
     "addRoot": "Ajouter un réseau",
     "rootName": "Nom du réseau",
-    "rootNetworksCount":"{count, plural, =1 {# réseau} other {# réseaux}}",
+    "rootNetworksCount": "{count, plural, =1 {# réseau} other {# réseaux}}",
     "updateRootNetworksList": "Mise à jour de la liste des réseaux racines cours ...",
     "deletingRootNetwork": "Suppression du réseau racine en cours ...",
     "creatingRootNetwork": "Création du réseau racine en cours ...",
     "rootNetworkCreated": "Le réseau racine a été créé avec succès",
     "errDeleteRootNetworkMsg": "Une erreur est survenue lors de la suppression des réseaux racines",
     "rootNetworknameValidityCheckErrorMsg": "Une erreur est survenue lors de la vérification du nom de réseau racine",
-    "rootNetworkDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier du réseau"
-
-
+    "rootNetworkDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier du réseau",
+    "RootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
+    "errCreateRootNetworksMsg": "Une erreur est survenue lors de la création du réseau racine"
 }

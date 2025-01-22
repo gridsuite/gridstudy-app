@@ -70,7 +70,7 @@ export const RootNetworkCaseSelection = ({ onSelectCase }: RootNetworkCaseSelect
                         {caseNameWatch ? (
                             <FormattedMessage id={'ModifyFromMenu'} />
                         ) : (
-                            <FormattedMessage id={'ChooseCase'} />
+                            <FormattedMessage id={'chooseCase'} />
                         )}
                     </Button>
                 </Grid>

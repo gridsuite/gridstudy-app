@@ -32,7 +32,7 @@ const ImportCaseDialog: FunctionComponent<ImportCaseDialogProps> = ({ open, onCl
             onClose={processSelectedElements}
             types={[ElementType.CASE]}
             title={intl.formatMessage({
-                id: 'ChooseCase',
+                id: 'chooseCase',
             })}
             multiSelect={false}
         />
