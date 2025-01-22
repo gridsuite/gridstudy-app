@@ -74,7 +74,7 @@ export function OperationalLimitsGroupsTabs({
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
     const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
-    const [activeTabIndex, setActiveTabIndex] = useState<number | null>(null);
+    const [activatedByMenuTabIndex, setActivatedByMenuTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
     const editLimitGroupRef = useRef<HTMLInputElement>(null);
     const { getValues, setValue } = useFormContext();
@@ -121,17 +121,24 @@ export function OperationalLimitsGroupsTabs({
         event.stopPropagation();
         setMenuAnchorEl(event.currentTarget);
         setSelectedLimitGroupTabIndex(index);
-        setActiveTabIndex(index);
+        setActivatedByMenuTabIndex(index);
         setEditedLimitGroupName(name);
     };
 
     const handleCloseMenu = () => {
         setMenuAnchorEl(null);
-        setActiveTabIndex(null);
+        setActivatedByMenuTabIndex(null);
     };
 
     const handleDeleteTab = () => {
-        if (activeTabIndex != null) {
+        if (activatedByMenuTabIndex != null) {
+            // if this operational limit was selected, deselect it
+            if (selectedLimitsGroups1 === editedLimitGroupName) {
+                setValue(`${id}.${SELECTED_LIMITS_GROUP_1}`, '');
+            }
+            if (selectedLimitsGroups2 === editedLimitGroupName) {
+                setValue(`${id}.${SELECTED_LIMITS_GROUP_2}`, '');
+            }
             removeLimitsGroups1(indexSelectedLimitSet1);
             removeLimitsGroups2(indexSelectedLimitSet2);
             handleCloseMenu();
@@ -139,7 +146,7 @@ export function OperationalLimitsGroupsTabs({
     };
 
     const handleDuplicateTab = () => {
-        if (activeTabIndex != null) {
+        if (activatedByMenuTabIndex != null) {
             const newName: string = editedLimitGroupName + ' (1)';
             const duplicatedLimits1 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`);
             const newLimitsGroup1: OperationalLimitsGroup = {
@@ -331,7 +338,7 @@ export function OperationalLimitsGroupsTabs({
                                     }}
                                 >
                                     {set.id}
-                                    {(index === hoveredRowIndex || index === activeTabIndex) && (
+                                    {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (
                                         <IconButton
                                             size="small"
                                             hidden
@@ -371,7 +378,9 @@ export function OperationalLimitsGroupsTabs({
                 />
             </Tabs>
             <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-                <MenuItem onClick={() => activeTabIndex != null && startEditingLimitsGroup(activeTabIndex)}>
+                <MenuItem
+                    onClick={() => activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex)}
+                >
                     <ListItemIcon>
                         <Edit fontSize="small" />
                     </ListItemIcon>
