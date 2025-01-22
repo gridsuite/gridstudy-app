@@ -42,7 +42,7 @@ export interface CrossValidationOptions {
 }
 
 const updateCellValue = (colId: string, value: any, cellEditingParams: CellEditingStoppedEvent) => {
-    const columnState = cellEditingParams.columnApi.getColumnState();
+    const columnState = cellEditingParams.api.getColumnState();
     if (columnState.find(({ colId: columnId }: any) => columnId === colId)) {
         cellEditingParams.node.setDataValue(colId, value);
         cellEditingParams.api.flashCells({
@@ -434,7 +434,7 @@ export const checkValidationsAndRefreshCells = (gridApi: GridApi, gridContext: a
 };
 
 const checkCrossValidationRequiredOn = (dynamicValidation: DynamicValidation, colDef: CustomColDef) => {
-    const requiredOn = colDef?.crossValidation?.requiredOn ?? {};
+    const requiredOn = colDef?.context?.crossValidation?.requiredOn ?? {};
     let dependencyValue = deepFindValue(dynamicValidation, requiredOn?.dependencyColumn);
 
     if ('columnValue' in requiredOn) {
