@@ -1265,13 +1265,11 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             .filter((c) => {
                 return selectedColumnsNames.has(c.colId);
             })
-            .map((column) => enrichColumn(column));
-
-        function sortByIndex(a: CustomColDef, b: CustomColDef) {
-            return reorderedTableDefinitionIndexes.indexOf(a.colId) - reorderedTableDefinitionIndexes.indexOf(b.colId);
-        }
-
-        selectedTableColumns.sort(sortByIndex);
+            .map((column) => enrichColumn(column))
+            .sort(
+                (a: CustomColDef, b: CustomColDef) =>
+                    reorderedTableDefinitionIndexes.indexOf(a.colId) - reorderedTableDefinitionIndexes.indexOf(b.colId)
+            );
 
         if (isEditColumnVisible()) {
             addEditColumn(currentTabType(), selectedTableColumns);
