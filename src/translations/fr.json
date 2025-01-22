@@ -581,7 +581,7 @@
     "FluxConvention.target": "Métier",
     "Advanced": "Avancés",
     "EnableDeveloperMode": "Activer mode développeur",
-    "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques", 
+    "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques",
     "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
     "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
 
@@ -1429,14 +1429,14 @@
     "searchPlaceholderLogsTreeStructure": "Rechercher dans l'arborescence",
     "GeneratedModification": "Modification-générée",
     "guidancePopUp.title": "Sélection sur la carte",
-    "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
-    "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
-    "guidancePopUp.action":"Fermer l'éditeur",
+    "guidancePopUp.firstVariant": "{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
+    "guidancePopUp.secondVariant": "Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
+    "guidancePopUp.action": "Fermer l'éditeur",
     "generateNad": "Générer",
     "networkModificationActivationError": "Une erreur est survenue lors de l'activation / désactivation de la modification",
     "AddAutomaton": "Ajouter un automate",
-    "BusBarCountMustBeGreaterThanOrEqualToOne" : "Un nombre de barres doit être supérieur ou égal à 1",
-    "SectionCountMustBeGreaterThanOrEqualToOne" : "Un nombre de sections doit être supérieur ou égal à 1",
+    "BusBarCountMustBeGreaterThanOrEqualToOne": "Un nombre de barres doit être supérieur ou égal à 1",
+    "SectionCountMustBeGreaterThanOrEqualToOne": "Un nombre de sections doit être supérieur ou égal à 1",
 
     "StateEstimationQualityCriterionResults": "Qualité critères",
     "StateEstimationQualityPerRegionResults": "Qualité régions",
@@ -1452,3 +1452,4 @@
     "StateEstimationQuality": "Qualité: ",
     "Or": "ou"
 }
+
