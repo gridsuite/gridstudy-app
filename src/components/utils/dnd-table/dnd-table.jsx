@@ -74,6 +74,49 @@ function MultiCheckbox({ arrayFormName, handleClickCheck, handleClickUncheck, ..
     );
 }
 
+function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
+    return (
+        <TableCell key={column.dataKey} sx={{ padding: 1 }}>
+            <RawReadOnlyInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
+        </TableCell>
+    );
+}
+
+function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, valueModified, ...props }) {
+    return (
+        <TableCell key={column.dataKey} sx={{ padding: 0.5 }}>
+            {column.numeric && (
+                <TableNumericalInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    previousValue={previousValue}
+                    valueModified={valueModified}
+                    adornment={column?.adornment}
+                    isClearable={column?.clearable}
+                    style={{
+                        textAlign: column?.textAlign,
+                    }}
+                    {...props}
+                />
+            )}
+            {!column.numeric && !column.directoryItems && !column.chipItems && (
+                <TableTextInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
+            )}
+            {column.directoryItems && (
+                <DirectoryItemsInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    equipmentTypes={column.equipmentTypes}
+                    elementType={column.elementType}
+                    titleId={column.titleId}
+                    hideErrorMessage={true}
+                />
+            )}
+            {column.chipItems && (
+                <ChipItemsInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} hideErrorMessage={true} />
+            )}
+        </TableCell>
+    );
+}
+
 const DndTable = ({
     arrayFormName,
     useFieldArrayOutput,
@@ -111,45 +154,6 @@ const DndTable = ({
         remove,
     } = useFieldArrayOutput;
 
-    const DefaultTableCell = ({ arrayFormName, rowIndex, column, ...props }) => (
-        <TableCell key={column.dataKey} sx={{ padding: 1 }}>
-            <RawReadOnlyInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
-        </TableCell>
-    );
-
-    const EditableTableCell = ({ arrayFormName, rowIndex, column, previousValue, valueModified, ...props }) => (
-        <TableCell key={column.dataKey} sx={{ padding: 0.5 }}>
-            {column.numeric && (
-                <TableNumericalInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    previousValue={previousValue}
-                    valueModified={valueModified}
-                    adornment={column?.adornment}
-                    isClearable={column?.clearable}
-                    style={{
-                        textAlign: column?.textAlign,
-                    }}
-                    {...props}
-                />
-            )}
-            {!column.numeric && !column.directoryItems && !column.chipItems && (
-                <TableTextInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
-            )}
-            {column.directoryItems && (
-                <DirectoryItemsInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    equipmentTypes={column.equipmentTypes}
-                    elementType={column.elementType}
-                    titleId={column.titleId}
-                    hideErrorMessage={true}
-                />
-            )}
-            {column.chipItems && (
-                <ChipItemsInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} hideErrorMessage={true} />
-            )}
-        </TableCell>
-    );
-
     if (currentRows.length < minRowsNumber) {
         addNewRows(minRowsNumber - currentRows.length);
     }
@@ -161,7 +165,8 @@ const DndTable = ({
         let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;
         return (
             <CustomTableCell
-                key={rowId + column.dataKey}
+                // getValues added to the key in order to force a rerender when the value is modified from outside this class
+                key={rowId + column.dataKey + getValues(`${arrayFormName}[${rowIndex}].${column.dataKey}`)}
                 arrayFormName={arrayFormName}
                 rowIndex={rowIndex}
                 column={column}
