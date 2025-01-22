@@ -99,9 +99,19 @@ export function OperationalLimitsGroupsTabs({
         name: `${id}.${SELECTED_LIMITS_GROUP_2}`,
     });
 
-    const handleTabChange = (event: React.SyntheticEvent, newValue: number): void => {
-        setSelectedLimitGroupTabIndex(newValue);
-    };
+    // focus on the edited tab
+    useEffect(() => {
+        if (editingTabIndex && editLimitGroupRef.current) {
+            editLimitGroupRef.current.focus();
+        }
+    }, [editingTabIndex]);
+
+    const handleTabChange = useCallback(
+        (event: React.SyntheticEvent, newValue: number): void => {
+            setSelectedLimitGroupTabIndex(newValue);
+        },
+        [setSelectedLimitGroupTabIndex]
+    );
 
     const handleLimitsGroupNameChange = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,27 +120,31 @@ export function OperationalLimitsGroupsTabs({
         [setEditedLimitGroupName]
     );
 
-    // focus on the edited tab
-    useEffect(() => {
-        if (editingTabIndex && editLimitGroupRef.current) {
-            editLimitGroupRef.current.focus();
-        }
-    }, [editingTabIndex]);
+    const handleOpenMenu = useCallback(
+        (event: React.MouseEvent<HTMLButtonElement>, index: number, name: string): void => {
+            event.stopPropagation();
+            setMenuAnchorEl(event.currentTarget);
+            setSelectedLimitGroupTabIndex(index);
+            setActivatedByMenuTabIndex(index);
+            setEditedLimitGroupName(name);
+        },
+        [setMenuAnchorEl, setSelectedLimitGroupTabIndex, setActivatedByMenuTabIndex, setEditedLimitGroupName]
+    );
 
-    const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>, index: number, name: string): void => {
-        event.stopPropagation();
-        setMenuAnchorEl(event.currentTarget);
-        setSelectedLimitGroupTabIndex(index);
-        setActivatedByMenuTabIndex(index);
-        setEditedLimitGroupName(name);
-    };
-
-    const handleCloseMenu = () => {
+    const handleCloseMenu = useCallback(() => {
         setMenuAnchorEl(null);
         setActivatedByMenuTabIndex(null);
-    };
+    }, [setMenuAnchorEl, setActivatedByMenuTabIndex]);
 
-    const handleDeleteTab = () => {
+    const startEditingLimitsGroup = useCallback(
+        (index: number) => {
+            setEditingTabIndex(index);
+            handleCloseMenu();
+        },
+        [setEditingTabIndex, handleCloseMenu]
+    );
+
+    const handleDeleteTab = useCallback(() => {
         if (activatedByMenuTabIndex != null) {
             // if this operational limit was selected, deselect it
             if (selectedLimitsGroups1 === editedLimitGroupName) {
@@ -143,9 +157,21 @@ export function OperationalLimitsGroupsTabs({
             removeLimitsGroups2(indexSelectedLimitSet2);
             handleCloseMenu();
         }
-    };
+    }, [
+        handleCloseMenu,
+        removeLimitsGroups1,
+        removeLimitsGroups2,
+        activatedByMenuTabIndex,
+        editedLimitGroupName,
+        id,
+        indexSelectedLimitSet1,
+        indexSelectedLimitSet2,
+        selectedLimitsGroups1,
+        selectedLimitsGroups2,
+        setValue,
+    ]);
 
-    const handleDuplicateTab = () => {
+    const handleDuplicateTab = useCallback(() => {
         if (activatedByMenuTabIndex != null) {
             const newName: string = editedLimitGroupName + ' (1)';
             const duplicatedLimits1 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`);
@@ -166,15 +192,19 @@ export function OperationalLimitsGroupsTabs({
 
             handleCloseMenu();
         }
-    };
-
-    const startEditingLimitsGroup = useCallback(
-        (index: number) => {
-            setEditingTabIndex(index);
-            handleCloseMenu();
-        },
-        [setEditingTabIndex]
-    );
+    }, [
+        handleCloseMenu,
+        activatedByMenuTabIndex,
+        appendToLimitsGroups1,
+        appendToLimitsGroups2,
+        editedLimitGroupName,
+        getValues,
+        id,
+        indexSelectedLimitSet1,
+        indexSelectedLimitSet2,
+        limitsGroups1.length,
+        startEditingLimitsGroup,
+    ]);
 
     useEffect(() => {
         if (limitsGroups1[selectedLimitGroupTabIndex]) {
