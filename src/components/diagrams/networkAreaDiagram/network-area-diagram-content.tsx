@@ -278,7 +278,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             );
             if (correspondingMovements.length > 0) {
                 correspondingMovements.forEach((movement) => {
-                    diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
+                    // It is possible to not have scalingFactors, so we only move the nodes if we have the needed value.
+                    if (!!movement.scalingFactor && !!props.svgScalingFactor) {
+                        let adjustedX = (movement.x / movement.scalingFactor) * props.svgScalingFactor;
+                        let adjustedY = (movement.y / movement.scalingFactor) * props.svgScalingFactor;
+                        diagramViewer.moveNodeToCoordinates(movement.equipmentId, adjustedX, adjustedY);
+                    }
                 });
             }
 
