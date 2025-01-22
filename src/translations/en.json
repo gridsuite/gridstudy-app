@@ -545,6 +545,8 @@
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
     "ModifyFromMenu": "Modify",
+    "Rename": "Rename",
+    "Duplicate": "Duplicate",
 
     "Provider": "Provider",
     "LimitReduction": "Limit reduction",

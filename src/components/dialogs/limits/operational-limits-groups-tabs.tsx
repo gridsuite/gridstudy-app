@@ -29,6 +29,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuIcon from '@mui/icons-material/Menu';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import { useIntl } from 'react-intl';
 
 export const limitsStyles = {
     limitsBackground: {
@@ -68,6 +69,7 @@ export function OperationalLimitsGroupsTabs({
     indexSelectedLimitSet1,
     indexSelectedLimitSet2,
 }: Readonly<OperationalLimitsGroupsTabsProps>) {
+    const intl = useIntl();
     const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number>(0);
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
     const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
@@ -129,7 +131,7 @@ export function OperationalLimitsGroupsTabs({
     };
 
     const handleDeleteTab = () => {
-        if (activeTabIndex) {
+        if (activeTabIndex != null) {
             removeLimitsGroups1(indexSelectedLimitSet1);
             removeLimitsGroups2(indexSelectedLimitSet2);
             handleCloseMenu();
@@ -137,7 +139,7 @@ export function OperationalLimitsGroupsTabs({
     };
 
     const handleDuplicateTab = () => {
-        if (activeTabIndex) {
+        if (activeTabIndex != null) {
             const newName: string = editedLimitGroupName + ' (1)';
             const duplicatedLimits1 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`);
             const newLimitsGroup1: OperationalLimitsGroup = {
@@ -369,23 +371,23 @@ export function OperationalLimitsGroupsTabs({
                 />
             </Tabs>
             <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-                <MenuItem onClick={() => activeTabIndex && startEditingLimitsGroup(activeTabIndex)}>
+                <MenuItem onClick={() => activeTabIndex != null && startEditingLimitsGroup(activeTabIndex)}>
                     <ListItemIcon>
                         <Edit fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>Edit Tab Label</ListItemText>
+                    <ListItemText>{intl.formatMessage({ id: 'Rename' })}</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={handleDeleteTab}>
                     <ListItemIcon>
                         <Delete fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>Delete Tab</ListItemText>
+                    <ListItemText>{intl.formatMessage({ id: 'DeleteFromMenu' })}</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={handleDuplicateTab}>
                     <ListItemIcon>
                         <ContentCopy fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>Duplicate Tab</ListItemText>
+                    <ListItemText>{intl.formatMessage({ id: 'Duplicate' })}</ListItemText>
                 </MenuItem>
             </Menu>
         </>

@@ -547,6 +547,8 @@
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
     "ModifyFromMenu": "Modifier",
+    "Rename": "Renommer",
+    "Duplicate": "Dupliquer",
 
     "Provider": "Simulateur",
     "LimitReduction": "Abattement des seuils",
