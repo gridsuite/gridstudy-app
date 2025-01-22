@@ -91,6 +91,7 @@ import {
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
+import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
 import { CustomAggridAutocompleteFilterParams } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
@@ -156,6 +157,10 @@ interface TableWrapperProps {
     disabled: boolean;
 }
 
+interface RecursiveIdentifiable extends Identifiable {
+    [alias: string]: Identifiable | string | undefined;
+}
+
 const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     studyUuid,
     currentNode,
@@ -182,6 +187,9 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
+    );
+    const additionalEquipmentsByNodesForCustomColumns = useSelector(
+        (state: AppState) => state.additionalEquipmentsByNodesForCustomColumns
     );
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const tablesDefinitionTypes = useSelector((state: AppState) => state.tables.definitionTypes);
@@ -306,7 +314,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         equipmentDefinition as EquipmentProps,
-        formatFetchedEquipmentsHandler
+        formatFetchedEquipmentsHandler,
+        tabIndex
     );
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams
@@ -489,13 +498,41 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (disabled || !equipments) {
             return;
         }
+
+        let equipmentsWithCustomColumnInfo = [...equipments];
+        if (equipmentDefinition.type) {
+            Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach(([nodeAlias, equipments]) => {
+                const equipmentsToAdd = equipments[equipmentDefinition.type];
+                if (equipmentsToAdd) {
+                    equipmentsToAdd.forEach((equipmentToAdd) => {
+                        let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(
+                            (equipmentWithCustomColumnInfo) => equipmentWithCustomColumnInfo.id === equipmentToAdd.id
+                        );
+                        let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
+                        if (matchingEquipment) {
+                            let equipmentWithAddedInfo: RecursiveIdentifiable = { ...matchingEquipment };
+                            equipmentWithAddedInfo[nodeAlias] = equipmentToAdd;
+                            equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
+                        }
+                    });
+                }
+            });
+        }
+        setRowData(equipmentsWithCustomColumnInfo);
+
         // To handle cases where a "customSpreadsheet" tab is opened.
         // This ensures that the grid correctly displays data specific to the custom tab.
         if (gridRef.current?.api) {
-            gridRef.current.api.setGridOption('rowData', equipments);
+            gridRef.current.api.setGridOption('rowData', equipmentsWithCustomColumnInfo);
         }
-        setRowData(equipments);
-    }, [tabIndex, disabled, equipments]);
+    }, [
+        tabIndex,
+        disabled,
+        equipments,
+        tablesNames,
+        additionalEquipmentsByNodesForCustomColumns,
+        equipmentDefinition.type,
+    ]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
@@ -1281,6 +1318,11 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     {developerMode && (
                         <Grid item>
                             <CustomColumnsConfig tabIndex={tabIndex} />
+                        </Grid>
+                    )}
+                    {developerMode && (
+                        <Grid item>
+                            <CustomColumnsNodesConfig />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
