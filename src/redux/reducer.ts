@@ -443,7 +443,6 @@ export type NadTextMovement = {
     connectionShiftY: number;
 };
 
-
 /**
  * Represent a node in the network modifications tree that is selected.
  */

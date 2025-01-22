@@ -154,14 +154,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
-
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
     const nadNodeMovementsRef = useRef<NadNodeMovement[]>([]);
     nadNodeMovementsRef.current = nadNodeMovements;
     const nadTextNodeMovements = useSelector((state: AppState) => state.nadTextNodeMovements);
     const nadTextNodeMovementsRef = useRef<NadTextMovement[]>([]);
     nadTextNodeMovementsRef.current = nadTextNodeMovements;
-
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
@@ -313,9 +311,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         currentNode,
         diagramSizeSetter,
         onMoveNodeCallback,
-        onMoveTextNodeCallback,
         OnToggleHoverCallback,
         nadIdentifier,
+        onMoveTextNodeCallback,
     ]);
 
     /**
