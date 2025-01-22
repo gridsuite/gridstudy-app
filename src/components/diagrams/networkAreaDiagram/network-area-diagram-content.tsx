@@ -305,7 +305,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         props.svgType,
         props.svg,
         props.svgMetadata,
-        currentNode,
         diagramSizeSetter,
         onMoveNodeCallback,
         OnToggleHoverCallback,
