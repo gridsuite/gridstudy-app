@@ -184,6 +184,10 @@ import {
     UseNameAction,
     STATEESTIMATION_RESULT_FILTER,
     StateEstimationResultFilterAction,
+    ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
+    AddEquipmentsByNodesForCustomColumnsAction,
+    UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
+    UpdateCustomColumnsNodesAliasesAction,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UpdateNetworkVisualizationParametersAction,
 } from './actions';
@@ -437,6 +441,12 @@ export type NodeSelectionForCopy = {
     allChildrenIds: string[] | null;
 };
 
+export type NodeAlias = {
+    id: UUID;
+    name: string;
+    alias: string;
+};
+
 export type Actions = AppActions | AuthenticationActions;
 
 export interface AppState extends CommonStoreState {
@@ -484,6 +494,8 @@ export interface AppState extends CommonStoreState {
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
+    additionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState;
+    customColumnsNodesAliases: NodeAlias[];
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     [PARAM_THEME]: GsTheme;
@@ -576,6 +588,13 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUSBAR_SECTION]: null,
 };
 
+export type AdditionalEquipmentsByNodesForCustomColumnsState = Record<
+    string,
+    Record<SpreadsheetEquipmentType, Identifiable[]>
+>;
+const initialAdditionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState = {};
+const initialCustomColumnsNodesAliases: NodeAlias[] = [];
+
 export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
 
 interface TablesState {
@@ -643,6 +662,8 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
+    additionalEquipmentsByNodesForCustomColumns: initialAdditionalEquipmentsByNodesForCustomColumns,
+    customColumnsNodesAliases: initialCustomColumnsNodesAliases,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1486,6 +1507,17 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(LOAD_EQUIPMENTS, (state, action: LoadEquipmentsAction) => {
         state.spreadsheetNetwork[action.equipmentType] = action.equipments;
+    });
+
+    builder.addCase(
+        ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
+        (state, action: AddEquipmentsByNodesForCustomColumnsAction) => {
+            state.additionalEquipmentsByNodesForCustomColumns = action.equipments;
+        }
+    );
+
+    builder.addCase(UPDATE_CUSTOM_COLUMNS_NODES_ALIASES, (state, action: UpdateCustomColumnsNodesAliasesAction) => {
+        state.customColumnsNodesAliases = action.nodesAliases;
     });
 
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {
