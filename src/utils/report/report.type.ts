@@ -48,3 +48,8 @@ export type ReportLog = {
     parentId: string;
     backgroundColor?: string;
 };
+
+export type SelectedReportLog = {
+    id: string;
+    type: ReportType;
+};

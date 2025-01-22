@@ -26,6 +26,7 @@ import type {
     AppState,
     CurrentTreeNode,
     EquipmentUpdateType,
+    NodeAlias,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     StudyIndexationStatus,
@@ -136,6 +137,8 @@ export type AppActions =
     | LogsFilterAction
     | UpdateCustomColumnsDefinitionsAction
     | RemoveCustomColumnsDefinitionsAction
+    | UpdateCustomColumnsNodesAliasesAction
+    | AddEquipmentsByNodesForCustomColumnsAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction;
 
@@ -153,6 +156,35 @@ export function loadEquipments(
         type: LOAD_EQUIPMENTS,
         equipmentType: equipmentType,
         equipments: equipments,
+    };
+}
+
+export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS =
+    'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
+export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<
+    Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>
+> & {
+    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>;
+};
+
+export function addAdditionalEquipmentsByNodesForCustomColumns(
+    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>
+): AddEquipmentsByNodesForCustomColumnsAction {
+    return {
+        type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
+        equipments: equipments,
+    };
+}
+
+export const UPDATE_CUSTOM_COLUMNS_NODES_ALIASES = 'UPDATE_CUSTOM_COLUMNS_NODES_ALIASES';
+export type UpdateCustomColumnsNodesAliasesAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_NODES_ALIASES>> & {
+    nodesAliases: NodeAlias[];
+};
+
+export function updateCustomColumnsNodesAliases(nodesAliases: NodeAlias[]): UpdateCustomColumnsNodesAliasesAction {
+    return {
+        type: UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
+        nodesAliases: nodesAliases,
     };
 }
 
