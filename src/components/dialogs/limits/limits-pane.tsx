@@ -101,20 +101,20 @@ export function LimitsPane({
     };
 
     const getCurrentLimits1 = (equipmentToModify: any): CurrentLimits | null => {
-        if (!equipmentToModify || !equipmentToModify.currentLimits1) {
-            return null;
+        if (equipmentToModify?.currentLimits1) {
+            return equipmentToModify.currentLimits1.find(
+                (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup1
+            );
         }
-        return equipmentToModify.currentLimits1.find(
-            (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup1
-        );
+        return null;
     };
     const getCurrentLimits2 = (equipmentToModify: any): CurrentLimits | null => {
-        if (!equipmentToModify || !equipmentToModify.currentLimits2) {
-            return null;
+        if (equipmentToModify?.currentLimits2) {
+            return equipmentToModify.currentLimits2.find(
+                (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup2
+            );
         }
-        return equipmentToModify.currentLimits2.find(
-            (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup2
-        );
+        return null;
     };
 
     return (
