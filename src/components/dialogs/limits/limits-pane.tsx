@@ -132,6 +132,8 @@ export function LimitsPane({
                         <OperationalLimitsGroupsTabs
                             limitsGroups1={limitsGroups1}
                             limitsGroups2={limitsGroups2}
+                            indexSelectedLimitSet1={indexSelectedLimitSet1}
+                            indexSelectedLimitSet2={indexSelectedLimitSet2}
                             setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}
                             setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
                         />

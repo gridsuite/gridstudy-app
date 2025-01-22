@@ -7,7 +7,7 @@
 
 import { Box, Tab, Tabs, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import { Edit } from '@mui/icons-material';
+import { ContentCopy, Delete, Edit } from '@mui/icons-material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     CURRENT_LIMITS,
@@ -24,6 +24,11 @@ import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { tabStyles } from '../../parameters-tabs';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MenuIcon from '@mui/icons-material/Menu';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
 export const limitsStyles = {
     limitsBackground: {
@@ -48,6 +53,8 @@ export interface OperationalLimitsGroupsTabsProps {
     id?: string;
     limitsGroups1: OperationalLimitsGroup[];
     limitsGroups2: OperationalLimitsGroup[];
+    indexSelectedLimitSet1: number;
+    indexSelectedLimitSet2: number;
     setIndexSelectedLimitSet1: React.Dispatch<React.SetStateAction<number>>;
     setIndexSelectedLimitSet2: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -58,17 +65,29 @@ export function OperationalLimitsGroupsTabs({
     limitsGroups2,
     setIndexSelectedLimitSet1,
     setIndexSelectedLimitSet2,
+    indexSelectedLimitSet1,
+    indexSelectedLimitSet2,
 }: Readonly<OperationalLimitsGroupsTabsProps>) {
     const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number>(0);
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
     const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
+    const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+    const [activeTabIndex, setActiveTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
     const editLimitGroupRef = useRef<HTMLInputElement>(null);
-    const { setValue } = useFormContext();
-    const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
+    const { getValues, setValue } = useFormContext();
+    const {
+        append: appendToLimitsGroups1,
+        update: updateLimitsGroups1,
+        remove: removeLimitsGroups1,
+    } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
     });
-    const { append: appendToLimitsGroups2, update: updateLimitsGroups2 } = useFieldArray({
+    const {
+        append: appendToLimitsGroups2,
+        update: updateLimitsGroups2,
+        remove: removeLimitsGroups2,
+    } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
     const selectedLimitsGroups1: string = useWatch({
@@ -89,12 +108,63 @@ export function OperationalLimitsGroupsTabs({
         [setEditedLimitGroupName]
     );
 
+    // focus on the edited tab
+    useEffect(() => {
+        if (editingTabIndex && editLimitGroupRef.current) {
+            editLimitGroupRef.current.focus();
+        }
+    }, [editingTabIndex]);
+
+    const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>, index: number, name: string): void => {
+        event.stopPropagation();
+        setMenuAnchorEl(event.currentTarget);
+        setSelectedLimitGroupTabIndex(index);
+        setActiveTabIndex(index);
+        setEditedLimitGroupName(name);
+    };
+
+    const handleCloseMenu = () => {
+        setMenuAnchorEl(null);
+        setActiveTabIndex(null);
+    };
+
+    const handleDeleteTab = () => {
+        if (activeTabIndex) {
+            removeLimitsGroups1(indexSelectedLimitSet1);
+            removeLimitsGroups2(indexSelectedLimitSet2);
+            handleCloseMenu();
+        }
+    };
+
+    const handleDuplicateTab = () => {
+        if (activeTabIndex) {
+            const newName: string = editedLimitGroupName + ' (1)';
+            const duplicatedLimits1 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`);
+            const newLimitsGroup1: OperationalLimitsGroup = {
+                ...duplicatedLimits1,
+                [ID]: newName,
+            };
+            appendToLimitsGroups1(newLimitsGroup1);
+
+            const duplicatedLimits2 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`);
+            const newLimitsGroup2: OperationalLimitsGroup = {
+                ...duplicatedLimits2,
+                [ID]: newName,
+            };
+            appendToLimitsGroups2(newLimitsGroup2);
+            setEditedLimitGroupName(newName);
+            startEditingLimitsGroup(limitsGroups1.length);
+
+            handleCloseMenu();
+        }
+    };
+
     const startEditingLimitsGroup = useCallback(
-        (index: number, name: string) => {
+        (index: number) => {
             setEditingTabIndex(index);
-            setEditedLimitGroupName(name);
+            handleCloseMenu();
         },
-        [setEditingTabIndex, setEditedLimitGroupName]
+        [setEditingTabIndex]
     );
 
     useEffect(() => {
@@ -220,83 +290,104 @@ export function OperationalLimitsGroupsTabs({
         };
         appendToLimitsGroups1(newLimitsGroup);
         appendToLimitsGroups2(newLimitsGroup);
-        startEditingLimitsGroup(newIndex, newName);
+        setEditedLimitGroupName(newName);
+        startEditingLimitsGroup(newIndex);
     }, [appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1, startEditingLimitsGroup]);
 
     return (
-        <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={selectedLimitGroupTabIndex}
-            onChange={handleTabChange}
-            sx={tabStyles.listDisplay}
-        >
-            {limitsGroups1.map((set: OperationalLimitsGroup, index: number) => (
+        <>
+            <Tabs
+                orientation="vertical"
+                variant="scrollable"
+                value={selectedLimitGroupTabIndex}
+                onChange={handleTabChange}
+                sx={tabStyles.listDisplay}
+            >
+                {limitsGroups1.map((set: OperationalLimitsGroup, index: number) => (
+                    <Tab
+                        onMouseEnter={() => setHoveredRowIndex(index)}
+                        onMouseLeave={() => setHoveredRowIndex(-1)}
+                        key={set.id + index}
+                        label={
+                            editingTabIndex === index ? (
+                                <TextField
+                                    value={editedLimitGroupName}
+                                    onChange={handleLimitsGroupNameChange}
+                                    onKeyDown={handleKeyDown}
+                                    inputRef={editLimitGroupRef}
+                                    autoFocus
+                                    size="small"
+                                    fullWidth
+                                />
+                            ) : (
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        width: '100%',
+                                    }}
+                                >
+                                    {set.id}
+                                    {(index === hoveredRowIndex || index === activeTabIndex) && (
+                                        <IconButton
+                                            size="small"
+                                            hidden
+                                            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                                                handleOpenMenu(e, index, set.id)
+                                            }
+                                        >
+                                            <MenuIcon fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                </Box>
+                            )
+                        }
+                        sx={limitsStyles.limitsBackground}
+                    />
+                ))}
                 <Tab
-                    onMouseEnter={() => setHoveredRowIndex(index)}
-                    onMouseLeave={() => setHoveredRowIndex(-1)}
-                    key={set.id + index}
                     label={
-                        editingTabIndex === index ? (
-                            <TextField
-                                value={editedLimitGroupName}
-                                onChange={handleLimitsGroupNameChange}
-                                onBlur={finishEditingLimitsGroup}
-                                onKeyDown={handleKeyDown}
-                                inputRef={editLimitGroupRef}
-                                autoFocus
-                                size="small"
-                                fullWidth
-                            />
-                        ) : (
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    width: '100%',
-                                }}
-                            >
-                                {set.id}
-                                {index === hoveredRowIndex && (
-                                    <IconButton
-                                        size="small"
-                                        hidden
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            startEditingLimitsGroup(index, set.id);
-                                        }}
-                                    >
-                                        <Edit fontSize="small" />
-                                    </IconButton>
-                                )}
-                            </Box>
-                        )
-                    }
-                    sx={limitsStyles.limitsBackground}
-                />
-            ))}
-            <Tab
-                label={
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            width: '100%',
-                            flexGrow: 1,
-                        }}
-                    >
-                        <IconButton
-                            onClick={() => addNewLimitSet()}
+                        <Box
                             sx={{
-                                align: 'right',
-                                marginLeft: 'auto',
+                                display: 'flex',
+                                width: '100%',
+                                flexGrow: 1,
                             }}
                         >
-                            <AddCircleIcon />
-                        </IconButton>
-                    </Box>
-                }
-            />
-        </Tabs>
+                            <IconButton
+                                onClick={() => addNewLimitSet()}
+                                sx={{
+                                    align: 'right',
+                                    marginLeft: 'auto',
+                                }}
+                            >
+                                <AddCircleIcon />
+                            </IconButton>
+                        </Box>
+                    }
+                />
+            </Tabs>
+            <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
+                <MenuItem onClick={() => activeTabIndex && startEditingLimitsGroup(activeTabIndex)}>
+                    <ListItemIcon>
+                        <Edit fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Edit Tab Label</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleDeleteTab}>
+                    <ListItemIcon>
+                        <Delete fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Delete Tab</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleDuplicateTab}>
+                    <ListItemIcon>
+                        <ContentCopy fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Duplicate Tab</ListItemText>
+                </MenuItem>
+            </Menu>
+        </>
     );
 }
