@@ -1463,7 +1463,8 @@
     "creatingRootNetwork": "Creating root network ...",
     "rootNetworkCreated": "The root network has been created successfully",
     "errDeleteRootNetworkMsg": "An error occurred while deleting root networks",
-    "rootNetworknameValidityCheckErrorMsg": "An error occurred while checking root network name"
+    "rootNetworknameValidityCheckErrorMsg": "An error occurred while checking root network name",
+    "rootNetworkDirectoryFetchingError": "An error occurred while fetching root directory"
 
  
 }

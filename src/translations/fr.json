@@ -1464,5 +1464,8 @@
     "creatingRootNetwork": "Création du réseau racine en cours ...",
     "rootNetworkCreated": "Le réseau racine a été créé avec succès",
     "errDeleteRootNetworkMsg": "Une erreur est survenue lors de la suppression des réseaux racines",
-    "rootNetworknameValidityCheckErrorMsg": "Une erreur est survenue lors de la vérification du nom de réseau racine"
+    "rootNetworknameValidityCheckErrorMsg": "Une erreur est survenue lors de la vérification du nom de réseau racine",
+    "rootNetworkDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier du réseau"
+
+
 }
