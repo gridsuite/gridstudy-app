@@ -111,48 +111,44 @@ const DndTable = ({
         remove,
     } = useFieldArrayOutput;
 
-    function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
-        return (
-            <TableCell key={column.dataKey} sx={{ padding: 1 }}>
-                <RawReadOnlyInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
-            </TableCell>
-        );
-    }
+    const DefaultTableCell = ({ arrayFormName, rowIndex, column, ...props }) => (
+        <TableCell key={column.dataKey} sx={{ padding: 1 }}>
+            <RawReadOnlyInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
+        </TableCell>
+    );
 
-    function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, valueModified, ...props }) {
-        return (
-            <TableCell key={column.dataKey} sx={{ padding: 0.5 }}>
-                {column.numeric && (
-                    <TableNumericalInput
-                        name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                        previousValue={previousValue}
-                        valueModified={valueModified}
-                        adornment={column?.adornment}
-                        isClearable={column?.clearable}
-                        style={{
-                            textAlign: column?.textAlign,
-                        }}
-                        {...props}
-                    />
-                )}
-                {!column.numeric && !column.directoryItems && !column.chipItems && (
-                    <TableTextInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
-                )}
-                {column.directoryItems && (
-                    <DirectoryItemsInput
-                        name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                        equipmentTypes={column.equipmentTypes}
-                        elementType={column.elementType}
-                        titleId={column.titleId}
-                        hideErrorMessage={true}
-                    />
-                )}
-                {column.chipItems && (
-                    <ChipItemsInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} hideErrorMessage={true} />
-                )}
-            </TableCell>
-        );
-    }
+    const EditableTableCell = ({ arrayFormName, rowIndex, column, previousValue, valueModified, ...props }) => (
+        <TableCell key={column.dataKey} sx={{ padding: 0.5 }}>
+            {column.numeric && (
+                <TableNumericalInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    previousValue={previousValue}
+                    valueModified={valueModified}
+                    adornment={column?.adornment}
+                    isClearable={column?.clearable}
+                    style={{
+                        textAlign: column?.textAlign,
+                    }}
+                    {...props}
+                />
+            )}
+            {!column.numeric && !column.directoryItems && !column.chipItems && (
+                <TableTextInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
+            )}
+            {column.directoryItems && (
+                <DirectoryItemsInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    equipmentTypes={column.equipmentTypes}
+                    elementType={column.elementType}
+                    titleId={column.titleId}
+                    hideErrorMessage={true}
+                />
+            )}
+            {column.chipItems && (
+                <ChipItemsInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} hideErrorMessage={true} />
+            )}
+        </TableCell>
+    );
 
     if (currentRows.length < minRowsNumber) {
         addNewRows(minRowsNumber - currentRows.length);

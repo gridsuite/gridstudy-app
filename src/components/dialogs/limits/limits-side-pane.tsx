@@ -84,9 +84,7 @@ export function LimitsSidePane({
 
     const newRowData = useMemo(() => {
         let newRowData: any = {};
-        columnsDefinition.forEach((column: ILimitColumnDef) => {
-            Object.keys(newRowData).forEach((key) => (newRowData[key] = column.initialValue));
-        });
+        columnsDefinition.forEach((column: ILimitColumnDef) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [columnsDefinition]);
     const createRows = () => [newRowData];
