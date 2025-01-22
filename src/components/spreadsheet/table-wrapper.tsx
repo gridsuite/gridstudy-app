@@ -1267,7 +1267,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             })
             .map((column) => enrichColumn(column))
             .sort(
-                (a: CustomColDef, b: CustomColDef) =>
+                (a, b) =>
                     reorderedTableDefinitionIndexes.indexOf(a.colId) - reorderedTableDefinitionIndexes.indexOf(b.colId)
             );
 
