@@ -8,7 +8,7 @@ import { FILTER_DATA_TYPES, FilterDataType, FilterParams } from '../custom-aggri
 import { useCallback, useEffect, useState } from 'react';
 import { debounce } from '@mui/material';
 
-export const useCustomAggridFilter = (field: string, filterParams: FilterParams) => {
+export const useCustomAggridFilter = (colId: string, filterParams: FilterParams) => {
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
     const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
     const [tolerance, setTolerance] = useState<number | undefined>();
@@ -23,8 +23,8 @@ export const useCustomAggridFilter = (field: string, filterParams: FilterParams)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedUpdateFilter = useCallback(
-        debounce((data) => updateFilter(field, data), debounceMs),
-        [field, debounceMs, updateFilter]
+        debounce((data) => updateFilter(colId, data), debounceMs),
+        [colId, debounceMs, updateFilter]
     );
     const handleChangeFilterValue = (filterData: FilterDataType) => {
         setSelectedFilterData(filterData.value);
@@ -57,7 +57,7 @@ export const useCustomAggridFilter = (field: string, filterParams: FilterParams)
         if (!filterSelector?.length) {
             setSelectedFilterData(undefined);
         } else {
-            const filterObject = filterSelector?.find((filter) => filter.column === field);
+            const filterObject = filterSelector?.find((filter) => filter.column === colId);
             if (filterObject) {
                 setSelectedFilterData(filterObject.value);
                 setSelectedFilterComparator(filterObject.type ?? selectedFilterComparator);
@@ -65,7 +65,7 @@ export const useCustomAggridFilter = (field: string, filterParams: FilterParams)
                 setSelectedFilterData(undefined);
             }
         }
-    }, [filterSelector, field, selectedFilterComparator]);
+    }, [filterSelector, colId, selectedFilterComparator]);
 
     return {
         selectedFilterData,

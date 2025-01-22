@@ -81,6 +81,13 @@ import {
     MAP_BASEMAP_CARTO_NOLABEL,
 } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
+import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
+
+// Register all community features (migration to V33)
+ModuleRegistry.registerModules([AllCommunityModule]);
+
+// Mark all grids as using legacy themes (migration to V33)
+provideGlobalGridOptions({ theme: 'legacy' });
 
 let lightTheme = createTheme({
     components: {

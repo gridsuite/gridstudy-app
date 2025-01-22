@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
 import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
-import { GridReadyEvent, RowClassParams, ValueGetterParams } from 'ag-grid-community';
+import { GridReadyEvent, RowClassParams, RowDataUpdatedEvent, ValueGetterParams } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
@@ -37,7 +37,7 @@ interface ShortCircuitAnalysisResultProps {
     sortProps: SortPropsType;
     filterEnums: FilterEnumsType;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
-    onRowDataUpdated: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -122,167 +122,189 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         return [
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IDNode' }),
-                id: 'elementId',
+                colId: 'elementId',
                 field: 'elementId',
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...textFilterParams,
-                        ...filterPropsCheckedForAllBusesAnalysisType,
+                context: {
+                    sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...textFilterParams,
+                            ...filterPropsCheckedForAllBusesAnalysisType,
+                        },
                     },
                 },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Type' }),
-                id: 'faultType',
+                colId: 'faultType',
                 field: 'faultType',
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        filterDataType: autoCompleteFilterParams.filterDataType,
-                        ...filterPropsCheckedForAllBusesAnalysisType,
+                context: {
+                    sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                    filterComponent: CustomAggridAutocompleteFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            filterDataType: autoCompleteFilterParams.filterDataType,
+                            ...filterPropsCheckedForAllBusesAnalysisType,
+                        },
+                        filterEnums: autoCompleteFilterParams.filterEnums,
+                        getEnumLabel: getEnumLabel,
                     },
-                    filterEnums: autoCompleteFilterParams.filterEnums,
-                    getEnumLabel: getEnumLabel,
                 },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
-                id: 'connectableId',
+                colId: 'connectableId',
                 field: 'connectableId',
-                sortProps: isAllBusesAnalysisType ? { ...sortProps, children: true } : sortProps,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...textFilterParams,
-                        ...filterProps,
+                context: {
+                    sortProps: isAllBusesAnalysisType ? { ...sortProps, children: true } : sortProps,
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...textFilterParams,
+                            ...filterProps,
+                        },
                     },
                 },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscKA' }),
-                id: 'current',
+                colId: 'current',
                 field: 'current',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...numericFilterParams,
-                        ...filterProps,
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    sortProps,
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...numericFilterParams,
+                            ...filterProps,
+                        },
                     },
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.current),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Side' }),
-                id: 'side',
+                colId: 'side',
                 field: 'side',
-                sortProps,
                 hide: !isOneBusAnalysisType,
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...filterPropsCheckedForOneBusAnalysisType,
-                        filterDataType: autoCompleteFilterParams.filterDataType,
+                context: {
+                    sortProps,
+                    filterComponent: CustomAggridAutocompleteFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...filterPropsCheckedForOneBusAnalysisType,
+                            filterDataType: autoCompleteFilterParams.filterDataType,
+                        },
+                        filterEnums: autoCompleteFilterParams.filterEnums,
+                        getEnumLabel: getEnumLabel,
                     },
-                    filterEnums: autoCompleteFilterParams.filterEnums,
-                    getEnumLabel: getEnumLabel,
                 },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
-                id: 'limitType',
+                colId: 'limitType',
                 field: 'limitType',
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterComponent: CustomAggridAutocompleteFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        filterDataType: autoCompleteFilterParams.filterDataType,
-                        ...filterPropsCheckedForAllBusesAnalysisType,
+                context: {
+                    sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                    filterComponent: CustomAggridAutocompleteFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            filterDataType: autoCompleteFilterParams.filterDataType,
+                            ...filterPropsCheckedForAllBusesAnalysisType,
+                        },
+                        filterEnums: autoCompleteFilterParams.filterEnums,
+                        getEnumLabel: getEnumLabel,
                     },
-                    filterEnums: autoCompleteFilterParams.filterEnums,
-                    getEnumLabel: getEnumLabel,
                 },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
-                id: 'limitMin',
+                colId: 'limitMin',
                 field: 'limitMin',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...numericFilterParams,
-                        ...filterPropsCheckedForAllBusesAnalysisType,
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...numericFilterParams,
+                            ...filterPropsCheckedForAllBusesAnalysisType,
+                        },
                     },
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMin),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
-                id: 'limitMax',
+                colId: 'limitMax',
                 field: 'limitMax',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...numericFilterParams,
-                        ...filterPropsCheckedForAllBusesAnalysisType,
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...numericFilterParams,
+                            ...filterPropsCheckedForAllBusesAnalysisType,
+                        },
                     },
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMax),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
-                id: 'shortCircuitPower',
+                colId: 'shortCircuitPower',
                 field: 'shortCircuitPower',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...numericFilterParams,
-                        ...filterPropsCheckedForAllBusesAnalysisType,
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...numericFilterParams,
+                            ...filterPropsCheckedForAllBusesAnalysisType,
+                        },
                     },
                 },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
-                id: 'deltaCurrentIpMin',
+                colId: 'deltaCurrentIpMin',
                 field: 'deltaCurrentIpMin',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...numericFilterParams,
-                        ...filterPropsCheckedForAllBusesAnalysisType,
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...numericFilterParams,
+                            ...filterPropsCheckedForAllBusesAnalysisType,
+                        },
                     },
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMin),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
-                id: 'deltaCurrentIpMax',
+                colId: 'deltaCurrentIpMax',
                 field: 'deltaCurrentIpMax',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...numericFilterParams,
-                        ...filterPropsCheckedForAllBusesAnalysisType,
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...numericFilterParams,
+                            ...filterPropsCheckedForAllBusesAnalysisType,
+                        },
                     },
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMax),
@@ -337,9 +359,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     );
 
     const handleRowDataUpdated = useCallback(
-        (params: GridReadyEvent) => {
-            if (params?.api) {
-                onRowDataUpdated(params);
+        (event: RowDataUpdatedEvent) => {
+            if (event?.api) {
+                onRowDataUpdated(event);
             }
         },
         [onRowDataUpdated]

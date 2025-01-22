@@ -18,12 +18,12 @@ const styles = {
 };
 
 interface CustomAggridSortProps {
-    field: string;
+    colId: string;
     sortParams: CustomHeaderSortParams;
 }
 
-export const CustomAggridSort = ({ field, sortParams }: CustomAggridSortProps) => {
-    const { columnSort, handleSortChange } = useCustomAggridSort(field, sortParams);
+export const CustomAggridSort = ({ colId, sortParams }: CustomAggridSortProps) => {
+    const { columnSort, handleSortChange } = useCustomAggridSort(colId, sortParams);
     const { isSortable } = sortParams;
     const handleClick = () => {
         handleSortChange();
