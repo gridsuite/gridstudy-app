@@ -24,7 +24,12 @@ export const SelectedOperationalLimitGroup = ({
     });
 
     const opLimitsGroupsNames: string[] = useMemo(
-        () => (optionsValues ? optionsValues.map((optionObj: OperationalLimitsGroup) => optionObj.id) : []),
+        () =>
+            optionsValues
+                ? optionsValues
+                      .map((optionObj: OperationalLimitsGroup) => optionObj.id)
+                      .filter((id: string) => id != null)
+                : [],
         [optionsValues]
     );
 

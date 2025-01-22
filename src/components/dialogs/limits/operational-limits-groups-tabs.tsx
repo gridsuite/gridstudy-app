@@ -7,7 +7,6 @@
 
 import { Box, Tab, Tabs, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import { ContentCopy, Delete, Edit } from '@mui/icons-material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     CURRENT_LIMITS,
@@ -24,12 +23,8 @@ import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { tabStyles } from '../../parameters-tabs';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import MenuIcon from '@mui/icons-material/Menu';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import { useIntl } from 'react-intl';
+import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 
 export const limitsStyles = {
     limitsBackground: {
@@ -69,7 +64,6 @@ export function OperationalLimitsGroupsTabs({
     indexSelectedLimitSet1,
     indexSelectedLimitSet2,
 }: Readonly<OperationalLimitsGroupsTabsProps>) {
-    const intl = useIntl();
     const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number>(0);
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
     const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
@@ -77,19 +71,11 @@ export function OperationalLimitsGroupsTabs({
     const [activatedByMenuTabIndex, setActivatedByMenuTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
     const editLimitGroupRef = useRef<HTMLInputElement>(null);
-    const { getValues, setValue } = useFormContext();
-    const {
-        append: appendToLimitsGroups1,
-        update: updateLimitsGroups1,
-        remove: removeLimitsGroups1,
-    } = useFieldArray({
+    const { setValue } = useFormContext();
+    const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
     });
-    const {
-        append: appendToLimitsGroups2,
-        update: updateLimitsGroups2,
-        remove: removeLimitsGroups2,
-    } = useFieldArray({
+    const { append: appendToLimitsGroups2, update: updateLimitsGroups2 } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
     const selectedLimitsGroups1: string = useWatch({
@@ -143,68 +129,6 @@ export function OperationalLimitsGroupsTabs({
         },
         [setEditingTabIndex, handleCloseMenu]
     );
-
-    const handleDeleteTab = useCallback(() => {
-        if (activatedByMenuTabIndex != null) {
-            // if this operational limit was selected, deselect it
-            if (selectedLimitsGroups1 === editedLimitGroupName) {
-                setValue(`${id}.${SELECTED_LIMITS_GROUP_1}`, '');
-            }
-            if (selectedLimitsGroups2 === editedLimitGroupName) {
-                setValue(`${id}.${SELECTED_LIMITS_GROUP_2}`, '');
-            }
-            removeLimitsGroups1(indexSelectedLimitSet1);
-            removeLimitsGroups2(indexSelectedLimitSet2);
-            handleCloseMenu();
-        }
-    }, [
-        handleCloseMenu,
-        removeLimitsGroups1,
-        removeLimitsGroups2,
-        activatedByMenuTabIndex,
-        editedLimitGroupName,
-        id,
-        indexSelectedLimitSet1,
-        indexSelectedLimitSet2,
-        selectedLimitsGroups1,
-        selectedLimitsGroups2,
-        setValue,
-    ]);
-
-    const handleDuplicateTab = useCallback(() => {
-        if (activatedByMenuTabIndex != null) {
-            const newName: string = editedLimitGroupName + ' (1)';
-            const duplicatedLimits1 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`);
-            const newLimitsGroup1: OperationalLimitsGroup = {
-                ...duplicatedLimits1,
-                [ID]: newName,
-            };
-            appendToLimitsGroups1(newLimitsGroup1);
-
-            const duplicatedLimits2 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`);
-            const newLimitsGroup2: OperationalLimitsGroup = {
-                ...duplicatedLimits2,
-                [ID]: newName,
-            };
-            appendToLimitsGroups2(newLimitsGroup2);
-            setEditedLimitGroupName(newName);
-            startEditingLimitsGroup(limitsGroups1.length);
-
-            handleCloseMenu();
-        }
-    }, [
-        handleCloseMenu,
-        activatedByMenuTabIndex,
-        appendToLimitsGroups1,
-        appendToLimitsGroups2,
-        editedLimitGroupName,
-        getValues,
-        id,
-        indexSelectedLimitSet1,
-        indexSelectedLimitSet2,
-        limitsGroups1.length,
-        startEditingLimitsGroup,
-    ]);
 
     useEffect(() => {
         if (limitsGroups1[selectedLimitGroupTabIndex]) {
@@ -407,28 +331,17 @@ export function OperationalLimitsGroupsTabs({
                     }
                 />
             </Tabs>
-            <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-                <MenuItem
-                    onClick={() => activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex)}
-                >
-                    <ListItemIcon>
-                        <Edit fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>{intl.formatMessage({ id: 'Rename' })}</ListItemText>
-                </MenuItem>
-                <MenuItem onClick={handleDeleteTab}>
-                    <ListItemIcon>
-                        <Delete fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>{intl.formatMessage({ id: 'DeleteFromMenu' })}</ListItemText>
-                </MenuItem>
-                <MenuItem onClick={handleDuplicateTab}>
-                    <ListItemIcon>
-                        <ContentCopy fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>{intl.formatMessage({ id: 'Duplicate' })}</ListItemText>
-                </MenuItem>
-            </Menu>
+            <LimitsGroupsContextualMenu
+                indexSelectedLimitSet1={indexSelectedLimitSet1}
+                indexSelectedLimitSet2={indexSelectedLimitSet2}
+                menuAnchorEl={menuAnchorEl}
+                handleCloseMenu={handleCloseMenu}
+                activatedByMenuTabIndex={activatedByMenuTabIndex}
+                startEditingLimitsGroup={startEditingLimitsGroup}
+                selectedLimitsGroups1={selectedLimitsGroups1}
+                selectedLimitsGroups2={selectedLimitsGroups2}
+                editedLimitGroupName={editedLimitGroupName}
+            />
         </>
     );
 }
