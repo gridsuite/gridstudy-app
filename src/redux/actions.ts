@@ -866,6 +866,35 @@ export function storeNetworkAreaDiagramNodeMovement(
     };
 }
 
+export const STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT';
+export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
+    Action<typeof STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT>
+> & {
+    nadIdentifier: string;
+    equipmentId: string;
+    shiftX: number;
+    shiftY: number;
+    connectionShiftX: number;
+    connectionShiftY: number;
+};
+export function storeNetworkAreaDiagramTextNodeMovement(
+    nadIdentifier: string,
+    equipmentId: string,
+    shiftX: number,
+    shiftY: number,
+    connectionShiftX: number,
+    connectionShiftY: number
+): StoreNetworkAreaDiagramTextNodeMovementAction {
+    return {
+        type: STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
+        nadIdentifier: nadIdentifier,
+        equipmentId: equipmentId,
+        shiftX: shiftX,
+        shiftY: shiftY,
+        connectionShiftX: connectionShiftX,
+        connectionShiftY: connectionShiftY,
+    };
+}
 export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS = 'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
 export type NetworkAreaDiagramNbVoltageLevelsAction = Readonly<
     Action<typeof NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS>

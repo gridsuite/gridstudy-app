@@ -27,8 +27,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from '../../computing-status/computing-type';
-import { AppState } from 'redux/reducer';
-import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
+import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
+import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
 import { getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
@@ -154,7 +154,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
+    const nadNodeMovementsRef = useRef<NadNodeMovement[]>([]);
+    nadNodeMovementsRef.current = nadNodeMovements;
+    const nadTextNodeMovements = useSelector((state: AppState) => state.nadTextNodeMovements);
+    const nadTextNodeMovementsRef = useRef<NadTextMovement[]>([]);
+    nadTextNodeMovementsRef.current = nadTextNodeMovements;
+
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
@@ -175,6 +182,35 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             }
         },
         [dispatch, nadIdentifier, props.svgScalingFactor]
+    );
+
+    const onMoveTextNodeCallback = useCallback(
+        (
+            equipmentId: string,
+            vlNodeId: string,
+            textNodeId: string,
+            shiftX: number,
+            shiftY: number,
+            shiftXOrig: number,
+            shiftYOrig: number,
+            connectionShiftX: number,
+            connectionShiftY: number,
+            connectionShiftXOrig: number,
+            connectionShiftYOrig: number
+        ) => {
+            // Dispatch the new position of the text node
+            dispatch(
+                storeNetworkAreaDiagramTextNodeMovement(
+                    nadIdentifier,
+                    equipmentId,
+                    shiftX,
+                    shiftY,
+                    connectionShiftX,
+                    connectionShiftY
+                )
+            );
+        },
+        [dispatch, nadIdentifier]
     );
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
@@ -214,7 +250,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
                 onMoveNodeCallback,
-                null,
+                onMoveTextNodeCallback,
                 null,
                 true,
                 true,
@@ -239,19 +275,33 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             }
 
             // Repositioning the previously moved nodes
-            const correspondingMovements = nadNodeMovements.filter(
+            const correspondingMovements = nadNodeMovementsRef.current.filter(
                 (movement) => movement.nadIdentifier === nadIdentifier
             );
             if (correspondingMovements.length > 0) {
                 correspondingMovements.forEach((movement) => {
-                    // It is possible to not have scalingFactors, so we only move the nodes if we have the needed value.
-                    if (!!movement.scalingFactor && !!props.svgScalingFactor) {
-                        let adjustedX = (movement.x / movement.scalingFactor) * props.svgScalingFactor;
-                        let adjustedY = (movement.y / movement.scalingFactor) * props.svgScalingFactor;
-                        diagramViewer.moveNodeToCoordinates(movement.equipmentId, adjustedX, adjustedY);
-                    }
+                    diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
                 });
             }
+
+            // Repositioning the previously moved text nodes
+            const correspondingTextMovements = nadTextNodeMovementsRef.current.filter(
+                (movement) => movement.nadIdentifier === nadIdentifier
+            );
+            if (correspondingTextMovements.length > 0) {
+                correspondingTextMovements.forEach((movement) => {
+                    // If the movement is due to a node move, adjust the text node relative to the node's movement
+                    // In case of text node movement adjust text node position
+                    diagramViewer.moveTextNodeToCoordinates(
+                        movement.equipmentId,
+                        movement.shiftX,
+                        movement.shiftY,
+                        movement.connectionShiftX,
+                        movement.connectionShiftY
+                    );
+                });
+            }
+
             diagramViewerRef.current = diagramViewer;
         }
     }, [
@@ -263,9 +313,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         currentNode,
         diagramSizeSetter,
         onMoveNodeCallback,
+        onMoveTextNodeCallback,
         OnToggleHoverCallback,
         nadIdentifier,
-        nadNodeMovements,
     ]);
 
     /**
