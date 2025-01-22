@@ -92,6 +92,8 @@ import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import { CustomAggridAutocompleteFilterParams } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
+import { SpreadsheetGsFilter } from './spreadsheet-gs-filter';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -212,6 +214,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { createCustomColumn } = useCustomColumn(tabIndex);
 
+    const { applyGsFilter, isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter();
+
     const globalFilterRef = useRef<any>();
 
     useEffect(() => {
@@ -232,6 +236,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const cleanTableState = useCallback(() => {
         globalFilterRef.current?.resetFilter();
+        applyGsFilter([]);
         gridRef?.current?.api.setFilterModel(null);
         // reset aggrid column definitions
         gridRef.current?.api.setGridOption('columnDefs', []);
@@ -239,7 +244,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             defaultState: { sort: null },
         });
         rollbackEdit();
-    }, [rollbackEdit]);
+    }, [applyGsFilter, rollbackEdit]);
 
     const applyFluxConvention = useCallback(
         (val: number) => {
@@ -1283,6 +1288,9 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             <CustomColumnsConfig tabIndex={tabIndex} />
                         </Grid>
                     )}
+                    <Grid item>
+                        <SpreadsheetGsFilter equipmentType={equipmentDefinition.type} applyGsFilter={applyGsFilter} />
+                    </Grid>
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item sx={styles.save}>
                         <SpreadsheetSave
@@ -1315,6 +1323,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
+                        isExternalFilterPresent={isExternalFilterPresent}
+                        doesExternalFilterPass={doesFormulaFilteringPass}
                     />
                 </Box>
             )}

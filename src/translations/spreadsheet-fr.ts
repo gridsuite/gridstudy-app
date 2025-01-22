@@ -40,6 +40,7 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model':
         'Vous devez sélectionner un seul modèle de tableur',
     'spreadsheet/create_new_spreadsheet/error_loading_model': 'Erreur lors de la récupération du modèle de tableur',
+    'spreadsheet/filter/config': 'Ouvrir la configuration des filtres GS',
 };
 
 export default spreadsheetFr;

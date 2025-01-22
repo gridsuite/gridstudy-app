@@ -7,7 +7,7 @@
 
 import { backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
@@ -39,5 +39,19 @@ export function evaluateJsonFilter(
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filter),
+    });
+}
+
+export function evaluateFilter(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    filter: UUID
+): Promise<IdentifiableAttributes[]> {
+    console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    const evaluateFilterUrl = getStudyUrl(studyUuid) + '/filters/' + filter + '/elements';
+    console.debug(evaluateFilterUrl);
+    return backendFetchJson(evaluateFilterUrl, {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
     });
 }

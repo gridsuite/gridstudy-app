@@ -15,6 +15,7 @@ import {
     ColDef,
     ColumnMovedEvent,
     GetRowIdParams,
+    GridOptions,
     RowClassParams,
     RowHeightParams,
     RowStyle,
@@ -51,6 +52,8 @@ interface EquipmentTableProps {
     handleRowDataUpdated: () => void;
     fetched: boolean;
     shouldHidePinnedHeaderRightBorder: boolean;
+    isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
+    doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
 }
 
 const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
@@ -69,6 +72,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     handleRowDataUpdated,
     fetched,
     shouldHidePinnedHeaderRightBorder,
+    isExternalFilterPresent,
+    doesExternalFilterPass,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -150,6 +155,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             loadingOverlayComponent={loadingOverlayComponent}
             loadingOverlayComponentParams={loadingOverlayComponentParams}
             showOverlay={true}
+            isExternalFilterPresent={isExternalFilterPresent}
+            doesExternalFilterPass={doesExternalFilterPass}
         />
     );
 };
