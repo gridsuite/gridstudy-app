@@ -21,6 +21,7 @@ const styles = {
 };
 
 interface CustomHeaderComponentProps<F extends CustomAggridFilterParams> {
+    colId: string;
     field: string;
     displayName: string;
     sortParams: CustomHeaderSortParams;
@@ -31,6 +32,7 @@ interface CustomHeaderComponentProps<F extends CustomAggridFilterParams> {
 }
 
 const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
+    colId,
     field,
     displayName,
     sortParams,
@@ -41,7 +43,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
 }: CustomHeaderComponentProps<F>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
-    const { handleSortChange } = useCustomAggridSort(field, sortParams);
+    const { handleSortChange } = useCustomAggridSort(colId, sortParams);
     const { isSortable = false } = sortParams;
     const handleClickHeader = () => {
         if (isSortable) {
@@ -82,7 +84,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
                         <Grid container sx={styles.displayName} alignItems={'center'} wrap="nowrap">
                             <Grid item>{displayName}</Grid>
                             <Grid item>
-                                <CustomAggridSort field={field} sortParams={sortParams} />
+                                <CustomAggridSort colId={colId} sortParams={sortParams} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -91,7 +93,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
                     {filterComponent && (
                         <CustomAggridFilter
                             filterComponent={filterComponent}
-                            filterComponentParams={{ ...filterComponentParams, field }}
+                            filterComponentParams={{ ...filterComponentParams, colId }}
                             isHoveringColumnHeader={isHoveringColumnHeader}
                             forceDisplayFilterIcon={forceDisplayFilterIcon}
                             handleCloseFilter={handleCloseFilter}

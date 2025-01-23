@@ -169,7 +169,9 @@ import {
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
     STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+    STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
     StoreNetworkAreaDiagramNodeMovementAction,
+    StoreNetworkAreaDiagramTextNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     TABLE_SORT,
@@ -431,6 +433,15 @@ export type NadNodeMovement = {
     y: number;
 };
 
+export type NadTextMovement = {
+    nadIdentifier: string;
+    equipmentId: string;
+    shiftX: number;
+    shiftY: number;
+    connectionShiftX: number;
+    connectionShiftY: number;
+};
+
 /**
  * Represent a node in the network modifications tree that is selected.
  */
@@ -480,6 +491,7 @@ export interface AppState extends CommonStoreState {
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
+    nadTextNodeMovements: NadTextMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -657,6 +669,7 @@ const initialState: AppState = {
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     nadNodeMovements: [],
+    nadTextNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -752,7 +765,7 @@ const initialState: AppState = {
             .reduce((acc, tabName) => {
                 acc[tabName] = [
                     {
-                        colId: 'id',
+                        colId: 'ID',
                         sort: SortWay.ASC,
                     },
                 ];
@@ -870,7 +883,7 @@ export const reducer = createReducer(initialState, (builder) => {
         updatedDefinitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
         const updatedColumnsNames = updatedDefinitions
             .map((tabDef) => tabDef.columns)
-            .map((cols) => new Set(cols.map((c) => c.id)));
+            .map((cols) => new Set(cols.map((c) => c.colId)));
         const updatedColumnsNamesJson = updatedColumnsNames.map((cols) => JSON.stringify([...cols]));
         const updatedNames = updatedDefinitions.map((tabDef) => tabDef.name);
         const updatedNamesIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.name, tabDef.index]));
@@ -1494,6 +1507,31 @@ export const reducer = createReducer(initialState, (builder) => {
             } else {
                 correspondingMovement[0].x = action.x;
                 correspondingMovement[0].y = action.y;
+            }
+        }
+    );
+
+    builder.addCase(
+        STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
+        (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
+            const correspondingMovement: NadTextMovement[] = state.nadTextNodeMovements.filter(
+                (movement) =>
+                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+            );
+            if (correspondingMovement.length === 0) {
+                state.nadTextNodeMovements.push({
+                    nadIdentifier: action.nadIdentifier,
+                    equipmentId: action.equipmentId,
+                    shiftX: action.shiftX,
+                    shiftY: action.shiftY,
+                    connectionShiftX: action.connectionShiftX,
+                    connectionShiftY: action.connectionShiftY,
+                });
+            } else {
+                correspondingMovement[0].shiftX = action.shiftX;
+                correspondingMovement[0].shiftY = action.shiftY;
+                correspondingMovement[0].connectionShiftX = action.connectionShiftX;
+                correspondingMovement[0].connectionShiftY = action.connectionShiftY;
             }
         }
     );

@@ -56,6 +56,6 @@ export type GenericTablesNamesIndexes = Map<string, number>;
 export type GenericTablesDefinitionTypes = Map<SpreadsheetEquipmentType, SpreadsheetTabDefinition>;
 export type GenericTablesDefinitionIndexes = Map<number, SpreadsheetTabDefinition>;
 
-export const TABLES_COLUMNS_NAMES = TABLES_DEFINITIONS.map((tabDef) => new Set(tabDef.columns.map((c) => c.id)));
+export const TABLES_COLUMNS_NAMES = TABLES_DEFINITIONS.map((tabDef) => new Set(tabDef.columns.map((c) => c.colId)));
 export const TABLES_NAMES = TABLES_DEFINITIONS.map((tabDef) => tabDef.name);
 export const TABLES_TYPES = TABLES_DEFINITIONS.map((tabDef) => tabDef.type);
