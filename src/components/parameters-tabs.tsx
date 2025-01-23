@@ -41,7 +41,7 @@ import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis
 import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
 import { ShortCircuitParameters, useGetShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
-import { LoadFlowParameters } from './dialogs/parameters/loadflow/load-flow-parameters';
+import LoadFlowParameters from './dialogs/parameters/loadflow/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';

@@ -6,56 +6,57 @@
  */
 
 import yup from 'components/utils/yup-config';
+import { ILimitReductionsByVoltageLevel, LIMIT_REDUCTIONS_FORM } from '../common/limitreductions/columns-definitions';
+import { PROVIDER } from 'components/utils/field-constants';
+import {
+    BALANCE_TYPE,
+    COMMON_PARAMETERS,
+    CONNECTED_COMPONENT_MODE,
+    COUNTRIES_TO_BALANCE,
+    DC,
+    DC_POWER_FACTOR,
+    DC_USE_TRANSFORMER_RATIO,
+    DISTRIBUTED_SLACK,
+    HVDC_AC_EMULATION,
+    PHASE_SHIFTER_REGULATION_ON,
+    READ_SLACK_BUS,
+    SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON,
+    SPECIFIC_PARAMETERS,
+    TRANSFORMER_VOLTAGE_CONTROL_ON,
+    TWT_SPLIT_SHUNT_ADMITTANCE,
+    TYPES,
+    USE_REACTIVE_LIMITS,
+    VOLTAGE_INIT_MODE,
+    WRITE_SLACK_BUS,
+} from './constants';
+
+export interface ParameterDescription {
+    name: string;
+    type: string;
+    description?: string;
+    label?: string;
+    possibleValues?: { id: string; label: string }[] | string[];
+    defaultValue?: any;
+}
+
+export interface FormLimits {
+    [PROVIDER]: string;
+    [COMMON_PARAMETERS]: Record<string, unknown>;
+    [SPECIFIC_PARAMETERS]: Record<string, unknown>;
+    [LIMIT_REDUCTIONS_FORM]: Record<string, unknown>[];
+}
+
+export interface Parameters {
+    provider: string;
+    commonParameters: Record<string, unknown>;
+    specificParametersPerProvider: Record<string, Record<string, unknown>>;
+    limitReductions: ILimitReductionsByVoltageLevel[];
+}
 
 export enum TAB_VALUES {
     GENERAL = 'General',
     LIMIT_REDUCTIONS = 'LimitReductions',
 }
-
-export const TYPES = {
-    STRING_LIST: 'STRING_LIST',
-    BOOLEAN: 'BOOLEAN',
-    COUNTRIES: 'COUNTRIES',
-    DOUBLE: 'DOUBLE',
-    STRING: 'STRING',
-    INTEGER: 'INTEGER',
-};
-
-export const COMMON_PARAMETERS = 'commonParameters';
-export const SPECIFIC_PARAMETERS = 'specificParametersPerProvider';
-
-// BasicLoadFlowParameters
-export const TRANSFORMER_VOLTAGE_CONTROL_ON = 'transformerVoltageControlOn';
-export const PHASE_SHIFTER_REGULATION_ON = 'phaseShifterRegulationOn';
-export const DC = 'dc';
-export const BALANCE_TYPE = 'balanceType';
-export const COUNTRIES_TO_BALANCE = 'countriesToBalance';
-export const CONNECTED_COMPONENT_MODE = 'connectedComponentMode';
-export const HVDC_AC_EMULATION = 'hvdcAcEmulation';
-
-// AdvancedLoadFlowParameters
-export const VOLTAGE_INIT_MODE = 'voltageInitMode';
-export const USE_REACTIVE_LIMITS = 'useReactiveLimits';
-export const TWT_SPLIT_SHUNT_ADMITTANCE = 'twtSplitShuntAdmittance';
-export const READ_SLACK_BUS = 'readSlackBus';
-export const WRITE_SLACK_BUS = 'writeSlackBus';
-export const DISTRIBUTED_SLACK = 'distributedSlack';
-export const SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON = 'shuntCompensatorVoltageControlOn';
-export const DC_USE_TRANSFORMER_RATIO = 'dcUseTransformerRatio';
-export const DC_POWER_FACTOR = 'dcPowerFactor';
-
-export const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 50;
-
-export const alertThresholdMarks = [
-    {
-        value: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
-        label: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION.toString(),
-    },
-    {
-        value: 100,
-        label: '100',
-    },
-];
 
 export const getBasicLoadFlowParametersFormSchema = () => {
     return yup.object().shape({
@@ -79,7 +80,7 @@ export const getAdvancedLoadFlowParametersFormSchema = () => {
         [DISTRIBUTED_SLACK]: yup.boolean().required(),
         [SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON]: yup.boolean().required(),
         [DC_USE_TRANSFORMER_RATIO]: yup.boolean().required(),
-        [DC_POWER_FACTOR]: yup.number().required(),
+        [DC_POWER_FACTOR]: yup.number().required().min(0).max(1),
     });
 };
 
@@ -92,10 +93,10 @@ export const getCommonLoadFlowParametersFormSchema = () => {
     });
 };
 
-export const getSpecificLoadFlowParametersFormSchema = (specificParameters: any) => {
+export const getSpecificLoadFlowParametersFormSchema = (specificParameters: ParameterDescription[]) => {
     const shape: { [key: string]: yup.AnySchema } = {};
 
-    specificParameters?.forEach((param: any) => {
+    specificParameters?.forEach((param: ParameterDescription) => {
         switch (param.type) {
             case TYPES.STRING:
                 shape[param.name] = yup.string().required();
@@ -120,4 +121,17 @@ export const getSpecificLoadFlowParametersFormSchema = (specificParameters: any)
     return yup.object().shape({
         [SPECIFIC_PARAMETERS]: yup.object().shape(shape),
     });
+};
+
+export const getDefaultSpecificParamsValues = (specificParams: ParameterDescription[]) => {
+    return specificParams?.reduce((acc: Record<string, any>, param: ParameterDescription) => {
+        if (param.type === TYPES.STRING_LIST && param.defaultValue === null) {
+            acc[param.name] = [];
+        } else if ((param.type === TYPES.DOUBLE || param.type === TYPES.INTEGER) && isNaN(param.defaultValue)) {
+            acc[param.name] = 0;
+        } else {
+            acc[param.name] = param.defaultValue;
+        }
+        return acc;
+    }, {});
 };

@@ -45,14 +45,11 @@ import { toFormValuesLimitReductions } from '../common/limitreductions/limit-red
 import yup from 'components/utils/yup-config';
 import { PROVIDER } from 'components/utils/field-constants';
 import {
-    alertThresholdMarks,
-    COMMON_PARAMETERS,
     getCommonLoadFlowParametersFormSchema,
+    getDefaultSpecificParamsValues,
     getSpecificLoadFlowParametersFormSchema,
-    MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
-    SPECIFIC_PARAMETERS,
+    ParameterDescription,
     TAB_VALUES,
-    TYPES,
 } from './load-flow-parameters-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -63,7 +60,14 @@ import LimitReductionsTableForm from '../common/limitreductions/limit-reductions
 import ParameterLineSlider from '../widget/parameter-line-slider';
 import { getTabStyle } from 'components/utils/tab-utils';
 import { LoadFlowProvider } from './load-flow-parameters-context';
-export const LoadFlowParameters: FunctionComponent<{
+import {
+    alertThresholdMarks,
+    COMMON_PARAMETERS,
+    MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
+    SPECIFIC_PARAMETERS,
+    TYPES,
+} from './constants';
+const LoadFlowParameters: FunctionComponent<{
     parametersBackend: UseParametersBackendReturnProps<ComputingType.LOAD_FLOW>;
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
 }> = ({ parametersBackend, setHaveDirtyFields }) => {
@@ -82,6 +86,8 @@ export const LoadFlowParameters: FunctionComponent<{
     const intl = useIntl();
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
+    const [currentProvider, setCurrentProvider] = useState(params?.provider);
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
     const { snackError } = useSnackMessage();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
@@ -95,12 +101,14 @@ export const LoadFlowParameters: FunctionComponent<{
     }, [provider, resetProvider, enableDeveloperMode]);
 
     // TODO: remove this when DynaFlow will be available not only in developer mode
-    const formattedProviders = Object.entries(providers)
-        .filter(([key]) => !key.includes('DynaFlow') || enableDeveloperMode)
-        .map(([key, value]) => ({
-            id: key,
-            label: value,
-        }));
+    const formattedProviders = useMemo(() => {
+        return Object.entries(providers)
+            .filter(([key]) => !key.includes('DynaFlow') || enableDeveloperMode)
+            .map(([key, value]) => ({
+                id: key,
+                label: value,
+            }));
+    }, [providers, enableDeveloperMode]);
 
     const resetLFParametersAndProvider = useCallback(() => {
         resetParameters();
@@ -133,34 +141,21 @@ export const LoadFlowParameters: FunctionComponent<{
         [snackError, updateParameters]
     );
 
-    const [currentProvider, setCurrentProvider] = useState(params?.provider);
-
     const specificParameters = useMemo(() => {
         const specificParams = currentProvider ? specificParamsDescriptions?.[currentProvider] : undefined;
-        return specificParams?.map((param: any) => {
-            return {
-                name: param.name,
-                type: param.type,
-                label: param.label,
-                description: param.description,
-                possibleValues: param.possibleValues,
-                defaultValue: param.defaultValue,
-            };
-        });
+        return specificParams?.map((param: ParameterDescription) => ({
+            name: param.name,
+            type: param.type,
+            label: param.label,
+            description: param.description,
+            possibleValues: param.possibleValues,
+            defaultValue: param.defaultValue,
+        }));
     }, [currentProvider, specificParamsDescriptions]);
 
     const specificParametersValues = useMemo(() => {
         const specificParams = currentProvider ? specificParamsDescriptions?.[currentProvider] : undefined;
-        return specificParams?.reduce((acc: Record<string, any>, param: any) => {
-            if (param.type === 'STRING_LIST' && param.defaultValue === null) {
-                acc[param.name] = [];
-            } else if ((param.type === 'DOUBLE' || param.type === 'INTEGER') && isNaN(param.defaultValue)) {
-                acc[param.name] = 0;
-            } else {
-                acc[param.name] = param.defaultValue;
-            }
-            return acc;
-        }, {});
+        return getDefaultSpecificParamsValues(specificParams);
     }, [currentProvider, specificParamsDescriptions]);
 
     const formSchema = useMemo(() => {
@@ -215,8 +210,6 @@ export const LoadFlowParameters: FunctionComponent<{
 
     const { handleSubmit, formState, reset } = formMethods;
 
-    const { errors } = formState;
-
     const updateLFParameters = useCallback(
         (formLimits: Record<string, any>) => {
             if (params) {
@@ -260,21 +253,17 @@ export const LoadFlowParameters: FunctionComponent<{
         const specificParams = params.provider ? specificParamsDescriptions?.[params.provider] : undefined;
         const specificParamsPerProvider = params.specificParametersPerProvider[params.provider];
 
-        const formatted = specificParams?.reduce((acc: Record<string, any>, param: any) => {
+        const formatted = specificParams?.reduce((acc: Record<string, unknown>, param: ParameterDescription) => {
             if (specificParamsPerProvider?.hasOwnProperty(param.name)) {
                 if (param.type === TYPES.BOOLEAN) {
                     acc[param.name] = specificParamsPerProvider[param.name] === 'true';
-                } else if (param.type === 'STRING_LIST') {
+                } else if (param.type === TYPES.STRING_LIST) {
                     acc[param.name] = specificParamsPerProvider[param.name].split(',');
                 } else {
                     acc[param.name] = specificParamsPerProvider[param.name];
                 }
-            } else if (param.type === 'STRING_LIST' && param.defaultValue === null) {
-                acc[param.name] = [];
-            } else if ((param.type === 'DOUBLE' || param.type === 'INTEGER') && isNaN(param.defaultValue)) {
-                acc[param.name] = 0;
             } else {
-                acc[param.name] = param.defaultValue;
+                acc[param.name] = getDefaultSpecificParamsValues([param])[param.name];
             }
             return acc;
         }, {});
@@ -295,8 +284,6 @@ export const LoadFlowParameters: FunctionComponent<{
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: TAB_VALUES) => {
         setTabSelected(newValue);
     }, []);
-
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
 
     const onValidationError = useCallback(
         (errors: FieldErrors) => {
@@ -321,16 +308,7 @@ export const LoadFlowParameters: FunctionComponent<{
         if (watchProvider !== currentProvider) {
             setCurrentProvider(watchProvider);
             const specificParams = watchProvider ? specificParamsDescriptions?.[watchProvider] : undefined;
-            const specificParamsValues = specificParams?.reduce((acc: Record<string, any>, param: any) => {
-                if (param.type === 'STRING_LIST' && param.defaultValue === null) {
-                    acc[param.name] = [];
-                } else if ((param.type === 'DOUBLE' || param.type === 'INTEGER') && isNaN(param.defaultValue)) {
-                    acc[param.name] = 0;
-                } else {
-                    acc[param.name] = param.defaultValue;
-                }
-                return acc;
-            }, {});
+            const specificParamsValues = getDefaultSpecificParamsValues(specificParams);
             formMethods.setValue(SPECIFIC_PARAMETERS, specificParamsValues);
             formMethods.setValue(
                 LIMIT_REDUCTIONS_FORM,
@@ -357,7 +335,7 @@ export const LoadFlowParameters: FunctionComponent<{
                                 spacing={1}
                                 sx={{
                                     padding: 0,
-                                    paddingBottom: 2,
+                                    paddingBottom: 0,
                                     height: 'fit-content',
                                 }}
                                 justifyContent={'space-between'}
@@ -373,20 +351,22 @@ export const LoadFlowParameters: FunctionComponent<{
                                     />
                                 </Grid>
                                 <LineSeparator />
-                                <Tabs value={tabSelected} onChange={handleTabChange}>
-                                    <Tab
-                                        label={<FormattedMessage id={TAB_VALUES.GENERAL} />}
-                                        value={TAB_VALUES.GENERAL}
-                                        sx={getTabStyle(tabIndexesWithError, TAB_VALUES.GENERAL)}
-                                    />
-                                    {enableDeveloperMode && (
+                                <Grid item sx={{ width: '100%' }}>
+                                    <Tabs value={tabSelected} onChange={handleTabChange}>
                                         <Tab
-                                            label={<FormattedMessage id={TAB_VALUES.LIMIT_REDUCTIONS} />}
-                                            value={TAB_VALUES.LIMIT_REDUCTIONS}
-                                            sx={getTabStyle(tabIndexesWithError, TAB_VALUES.LIMIT_REDUCTIONS)}
+                                            label={<FormattedMessage id={TAB_VALUES.GENERAL} />}
+                                            value={TAB_VALUES.GENERAL}
+                                            sx={getTabStyle(tabIndexesWithError, TAB_VALUES.GENERAL)}
                                         />
-                                    )}
-                                </Tabs>
+                                        {enableDeveloperMode && (
+                                            <Tab
+                                                label={<FormattedMessage id={TAB_VALUES.LIMIT_REDUCTIONS} />}
+                                                value={TAB_VALUES.LIMIT_REDUCTIONS}
+                                                sx={getTabStyle(tabIndexesWithError, TAB_VALUES.LIMIT_REDUCTIONS)}
+                                            />
+                                        )}
+                                    </Tabs>
+                                </Grid>
                             </Grid>
                         </Box>
                         <Box
@@ -400,10 +380,9 @@ export const LoadFlowParameters: FunctionComponent<{
                                 container
                                 sx={mergeSx(styles.scrollableGrid, {
                                     maxHeight: '100%',
-                                    paddingTop: 0,
                                 })}
                             >
-                                <Grid sx={{ width: '100%' }}>
+                                <Grid item sx={{ width: '100%' }}>
                                     <TabPanel value={tabSelected} index={TAB_VALUES.GENERAL}>
                                         <LoadFlowGeneralParameters
                                             provider={watchProvider}
@@ -412,32 +391,19 @@ export const LoadFlowParameters: FunctionComponent<{
                                     </TabPanel>
                                     {enableDeveloperMode && (
                                         <TabPanel value={tabSelected} index={TAB_VALUES.LIMIT_REDUCTIONS}>
-                                            <Grid
-                                                container
-                                                sx={mergeSx(styles.scrollableGrid, {
-                                                    maxHeight: '100%',
-                                                })}
-                                            >
-                                                <Grid
-                                                    container
-                                                    spacing={1}
-                                                    paddingTop={1}
-                                                    paddingLeft={2}
-                                                    sx={{ width: '100%' }}
-                                                >
-                                                    {currentProvider === 'OpenLoadFlow' ? (
-                                                        <LimitReductionsTableForm
-                                                            limits={params?.limitReductions ?? defaultLimitReductions}
-                                                        />
-                                                    ) : (
-                                                        <ParameterLineSlider
-                                                            paramNameId={PARAM_LIMIT_REDUCTION}
-                                                            label="LimitReduction"
-                                                            marks={alertThresholdMarks}
-                                                            minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
-                                                        />
-                                                    )}
-                                                </Grid>
+                                            <Grid container sx={{ width: '100%' }}>
+                                                {currentProvider === 'OpenLoadFlow' ? (
+                                                    <LimitReductionsTableForm
+                                                        limits={params?.limitReductions ?? defaultLimitReductions}
+                                                    />
+                                                ) : (
+                                                    <ParameterLineSlider
+                                                        paramNameId={PARAM_LIMIT_REDUCTION}
+                                                        label="LimitReduction"
+                                                        marks={alertThresholdMarks}
+                                                        minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                                                    />
+                                                )}
                                             </Grid>
                                         </TabPanel>
                                     )}
@@ -464,11 +430,6 @@ export const LoadFlowParameters: FunctionComponent<{
                                     disabled={loadFlowStatus === RunningStatus.RUNNING}
                                 >
                                     <FormattedMessage id="validate" />
-                                    {Object.keys(errors).map((key) => (
-                                        <div key={key} style={{ color: 'red' }}>
-                                            {String(errors[key]?.message)}
-                                        </div>
-                                    ))}
                                 </SubmitButton>
                             </Grid>
                         </Box>
@@ -505,3 +466,5 @@ export const LoadFlowParameters: FunctionComponent<{
         </LoadFlowProvider>
     );
 };
+
+export default LoadFlowParameters;

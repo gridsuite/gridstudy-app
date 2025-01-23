@@ -6,40 +6,33 @@
  */
 
 import { FunctionComponent, memo } from 'react';
-import {
-    COMMON_PARAMETERS,
-    SPECIFIC_PARAMETERS,
-    TYPES,
-    TRANSFORMER_VOLTAGE_CONTROL_ON,
-    PHASE_SHIFTER_REGULATION_ON,
-    DC,
-    BALANCE_TYPE,
-    COUNTRIES_TO_BALANCE,
-    CONNECTED_COMPONENT_MODE,
-    HVDC_AC_EMULATION,
-    VOLTAGE_INIT_MODE,
-    USE_REACTIVE_LIMITS,
-    TWT_SPLIT_SHUNT_ADMITTANCE,
-    READ_SLACK_BUS,
-    WRITE_SLACK_BUS,
-    DISTRIBUTED_SLACK,
-    SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON,
-    DC_USE_TRANSFORMER_RATIO,
-    DC_POWER_FACTOR,
-} from './load-flow-parameters-utils';
 import { ParameterGroup } from '../widget';
 import { useLoadFlowContext } from './load-flow-parameters-context';
 import LoadFlowParameterField from './load-flow-parameter-field';
+import {
+    BALANCE_TYPE,
+    COMMON_PARAMETERS,
+    CONNECTED_COMPONENT_MODE,
+    COUNTRIES_TO_BALANCE,
+    DC,
+    DC_POWER_FACTOR,
+    DC_USE_TRANSFORMER_RATIO,
+    DISTRIBUTED_SLACK,
+    HVDC_AC_EMULATION,
+    PHASE_SHIFTER_REGULATION_ON,
+    READ_SLACK_BUS,
+    SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON,
+    SPECIFIC_PARAMETERS,
+    TRANSFORMER_VOLTAGE_CONTROL_ON,
+    TWT_SPLIT_SHUNT_ADMITTANCE,
+    TYPES,
+    USE_REACTIVE_LIMITS,
+    VOLTAGE_INIT_MODE,
+    WRITE_SLACK_BUS,
+} from './constants';
+import { ParameterDescription } from './load-flow-parameters-utils';
 
-interface FieldToShow {
-    name: string;
-    type: string;
-    description?: string;
-    label?: string;
-    possibleValues?: { id: string; label: string }[] | string[];
-}
-
-const basicParams: FieldToShow[] = [
+const basicParams: ParameterDescription[] = [
     {
         name: TRANSFORMER_VOLTAGE_CONTROL_ON,
         type: TYPES.BOOLEAN,
@@ -93,7 +86,7 @@ const basicParams: FieldToShow[] = [
     },
 ];
 
-const fieldsToShow: FieldToShow[] = [
+const fieldsToShow: ParameterDescription[] = [
     {
         name: VOLTAGE_INIT_MODE,
         type: TYPES.STRING,
@@ -157,7 +150,7 @@ const fieldsToShow: FieldToShow[] = [
 
 interface LoadFlowGeneralParametersProps {
     provider: string;
-    specificParams: FieldToShow[];
+    specificParams: ParameterDescription[];
 }
 
 const LoadFlowGeneralParameters: FunctionComponent<LoadFlowGeneralParametersProps> = ({ provider, specificParams }) => {
