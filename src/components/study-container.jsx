@@ -13,21 +13,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
     closeStudy,
+    limitReductionModified,
     loadNetworkModificationTreeSuccess,
     openStudy,
-    studyUpdated,
-    setCurrentTreeNode,
     resetEquipments,
     resetEquipmentsPostLoadflow,
+    setCurrentTreeNode,
     setStudyIndexationStatus,
-    limitReductionModified,
+    studyUpdated,
 } from '../redux/actions';
 import WaitingLoader from './utils/waiting-loader';
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchDirectoryElementPath, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
 import { RunningStatus } from './utils/running-status';
-import { computePageTitle, computeFullPath } from '../utils/compute-title';
+import { computeFullPath, computePageTitle } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { BUILD_STATUS } from './network/constants';
 import { connectNotificationsWebsocket } from '../services/study-notification';
@@ -45,7 +45,6 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
 import { StudyIndexationStatus } from 'redux/reducer';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import { NodeType } from './graph/tree-node.type';
 
 function isWorthUpdate(studyUpdatedForce, fetcher, lastUpdateRef, nodeUuidRef, nodeUuid, invalidations) {
@@ -256,6 +255,12 @@ export function StudyContainer({ view, onChangeTab }) {
             if (updateTypeHeader === 'dynamicSimulation_failed') {
                 snackError({
                     headerId: 'DynamicSimulationRunError',
+                    messageTxt: errorMessage,
+                });
+            }
+            if (updateTypeHeader === 'dynamicSecurityAnalysis_failed') {
+                snackError({
+                    headerId: 'DynamicSecurityAnalysisRunError',
                     messageTxt: errorMessage,
                 });
             }
