@@ -403,11 +403,12 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const generateTableColumns = useCallback(() => {
         return currentColumns()
             .filter((c) => {
-                return selectedColumnsNames.has(c.colId);
+                return selectedColumnsNames.has(c.colId!);
             })
             .sort(
                 (a, b) =>
-                    reorderedTableDefinitionIndexes.indexOf(a.colId) - reorderedTableDefinitionIndexes.indexOf(b.colId)
+                    reorderedTableDefinitionIndexes.indexOf(a.colId!) -
+                    reorderedTableDefinitionIndexes.indexOf(b.colId!)
             );
     }, [reorderedTableDefinitionIndexes, selectedColumnsNames, currentColumns]);
 

@@ -203,7 +203,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         filterParams: {
                             dataType: autoCompleteFilterParams.dataType,
                             ...filterParams,
-                    },
+                        },
 
                         filterEnums: autoCompleteFilterParams.filterEnums,
                         getEnumLabel: getEnumLabel,

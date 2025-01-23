@@ -60,10 +60,10 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
                     filterComponentParams: {
                         filterParams: {
                             customFilterOptions: filterOptions,
+                            type: AgGridFilterType.SensitivityAnalysis,
+                            tab: mappingTabs(sensiKind, nOrNkIndex),
+                            updateFilterCallback: onFilter,
                         },
-                        type: AgGridFilterType.SensitivityAnalysis,
-                        tab: mappingTabs(sensiKind, nOrNkIndex),
-                        updateFilterCallback: onFilter,
                     },
                 },
                 minWidth: 95,

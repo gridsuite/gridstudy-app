@@ -29,10 +29,12 @@ import {
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
+    ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
     ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
+    AddEquipmentsByNodesForCustomColumnsAction,
     AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
     AddSortForNewSpreadsheetAction,
@@ -177,10 +179,12 @@ import {
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
     UPDATE_CUSTOM_COLUMNS_DEFINITION,
+    UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UPDATE_TABLE_DEFINITION,
     UpdateCustomColumnsDefinitionsAction,
+    UpdateCustomColumnsNodesAliasesAction,
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
     UpdateTableDefinitionAction,
@@ -872,7 +876,7 @@ export const reducer = createReducer(initialState, (builder) => {
         updatedDefinitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
         const updatedColumnsNames = updatedDefinitions
             .map((tabDef) => tabDef.columns)
-            .map((cols) => new Set(cols.map((c) => c.colId)));
+            .map((cols) => new Set(cols.map((c) => c.colId!)));
         const updatedColumnsNamesJson = updatedColumnsNames.map((cols) => JSON.stringify([...cols]));
         const updatedNames = updatedDefinitions.map((tabDef) => tabDef.name);
         const updatedNamesIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.name, tabDef.index]));

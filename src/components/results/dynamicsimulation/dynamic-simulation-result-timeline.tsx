@@ -90,11 +90,13 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
                     fractionDigits: 2,
                     filterComponent: CustomAggridComparatorFilter,
                     filterComponentParams: {
-                        type: FilterType.DynamicSimulation,
-                        tab: TIMELINE,
-                        updateFilterCallback: updateFilters,
-                        dataType: FILTER_DATA_TYPES.NUMBER,
-                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        filterParams: {
+                            type: FilterType.DynamicSimulation,
+                            tab: TIMELINE,
+                            updateFilterCallback: updateFilters,
+                            dataType: FILTER_DATA_TYPES.NUMBER,
+                            comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        },
                     },
                     sortParams: {
                         table: DYNAMIC_SIMULATION_RESULT_SORT_STORE,
