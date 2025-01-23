@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { Grid, Tab, Tabs } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { Button, Grid, Tab, Tabs } from '@mui/material';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { styles, TabPanel } from '../parameters';
 import { SingleLineDiagramParameters, useGetAvailableComponentLibraries } from './single-line-diagram-parameters';
 import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
@@ -19,7 +19,14 @@ import {
     initialNetworkVisualizationParametersForm,
     networkVisualizationParametersSchema,
 } from './network-visualizations-form';
-import { CustomFormProvider, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DirectoryItemSelector,
+    ElementType,
+    SubmitButton,
+    TreeViewFinderNodeProps,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { TabValue } from './network-visualizations-utils';
 import { mergeSx } from '../../../utils/functions';
 import { NetworkVisualizationParameters } from './network-visualizations.types';
@@ -30,6 +37,7 @@ import {
 import { UUID } from 'crypto';
 import { UPDATE_TYPE_HEADER } from '../common/computation-parameters-util';
 import { setUpdateNetworkVisualizationParameters } from '../../../../redux/actions';
+import CreateParameterDialog from '../common/parameters-creation-dialog';
 
 interface NetworkVisualizationsParametersProps {
     setHaveDirtyFields: (haveDirtyFields: boolean) => void;
@@ -41,11 +49,14 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
     const user = useSelector((state: AppState) => state.user);
     const componentLibraries = useGetAvailableComponentLibraries(user);
     const [tabValue, setTabValue] = useState(TabValue.MAP);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const networkVisualizationsParameters = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
+    const intl = useIntl();
 
     const handleTabChange = useCallback((_: SyntheticEvent, newValue: TabValue) => {
         setTabValue(newValue);
@@ -56,7 +67,7 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
         resolver: yupResolver(networkVisualizationParametersSchema),
     });
 
-    const { reset, handleSubmit, formState } = formMethods;
+    const { formState, getValues, handleSubmit, reset } = formMethods;
 
     useEffect(() => {
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
@@ -99,6 +110,14 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
         [studyUuid, snackError]
     );
 
+    const loadParameters = useCallback((newParams: TreeViewFinderNodeProps[]) => {
+        if (newParams && newParams.length > 0) {
+            const paramUuid = newParams[0].id;
+            console.log('DBG DBR Load', newParams, paramUuid);
+        }
+        setOpenSelectParameterDialog(false);
+    }, []);
+
     return (
         <CustomFormProvider validationSchema={networkVisualizationParametersSchema} {...formMethods}>
             <Grid container sx={{ height: '100%' }} direction="column" justifyContent="space-between">
@@ -139,9 +158,39 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
                         paddingBottom: 2,
                     }}
                 >
+                    <Button onClick={() => setOpenSelectParameterDialog(true)}>
+                        <FormattedMessage id="settings.button.chooseSettings" />
+                    </Button>
+                    <Button onClick={() => setOpenCreateParameterDialog(true)}>
+                        <FormattedMessage id="save" />
+                    </Button>
                     <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit)} />
                 </Grid>
             </Grid>
+            {openCreateParameterDialog && (
+                <CreateParameterDialog
+                    open={openCreateParameterDialog}
+                    onClose={() => setOpenCreateParameterDialog(false)}
+                    parameterValues={() => getValues()}
+                    parameterFormatter={(newParams) => newParams}
+                    parameterType={ElementType.NETWORK_VISUALIZATION_PARAMETERS}
+                />
+            )}
+            {openSelectParameterDialog && (
+                <DirectoryItemSelector
+                    open={openSelectParameterDialog}
+                    onClose={loadParameters}
+                    types={[ElementType.NETWORK_VISUALIZATION_PARAMETERS]}
+                    title={intl.formatMessage({
+                        id: 'showSelectParameterDialog',
+                    })}
+                    onlyLeaves={true}
+                    multiselect={false}
+                    validationButtonText={intl.formatMessage({
+                        id: 'validate',
+                    })}
+                />
+            )}
         </CustomFormProvider>
     );
 };
