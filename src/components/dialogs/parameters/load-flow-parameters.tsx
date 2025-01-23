@@ -831,7 +831,7 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
                                 id: 'showSelectParameterDialog',
                             })}
                             onlyLeaves={true}
-                            multiselect={false}
+                            multiSelect={false}
                             validationButtonText={intl.formatMessage({
                                 id: 'validate',
                             })}
