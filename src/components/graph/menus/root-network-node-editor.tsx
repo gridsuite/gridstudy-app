@@ -16,7 +16,7 @@ import {
 
 import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography, Badge, IconButton } from '@mui/material';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -103,6 +103,9 @@ const RootNetworkNodeEditor = () => {
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [isLoading, setIsLoading] = useState(false);
 
+    const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
+    rootNetworksRef.current = rootNetworks;
+
     const updateSelectedItems = useCallback((rootNetworks: RootNetworkMetadata[]) => {
         const toKeepIdsSet = new Set(rootNetworks.map((e) => e.rootNetworkUuid));
         setSelectedItems((oldselectedItems) => oldselectedItems.filter((s) => toKeepIdsSet.has(s.rootNetworkUuid)));
@@ -129,14 +132,15 @@ const RootNetworkNodeEditor = () => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworksUpdated') {
-            if (deleteInProgress) {
-                dofetchRootNetworks();
-                setDeleteInProgress(false);
-            }
-        } else if (studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworkDeletionStarted') {
+            dofetchRootNetworks();
+            setDeleteInProgress(false);
+        } else if (
+            rootNetworksRef.current &&
+            studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworkDeletionStarted'
+        ) {
             // when node are being deleted, we select 1st node that won't be deleted
             const deletingNodes = studyUpdatedForce.eventData.headers.rootNetworks;
-            const newSelectedRootNetwork = rootNetworks.find(
+            const newSelectedRootNetwork = rootNetworksRef.current.find(
                 (rootNetwork) => !deletingNodes.includes(rootNetwork.rootNetworkUuid)
             );
             if (newSelectedRootNetwork) {
@@ -144,7 +148,7 @@ const RootNetworkNodeEditor = () => {
             }
             setDeleteInProgress(true);
         }
-    }, [studyUpdatedForce, dofetchRootNetworks, dispatch, rootNetworks, deleteInProgress, isLoading]);
+    }, [studyUpdatedForce, dofetchRootNetworks, dispatch]);
 
     useEffect(() => {
         dofetchRootNetworks();
@@ -313,10 +317,7 @@ const RootNetworkNodeEditor = () => {
                     customizedCurrentParameters
                 );
             })
-            .then(() => {
-                // After successfully creating the root network, refetch the root networks
-                dofetchRootNetworks();
-            })
+
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
