@@ -532,7 +532,9 @@ export function StudyContainer({ view, onChangeTab }) {
                             });
                         });
 
+                    // Check if the current root network has changed and if there's a current selected node
                     if (previousCurrentRootNetwork !== currentRootNetworkUuid && currentNode) {
+                        // Find the last selected node from the previous root network in the tree model
                         const ModelLastSelectedNode = {
                             ...networkModificationTreeModel.treeNodes.find((node) => node.id === currentNode?.id),
                         };
