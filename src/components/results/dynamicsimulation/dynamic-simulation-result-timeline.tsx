@@ -106,59 +106,65 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
                 }),
                 field: COL_TIME,
                 width: MIN_COLUMN_WIDTH,
-                numeric: true,
-                fractionDigits: 2,
-                id: 'agNumberColumnFilter',
+                colId: 'agNumberColumnFilter',
                 filter: 'agNumberColumnFilter',
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...sortAndFilterProps.filterProps,
-                        filterDataType: FILTER_DATA_TYPES.NUMBER,
-                        filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...sortAndFilterProps.filterProps,
+                            filterDataType: FILTER_DATA_TYPES.NUMBER,
+                            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        },
+                    },
+                    sortProps: {
+                        ...sortAndFilterProps.sortProps,
                     },
                 },
                 cellRenderer: NumberCellRenderer,
-                sortProps: {
-                    ...sortAndFilterProps.sortProps,
-                },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationTimelineEventModelName',
                 }),
-                id: COL_MODEL_NAME,
+                colId: COL_MODEL_NAME,
                 field: COL_MODEL_NAME,
                 width: MEDIUM_COLUMN_WIDTH,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...sortAndFilterProps.filterProps,
-                        filterDataType: FILTER_DATA_TYPES.TEXT,
-                        filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                context: {
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...sortAndFilterProps.filterProps,
+                            filterDataType: FILTER_DATA_TYPES.TEXT,
+                            filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        },
                     },
-                },
-                sortProps: {
-                    ...sortAndFilterProps.sortProps,
+                    sortProps: {
+                        ...sortAndFilterProps.sortProps,
+                    },
                 },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationTimelineEventModelMessage',
                 }),
-                id: COL_MESSAGE,
+                colId: COL_MESSAGE,
                 field: COL_MESSAGE,
                 width: LARGE_COLUMN_WIDTH,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        ...sortAndFilterProps.filterProps,
-                        filterDataType: FILTER_DATA_TYPES.TEXT,
-                        filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                context: {
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...sortAndFilterProps.filterProps,
+                            filterDataType: FILTER_DATA_TYPES.TEXT,
+                            filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        },
                     },
-                },
-                sortProps: {
-                    ...sortAndFilterProps.sortProps,
+                    sortProps: {
+                        ...sortAndFilterProps.sortProps,
+                    },
                 },
             }),
         ],
