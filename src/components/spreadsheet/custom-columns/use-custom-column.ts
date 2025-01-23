@@ -73,7 +73,6 @@ export function useCustomColumn(tabIndex: number) {
                         acc[key] = typeof value === 'number' ? bignumber(value) : value;
                         return acc;
                     }, {} as Record<string, unknown>);
-
                     return math.limitedEvaluate(colWithFormula.formula, scope);
                 } catch (e) {
                     return '';
@@ -86,18 +85,20 @@ export function useCustomColumn(tabIndex: number) {
         return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula) => {
             return makeAgGridCustomHeaderColumn({
                 headerName: colWithFormula.name,
-                id: colWithFormula.name,
+                colId: colWithFormula.name,
                 field: colWithFormula.name,
-                sortProps: {
-                    onSortChanged,
-                    sortConfig,
-                },
                 valueGetter: createValueGetter(colWithFormula),
                 editable: false,
                 suppressMovable: true,
-                tabIndex,
-                isCustomColumn: true,
-                Menu: CustomColumnMenu,
+                context: {
+                    sortProps: {
+                        onSortChanged,
+                        sortConfig,
+                    },
+                    tabIndex,
+                    isCustomColumn: true,
+                    Menu: CustomColumnMenu,
+                },
             });
         });
     }, [customColumnsDefinitions, onSortChanged, sortConfig, createValueGetter, tabIndex]);
