@@ -40,14 +40,16 @@ import {
 import LineSeparator from '../../commons/line-separator';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import ComputingType from 'components/computing-status/computing-type';
-import { fetchLoadFlowParameters, getLoadFlowDefaultLimitReductions } from 'services/loadflow';
+import { fetchLoadFlowParameters } from 'services/loadflow';
 import { toFormValuesLimitReductions } from '../common/limitreductions/limit-reductions-form-util';
 import yup from 'components/utils/yup-config';
 import { PROVIDER } from 'components/utils/field-constants';
 import {
+    alertThresholdMarks,
     COMMON_PARAMETERS,
     getCommonLoadFlowParametersFormSchema,
     getSpecificLoadFlowParametersFormSchema,
+    MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
     SPECIFIC_PARAMETERS,
     TAB_VALUES,
     TYPES,
@@ -74,6 +76,7 @@ export const LoadFlowParameters: FunctionComponent<{
         updateParameters,
         resetParameters,
         specificParamsDescriptions,
+        defaultLimitReductions,
     ] = parametersBackend;
 
     const intl = useIntl();
@@ -214,7 +217,7 @@ export const LoadFlowParameters: FunctionComponent<{
 
     const { errors } = formState;
 
-    const updateSAParameters = useCallback(
+    const updateLFParameters = useCallback(
         (formLimits: Record<string, any>) => {
             if (params) {
                 setTabIndexesWithError([]);
@@ -276,38 +279,17 @@ export const LoadFlowParameters: FunctionComponent<{
             return acc;
         }, {});
 
-        if (params.provider !== 'OpenLoadFlow') {
-            reset({
-                [PROVIDER]: params.provider,
-                [COMMON_PARAMETERS]: {
-                    ...params.commonParameters,
-                },
-                [SPECIFIC_PARAMETERS]: {
-                    ...formatted,
-                },
-                [LIMIT_REDUCTIONS_FORM]: [],
-            });
-        } else {
-            reset({
-                [PROVIDER]: params.provider,
-                [COMMON_PARAMETERS]: {
-                    ...params.commonParameters,
-                },
-                [SPECIFIC_PARAMETERS]: {
-                    ...formatted,
-                },
-                ...toFormValuesLimitReductions(params.limitReductions),
-            });
-        }
-    }, [params, reset, specificParamsDescriptions]);
-
-    const [defaultLimitReductions, setDefaultLimitReductions] = useState<ILimitReductionsByVoltageLevel[]>([]);
-
-    useEffect(() => {
-        getLoadFlowDefaultLimitReductions().then((defaultLimits) => {
-            setDefaultLimitReductions(defaultLimits);
+        reset({
+            [PROVIDER]: params.provider,
+            [COMMON_PARAMETERS]: {
+                ...params.commonParameters,
+            },
+            [SPECIFIC_PARAMETERS]: {
+                ...formatted,
+            },
+            ...toFormValuesLimitReductions(params.limitReductions),
         });
-    }, []);
+    }, [params, reset, specificParamsDescriptions]);
 
     const [tabSelected, setTabSelected] = useState(TAB_VALUES.GENERAL);
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: TAB_VALUES) => {
@@ -332,18 +314,6 @@ export const LoadFlowParameters: FunctionComponent<{
         },
         [tabSelected]
     );
-
-    const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 50;
-    const alertThresholdMarks = [
-        {
-            value: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
-            label: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION.toString(),
-        },
-        {
-            value: 100,
-            label: '100',
-        },
-    ];
 
     const watchProvider = formMethods.watch('provider');
 
@@ -489,7 +459,7 @@ export const LoadFlowParameters: FunctionComponent<{
                                 <LabelledButton callback={resetLFParametersAndProvider} label="resetToDefault" />
                                 <LabelledButton label="resetProviderValuesToDefault" callback={resetLFParameters} />
                                 <SubmitButton
-                                    onClick={handleSubmit(updateSAParameters, onValidationError)}
+                                    onClick={handleSubmit(updateLFParameters, onValidationError)}
                                     variant="outlined"
                                     disabled={loadFlowStatus === RunningStatus.RUNNING}
                                 >

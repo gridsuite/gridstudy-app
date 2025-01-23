@@ -6,112 +6,30 @@
  */
 
 import { FunctionComponent, memo } from 'react';
-import { Chip, Grid, Tooltip } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
-import { styles } from '../parameters';
-import Typography from '@mui/material/Typography';
-
 import {
-    AutocompleteInput,
-    CountriesInput,
-    FloatInput,
-    IntegerInput,
-    MuiSelectInput,
-    MultipleAutocompleteInput,
-    SwitchInput,
-    TextInput,
-} from '@gridsuite/commons-ui';
-import LineSeparator from 'components/dialogs/commons/line-separator';
-import {
-    BALANCE_TYPE,
     COMMON_PARAMETERS,
-    CONNECTED_COMPONENT_MODE,
-    COUNTRIES_TO_BALANCE,
-    DC,
-    DC_POWER_FACTOR,
-    DC_USE_TRANSFORMER_RATIO,
-    DISTRIBUTED_SLACK,
-    HVDC_AC_EMULATION,
-    PHASE_SHIFTER_REGULATION_ON,
-    READ_SLACK_BUS,
-    SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON,
     SPECIFIC_PARAMETERS,
-    TRANSFORMER_VOLTAGE_CONTROL_ON,
-    TWT_SPLIT_SHUNT_ADMITTANCE,
     TYPES,
-    USE_REACTIVE_LIMITS,
+    TRANSFORMER_VOLTAGE_CONTROL_ON,
+    PHASE_SHIFTER_REGULATION_ON,
+    DC,
+    BALANCE_TYPE,
+    COUNTRIES_TO_BALANCE,
+    CONNECTED_COMPONENT_MODE,
+    HVDC_AC_EMULATION,
     VOLTAGE_INIT_MODE,
+    USE_REACTIVE_LIMITS,
+    TWT_SPLIT_SHUNT_ADMITTANCE,
+    READ_SLACK_BUS,
     WRITE_SLACK_BUS,
+    DISTRIBUTED_SLACK,
+    SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON,
+    DC_USE_TRANSFORMER_RATIO,
+    DC_POWER_FACTOR,
 } from './load-flow-parameters-utils';
 import { ParameterGroup } from '../widget';
 import { useLoadFlowContext } from './load-flow-parameters-context';
-
-interface LoadFlowFieldsProps {
-    id: string;
-    item: FieldToShow;
-}
-
-const LoadFlowFields: FunctionComponent<LoadFlowFieldsProps> = ({ id, item }) => {
-    const { name, type, label, description, possibleValues } = item;
-    const renderField = () => {
-        switch (type) {
-            case TYPES.STRING: {
-                if (possibleValues) {
-                    return <MuiSelectInput name={`${id}.${name}`} options={possibleValues} size="small" />;
-                } else {
-                    return <TextInput name={`${id}.${name}`} />;
-                }
-            }
-            case TYPES.BOOLEAN:
-                return <SwitchInput name={`${id}.${name}`} />;
-            case TYPES.COUNTRIES:
-                return <CountriesInput name={`${id}.${name}`} label={'descLfCountries'} />;
-            case TYPES.DOUBLE:
-                return <FloatInput name={`${id}.${name}`} />;
-            case TYPES.STRING_LIST: {
-                if (possibleValues) {
-                    return (
-                        <AutocompleteInput
-                            name={`${id}.${name}`}
-                            label={label}
-                            options={possibleValues}
-                            fullWidth
-                            multiple
-                            size="small"
-                            renderTags={(val: any[], getTagsProps: any) =>
-                                val.map((code: string, index: number) => (
-                                    <Chip key={code} size="small" label={code} {...getTagsProps({ index })} />
-                                ))
-                            }
-                        />
-                    );
-                } else {
-                    return <MultipleAutocompleteInput name={`${id}.${name}`} size="small" />;
-                }
-            }
-            case TYPES.INTEGER:
-                return <IntegerInput name={`${id}.${name}`} />;
-            default:
-                return null;
-        }
-    };
-
-    return (
-        <Grid container spacing={1} paddingTop={1} key={name} justifyContent={'space-between'}>
-            <Grid item xs={8}>
-                <Tooltip title={description} enterDelay={1200} key={name}>
-                    <Typography sx={styles.parameterName}>
-                        {label ? <FormattedMessage id={label}></FormattedMessage> : name}
-                    </Typography>
-                </Tooltip>
-            </Grid>
-            <Grid item container xs={4} sx={styles.controlItem}>
-                {renderField()}
-            </Grid>
-            <LineSeparator />
-        </Grid>
-    );
-};
+import LoadFlowParameterField from './load-flow-parameter-field';
 
 interface FieldToShow {
     name: string;
@@ -247,18 +165,18 @@ const LoadFlowGeneralParameters: FunctionComponent<LoadFlowGeneralParametersProp
         useLoadFlowContext();
     return (
         <>
-            {Object.values(basicParams).map((item) => {
-                return <LoadFlowFields id={COMMON_PARAMETERS} item={item} key={item.name} />;
-            })}
+            {basicParams.map((item) => (
+                <LoadFlowParameterField id={COMMON_PARAMETERS} {...item} key={item.name} />
+            ))}
             <ParameterGroup
                 label="showAdvancedParameters"
                 state={showAdvancedLfParams}
                 onClick={setShowAdvancedLfParams}
             >
                 {showAdvancedLfParams &&
-                    fieldsToShow.map((item) => {
-                        return <LoadFlowFields id={COMMON_PARAMETERS} item={item} key={item.name} />;
-                    })}
+                    fieldsToShow.map((item) => (
+                        <LoadFlowParameterField id={COMMON_PARAMETERS} {...item} key={item.name} />
+                    ))}
             </ParameterGroup>
             <ParameterGroup
                 label="showSpecificParameters"
@@ -268,7 +186,7 @@ const LoadFlowGeneralParameters: FunctionComponent<LoadFlowGeneralParametersProp
             >
                 {showSpecificLfParams &&
                     specificParams?.map((item) => (
-                        <LoadFlowFields id={SPECIFIC_PARAMETERS} item={item} key={item.name} />
+                        <LoadFlowParameterField id={SPECIFIC_PARAMETERS} {...item} key={item.name} />
                     ))}
             </ParameterGroup>
         </>

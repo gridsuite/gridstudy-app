@@ -15,7 +15,11 @@ import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from 'redux/reducer';
-import { getLoadFlowProviders, getLoadFlowSpecificParametersDescription } from 'services/loadflow';
+import {
+    getLoadFlowDefaultLimitReductions,
+    getLoadFlowProviders,
+    getLoadFlowSpecificParametersDescription,
+} from 'services/loadflow';
 import {
     getDefaultLoadFlowProvider,
     getLoadFlowParameters,
@@ -180,7 +184,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         setLoadFlowProvider,
         getLoadFlowParameters,
         setLoadFlowParameters,
-        getLoadFlowSpecificParametersDescription
+        getLoadFlowSpecificParametersDescription,
+        getLoadFlowDefaultLimitReductions
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(

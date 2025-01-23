@@ -66,6 +66,7 @@
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
     "optionalServicesRetrievingError": "An error occurred while retrieving the status of optional services",
     "defaultSensiResultsThresholdRetrievingError": "An error occurred while retrieving the sensitivity analysis results default threshold",
+    "fetchDefaultLimitReductionsError": "An error occurred while fetching the default limit reductions",
     "button.restore": "Restore",
     "close": "Close",
     "validate": "Validate",

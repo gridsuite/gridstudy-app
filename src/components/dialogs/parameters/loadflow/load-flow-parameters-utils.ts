@@ -7,6 +7,20 @@
 
 import yup from 'components/utils/yup-config';
 
+export enum TAB_VALUES {
+    GENERAL = 'General',
+    LIMIT_REDUCTIONS = 'LimitReductions',
+}
+
+export const TYPES = {
+    STRING_LIST: 'STRING_LIST',
+    BOOLEAN: 'BOOLEAN',
+    COUNTRIES: 'COUNTRIES',
+    DOUBLE: 'DOUBLE',
+    STRING: 'STRING',
+    INTEGER: 'INTEGER',
+};
+
 export const COMMON_PARAMETERS = 'commonParameters';
 export const SPECIFIC_PARAMETERS = 'specificParametersPerProvider';
 
@@ -29,6 +43,19 @@ export const DISTRIBUTED_SLACK = 'distributedSlack';
 export const SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON = 'shuntCompensatorVoltageControlOn';
 export const DC_USE_TRANSFORMER_RATIO = 'dcUseTransformerRatio';
 export const DC_POWER_FACTOR = 'dcPowerFactor';
+
+export const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 50;
+
+export const alertThresholdMarks = [
+    {
+        value: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
+        label: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION.toString(),
+    },
+    {
+        value: 100,
+        label: '100',
+    },
+];
 
 export const getBasicLoadFlowParametersFormSchema = () => {
     return yup.object().shape({
@@ -65,15 +92,6 @@ export const getCommonLoadFlowParametersFormSchema = () => {
     });
 };
 
-export const TYPES = {
-    STRING_LIST: 'STRING_LIST',
-    BOOLEAN: 'BOOLEAN',
-    COUNTRIES: 'COUNTRIES',
-    DOUBLE: 'DOUBLE',
-    STRING: 'STRING',
-    INTEGER: 'INTEGER',
-};
-
 export const getSpecificLoadFlowParametersFormSchema = (specificParameters: any) => {
     const shape: { [key: string]: yup.AnySchema } = {};
 
@@ -103,8 +121,3 @@ export const getSpecificLoadFlowParametersFormSchema = (specificParameters: any)
         [SPECIFIC_PARAMETERS]: yup.object().shape(shape),
     });
 };
-
-export enum TAB_VALUES {
-    GENERAL = 'General',
-    LIMIT_REDUCTIONS = 'LimitReductions',
-}
