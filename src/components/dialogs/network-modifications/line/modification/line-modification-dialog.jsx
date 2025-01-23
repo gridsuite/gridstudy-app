@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     convertInputValue,
     convertOutputValue,
@@ -122,8 +122,6 @@ const LineModificationDialog = ({
     const [lineToModify, setLineToModify] = useState(null);
     const [tabIndex, setTabIndex] = useState(LineModificationDialogTab.CONNECTIVITY_TAB);
     const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
-    const twtToModifyRef = useRef(null);
-    const editDataRef = useRef(null);
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
@@ -159,12 +157,12 @@ const LineModificationDialog = ({
                 setSelectedId(line.equipmentId);
             }
             const updatedTemporaryLimits1 = updateTemporaryLimits(
-                formatTemporaryLimits(line.currentLimits1?.temporaryLimits),
-                formatTemporaryLimits(twtToModifyRef.current?.currentLimits1?.temporaryLimits)
+                formatTemporaryLimits(line?.currentLimits1?.temporaryLimits),
+                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`))
             );
             const updatedTemporaryLimits2 = updateTemporaryLimits(
-                formatTemporaryLimits(line.currentLimits2?.temporaryLimits),
-                formatTemporaryLimits(twtToModifyRef.current?.currentLimits2?.temporaryLimits)
+                formatTemporaryLimits(line?.currentLimits2?.temporaryLimits),
+                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`))
             );
             reset({
                 [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
@@ -197,12 +195,11 @@ const LineModificationDialog = ({
                 ...getPropertiesFromModification(line.properties),
             });
         },
-        [reset]
+        [getValues, reset]
     );
 
     useEffect(() => {
         if (editData) {
-            editDataRef.current = editData;
             fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
@@ -304,22 +301,23 @@ const LineModificationDialog = ({
                     .then((line) => {
                         if (line) {
                             setLineToModify(line);
-                            twtToModifyRef.current = line;
                             setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, line?.voltageLevelId1);
                             setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, line?.voltageLevelId2);
                             setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
                             setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
                             const updatedTemporaryLimits1 = updateTemporaryLimits(
-                                formatTemporaryLimits(editDataRef.current?.currentLimits1?.temporaryLimits),
-                                formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
+                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(line?.currentLimits1?.temporaryLimits)
                             );
                             const updatedTemporaryLimits2 = updateTemporaryLimits(
-                                formatTemporaryLimits(editDataRef.current?.currentLimits2?.temporaryLimits),
-                                formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
+                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(line?.currentLimits2?.temporaryLimits)
                             );
                             reset((formValues) => ({
                                 ...formValues,
                                 ...getLimitsFormData({
+                                    permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
+                                    permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
                                     temporaryLimits1: addSelectedFieldToRows(
                                         updatedTemporaryLimits1
                                             ? updatedTemporaryLimits1
@@ -340,15 +338,11 @@ const LineModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setLineToModify(null);
-                            twtToModifyRef.current = null;
-                            editDataRef.current = null;
                             reset(emptyFormData);
                         }
                     });
             } else {
                 setLineToModify(null);
-                twtToModifyRef.current = null;
-                editDataRef.current = null;
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },

@@ -649,7 +649,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, setConnectivityValue, reset, getValues, editData?.equipmentId]
+        [reset, studyUuid, currentNodeUuid, setConnectivityValue, getValues, editData?.equipmentId]
     );
 
     useEffect(() => {
