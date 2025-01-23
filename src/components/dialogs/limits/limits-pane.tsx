@@ -31,7 +31,7 @@ export interface LimitsPaneProps {
     id?: string;
     currentNode?: CurrentTreeNode;
     equipmentToModify?: any;
-    clearableFields?: any;
+    clearableFields?: boolean;
     // temporary value because creation interfaces uses complete limits groups while modification still uses the old system with only the selected current limits
     // will become obsolete once the modification interfaces use complete limits groups
     onlySelectedLimitsGroup?: boolean;
@@ -93,7 +93,7 @@ export function LimitsPane({
                 limitsGroupFormName={formName}
                 clearableFields={clearableFields}
                 permanentCurrentLimitPreviousValue={currentLimits?.permanentLimit}
-                previousValues={currentLimits?.temporaryLimits}
+                temporaryLimitsPreviousValues={currentLimits?.temporaryLimits}
                 currentNode={currentNode}
                 onlySelectedLimitsGroup={onlySelectedLimitsGroup}
             />

@@ -26,8 +26,8 @@ import { TemporaryLimit } from '../../../services/network-modification-types';
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
     permanentCurrentLimitPreviousValue: any;
-    previousValues: any;
-    clearableFields: any;
+    temporaryLimitsPreviousValues: any;
+    clearableFields: boolean | undefined;
     currentNode: any;
     onlySelectedLimitsGroup: boolean;
 }
@@ -43,7 +43,7 @@ export interface ILimitColumnDef {
 export function LimitsSidePane({
     limitsGroupFormName,
     permanentCurrentLimitPreviousValue,
-    previousValues,
+    temporaryLimitsPreviousValues,
     clearableFields,
     currentNode,
     onlySelectedLimitsGroup,
@@ -203,7 +203,7 @@ export function LimitsSidePane({
                     withBottomButtons={onlySelectedLimitsGroup}
                     withCheckboxes={onlySelectedLimitsGroup}
                     withButtonOnTheRight={!onlySelectedLimitsGroup}
-                    previousValues={previousValues}
+                    previousValues={temporaryLimitsPreviousValues}
                     disableTableCell={disableTableCell}
                     getPreviousValue={getPreviousValue}
                     isValueModified={isValueModified}

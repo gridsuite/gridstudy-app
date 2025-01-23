@@ -65,7 +65,7 @@ export function OperationalLimitsGroupsTabs({
     indexSelectedLimitSet1,
     indexSelectedLimitSet2,
 }: Readonly<OperationalLimitsGroupsTabsProps>) {
-    const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number>(0);
+    const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number | null>(0);
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
     const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -132,14 +132,22 @@ export function OperationalLimitsGroupsTabs({
     );
 
     useEffect(() => {
-        if (limitsGroups1[selectedLimitGroupTabIndex]) {
-            const selectedGroupStr = limitsGroups1[selectedLimitGroupTabIndex].id;
+        if (selectedLimitGroupTabIndex != null && selectedLimitGroupTabIndex < limitsGroups1.length) {
+            const selectedGroupStr: string = limitsGroups1[selectedLimitGroupTabIndex].id;
             setIndexSelectedLimitSet1(
-                limitsGroups1.findIndex((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr)
+                limitsGroups1.findIndex(
+                    (limitsGroup: OperationalLimitsGroup) => limitsGroup && limitsGroup.id === selectedGroupStr
+                )
             );
             setIndexSelectedLimitSet2(
-                limitsGroups2.findIndex((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr)
+                limitsGroups2.findIndex(
+                    (limitsGroup: OperationalLimitsGroup) => limitsGroup && limitsGroup.id === selectedGroupStr
+                )
             );
+        } else {
+            setSelectedLimitGroupTabIndex(null);
+            setIndexSelectedLimitSet1(-1);
+            setIndexSelectedLimitSet2(-1);
         }
     }, [
         selectedLimitGroupTabIndex,
@@ -263,7 +271,7 @@ export function OperationalLimitsGroupsTabs({
             <Tabs
                 orientation="vertical"
                 variant="scrollable"
-                value={selectedLimitGroupTabIndex}
+                value={selectedLimitGroupTabIndex != null ? selectedLimitGroupTabIndex : false}
                 onChange={handleTabChange}
                 sx={tabStyles.listDisplay}
             >

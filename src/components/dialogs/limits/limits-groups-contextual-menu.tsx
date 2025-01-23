@@ -58,20 +58,21 @@ export function LimitsGroupsContextualMenu({
     const { getValues, setValue } = useFormContext();
 
     const handleDeleteTab = useCallback(() => {
-        if (activatedByMenuTabIndex != null) {
+        if (indexSelectedLimitSet1 >= 0) {
             // if this operational limit was selected, deselect it
             if (selectedLimitsGroups1 === editedLimitGroupName) {
                 setValue(`${id}.${SELECTED_LIMITS_GROUP_1}`, '');
             }
+            removeLimitsGroups1(indexSelectedLimitSet1);
+        }
+        if (indexSelectedLimitSet2 >= 0) {
             if (selectedLimitsGroups2 === editedLimitGroupName) {
                 setValue(`${id}.${SELECTED_LIMITS_GROUP_2}`, '');
             }
-            removeLimitsGroups1(indexSelectedLimitSet1);
             removeLimitsGroups2(indexSelectedLimitSet2);
-            handleCloseMenu();
         }
+        handleCloseMenu();
     }, [
-        activatedByMenuTabIndex,
         handleCloseMenu,
         removeLimitsGroups1,
         removeLimitsGroups2,
@@ -85,27 +86,28 @@ export function LimitsGroupsContextualMenu({
     ]);
 
     const handleDuplicateTab = useCallback(() => {
-        if (activatedByMenuTabIndex != null) {
-            const newName: string = editedLimitGroupName + ' (duplicate)';
+        const newName: string = editedLimitGroupName + ` (${getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`).length})`;
+        if (indexSelectedLimitSet1 >= 0) {
             const duplicatedLimits1 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`);
             const newLimitsGroup1: OperationalLimitsGroup = {
                 ...duplicatedLimits1,
                 [ID]: newName,
             };
             appendToLimitsGroups1(newLimitsGroup1);
+        }
 
+        if (indexSelectedLimitSet2 >= 0) {
             const duplicatedLimits2 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`);
             const newLimitsGroup2: OperationalLimitsGroup = {
                 ...duplicatedLimits2,
                 [ID]: newName,
             };
             appendToLimitsGroups2(newLimitsGroup2);
-
-            handleCloseMenu();
         }
+        handleCloseMenu();
     }, [
+        getValues,
         handleCloseMenu,
-        activatedByMenuTabIndex,
         appendToLimitsGroups1,
         appendToLimitsGroups2,
         editedLimitGroupName,
