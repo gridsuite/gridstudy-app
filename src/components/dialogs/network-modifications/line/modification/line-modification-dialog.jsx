@@ -156,14 +156,6 @@ const LineModificationDialog = ({
             if (line?.equipmentId) {
                 setSelectedId(line.equipmentId);
             }
-            const updatedTemporaryLimits1 = updateTemporaryLimits(
-                formatTemporaryLimits(line?.currentLimits1?.temporaryLimits),
-                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`))
-            );
-            const updatedTemporaryLimits2 = updateTemporaryLimits(
-                formatTemporaryLimits(line?.currentLimits2?.temporaryLimits),
-                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`))
-            );
             reset({
                 [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
                 [CONNECTIVITY]: {
@@ -182,20 +174,16 @@ const LineModificationDialog = ({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        updatedTemporaryLimits1
-                            ? updatedTemporaryLimits1
-                            : formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
+                        formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        updatedTemporaryLimits2
-                            ? updatedTemporaryLimits2
-                            : formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
+                        formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
                     ),
                 }),
                 ...getPropertiesFromModification(line.properties),
             });
         },
-        [getValues, reset]
+        [reset]
     );
 
     useEffect(() => {
@@ -318,16 +306,8 @@ const LineModificationDialog = ({
                                 ...getLimitsFormData({
                                     permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
                                     permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
-                                    temporaryLimits1: addSelectedFieldToRows(
-                                        updatedTemporaryLimits1
-                                            ? updatedTemporaryLimits1
-                                            : formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
-                                    ),
-                                    temporaryLimits2: addSelectedFieldToRows(
-                                        updatedTemporaryLimits2
-                                            ? updatedTemporaryLimits2
-                                            : formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
-                                    ),
+                                    temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
+                                    temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
                                 }),
                                 [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                             }));
