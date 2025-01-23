@@ -26,7 +26,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button';
 import { UUID } from 'crypto';
-import { GridReadyEvent } from 'ag-grid-community';
+import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -115,9 +115,9 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         }
     }, []);
 
-    const handleRowDataUpdated = useCallback((params: GridReadyEvent) => {
-        if (params?.api) {
-            setIsCsvButtonDisabled(params.api.getModel().getRowCount() === 0);
+    const handleRowDataUpdated = useCallback((event: RowDataUpdatedEvent) => {
+        if (event?.api) {
+            setIsCsvButtonDisabled(event.api.getDisplayedRowCount() === 0);
         }
     }, []);
 

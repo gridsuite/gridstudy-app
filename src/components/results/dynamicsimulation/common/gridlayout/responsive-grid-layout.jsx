@@ -9,7 +9,7 @@ import './react-grid-layout.main.css'; // from /node_modules/react-grid-layout/c
 import './react-grid-layout.custom.css';
 // TODO place these css at global or directly into useStyles for RGLResponsive
 import { Responsive as RGLResponsive } from 'react-grid-layout';
-import { AutoSizer } from 'react-virtualized';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 const ResponsiveGridLayout = ({ computeRowHeight, ...rest }) => {
     // use AutoSizer to make react-grid-layout Responsive component aware of width

@@ -29,7 +29,7 @@ import {
 } from './diagram-common';
 import { getEstimatedNbVoltageLevels, makeDiagramSorter } from './diagram-utils';
 import { isNodeBuilt, isNodeInNotificationList } from '../graph/util/model-functions';
-import { AutoSizer } from 'react-virtualized';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
