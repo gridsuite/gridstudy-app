@@ -18,7 +18,7 @@ import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { ContingencyCellRenderer, convertDuration, formatNAValue } from 'components/spreadsheet/utils/cell-renderers';
 import {
-    CustomColDef,
+    ColumnContext,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -137,7 +137,7 @@ export const securityAnalysisTableNColumnsDefinition = (
     tabIndex: number,
     onFilter: () => void
 ): ColDef[] => {
-    const sortParams: CustomColDef['sortParams'] = {
+    const sortParams: ColumnContext['sortParams'] = {
         table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
         tab: getStoreFields(tabIndex),
     };
@@ -307,7 +307,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     tabIndex: number,
     onFilter: () => void
 ): ColDef[] => {
-    const sortParams: CustomColDef['sortParams'] = {
+    const sortParams: ColumnContext['sortParams'] = {
         table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
         tab: getStoreFields(tabIndex),
     };
@@ -513,7 +513,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     tabIndex: number,
     onFilter: () => void
 ): ColDef[] => {
-    const sortParams: CustomColDef['sortParams'] = {
+    const sortParams: ColumnContext['sortParams'] = {
         table: SECURITY_ANALYSIS_RESULT_SORT_STORE,
         tab: getStoreFields(tabIndex),
     };

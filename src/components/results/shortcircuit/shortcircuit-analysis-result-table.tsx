@@ -16,7 +16,7 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import {
-    CustomColDef,
+    ColumnContext,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -98,7 +98,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         const isAllBusesAnalysisType = analysisType === ShortCircuitAnalysisType.ALL_BUSES;
         const isOneBusAnalysisType = analysisType === ShortCircuitAnalysisType.ONE_BUS;
 
-        const sortParams: CustomColDef['sortParams'] = {
+        const sortParams: ColumnContext['sortParams'] = {
             table: SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
             tab: mappingTabs(analysisType),
         };

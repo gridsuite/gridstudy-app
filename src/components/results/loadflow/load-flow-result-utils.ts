@@ -13,7 +13,7 @@ import { convertDuration, formatNAValue } from '../../spreadsheet/utils/cell-ren
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import {
-    CustomColDef,
+    ColumnContext,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -232,7 +232,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number
 ): ColDef[] => {
-    const sortParams: CustomColDef['sortParams'] = {
+    const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
         tab: mappingTabs(tabIndex),
     };
@@ -366,7 +366,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     tabIndex: number
 ): ColDef[] => {
-    const sortParams: CustomColDef['sortParams'] = {
+    const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
         tab: mappingTabs(tabIndex),
     };
@@ -440,7 +440,7 @@ export const loadFlowResultColumnsDefinition = (
     statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
 ): ColDef[] => {
-    const sortParams: CustomColDef['sortParams'] = {
+    const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
         tab: mappingTabs(tabIndex),
     };

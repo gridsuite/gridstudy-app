@@ -12,7 +12,7 @@ import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
-import { ColDef } from 'ag-grid-community';
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 
 export function useCustomColumn(tabIndex: number) {
     const tablesNames = useSelector((state: AppState) => state.tables.names);
@@ -77,7 +77,7 @@ export function useCustomColumn(tabIndex: number) {
     );
 
     const createCustomColumn = useCallback(() => {
-        return customColumnsDefinitions.map((colWithFormula): ColDef => {
+        return customColumnsDefinitions.map((colWithFormula): CustomColDef => {
             return {
                 colId: colWithFormula.id,
                 headerName: colWithFormula.name,
