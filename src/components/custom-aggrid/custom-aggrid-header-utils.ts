@@ -9,16 +9,21 @@ import { CustomAggridFilterParams, CustomColDef, FilterSelectorType } from './cu
 import CustomHeaderComponent from './custom-aggrid-header';
 
 export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
-    sortProps, // sortProps: contains useAgGridSort params
-    forceDisplayFilterIcon,
-    filterComponent,
-    filterComponentParams,
-    tabIndex,
-    isCustomColumn,
-    Menu,
+    context,
     ...props // agGrid column props
 }: CustomColDef<any, any, F>) => {
-    const { headerName, field = '', fractionDigits, numeric } = props;
+    const {
+        sortProps, // sortProps: contains useAgGridSort params
+        forceDisplayFilterIcon,
+        filterComponent,
+        filterComponentParams,
+        tabIndex,
+        isCustomColumn,
+        Menu,
+        fractionDigits,
+        numeric,
+    } = context || {};
+    const { colId, headerName, field = '' } = props;
     const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const isSortable = !!sortProps;
     const isCurrentColumnSorted = !!sortConfig?.find((value) => value.colId === field);
@@ -34,9 +39,9 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
     return {
         headerTooltip: headerName,
         minWidth,
-        fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
+            colId,
             field,
             displayName: headerName,
             sortParams: {
@@ -53,8 +58,12 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
             filterComponent: filterComponent,
             filterComponentParams,
         },
-        filterParams: props?.agGridFilterParams || undefined,
+        filterParams: context?.agGridFilterParams || undefined,
         ...props,
+        context: {
+            ...context,
+            fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
+        },
     };
 };
 

@@ -36,6 +36,7 @@ import { mergeSx } from '../utils/functions';
 import { CustomAggridFilterParams, CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
+import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
 import { CustomAggridAutocompleteFilterParams } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 
 const styles = {
@@ -83,6 +84,10 @@ interface TableWrapperProps {
     disabled: boolean;
 }
 
+interface RecursiveIdentifiable extends Identifiable {
+    [alias: string]: Identifiable | string | undefined;
+}
+
 const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     studyUuid,
     currentNode,
@@ -105,6 +110,9 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
+    );
+    const additionalEquipmentsByNodesForCustomColumns = useSelector(
+        (state: AppState) => state.additionalEquipmentsByNodesForCustomColumns
     );
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const tablesDefinitionTypes = useSelector((state: AppState) => state.tables.definitionTypes);
@@ -186,40 +194,47 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         equipmentDefinition as EquipmentProps,
-        formatFetchedEquipmentsHandler
+        formatFetchedEquipmentsHandler,
+        tabIndex
     );
 
     const enrichColumn = useCallback(
         (column: CustomColDef<any, any, CustomAggridAutocompleteFilterParams & CustomAggridFilterParams>) => {
             const columnExtended = { ...column };
-            columnExtended.headerName = intl.formatMessage({ id: columnExtended.id });
+            columnExtended.headerName = intl.formatMessage({ id: columnExtended.colId });
 
             if (columnExtended.cellRenderer == null) {
                 columnExtended.cellRenderer = DefaultCellRenderer;
             }
 
-            columnExtended.width = columnExtended.columnWidth || MIN_COLUMN_WIDTH;
+            columnExtended.width = columnExtended?.context?.columnWidth || MIN_COLUMN_WIDTH;
 
             //if it is not the first render the column might already have a pinned value so we need to handle the case where it needs to be reseted to undefined
             //we reuse and mutate the column objects so we need to clear to undefined
-            columnExtended.pinned = lockedColumnsNames.has(columnExtended.id) ? 'left' : undefined;
+            columnExtended.pinned = lockedColumnsNames.has(columnExtended.colId) ? 'left' : undefined;
 
-            columnExtended.filterComponentParams = {
-                filterParams: {
-                    updateFilter,
-                    filterSelector,
-                    ...columnExtended?.filterComponentParams?.filterParams,
+            columnExtended.context = {
+                ...columnExtended?.context,
+                filterComponentParams: {
+                    filterParams: {
+                        updateFilter,
+                        filterSelector,
+                        ...columnExtended?.context?.filterComponentParams?.filterParams,
+                    },
                 },
             };
 
             return makeAgGridCustomHeaderColumn({
                 headerName: columnExtended.headerName,
                 field: columnExtended.field,
-                sortProps: {
-                    onSortChanged,
-                    sortConfig,
-                },
                 ...columnExtended,
+                context: {
+                    ...columnExtended.context,
+                    sortProps: {
+                        onSortChanged,
+                        sortConfig,
+                    },
+                },
             });
         },
         [intl, lockedColumnsNames, updateFilter, filterSelector, onSortChanged, sortConfig]
@@ -245,13 +260,41 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (disabled || !equipments) {
             return;
         }
+
+        let equipmentsWithCustomColumnInfo = [...equipments];
+        if (equipmentDefinition.type) {
+            Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach(([nodeAlias, equipments]) => {
+                const equipmentsToAdd = equipments[equipmentDefinition.type];
+                if (equipmentsToAdd) {
+                    equipmentsToAdd.forEach((equipmentToAdd) => {
+                        let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(
+                            (equipmentWithCustomColumnInfo) => equipmentWithCustomColumnInfo.id === equipmentToAdd.id
+                        );
+                        let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
+                        if (matchingEquipment) {
+                            let equipmentWithAddedInfo: RecursiveIdentifiable = { ...matchingEquipment };
+                            equipmentWithAddedInfo[nodeAlias] = equipmentToAdd;
+                            equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
+                        }
+                    });
+                }
+            });
+        }
+        setRowData(equipmentsWithCustomColumnInfo);
+
         // To handle cases where a "customSpreadsheet" tab is opened.
         // This ensures that the grid correctly displays data specific to the custom tab.
         if (gridRef.current?.api) {
-            gridRef.current.api.setGridOption('rowData', equipments);
+            gridRef.current.api.setGridOption('rowData', equipmentsWithCustomColumnInfo);
         }
-        setRowData(equipments);
-    }, [tabIndex, disabled, equipments]);
+    }, [
+        tabIndex,
+        disabled,
+        equipments,
+        tablesNames,
+        additionalEquipmentsByNodesForCustomColumns,
+        equipmentDefinition.type,
+    ]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
@@ -263,7 +306,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     useEffect(() => {
-        gridRef.current?.api?.showLoadingOverlay();
         return () => clearTimeout(timerRef.current);
     }, [tabIndex]);
 
@@ -282,7 +324,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setReorderedTableDefinitionIndexes(
             allReorderedTemp
                 ? JSON.parse(allReorderedTemp)
-                : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.id)
+                : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.colId)
         );
     }, [allReorderedTableDefinitionIndexes, tabIndex, tablesDefinitionIndexes]);
 
@@ -339,7 +381,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     useEffect(() => {
         const lockedColumnsConfig = currentColumns()
-            .filter((column) => lockedColumnsNames.has(column.id))
+            .filter((column) => lockedColumnsNames.has(column.colId))
             .map((column) => {
                 const s: ColumnState = {
                     colId: column.field ?? '',
@@ -395,19 +437,15 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const generateTableColumns = useCallback(() => {
-        let selectedTableColumns = currentColumns()
+        return currentColumns()
             .filter((c) => {
-                return selectedColumnsNames.has(c.id);
+                return selectedColumnsNames.has(c.colId);
             })
-            .map((column) => enrichColumn(column));
-
-        function sortByIndex(a: any, b: any) {
-            return reorderedTableDefinitionIndexes.indexOf(a.id) - reorderedTableDefinitionIndexes.indexOf(b.id);
-        }
-
-        selectedTableColumns.sort(sortByIndex);
-
-        return selectedTableColumns;
+            .map((column) => enrichColumn(column))
+            .sort(
+                (a, b) =>
+                    reorderedTableDefinitionIndexes.indexOf(a.colId) - reorderedTableDefinitionIndexes.indexOf(b.colId)
+            );
     }, [enrichColumn, reorderedTableDefinitionIndexes, selectedColumnsNames, currentColumns]);
 
     useEffect(() => {
@@ -434,6 +472,11 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     {developerMode && (
                         <Grid item>
                             <CustomColumnsConfig tabIndex={tabIndex} />
+                        </Grid>
+                    )}
+                    {developerMode && (
+                        <Grid item>
+                            <CustomColumnsNodesConfig />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>

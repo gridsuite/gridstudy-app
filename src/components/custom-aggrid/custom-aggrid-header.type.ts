@@ -40,12 +40,12 @@ export type FilterParams = {
     filterDataType?: string;
     filterComparators?: string[];
     debounceMs?: number;
-    updateFilter?: (field: string, value: FilterDataType) => void;
+    updateFilter?: (colId: string, value: FilterDataType) => void;
     filterSelector?: FilterSelectorType[] | null;
 };
 
 export interface CustomAggridFilterParams {
-    field: string;
+    colId: string;
     filterParams: FilterParams;
 }
 
@@ -76,14 +76,12 @@ export type FilterStorePropsType = {
     filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
 };
 
-export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
-    extends ColDef<TData, TValue> {
+export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggridFilterParams> {
     agGridFilterParams?: {
         filterOptions: IFilterOptionDef[];
     };
     columnWidth?: number;
     fractionDigits?: number;
-    id: string;
     isDefaultSort?: boolean;
     numeric?: boolean;
     sortProps?: SortPropsType;
@@ -92,6 +90,12 @@ export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridF
     isCustomColumn?: boolean;
     Menu?: React.FC<CustomColumnConfigProps>;
     filterComponent?: ComponentType<F>;
-    //We omit field here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
-    filterComponentParams?: Omit<F, 'field'>;
+    //We omit colId here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
+    filterComponentParams?: Omit<F, 'colId'>;
+}
+
+export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
+    extends ColDef<TData, TValue> {
+    colId: string;
+    context?: ColumnContext<F>;
 }

@@ -4,108 +4,114 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
-import { useDispatch } from 'react-redux';
 import { VirtualizedTreeview } from './virtualized-treeview';
 import { ReportItem } from './treeview-item';
-import { Report, ReportLog, ReportTree, ReportType, SeverityLevel } from 'utils/report/report.type';
+import { Report, ReportLog, ReportTree, ReportType, SelectedReportLog, SeverityLevel } from 'utils/report/report.type';
+import { GLOBAL_REPORT_NODE_LABEL } from '../../utils/report/report.constant';
 
 type ReportViewerProps = { report: Report; reportType: string; severities: SeverityLevel[] | undefined };
 
-export default function ReportViewer({ report, reportType, severities }: ReportViewerProps) {
-    const dispatch = useDispatch();
+const DEFAULT_CONTAINER_HEIGHT_OFFSET = 170; // The value 170px is fine, but leaves a gap below the report.
 
+export default function ReportViewer({ report, reportType, severities = [] }: Readonly<ReportViewerProps>) {
     const [expandedTreeReports, setExpandedTreeReports] = useState<string[]>([]);
     const [highlightedReportId, setHighlightedReportId] = useState<string>();
-    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number | undefined>(undefined);
+    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number>(
+        DEFAULT_CONTAINER_HEIGHT_OFFSET
+    );
 
-    const [selectedReportId, setSelectedReportId] = useState(report?.id);
-    const [selectedReportType, setSelectedReportType] = useState<ReportType>();
+    const [selectedReport, setSelectedReport] = useState<SelectedReportLog>({
+        id: report.id,
+        type: report.message === GLOBAL_REPORT_NODE_LABEL ? ReportType.GLOBAL : ReportType.NODE,
+    });
 
     const reportTree = useMemo(() => mapReportsTree(report), [report]);
-    const reportTreeMap = useRef<Record<string, ReportTree>>({});
 
-    const mapReportsById = useCallback((item: ReportTree) => {
-        reportTreeMap.current[item.id] = item;
-        for (let subReport of item.subReports) {
-            mapReportsById(subReport);
-        }
-    }, []);
+    const reportTreeMap = useMemo(() => {
+        const map: Record<string, ReportTree> = {};
+        const mapReportsById = (item: ReportTree) => {
+            map[item.id] = item;
+            item.subReports.forEach((subReport) => mapReportsById(subReport));
+        };
+        mapReportsById(reportTree);
+        return map;
+    }, [reportTree]);
 
     useEffect(() => {
-        mapReportsById(reportTree);
         setExpandedTreeReports([reportTree.id]);
-        setSelectedReportId(reportTree.id);
-        setSelectedReportType(reportTreeMap.current[reportTree.id]?.type);
-    }, [reportTree, dispatch, mapReportsById]);
+        setSelectedReport({ id: reportTree.id, type: reportTreeMap[reportTree.id]?.type });
+    }, [reportTree, reportTreeMap]);
 
     const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
-        setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
+        setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top ?? DEFAULT_CONTAINER_HEIGHT_OFFSET);
     }, []);
 
-    const onLogRowClick = (data: ReportLog) => {
-        setExpandedTreeReports((previouslyExpandedTreeReports) => {
-            let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
-            let parentId = data.parentId;
-            while (reportTreeMap.current[parentId]?.parentId) {
-                parentId = reportTreeMap.current[parentId].parentId as string;
-                treeReportsToExpand.add(parentId);
-            }
-            return Array.from(treeReportsToExpand);
-        });
-        setHighlightedReportId(data.parentId);
-    };
+    // We calculate the remaining height relative to the viewport and the top position of the report.
+    const reportContainerHeight = useMemo(
+        () => `calc(100vh - ${reportVerticalPositionFromTop}px)`,
+        [reportVerticalPositionFromTop]
+    );
+
+    const onLogRowClick = useCallback(
+        (data: ReportLog) => {
+            setExpandedTreeReports((previouslyExpandedTreeReports) => {
+                let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
+                let parentId: string | null = data.parentId;
+                while (parentId && reportTreeMap[parentId]?.parentId) {
+                    parentId = reportTreeMap[parentId].parentId;
+                    if (parentId) {
+                        treeReportsToExpand.add(parentId);
+                    }
+                }
+                return Array.from(treeReportsToExpand);
+            });
+            setHighlightedReportId(data.parentId);
+        },
+        [reportTreeMap]
+    );
 
     const handleSelectedItem = useCallback(
         (report: ReportItem) => {
-            if (selectedReportId !== report.id) {
-                setSelectedReportId(report.id);
-                setSelectedReportType(reportTreeMap.current[report.id].type);
-            }
+            setSelectedReport((prevSelectedReport) => {
+                if (prevSelectedReport.id !== report.id) {
+                    return { id: report.id, type: reportTreeMap[report.id].type };
+                }
+                return prevSelectedReport;
+            });
         },
-        [selectedReportId]
+        [reportTreeMap]
     );
 
     return (
-        report && (
-            <Grid
-                container
-                ref={handleReportVerticalPositionFromTop}
-                sx={{
-                    // We calculate the remaining height relative to the viewport and the top position of the report.
-                    height:
-                        'calc(100vh - ' +
-                        (reportVerticalPositionFromTop || '160') + // The value 160 is fine, but leaves a gap below the report.
-                        'px)',
-                }}
-            >
-                <Grid item sm={3} sx={{ borderRight: (theme) => `1px solid ${theme.palette.divider}` }}>
-                    {reportTree && (
-                        <VirtualizedTreeview
-                            expandedTreeReports={expandedTreeReports}
-                            setExpandedTreeReports={setExpandedTreeReports}
-                            selectedReportId={selectedReportId}
-                            reportTree={reportTree}
-                            onSelectedItem={handleSelectedItem}
-                            highlightedReportId={highlightedReportId}
-                        />
-                    )}
-                </Grid>
-                <Grid item xs={12} sm={9}>
-                    {selectedReportId && selectedReportType && (
-                        <LogTable
-                            selectedReportId={selectedReportId}
-                            reportType={reportType}
-                            reportNature={selectedReportType} // GlobalReport or NodeReport
-                            severities={severities}
-                            onRowClick={onLogRowClick}
-                        />
-                    )}
-                </Grid>
+        <Grid
+            container
+            ref={handleReportVerticalPositionFromTop}
+            sx={{
+                height: reportContainerHeight,
+            }}
+        >
+            <Grid item sm={3} sx={{ borderRight: (theme) => `1px solid ${theme.palette.divider}` }}>
+                <VirtualizedTreeview
+                    expandedTreeReports={expandedTreeReports}
+                    setExpandedTreeReports={setExpandedTreeReports}
+                    selectedReportId={selectedReport.id}
+                    reportTree={reportTree}
+                    onSelectedItem={handleSelectedItem}
+                    highlightedReportId={highlightedReportId}
+                />
             </Grid>
-        )
+            <Grid item xs={12} sm={9}>
+                <LogTable
+                    selectedReport={selectedReport}
+                    reportType={reportType}
+                    severities={severities}
+                    onRowClick={onLogRowClick}
+                />
+            </Grid>
+        </Grid>
     );
 }

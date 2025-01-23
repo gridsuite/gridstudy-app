@@ -18,53 +18,68 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
     ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
-            isDefaultSort: true,
             ...defaultTextFilterConfig,
+            context: {
+                ...defaultTextFilterConfig.context,
+                isDefaultSort: true,
+            },
         },
         {
-            id: 'Name',
+            colId: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
         },
         {
-            id: 'SubstationId',
+            colId: 'SubstationId',
             field: 'substationId',
             ...defaultTextFilterConfig,
         },
         {
-            id: 'Country',
+            colId: 'Country',
             field: 'country',
             ...defaultTextFilterConfig,
         },
         {
-            id: 'NominalV',
+            colId: 'NominalV',
             field: 'nominalV',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 0,
+            },
         },
         {
             id: 'LowVoltageLimitkV',
             field: 'lowVoltageLimit',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+            },
         },
         {
             id: 'HighVoltageLimitkV',
             field: 'highVoltageLimit',
-            numeric: true,
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+            },
         },
         {
-            id: 'IpMin',
+            colId: 'IpMin',
             field: 'identifiableShortCircuit.ipMin',
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            numeric: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+            },
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -72,11 +87,14 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
                 ),
         },
         {
-            id: 'IpMax',
+            colId: 'IpMax',
             field: 'identifiableShortCircuit.ipMax',
             ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            numeric: true,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+            },
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,

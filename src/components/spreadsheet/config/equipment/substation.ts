@@ -17,18 +17,21 @@ export const SUBSTATION_TAB_DEF = {
     ...typeAndFetchers(EQUIPMENT_TYPES.SUBSTATION),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
             ...defaultTextFilterConfig,
-            isDefaultSort: true,
+            context: {
+                ...defaultTextFilterConfig.context,
+                isDefaultSort: true,
+            },
         },
         {
-            id: 'Name',
+            colId: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
         },
         {
-            id: 'Country',
+            colId: 'Country',
             field: 'country',
             ...defaultTextFilterConfig,
         },
