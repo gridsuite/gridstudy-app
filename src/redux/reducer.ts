@@ -1160,7 +1160,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CURRENT_ROOT_NETWORK, (state, action: CurrentRootNetworkAction) => {
         state.currentRootNetwork = action.currentRootNetwork;
-        state.reloadMap = true;
         state.isNetworkModificationTreeModelUpToDate = false;
     });
 

@@ -192,7 +192,10 @@ function useStudy(studyUuidRequest) {
                     .catch((error) => {
                         // Handle errors when fetching root networks
                         setErrMessage(
-                            intlRef.current.formatMessage({ id: 'rootNetworkNotFound' }, { error: error.message })
+                            intlRef.current.formatMessage(
+                                { id: 'rootNetworkNotFound' },
+                                { studyUuid: studyUuidRequest }
+                            )
                         );
                     });
             })

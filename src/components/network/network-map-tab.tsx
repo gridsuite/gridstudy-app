@@ -808,10 +808,10 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         if (isInitialized && studyUpdatedForce.eventData.headers) {
-            const currentRootNetwork = studyUpdatedForce.eventData.headers['rootNetwork'];
+            const rootNetworkUuidFromNotification = studyUpdatedForce.eventData.headers['rootNetwork'];
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
-                currentRootNetwork === currentRootNetworkUuid
+                rootNetworkUuidFromNotification === currentRootNetworkUuid
             ) {
                 reloadMapEquipments(currentNodeRef.current, undefined).catch((e) =>
                     snackError({
