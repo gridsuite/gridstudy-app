@@ -13,7 +13,7 @@ import {
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
 } from '../../utils/field-constants';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -25,8 +25,10 @@ import { OperationalLimitsGroup } from '../../../services/network-modification-t
 
 export interface LimitsGroupsContextualMenuProps {
     id?: string;
-    indexSelectedLimitSet1: number;
-    indexSelectedLimitSet2: number;
+    indexSelectedLimitSet1: number | null;
+    indexSelectedLimitSet2: number | null;
+    setIndexSelectedLimitSet1: React.Dispatch<React.SetStateAction<number | null>>;
+    setIndexSelectedLimitSet2: React.Dispatch<React.SetStateAction<number | null>>;
     menuAnchorEl: any;
     handleCloseMenu: () => void;
     activatedByMenuTabIndex: number | null;
@@ -47,6 +49,8 @@ export function LimitsGroupsContextualMenu({
     selectedLimitsGroups1,
     selectedLimitsGroups2,
     editedLimitGroupName,
+    setIndexSelectedLimitSet1,
+    setIndexSelectedLimitSet2,
 }: Readonly<LimitsGroupsContextualMenuProps>) {
     const intl = useIntl();
     const { append: appendToLimitsGroups1, remove: removeLimitsGroups1 } = useFieldArray({
@@ -57,37 +61,29 @@ export function LimitsGroupsContextualMenu({
     });
     const { getValues, setValue } = useFormContext();
 
-    const handleDeleteTab = useCallback(() => {
-        if (indexSelectedLimitSet1 >= 0) {
+    const handleDeleteTab = () => {
+        if (indexSelectedLimitSet1 !== null) {
             // if this operational limit was selected, deselect it
             if (selectedLimitsGroups1 === editedLimitGroupName) {
                 setValue(`${id}.${SELECTED_LIMITS_GROUP_1}`, '');
             }
             removeLimitsGroups1(indexSelectedLimitSet1);
+            setIndexSelectedLimitSet1(null);
         }
-        if (indexSelectedLimitSet2 >= 0) {
+        if (indexSelectedLimitSet2 !== null) {
             if (selectedLimitsGroups2 === editedLimitGroupName) {
                 setValue(`${id}.${SELECTED_LIMITS_GROUP_2}`, '');
             }
             removeLimitsGroups2(indexSelectedLimitSet2);
+            setIndexSelectedLimitSet2(null);
         }
         handleCloseMenu();
-    }, [
-        handleCloseMenu,
-        removeLimitsGroups1,
-        removeLimitsGroups2,
-        editedLimitGroupName,
-        id,
-        indexSelectedLimitSet1,
-        indexSelectedLimitSet2,
-        selectedLimitsGroups1,
-        selectedLimitsGroups2,
-        setValue,
-    ]);
+    };
 
-    const handleDuplicateTab = useCallback(() => {
-        const newName: string = editedLimitGroupName + ` (${getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`).length})`;
-        if (indexSelectedLimitSet1 >= 0) {
+    const handleDuplicateTab = () => {
+        const numberOfLimitsGroups = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`).length;
+        const newName: string = editedLimitGroupName + ` (${numberOfLimitsGroups})`;
+        if (indexSelectedLimitSet1 !== null) {
             const duplicatedLimits1 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`);
             const newLimitsGroup1: OperationalLimitsGroup = {
                 ...duplicatedLimits1,
@@ -96,7 +92,7 @@ export function LimitsGroupsContextualMenu({
             appendToLimitsGroups1(newLimitsGroup1);
         }
 
-        if (indexSelectedLimitSet2 >= 0) {
+        if (indexSelectedLimitSet2 !== null) {
             const duplicatedLimits2 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`);
             const newLimitsGroup2: OperationalLimitsGroup = {
                 ...duplicatedLimits2,
@@ -105,17 +101,7 @@ export function LimitsGroupsContextualMenu({
             appendToLimitsGroups2(newLimitsGroup2);
         }
         handleCloseMenu();
-    }, [
-        getValues,
-        handleCloseMenu,
-        appendToLimitsGroups1,
-        appendToLimitsGroups2,
-        editedLimitGroupName,
-        getValues,
-        id,
-        indexSelectedLimitSet1,
-        indexSelectedLimitSet2,
-    ]);
+    };
 
     return (
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>

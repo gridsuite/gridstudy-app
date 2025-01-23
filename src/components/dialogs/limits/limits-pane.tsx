@@ -44,8 +44,8 @@ export function LimitsPane({
     clearableFields,
     onlySelectedLimitsGroup = false,
 }: Readonly<LimitsPaneProps>) {
-    const [indexSelectedLimitSet1, setIndexSelectedLimitSet1] = useState<number>(0);
-    const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number>(0);
+    const [indexSelectedLimitSet1, setIndexSelectedLimitSet1] = useState<number | null>(null);
+    const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | null>(null);
 
     const limitsGroups1: OperationalLimitsGroup[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}.`,
@@ -75,13 +75,14 @@ export function LimitsPane({
     const renderSidePaneAccordingToTabs = (
         id: string,
         limitsGroups: OperationalLimitsGroup[],
-        selectedTabIndex: number,
+        selectedTabIndex: number | null,
         formName: string,
         currentLimits: CurrentLimits | null
     ) =>
-        indexSelectedLimitSet1 !== -1 &&
+        indexSelectedLimitSet1 !== null &&
         limitsGroups.map(
             (operationalLimitsGroup: OperationalLimitsGroup, index: number) =>
+                selectedTabIndex != null &&
                 index === selectedTabIndex &&
                 renderSidePane(operationalLimitsGroup.id + id, `${formName}[${index}].${CURRENT_LIMITS}`, currentLimits)
         );

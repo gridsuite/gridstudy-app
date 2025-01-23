@@ -50,10 +50,10 @@ export interface OperationalLimitsGroupsTabsProps {
     id?: string;
     limitsGroups1: OperationalLimitsGroup[];
     limitsGroups2: OperationalLimitsGroup[];
-    indexSelectedLimitSet1: number;
-    indexSelectedLimitSet2: number;
-    setIndexSelectedLimitSet1: React.Dispatch<React.SetStateAction<number>>;
-    setIndexSelectedLimitSet2: React.Dispatch<React.SetStateAction<number>>;
+    indexSelectedLimitSet1: number | null;
+    indexSelectedLimitSet2: number | null;
+    setIndexSelectedLimitSet1: React.Dispatch<React.SetStateAction<number | null>>;
+    setIndexSelectedLimitSet2: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 export function OperationalLimitsGroupsTabs({
@@ -146,8 +146,8 @@ export function OperationalLimitsGroupsTabs({
             );
         } else {
             setSelectedLimitGroupTabIndex(null);
-            setIndexSelectedLimitSet1(-1);
-            setIndexSelectedLimitSet2(-1);
+            setIndexSelectedLimitSet1(null);
+            setIndexSelectedLimitSet2(null);
         }
     }, [
         selectedLimitGroupTabIndex,
@@ -343,6 +343,8 @@ export function OperationalLimitsGroupsTabs({
             <LimitsGroupsContextualMenu
                 indexSelectedLimitSet1={indexSelectedLimitSet1}
                 indexSelectedLimitSet2={indexSelectedLimitSet2}
+                setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}
+                setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
                 menuAnchorEl={menuAnchorEl}
                 handleCloseMenu={handleCloseMenu}
                 activatedByMenuTabIndex={activatedByMenuTabIndex}

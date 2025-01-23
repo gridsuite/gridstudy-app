@@ -15,8 +15,8 @@ import { limitsStyles } from './operational-limits-groups-tabs';
 
 export interface CopyLimitsProps {
     id?: string;
-    indexSelectedLimitSet1: number;
-    indexSelectedLimitSet2: number;
+    indexSelectedLimitSet1: number | null;
+    indexSelectedLimitSet2: number | null;
 }
 
 export function CopyLimits({ id = LIMITS, indexSelectedLimitSet1, indexSelectedLimitSet2 }: Readonly<CopyLimitsProps>) {
@@ -29,17 +29,21 @@ export function CopyLimits({ id = LIMITS, indexSelectedLimitSet1, indexSelectedL
     });
 
     const copyToRight = useCallback(() => {
-        updateLimitsGroups2(
-            indexSelectedLimitSet2,
-            getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`)
-        );
+        if (indexSelectedLimitSet2 !== null) {
+            updateLimitsGroups2(
+                indexSelectedLimitSet2,
+                getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`)
+            );
+        }
     }, [id, getValues, updateLimitsGroups2, indexSelectedLimitSet1, indexSelectedLimitSet2]);
 
     const copyToLeft = useCallback(() => {
-        updateLimitsGroups1(
-            indexSelectedLimitSet1,
-            getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`)
-        );
+        if (indexSelectedLimitSet1 != null) {
+            updateLimitsGroups1(
+                indexSelectedLimitSet1,
+                getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`)
+            );
+        }
     }, [id, getValues, updateLimitsGroups1, indexSelectedLimitSet1, indexSelectedLimitSet2]);
 
     return (
