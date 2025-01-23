@@ -375,6 +375,7 @@
     "DynamicSecurityAnalysisScenario": "Scénario",
     "DynamicSecurityAnalysisScenarioDuration": "Duration du scenario",
     "DynamicSecurityAnalysisContingenciesStartTime": "Temps de début des aléas",
+    "DynamicSecurityAnalysisTabStatus": "Statut",
 
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",

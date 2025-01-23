@@ -9,7 +9,11 @@ import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './in
 
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { DynamicSecurityAnalysisParametersInfos } from './dynamic-security-analysis.type';
+import {
+    DynamicSecurityAnalysisParametersFetchReturn,
+    DynamicSecurityAnalysisParametersInfos,
+} from './dynamic-security-analysis.type';
+import { fetchContingencyAndFiltersLists } from '../directory';
 
 const PREFIX_DYNAMIC_SECURITY_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/dynamic-security-analysis';
 
@@ -74,7 +78,7 @@ export function fetchDefaultDynamicSecurityAnalysisProvider() {
 
 export function updateDynamicSecurityAnalysisProvider(studyUuid: UUID, newProvider: string) {
     console.info('update dynamic security analysis provider');
-    const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis-/provider';
+    const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/provider';
     console.debug(url);
     return backendFetch(url, {
         method: 'POST',
@@ -88,17 +92,48 @@ export function updateDynamicSecurityAnalysisProvider(studyUuid: UUID, newProvid
 
 export function fetchDynamicSecurityAnalysisParameters(
     studyUuid: UUID
-): Promise<DynamicSecurityAnalysisParametersInfos> {
+): Promise<DynamicSecurityAnalysisParametersFetchReturn> {
     console.info(`Fetching dynamic security analysis parameters on '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/parameters';
     console.debug(url);
-    return backendFetchJson(url);
+    const parametersPromise: Promise<DynamicSecurityAnalysisParametersInfos> = backendFetchJson(url);
+
+    // enrich contingency list uuids by contingency list infos with id and name
+    return parametersPromise.then((parameters) => {
+        if (parameters?.contingencyListIds) {
+            return fetchContingencyAndFiltersLists(parameters?.contingencyListIds).then((contingencyListInfos) => {
+                delete parameters.contingencyListIds;
+                return {
+                    ...parameters,
+                    contingencyListInfos: contingencyListInfos?.map((info) => ({
+                        id: info.elementUuid,
+                        name: info.elementName,
+                    })),
+                };
+            });
+        }
+        delete parameters.contingencyListIds;
+        return {
+            ...parameters,
+            contingencyListInfos: [],
+        };
+    });
 }
 
-export function updateDynamicSecurityAnalysisParameters(studyUuid: UUID, newParams: any) {
+export function updateDynamicSecurityAnalysisParameters(
+    studyUuid: UUID,
+    newParams: DynamicSecurityAnalysisParametersFetchReturn | null
+): Promise<void> {
     console.info('set dynamic security analysis parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/parameters';
     console.debug(url);
+
+    // send to back contingency list uuids instead of contingency list infos
+    const newParameters = {
+        ...newParams,
+        contingencyListIds: newParams?.contingencyListInfos?.map((info) => info.id),
+    };
+    delete newParameters.contingencyListInfos;
 
     return backendFetch(url, {
         method: 'POST',
@@ -106,6 +141,6 @@ export function updateDynamicSecurityAnalysisParameters(studyUuid: UUID, newPara
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newParams),
+        body: JSON.stringify(newParameters),
     });
 }

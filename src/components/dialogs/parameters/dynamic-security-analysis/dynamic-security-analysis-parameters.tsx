@@ -18,7 +18,6 @@ import ScenarioParameters, {
 import {
     fetchDefaultDynamicSecurityAnalysisProvider,
     fetchDynamicSecurityAnalysisParameters,
-    fetchDynamicSecurityAnalysisProvider,
     fetchDynamicSecurityAnalysisProviders,
     updateDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisProvider,
@@ -36,13 +35,11 @@ import { User } from 'oidc-client';
 
 import { DropDown, LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
 import ContingencyParameters, {
-    CONTINGENCIES_LIST_IDS,
+    CONTINGENCIES_LIST_INFOS,
     CONTINGENCIES_START_TIME,
     emptyFormData as contingencyEmptyFormData,
     formSchema as contingencyFormSchema,
 } from './contingency-parameters';
-import { UUID } from 'crypto';
-import { ID } from '../../../utils/field-constants';
 
 enum TAB_VALUES {
     SCENARIO = 'scenario',
@@ -78,7 +75,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
             ComputingType.DYNAMIC_SECURITY_ANALYSIS,
             dynamicSecurityAnalysisAvailability,
             fetchDynamicSecurityAnalysisProviders,
-            fetchDynamicSecurityAnalysisProvider,
+            null,
             fetchDefaultDynamicSecurityAnalysisProvider,
             updateDynamicSecurityAnalysisProvider,
             fetchDynamicSecurityAnalysisParameters,
@@ -138,9 +135,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
                 ...parameters,
                 ...newParams[TAB_VALUES.SCENARIO],
                 [CONTINGENCIES_START_TIME]: newParams[TAB_VALUES.CONTINGENCY][CONTINGENCIES_START_TIME],
-                [CONTINGENCIES_LIST_IDS]: newParams[TAB_VALUES.CONTINGENCY][CONTINGENCIES_LIST_IDS].map(
-                    (elem) => elem.id as UUID
-                ),
+                [CONTINGENCIES_LIST_INFOS]: newParams[TAB_VALUES.CONTINGENCY][CONTINGENCIES_LIST_INFOS],
             });
         },
         [parameters, updateParameters]
@@ -154,7 +149,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
                 },
                 [TAB_VALUES.CONTINGENCY]: {
                     [CONTINGENCIES_START_TIME]: parameters[CONTINGENCIES_START_TIME],
-                    [CONTINGENCIES_LIST_IDS]: parameters[CONTINGENCIES_LIST_IDS]?.map((elem) => ({ [ID]: elem })),
+                    [CONTINGENCIES_LIST_INFOS]: parameters[CONTINGENCIES_LIST_INFOS],
                 },
             });
         }

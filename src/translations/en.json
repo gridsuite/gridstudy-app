@@ -374,6 +374,7 @@
     "DynamicSecurityAnalysisScenario": "Scenario",
     "DynamicSecurityAnalysisScenarioDuration": "Scenario duration",
     "DynamicSecurityAnalysisContingenciesStartTime": "Contingencies start time",
+    "DynamicSecurityAnalysisTabStatus": "Status",
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
