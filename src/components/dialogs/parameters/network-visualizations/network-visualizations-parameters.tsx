@@ -38,6 +38,7 @@ import { UUID } from 'crypto';
 import { UPDATE_TYPE_HEADER } from '../common/computation-parameters-util';
 import { setUpdateNetworkVisualizationParameters } from '../../../../redux/actions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
+import { fetchNetworkVisualizationsParameters } from '../../../../services/study-config';
 
 interface NetworkVisualizationsParametersProps {
     setHaveDirtyFields: (haveDirtyFields: boolean) => void;
@@ -110,13 +111,27 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
         [studyUuid, snackError]
     );
 
-    const loadParameters = useCallback((newParams: TreeViewFinderNodeProps[]) => {
-        if (newParams && newParams.length > 0) {
-            const paramUuid = newParams[0].id;
-            console.log('DBG DBR Load', newParams, paramUuid);
-        }
-        setOpenSelectParameterDialog(false);
-    }, []);
+    const loadParameters = useCallback(
+        (newParams: TreeViewFinderNodeProps[]) => {
+            if (newParams && newParams.length > 0) {
+                const paramUuid = newParams[0].id;
+                fetchNetworkVisualizationsParameters(paramUuid as UUID)
+                    .then((parameters: NetworkVisualizationParameters) => {
+                        console.info('loading network visualization parameters', paramUuid);
+                        reset(parameters, { keepDefaultValues: true });
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            }
+            setOpenSelectParameterDialog(false);
+        },
+        [reset, snackError]
+    );
 
     return (
         <CustomFormProvider validationSchema={networkVisualizationParametersSchema} {...formMethods}>
