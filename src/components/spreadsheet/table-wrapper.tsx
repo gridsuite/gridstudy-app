@@ -31,6 +31,7 @@ import { mergeSx } from '../utils/functions';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
+import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterType } from '../../types/custom-aggrid-types';
 import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
@@ -80,6 +81,10 @@ interface TableWrapperProps {
     disabled: boolean;
 }
 
+interface RecursiveIdentifiable extends Identifiable {
+    [alias: string]: Identifiable | string | undefined;
+}
+
 export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     studyUuid,
     currentNode,
@@ -101,6 +106,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
+    );
+    const additionalEquipmentsByNodesForCustomColumns = useSelector(
+        (state: AppState) => state.additionalEquipmentsByNodesForCustomColumns
     );
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const tablesDefinitionTypes = useSelector((state: AppState) => state.tables.definitionTypes);
@@ -215,7 +223,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         equipmentDefinition as EquipmentProps,
-        formatFetchedEquipmentsHandler
+        formatFetchedEquipmentsHandler,
+        tabIndex
     );
 
     useEffect(() => {
@@ -231,13 +240,41 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (disabled || !equipments) {
             return;
         }
+
+        let equipmentsWithCustomColumnInfo = [...equipments];
+        if (equipmentDefinition.type) {
+            Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach(([nodeAlias, equipments]) => {
+                const equipmentsToAdd = equipments[equipmentDefinition.type];
+                if (equipmentsToAdd) {
+                    equipmentsToAdd.forEach((equipmentToAdd) => {
+                        let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(
+                            (equipmentWithCustomColumnInfo) => equipmentWithCustomColumnInfo.id === equipmentToAdd.id
+                        );
+                        let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
+                        if (matchingEquipment) {
+                            let equipmentWithAddedInfo: RecursiveIdentifiable = { ...matchingEquipment };
+                            equipmentWithAddedInfo[nodeAlias] = equipmentToAdd;
+                            equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
+                        }
+                    });
+                }
+            });
+        }
+        setRowData(equipmentsWithCustomColumnInfo);
+
         // To handle cases where a "customSpreadsheet" tab is opened.
         // This ensures that the grid correctly displays data specific to the custom tab.
         if (gridRef.current?.api) {
-            gridRef.current.api.setGridOption('rowData', equipments);
+            gridRef.current.api.setGridOption('rowData', equipmentsWithCustomColumnInfo);
         }
-        setRowData(equipments);
-    }, [tabIndex, disabled, equipments]);
+    }, [
+        tabIndex,
+        disabled,
+        equipments,
+        tablesNames,
+        additionalEquipmentsByNodesForCustomColumns,
+        equipmentDefinition.type,
+    ]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
@@ -249,7 +286,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     useEffect(() => {
-        gridRef.current?.api?.showLoadingOverlay();
         return () => clearTimeout(timerRef.current);
     }, [tabIndex]);
 
@@ -365,18 +401,15 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const generateTableColumns = useCallback(() => {
-        let selectedTableColumns = currentColumns().filter((c) => {
-            return selectedColumnsNames.has(c.colId!);
-        });
-
-        function sortByIndex(a: any, b: any) {
-            return reorderedTableDefinitionIndexes.indexOf(a.colId) - reorderedTableDefinitionIndexes.indexOf(b.colId);
-        }
-
-        selectedTableColumns.sort(sortByIndex);
-
-        return selectedTableColumns;
-    }, [currentColumns, selectedColumnsNames, reorderedTableDefinitionIndexes]);
+        return currentColumns()
+            .filter((c) => {
+                return selectedColumnsNames.has(c.colId);
+            })
+            .sort(
+                (a, b) =>
+                    reorderedTableDefinitionIndexes.indexOf(a.colId) - reorderedTableDefinitionIndexes.indexOf(b.colId)
+            );
+    }, [reorderedTableDefinitionIndexes, selectedColumnsNames, currentColumns]);
 
     useEffect(() => {
         setColumnData(generateTableColumns());
@@ -402,6 +435,11 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     {developerMode && (
                         <Grid item>
                             <CustomColumnsConfig tabIndex={tabIndex} />
+                        </Grid>
+                    )}
+                    {developerMode && (
+                        <Grid item>
+                            <CustomColumnsNodesConfig />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>

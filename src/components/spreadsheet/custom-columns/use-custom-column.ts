@@ -68,7 +68,6 @@ export function useCustomColumn(tabIndex: number) {
                         acc[key] = typeof value === 'number' ? bignumber(value) : value;
                         return acc;
                     }, {} as Record<string, unknown>);
-
                     return math.limitedEvaluate(colWithFormula.formula, scope);
                 } catch (e) {
                     return '';

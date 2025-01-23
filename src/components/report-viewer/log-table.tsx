@@ -18,7 +18,7 @@ import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { ReportLog, ReportType, SeverityLevel } from 'utils/report/report.type';
+import { ReportLog, SelectedReportLog, SeverityLevel } from 'utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -63,14 +63,13 @@ const styles = {
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
 type LogTableProps = {
-    selectedReportId: string;
+    selectedReport: SelectedReportLog;
     reportType: string;
-    reportNature: ReportType;
     severities: SeverityLevel[] | undefined;
     onRowClick: (data: ReportLog) => void;
 };
 
-const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRowClick }: LogTableProps) => {
+const LogTable = ({ selectedReport, reportType, severities, onRowClick }: LogTableProps) => {
     const intl = useIntl();
 
     const theme = useTheme<Theme>();
@@ -104,7 +103,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             resetSearch();
             return;
         }
-        fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter)?.then((reportLogs) => {
+        fetchReportLogs(selectedReport.id, severityFilter, selectedReport.type, messageFilter)?.then((reportLogs) => {
             const transformedLogs = reportLogs.map(
                 (log) =>
                     ({
@@ -118,7 +117,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             setRowData(transformedLogs);
             resetSearch();
         });
-    }, [severityFilter, fetchReportLogs, selectedReportId, reportNature, messageFilter, resetSearch]);
+    }, [severityFilter, fetchReportLogs, selectedReport, messageFilter, resetSearch]);
 
     useEffect(() => {
         if (filters?.length === 0 && severities && severities.length > 0) {
@@ -133,20 +132,20 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 ])
             );
         }
-    }, [severities, dispatch, reportType, filters, fetchNodeSeverities, selectedReportId, reportNature]);
+    }, [severities, dispatch, reportType, filters, fetchNodeSeverities, selectedReport]);
 
     useEffect(() => {
-        if (selectedReportId && reportNature) {
+        if (selectedReport.id && selectedReport.type) {
             refreshLogsOnSelectedReport();
         }
-    }, [refreshLogsOnSelectedReport, reportNature, selectedReportId]);
+    }, [refreshLogsOnSelectedReport, selectedReport]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'report_viewer/severity' }),
                 width: SEVERITY_COLUMN_FIXED_WIDTH,
-                id: 'severity',
+                colId: 'severity',
                 field: 'severity',
                 cellStyle: (params) => ({
                     backgroundColor: params.data.backgroundColor,
@@ -155,16 +154,19 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'report_viewer/message' }),
-                id: 'message',
+                colId: 'message',
                 field: 'message',
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        type: FilterType.Logs,
-                        tab: reportType,
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        comparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                context: {
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            type: FilterType.Logs,
+                            tab: reportType,
+                            dataType: FILTER_DATA_TYPES.TEXT,
+                            comparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                        },
                     },
+                    forceDisplayFilterIcon: true,
                 },
                 flex: 1,
                 cellRenderer: (param: ICellRendererParams) =>
@@ -176,7 +178,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                         currentResultIndex: currentResultIndex,
                         searchResults: searchResults,
                     }),
-                forceDisplayFilterIcon: true,
             }),
         ],
         [
@@ -312,7 +313,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             <Box sx={styles.quickSearch}>
                 <QuickSearch
                     currentResultIndex={currentResultIndex}
-                    selectedReportId={selectedReportId}
+                    selectedReportId={selectedReport.id}
                     onSearch={handleSearch}
                     onNavigate={handleNavigate}
                     resultCount={searchResults.length}

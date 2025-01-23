@@ -9,16 +9,21 @@ import { CustomAggridFilterParams, CustomColDef } from './custom-aggrid-header.t
 import CustomHeaderComponent from './custom-aggrid-header';
 
 export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
-    sortParams,
-    forceDisplayFilterIcon,
-    filterComponent,
-    filterComponentParams,
-    tabIndex,
-    isCustomColumn,
-    Menu,
+    context,
     ...props // agGrid column props
 }: CustomColDef<any, any, F>) => {
-    const { headerName, field = '', fractionDigits, numeric } = props;
+    const {
+        sortParams,
+        forceDisplayFilterIcon,
+        filterComponent,
+        filterComponentParams,
+        tabIndex,
+        isCustomColumn,
+        Menu,
+        fractionDigits,
+        numeric,
+    } = context || {};
+    const { headerName, field = '' } = props;
     const isSortable = !!sortParams;
 
     let minWidth = 75;
@@ -32,7 +37,6 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
     return {
         headerTooltip: headerName,
         minWidth,
-        fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             field,
@@ -47,6 +51,11 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
             filterComponent: filterComponent,
             filterComponentParams,
         },
+        filterParams: context?.agGridFilterParams || undefined,
         ...props,
+        context: {
+            ...context,
+            fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
+        },
     };
 };

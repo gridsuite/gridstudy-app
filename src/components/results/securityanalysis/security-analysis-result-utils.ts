@@ -149,8 +149,8 @@ export const securityAnalysisTableNColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Equipment' }),
-            id: 'subjectId',
-            field: 'subjectId',
+            colId: 'subjectId',
+            field: 'subjectId',context: {
             sortParams,
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
@@ -160,12 +160,13 @@ export const securityAnalysisTableNColumnsDefinition = (
                     ...filterParams,
                 },
             },
-        }),
+        },
+    }),
 
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
-            id: 'limitType',
-            field: 'limitType',
+            colId: 'limitType',
+            field: 'limitType',context: {
             sortParams,
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
@@ -177,13 +178,14 @@ export const securityAnalysisTableNColumnsDefinition = (
                 filterEnums,
                 getEnumLabel,
             },
-        }),
+        },
+    }),
 
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
-            id: 'limitName',
+            colId: 'limitName',
             field: 'limitName',
-            valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
+            valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),context: {
             sortParams,
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: {
@@ -193,12 +195,13 @@ export const securityAnalysisTableNColumnsDefinition = (
                     ...filterParams,
                 },
             },
-        }),
+        },
+    }),
 
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
-            id: 'limit',
-            field: 'limit',
+            colId: 'limit',
+            field: 'limit',context: {
             numeric: true,
             fractionDigits: 2,
             sortParams,
@@ -210,12 +213,13 @@ export const securityAnalysisTableNColumnsDefinition = (
                     ...filterParams,
                 },
             },
-        }),
+        },
+    }),
 
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
-            id: 'value',
-            field: 'value',
+            colId: 'value',
+            field: 'value',context: {
             numeric: true,
             fractionDigits: 2,
             sortParams,
@@ -227,12 +231,13 @@ export const securityAnalysisTableNColumnsDefinition = (
                     ...filterParams,
                 },
             },
-        }),
+        },
+    }),
 
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
-            id: 'loading',
-            field: 'loading',
+            colId: 'loading',
+            field: 'loading',context: {
             numeric: true,
             fractionDigits: 2,
             sortParams,
@@ -244,15 +249,16 @@ export const securityAnalysisTableNColumnsDefinition = (
                     ...filterParams,
                 },
             },
-        }),
+        },
+    }),
 
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
-            id: 'acceptableDuration',
+            colId: 'acceptableDuration',
             field: 'acceptableDuration',
-            valueFormatter: (value: any) => convertDuration(value.data.acceptableDuration),
+            valueFormatter: (value: any) => convertDuration(value.data.acceptableDuration),context: {
             sortParams,
             filterComponent: CustomAggridDurationFilter,
             filterComponentParams: {
@@ -262,12 +268,13 @@ export const securityAnalysisTableNColumnsDefinition = (
                     ...filterParams,
                 },
             },
-        }),
+        },
+    }),
 
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
-            id: 'side',
-            field: 'side',
+            colId: 'side',
+            field: 'side',context: {
             sortParams,
             filterComponent: CustomAggridAutocompleteFilter,
             filterComponentParams: {
@@ -279,8 +286,8 @@ export const securityAnalysisTableNColumnsDefinition = (
                 filterEnums,
                 getEnumLabel,
             },
-        }),
-    ];
+        },
+    }),];
 };
 
 export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
@@ -303,127 +310,142 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
-            id: 'contingencyId',
+            colId: 'contingencyId',
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-            sortParams,
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    ...filterParams,
+            context: {
+                sortParams,
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
-            id: 'status',
+            colId: 'status',
             field: 'status',
-            sortParams,
-            filterComponent: CustomAggridAutocompleteFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterParams,
+            context: {
+                sortParams,
+                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        ...filterParams,
+                    },
+                    filterEnums,
+                    getEnumLabel,
                 },
-
-                filterEnums,
-                getEnumLabel,
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
-            id: 'subjectId',
+            colId: 'subjectId',
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    ...filterParams,
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
-            id: 'limitType',
+            colId: 'limitType',
             field: 'limitType',
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridAutocompleteFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterParams,
-                },
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        ...filterParams,
+                    },
 
-                filterEnums,
-                getEnumLabel,
+                    filterEnums,
+                    getEnumLabel,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
-            id: 'limitName',
+            colId: 'limitName',
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    comparators: [FILTER_TEXT_COMPARATORS.EQUALS],
-                    ...filterParams,
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
-            id: 'limit',
+            colId: 'limit',
             field: 'limit',
-            numeric: true,
-            fractionDigits: 2,
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.NUMBER,
-                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterParams,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
-            id: 'value',
+            colId: 'value',
             field: 'value',
-            numeric: true,
-            fractionDigits: 2,
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.NUMBER,
-                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterParams,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
-            id: 'loading',
+            colId: 'loading',
             field: 'loading',
-            numeric: true,
-            fractionDigits: 2,
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.NUMBER,
-                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterParams,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
                 },
             },
         }),
@@ -431,39 +453,43 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
-            id: 'acceptableDuration',
+            colId: 'acceptableDuration',
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridDurationFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.NUMBER,
-                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterParams,
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridDurationFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
-            id: 'side',
+            colId: 'side',
             field: 'side',
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridAutocompleteFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterParams,
-                },
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        ...filterParams,
+                    },
 
-                filterEnums,
-                getEnumLabel,
+                    filterEnums,
+                    getEnumLabel,
+                },
             },
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeAgGridCustomHeaderColumn({
-            id: 'linkedElementId',
+            colId: 'linkedElementId',
             field: 'linkedElementId',
             hide: true,
         }),
@@ -490,127 +516,143 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
-            id: 'subjectId',
+            colId: 'subjectId',
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-            sortParams,
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    ...filterParams,
+            context: {
+                sortParams,
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
-            id: 'contingencyId',
+            colId: 'contingencyId',
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    ...filterParams,
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
-            id: 'status',
+            colId: 'status',
             field: 'status',
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridAutocompleteFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterParams,
-                },
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        ...filterParams,
+                    },
 
-                filterEnums,
-                getEnumLabel,
+                    filterEnums,
+                    getEnumLabel,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
-            id: 'limitType',
+            colId: 'limitType',
             field: 'limitType',
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridAutocompleteFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterParams,
-                },
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        ...filterParams,
+                    },
 
-                filterEnums,
-                getEnumLabel,
+                    filterEnums,
+                    getEnumLabel,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
-            id: 'limitName',
+            colId: 'limitName',
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    comparators: [FILTER_TEXT_COMPARATORS.EQUALS],
-                    ...filterParams,
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
-            id: 'limit',
+            colId: 'limit',
             field: 'limit',
-            numeric: true,
-            fractionDigits: 2,
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.NUMBER,
-                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterParams,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
-            id: 'value',
+            colId: 'value',
             field: 'value',
-            numeric: true,
-            fractionDigits: 2,
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.NUMBER,
-                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterParams,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
-            id: 'loading',
+            colId: 'loading',
             field: 'loading',
-            numeric: true,
-            fractionDigits: 2,
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridComparatorFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.NUMBER,
-                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterParams,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
                 },
             },
         }),
@@ -618,39 +660,43 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
-            id: 'acceptableDuration',
+            colId: 'acceptableDuration',
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridDurationFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.NUMBER,
-                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    ...filterParams,
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridDurationFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
                 },
             },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
-            id: 'side',
+            colId: 'side',
             field: 'side',
-            sortParams: { ...sortParams, isChildren: true },
-            filterComponent: CustomAggridAutocompleteFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterParams,
-                },
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        ...filterParams,
+                    },
 
-                filterEnums,
-                getEnumLabel,
+                    filterEnums,
+                    getEnumLabel,
+                },
             },
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeAgGridCustomHeaderColumn({
-            id: 'linkedElementId',
+            colId: 'linkedElementId',
             field: 'linkedElementId',
             hide: true,
         }),
