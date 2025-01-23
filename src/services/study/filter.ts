@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson } from '../utils';
+import { backendFetchJson, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
@@ -17,6 +17,12 @@ export interface ExpertFilter {
     equipmentType: string; // TODO must be EquipmentType enum
     rules: RuleGroupTypeExport;
     topologyKind?: string; // TODO must be TopologyKind enum
+}
+
+export interface FilterEquipments {
+    filterId: UUID;
+    identifiableAttributes: IdentifiableAttributes[];
+    notFoundEquipments: string[];
 }
 
 export interface IdentifiableAttributes {
@@ -42,13 +48,17 @@ export function evaluateJsonFilter(
     });
 }
 
-export function evaluateFilter(
+export function evaluateFilters(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    filter: UUID
-): Promise<IdentifiableAttributes[]> {
+    filters: UUID[]
+): Promise<FilterEquipments[]> {
     console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
-    const evaluateFilterUrl = getStudyUrl(studyUuid) + '/filters/' + filter + '/elements';
+
+    const filtersListsQueryParams = getRequestParamFromList(filters, 'filtersUuid');
+    const urlSearchParams = new URLSearchParams(filtersListsQueryParams);
+
+    const evaluateFilterUrl = getStudyUrl(studyUuid) + `/filters/elements?${urlSearchParams}`;
     console.debug(evaluateFilterUrl);
     return backendFetchJson(evaluateFilterUrl, {
         method: 'get',

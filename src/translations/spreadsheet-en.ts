@@ -49,7 +49,7 @@ const spreadsheetEn = {
     'spreadsheet/parameter_aliases/no_special_characters': 'No special characters allowed',
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'No node with this name',
     'spreadsheet/parameter_aliases/unique_aliases': 'Aliases should be unique',
-    'spreadsheet/filter/config': 'Open GS Filter config',
+    'spreadsheet/filter/config': 'Gridsuite filters',
 };
 
 export default spreadsheetEn;

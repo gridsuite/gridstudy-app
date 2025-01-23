@@ -7,7 +7,7 @@
 
 import { useCallback, useState } from 'react';
 import { IRowNode } from 'ag-grid-community/dist/types/core/interfaces/iRowNode';
-import { evaluateFilter, ExpertFilter } from '../../services/study/filter';
+import { evaluateFilters, ExpertFilter } from '../../services/study/filter';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
@@ -24,13 +24,20 @@ export const useSpreadsheetGsFilter = () => {
                 return;
             }
             if (currentNode?.id) {
-                filters.forEach((filter) => {
-                    if (filter.id) {
-                        evaluateFilter(studyUuid as UUID, currentNode.id, filter.id).then((response) => {
-                            setFilterIds(response.map((equipment) => equipment.id));
-                        });
-                    }
-                });
+                const filtersUuid: UUID[] = filters
+                    .filter((filter) => filter.id !== undefined)
+                    .map((filter) => filter.id) as UUID[];
+                if (filtersUuid.length) {
+                    evaluateFilters(studyUuid as UUID, currentNode.id, filtersUuid).then((response) => {
+                        const equipmentsIds: string[] = [];
+                        response.forEach((filterEquipments) =>
+                            filterEquipments.identifiableAttributes.map((identifiableAttribute) =>
+                                equipmentsIds.push(identifiableAttribute.id)
+                            )
+                        );
+                        setFilterIds(equipmentsIds);
+                    });
+                }
             }
         },
         [currentNode?.id, studyUuid]
@@ -43,7 +50,7 @@ export const useSpreadsheetGsFilter = () => {
         [filterIds]
     );
 
-    const isExternalFilterPresent = useCallback(() => filterIds.length > 0, [filterIds.length]);
+    const isExternalFilterPresent = useCallback(() => filterIds.length, [filterIds.length]);
 
     return { applyGsFilter, doesFormulaFilteringPass, isExternalFilterPresent };
 };

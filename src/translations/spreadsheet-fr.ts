@@ -49,7 +49,7 @@ const spreadsheetFr = {
     'spreadsheet/parameter_aliases/no_special_characters': 'Ne doit pas contenir de caractères spéciaux',
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'Aucun nœud avec ce nom',
     'spreadsheet/parameter_aliases/unique_aliases': 'Les alias doivent être unique',
-    'spreadsheet/filter/config': 'Ouvrir la configuration des filtres GS',
+    'spreadsheet/filter/config': 'Filtres Gridsuite',
 };
 
 export default spreadsheetFr;
