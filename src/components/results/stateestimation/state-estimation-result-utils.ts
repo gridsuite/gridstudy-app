@@ -28,29 +28,35 @@ export const stateEstimationQualityCriterionColumnsDefinition = (intl: IntlShape
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CriterionType' }),
-            id: 'type',
+            colId: 'type',
             field: 'type',
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Validity' }),
-            id: 'validity',
+            colId: 'validity',
             field: 'validity',
-            numeric: true,
-            fractionDigits: 0,
+            context: {
+                numeric: true,
+                fractionDigits: 0,
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Value' }),
-            id: 'value',
+            colId: 'value',
             field: 'value',
-            numeric: true,
-            fractionDigits: 2,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Threshold' }),
-            id: 'threshold',
+            colId: 'threshold',
             field: 'threshold',
-            numeric: true,
-            fractionDigits: 2,
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+            },
         }),
     ];
 };
@@ -59,15 +65,17 @@ export const stateEstimationQualityPerRegionColumnsDefinition = (intl: IntlShape
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'QualityRegion' }),
-            id: 'name',
+            colId: 'name',
             field: 'name',
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'QualityLevel' }),
-            id: 'level',
+            colId: 'level',
             field: 'level',
-            numeric: true,
-            fractionDigits: 0,
+            context: {
+                numeric: true,
+                fractionDigits: 0,
+            },
         }),
     ];
 };
