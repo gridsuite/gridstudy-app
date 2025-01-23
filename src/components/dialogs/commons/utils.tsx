@@ -14,7 +14,7 @@ export function getLabelOrValue(value: any) {
     return typeof value !== 'string' ? value?.label ?? null : value;
 }
 
-const ALLOWED_KEYS = [KeyCode.ESCAPE, KeyCode.DOWN, KeyCode.UP, KeyCode.LEFT, KeyCode.RIGHT];
+const ALLOWED_KEYS: readonly string[] = [KeyCode.ESCAPE, KeyCode.DOWN, KeyCode.UP, KeyCode.LEFT, KeyCode.RIGHT];
 
 /** we filter enter key event to prevent closing or opening edit mode */
 export function suppressEventsToPreventEditMode<TData = any, TValue = any>(

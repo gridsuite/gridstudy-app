@@ -16,13 +16,16 @@ export const BUSBAR_SECTION_TAB_DEF = {
     ...typeAndFetchers(EQUIPMENT_TYPES.BUSBAR_SECTION),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
-            isDefaultSort: true,
             ...defaultTextFilterConfig,
+            context: {
+                ...defaultTextFilterConfig.context,
+                isDefaultSort: true,
+            },
         },
         {
-            id: 'VoltageLevelId',
+            colId: 'VoltageLevelId',
             field: 'voltageLevelId',
             ...defaultTextFilterConfig,
         },

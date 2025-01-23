@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { IRowNode } from 'ag-grid-community/dist/types/core/interfaces/iRowNode';
+import { IRowNode } from 'ag-grid-community';
 import { evaluateFilters, ExpertFilter } from '../../services/study/filter';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
@@ -19,7 +19,7 @@ export const useSpreadsheetGsFilter = () => {
 
     const applyGsFilter = useCallback(
         (filters: ExpertFilter[]) => {
-            if (!filters.length) {
+            if (!!filters.length) {
                 setFilterIds([]);
                 return;
             }
@@ -27,7 +27,7 @@ export const useSpreadsheetGsFilter = () => {
                 const filtersUuid: UUID[] = filters
                     .filter((filter) => filter.id !== undefined)
                     .map((filter) => filter.id) as UUID[];
-                if (filtersUuid.length) {
+                if (!!filtersUuid.length) {
                     evaluateFilters(studyUuid as UUID, currentNode.id, filtersUuid).then((response) => {
                         const equipmentsIds: string[] = [];
                         response.forEach((filterEquipments) =>
@@ -50,7 +50,7 @@ export const useSpreadsheetGsFilter = () => {
         [filterIds]
     );
 
-    const isExternalFilterPresent = useCallback(() => filterIds.length, [filterIds.length]);
+    const isExternalFilterPresent = useCallback(() => !!filterIds.length, [filterIds.length]);
 
     return { applyGsFilter, doesFormulaFilteringPass, isExternalFilterPresent };
 };

@@ -15,11 +15,11 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { ComputingType } from 'components/computing-status/computing-type';
-import { GridReadyEvent } from 'ag-grid-community';
+import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisAllBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
-    onRowDataUpdated: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
 }
 
 export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitAnalysisAllBusResultProps> = ({
