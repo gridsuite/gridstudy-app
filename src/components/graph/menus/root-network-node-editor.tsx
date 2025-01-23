@@ -142,7 +142,7 @@ const RootNetworkNodeEditor = () => {
             }
             setDeleteInProgress(true);
         }
-    }, [studyUpdatedForce, dofetchRootNetworks, dispatch, rootNetworks]);
+    }, [studyUpdatedForce, dofetchRootNetworks, dispatch]);
 
     useEffect(() => {
         dofetchRootNetworks();
