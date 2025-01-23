@@ -48,11 +48,7 @@ export function evaluateJsonFilter(
     });
 }
 
-export function evaluateFilters(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    filters: UUID[]
-): Promise<FilterEquipments[]> {
+export function evaluateFilters(studyUuid: UUID, currentNodeUuid: UUID, filters: UUID[]): Promise<FilterEquipments[]> {
     console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const filtersListsQueryParams = getRequestParamFromList(filters, 'filtersUuid');
