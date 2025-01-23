@@ -36,7 +36,7 @@ export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'ConnectedComponent',
             field: 'connectedComponentNum',
-            ...numberColumnDefinition('connected component', tab, 0),
+            ...numberColumnDefinition('Connected component', tab, 0),
         },
         {
             colId: 'SynchronousComponent',

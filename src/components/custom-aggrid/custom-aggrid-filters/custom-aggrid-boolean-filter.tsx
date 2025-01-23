@@ -13,7 +13,7 @@ import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { mergeSx } from 'components/utils/functions';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { CustomAggridFilterParams, FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
-import { isStringOrNonEmptyArray } from '../../../utils/types';
+import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 
 export enum BooleanFilterValue {
     TRUE = 'true',
@@ -65,7 +65,7 @@ export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterPara
                 },
             })}
             endAdornment={
-                isStringOrNonEmptyArray(selectedFilterData) && (
+                isNonEmptyStringOrArray(selectedFilterData) && (
                     <IconButton onClick={handleClearFilter}>
                         <ClearIcon fontSize={'small'} />
                     </IconButton>

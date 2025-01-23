@@ -7,7 +7,7 @@
 import React, { MouseEventHandler } from 'react';
 import { Badge, Grid, IconButton } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
-import { isStringOrNonEmptyArray } from '../../../utils/types';
+import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 
 const styles = {
     iconSize: {
@@ -31,7 +31,7 @@ export const CustomFilterIcon = ({ handleShowFilter, selectedFilterData }: Custo
             <IconButton size={'small'} onClick={handleShowFilter}>
                 <Badge
                     color="secondary"
-                    variant={isStringOrNonEmptyArray(selectedFilterData) ? 'dot' : undefined}
+                    variant={isNonEmptyStringOrArray(selectedFilterData) ? 'dot' : undefined}
                     invisible={!selectedFilterData}
                 >
                     <FilterAlt sx={styles.iconSize} />

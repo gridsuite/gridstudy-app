@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { AnyAction } from 'redux';
+import { UnknownAction } from 'redux';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
@@ -31,7 +31,7 @@ import { FilterConfig, FilterType } from '../types/custom-aggrid-types';
 
 const FILTER_PARAMS: Record<
     FilterType,
-    { filterType: string; filterStoreAction: (filterTab: any, filter: FilterConfig[]) => AnyAction }
+    { filterType: string; filterStoreAction: (filterTab: any, filter: FilterConfig[]) => UnknownAction }
 > = {
     [FilterType.Loadflow]: {
         filterType: LOADFLOW_RESULT_STORE_FIELD,

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const isStringOrNonEmptyArray = (value: unknown): value is string | unknown[] => {
+export const isNonEmptyStringOrArray = (value: unknown): value is string | unknown[] => {
     if (typeof value === 'string' && value.length > 0) {
         return true;
     }

@@ -64,7 +64,7 @@ const styles = {
         marginLeft: theme.spacing(1),
     }),
     selectColumns: (theme: Theme) => ({
-        marginLeft: theme.spacing(4),
+        marginLeft: theme.spacing(1),
     }),
     save: (theme: Theme) => ({
         marginRight: theme.spacing(1),

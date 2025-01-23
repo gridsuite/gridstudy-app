@@ -9,7 +9,7 @@ import { Autocomplete, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS, FilterEnumsType } from '../custom-aggrid-header.type';
-import { isStringOrNonEmptyArray } from '../../../utils/types';
+import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 
 export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilterParams {
     filterEnums?: FilterEnumsType;
@@ -45,7 +45,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
                 <TextField
                     {...params}
                     placeholder={
-                        !isStringOrNonEmptyArray(selectedFilterData)
+                        !isNonEmptyStringOrArray(selectedFilterData)
                             ? intl.formatMessage({
                                   id: 'filter.filterOoo',
                               })

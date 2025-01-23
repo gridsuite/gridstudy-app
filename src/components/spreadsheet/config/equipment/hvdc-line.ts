@@ -71,7 +71,7 @@ export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'ActivePowerSetpoint',
             field: 'activePowerSetpoint',
-            ...numberColumnDefinition('Active power setpoint (MW)', tab, 1),
+            ...numberColumnDefinition('Active power set point (MW)', tab, 1),
         },
         {
             colId: 'maxActivePower',

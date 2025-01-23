@@ -13,7 +13,7 @@ import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
-    return filtersArrayToRemoveFieldValueFrom.filter((f: FilterConfig) => f.column !== field);
+    return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
 };
 
 const changeValueFromArrayWithFieldValue = (
@@ -21,7 +21,7 @@ const changeValueFromArrayWithFieldValue = (
     field: string,
     newData: FilterConfig
 ) => {
-    const filterIndex = filtersArrayToModify.findIndex((f: FilterConfig) => f.column === field);
+    const filterIndex = filtersArrayToModify.findIndex((f) => f.column === field);
     if (filterIndex === -1) {
         return [...filtersArrayToModify, newData];
     } else {

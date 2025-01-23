@@ -91,7 +91,7 @@ export const updateFilters = (api: GridApi | undefined, filters: FilterConfig[] 
     const allColumnsExist = filters.every((filter) =>
         currentColumnDefs?.some((col) => {
             return (
-                // Ensure the column definition has a 'field' property
+                // Ensure the column definition has a 'colId' property
                 // and it matches the filter's column field
                 col.getColId() === filter.column
             );

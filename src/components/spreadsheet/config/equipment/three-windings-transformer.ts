@@ -58,17 +58,17 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'ReactivePowerT3WSide1',
             field: 'q1',
-            ...numberColumnDefinition('q1 (MW)', tab, 1),
+            ...numberColumnDefinition('q1 (MVar)', tab, 1),
         },
         {
             colId: 'ReactivePowerT3WSide2',
             field: 'q2',
-            ...numberColumnDefinition('q2 (MW)', tab, 1),
+            ...numberColumnDefinition('q2 (MVar)', tab, 1),
         },
         {
             colId: 'ReactivePowerT3WSide3',
             field: 'q3',
-            ...numberColumnDefinition('q3 (MW)', tab, 1),
+            ...numberColumnDefinition('q3 (MVar)', tab, 1),
         },
         {
             colId: 'HasLoadTapChanging1Capabilities',

@@ -57,7 +57,7 @@ export const DANGLING_LINE_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'ReactivePower',
             field: 'q',
-            ...numberColumnDefinition('q (MW)', tab, 1),
+            ...numberColumnDefinition('q (MVar)', tab, 1),
         },
         {
             colId: 'p0',

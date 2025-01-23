@@ -20,7 +20,6 @@ const propertiesGetter: ValueGetterFunc = (params) => {
     }
 };
 
-//TODO only used in tie-line config, is "valueSetter" forgotten?
 export const genericColumnOfPropertiesReadonly = (tab: string) => {
     return {
         colId: 'Properties',
