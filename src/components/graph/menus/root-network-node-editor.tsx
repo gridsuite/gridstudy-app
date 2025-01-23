@@ -129,8 +129,10 @@ const RootNetworkNodeEditor = () => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworksUpdated') {
-            dofetchRootNetworks();
-            setDeleteInProgress(false);
+            if (deleteInProgress) {
+                dofetchRootNetworks();
+                setDeleteInProgress(false);
+            }
         } else if (studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworkDeletionStarted') {
             // when node are being deleted, we select 1st node that won't be deleted
             const deletingNodes = studyUpdatedForce.eventData.headers.rootNetworks;
@@ -142,7 +144,7 @@ const RootNetworkNodeEditor = () => {
             }
             setDeleteInProgress(true);
         }
-    }, [studyUpdatedForce, dofetchRootNetworks, dispatch]);
+    }, [studyUpdatedForce, dofetchRootNetworks, dispatch, rootNetworks, deleteInProgress, isLoading]);
 
     useEffect(() => {
         dofetchRootNetworks();
@@ -156,12 +158,18 @@ const RootNetworkNodeEditor = () => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
 
         if (studyUuid) {
-            deleteRootNetworks(studyUuid, selectedRootNetworksUuid).catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errDeleteRootNetworkMsg',
+            deleteRootNetworks(studyUuid, selectedRootNetworksUuid)
+                .then(() => {
+                    setDeleteInProgress(true);
+                })
+
+                .catch((errmsg) => {
+                    snackError({
+                        messageTxt: errmsg,
+                        headerId: 'errDeleteRootNetworkMsg',
+                    });
+                    setDeleteInProgress(false);
                 });
-            });
         }
     }, [selectedItems, snackError, studyUuid]);
 
@@ -304,6 +312,10 @@ const RootNetworkNodeEditor = () => {
                     studyUuid,
                     customizedCurrentParameters
                 );
+            })
+            .then(() => {
+                // After successfully creating the root network, refetch the root networks
+                dofetchRootNetworks();
             })
             .catch((error) => {
                 snackError({
