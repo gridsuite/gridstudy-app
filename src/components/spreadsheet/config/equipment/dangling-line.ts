@@ -106,10 +106,6 @@ export const DANGLING_LINE_TAB_DEF = {
             colId: 'connected',
             field: 'terminalConnected',
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
             cellRenderer: BooleanCellRenderer,
         },
         genericColumnOfPropertiesReadonly,

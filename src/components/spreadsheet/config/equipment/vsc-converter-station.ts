@@ -98,9 +98,6 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             field: 'voltageRegulatorOn',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'VoltageSetpointKV',
@@ -127,9 +124,6 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         genericColumnOfPropertiesReadonly,
     ],

@@ -85,10 +85,8 @@ export const BATTERY_TAB_DEF = {
         {
             colId: 'DroopColumnName',
             field: 'activePowerControl.droop',
-            ...defaultNumericFilterConfig,
             valueGetter: (params) => params.data?.activePowerControl?.droop,
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
@@ -140,9 +138,6 @@ export const BATTERY_TAB_DEF = {
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         genericColumnOfPropertiesReadonly,
     ],

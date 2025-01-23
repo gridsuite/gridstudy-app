@@ -192,18 +192,12 @@ export const LINE_TAB_DEF = {
             field: 'terminal1Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'connected2',
             field: 'terminal2Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         genericColumnOfPropertiesReadonly,
     ],

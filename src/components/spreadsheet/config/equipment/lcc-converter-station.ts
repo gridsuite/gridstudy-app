@@ -106,10 +106,6 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
         },
         genericColumnOfPropertiesReadonly,
     ],

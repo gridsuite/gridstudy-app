@@ -52,7 +52,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             },
         },
         {
-            id: 'LowVoltageLimitkV',
+            colId: 'LowVoltageLimitkV',
             field: 'lowVoltageLimit',
             ...defaultNumericFilterConfig,
             context: {
@@ -62,7 +62,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             },
         },
         {
-            id: 'HighVoltageLimitkV',
+            colId: 'HighVoltageLimitkV',
             field: 'highVoltageLimit',
             ...defaultNumericFilterConfig,
             context: {

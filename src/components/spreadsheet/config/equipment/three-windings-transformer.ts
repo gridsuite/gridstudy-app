@@ -153,18 +153,12 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'hasLoadTapChanging1Capabilities',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'RegulatingRatio1',
             field: 'isRegulatingRatio1',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'TargetVPoint1',
@@ -191,18 +185,12 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'hasLoadTapChanging2Capabilities',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'RegulatingRatio2',
             field: 'isRegulatingRatio2',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'TargetVPoint2',
@@ -229,18 +217,12 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'hasLoadTapChanging3Capabilities',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'RegulatingRatio3',
             field: 'isRegulatingRatio3',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'TargetVPoint3',
@@ -276,9 +258,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingPhase1',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'PhaseTap1',
@@ -315,9 +294,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingPhase2',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'PhaseTap2',
@@ -354,9 +330,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingPhase3',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'PhaseTap3',
@@ -384,27 +357,18 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'terminal1Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'ConnectedT3WSide2',
             field: 'terminal2Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'ConnectedT3WSide3',
             field: 'terminal3Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         genericColumnOfPropertiesReadonly,
     ],

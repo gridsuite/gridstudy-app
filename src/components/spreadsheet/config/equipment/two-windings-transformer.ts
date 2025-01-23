@@ -183,9 +183,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             colId: 'RatioRegulatedSide',
             field: 'ratioTapChanger.regulationSide',
             ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-            },
             valueGetter: (params) => params.data?.ratioTapChanger?.regulationSide,
         },
         {
@@ -269,9 +266,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             colId: 'PhaseRegulatedSide',
             field: 'phaseTapChanger.regulationSide',
             ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-            },
             valueGetter: (params) => params.data?.phaseTapChanger?.regulationSide,
         },
         {
@@ -368,18 +362,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'terminal1Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         {
             colId: 'connected2',
             field: 'terminal2Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-            },
         },
         genericColumnOfPropertiesReadonly,
     ],

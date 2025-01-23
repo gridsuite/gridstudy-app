@@ -146,10 +146,6 @@ export const HVDC_LINE_TAB_DEF = {
             field: 'hvdcAngleDroopActivePowerControl.isEnabled',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
         },
         {
             colId: 'K',
