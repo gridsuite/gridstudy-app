@@ -18,23 +18,23 @@ import { AppState } from '../redux/reducer';
 import { computeTolerance } from './use-aggrid-local-row-filter';
 
 export type UseAggridRowFilterOutputType = {
-    updateFilter: (field: string, data: FilterDataType) => void;
+    updateFilter: (colId: string, data: FilterDataType) => void;
     filterSelector: FilterSelectorType[] | null;
 };
 
 const removeElementFromArrayWithFieldValue = (
     filtersArrayToRemoveFieldValueFrom: FilterSelectorType[],
-    field: string
+    colId: string
 ) => {
-    return filtersArrayToRemoveFieldValueFrom.filter((f: FilterSelectorType) => f.column !== field);
+    return filtersArrayToRemoveFieldValueFrom.filter((f: FilterSelectorType) => f.column !== colId);
 };
 
 const changeValueFromArrayWithFieldValue = (
     filtersArrayToModify: FilterSelectorType[],
-    field: string,
+    colId: string,
     newData: FilterSelectorType
 ) => {
-    const filterIndex = filtersArrayToModify.findIndex((f: FilterSelectorType) => f.column === field);
+    const filterIndex = filtersArrayToModify.findIndex((f: FilterSelectorType) => f.column === colId);
     if (filterIndex === -1) {
         return [...filtersArrayToModify, newData];
     } else {
@@ -56,9 +56,9 @@ export const useAggridRowFilter = (
     );
 
     const updateFilter = useCallback(
-        (field: string, data: FilterDataType): void => {
+        (colId: string, data: FilterDataType): void => {
             const newFilter = {
-                column: field,
+                column: colId,
                 dataType: data.dataType,
                 tolerance: data.dataType === FILTER_DATA_TYPES.NUMBER ? computeTolerance(data.value) : undefined,
                 type: data.type,
@@ -67,9 +67,9 @@ export const useAggridRowFilter = (
             let updatedFilters;
 
             if (!data.value) {
-                updatedFilters = removeElementFromArrayWithFieldValue(filterStore, field);
+                updatedFilters = removeElementFromArrayWithFieldValue(filterStore, colId);
             } else {
-                updatedFilters = changeValueFromArrayWithFieldValue(filterStore, field, newFilter);
+                updatedFilters = changeValueFromArrayWithFieldValue(filterStore, colId, newFilter);
             }
 
             updateFilterCallback && updateFilterCallback();
