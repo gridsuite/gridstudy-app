@@ -155,7 +155,6 @@ const DndTable = ({
     getPreviousValue,
     isValueModified,
     disableAddingRows = false,
-    minRowsNumber = 0,
 }) => {
     const intl = useIntl();
 
@@ -168,10 +167,6 @@ const DndTable = ({
         append,
         remove,
     } = useFieldArrayOutput;
-
-    if (currentRows.length < minRowsNumber) {
-        addNewRows(minRowsNumber - currentRows.length);
-    }
 
     const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
@@ -458,7 +453,6 @@ DndTable.propTypes = {
     withBottomButtons: PropTypes.bool,
     withCheckboxes: PropTypes.bool,
     withButtonOnTheRight: PropTypes.bool,
-    minRowsNumber: PropTypes.number,
 };
 
 export default DndTable;

@@ -207,7 +207,6 @@ export function LimitsSidePane({
                     disableTableCell={disableTableCell}
                     getPreviousValue={getPreviousValue}
                     isValueModified={isValueModified}
-                    minRowsNumber={onlySelectedLimitsGroup ? 0 : 5}
                     tableHeight={onlySelectedLimitsGroup ? 270 : 400}
                 />
             }

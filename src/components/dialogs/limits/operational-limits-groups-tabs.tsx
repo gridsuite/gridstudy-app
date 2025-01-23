@@ -15,8 +15,12 @@ import {
     OPERATIONAL_LIMITS_GROUPS_1,
     OPERATIONAL_LIMITS_GROUPS_2,
     PERMANENT_LIMIT,
+    SELECTED,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
@@ -222,6 +226,7 @@ export function OperationalLimitsGroupsTabs({
                     setValue(`${id}.${SELECTED_LIMITS_GROUP_2}`, editedLimitGroupName);
                 }
             }
+            setSelectedLimitGroupTabIndex(editingTabIndex);
             setEditingTabIndex(null);
         }
     }, [
@@ -236,6 +241,7 @@ export function OperationalLimitsGroupsTabs({
         updateLimitsGroups1,
         updateLimitsGroups2,
         setEditingTabIndex,
+        setSelectedLimitGroupTabIndex,
     ]);
 
     const handleKeyDown = useCallback(
@@ -253,10 +259,24 @@ export function OperationalLimitsGroupsTabs({
         if (newIndex > 0) {
             newName += `(${limitsGroups1.length > 0 ? newIndex : ''})`;
         }
+        // new limit sets are created with 5 empty limits by default
+        const emptyTemporaryLimit = {
+            [TEMPORARY_LIMIT_NAME]: '',
+            [TEMPORARY_LIMIT_DURATION]: null,
+            [TEMPORARY_LIMIT_VALUE]: null,
+            modificationType: null,
+            [SELECTED]: false,
+        };
         const newLimitsGroup: OperationalLimitsGroup = {
             [ID]: newName,
             [CURRENT_LIMITS]: {
-                [TEMPORARY_LIMITS]: [],
+                [TEMPORARY_LIMITS]: [
+                    emptyTemporaryLimit,
+                    emptyTemporaryLimit,
+                    emptyTemporaryLimit,
+                    emptyTemporaryLimit,
+                    emptyTemporaryLimit,
+                ],
                 [PERMANENT_LIMIT]: null,
             },
         };
@@ -271,7 +291,7 @@ export function OperationalLimitsGroupsTabs({
             <Tabs
                 orientation="vertical"
                 variant="scrollable"
-                value={selectedLimitGroupTabIndex != null ? selectedLimitGroupTabIndex : false}
+                value={selectedLimitGroupTabIndex !== null && selectedLimitGroupTabIndex}
                 onChange={handleTabChange}
                 sx={tabStyles.listDisplay}
             >
