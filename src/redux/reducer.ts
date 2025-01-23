@@ -170,7 +170,9 @@ import {
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
     STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+    STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
     StoreNetworkAreaDiagramNodeMovementAction,
+    StoreNetworkAreaDiagramTextNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     TABLE_SORT,
@@ -187,6 +189,10 @@ import {
     StateEstimationResultFilterAction,
     CURRENT_ROOT_NETWORK,
     CurrentRootNetworkAction,
+    ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
+    AddEquipmentsByNodesForCustomColumnsAction,
+    UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
+    UpdateCustomColumnsNodesAliasesAction,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UpdateNetworkVisualizationParametersAction,
     RESET_MAP_EQUIPMENTS,
@@ -433,6 +439,15 @@ export type NadNodeMovement = {
     y: number;
 };
 
+export type NadTextMovement = {
+    nadIdentifier: string;
+    equipmentId: string;
+    shiftX: number;
+    shiftY: number;
+    connectionShiftX: number;
+    connectionShiftY: number;
+};
+
 /**
  * Represent a node in the network modifications tree that is selected.
  */
@@ -441,6 +456,12 @@ export type NodeSelectionForCopy = {
     nodeId: UUID | null;
     copyType: ValueOf<typeof CopyType> | null;
     allChildrenIds: string[] | null;
+};
+
+export type NodeAlias = {
+    id: UUID;
+    name: string;
+    alias: string;
 };
 
 export type Actions = AppActions | AuthenticationActions;
@@ -478,6 +499,7 @@ export interface AppState extends CommonStoreState {
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
+    nadTextNodeMovements: NadTextMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -492,6 +514,8 @@ export interface AppState extends CommonStoreState {
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
+    additionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState;
+    customColumnsNodesAliases: NodeAlias[];
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     [PARAM_THEME]: GsTheme;
@@ -584,6 +608,13 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUSBAR_SECTION]: null,
 };
 
+export type AdditionalEquipmentsByNodesForCustomColumnsState = Record<
+    string,
+    Record<SpreadsheetEquipmentType, Identifiable[]>
+>;
+const initialAdditionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState = {};
+const initialCustomColumnsNodesAliases: NodeAlias[] = [];
+
 export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
 
 interface TablesState {
@@ -649,11 +680,14 @@ const initialState: AppState = {
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     nadNodeMovements: [],
+    nadTextNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
+    additionalEquipmentsByNodesForCustomColumns: initialAdditionalEquipmentsByNodesForCustomColumns,
+    customColumnsNodesAliases: initialCustomColumnsNodesAliases,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -742,7 +776,7 @@ const initialState: AppState = {
             .reduce((acc, tabName) => {
                 acc[tabName] = [
                     {
-                        colId: 'id',
+                        colId: 'ID',
                         sort: SortWay.ASC,
                     },
                 ];
@@ -865,7 +899,7 @@ export const reducer = createReducer(initialState, (builder) => {
         updatedDefinitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
         const updatedColumnsNames = updatedDefinitions
             .map((tabDef) => tabDef.columns)
-            .map((cols) => new Set(cols.map((c) => c.id)));
+            .map((cols) => new Set(cols.map((c) => c.colId)));
         const updatedColumnsNamesJson = updatedColumnsNames.map((cols) => JSON.stringify([...cols]));
         const updatedNames = updatedDefinitions.map((tabDef) => tabDef.name);
         const updatedNamesIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.name, tabDef.index]));
@@ -1500,6 +1534,31 @@ export const reducer = createReducer(initialState, (builder) => {
     );
 
     builder.addCase(
+        STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
+        (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
+            const correspondingMovement: NadTextMovement[] = state.nadTextNodeMovements.filter(
+                (movement) =>
+                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+            );
+            if (correspondingMovement.length === 0) {
+                state.nadTextNodeMovements.push({
+                    nadIdentifier: action.nadIdentifier,
+                    equipmentId: action.equipmentId,
+                    shiftX: action.shiftX,
+                    shiftY: action.shiftY,
+                    connectionShiftX: action.connectionShiftX,
+                    connectionShiftY: action.connectionShiftY,
+                });
+            } else {
+                correspondingMovement[0].shiftX = action.shiftX;
+                correspondingMovement[0].shiftY = action.shiftY;
+                correspondingMovement[0].connectionShiftX = action.connectionShiftX;
+                correspondingMovement[0].connectionShiftY = action.connectionShiftY;
+            }
+        }
+    );
+
+    builder.addCase(
         NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
         (state, action: NetworkAreaDiagramNbVoltageLevelsAction) => {
             state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
@@ -1508,6 +1567,17 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(LOAD_EQUIPMENTS, (state, action: LoadEquipmentsAction) => {
         state.spreadsheetNetwork[action.equipmentType] = action.equipments;
+    });
+
+    builder.addCase(
+        ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
+        (state, action: AddEquipmentsByNodesForCustomColumnsAction) => {
+            state.additionalEquipmentsByNodesForCustomColumns = action.equipments;
+        }
+    );
+
+    builder.addCase(UPDATE_CUSTOM_COLUMNS_NODES_ALIASES, (state, action: UpdateCustomColumnsNodesAliasesAction) => {
+        state.customColumnsNodesAliases = action.nodesAliases;
     });
 
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {

@@ -70,7 +70,7 @@ const DynamicSimulationResultSynthesis = memo(
                     headerName: intl.formatMessage({
                         id: 'status',
                     }),
-                    id: 'status',
+                    colId: 'status',
                     field: 'status',
                     width: MEDIUM_COLUMN_WIDTH,
                     cellRenderer: StatusCellRender,

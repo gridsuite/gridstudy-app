@@ -209,8 +209,8 @@ export const NumericalField = forwardRef(
 
         const intl = useIntl();
 
-        const minExpression = colDef.crossValidation?.minExpression;
-        const maxExpression = colDef.crossValidation?.maxExpression;
+        const minExpression = colDef?.context?.crossValidation?.minExpression;
+        const maxExpression = colDef?.context?.crossValidation?.maxExpression;
 
         //minExpression and maxExpression are either a reference to a variable or a static number
         const minValue = useMemo(() => {

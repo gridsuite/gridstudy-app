@@ -34,7 +34,7 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
-import { GridReadyEvent } from 'ag-grid-community';
+import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import {
@@ -51,7 +51,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     updateResult: (result: SCAFaultResult[] | SCAFeederResult[] | null) => void;
     customTablePaginationProps: any;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
-    onRowDataUpdated: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysisGlobalResultProps> = ({

@@ -24,6 +24,7 @@ import {
     stateEstimationQualityCriterionColumnsDefinition,
     stateEstimationQualityPerRegionColumnsDefinition,
 } from './state-estimation-result-utils';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 const styles = {
     flexWrapper: {
@@ -107,6 +108,17 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         };
     }, [stateEstimationStatus, stateEstimationResult, intl]);
 
+    const renderReportViewer = () => {
+        return (
+            <GlassPane active={isLoadingResult}>
+                {(stateEstimationStatus === RunningStatus.SUCCEED ||
+                    stateEstimationStatus === RunningStatus.FAILED) && (
+                    <ComputationReportViewer reportType={ComputingType.STATE_ESTIMATION} />
+                )}
+            </GlassPane>
+        );
+    };
+
     return (
         <>
             <Box sx={styles.flexWrapper}>
@@ -114,6 +126,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     <Tab label={<FormattedMessage id={'StateEstimationStatusResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityCriterionResults'} />} />
                     <Tab label={<FormattedMessage id={'StateEstimationQualityPerRegionResults'} />} />
+                    <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
                 <Box sx={styles.emptySpace}></Box>
             </Box>
@@ -139,6 +152,7 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
                     />
                 </GlassPane>
             )}
+            {tabIndex === 3 && renderReportViewer()}
         </>
     );
 };

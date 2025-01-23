@@ -102,12 +102,7 @@ export const useAggridLocalRowFilter = (
                         filterType: filters[0].dataType,
                         tolerance: filters[0].tolerance,
                         operator: 'OR',
-                        // Dynamically add additional conditions
-                        // Each additional condition is added as 'condition1', 'condition2', etc.
-                        ...conditions.reduce((acc: FilterModel, condition: FilterModel, index: number) => {
-                            acc[`condition${index + 1}`] = condition;
-                            return acc;
-                        }, {}),
+                        conditions: conditions,
                     };
                 }
             });
@@ -131,9 +126,9 @@ export const useAggridLocalRowFilter = (
             const allColumnsExist = filters.every((filter) =>
                 currentColumnDefs?.some((colDef) => {
                     return (
-                        // Ensure the column definition has a 'field' property
-                        // and it matches the filter's column field
-                        'field' in colDef && filter && colDef?.field === filter.column
+                        // Ensure the column definition has a 'colId' property
+                        // and it matches the filter's column colId
+                        'colId' in colDef && filter && colDef?.colId === filter.column
                     );
                 })
             );
