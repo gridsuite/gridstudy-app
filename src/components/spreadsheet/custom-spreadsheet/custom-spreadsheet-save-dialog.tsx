@@ -44,14 +44,14 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
 
     const staticColumnIdToField = useMemo(() => {
         const equipment = tablesDefinitionIndexes.get(tabIndex);
-        return equipment ? new Map<string, string>(equipment.columns.map((c) => [c.id, c.field ?? ''])) : null;
+        return equipment ? new Map<string, string>(equipment.columns.map((c) => [c.colId, c.field ?? ''])) : null;
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const reorderedStaticColumnIds = useMemo(() => {
         const allReorderedColumns = allReorderedTableDefinitionIndexes[tabIndex];
         return allReorderedColumns
             ? JSON.parse(allReorderedColumns)
-            : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.id);
+            : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.colId);
     }, [allReorderedTableDefinitionIndexes, tabIndex, tablesDefinitionIndexes]);
 
     const staticColumnFormulas = useMemo(() => {

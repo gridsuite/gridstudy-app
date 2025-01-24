@@ -95,18 +95,20 @@ export function useCustomColumn(tabIndex: number) {
         return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula) => {
             return makeAgGridCustomHeaderColumn({
                 headerName: colWithFormula.name,
-                id: colWithFormula.name,
+                colId: colWithFormula.name,
                 field: colWithFormula.name,
-                sortProps: {
-                    onSortChanged,
-                    sortConfig,
-                },
                 valueGetter: createValueGetter(colWithFormula),
                 editable: false,
                 suppressMovable: true,
-                tabIndex,
-                isCustomColumn: true,
-                Menu: CustomColumnMenu,
+                context: {
+                    sortProps: {
+                        onSortChanged,
+                        sortConfig,
+                    },
+                    tabIndex,
+                    isCustomColumn: true,
+                    Menu: CustomColumnMenu,
+                },
             });
         });
     }, [customColumnsDefinitions, onSortChanged, sortConfig, createValueGetter, tabIndex]);
