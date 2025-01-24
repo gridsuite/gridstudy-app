@@ -194,7 +194,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const currentNodeRef = useRef();
 
-    useAllComputingStatus(studyUuid, currentNode?.id);
+    useAllComputingStatus();
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
