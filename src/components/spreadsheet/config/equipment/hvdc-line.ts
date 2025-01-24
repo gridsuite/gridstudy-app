@@ -8,19 +8,15 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
-    defaultEnumFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const HVDC_LINE_TAB_DEF = {
     index: 10,
@@ -59,10 +55,9 @@ export const HVDC_LINE_TAB_DEF = {
         {
             colId: 'ConvertersMode',
             field: 'convertersMode',
-            getQuickFilterText: excludeFromGlobalFilter,
-            ...defaultEnumFilterConfig,
+            ...defaultTextFilterConfig,
             context: {
-                ...defaultEnumFilterConfig.context,
+                ...defaultTextFilterConfig.context,
                 columnWidth: LARGE_COLUMN_WIDTH,
             },
         },
@@ -87,20 +82,17 @@ export const HVDC_LINE_TAB_DEF = {
         {
             colId: 'Country1',
             field: 'country1',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'Country2',
             field: 'country2',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'R',
             field: 'r',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
@@ -111,7 +103,6 @@ export const HVDC_LINE_TAB_DEF = {
             colId: 'ActivePowerSetpoint',
             field: 'activePowerSetpoint',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
@@ -122,7 +113,6 @@ export const HVDC_LINE_TAB_DEF = {
             colId: 'maxActivePower',
             field: 'maxP',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
@@ -133,7 +123,6 @@ export const HVDC_LINE_TAB_DEF = {
             colId: 'OprFromCS1toCS2',
             field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
@@ -145,7 +134,6 @@ export const HVDC_LINE_TAB_DEF = {
             colId: 'OprFromCS2toCS1',
             field: 'hvdcOperatorActivePowerRange.oprFromCS2toCS1',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
@@ -158,17 +146,11 @@ export const HVDC_LINE_TAB_DEF = {
             field: 'hvdcAngleDroopActivePowerControl.isEnabled',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
         },
         {
             colId: 'K',
             field: 'hvdcAngleDroopActivePowerControl.droop',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
@@ -179,13 +161,12 @@ export const HVDC_LINE_TAB_DEF = {
             colId: 'P0',
             field: 'hvdcAngleDroopActivePowerControl.p0',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
             },
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

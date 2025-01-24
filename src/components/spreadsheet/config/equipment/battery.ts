@@ -7,20 +7,15 @@
 
 import type { ReadonlyDeep } from 'type-fest';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const BATTERY_TAB_DEF = {
     index: 9,
@@ -40,7 +35,6 @@ export const BATTERY_TAB_DEF = {
             colId: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            ...editableColumnConfig,
         },
         {
             colId: 'VoltageLevelId',
@@ -50,8 +44,7 @@ export const BATTERY_TAB_DEF = {
         {
             colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'NominalV',
@@ -71,22 +64,16 @@ export const BATTERY_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                withFluxConvention: true,
-                canBeInvalidated: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'ReactivePower',
             field: 'q',
-            getQuickFilterText: excludeFromGlobalFilter,
             ...defaultNumericFilterConfig,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                withFluxConvention: true,
-                canBeInvalidated: true,
             },
         },
         {
@@ -94,101 +81,52 @@ export const BATTERY_TAB_DEF = {
             field: 'activePowerControl.participate',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            ...editableColumnConfig,
-            valueSetter: (params) => {
-                params.data.activePowerControl = {
-                    ...(params.data.activePowerControl || {}),
-                    participate: params.newValue,
-                };
-                return true;
-            },
-            ...booleanCellEditorConfig((params) => params.data?.activePowerControl?.participate ?? false),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'DroopColumnName',
             field: 'activePowerControl.droop',
             valueGetter: (params) => params.data?.activePowerControl?.droop,
-            valueSetter: (params) => {
-                params.data.activePowerControl = {
-                    ...(params.data.activePowerControl || {}),
-                    droop: params.newValue,
-                };
-                return true;
-            },
             ...defaultNumericFilterConfig,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                crossValidation: {
-                    requiredOn: {
-                        dependencyColumn: 'activePowerControl.participate',
-                        columnValue: true,
-                    },
-                },
             },
         },
         {
             colId: 'minP',
             field: 'minP',
             ...defaultNumericFilterConfig,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.minP),
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                crossValidation: {
-                    minExpression: '0',
-                },
             },
         },
         {
             colId: 'maxP',
             field: 'maxP',
             ...defaultNumericFilterConfig,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.maxP),
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                crossValidation: {
-                    minExpression: 'minP',
-                },
             },
         },
         {
             colId: 'activePowerSetpoint',
             field: 'targetP',
             ...defaultNumericFilterConfig,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.targetP),
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                crossValidation: {
-                    minExpression: 'minP',
-                    maxExpression: 'maxP',
-                    allowZero: true,
-                },
             },
         },
         {
             colId: 'reactivePowerSetpoint',
             field: 'targetQ',
-            ...editableColumnConfig,
             ...defaultNumericFilterConfig,
-            ...numericalCellEditorConfig((params) => params.data.targetQ),
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
@@ -199,13 +137,8 @@ export const BATTERY_TAB_DEF = {
             colId: 'connected',
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
-            getQuickFilterText: excludeFromGlobalFilter,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

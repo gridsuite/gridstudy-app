@@ -7,7 +7,6 @@
 import { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
-import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
 import { CustomColumnConfigProps } from 'components/spreadsheet/custom-columns/custom-column-menu';
 import React, { ComponentType } from 'react';
 
@@ -81,27 +80,18 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
     agGridFilterParams?: {
         filterOptions: IFilterOptionDef[];
     };
-    boolean?: boolean;
-    canBeInvalidated?: boolean;
-    changeCmd?: string;
     columnWidth?: number;
-    crossValidation?: CrossValidationOptions;
+    fractionDigits?: number;
+    isDefaultSort?: boolean;
+    numeric?: boolean;
+    sortProps?: SortPropsType;
     forceDisplayFilterIcon?: boolean;
+    tabIndex?: number;
+    isCustomColumn?: boolean;
+    Menu?: React.FC<CustomColumnConfigProps>;
     filterComponent?: ComponentType<F>;
     //We omit colId here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
     filterComponentParams?: Omit<F, 'colId'>;
-    filterTab?: string[];
-    fractionDigits?: number;
-    getEnumLabel?: (value: string) => string | undefined;
-    isCountry?: boolean;
-    isCustomColumn?: boolean;
-    isDefaultSort?: boolean;
-    isEnum?: boolean;
-    Menu?: React.FC<CustomColumnConfigProps>;
-    numeric?: boolean;
-    sortProps?: SortPropsType;
-    tabIndex?: number;
-    withFluxConvention?: boolean;
 }
 
 export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>

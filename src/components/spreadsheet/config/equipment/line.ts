@@ -8,18 +8,15 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 
 export const LINE_TAB_DEF = {
@@ -59,14 +56,12 @@ export const LINE_TAB_DEF = {
         {
             colId: 'Country1',
             field: 'country1',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'Country2',
             field: 'country2',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'nominalVoltage1KV',
@@ -92,12 +87,10 @@ export const LINE_TAB_DEF = {
             colId: 'ActivePowerSide1',
             field: 'p1',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
         },
         {
@@ -108,9 +101,7 @@ export const LINE_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'ReactivePowerSide1',
@@ -120,9 +111,7 @@ export const LINE_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'ReactivePowerSide2',
@@ -132,9 +121,7 @@ export const LINE_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'r',
@@ -145,7 +132,6 @@ export const LINE_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 1,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'x',
@@ -156,7 +142,6 @@ export const LINE_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 1,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'g1',
@@ -168,7 +153,6 @@ export const LINE_TAB_DEF = {
                 fractionDigits: 1,
             },
             valueGetter: (params) => convertInputValue(FieldType.G1, params.data.g1),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'g2',
@@ -180,7 +164,6 @@ export const LINE_TAB_DEF = {
                 fractionDigits: 1,
             },
             valueGetter: (params) => convertInputValue(FieldType.G2, params.data.g2),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'b1',
@@ -192,7 +175,6 @@ export const LINE_TAB_DEF = {
                 fractionDigits: 1,
             },
             valueGetter: (params) => convertInputValue(FieldType.B1, params.data.b1),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'b2',
@@ -204,30 +186,19 @@ export const LINE_TAB_DEF = {
                 fractionDigits: 1,
             },
             valueGetter: (params) => convertInputValue(FieldType.B2, params.data.b2),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'connected1',
             field: 'terminal1Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'connected2',
             field: 'terminal2Connected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

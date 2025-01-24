@@ -8,19 +8,16 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { NOMINAL_V } from '../../../utils/field-constants';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
     index: 8,
@@ -49,8 +46,7 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
         {
             colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'NominalV',
@@ -70,9 +66,7 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'ReactivePower',
@@ -82,9 +76,7 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'VoltageSetpointKV',
@@ -95,7 +87,6 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 1,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'ReactivePowerSetpointMVAR',
@@ -107,19 +98,13 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
                 fractionDigits: 1,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'connected',
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
