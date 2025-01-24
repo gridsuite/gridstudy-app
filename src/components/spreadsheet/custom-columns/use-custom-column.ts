@@ -65,30 +65,41 @@ export function useCustomColumn(tabIndex: number) {
         return { limitedEvaluate };
     }, []);
 
+    const processValue = useCallback((value: unknown): unknown => {
+        return typeof value === 'number' ? bignumber(value) : value;
+    }, []);
+
+    const processNode = useCallback(
+        (node: Record<string, unknown>): Record<string, unknown> => {
+            return Object.entries(node).reduce((acc, [key, value]) => {
+                acc[key] = processValue(value);
+                return acc;
+            }, {} as Record<string, unknown>);
+        },
+        [processValue]
+    );
+
     const createValueGetter = useCallback(
         (colWithFormula: ColumnWithFormula) =>
             (params: { data: Record<string, unknown> }): string => {
                 try {
                     const { data } = params;
+
                     const scope = Object.entries(data).reduce((acc, [key, value]) => {
-                        //We need to iterate through other node data as well to convert properties to bignumber when necessary
-                        if (nodesAliases.find((nodeAlias) => nodeAlias.alias === key)) {
-                            acc[key] = Object.entries(value as Object).reduce((innerAcc, [innerKey, innerValue]) => {
-                                innerAcc[innerKey] =
-                                    typeof innerValue === 'number' ? bignumber(innerValue) : innerValue;
-                                return innerAcc;
-                            }, {} as Record<string, unknown>);
+                        if (nodesAliases.some((nodeAlias) => nodeAlias.alias === key)) {
+                            acc[key] = processNode(value as Record<string, unknown>);
                         } else {
-                            acc[key] = typeof value === 'number' ? bignumber(value) : value;
+                            acc[key] = processValue(value);
                         }
                         return acc;
                     }, {} as Record<string, unknown>);
+
                     return math.limitedEvaluate(colWithFormula.formula, scope);
                 } catch (e) {
                     return '';
                 }
             },
-        [math, nodesAliases]
+        [math, nodesAliases, processNode, processValue]
     );
 
     const createCustomColumn = useCallback(() => {
