@@ -35,10 +35,12 @@ interface ShortCircuitAnalysisResultTabProps {
 }
 
 const getDisplayedColumns = (params: GridReadyEvent) => {
-    return params.api?.getColumnDefs()
-        ?.filter((col: ColDef) => !col.hide)
-        ?.map((col) => col.headerName) as string[]
-        ?? [];
+    return (
+        (params.api
+            ?.getColumnDefs()
+            ?.filter((col: ColDef) => !col.hide)
+            ?.map((col) => col.headerName) as string[]) ?? []
+    );
 };
 
 export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalysisResultTabProps> = ({
