@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from './spreadsheet.type';
 import { SUBSTATION_TAB_DEF } from './equipment/substation';
 import { VOLTAGE_LEVEL_TAB_DEF } from './equipment/voltage-level';
@@ -25,7 +24,7 @@ import { BUS_TAB_DEF } from './equipment/bus';
 import { TIE_LINE_TAB_DEF } from './equipment/tie-line';
 import { BUSBAR_SECTION_TAB_DEF } from './equipment/busbar-section';
 
-export const TABLES_DEFINITIONS = [
+export const TABLES_DEFINITIONS: SpreadsheetTabDefinition[] = [
     SUBSTATION_TAB_DEF,
     VOLTAGE_LEVEL_TAB_DEF,
     LINE_TAB_DEF,
@@ -43,7 +42,7 @@ export const TABLES_DEFINITIONS = [
     BUS_TAB_DEF,
     TIE_LINE_TAB_DEF,
     BUSBAR_SECTION_TAB_DEF,
-] as const satisfies ReadonlyDeep<SpreadsheetTabDefinition[]>;
+];
 
 export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
 export type TablesDefinitionsNames = TablesDefinitionsType[number]['name'];
@@ -56,6 +55,6 @@ export type GenericTablesNamesIndexes = Map<string, number>;
 export type GenericTablesDefinitionTypes = Map<SpreadsheetEquipmentType, SpreadsheetTabDefinition>;
 export type GenericTablesDefinitionIndexes = Map<number, SpreadsheetTabDefinition>;
 
-export const TABLES_COLUMNS_NAMES = TABLES_DEFINITIONS.map((tabDef) => new Set(tabDef.columns.map((c) => c.colId)));
+export const TABLES_COLUMNS_NAMES = TABLES_DEFINITIONS.map((tabDef) => new Set(tabDef.columns.map((c) => c.colId!)));
 export const TABLES_NAMES = TABLES_DEFINITIONS.map((tabDef) => tabDef.name);
 export const TABLES_TYPES = TABLES_DEFINITIONS.map((tabDef) => tabDef.type);

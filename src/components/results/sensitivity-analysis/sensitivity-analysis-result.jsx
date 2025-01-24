@@ -17,9 +17,11 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
-import { SENSITIVITY_AT_NODE, SUFFIX_TYPES } from './sensitivity-analysis-result-utils';
+import { mappingTabs, SENSITIVITY_AT_NODE, SUFFIX_TYPES } from './sensitivity-analysis-result-utils';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -31,16 +33,7 @@ function makeRows(resultRecord) {
     });
 }
 
-const SensitivityAnalysisResult = ({
-    result,
-    nOrNkIndex,
-    sensiKind,
-    filtersDef,
-    sortProps,
-    filterProps,
-    isLoading,
-    ...props
-}) => {
+const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, onFilter, isLoading, ...props }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
     const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
@@ -71,15 +64,44 @@ const SensitivityAnalysisResult = ({
             });
             /*return {
                 headerComponentParams: {
-                    filterComponentParams: {
+                
+            //const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
+
+            return {
+                field,
+                numeric: isNum,
+                fractionDigits: isNum ? 2 : undefined,
+                headerComponent: CustomHeaderComponent,
+                headerComponentParams: {
+                    field,
+                    displayName: intl.formatMessage({ id: labelId }),
+                    sortParams: {
+                        table: SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+                        tab: mappingTabs(sensiKind, nOrNkIndex),
+                    },
+ main*/
+                    /*filterComponentParams: {
                         filterParams: {
-                            ...filterProps,
                             customFilterOptions: filterOptions,
+                            type: AgGridFilterType.SensitivityAnalysis,
+                            tab: mappingTabs(sensiKind, nOrNkIndex),
+                            updateFilterCallback: onFilter,
                         },
                     },
                 },*/
         },
         [/*filtersDef, */ intl, sortProps /*, filterProps*/]
+               /* },
+                minWidth: 95,
+                maxWidth: maxWidth,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
+                pinned: pinned,
+                headerTooltip: intl.formatMessage({ id: labelId }),
+            };
+        },
+        [filtersDef, intl, nOrNkIndex, onFilter, sensiKind]
+ main*/
     );
 
     const columnsDefs = useMemo(() => {
@@ -207,9 +229,8 @@ SensitivityAnalysisResult.propTypes = {
     result: PropTypes.array,
     nOrNkIndex: PropTypes.number,
     sensiKind: PropTypes.string,
-    sortProps: PropTypes.object,
-    filterProps: PropTypes.object,
     isLoading: PropTypes.bool,
+    onFilter: PropTypes.func,
 };
 
 export default SensitivityAnalysisResult;
