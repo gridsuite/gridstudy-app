@@ -21,7 +21,6 @@ import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { fetchDynamicSecurityAnalysisStatus } from '../../../services/study/dynamic-security-analysis';
 import { dynamicSecurityAnalysisResultInvalidations } from './utils/dynamic-security-analysis-result-utils';
-import { MEDIUM_COLUMN_WIDTH } from '../../spreadsheet/utils/constants';
 
 const styles = {
     loader: {
@@ -69,9 +68,8 @@ const DynamicSecurityAnalysisResultSynthesis = memo(
                     headerName: intl.formatMessage({
                         id: 'status',
                     }),
-                    id: 'status',
+                    colId: 'status',
                     field: 'status',
-                    width: MEDIUM_COLUMN_WIDTH,
                     cellRenderer: StatusCellRender,
                 }),
             ],

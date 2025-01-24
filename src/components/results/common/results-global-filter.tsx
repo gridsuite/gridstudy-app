@@ -6,15 +6,13 @@
  */
 
 import { FunctionComponent, SyntheticEvent, useCallback } from 'react';
-import { Box, FilterOptionsState } from '@mui/material';
-import { Autocomplete, Chip, InputAdornment, TextField } from '@mui/material';
+import { Autocomplete, Box, Chip, FilterOptionsState, InputAdornment, TextField, Theme } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
-import { Theme } from '@mui/material';
 import { AppState } from '../../../redux/reducer';
 import { AppDispatch } from '../../../redux/store';
 
