@@ -542,7 +542,6 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
 
     const updateNAD = useCallback(
         (diagramStates: DiagramState[]) => {
-            previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
             const networkAreaIds: UUID[] = [];
             let networkAreaViewState = ViewState.OPENED;
             diagramStates.forEach((diagramState) => {
@@ -552,13 +551,17 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                 }
             });
             if (networkAreaIds.length > 0) {
-                const isSameNadAlreadyPresentInViews = viewsRef.current.find(
-                    (diagramView) =>
+                const isSameNadAlreadyPresentInViews = viewsRef.current.find((diagramView) => {
+                    return (
                         diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM &&
                         diagramView.ids?.toString() === networkAreaIds.toString() &&
-                        diagramView.depth === networkAreaDiagramDepth
-                );
+                        // Do not compare with depth in view here because it is set asynchronously
+                        previousNetworkAreaDiagramDepth.current === networkAreaDiagramDepth
+                    );
+                });
                 if (!isSameNadAlreadyPresentInViews) {
+                    // set the previous depth to the current one to avoid other close in time calls to updateNAD
+                    previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
                     addOrReplaceNAD(networkAreaIds, networkAreaViewState, networkAreaDiagramDepth);
                 }
             } else if (
