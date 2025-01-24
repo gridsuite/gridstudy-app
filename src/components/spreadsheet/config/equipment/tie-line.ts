@@ -63,21 +63,25 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
         { colId: 'x', field: 'x', ...numberColumnDefinition('Series reactance (Ω)', tab, 1) },
         {
             colId: 'g1',
+            field: 'g1', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.G1, params.data.g1),
             ...numberColumnDefinition('Shunt conductance 1 (μS)', tab, 1),
         },
         {
             colId: 'g2',
+            field: 'g2', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.G2, params.data.g2),
             ...numberColumnDefinition('Shunt conductance 1 (μS)', tab, 1),
         },
         {
             colId: 'b1',
+            field: 'b1', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.B1, params.data.b1),
             ...numberColumnDefinition('Shunt susceptance 1 (μS)', tab, 1),
         },
         {
             colId: 'b2',
+            field: 'b2', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.B2, params.data.b2),
             ...numberColumnDefinition('Shunt susceptance 2 (μS)', tab, 1),
         },

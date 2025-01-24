@@ -103,6 +103,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             colId: 'RatioHighTapPosition',
+            field: 'ratioTapChanger.highTapPosition', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
             ...numberColumnDefinition('Ratio high tap position', tab, 0),
         },
@@ -148,6 +149,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             colId: 'PhaseHighTapPosition',
+            field: 'phaseTapChanger.highTapPosition', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => computeHighTapPosition(params?.data?.phaseTapChanger?.steps),
             ...numberColumnDefinition('Phase high tap position', tab, 0),
         },
@@ -160,11 +162,13 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         { colId: 'x', field: 'x', ...numberColumnDefinition('Series reactance (Ω)', tab, 1) },
         {
             colId: 'g',
+            field: 'g', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.G, params.data.g),
             ...numberColumnDefinition('Magnetizing conductance (μS)', tab, 1),
         },
         {
             colId: 'b',
+            field: 'b', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.B, params.data.b),
             ...numberColumnDefinition('Magnetizing susceptance (μS)', tab, 1),
         },

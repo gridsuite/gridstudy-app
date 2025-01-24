@@ -70,6 +70,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             colId: 'SwitchedOnMaxQAtNominalV',
+            field: 'switchedOnQAtNominalV', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
             ...numberColumnDefinition('Switch-on Q at nominal voltage', tab, 1),
@@ -81,6 +82,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             colId: 'SwitchedOnMaxSusceptance',
+            field: 'switchedOnSusceptance', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
             ...numberColumnDefinition('Switch-on susceptance', tab, 5),

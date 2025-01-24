@@ -23,6 +23,7 @@ const propertiesGetter: ValueGetterFunc = (params) => {
 export const genericColumnOfPropertiesReadonly = (tab: string) => {
     return {
         colId: 'Properties',
+        field: 'properties', // TODO: useless for AgGrid used only for static/custom columns export
         valueGetter: propertiesGetter,
         ...textColumnDefinition('Properties', tab),
         cellRenderer: PropertiesCellRenderer,

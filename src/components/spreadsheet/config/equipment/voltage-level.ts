@@ -56,6 +56,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             colId: 'IpMin',
+            field: 'identifiableShortCircuit.ipMin', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -65,6 +66,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             colId: 'IpMax',
+            field: 'identifiableShortCircuit.ipMax', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,

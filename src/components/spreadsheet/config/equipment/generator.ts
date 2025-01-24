@@ -117,6 +117,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             colId: 'ReactivePercentageVoltageRegulation',
+            field: 'coordinatedReactiveControl.qPercent', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => {
                 const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
                 return isNaN(qPercent) ? 0 : qPercent;
@@ -165,6 +166,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             colId: 'RegulatingTerminalGenerator',
+            field: 'regulatingTerminalConnectableId', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: RegulatingTerminalCellGetter,
             ...textColumnDefinition('Regulated terminal', tab),
         },
