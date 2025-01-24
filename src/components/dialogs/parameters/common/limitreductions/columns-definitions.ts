@@ -59,7 +59,7 @@ export enum TAB_VALUES {
 
 export const TAB_INFO = [
     { label: TAB_VALUES[TAB_VALUES.General], developerModeOnly: false },
-    { label: TAB_VALUES[TAB_VALUES.LimitReductions], developerModeOnly: true },
+    { label: TAB_VALUES[TAB_VALUES.LimitReductions], developerModeOnly: false },
 ];
 
 export interface IColumnsDef {
