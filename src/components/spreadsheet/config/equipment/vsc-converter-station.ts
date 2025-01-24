@@ -5,147 +5,84 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { typeAndFetchers } from './common-config';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-export const VSC_CONVERTER_STATION_TAB_DEF = {
+const tab = 'VscConverterStations';
+
+export const VSC_CONVERTER_STATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 12,
-    name: 'VscConverterStations',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.VSC_CONVERTER_STATION),
     columns: [
         {
             colId: 'ID',
             field: 'id',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-                isDefaultSort: true,
-            },
+            ...textColumnDefinition('ID', tab),
         },
         {
             colId: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Name', tab),
         },
         {
             colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID', tab),
         },
         {
             colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...textColumnDefinition('Country', tab),
         },
         {
             colId: 'NominalV',
             field: 'nominalV',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         {
             colId: 'HvdcLineId',
             field: 'hvdcLineId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('HVDC Line ID', tab),
         },
         {
             colId: 'activePower',
             field: 'p',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-                canBeInvalidated: true,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('p (MW)', tab, 1),
         },
         {
             colId: 'ReactivePower',
             field: 'q',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-                canBeInvalidated: true,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('q (MVar)', tab, 1),
         },
         {
             colId: 'LossFactor',
             field: 'lossFactor',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Loss factor', tab, 1),
         },
         {
             colId: 'voltageRegulationOn',
             field: 'voltageRegulatorOn',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Voltage regulation', tab),
         },
         {
             colId: 'VoltageSetpointKV',
             field: 'voltageSetpoint',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Voltage set point (kV)', tab, 1),
         },
         {
             colId: 'ReactivePowerSetpointMVAR',
             field: 'reactivePowerSetpoint',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Reactive power set point (MVar)', tab, 1),
         },
         {
             colId: 'connected',
             field: 'terminalConnected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Connected', tab),
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

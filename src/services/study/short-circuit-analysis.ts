@@ -12,9 +12,8 @@ import {
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { FilterSelectorType } from '../../components/custom-aggrid/custom-aggrid-header.type';
-import { SortConfigType } from '../../hooks/use-aggrid-sort';
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../components/utils/constants';
+import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
@@ -24,8 +23,8 @@ interface ShortCircuitAnalysisResult {
 interface Selector {
     page: number;
     size: number;
-    filter: FilterSelectorType[] | null;
-    sort: SortConfigType[];
+    filter: FilterConfig[] | null;
+    sort: SortConfig[];
 }
 interface ShortCircuitAnalysisPagedResults extends ShortCircuitAnalysisResult {
     selector: Partial<Selector>;
