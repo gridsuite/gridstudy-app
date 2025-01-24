@@ -8,7 +8,6 @@
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo, useRef } from 'react';
-import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
@@ -20,6 +19,7 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
 import { SENSITIVITY_AT_NODE, SUFFIX_TYPES } from './sensitivity-analysis-result-utils';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -50,41 +50,36 @@ const SensitivityAnalysisResult = ({
 
     const makeColumn = useCallback(
         ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
-            const { onSortChanged = () => {}, sortConfig } = sortProps || {};
+            //const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
 
-            const isSortActive = !!sortConfig?.find((value) => value.colId === field);
-
-            const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
-
-            return {
-                field,
-                numeric: isNum,
-                fractionDigits: isNum ? 2 : undefined,
-                headerComponent: CustomHeaderComponent,
+            return makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: labelId }),
+                colId: field,
+                field: field,
+                context: {
+                    numeric: isNum,
+                    fractionDigits: isNum ? 2 : undefined,
+                    sortProps,
+                    //filterComponent: CustomAggridComparatorFilter,
+                    //filterComponentParams: { filterParams: { ...filterProps, ...textFilterParams } },
+                    // maxWidth: maxWidth,
+                    // wrapHeaderText: true,
+                    // autoHeaderHeight: true,
+                    // pinned: pinned,
+                    forceDisplayFilterIcon: true,
+                },
+            });
+            /*return {
                 headerComponentParams: {
-                    field,
-                    displayName: intl.formatMessage({ id: labelId }),
-                    sortParams: {
-                        isSortable: !!sortProps,
-                        sortConfig,
-                        onSortChanged,
-                    },
                     filterComponentParams: {
                         filterParams: {
                             ...filterProps,
                             customFilterOptions: filterOptions,
                         },
                     },
-                },
-                minWidth: isSortActive ? 95 : 65,
-                maxWidth: maxWidth,
-                wrapHeaderText: true,
-                autoHeaderHeight: true,
-                pinned: pinned,
-                headerTooltip: intl.formatMessage({ id: labelId }),
-            };
+                },*/
         },
-        [filtersDef, intl, sortProps, filterProps]
+        [/*filtersDef, */ intl, sortProps /*, filterProps*/]
     );
 
     const columnsDefs = useMemo(() => {
