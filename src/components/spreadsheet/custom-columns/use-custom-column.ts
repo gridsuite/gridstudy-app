@@ -20,6 +20,7 @@ export function useCustomColumn(tabIndex: number) {
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
+    const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
 
     const { onSortChanged, sortConfig } = useAgGridSort(
         SPREADSHEET_SORT_STORE,
@@ -70,7 +71,16 @@ export function useCustomColumn(tabIndex: number) {
                 try {
                     const { data } = params;
                     const scope = Object.entries(data).reduce((acc, [key, value]) => {
-                        acc[key] = typeof value === 'number' ? bignumber(value) : value;
+                        //We need to iterate through other node data as well to convert properties to bignumber when necessary
+                        if (nodesAliases.find((nodeAlias) => nodeAlias.alias === key)) {
+                            acc[key] = Object.entries(value as Object).reduce((innerAcc, [innerKey, innerValue]) => {
+                                innerAcc[innerKey] =
+                                    typeof innerValue === 'number' ? bignumber(innerValue) : innerValue;
+                                return innerAcc;
+                            }, {} as Record<string, unknown>);
+                        } else {
+                            acc[key] = typeof value === 'number' ? bignumber(value) : value;
+                        }
                         return acc;
                     }, {} as Record<string, unknown>);
                     return math.limitedEvaluate(colWithFormula.formula, scope);
@@ -78,7 +88,7 @@ export function useCustomColumn(tabIndex: number) {
                     return '';
                 }
             },
-        [math]
+        [math, nodesAliases]
     );
 
     const createCustomColumn = useCallback(() => {
