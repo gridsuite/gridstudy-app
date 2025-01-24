@@ -5,102 +5,75 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { typeAndFetchers } from './common-config';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-export const VOLTAGE_LEVEL_TAB_DEF = {
+const tab = 'VoltageLevels';
+
+export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
     index: 1,
-    name: 'VoltageLevels',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
     columns: [
         {
             colId: 'ID',
             field: 'id',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                isDefaultSort: true,
-            },
+            ...textColumnDefinition('ID', tab),
         },
         {
             colId: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Name', tab),
         },
         {
             colId: 'SubstationId',
             field: 'substationId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Substation ID', tab),
         },
         {
             colId: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Country', tab),
         },
         {
             colId: 'NominalV',
             field: 'nominalV',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         {
-            colId: 'LowVoltageLimitkV',
+            colId: 'lowVoltageLimit',
             field: 'lowVoltageLimit',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Low voltage limit (kV)', tab, 1),
         },
         {
-            colId: 'HighVoltageLimitkV',
+            colId: 'highVoltageLimit',
             field: 'highVoltageLimit',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('High voltage limit (kV)', tab, 1),
         },
         {
             colId: 'IpMin',
-            field: 'identifiableShortCircuit.ipMin',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            field: 'identifiableShortCircuit.ipMin', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMin
                 ),
+            ...numberColumnDefinition('ISC min (kA)', tab, 1),
         },
         {
             colId: 'IpMax',
-            field: 'identifiableShortCircuit.ipMax',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            field: 'identifiableShortCircuit.ipMax', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMax
                 ),
+            ...numberColumnDefinition('ISC max (kA)', tab, 1),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

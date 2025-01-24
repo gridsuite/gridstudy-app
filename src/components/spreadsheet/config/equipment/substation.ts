@@ -5,36 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { textColumnDefinition } from '../common-column-definitions';
 
-export const SUBSTATION_TAB_DEF = {
+const tab = 'Substations';
+
+export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 0,
-    name: 'Substations',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.SUBSTATION),
     columns: [
-        {
-            colId: 'ID',
-            field: 'id',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                isDefaultSort: true,
-            },
-        },
-        {
-            colId: 'Name',
-            field: 'name',
-            ...defaultTextFilterConfig,
-        },
+        { colId: 'ID', field: 'id', ...textColumnDefinition('ID', tab) },
+        { colId: 'Name', field: 'name', ...textColumnDefinition('Name', tab) },
         {
             colId: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Country', tab),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

@@ -5,370 +5,184 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import { typeAndFetchers } from './common-config';
 import { computeHighTapPosition } from '../../../utils/utils';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
+const tab = 'TwoWindingsTransformers';
+
+export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
     index: 3,
-    name: 'TwoWindingsTransformers',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
     columns: [
-        {
-            colId: 'ID',
-            field: 'id',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                isDefaultSort: true,
-            },
-        },
+        { colId: 'ID', field: 'id', ...textColumnDefinition('ID', tab) },
         {
             colId: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Name', tab),
         },
         {
             colId: 'VoltageLevelIdSide1',
             field: 'voltageLevelId1',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID 1', tab),
         },
         {
             colId: 'VoltageLevelIdSide2',
             field: 'voltageLevelId2',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID 2', tab),
         },
-        {
-            colId: 'Country',
-            field: 'country',
-            ...defaultTextFilterConfig,
-        },
+        { colId: 'Country', field: 'country', ...textColumnDefinition('Country', tab) },
         {
             colId: 'nominalVoltage1KV',
             field: 'nominalVoltage1',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Nominal voltage 1 (kV)', tab, 0),
         },
         {
             colId: 'nominalVoltage2KV',
             field: 'nominalVoltage2',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Nominal voltage 2 (kV)', tab, 0),
         },
         {
             colId: 'ratedVoltage1KV',
             field: 'ratedU1',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Rated voltage 1 (kV)', tab, 0),
         },
         {
             colId: 'ratedVoltage2KV',
             field: 'ratedU2',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Rated voltage 2 (kV)', tab, 0),
         },
-        {
-            colId: 'ActivePowerSide1',
-            field: 'p1',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-        },
-        {
-            colId: 'ActivePowerSide2',
-            field: 'p2',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-        },
-        {
-            colId: 'ReactivePowerSide1',
-            field: 'q1',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-        },
-        {
-            colId: 'ReactivePowerSide2',
-            field: 'q2',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-        },
+        { colId: 'ActivePowerSide1', field: 'p1', ...numberColumnDefinition('p1 (MW)', tab, 1) },
+        { colId: 'ActivePowerSide2', field: 'p2', ...numberColumnDefinition('p2 (MW)', tab, 1) },
+        { colId: 'ReactivePowerSide1', field: 'q1', ...numberColumnDefinition('q1 (MVar)', tab, 1) },
+        { colId: 'ReactivePowerSide2', field: 'q2', ...numberColumnDefinition('q2 (MVar)', tab, 1) },
         {
             colId: 'HasLoadTapChangingCapabilities',
             field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
-            valueGetter: (params) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanColumnDefinition('Ratio on-load', tab),
         },
         {
             colId: 'RatioRegulationMode',
             field: 'ratioTapChanger.regulationMode',
-            valueGetter: (params) => params.data?.ratioTapChanger?.regulationMode,
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-            },
+            ...textColumnDefinition('Ratio regulation mode', tab),
         },
         {
             colId: 'TargetVPoint',
             field: 'ratioTapChanger.targetV',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Voltage set point (kV)', tab, 1),
         },
         {
             colId: 'RatioDeadBand',
             field: 'ratioTapChanger.targetDeadband',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Ratio deadband', tab, 1),
         },
         {
             colId: 'RatioRegulationTypeText',
             field: 'ratioTapChanger.regulationType',
-            valueGetter: (params) => params.data?.ratioTapChanger?.regulationType,
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-            },
+            ...textColumnDefinition('Ratio regulation', tab),
         },
         {
             colId: 'RatioRegulatedSide',
             field: 'ratioTapChanger.regulationSide',
-            ...defaultTextFilterConfig,
-            valueGetter: (params) => params.data?.ratioTapChanger?.regulationSide,
+            ...textColumnDefinition('Ratio regulated side', tab),
         },
         {
             colId: 'RatioRegulatingTerminal',
             field: 'ratioTapChanger.ratioRegulatingTerminal',
-            ...defaultTextFilterConfig,
-            valueGetter: (params) => params.data?.ratioTapChanger?.ratioRegulatingTerminal,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-            },
+            ...textColumnDefinition('Ratio regulated terminal', tab),
         },
         {
             colId: 'RatioLowTapPosition',
             field: 'ratioTapChanger.lowTapPosition',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Ratio low tap position', tab, 0),
         },
         {
             colId: 'RatioHighTapPosition',
-            field: 'ratioTapChanger.highTapPosition',
-            ...defaultNumericFilterConfig,
+            field: 'ratioTapChanger.highTapPosition', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
+            ...numberColumnDefinition('Ratio high tap position', tab, 0),
         },
         {
             colId: 'RatioTap',
             field: 'ratioTapChanger.tapPosition',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
-            valueGetter: (params) => params?.data?.ratioTapChanger?.tapPosition,
+            ...numberColumnDefinition('Ratio tap', tab, 0),
         },
         {
             colId: 'RegulatingMode',
             field: 'phaseTapChanger.regulationMode',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-            },
-            valueGetter: (params) => params?.data?.phaseTapChanger?.regulationMode,
+            ...textColumnDefinition('Phase regulation mode', tab),
         },
         {
             colId: 'RegulatingValue',
             field: 'phaseTapChanger.regulationValue',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-                fractionDigits: 1,
-            },
-            valueGetter: (params) => params?.data?.phaseTapChanger?.regulationValue,
+            ...numberColumnDefinition('Current (A) or flow set point (MW)', tab, 1),
         },
         {
             colId: 'PhaseDeadBand',
             field: 'phaseTapChanger.targetDeadband',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Phase deadband', tab, 1),
         },
         {
             colId: 'PhaseRegulationTypeText',
             field: 'phaseTapChanger.regulationType',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-            },
-            valueGetter: (params) => params.data?.phaseTapChanger?.regulationType,
+            ...textColumnDefinition('Phase regulation', tab),
         },
         {
             colId: 'PhaseRegulatedSide',
             field: 'phaseTapChanger.regulationSide',
-            ...defaultTextFilterConfig,
-            valueGetter: (params) => params.data?.phaseTapChanger?.regulationSide,
+            ...textColumnDefinition('Phase regulated side', tab),
         },
         {
             colId: 'PhaseRegulatingTerminal',
             field: 'phaseTapChanger.phaseRegulatingTerminal',
-            ...defaultTextFilterConfig,
-            valueGetter: (params) => params.data?.phaseTapChanger?.phaseRegulatingTerminal,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-            },
+            ...textColumnDefinition('Phase regulated terminal', tab),
         },
         {
             colId: 'PhaseLowTapPosition',
             field: 'phaseTapChanger.lowTapPosition',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Phase low tap position', tab, 0),
         },
         {
             colId: 'PhaseHighTapPosition',
-            field: 'phaseTapChanger.highTapPosition',
-            ...defaultNumericFilterConfig,
+            field: 'phaseTapChanger.highTapPosition', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => computeHighTapPosition(params?.data?.phaseTapChanger?.steps),
+            ...numberColumnDefinition('Phase high tap position', tab, 0),
         },
         {
             colId: 'PhaseTap',
             field: 'phaseTapChanger.tapPosition',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
-            valueGetter: (params) => params?.data?.phaseTapChanger?.tapPosition,
+            ...numberColumnDefinition('Phase tap', tab, 0),
         },
-        {
-            colId: 'r',
-            field: 'r',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-        },
-        {
-            colId: 'x',
-            field: 'x',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-        },
+        { colId: 'r', field: 'r', ...numberColumnDefinition('Series resistance (Ω)', tab, 1) },
+        { colId: 'x', field: 'x', ...numberColumnDefinition('Series reactance (Ω)', tab, 1) },
         {
             colId: 'g',
-            field: 'g',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            field: 'g', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.G, params.data.g),
+            ...numberColumnDefinition('Magnetizing conductance (μS)', tab, 1),
         },
         {
             colId: 'b',
-            field: 'b',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            field: 'b', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.B, params.data.b),
+            ...numberColumnDefinition('Magnetizing susceptance (μS)', tab, 1),
         },
         {
             colId: 'ratedNominalPower',
             field: 'ratedS',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Rated nominal power (MVA)', tab, 1),
         },
-        {
-            colId: 'connected1',
-            field: 'terminal1Connected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-        },
+        { colId: 'connected1', field: 'terminal1Connected', ...booleanColumnDefinition('Connected 1', tab) },
         {
             colId: 'connected2',
             field: 'terminal2Connected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanColumnDefinition('Connected 2', tab),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

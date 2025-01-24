@@ -4,15 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
-import { create, all, bignumber } from 'mathjs';
+import { all, bignumber, create } from 'mathjs';
 import { useSelector } from 'react-redux';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import CustomColumnMenu from './custom-column-menu';
+import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
+import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 
 export function useCustomColumn(tabIndex: number) {
     const tablesNames = useSelector((state: AppState) => state.tables.names);
@@ -20,11 +20,6 @@ export function useCustomColumn(tabIndex: number) {
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
-
-    const { onSortChanged, sortConfig } = useAgGridSort(
-        SPREADSHEET_SORT_STORE,
-        tablesDefinitionIndexes.get(tabIndex)!.name
-    );
 
     const math = useMemo(() => {
         const instance = create(all, {
@@ -82,26 +77,32 @@ export function useCustomColumn(tabIndex: number) {
     );
 
     const createCustomColumn = useCallback(() => {
-        return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula) => {
-            return makeAgGridCustomHeaderColumn({
+        return customColumnsDefinitions.map((colWithFormula): CustomColDef => {
+            return {
+                colId: colWithFormula.id,
                 headerName: colWithFormula.name,
-                colId: colWithFormula.name,
-                field: colWithFormula.name,
+                headerTooltip: colWithFormula.name,
+                headerComponent: CustomHeaderComponent,
+                headerComponentParams: {
+                    field: colWithFormula.name,
+                    sortParams: {
+                        table: SPREADSHEET_SORT_STORE,
+                        tab: tablesDefinitionIndexes.get(tabIndex)!.name,
+                    },
+                    menu: {
+                        Menu: CustomColumnMenu,
+                        menuParams: {
+                            tabIndex,
+                            customColumnName: colWithFormula.name,
+                        },
+                    },
+                },
                 valueGetter: createValueGetter(colWithFormula),
                 editable: false,
                 suppressMovable: true,
-                context: {
-                    sortProps: {
-                        onSortChanged,
-                        sortConfig,
-                    },
-                    tabIndex,
-                    isCustomColumn: true,
-                    Menu: CustomColumnMenu,
-                },
-            });
+            };
         });
-    }, [customColumnsDefinitions, onSortChanged, sortConfig, createValueGetter, tabIndex]);
+    }, [customColumnsDefinitions, tablesDefinitionIndexes, tabIndex, createValueGetter]);
 
     return { createCustomColumn };
 }
