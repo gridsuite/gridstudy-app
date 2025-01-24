@@ -341,6 +341,8 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
     const previousNetworkAreaDiagramDepth = useRef(networkAreaDiagramDepth);
 
     const networkAreaDiagramNbVoltageLevels = useSelector((state: AppState) => state.networkAreaDiagramNbVoltageLevels);
+    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const initNadWithGeoDataRef = useRef(networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
 
     const { translate } = useLocalizedCountries();
 
@@ -542,6 +544,10 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
 
     const updateNAD = useCallback(
         (diagramStates: DiagramState[]) => {
+            const initNadWithGeoDataParamHasChanged =
+                initNadWithGeoDataRef.current !== networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData;
+            initNadWithGeoDataRef.current = networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData;
+
             previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
             const networkAreaIds: UUID[] = [];
             let networkAreaViewState = ViewState.OPENED;
@@ -558,7 +564,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                         diagramView.ids?.toString() === networkAreaIds.toString() &&
                         diagramView.depth === networkAreaDiagramDepth
                 );
-                if (!isSameNadAlreadyPresentInViews) {
+                if (!isSameNadAlreadyPresentInViews || initNadWithGeoDataParamHasChanged) {
                     addOrReplaceNAD(networkAreaIds, networkAreaViewState, networkAreaDiagramDepth);
                 }
             } else if (
@@ -568,7 +574,12 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                 removeNAD();
             }
         },
-        [addOrReplaceNAD, removeNAD, networkAreaDiagramDepth]
+        [
+            networkAreaDiagramDepth,
+            networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+            addOrReplaceNAD,
+            removeNAD,
+        ]
     );
 
     // Update the state of the diagrams (opened, minimized, etc) in the 'views'
