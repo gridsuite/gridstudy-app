@@ -74,6 +74,10 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
                         },
                     },
                 },
+                maxWidth: maxWidth,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
+                pinned: pinned,
             });
         },
         [filtersDef, intl, nOrNkIndex, onFilter, sensiKind]
