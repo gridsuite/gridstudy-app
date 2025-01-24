@@ -832,18 +832,14 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
      */
 
     // This function is called by the diagram's contents, when they get their sizes from the backend.
-    const setDiagramSize = (diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
-        // Let's update the stored values if they are new
-        const storedValues = diagramContentSizes?.get(diagramType + diagramId);
-        if (!storedValues || storedValues.width !== width || storedValues.height !== height) {
-            let newDiagramContentSizes = new Map(diagramContentSizes);
-            newDiagramContentSizes.set(diagramType + diagramId, {
+    const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
+        setDiagramContentSizes((oldContentSizes) => {
+            return new Map(oldContentSizes).set(diagramType + diagramId, {
                 width: width,
                 height: height,
             });
-            setDiagramContentSizes(newDiagramContentSizes);
-        }
-    };
+        });
+    }, []);
 
     const getDefaultHeightByDiagramType = (diagramType: DiagramType) => {
         switch (diagramType) {
