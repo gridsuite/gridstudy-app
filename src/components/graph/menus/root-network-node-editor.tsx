@@ -101,7 +101,6 @@ const RootNetworkNodeEditor = () => {
     const [rootNetworkCreationDialogOpen, setRootNetworkCreationDialogOpen] = useState(false);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const [isLoading, setIsLoading] = useState(false);
 
     const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
     rootNetworksRef.current = rootNetworks;
@@ -112,7 +111,6 @@ const RootNetworkNodeEditor = () => {
     }, []);
 
     const dofetchRootNetworks = useCallback(() => {
-        setIsLoading(true);
         if (studyUuid) {
             fetchRootNetworks(studyUuid)
                 .then((res: RootNetworkMetadata[]) => {
@@ -123,9 +121,6 @@ const RootNetworkNodeEditor = () => {
                     snackError({
                         messageTxt: error.message,
                     });
-                })
-                .finally(() => {
-                    setIsLoading(false);
                 });
         }
     }, [studyUuid, updateSelectedItems, snackError]);
@@ -237,19 +232,6 @@ const RootNetworkNodeEditor = () => {
         );
     };
 
-    const renderRootNetworksListTitleLoading = () => {
-        return (
-            <Box sx={styles.rootNetworksTitle}>
-                <Box sx={styles.icon}>
-                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
-                </Box>
-                <Typography noWrap>
-                    <FormattedMessage id={'updateRootNetworksList'} />
-                </Typography>
-            </Box>
-        );
-    };
-
     const renderRootNetworksListTitle = () => {
         return (
             <Box sx={styles.rootNetworksTitle}>
@@ -271,7 +253,7 @@ const RootNetworkNodeEditor = () => {
                 open={rootNetworkCreationDialogOpen}
                 onClose={() => setRootNetworkCreationDialogOpen(false)}
                 onSave={doCreateRootNetwork}
-                titleId={'addRoot'}
+                titleId={'addNetwork'}
             />
         );
     };
@@ -301,8 +283,6 @@ const RootNetworkNodeEditor = () => {
             return;
         }
 
-        setIsLoading(true);
-
         getCaseImportParameters(caseId as UUID)
             .then((params: GetCaseImportParametersReturn) => {
                 // Format the parameters
@@ -323,17 +303,7 @@ const RootNetworkNodeEditor = () => {
                     messageTxt: error.message,
                     headerId: 'createRootNetworksError',
                 });
-            })
-            .finally(() => {
-                setIsLoading(false);
             });
-    };
-
-    const renderPaneSubtitle = () => {
-        if (isLoading) {
-            return renderRootNetworksListTitleLoading();
-        }
-        return renderRootNetworksListTitle();
     };
 
     return (
@@ -350,7 +320,7 @@ const RootNetworkNodeEditor = () => {
                 />
                 <Box sx={styles.filler} />
 
-                <Tooltip title={<FormattedMessage id={'addRoot'} />}>
+                <Tooltip title={<FormattedMessage id={'addNetwork'} />}>
                     <span>
                         <IconButton
                             onClick={openRootNetworkCreationDialog}
@@ -382,7 +352,7 @@ const RootNetworkNodeEditor = () => {
                 )}
             </Toolbar>
             {rootNetworkCreationDialogOpen && renderRootNetworkCreationDialog()}
-            {renderPaneSubtitle()}
+            {renderRootNetworksListTitle()}
 
             {renderRootNetworksList()}
         </>

@@ -61,12 +61,16 @@ export const RootNetworkCaseSelection = ({ onSelectCase }: RootNetworkCaseSelect
                         <FolderOutlined />
                         <span>
                             &nbsp;
-                            {directoryName}
+                            {directoryName} &nbsp;
                         </span>
                     </Box>
                 </Typography>
                 <Grid item>
-                    <Button onClick={() => setIsDialogOpen(true)}>
+                    <Button
+                        variant={caseNameWatch ? 'contained' : undefined}
+                        size={caseNameWatch ? 'small' : 'medium'}
+                        onClick={() => setIsDialogOpen(true)}
+                    >
                         {caseNameWatch ? (
                             <FormattedMessage id={'ModifyFromMenu'} />
                         ) : (

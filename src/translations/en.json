@@ -1450,10 +1450,9 @@
     "Or": "or",
 
     "chooseCase": "Select a case",
-    "addRoot": "Add a network",
+    "addNetwork": "Add network",
     "rootName": "Network name",
     "rootNetworksCount": "{count, plural, =1 {# network} other {# networks}}",
-    "updateRootNetworksList": "Updating root network list ...",
     "deletingRootNetwork": "Deleting root network ...",
     "creatingRootNetwork": "Creating root network ...",
     "rootNetworkCreated": "The root network has been created successfully",
