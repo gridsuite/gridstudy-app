@@ -21,6 +21,7 @@ import { UUID } from 'crypto';
 import RunningStatus from '../../utils/running-status';
 import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { MEDIUM_COLUMN_WIDTH } from '../common/utils';
 
 const styles = {
     loader: {
@@ -69,6 +70,7 @@ const DynamicSimulationResultSynthesis = memo(({ nodeUuid, studyUuid }: DynamicS
                 }),
                 colId: 'status',
                 field: 'status',
+                width: MEDIUM_COLUMN_WIDTH,
                 cellRenderer: StatusCellRender,
             }),
         ],

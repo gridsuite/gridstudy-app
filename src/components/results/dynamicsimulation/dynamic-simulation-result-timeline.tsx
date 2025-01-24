@@ -31,6 +31,7 @@ import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { AgGridReact } from 'ag-grid-react';
 import { FilterType } from '../../../types/custom-aggrid-types';
+import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../common/utils';
 
 const styles = {
     loader: {
@@ -77,6 +78,7 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
                     id: 'DynamicSimulationTimelineEventTime',
                 }),
                 field: COL_TIME,
+                width: MIN_COLUMN_WIDTH,
                 colId: 'agNumberColumnFilter',
                 filter: 'agNumberColumnFilter',
                 context: {
@@ -105,6 +107,7 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
                 }),
                 colId: COL_MODEL_NAME,
                 field: COL_MODEL_NAME,
+                width: MEDIUM_COLUMN_WIDTH,
                 context: {
                     filterComponent: CustomAggridComparatorFilter,
                     filterComponentParams: {
@@ -128,6 +131,7 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
                 }),
                 colId: COL_MESSAGE,
                 field: COL_MESSAGE,
+                width: LARGE_COLUMN_WIDTH,
                 context: {
                     filterComponent: CustomAggridComparatorFilter,
                     filterComponentParams: {

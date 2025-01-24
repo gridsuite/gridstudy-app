@@ -9,6 +9,10 @@ import { NA_Value } from '../../spreadsheet/utils/cell-renderers';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
+export const MIN_COLUMN_WIDTH = 160;
+export const MEDIUM_COLUMN_WIDTH = 220;
+export const LARGE_COLUMN_WIDTH = 340;
+
 export const translateLimitNameBackToFront = (limitName: string | null | undefined, intl: IntlShape) => {
     switch (limitName) {
         case PERMANENT_LIMIT_NAME:
