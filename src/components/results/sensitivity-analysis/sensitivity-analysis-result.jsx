@@ -22,6 +22,8 @@ import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../../custom-aggrid/custom-aggrid-header.type';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -33,6 +35,11 @@ function makeRows(resultRecord) {
     });
 }
 
+const textFilterParams = {
+    dataType: FILTER_DATA_TYPES.TEXT,
+    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+};
+
 const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, onFilter, isLoading, ...props }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
@@ -43,7 +50,7 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
 
     const makeColumn = useCallback(
         ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
-            //const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
+            const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
 
             return makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: labelId }),
@@ -56,37 +63,18 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
                         table: SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
                         tab: mappingTabs(sensiKind, nOrNkIndex),
                     },
-                    //filterComponent: CustomAggridComparatorFilter,
-                    //filterComponentParams: { filterParams: { ...filterProps, ...textFilterParams } },
-                    // maxWidth: maxWidth,
-                    // wrapHeaderText: true,
-                    // autoHeaderHeight: true,
-                    // pinned: pinned,
-                    //forceDisplayFilterIcon: true,
-                },
-            });
-
-            //const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
-
-            /*return {
-                field,
-                numeric: isNum,
-                fractionDigits: isNum ? 2 : undefined,
-                headerComponent: CustomHeaderComponent,
-                headerComponentParams: {
-                    field,
-                    displayName: intl.formatMessage({ id: labelId }),
-
- main*/
-            /*filterComponentParams: {
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
                         filterParams: {
+                            ...textFilterParams,
                             customFilterOptions: filterOptions,
                             type: AgGridFilterType.SensitivityAnalysis,
                             tab: mappingTabs(sensiKind, nOrNkIndex),
                             updateFilterCallback: onFilter,
                         },
                     },
-                },*/
+                },
+            });
         },
         [filtersDef, intl, nOrNkIndex, onFilter, sensiKind]
     );
