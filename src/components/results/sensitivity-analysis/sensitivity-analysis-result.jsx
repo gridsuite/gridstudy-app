@@ -64,8 +64,8 @@ const SensitivityAnalysisResult = ({
                 headerComponentParams: {
                     field,
                     displayName: intl.formatMessage({ id: labelId }),
-                    isSortable: !!sortProps,
                     sortParams: {
+                        isSortable: !!sortProps,
                         sortConfig,
                         onSortChanged,
                     },
