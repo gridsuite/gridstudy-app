@@ -266,7 +266,7 @@ const RatioTapChangerPane = ({
                                     marginLeft: '10px',
                                 }}
                             >
-                                {GridItem(regulatingTerminalField, 2)}
+                                <GridItem size={2}>{regulatingTerminalField}</GridItem>
                             </Grid>
                         )}
                     </>

@@ -13,13 +13,13 @@ import { countDecimalPlacesFromString } from '../../../utils/rounding';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
 import { FilterParams } from '../custom-aggrid-header.type';
 
-export const useCustomAggridComparatorFilter = (field: string, filterParams: FilterParams) => {
+export const useCustomAggridComparatorFilter = (colId: string, filterParams: FilterParams) => {
     const { filterDataType = FILTER_DATA_TYPES.TEXT } = filterParams;
 
     const isNumberInput = filterDataType === FILTER_DATA_TYPES.NUMBER;
 
     const { selectedFilterData, selectedFilterComparator, handleChangeFilterValue, handleChangeComparator } =
-        useCustomAggridFilter(field, filterParams);
+        useCustomAggridFilter(colId, filterParams);
 
     const { snackWarning } = useSnackMessage();
 

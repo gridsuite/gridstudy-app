@@ -7,13 +7,13 @@
 import { useCallback } from 'react';
 import { SortPropsType, SortWay } from '../../../hooks/use-aggrid-sort';
 
-export const useCustomAggridSort = (field: string, sortParams: SortPropsType) => {
+export const useCustomAggridSort = (colId: string, sortParams: SortPropsType) => {
     const {
         sortConfig, // used to get sort data
         onSortChanged = () => {}, // used to handle sort change
     } = sortParams;
 
-    const columnSort = sortConfig?.find((value) => value.colId === field);
+    const columnSort = sortConfig?.find((value) => value.colId === colId);
     const isColumnSorted = !!columnSort;
 
     const handleSortChange = useCallback(() => {
@@ -27,9 +27,9 @@ export const useCustomAggridSort = (field: string, sortParams: SortPropsType) =>
         }
 
         if (typeof onSortChanged === 'function') {
-            onSortChanged({ colId: field, sort: newSort, children: columnSort?.children });
+            onSortChanged({ colId: colId, sort: newSort, children: columnSort?.children });
         }
-    }, [isColumnSorted, onSortChanged, columnSort?.sort, columnSort?.children, field]);
+    }, [isColumnSorted, onSortChanged, columnSort?.sort, columnSort?.children, colId]);
 
     return { columnSort, handleSortChange };
 };
