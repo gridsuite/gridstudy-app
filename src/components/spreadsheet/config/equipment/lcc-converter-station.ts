@@ -8,17 +8,14 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const LCC_CONVERTER_STATION_TAB_DEF = {
     index: 11,
@@ -47,8 +44,7 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
         {
             colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'NominalV',
@@ -69,31 +65,26 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             colId: 'activePower',
             field: 'p',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
         },
         {
             colId: 'ReactivePower',
             field: 'q',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
         },
         {
             colId: 'PowerFactor',
             field: 'powerFactor',
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
@@ -109,19 +100,13 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 1,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'connected',
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

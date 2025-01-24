@@ -8,22 +8,15 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    getDefaultEnumConfig,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
-import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const SHUNT_COMPENSATOR_TAB_DEF = {
     index: 7,
@@ -44,7 +37,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             colId: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            ...editableColumnConfig,
             context: {
                 ...defaultTextFilterConfig.context,
                 columnWidth: MIN_COLUMN_WIDTH,
@@ -58,8 +50,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'NominalV',
@@ -79,63 +70,39 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
-                withFluxConvention: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'maximumSectionCount',
             field: 'maximumSectionCount',
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.maximumSectionCount),
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
-                crossValidation: {
-                    minExpression: 1,
-                },
             },
         },
         {
             colId: 'sectionCount',
             field: 'sectionCount',
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.sectionCount),
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
-                crossValidation: {
-                    minExpression: 0,
-                    maxExpression: 'maximumSectionCount',
-                },
             },
         },
         {
             colId: 'Type',
             field: 'type',
-            ...getDefaultEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
-            ...editableColumnConfig,
-            ...enumCellEditorConfig((params) => params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.maxQAtNominalV),
             ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                crossValidation: {
-                    minExpression: 0,
-                },
             },
         },
         {
@@ -149,20 +116,16 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 1,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'maxSusceptance',
-            ...editableColumnConfig,
             field: 'maxSusceptance',
-            ...numericalCellEditorConfig((params) => params.data.maxSusceptance),
             ...defaultNumericFilterConfig,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 5,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'SwitchedOnMaxSusceptance',
@@ -175,7 +138,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 5,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'voltageSetpoint',
@@ -186,19 +148,13 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 1,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'connected',
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

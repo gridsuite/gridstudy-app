@@ -8,15 +8,8 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { SelectCountryField } from '../../utils/equipment-table-editors';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import {
-    countryEnumFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    typeAndFetchers,
-} from './common-config';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const SUBSTATION_TAB_DEF = {
     index: 0,
@@ -35,21 +28,13 @@ export const SUBSTATION_TAB_DEF = {
         {
             colId: 'Name',
             field: 'name',
-            ...editableColumnConfig,
             ...defaultTextFilterConfig,
         },
         {
             colId: 'Country',
             field: 'country',
-            ...editableColumnConfig,
-            cellEditor: SelectCountryField,
-            cellRenderer: CountryCellRenderer,
-            valueSetter: (params) => {
-                params.data.country = params?.newValue;
-                return true;
-            },
-            ...countryEnumFilterConfig,
+            ...defaultTextFilterConfig,
         },
-        genericColumnOfPropertiesEditPopup, // FIXME try valueFormatter?
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

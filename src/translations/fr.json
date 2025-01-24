@@ -574,9 +574,6 @@
     "loadingReport": "Chargement des logs en cours...",
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants",
-    "FluxConvention": "Convention des flux actifs et réactifs dans les tableurs",
-    "FluxConvention.iidm": "IIDM",
-    "FluxConvention.target": "Métier",
     "Advanced": "Avancés",
     "EnableDeveloperMode": "Activer mode développeur",
     "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques",
@@ -1449,4 +1446,3 @@
     "StateEstimationQuality": "Qualité: ",
     "Or": "ou"
 }
-

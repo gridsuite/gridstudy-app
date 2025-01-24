@@ -68,8 +68,6 @@ import {
     EnableDeveloperModeAction,
     FAVORITE_CONTINGENCY_LISTS,
     FavoriteContingencyListsAction,
-    FLUX_CONVENTION,
-    FluxConventionAction,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     IncrementNetworkAreaDiagramDepthAction,
     LIMIT_REDUCTION,
@@ -224,7 +222,6 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_FLUX_CONVENTION,
     PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
@@ -241,7 +238,6 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
@@ -527,7 +523,6 @@ export interface AppState extends CommonStoreState {
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
     [PARAM_COMPONENT_LIBRARY]: unknown | null;
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: UnknownArray;
-    [PARAM_FLUX_CONVENTION]: FluxConventions;
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;
@@ -714,7 +709,6 @@ const initialState: AppState = {
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout.HORIZONTAL,
     [PARAM_COMPONENT_LIBRARY]: null,
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
-    [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
     [PARAM_INIT_NAD_WITH_GEO_DATA]: true,
     [PARAMS_LOADED]: false,
@@ -1081,10 +1075,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(USER, (state, action: UserAction) => {
         state.user = action.user;
-    });
-
-    builder.addCase(FLUX_CONVENTION, (state, action: FluxConventionAction) => {
-        state[PARAM_FLUX_CONVENTION] = action[PARAM_FLUX_CONVENTION];
     });
 
     builder.addCase(ENABLE_DEVELOPER_MODE, (state, action: EnableDeveloperModeAction) => {

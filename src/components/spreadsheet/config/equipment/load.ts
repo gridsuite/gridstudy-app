@@ -8,22 +8,15 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    getDefaultEnumConfig,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { LOAD_TYPES } from '../../../network/constants';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const LOAD_TAB_DEF = {
     index: 6,
@@ -44,7 +37,6 @@ export const LOAD_TAB_DEF = {
             colId: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            ...editableColumnConfig,
             context: {
                 ...defaultTextFilterConfig.context,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
@@ -53,12 +45,7 @@ export const LOAD_TAB_DEF = {
         {
             colId: 'loadType',
             field: 'type',
-            ...getDefaultEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]),
-            ...editableColumnConfig,
-            ...enumCellEditorConfig(
-                (params) => params.data?.type,
-                [...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]
-            ),
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'VoltageLevelId',
@@ -68,8 +55,7 @@ export const LOAD_TAB_DEF = {
         {
             colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'NominalV',
@@ -89,9 +75,7 @@ export const LOAD_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'ReactivePower',
@@ -101,9 +85,7 @@ export const LOAD_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'p0',
@@ -114,9 +96,6 @@ export const LOAD_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 1,
             },
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.p0),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'q0',
@@ -127,21 +106,13 @@ export const LOAD_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 1,
             },
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.q0),
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'connected',
             field: 'terminalConnected',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

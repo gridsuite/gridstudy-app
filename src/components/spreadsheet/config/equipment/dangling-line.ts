@@ -8,18 +8,15 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const DANGLING_LINE_TAB_DEF = {
     index: 13,
@@ -48,8 +45,7 @@ export const DANGLING_LINE_TAB_DEF = {
         {
             colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'NominalV',
@@ -64,7 +60,6 @@ export const DANGLING_LINE_TAB_DEF = {
         {
             colId: 'PairingKey',
             field: 'pairingKey',
-            getQuickFilterText: excludeFromGlobalFilter,
             ...defaultTextFilterConfig,
         },
         {
@@ -75,9 +70,7 @@ export const DANGLING_LINE_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'ReactivePower',
@@ -87,9 +80,7 @@ export const DANGLING_LINE_TAB_DEF = {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                canBeInvalidated: true,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'p0',
@@ -100,7 +91,6 @@ export const DANGLING_LINE_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 1,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'q0',
@@ -111,19 +101,13 @@ export const DANGLING_LINE_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 1,
             },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'connected',
             field: 'terminalConnected',
             ...defaultBooleanFilterConfig,
-            context: {
-                ...defaultBooleanFilterConfig.context,
-                boolean: true,
-            },
             cellRenderer: BooleanCellRenderer,
-            getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

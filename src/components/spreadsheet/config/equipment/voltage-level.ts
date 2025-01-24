@@ -7,46 +7,10 @@
 
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
-import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import {
-    countryEnumFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { numericalCellEditorConfig } from '../common/cell-editors';
-import { convertInputValue, convertOutputValue, FieldType } from '@gridsuite/commons-ui';
-
-function generateEditableNumericColumnDefinition<
-    TId extends string,
-    TField extends string,
-    TMin extends string | undefined,
-    TMax extends string | undefined
->(id: TId, field: TField, minExpression: TMin, maxExpression: TMax) {
-    return {
-        colId: id,
-        field: field,
-        ...defaultNumericFilterConfig,
-        context: {
-            ...defaultNumericFilterConfig.context,
-            numeric: true,
-            fractionDigits: 1,
-            crossValidation: {
-                optional: true,
-                minExpression: minExpression,
-                maxExpression: maxExpression,
-            },
-        },
-        ...editableColumnConfig,
-        ...numericalCellEditorConfig((params) => params.data[field]),
-        getQuickFilterText: excludeFromGlobalFilter,
-    } as const satisfies ReadonlyDeep<CustomColDef>;
-}
+import { defaultNumericFilterConfig, defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
 
 export const VOLTAGE_LEVEL_TAB_DEF = {
     index: 1,
@@ -65,7 +29,6 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             colId: 'Name',
             field: 'name',
-            ...editableColumnConfig,
             ...defaultTextFilterConfig,
         },
         {
@@ -76,8 +39,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...defaultTextFilterConfig,
         },
         {
             colId: 'NominalV',
@@ -88,79 +50,57 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
                 numeric: true,
                 fractionDigits: 0,
             },
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.nominalV),
         },
-        generateEditableNumericColumnDefinition('LowVoltageLimitkV', 'lowVoltageLimit', undefined, 'highVoltageLimit'),
-        generateEditableNumericColumnDefinition('HighVoltageLimitkV', 'highVoltageLimit', 'lowVoltageLimit', undefined),
         {
-            colId: 'IpMin',
-            field: 'identifiableShortCircuit.ipMin',
+            colId: 'LowVoltageLimitkV',
+            field: 'lowVoltageLimit',
             ...defaultNumericFilterConfig,
-            ...editableColumnConfig,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                crossValidation: {
-                    optional: true,
-                },
             },
-            ...numericalCellEditorConfig((params) =>
-                convertInputValue(
-                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    params.data?.identifiableShortCircuit?.ipMin
-                )
-            ),
+        },
+        {
+            colId: 'HighVoltageLimitkV',
+            field: 'highVoltageLimit',
+            ...defaultNumericFilterConfig,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+            },
+        },
+        {
+            colId: 'IpMin',
+            field: 'identifiableShortCircuit.ipMin',
+            ...defaultNumericFilterConfig,
+            context: {
+                ...defaultNumericFilterConfig.context,
+                numeric: true,
+                fractionDigits: 1,
+            },
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMin
                 ),
-            valueSetter: (params) => {
-                params.data.identifiableShortCircuit = {
-                    ...params.data.identifiableShortCircuit,
-                    ipMin: convertOutputValue(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
-                };
-                return true;
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             colId: 'IpMax',
             field: 'identifiableShortCircuit.ipMax',
             ...defaultNumericFilterConfig,
-            ...editableColumnConfig,
             context: {
                 ...defaultNumericFilterConfig.context,
                 numeric: true,
                 fractionDigits: 1,
-                crossValidation: {
-                    requiredOn: {
-                        dependencyColumn: 'identifiableShortCircuit.ipMin',
-                    },
-                },
             },
-            ...numericalCellEditorConfig((params) =>
-                convertInputValue(
-                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    params.data?.identifiableShortCircuit?.ipMax
-                )
-            ),
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMax
                 ),
-            valueSetter: (params) => {
-                params.data.identifiableShortCircuit = {
-                    ...params.data.identifiableShortCircuit,
-                    ipMax: convertOutputValue(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
-                };
-                return true;
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly,
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
