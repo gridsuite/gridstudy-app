@@ -196,7 +196,7 @@ const App = () => {
 
                     const index = param.index;
 
-                    const equipmentAllColumnsIds = tablesDefinitionIndexes.get(index).columns.map((item) => item.id);
+                    const equipmentAllColumnsIds = tablesDefinitionIndexes.get(index).columns.map((item) => item.colId);
 
                     const equipmentReorderedColumnsIds = JSON.parse(reorderedColumnsParams[index].value);
                     const equipmentNewColumnsIds = equipmentAllColumnsIds.filter(
