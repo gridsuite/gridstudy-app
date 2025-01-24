@@ -5,27 +5,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomAggridFilterParams, CustomColDef, FilterSelectorType } from './custom-aggrid-header.type';
+import { CustomAggridFilterParams, CustomColDef } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
 
 export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
-    sortProps, // sortProps: contains useAgGridSort params
-    filterTab,
-    forceDisplayFilterIcon,
-    filterComponent,
-    filterComponentParams,
-    tabIndex,
-    isCustomColumn,
-    Menu,
+    context,
     ...props // agGrid column props
 }: CustomColDef<any, any, F>) => {
-    const { headerName, field = '', fractionDigits, numeric } = props;
-    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
-    const isSortable = !!sortProps;
-    const isCurrentColumnSorted = !!sortConfig?.find((value) => value.colId === field);
+    const {
+        sortParams,
+        forceDisplayFilterIcon,
+        filterComponent,
+        filterComponentParams,
+        tabIndex,
+        isCustomColumn,
+        Menu,
+        fractionDigits,
+        numeric,
+    } = context || {};
+    const { headerName, field = '' } = props;
+    const isSortable = !!sortParams;
 
     let minWidth = 75;
-    if (isSortable && isCurrentColumnSorted) {
+    if (isSortable) {
         minWidth += 30;
     }
     if (!!filterComponent) {
@@ -35,16 +37,11 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
     return {
         headerTooltip: headerName,
         minWidth,
-        fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             field,
             displayName: headerName,
-            sortParams: {
-                isSortable,
-                sortConfig,
-                onSortChanged,
-            },
+            sortParams,
             customMenuParams: {
                 tabIndex: tabIndex,
                 isCustomColumn: isCustomColumn,
@@ -54,24 +51,11 @@ export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams 
             filterComponent: filterComponent,
             filterComponentParams,
         },
-        filterParams: props?.agGridFilterParams || undefined,
+        filterParams: context?.agGridFilterParams || undefined,
         ...props,
+        context: {
+            ...context,
+            fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
+        },
     };
-};
-
-export const mapFieldsToColumnsFilter = (
-    filterSelector: FilterSelectorType[],
-    columnToFieldMapping: Record<string, string>
-) => {
-    return filterSelector.map((filter) => ({
-        ...filter,
-        column: columnToFieldMapping[filter.column],
-    }));
-};
-
-export const isStringOrNonEmptyArray = (value: unknown): value is string | unknown[] => {
-    if (typeof value === 'string' && value.length > 0) {
-        return true;
-    }
-    return Array.isArray(value) && value.length > 0;
 };

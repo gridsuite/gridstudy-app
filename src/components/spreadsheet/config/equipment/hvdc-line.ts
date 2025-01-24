@@ -5,148 +5,104 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultEnumFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
-import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { typeAndFetchers } from './common-config';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-export const HVDC_LINE_TAB_DEF = {
+const tab = 'HvdcLines';
+
+export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 10,
-    name: 'HvdcLines',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.HVDC_LINE),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('ID', tab),
         },
         {
-            id: 'Name',
+            colId: 'Name',
             field: 'name',
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Name', tab),
         },
         {
-            id: 'VoltageLevelIdSide1',
+            colId: 'VoltageLevelIdSide1',
             field: 'voltageLevelId1',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID 1', tab),
         },
         {
-            id: 'VoltageLevelIdSide2',
+            colId: 'VoltageLevelIdSide2',
             field: 'voltageLevelId2',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID 2', tab),
         },
         {
-            id: 'ConvertersMode',
+            colId: 'ConvertersMode',
             field: 'convertersMode',
-            columnWidth: LARGE_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
-            ...defaultEnumFilterConfig,
+            ...textColumnDefinition('Converters mode', tab),
         },
         {
-            id: 'ConverterStationId1',
+            colId: 'ConverterStationId1',
             field: 'converterStationId1',
-            columnWidth: LARGE_COLUMN_WIDTH,
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Converter station ID 1', tab),
         },
         {
-            id: 'ConverterStationId2',
+            colId: 'ConverterStationId2',
             field: 'converterStationId2',
-            columnWidth: LARGE_COLUMN_WIDTH,
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Converter station ID 2', tab),
         },
         {
-            id: 'Country1',
+            colId: 'Country1',
             field: 'country1',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...textColumnDefinition('Country 1', tab),
         },
         {
-            id: 'Country2',
+            colId: 'Country2',
             field: 'country2',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...textColumnDefinition('Country 2', tab),
         },
         {
-            id: 'R',
+            colId: 'R',
             field: 'r',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Resistance', tab, 1),
         },
         {
-            id: 'ActivePowerSetpoint',
+            colId: 'ActivePowerSetpoint',
             field: 'activePowerSetpoint',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Active power set point (MW)', tab, 1),
         },
         {
-            id: 'maxActivePower',
+            colId: 'maxActivePower',
             field: 'maxP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Max P (MW)', tab, 1),
         },
         {
-            id: 'OprFromCS1toCS2',
+            colId: 'OprFromCS1toCS2',
             field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            columnWidth: LARGE_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Operational limit (side_1 to side_2) (MW)', tab, 1),
         },
         {
-            id: 'OprFromCS2toCS1',
+            colId: 'OprFromCS2toCS1',
             field: 'hvdcOperatorActivePowerRange.oprFromCS2toCS1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            columnWidth: LARGE_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Operational limit (side_2 to side_1) (MW)', tab, 1),
         },
         {
-            id: 'AcEmulation',
+            colId: 'AcEmulation',
             field: 'hvdcAngleDroopActivePowerControl.isEnabled',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('AC emulation', tab),
         },
         {
-            id: 'K',
+            colId: 'K',
             field: 'hvdcAngleDroopActivePowerControl.droop',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('K (MW/Deg)', tab, 1),
         },
         {
-            id: 'P0',
+            colId: 'P0',
             field: 'hvdcAngleDroopActivePowerControl.p0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('P0 (side_1 to side_2) (MW)', tab, 1),
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

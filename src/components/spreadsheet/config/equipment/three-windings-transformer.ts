@@ -5,428 +5,206 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultEnumFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    generateTapPositions,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { genericColumnOfProperties } from '../common/column-properties';
-import { standardSelectCellEditorConfig } from '../common/cell-editors';
+import { typeAndFetchers } from './common-config';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-function generateTapRequest(tapType: string, legNumber: number) {
-    return (
-        `tap = equipment.getLeg${legNumber}().get${tapType}TapChanger()\n` +
-        'if (tap.getLowTapPosition() <= {} && {} <= tap.getHighTapPosition()) { \n' +
-        '    tap.setTapPosition({})\n' +
-        // to force update of transformer as sub elements changes like tapChanger are not detected
-        '    equipment.setFictitious(equipment.isFictitious())\n' +
-        '} else {\n' +
-        "    throw new Exception('incorrect value')\n" +
-        ' }\n'
-    );
-}
+const tab = 'ThreeWindingsTransformers';
 
-export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
+export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
     index: 4,
-    name: 'ThreeWindingsTransformers',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER),
     groovyEquipmentGetter: 'getThreeWindingsTransformer',
     columns: [
+        { colId: 'ID', field: 'id', ...textColumnDefinition('ID', tab) },
+        { colId: 'Name', field: 'name', ...textColumnDefinition('Name', tab) },
         {
-            id: 'ID',
-            field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
-        },
-        {
-            id: 'Name',
-            field: 'name',
-            ...defaultTextFilterConfig,
-        },
-        {
-            id: 'VoltageLevelIdT3WSide1',
+            colId: 'VoltageLevelIdT3WSide1',
             field: 'voltageLevelId1',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID 1', tab),
         },
         {
-            id: 'VoltageLevelIdT3WSide2',
+            colId: 'VoltageLevelIdT3WSide2',
             field: 'voltageLevelId2',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID 2', tab),
         },
         {
-            id: 'VoltageLevelIdT3WSide3',
+            colId: 'VoltageLevelIdT3WSide3',
             field: 'voltageLevelId3',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID 3', tab),
         },
+        { colId: 'Country', field: 'country', ...textColumnDefinition('Country', tab) },
         {
-            id: 'Country',
-            field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
-        },
-        {
-            id: 'NominalVT3WSide1',
+            colId: 'NominalVT3WSide1',
             field: 'nominalV1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberColumnDefinition('Nominal voltage 1 (kV)', tab, 0),
         },
         {
-            id: 'NominalVT3WSide2',
+            colId: 'NominalVT3WSide2',
             field: 'nominalV2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberColumnDefinition('Nominal voltage 2 (kV)', tab, 0),
         },
         {
-            id: 'NominalVT3WSide3',
+            colId: 'NominalVT3WSide3',
             field: 'nominalV3',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberColumnDefinition('Nominal voltage 3 (kV)', tab, 0),
         },
+        { colId: 'ActivePowerT3WSide1', field: 'p1', ...numberColumnDefinition('p1 (MW)', tab, 1) },
+        { colId: 'ActivePowerT3WSide2', field: 'p2', ...numberColumnDefinition('p2 (MW)', tab, 1) },
+        { colId: 'ActivePowerT3WSide3', field: 'p3', ...numberColumnDefinition('p3 (MW)', tab, 1) },
         {
-            id: 'ActivePowerT3WSide1',
-            field: 'p1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            getQuickFilterText: excludeFromGlobalFilter,
-        },
-        {
-            id: 'ActivePowerT3WSide2',
-            field: 'p2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            getQuickFilterText: excludeFromGlobalFilter,
-        },
-        {
-            id: 'ActivePowerT3WSide3',
-            field: 'p3',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            getQuickFilterText: excludeFromGlobalFilter,
-        },
-        {
-            id: 'ReactivePowerT3WSide1',
+            colId: 'ReactivePowerT3WSide1',
             field: 'q1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('q1 (MVar)', tab, 1),
         },
         {
-            id: 'ReactivePowerT3WSide2',
+            colId: 'ReactivePowerT3WSide2',
             field: 'q2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('q2 (MVar)', tab, 1),
         },
         {
-            id: 'ReactivePowerT3WSide3',
+            colId: 'ReactivePowerT3WSide3',
             field: 'q3',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('q3 (MVar)', tab, 1),
         },
         {
-            id: 'HasLoadTapChanging1Capabilities',
+            colId: 'HasLoadTapChanging1Capabilities',
             field: 'hasLoadTapChanging1Capabilities',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Ratio on-load 1', tab),
         },
         {
-            id: 'RegulatingRatio1',
+            colId: 'RegulatingRatio1',
             field: 'isRegulatingRatio1',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Ratio regulating 1', tab),
         },
         {
-            id: 'TargetVPoint1',
+            colId: 'TargetVPoint1',
             field: 'targetV1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Voltage set point (kV) 1', tab, 1),
         },
         {
-            id: 'RatioTap1',
+            colId: 'RatioTap1',
             field: 'ratioTapChanger1.tapPosition',
-            ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Ratio', 1),
-            fractionDigits: 0,
-            valueGetter: (params) => params?.data?.ratioTapChanger1?.tapPosition,
-            valueSetter: (params) => {
-                params.data.ratioTapChanger1 = {
-                    ...params.data.ratioTapChanger1,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger1)),
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Ratio tap 1', tab, 0),
         },
         {
-            id: 'HasLoadTapChanging2Capabilities',
+            colId: 'HasLoadTapChanging2Capabilities',
             field: 'hasLoadTapChanging2Capabilities',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Ratio on-load 2', tab),
         },
         {
-            id: 'RegulatingRatio2',
+            colId: 'RegulatingRatio2',
             field: 'isRegulatingRatio2',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Ratio regulating 2', tab),
         },
         {
-            id: 'TargetVPoint2',
+            colId: 'TargetVPoint2',
             field: 'targetV2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Voltage set point (kV) 2', tab, 1),
         },
         {
-            id: 'RatioTap2',
+            colId: 'RatioTap2',
             field: 'ratioTapChanger2.tapPosition',
-            ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Ratio', 2),
-            fractionDigits: 0,
-            valueGetter: (params) => params?.data?.ratioTapChanger2?.tapPosition,
-            valueSetter: (params) => {
-                params.data.ratioTapChanger2 = {
-                    ...params.data.ratioTapChanger2,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger2)),
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Ratio tap 2', tab, 0),
         },
         {
-            id: 'HasLoadTapChanging3Capabilities',
+            colId: 'HasLoadTapChanging3Capabilities',
             field: 'hasLoadTapChanging3Capabilities',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Ratio on-load 3', tab),
         },
         {
-            id: 'RegulatingRatio3',
+            colId: 'RegulatingRatio3',
             field: 'isRegulatingRatio3',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Ratio regulating 3', tab),
         },
         {
-            id: 'TargetVPoint3',
+            colId: 'TargetVPoint3',
             field: 'targetV3',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Voltage set point (kV) 3', tab, 1),
         },
         {
-            id: 'RatioTap3',
+            colId: 'RatioTap3',
             field: 'ratioTapChanger3.tapPosition',
-            ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Ratio', 3),
-            fractionDigits: 0,
-            valueGetter: (params) => params?.data?.ratioTapChanger3?.tapPosition,
-            valueSetter: (params) => {
-                params.data.ratioTapChanger3 = {
-                    ...params.data.ratioTapChanger3,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger3)),
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Ratio tap 3', tab, 0),
         },
         {
-            id: 'RegulatingMode1',
+            colId: 'RegulatingMode1',
             field: 'regulationModeName1',
-            ...defaultEnumFilterConfig,
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...textColumnDefinition('Phase regulation mode 1', tab),
         },
         {
-            id: 'RegulatingPhase1',
+            colId: 'RegulatingPhase1',
             field: 'isRegulatingPhase1',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Phase regulating 1', tab),
         },
         {
-            id: 'PhaseTap1',
+            colId: 'PhaseTap1',
             field: 'phaseTapChanger1.tapPosition',
-            ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Phase', 1),
-            fractionDigits: 0,
-            valueGetter: (params) => params?.data?.phaseTapChanger1?.tapPosition,
-            valueSetter: (params) => {
-                params.data.phaseTapChanger1 = {
-                    ...params.data.phaseTapChanger1,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger1)),
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Phase tap 1', tab, 0),
         },
         {
-            id: 'RegulatingValue1',
+            colId: 'RegulatingValue1',
             field: 'regulatingValue1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Current (A) or flow set point (MW) 1', tab, 1),
         },
         {
-            id: 'RegulatingMode2',
+            colId: 'RegulatingMode2',
             field: 'regulationModeName2',
-            ...defaultEnumFilterConfig,
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...textColumnDefinition('Phase regulation mode 2', tab),
         },
         {
-            id: 'RegulatingPhase2',
+            colId: 'RegulatingPhase2',
             field: 'isRegulatingPhase2',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Phase regulating 2', tab),
         },
         {
-            id: 'PhaseTap2',
+            colId: 'PhaseTap2',
             field: 'phaseTapChanger2.tapPosition',
-            ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Phase', 2),
-            fractionDigits: 0,
-            valueGetter: (params) => params?.data?.phaseTapChanger2?.tapPosition,
-            valueSetter: (params) => {
-                params.data.phaseTapChanger2 = {
-                    ...params.data.phaseTapChanger2,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger1)),
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Phase tap 2', tab, 0),
         },
         {
-            id: 'RegulatingValue2',
+            colId: 'RegulatingValue2',
             field: 'regulatingValue2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Current (A) or flow set point (MW) 2', tab, 1),
         },
         {
-            id: 'RegulatingMode3',
+            colId: 'RegulatingMode3',
             field: 'regulationModeName3',
-            ...defaultEnumFilterConfig,
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...textColumnDefinition('Phase regulation mode 3', tab),
         },
         {
-            id: 'RegulatingPhase3',
+            colId: 'RegulatingPhase3',
             field: 'isRegulatingPhase3',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Phase regulating 3', tab),
         },
         {
-            id: 'PhaseTap3',
+            colId: 'PhaseTap3',
             field: 'phaseTapChanger3.tapPosition',
-            ...defaultNumericFilterConfig,
-            changeCmd: generateTapRequest('Phase', 3),
-            fractionDigits: 0,
-            valueGetter: (params) => params?.data?.phaseTapChanger3?.tapPosition,
-            valueSetter: (params) => {
-                params.data.phaseTapChanger3 = {
-                    ...params.data.phaseTapChanger3,
-                    tapPosition: params.newValue,
-                };
-                return true;
-            },
-            ...editableColumnConfig,
-            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger3)),
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Phase tap 3', tab, 0),
         },
         {
-            id: 'RegulatingValue3',
+            colId: 'RegulatingValue3',
             field: 'regulatingValue3',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Current (A) or flow set point (MW) 3', tab, 1),
         },
         {
-            id: 'ConnectedT3WSide1',
+            colId: 'ConnectedT3WSide1',
             field: 'terminal1Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Connected 1', tab),
         },
         {
-            id: 'ConnectedT3WSide2',
+            colId: 'ConnectedT3WSide2',
             field: 'terminal2Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Connected 2', tab),
         },
         {
-            id: 'ConnectedT3WSide3',
+            colId: 'ConnectedT3WSide3',
             field: 'terminal3Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Connected 3', tab),
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

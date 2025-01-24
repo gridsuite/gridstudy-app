@@ -21,6 +21,9 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/delete_custom_column_confirmation':
         'Êtes-vous sûr de vouloir supprimer la colonne "{columnName}" ?',
     'spreadsheet/custom_column/column_name_already_exist': 'Nom de colonne déjà existant',
+    'spreadsheet/custom_column/nodes': 'Nœuds',
+    'spreadsheet/custom_column/parameter_nodes': 'Parametrer les alias de nœuds',
+    'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
     'spreadsheet/save/button': 'Enregistrer',
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/csv': 'Export CSV',
@@ -40,6 +43,12 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model':
         'Vous devez sélectionner un seul modèle de tableur',
     'spreadsheet/create_new_spreadsheet/error_loading_model': 'Erreur lors de la récupération du modèle de tableur',
+    'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
+    'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
+    'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',
+    'spreadsheet/parameter_aliases/no_special_characters': 'Ne doit pas contenir de caractères spéciaux',
+    'spreadsheet/parameter_aliases/node_doesnt_exist': 'Aucun nœud avec ce nom',
+    'spreadsheet/parameter_aliases/unique_aliases': 'Les alias doivent être unique',
 };
 
 export default spreadsheetFr;
