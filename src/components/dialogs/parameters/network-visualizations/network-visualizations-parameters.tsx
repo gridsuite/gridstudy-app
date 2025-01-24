@@ -188,14 +188,14 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={() => getValues()}
                     parameterFormatter={(newParams) => newParams}
-                    parameterType={ElementType.NETWORK_VISUALIZATION_PARAMETERS}
+                    parameterType={ElementType.NETWORK_VISUALIZATIONS_PARAMETERS}
                 />
             )}
             {openSelectParameterDialog && (
                 <DirectoryItemSelector
                     open={openSelectParameterDialog}
                     onClose={loadParameters}
-                    types={[ElementType.NETWORK_VISUALIZATION_PARAMETERS]}
+                    types={[ElementType.NETWORK_VISUALIZATIONS_PARAMETERS]}
                     title={intl.formatMessage({
                         id: 'showSelectParameterDialog',
                     })}
