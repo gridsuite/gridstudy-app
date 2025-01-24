@@ -221,7 +221,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const isPhaseTapChangerEnabled = useCallback(
         (twtToModify) => {
             const phaseTapEnabledInEditData = getValues(`${PHASE_TAP_CHANGER}.${ENABLED}`);
-            const phaseTapFormHasBeenEdited = Object.keys(`${PHASE_TAP_CHANGER}` ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
+            const phaseTapFormHasBeenEdited = Object.keys(getValues(`${PHASE_TAP_CHANGER}`) ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
             const phaseTapEnabledInTwtToModify = !!twtToModify?.[PHASE_TAP_CHANGER]; // used when we have twt element (built node)
             return phaseTapEnabledInTwtToModify ?? (phaseTapFormHasBeenEdited || phaseTapEnabledInEditData);
         },
