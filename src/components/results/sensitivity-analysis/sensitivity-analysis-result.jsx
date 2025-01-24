@@ -52,22 +52,23 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
                 context: {
                     numeric: isNum,
                     fractionDigits: isNum ? 2 : undefined,
-                    sortProps,
+                    sortParams: {
+                        table: SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+                        tab: mappingTabs(sensiKind, nOrNkIndex),
+                    },
                     //filterComponent: CustomAggridComparatorFilter,
                     //filterComponentParams: { filterParams: { ...filterProps, ...textFilterParams } },
                     // maxWidth: maxWidth,
                     // wrapHeaderText: true,
                     // autoHeaderHeight: true,
                     // pinned: pinned,
-                    forceDisplayFilterIcon: true,
+                    //forceDisplayFilterIcon: true,
                 },
             });
-            /*return {
-                headerComponentParams: {
-                
+
             //const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
 
-            return {
+            /*return {
                 field,
                 numeric: isNum,
                 fractionDigits: isNum ? 2 : undefined,
@@ -75,12 +76,9 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
                 headerComponentParams: {
                     field,
                     displayName: intl.formatMessage({ id: labelId }),
-                    sortParams: {
-                        table: SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
-                        tab: mappingTabs(sensiKind, nOrNkIndex),
-                    },
+
  main*/
-                    /*filterComponentParams: {
+            /*filterComponentParams: {
                         filterParams: {
                             customFilterOptions: filterOptions,
                             type: AgGridFilterType.SensitivityAnalysis,
@@ -90,18 +88,7 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
                     },
                 },*/
         },
-        [/*filtersDef, */ intl, sortProps /*, filterProps*/]
-               /* },
-                minWidth: 95,
-                maxWidth: maxWidth,
-                wrapHeaderText: true,
-                autoHeaderHeight: true,
-                pinned: pinned,
-                headerTooltip: intl.formatMessage({ id: labelId }),
-            };
-        },
         [filtersDef, intl, nOrNkIndex, onFilter, sensiKind]
- main*/
     );
 
     const columnsDefs = useMemo(() => {
