@@ -13,6 +13,7 @@ import { mergeSx } from '../../utils/functions';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { IntlShape } from 'react-intl';
 import { ICellRendererParams } from 'ag-grid-community';
+import { CustomCellRendererProps } from 'ag-grid-react';
 
 const styles = {
     tableCell: (theme: Theme) => ({
@@ -40,10 +41,10 @@ const styles = {
 export const NA_Value = 'N/A';
 
 export const BooleanCellRenderer = (props: any) => {
-    const isChecked = Boolean(props.value);
+    const isChecked = props.value;
     return (
         <div>
-            {isChecked !== undefined && (
+            {props.value !== undefined && (
                 <Checkbox style={{ padding: 0 }} color="default" checked={isChecked} disableRipple={true} />
             )}
         </div>
@@ -62,6 +63,13 @@ export const BooleanNullableCellRenderer = (props: any) => {
             />
         </div>
     );
+};
+
+const formatNumericCell = (value: number, fractionDigits?: number) => {
+    if (value === null || isNaN(value)) {
+        return { value: null };
+    }
+    return { value: value.toFixed(fractionDigits ?? 2), tooltip: value };
 };
 
 export const formatCell = (props: any) => {
@@ -102,8 +110,12 @@ export const convertDuration = (duration: number) => {
     return `${minutes}' ${seconds}"`;
 };
 
-export const DefaultCellRenderer = (props: any) => {
-    const cellValue = formatCell(props);
+export interface NumericCellRendererProps extends CustomCellRendererProps {
+    fractionDigits?: number;
+}
+
+export const NumericCellRenderer = (props: NumericCellRendererProps) => {
+    const cellValue = formatNumericCell(props.value, props.fractionDigits);
     return (
         <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip
@@ -112,6 +124,17 @@ export const DefaultCellRenderer = (props: any) => {
                 title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
             >
                 <Box sx={styles.overflow} children={cellValue.value} />
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
+    const cellValue = formatCell(props);
+    return (
+        <Box sx={mergeSx(styles.tableCell)}>
+            <Tooltip disableFocusListener disableTouchListener title={cellValue.value}>
+                <Box sx={styles.overflow} children={cellValue.value?.toString()} />
             </Tooltip>
         </Box>
     );

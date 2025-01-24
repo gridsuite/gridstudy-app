@@ -5,19 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import type { ValueGetterFunc } from 'ag-grid-community';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
 const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
@@ -35,241 +28,148 @@ const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     return null;
 };
 
-export const GENERATOR_TAB_DEF = {
+const tab = 'Generators';
+
+export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 5,
-    name: 'Generators',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.GENERATOR),
     columns: [
         {
             colId: 'ID',
             field: 'id',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-                isDefaultSort: true,
-            },
+            ...textColumnDefinition('ID', tab),
         },
         {
             colId: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Name', tab),
         },
         {
             colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID', tab),
         },
         {
             colId: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Country', tab),
         },
         {
             colId: 'NominalV',
             field: 'nominalVoltage',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         {
             colId: 'energySource',
             field: 'energySource',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Energy Source', tab),
         },
         {
             colId: 'activePower',
             field: 'p',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('p (MW)', tab, 1),
         },
         {
             colId: 'ReactivePower',
             field: 'q',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('q (MVar)', tab, 1),
         },
         {
             colId: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanColumnDefinition('Active power control', tab),
         },
         {
             colId: 'ActivePowerRegulationDroop',
             field: 'activePowerControl.droop',
-            ...defaultNumericFilterConfig,
-            valueGetter: (params) => params.data?.activePowerControl?.droop,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Active power regulation droop', tab, 1),
         },
         {
             colId: 'minP',
             field: 'minP',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Min P (MW)', tab, 1),
         },
         {
             colId: 'maxP',
             field: 'maxP',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Max P (MW)', tab, 1),
         },
         {
             colId: 'activePowerSetpoint',
             field: 'targetP',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Target P (MW)', tab, 1),
         },
         {
             colId: 'reactivePowerSetpoint',
             field: 'targetQ',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Target Q (MVar)', tab, 1),
         },
         {
             colId: 'voltageRegulationOn',
             field: 'voltageRegulatorOn',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanColumnDefinition('Voltage regulation', tab),
         },
         {
             colId: 'voltageSetpoint',
             field: 'targetV',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Target V (kV)', tab, 1),
         },
         {
             colId: 'ReactivePercentageVoltageRegulation',
-            field: 'coordinatedReactiveControl.qPercent',
-            ...defaultNumericFilterConfig,
+            field: 'coordinatedReactiveControl.qPercent', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => {
                 const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
                 return isNaN(qPercent) ? 0 : qPercent;
             },
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Reactive percentage', tab, 1),
         },
         {
             colId: 'directTransX',
             field: 'generatorShortCircuit.directTransX',
-            ...defaultNumericFilterConfig,
-            valueGetter: (params) => params.data?.generatorShortCircuit?.directTransX,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Transient reactance (Ω)', tab, 1),
         },
         {
             colId: 'stepUpTransformerX',
             field: 'generatorShortCircuit.stepUpTransformerX',
-            ...defaultNumericFilterConfig,
-            valueGetter: (params) => params.data?.generatorShortCircuit?.stepUpTransformerX,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Transformer reactance (Ω)', tab, 1),
         },
         {
             colId: 'plannedActivePowerSetPoint',
             field: 'generatorStartup.plannedActivePowerSetPoint',
-            ...defaultNumericFilterConfig,
-            valueGetter: (params) => params.data?.generatorStartup?.plannedActivePowerSetPoint,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Planning P (MW)', tab, 1),
         },
         {
             colId: 'marginalCost',
             field: 'generatorStartup.marginalCost',
-            ...defaultNumericFilterConfig,
-            valueGetter: (params) => params.data?.generatorStartup?.marginalCost,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Startup Cost', tab, 1),
         },
         {
             colId: 'plannedOutageRate',
             field: 'generatorStartup.plannedOutageRate',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 2,
-            },
-            valueGetter: (params) => params.data?.generatorStartup?.plannedOutageRate,
+            ...numberColumnDefinition('Planning outage rate', tab, 2),
         },
         {
             colId: 'forcedOutageRate',
             field: 'generatorStartup.forcedOutageRate',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 2,
-            },
-            valueGetter: (params) => params.data?.generatorStartup?.forcedOutageRate,
+            ...numberColumnDefinition('Forced outage rate', tab, 2),
         },
         {
             colId: 'connected',
             field: 'terminalConnected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanColumnDefinition('Connected', tab),
         },
         {
             colId: 'RegulationTypeText',
             field: 'RegulationTypeText',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Regulation type', tab),
         },
         {
             colId: 'RegulatingTerminalGenerator',
-            field: 'regulatingTerminalConnectableId',
-            ...defaultTextFilterConfig,
+            field: 'regulatingTerminalConnectableId', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: RegulatingTerminalCellGetter,
+            ...textColumnDefinition('Regulated terminal', tab),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

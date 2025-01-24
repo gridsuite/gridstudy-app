@@ -5,200 +5,92 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { typeAndFetchers } from './common-config';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, textColumnDefinition, numberColumnDefinition } from '../common-column-definitions';
 
-export const TIE_LINE_TAB_DEF = {
+const tab = 'TieLines';
+
+export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 15,
-    name: 'TieLines',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.TIE_LINE),
     columns: [
         {
             colId: 'ID',
             field: 'id',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                isDefaultSort: true,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-            },
+            ...textColumnDefinition('ID', tab),
         },
-        {
-            colId: 'Name',
-            field: 'name',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-            },
-        },
+        { colId: 'Name', field: 'name', ...textColumnDefinition('Name', tab) },
         {
             colId: 'VoltageLevelIdSide1',
             field: 'voltageLevelId1',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID 1', tab),
         },
         {
             colId: 'VoltageLevelIdSide2',
             field: 'voltageLevelId2',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID 2', tab),
         },
-        {
-            colId: 'Country1',
-            field: 'country1',
-            ...defaultTextFilterConfig,
-        },
-        {
-            colId: 'Country2',
-            field: 'country2',
-            ...defaultTextFilterConfig,
-        },
+        { colId: 'Country1', field: 'country1', ...textColumnDefinition('Country 1', tab) },
+        { colId: 'Country2', field: 'country2', ...textColumnDefinition('Country 2', tab) },
         {
             colId: 'nominalVoltage1KV',
             field: 'nominalVoltage1',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Nominal voltage 1 (kV)', tab, 0),
         },
         {
             colId: 'nominalVoltage2KV',
             field: 'nominalVoltage2',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Nominal voltage 2 (kV)', tab, 0),
         },
-        {
-            colId: 'ActivePowerSide1',
-            field: 'p1',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-        },
-        {
-            colId: 'ActivePowerSide2',
-            field: 'p2',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-        },
+        { colId: 'ActivePowerSide1', field: 'p1', ...numberColumnDefinition('p1 (MW)', tab, 1) },
+        { colId: 'ActivePowerSide2', field: 'p2', ...numberColumnDefinition('p2 (MW)', tab, 1) },
         {
             colId: 'ReactivePowerSide1',
             field: 'q1',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('q1 (MVar)', tab, 1),
         },
         {
             colId: 'ReactivePowerSide2',
             field: 'q2',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('q2 (MVar)', tab, 1),
         },
-        {
-            colId: 'r',
-            field: 'r',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-        },
-        {
-            colId: 'x',
-            field: 'x',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
-        },
+        { colId: 'r', field: 'r', ...numberColumnDefinition('Series resistance (Ω)', tab, 1) },
+        { colId: 'x', field: 'x', ...numberColumnDefinition('Series reactance (Ω)', tab, 1) },
         {
             colId: 'g1',
-            field: 'g1',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            field: 'g1', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.G1, params.data.g1),
+            ...numberColumnDefinition('Shunt conductance 1 (μS)', tab, 1),
         },
         {
             colId: 'g2',
-            field: 'g2',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            field: 'g2', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.G2, params.data.g2),
+            ...numberColumnDefinition('Shunt conductance 1 (μS)', tab, 1),
         },
         {
             colId: 'b1',
-            field: 'b1',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            field: 'b1', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.B1, params.data.b1),
+            ...numberColumnDefinition('Shunt susceptance 1 (μS)', tab, 1),
         },
         {
             colId: 'b2',
-            field: 'b2',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            field: 'b2', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) => convertInputValue(FieldType.B2, params.data.b2),
+            ...numberColumnDefinition('Shunt susceptance 2 (μS)', tab, 1),
         },
         {
             colId: 'connected1',
             field: 'terminal1Connected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanColumnDefinition('Connected 1', tab),
         },
-        {
-            colId: 'connected2',
-            field: 'terminal2Connected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-        },
-        genericColumnOfPropertiesReadonly,
+        { colId: 'connected2', field: 'terminal2Connected', ...booleanColumnDefinition('Connected 2', tab) },
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

@@ -9,7 +9,6 @@ import { useCallback } from 'react';
 import { ProcessCellForExportParams } from 'ag-grid-community';
 import { useIntl } from 'react-intl';
 import { TABLES_NAMES } from '../config/config-tables';
-import { EDIT_COLUMN } from '../utils/constants';
 import { formatNAValue } from '../utils/cell-renderers';
 import { CsvDownloadProps } from './csv-export.type';
 
@@ -33,13 +32,9 @@ export const useCsvExport = () => {
 
     const downloadCSVData = useCallback(
         (props: CsvDownloadProps) => {
-            const isFieldDefined = (field: string | undefined): field is string => {
-                return field !== undefined;
+            const hasColId = (colId: string | undefined): colId is string => {
+                return colId !== undefined;
             };
-            const filteredColumnsKeys = props.columns
-                .map((column) => column.field)
-                .filter(isFieldDefined) // TODO should not be required with recent TS version
-                .filter((field) => field !== EDIT_COLUMN);
 
             const processCell = (params: ProcessCellForExportParams): string => {
                 if (params.column.getColId() === 'limitName') {
@@ -51,8 +46,10 @@ export const useCsvExport = () => {
 
             props.gridRef?.current?.api?.exportDataAsCsv({
                 suppressQuotes: true,
-                columnKeys: filteredColumnsKeys,
+                columnKeys: props.columns.map((col) => col.colId).filter(hasColId),
                 skipColumnHeaders: props.skipColumnHeaders,
+                processHeaderCallback: (params) =>
+                    params.column.getColDef().headerComponentParams?.displayName ?? params.column.getColId(),
                 fileName: prefix.concat(getCSVFilename(props.tableName)),
                 processCellCallback: processCell,
             });

@@ -5,156 +5,98 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-export const SHUNT_COMPENSATOR_TAB_DEF = {
+const tab = 'ShuntCompensators';
+
+export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 7,
-    name: 'ShuntCompensators',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
     columns: [
         {
             colId: 'ID',
             field: 'id',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MEDIUM_COLUMN_WIDTH,
-                isDefaultSort: true,
-            },
+            ...textColumnDefinition('ID', tab),
         },
         {
             colId: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                columnWidth: MIN_COLUMN_WIDTH,
-            },
+            ...textColumnDefinition('Name', tab),
         },
         {
             colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID', tab),
         },
         {
             colId: 'Country',
             field: 'country',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Country', tab),
         },
         {
             colId: 'NominalV',
             field: 'nominalVoltage',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         {
             colId: 'ReactivePower',
             field: 'q',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('q (MVar)', tab, 1),
         },
         {
             colId: 'maximumSectionCount',
             field: 'maximumSectionCount',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-            },
+            ...numberColumnDefinition('Maximum number of sections', tab),
         },
         {
             colId: 'sectionCount',
             field: 'sectionCount',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-            },
+            ...numberColumnDefinition('Current number of sections', tab),
         },
         {
             colId: 'Type',
             field: 'type',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Type', tab),
         },
         {
             colId: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Qmax available at nominal voltage', tab, 1),
         },
         {
             colId: 'SwitchedOnMaxQAtNominalV',
-            field: 'switchedOnQAtNominalV',
+            field: 'switchedOnQAtNominalV', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Switch-on Q at nominal voltage', tab, 1),
         },
         {
             colId: 'maxSusceptance',
             field: 'maxSusceptance',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 5,
-            },
+            ...numberColumnDefinition('Maximal susceptance available', tab, 5),
         },
         {
             colId: 'SwitchedOnMaxSusceptance',
-            field: 'switchedOnSusceptance',
+            field: 'switchedOnSusceptance', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 5,
-            },
+            ...numberColumnDefinition('Switch-on susceptance', tab, 5),
         },
         {
             colId: 'voltageSetpoint',
             field: 'targetV',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-            },
+            ...numberColumnDefinition('Target V (kV)', tab, 1),
         },
         {
             colId: 'connected',
             field: 'terminalConnected',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            ...booleanColumnDefinition('Connected', tab),
         },
-        genericColumnOfPropertiesReadonly,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};
