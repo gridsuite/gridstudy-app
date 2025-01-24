@@ -73,7 +73,7 @@ export function UniqueCheckNameInput({
                     .catch((e) => {
                         setError(name, {
                             type: 'validate',
-                            message: 'rootNetworknameValidityCheckErrorMsg',
+                            message: 'rootNetworknameValidityCheckError',
                         });
                         console.error(e?.message);
                     })

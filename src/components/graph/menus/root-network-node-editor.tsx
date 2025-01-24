@@ -170,7 +170,7 @@ const RootNetworkNodeEditor = () => {
                 .catch((errmsg) => {
                     snackError({
                         messageTxt: errmsg,
-                        headerId: 'errDeleteRootNetworkMsg',
+                        headerId: 'deleteRootNetworkError',
                     });
                     setDeleteInProgress(false);
                 });
@@ -321,7 +321,7 @@ const RootNetworkNodeEditor = () => {
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'errCreateRootNetworksMsg',
+                    headerId: 'createRootNetworksError',
                 });
             })
             .finally(() => {

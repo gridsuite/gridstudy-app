@@ -49,14 +49,14 @@ function isWorthUpdate(
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const node = headers?.['node'];
     const nodes = headers?.['nodes'];
-    const rootNetworkUuid = studyUpdatedForce?.eventData?.headers?.['rootNetwork'];
+    const rootNetworkUuidFromNotification = studyUpdatedForce?.eventData?.headers?.['rootNetwork'];
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
     }
     if (rootNetworkUuidRef.current !== currentRootNetworkUuid) {
         return true;
     }
-    if (rootNetworkUuid && rootNetworkUuid !== currentRootNetworkUuid) {
+    if (rootNetworkUuidFromNotification && rootNetworkUuidFromNotification !== currentRootNetworkUuid) {
         return false;
     }
     if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {

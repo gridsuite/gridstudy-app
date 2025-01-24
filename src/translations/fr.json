@@ -1457,10 +1457,10 @@
     "deletingRootNetwork": "Suppression du réseau racine en cours ...",
     "creatingRootNetwork": "Création du réseau racine en cours ...",
     "rootNetworkCreated": "Le réseau racine a été créé avec succès",
-    "errDeleteRootNetworkMsg": "Une erreur est survenue lors de la suppression des réseaux racines",
-    "rootNetworknameValidityCheckErrorMsg": "Une erreur est survenue lors de la vérification du nom de réseau racine",
+    "deleteRootNetworkError": "Une erreur est survenue lors de la suppression des réseaux racines",
+    "rootNetworknameValidityCheckError": "Une erreur est survenue lors de la vérification du nom de réseau racine",
     "rootNetworkDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier du réseau",
     "RootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
-    "errCreateRootNetworksMsg": "Une erreur est survenue lors de la création du réseau racine"
+    "createRootNetworksError": "Une erreur est survenue lors de la création du réseau racine"
 }
 

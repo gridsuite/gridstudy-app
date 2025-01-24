@@ -819,10 +819,7 @@ export function DiagramPane({
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers['rootNetwork'] !== currentRootNetworkRef.current &&
-                currentRootNetworkRef
-            ) {
+            if (studyUpdatedForce.eventData.headers['rootNetwork'] !== currentRootNetworkRef.current) {
                 return;
             }
             if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult') {
