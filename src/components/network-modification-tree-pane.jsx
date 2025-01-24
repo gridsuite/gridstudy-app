@@ -623,4 +623,5 @@ export default NetworkModificationTreePane;
 NetworkModificationTreePane.propTypes = {
     studyUuid: PropTypes.string.isRequired,
     studyMapTreeDisplay: PropTypes.string.isRequired,
+    currentRootNetworkUuid: PropTypes.string.isRequired,
 };

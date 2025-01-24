@@ -414,5 +414,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 RunButtonContainer.propTypes = {
     studyUuid: PropTypes.string.isRequired,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
 };

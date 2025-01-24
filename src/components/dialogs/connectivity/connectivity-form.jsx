@@ -42,6 +42,7 @@ import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } fro
  * @param newBusOrBusbarSectionOptions list of bus or bus bar sections for the newly created voltage level
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param onVoltageLevelChangeCallback callback to be called when the voltage level changes
  * @param isEquipmentModification connectivity form is used in a modification form or not
  * @param previousValues previous values of connectivity form's fields
