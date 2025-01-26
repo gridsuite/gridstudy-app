@@ -282,6 +282,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 <LineSplitWithVoltageLevelForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     onVoltageLevelCreationDo={onVoltageLevelCreationDo}
                     voltageLevelToEdit={newVoltageLevel}
                     onVoltageLevelChange={onVoltageLevelChange}

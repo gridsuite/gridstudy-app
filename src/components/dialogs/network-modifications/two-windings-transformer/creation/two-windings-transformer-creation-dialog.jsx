@@ -114,6 +114,7 @@ import {
  * Dialog to create a two windings transformer in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -671,6 +672,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 <TwoWindingsTransformerCreationCharacteristicsPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     tabIndex={tabIndex}
                 />
 

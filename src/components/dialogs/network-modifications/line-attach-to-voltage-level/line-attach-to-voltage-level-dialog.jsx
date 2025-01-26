@@ -194,11 +194,11 @@ const LineAttachToVoltageLevelDialog = ({
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then((values) => {
+            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid).then((values) => {
                 setVoltageLevelOptions(values.sort((a, b) => a?.id?.localeCompare(b?.id)));
             });
         }
-    }, [studyUuid, currentNode?.id]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -327,6 +327,7 @@ const LineAttachToVoltageLevelDialog = ({
                 <LineAttachToVoltageLevelForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     onLineCreationDo={onLineCreationDo}
                     lineToEdit={attachmentLine}
                     onVoltageLevelCreationDo={onVoltageLevelCreationDo}
