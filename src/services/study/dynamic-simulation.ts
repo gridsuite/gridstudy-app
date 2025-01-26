@@ -74,7 +74,9 @@ export function fetchDynamicSimulationResultTimeSeries(
     currentRootNetworkUuid: UUID,
     timeSeriesNames: string[]
 ) {
-    console.info(`Fetching dynamic simulation time series result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    console.info(
+        `Fetching dynamic simulation time series result on '${studyUuid}' on root nerwork '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
 
     // Add params to Url
     const timeSeriesParams = getRequestParamFromList(timeSeriesNames, 'timeSeriesNames');

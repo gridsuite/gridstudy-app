@@ -138,7 +138,7 @@ export function getSubstationSingleLineDiagram({
     language,
 }: SubstationSingleLineDiagram) {
     console.info(
-        `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Getting url of substation diagram '${substationId}' of study '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
     );
     const queryParams = new URLSearchParams({
         useName: String(useName),

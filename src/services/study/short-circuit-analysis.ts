@@ -160,7 +160,7 @@ export function fetchShortCircuitAnalysisPagedResults({
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
 
     console.info(
-        `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
     );
 
     const urlSearchParams = new URLSearchParams();
@@ -238,7 +238,9 @@ export function downloadShortCircuitResultZippedCsv(
     headersCsv: string[] | undefined,
     enumValueTranslations: Record<string, string>
 ) {
-    console.info(`Fetching short-circuit analysis export csv on ${studyUuid} and node ${currentNodeUuid} ...`);
+    console.info(
+        `Fetching short-circuit analysis export csv on ${studyUuid} , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
+    );
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,

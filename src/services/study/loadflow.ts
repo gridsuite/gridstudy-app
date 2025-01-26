@@ -112,7 +112,9 @@ export function fetchLoadFlowResult(
     currentRootNetworkUuid: UUID,
     queryParams: QueryParams
 ) {
-    console.info(`Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    console.info(
+        `Fetching loadflow result on '${studyUuid}', node '${currentNodeUuid}' and current root network '${currentRootNetworkUuid}' ...`
+    );
     const { sort, filters } = queryParams || {};
     const params = new URLSearchParams({});
 

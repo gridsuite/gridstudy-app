@@ -46,7 +46,9 @@ export function fetchVoltageInitStatus(studyUuid: UUID, currentNodeUuid: UUID, c
 }
 
 export function fetchVoltageInitResult(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
-    console.info(`Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    console.info(
+        `Fetching voltage init result on '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
+    );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/voltage-init/result';

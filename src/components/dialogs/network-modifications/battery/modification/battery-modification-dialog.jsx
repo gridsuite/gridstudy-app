@@ -336,6 +336,7 @@ const BatteryModificationDialog = ({
                     <BatteryModificationForm
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={selectedId}
                         batteryToModify={batteryToModify}
                         updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}

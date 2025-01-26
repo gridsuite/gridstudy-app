@@ -262,7 +262,12 @@ const VscCreationDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <VscCreationForm tabIndex={tabIndex} currentNode={currentNode} studyUuid={studyUuid} />
+                <VscCreationForm
+                    tabIndex={tabIndex}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}

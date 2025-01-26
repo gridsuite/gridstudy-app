@@ -97,7 +97,7 @@ export function fetchEquipmentsIds(
     const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
 
     console.info(
-        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' for ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
+        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' for ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
     );
     let urlSearchParams = new URLSearchParams();
 
@@ -132,7 +132,7 @@ export function fetchVoltageLevelIdForLineOrTransformerBySide(
     side: string
 ) {
     console.info(
-        `Fetching voltage level ID for equipment '${equipmentId}' in study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching voltage level ID for equipment '${equipmentId}' in study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
     );
 
     let urlSearchParams = new URLSearchParams();
@@ -150,7 +150,9 @@ export function fetchVoltageLevelIdForLineOrTransformerBySide(
 }
 
 export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
-    console.info(`Fetching all countries of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    console.info(
+        `Fetching all countries of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
+    );
 
     const fetchCountriesUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
@@ -283,7 +285,9 @@ export async function createMapContingencyList(
 }
 
 export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
-    console.info(`Fetching all nominal voltages of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    console.info(
+        `Fetching all nominal voltages of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
+    );
 
     const fetchNominalVoltagesUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +

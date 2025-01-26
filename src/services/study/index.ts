@@ -184,7 +184,7 @@ export function fetchContingencyCount(
     contingencyListNames: string[]
 ) {
     console.info(
-        `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
 
     const contingencyListNamesParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
@@ -243,7 +243,15 @@ export function getAvailableComponentLibraries(): Promise<string[]> {
 }
 
 export function unbuildNode(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
-    console.info('Unbuild node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...');
+    console.info(
+        'Unbuild node ' +
+            currentNodeUuid +
+            ' of study ' +
+            studyUuid +
+            ' and current root network ' +
+            currentRootNetworkUuid +
+            ' ...'
+    );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) + '/unbuild';
     console.debug(url);
@@ -258,6 +266,8 @@ export function buildNode(studyUuid: UUID, currentNodeUuid: UUID, currentRootNet
             currentRootNetworkUuid +
             ' of study ' +
             studyUuid +
+            ' and current root network ' +
+            currentRootNetworkUuid +
             ' ...'
     );
     const url =

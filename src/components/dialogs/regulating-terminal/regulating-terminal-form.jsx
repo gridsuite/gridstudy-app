@@ -179,6 +179,7 @@ const RegulatingTerminalForm = ({
 RegulatingTerminalForm.propTypes = {
     id: PropTypes.string.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    currentRootNetworkUuid: PropTypes.string.isRequired,
     direction: PropTypes.string,
     disabled: PropTypes.bool,
 };
