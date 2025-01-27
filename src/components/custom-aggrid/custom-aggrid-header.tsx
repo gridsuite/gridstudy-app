@@ -7,11 +7,12 @@
 
 import React, { ComponentType, useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
-import { CustomAggridFilterParams, CustomHeaderMenuParams, CustomHeaderSortParams } from './custom-aggrid-header.type';
+import { CustomAggridFilterParams } from './custom-aggrid-header.type';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort';
-import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
-import { CustomMenu } from './custom-menu';
+import { SortParams, useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
+import { CustomMenu, CustomMenuProps } from './custom-aggrid-menu';
+import { CustomHeaderProps } from 'ag-grid-react';
 
 const styles = {
     displayName: {
@@ -20,35 +21,31 @@ const styles = {
     },
 };
 
-interface CustomHeaderComponentProps<F extends CustomAggridFilterParams> {
-    colId: string;
-    field: string;
+interface CustomHeaderComponentProps<F extends CustomAggridFilterParams, T> extends CustomHeaderProps {
     displayName: string;
-    sortParams: CustomHeaderSortParams;
-    customMenuParams: CustomHeaderMenuParams;
+    sortParams?: SortParams;
+    menu?: CustomMenuProps<T>;
     forceDisplayFilterIcon: boolean;
     filterComponent: ComponentType<F>;
     filterComponentParams: F;
 }
 
-const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
-    colId,
-    field,
+const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
+    column,
     displayName,
     sortParams,
-    customMenuParams,
+    menu,
     forceDisplayFilterIcon,
     filterComponent,
     filterComponentParams,
-}: CustomHeaderComponentProps<F>) => {
+    api,
+}: CustomHeaderComponentProps<F, T>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
-    const { handleSortChange } = useCustomAggridSort(colId, sortParams);
-    const { isSortable = false } = sortParams;
+    const { handleSortChange } = useCustomAggridSort(column.getId(), sortParams);
+    const isSortable = !!sortParams;
     const handleClickHeader = () => {
-        if (isSortable) {
-            handleSortChange();
-        }
+        handleSortChange && handleSortChange();
     };
 
     const handleCloseFilter = () => {
@@ -83,9 +80,11 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
                     >
                         <Grid container sx={styles.displayName} alignItems={'center'} wrap="nowrap">
                             <Grid item>{displayName}</Grid>
-                            <Grid item>
-                                <CustomAggridSort colId={colId} sortParams={sortParams} />
-                            </Grid>
+                            {sortParams && (
+                                <Grid item>
+                                    <CustomAggridSort colId={column.getId()} sortParams={sortParams} />
+                                </Grid>
+                            )}
                         </Grid>
                     </Grid>
                 </Grid>
@@ -93,13 +92,13 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
                     {filterComponent && (
                         <CustomAggridFilter
                             filterComponent={filterComponent}
-                            filterComponentParams={{ ...filterComponentParams, colId }}
+                            filterComponentParams={{ ...filterComponentParams, colId: column.getId(), api }}
                             isHoveringColumnHeader={isHoveringColumnHeader}
                             forceDisplayFilterIcon={forceDisplayFilterIcon}
                             handleCloseFilter={handleCloseFilter}
                         />
                     )}
-                    {customMenuParams && <CustomMenu field={field} customMenuParams={customMenuParams} />}
+                    {menu && <CustomMenu {...menu} />}
                 </Grid>
             </Grid>
         </Grid>
