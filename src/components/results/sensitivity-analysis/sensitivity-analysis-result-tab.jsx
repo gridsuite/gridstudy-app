@@ -35,7 +35,7 @@ export const SensitivityResultTabs = [
 ];
 
 function getDisplayedColumns(params) {
-    return params.api.columnModel.columnDefs.map((c) => c.headerComponentParams.displayName);
+    return params.api.getColumnDefs()?.map((c) => c.headerComponentParams.displayName);
 }
 
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
@@ -85,7 +85,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
 
     const handleRowDataUpdated = useCallback((params) => {
         if (params?.api) {
-            setIsCsvButtonDisabled(params.api.getModel().getRowCount() === 0);
+            setIsCsvButtonDisabled(params.api.getDisplayedRowCount() === 0);
         }
     }, []);
 
