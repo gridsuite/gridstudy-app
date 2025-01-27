@@ -16,9 +16,6 @@ export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilter
     options?: string[];
 }
 
-/**
- * may be used with enums OR with a customOptions string array
- */
 export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutocompleteFilterParams> = ({
     api,
     colId,
