@@ -26,7 +26,7 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-
 import { CustomAGGrid, unitToKiloUnit } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import { CustomAggridAutocompleteEnumFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-enum-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
@@ -146,7 +146,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 field: 'faultType',
                 context: {
                     sortParams,
-                    filterComponent: CustomAggridAutocompleteFilter,
+                    filterComponent: CustomAggridAutocompleteEnumFilter,
                     filterComponentParams: {
                         filterParams: {
                             dataType: autoCompleteFilterParams.dataType,
@@ -198,7 +198,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 hide: !isOneBusAnalysisType,
                 context: {
                     sortParams,
-                    filterComponent: CustomAggridAutocompleteFilter,
+                    filterComponent: CustomAggridAutocompleteEnumFilter,
                     filterComponentParams: {
                         filterParams: {
                             dataType: autoCompleteFilterParams.dataType,
@@ -216,7 +216,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 field: 'limitType',
                 context: {
                     sortParams,
-                    filterComponent: CustomAggridAutocompleteFilter,
+                    filterComponent: CustomAggridAutocompleteEnumFilter,
                     filterComponentParams: {
                         filterParams: {
                             dataType: autoCompleteFilterParams.dataType,

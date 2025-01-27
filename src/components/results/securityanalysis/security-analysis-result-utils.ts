@@ -38,7 +38,7 @@ import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import { CustomAggridAutocompleteEnumFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-enum-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 
@@ -170,7 +170,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             field: 'limitType',
             context: {
                 sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
@@ -284,7 +284,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             field: 'side',
             context: {
                 sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
@@ -341,7 +341,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'status',
             context: {
                 sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
@@ -375,7 +375,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'limitType',
             context: {
                 sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
@@ -483,7 +483,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'side',
             context: {
                 sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
@@ -564,7 +564,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'status',
             context: {
                 sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
@@ -582,7 +582,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'limitType',
             context: {
                 sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
@@ -690,7 +690,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'side',
             context: {
                 sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,

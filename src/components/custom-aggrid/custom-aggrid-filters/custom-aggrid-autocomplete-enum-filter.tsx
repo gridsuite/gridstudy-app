@@ -1,25 +1,27 @@
 /**
- * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { FunctionComponent, SyntheticEvent } from 'react';
+import React, { FunctionComponent, SyntheticEvent, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
-import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
+import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS, FilterEnumsType } from '../custom-aggrid-header.type';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 
-export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilterParams {
-    options?: string[];
+export interface CustomAggridAutocompleteEnumFilterParams extends CustomAggridFilterParams {
+    filterEnums?: FilterEnumsType;
+    getEnumLabel?: (value: string) => string; // Used for translation of enum values in the filter
 }
 
-export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutocompleteFilterParams> = ({
+export const CustomAggridAutocompleteEnumFilter: FunctionComponent<CustomAggridAutocompleteEnumFilterParams> = ({
     api,
     colId,
     filterParams,
-    options,
+    filterEnums,
+    getEnumLabel,
 }) => {
     const intl = useIntl();
     const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, colId, filterParams);
@@ -28,11 +30,14 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
         handleChangeFilterValue({ value: data, type: FILTER_TEXT_COMPARATORS.EQUALS });
     };
 
+    const filterOption = useMemo(() => filterEnums?.[colId] ?? [], [colId, filterEnums]);
+
     return (
         <Autocomplete
             multiple
             value={Array.isArray(selectedFilterData) ? selectedFilterData : []}
-            options={options ?? []}
+            options={filterOption}
+            getOptionLabel={getEnumLabel}
             onChange={handleFilterAutoCompleteChange}
             size="small"
             disableCloseOnSelect

@@ -9,7 +9,7 @@ import { Popover } from '@mui/material';
 import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
 import { CustomFilterIcon } from './custom-filter-icon';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
-import { CustomAggridAutocompleteFilterParams } from './custom-aggrid-autocomplete-filter';
+import { CustomAggridAutocompleteEnumFilterParams } from './custom-aggrid-autocomplete-enum-filter';
 
 const styles = {
     input: {
@@ -84,7 +84,8 @@ export const CustomAggridFilter = <F extends CustomAggridFilterParams>({
                     paper: {
                         //Test for specific parameter presence to apply a style
                         sx: styles[
-                            !!(filterComponentParams as unknown as CustomAggridAutocompleteFilterParams)?.filterEnums
+                            !!(filterComponentParams as unknown as CustomAggridAutocompleteEnumFilterParams)
+                                ?.filterEnums
                                 ? 'autoCompleteInput'
                                 : 'input'
                         ],

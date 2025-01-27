@@ -33,9 +33,9 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { CustomAggridAutocompleteEnumFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-enum-filter';
 
 export const convertMillisecondsToMinutesSeconds = (durationInMilliseconds: number): string => {
     const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
@@ -343,7 +343,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             field: 'side',
             context: {
                 sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
@@ -391,7 +391,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             field: 'limitType',
             context: {
                 sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
@@ -475,7 +475,7 @@ export const loadFlowResultColumnsDefinition = (
             field: 'status',
             context: {
                 sortParams,
-                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponent: CustomAggridAutocompleteEnumFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.TEXT,
