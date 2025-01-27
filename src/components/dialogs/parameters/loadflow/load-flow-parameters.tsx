@@ -185,7 +185,7 @@ const LoadFlowParameters: FunctionComponent<{
 
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
-            if (formLimits.length === 0) {
+            if (formLimits?.length === 0) {
                 return [];
             }
             if (!params?.limitReductions) {
@@ -258,7 +258,10 @@ const LoadFlowParameters: FunctionComponent<{
                 if (param.type === TYPES.BOOLEAN) {
                     acc[param.name] = specificParamsPerProvider[param.name] === 'true';
                 } else if (param.type === TYPES.STRING_LIST) {
-                    acc[param.name] = specificParamsPerProvider[param.name].split(',');
+                    acc[param.name] =
+                        specificParamsPerProvider[param.name] !== ''
+                            ? specificParamsPerProvider[param.name].split(',')
+                            : [];
                 } else {
                     acc[param.name] = specificParamsPerProvider[param.name];
                 }

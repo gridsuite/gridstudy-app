@@ -176,6 +176,7 @@ const LoadFlowGeneralParameters: FunctionComponent<LoadFlowGeneralParametersProp
                 state={showSpecificLfParams}
                 onClick={setShowSpecificLfParams}
                 infoText={provider ?? ''}
+                disabled={!provider || !specificParams}
             >
                 {showSpecificLfParams &&
                     specificParams?.map((item) => (

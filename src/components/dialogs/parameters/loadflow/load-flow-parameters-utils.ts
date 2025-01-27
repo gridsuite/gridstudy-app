@@ -6,8 +6,7 @@
  */
 
 import yup from 'components/utils/yup-config';
-import { ILimitReductionsByVoltageLevel, LIMIT_REDUCTIONS_FORM } from '../common/limitreductions/columns-definitions';
-import { PROVIDER } from 'components/utils/field-constants';
+import { ILimitReductionsByVoltageLevel } from '../common/limitreductions/columns-definitions';
 import {
     BALANCE_TYPE,
     COMMON_PARAMETERS,
@@ -37,13 +36,6 @@ export interface ParameterDescription {
     label?: string;
     possibleValues?: { id: string; label: string }[] | string[];
     defaultValue?: any;
-}
-
-export interface FormLimits {
-    [PROVIDER]: string;
-    [COMMON_PARAMETERS]: Record<string, unknown>;
-    [SPECIFIC_PARAMETERS]: Record<string, unknown>;
-    [LIMIT_REDUCTIONS_FORM]: Record<string, unknown>[];
 }
 
 export interface Parameters {
@@ -83,8 +75,8 @@ export const getAdvancedLoadFlowParametersFormSchema = () => {
         [DC_POWER_FACTOR]: yup
             .number()
             .required()
-            .min(0, 'dcPowerFactorValidationErrorMessage')
-            .max(1, 'dcPowerFactorValidationErrorMessage'),
+            .positive('dcPowerFactorGreaterThan0')
+            .max(1, 'dcPowerFactorLessOrEqualThan1'),
     });
 };
 
