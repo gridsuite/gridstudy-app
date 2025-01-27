@@ -8,24 +8,22 @@
 import { useState, useCallback } from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { PopupConfirmationDialog, useStateBoolean } from '@gridsuite/commons-ui';
-import { CUSTOM_COLUMNS_MENU_DEFINITION, DELETE, UPDATE } from '../constants';
+import { CUSTOM_COLUMNS_MENU_DEFINITION, DELETE, UPDATE } from '../spreadsheet/constants';
 import { FormattedMessage, useIntl } from 'react-intl';
-import CustomColumnDialog from './custom-columns-dialog';
+import CustomColumnDialog from '../spreadsheet/custom-columns/custom-columns-dialog';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { setRemoveCustomColumDefinitions } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
+import { DialogMenuProps } from './custom-aggrid-menu';
 
-export interface CustomColumnConfigProps {
-    open: boolean;
+export interface CustomColumnConfigProps extends DialogMenuProps {
     tabIndex: number;
     customColumnName: string;
-    anchorEl: HTMLElement | null;
-    onClose: () => void;
 }
 
-const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({
+export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({
     open,
     tabIndex,
     customColumnName,
@@ -106,5 +104,3 @@ const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({
         </>
     );
 };
-
-export default CustomColumnMenu;
