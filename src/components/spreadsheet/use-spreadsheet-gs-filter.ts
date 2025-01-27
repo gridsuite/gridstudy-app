@@ -28,7 +28,7 @@ export const useSpreadsheetGsFilter = () => {
                 const filtersUuid: UUID[] = filters
                     .filter((filter) => filter.id !== undefined)
                     .map((filter) => filter.id) as UUID[];
-                if (!!filtersUuid.length) {
+                if (filtersUuid.length > 0) {
                     evaluateFilters(studyUuid as UUID, currentNode.id, filtersUuid).then((response) => {
                         const equipmentsIds: string[] = [];
                         response.forEach((filterEquipments) =>
