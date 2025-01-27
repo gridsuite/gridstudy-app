@@ -624,7 +624,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     highTapPosition: getValues(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
                                     tapPosition: getValues(`${RATIO_TAP_CHANGER}.${TAP_POSITION}`),
                                     steps: addSelectedFieldToRows(
-                                        getValues(`${RATIO_TAP_CHANGER}.${STEPS}`).length > 0
+                                        !isNodeBuilt(currentNode)
                                             ? getValues(`${RATIO_TAP_CHANGER}.${STEPS}`)
                                             : twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                                     ),
@@ -651,7 +651,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     ),
                                     tapPosition: getValues(`${PHASE_TAP_CHANGER}.${TAP_POSITION}`),
                                     steps: addSelectedFieldToRows(
-                                        getValues(`${PHASE_TAP_CHANGER}.${STEPS}`).length > 0
+                                        !isNodeBuilt(currentNode)
                                             ? getValues(`${PHASE_TAP_CHANGER}.${STEPS}`)
                                             : twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                                     ),
@@ -683,6 +683,7 @@ const TwoWindingsTransformerModificationDialog = ({
             getValues,
             reset,
             isRatioTapChangerEnabled,
+            currentNode,
             isPhaseTapChangerEnabled,
             editData?.equipmentId,
         ]
