@@ -8,8 +8,7 @@
 import { CustomFormProvider, DirectoryItemsInput, ElementType, useStateBoolean } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../utils/yup-config';
-import { FILTERS, ID, NAME } from '../utils/field-constants';
+import { SPREADSHEET_GS_FILTER } from '../utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { ExpertFilter } from '../../services/study/filter';
 import { Badge, Button, Popover } from '@mui/material';
@@ -20,61 +19,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
 import { saveSpreadsheetGsFilters } from '../../redux/actions';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
-
-type ExpertFilterForm = Omit<ExpertFilter, 'type' | 'equipmentType' | 'topologyKind' | 'rules'>;
-
-export const SPREADSHEET_GS_FILTER = 'SpreadsheetGsFilter';
-
-export const spreadsheetGsFilterFormSchema = yup.object().shape({
-    [SPREADSHEET_GS_FILTER]: yup.array().of(
-        yup
-            .object()
-            .shape({
-                [FILTERS]: yup
-                    .array()
-                    .of(
-                        yup.object().shape({
-                            [ID]: yup.string().required(),
-                            [NAME]: yup.string().required(),
-                        })
-                    )
-                    .min(1, 'FilterInputMinError'),
-            })
-            .required()
-    ),
-});
-
-export type SpreadsheetGsFilterForm = yup.InferType<typeof spreadsheetGsFilterFormSchema>;
-
-export const initialSpreadsheetGsFilterForm: Record<string, ExpertFilterForm[]> = {
-    [SPREADSHEET_GS_FILTER]: [],
-};
-
-function isExpertFilter(obj: unknown): obj is ExpertFilter {
-    if (typeof obj !== 'object' || obj === null) {
-        return false;
-    }
-    const expertFilter = obj as ExpertFilter;
-    if (expertFilter.id === undefined) {
-        return false;
-    }
-    return true;
-}
-
-export function convertToExpertFilter(input: unknown): ExpertFilter[] {
-    if (Array.isArray(input) && input.every(isExpertFilter)) {
-        return input;
-    }
-    return [];
-}
-
-export function convertToExpertFilterForm(input: ExpertFilter[]): Record<string, ExpertFilterForm[]> {
-    const filters = input?.map((filter) => {
-        return { id: filter.id, name: filter.name };
-    });
-
-    return { [SPREADSHEET_GS_FILTER]: filters };
-}
+import {
+    convertToExpertFilter,
+    convertToExpertFilterForm,
+    initialSpreadsheetGsFilterForm,
+    SpreadsheetGsFilterForm,
+    spreadsheetGsFilterFormSchema,
+} from './utils/spreadsheet-gs-filter-utils';
 
 interface SpreadsheetGsFilterProps {
     equipmentType: SpreadsheetEquipmentType;
@@ -134,7 +85,6 @@ export const SpreadsheetGsFilter = ({ equipmentType, applyGsFilter }: Spreadshee
             </Badge>
 
             <Popover
-                id={'pop'}
                 open={filterConfigOpen.value}
                 anchorEl={anchorEl}
                 anchorOrigin={{

@@ -384,3 +384,4 @@ export const MIN_S_AUTOMATON = 'minSAutomaton';
 export const MAX_S_AUTOMATON = 'maxSAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
+export const SPREADSHEET_GS_FILTER = 'SpreadsheetGsFilter';
