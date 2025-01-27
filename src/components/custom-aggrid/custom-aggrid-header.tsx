@@ -92,7 +92,12 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
                     {filterComponent && (
                         <CustomAggridFilter
                             filterComponent={filterComponent}
-                            filterComponentParams={{ ...filterComponentParams, colId: column.getId(), api }}
+                            filterComponentParams={{
+                                ...filterComponentParams,
+                                colId: column.getId(),
+                                field: column.getColDef().field,
+                                api,
+                            }}
                             isHoveringColumnHeader={isHoveringColumnHeader}
                             forceDisplayFilterIcon={forceDisplayFilterIcon}
                             handleCloseFilter={handleCloseFilter}
