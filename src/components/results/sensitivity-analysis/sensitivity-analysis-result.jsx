@@ -23,7 +23,6 @@ import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sor
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -58,7 +57,7 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
                         table: SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
                         tab: mappingTabs(sensiKind, nOrNkIndex),
                     },
-                    filterComponent: isNum ? CustomAggridComparatorFilter : CustomAggridAutocompleteFilter,
+                    filterComponent: isNum ? null : CustomAggridAutocompleteFilter,
                     filterComponentParams: {
                         filterParams: {
                             type: AgGridFilterType.SensitivityAnalysis,
