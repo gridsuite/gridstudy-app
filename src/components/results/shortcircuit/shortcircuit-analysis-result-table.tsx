@@ -100,6 +100,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         const onlyIfIsAllBuses = <T,>(data: T, defaultData: T | undefined = {} as T) =>
             isAllBusesAnalysisType ? data : defaultData;
 
+        const onlyIfIsOneBus = <T,>(data: T, defaultData: T | undefined = {} as T) =>
+            !isAllBusesAnalysisType ? data : defaultData;
+
         const sortParams: ColumnContext['sortParams'] = {
             table: SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
             tab: mappingTabs(analysisType),
@@ -194,7 +197,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 field: 'side',
                 hide: isAllBusesAnalysisType,
                 context: {
-                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams }),
+                    ...onlyIfIsOneBus({ sortParams, ...autocompleteFilterParams }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
