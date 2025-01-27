@@ -13,7 +13,7 @@ import { ResultViewTab } from './result-view-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
-import TableWrapper from './spreadsheet/table-wrapper';
+import { TableWrapper } from './spreadsheet/table-wrapper';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 

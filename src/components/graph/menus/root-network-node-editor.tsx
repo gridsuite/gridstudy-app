@@ -17,7 +17,7 @@ import {
 import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography, Badge, IconButton } from '@mui/material';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
@@ -176,11 +176,6 @@ const RootNetworkNodeEditor = () => {
         setSelectedItems((oldVal) => (oldVal.length === 0 ? rootNetworks : []));
     }, [rootNetworks]);
 
-    const intl = useIntl();
-    const getRootNetworkLabel = (rootNetwork: RootNetworkMetadata): string => {
-        return intl.formatMessage({ id: 'root' }) + ': ' + rootNetwork.name;
-    };
-
     const handleSecondaryAction = useCallback(
         (rootNetwork: RootNetworkMetadata) => {
             const isCurrentRootNetwork = rootNetwork.rootNetworkUuid === currentRootNetwork;
@@ -226,7 +221,7 @@ const RootNetworkNodeEditor = () => {
                 onSelectionChange={setSelectedItems}
                 items={rootNetworks}
                 getItemId={(val) => val.rootNetworkUuid}
-                getItemLabel={getRootNetworkLabel}
+                getItemLabel={(val) => val.name}
                 secondaryAction={handleSecondaryAction}
             />
         );

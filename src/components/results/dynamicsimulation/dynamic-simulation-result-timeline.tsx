@@ -19,8 +19,7 @@ import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggri
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import ComputingType from '../../computing-status/computing-type';
-import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
-import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
+import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import {
@@ -32,14 +31,11 @@ import {
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
-import { setDynamicSimulationResultFilter } from 'redux/actions';
-import {
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
-    TIMELINE,
-} from 'utils/store-sort-filter-fields';
+import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { AgGridReact } from 'ag-grid-react';
+import { FilterType } from '../../../types/custom-aggrid-types';
 
 const styles = {
     loader: {
@@ -71,7 +67,7 @@ type DynamicSimulationResultTimelineProps = {
 const DynamicSimulationResultTimeline = memo(
     ({ studyUuid, nodeUuid, currentRootNetworkUuid }: DynamicSimulationResultTimelineProps) => {
         const intl = useIntl();
-        const gridRef = useRef(null);
+        const gridRef = useRef<AgGridReact>(null);
 
         const [timelines, isLoading] = useNodeData(
             studyUuid,
@@ -79,29 +75,6 @@ const DynamicSimulationResultTimeline = memo(
             currentRootNetworkUuid,
             fetchDynamicSimulationResultTimeline,
             dynamicSimulationResultInvalidations
-        );
-
-        const { onSortChanged, sortConfig } = useAgGridSort(DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE);
-
-        const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
-            filterType: DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-            filterTab: TIMELINE,
-            // @ts-expect-error TODO: found how to have Action type in props type
-            filterStoreAction: setDynamicSimulationResultFilter,
-        });
-
-        const sortAndFilterProps = useMemo(
-            () => ({
-                sortProps: {
-                    onSortChanged,
-                    sortConfig,
-                },
-                filterProps: {
-                    updateFilter,
-                    filterSelector,
-                },
-            }),
-            [onSortChanged, sortConfig, updateFilter, filterSelector]
         );
 
         // columns are defined from fields in {@link TimelineEvent} types
@@ -121,13 +94,16 @@ const DynamicSimulationResultTimeline = memo(
                         filterComponent: CustomAggridComparatorFilter,
                         filterComponentParams: {
                             filterParams: {
-                                ...sortAndFilterProps.filterProps,
-                                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                                type: FilterType.DynamicSimulation,
+                                tab: TIMELINE,
+                                updateFilterCallback: updateFilters,
+                                dataType: FILTER_DATA_TYPES.NUMBER,
+                                comparators: Object.values(FILTER_NUMBER_COMPARATORS),
                             },
                         },
-                        sortProps: {
-                            ...sortAndFilterProps.sortProps,
+                        sortParams: {
+                            table: DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+                            tab: TIMELINE,
                         },
                     },
                     cellRenderer: NumberCellRenderer,
@@ -143,16 +119,16 @@ const DynamicSimulationResultTimeline = memo(
                         filterComponent: CustomAggridComparatorFilter,
                         filterComponentParams: {
                             filterParams: {
-                                ...sortAndFilterProps.filterProps,
-                                filterDataType: FILTER_DATA_TYPES.TEXT,
-                                filterComparators: [
-                                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                                ],
+                                type: FilterType.DynamicSimulation,
+                                tab: TIMELINE,
+                                updateFilterCallback: updateFilters,
+                                dataType: FILTER_DATA_TYPES.TEXT,
+                                comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },
                         },
-                        sortProps: {
-                            ...sortAndFilterProps.sortProps,
+                        sortParams: {
+                            table: DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+                            tab: TIMELINE,
                         },
                     },
                 }),
@@ -167,21 +143,21 @@ const DynamicSimulationResultTimeline = memo(
                         filterComponent: CustomAggridComparatorFilter,
                         filterComponentParams: {
                             filterParams: {
-                                ...sortAndFilterProps.filterProps,
-                                filterDataType: FILTER_DATA_TYPES.TEXT,
-                                filterComparators: [
-                                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                                ],
+                                type: FilterType.DynamicSimulation,
+                                tab: TIMELINE,
+                                updateFilterCallback: updateFilters,
+                                dataType: FILTER_DATA_TYPES.TEXT,
+                                comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             },
                         },
-                        sortProps: {
-                            ...sortAndFilterProps.sortProps,
+                        sortParams: {
+                            table: DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+                            tab: TIMELINE,
                         },
                     },
                 }),
             ],
-            [intl, sortAndFilterProps]
+            [intl]
         );
 
         // messages to show when no data

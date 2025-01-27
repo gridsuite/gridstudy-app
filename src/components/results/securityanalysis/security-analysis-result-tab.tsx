@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SyntheticEvent, FunctionComponent, useState, useCallback, useMemo, useEffect } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { AppState } from '../../../redux/reducer';
 
-import { Tabs, Tab, Select, MenuItem, LinearProgress, Box } from '@mui/material';
+import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
@@ -21,31 +21,27 @@ import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { QueryParamsType, SecurityAnalysisTabProps } from './security-analysis.type';
 import {
+    convertFilterValues,
     DEFAULT_PAGE_COUNT,
+    getStoreFields,
+    mappingColumnToField,
     NMK_TYPE,
     RESULT_TYPE,
-    useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
-    mappingColumnToField,
-    getStoreFields,
-    convertFilterValues,
+    useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
-import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
-import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { setSecurityAnalysisResultFilter } from 'redux/actions';
-import {
-    SECURITY_ANALYSIS_RESULT_SORT_STORE,
-    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
-} from 'utils/store-sort-filter-fields';
+import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useIntl } from 'react-intl/lib';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { usePrevious } from 'components/utils/utils';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -120,21 +116,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         }
     }, [tabIndex, nmkType, enableDeveloperMode]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(SECURITY_ANALYSIS_RESULT_SORT_STORE, getStoreFields(tabIndex));
+    const sortConfig = useSelector(
+        (state: AppState) => state.tableSort[SECURITY_ANALYSIS_RESULT_SORT_STORE][getStoreFields(tabIndex)]
+    );
+
+    const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
 
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
     }, []);
-
-    const { updateFilter, filterSelector } = useAggridRowFilter(
-        {
-            filterType: SECURITY_ANALYSIS_RESULT_STORE_FIELD,
-            filterTab: getStoreFields(tabIndex),
-            // @ts-expect-error TODO: found how to have Action type in props type
-            filterStoreAction: setSecurityAnalysisResultFilter,
-        },
-        memoizedSetPageCallback
-    );
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
@@ -159,21 +149,22 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 }));
             }
 
-            if (filterSelector) {
-                const updatedFilters = convertFilterValues(intl, filterSelector);
+            if (filters) {
+                const updatedFilters = convertFilterValues(intl, filters);
                 const columnToFieldMapping = mappingColumnToField(resultType);
                 queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
             }
 
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
+
         [
             page,
             tabIndex,
             rowsPerPage,
             sortConfig,
-            filterSelector,
             currentRootNetworkUuid,
+            filters,
             resultType,
             intl,
             enableDeveloperMode,
@@ -244,17 +235,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     });
 
     const columnDefs = useSecurityAnalysisColumnsDefs(
-        {
-            onSortChanged,
-            sortConfig,
-        },
-        {
-            updateFilter,
-            filterSelector,
-        },
         filterEnums,
         resultType,
-        openVoltageLevelDiagram
+        openVoltageLevelDiagram,
+        tabIndex,
+        memoizedSetPageCallback
     );
 
     const csvHeaders = useMemo(() => columnDefs.map((cDef) => cDef.headerName ?? ''), [columnDefs]);
