@@ -13,6 +13,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 export interface ExpertFilter {
     id?: UUID;
+    name?: string;
     type: 'EXPERT';
     equipmentType: string; // TODO must be EquipmentType enum
     rules: RuleGroupTypeExport;

@@ -19,10 +19,11 @@ export const useSpreadsheetGsFilter = () => {
 
     const applyGsFilter = useCallback(
         (filters: ExpertFilter[]) => {
-            if (!filters.length) {
+            if (filters.length === 0) {
                 setFilterIds([]);
                 return;
             }
+
             if (currentNode?.id) {
                 const filtersUuid: UUID[] = filters
                     .filter((filter) => filter.id !== undefined)

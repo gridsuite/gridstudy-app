@@ -427,6 +427,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 <EquipmentTabs disabled={disabled} tabIndex={tabIndex} handleSwitchTab={handleSwitchTab} />
                 <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.selectColumns}>
+                        <SpreadsheetGsFilter equipmentType={equipmentDefinition.type} applyGsFilter={applyGsFilter} />
+                    </Grid>
+                    <Grid item>
                         <ColumnsConfig
                             tabIndex={tabIndex}
                             disabled={disabled || currentColumns().length === 0}
@@ -448,9 +451,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             <CustomColumnsNodesConfig />
                         </Grid>
                     )}
-                    <Grid item>
-                        <SpreadsheetGsFilter equipmentType={equipmentDefinition.type} applyGsFilter={applyGsFilter} />
-                    </Grid>
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item sx={styles.save}>
                         <SpreadsheetSave
