@@ -106,3 +106,7 @@ export const updateFilters = (api: GridApi | undefined, filters: FilterConfig[] 
         api.setFilterModel(formattedFilters);
     }
 };
+
+export const getNestedField = (obj: any, path: string): any => {
+    return path.split('.').reduce((acc, part) => acc?.[part], obj);
+};

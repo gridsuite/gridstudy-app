@@ -11,7 +11,12 @@ import { typeAndFetchers } from './common-config';
 import { computeHighTapPosition } from '../../../utils/utils';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import {
+    booleanColumnDefinition,
+    enumColumnDefinition,
+    numberColumnDefinition,
+    textColumnDefinition,
+} from '../common-column-definitions';
 
 const tab = 'TwoWindingsTransformers';
 
@@ -36,7 +41,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'voltageLevelId2',
             ...textColumnDefinition('Voltage level ID 2', tab),
         },
-        { colId: 'Country', field: 'country', ...textColumnDefinition('Country', tab) },
+        { colId: 'Country', field: 'country', ...enumColumnDefinition('Country', tab) },
         {
             colId: 'nominalVoltage1KV',
             field: 'nominalVoltage1',
@@ -69,7 +74,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'RatioRegulationMode',
             field: 'ratioTapChanger.regulationMode',
-            ...textColumnDefinition('Ratio regulation mode', tab),
+            ...enumColumnDefinition('Ratio regulation mode', tab),
         },
         {
             colId: 'TargetVPoint',
@@ -84,12 +89,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'RatioRegulationTypeText',
             field: 'ratioTapChanger.regulationType',
-            ...textColumnDefinition('Ratio regulation', tab),
+            ...enumColumnDefinition('Ratio regulation', tab),
         },
         {
             colId: 'RatioRegulatedSide',
             field: 'ratioTapChanger.regulationSide',
-            ...textColumnDefinition('Ratio regulated side', tab),
+            ...enumColumnDefinition('Ratio regulated side', tab),
         },
         {
             colId: 'RatioRegulatingTerminal',
@@ -115,7 +120,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'RegulatingMode',
             field: 'phaseTapChanger.regulationMode',
-            ...textColumnDefinition('Phase regulation mode', tab),
+            ...enumColumnDefinition('Phase regulation mode', tab),
         },
         {
             colId: 'RegulatingValue',
@@ -130,12 +135,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'PhaseRegulationTypeText',
             field: 'phaseTapChanger.regulationType',
-            ...textColumnDefinition('Phase regulation', tab),
+            ...enumColumnDefinition('Phase regulation', tab),
         },
         {
             colId: 'PhaseRegulatedSide',
             field: 'phaseTapChanger.regulationSide',
-            ...textColumnDefinition('Phase regulated side', tab),
+            ...enumColumnDefinition('Phase regulated side', tab),
         },
         {
             colId: 'PhaseRegulatingTerminal',

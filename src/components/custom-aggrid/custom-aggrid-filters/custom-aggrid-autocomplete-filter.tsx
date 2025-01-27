@@ -10,6 +10,7 @@ import { useIntl } from 'react-intl';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS, FilterEnumsType } from '../custom-aggrid-header.type';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
+import { getNestedField } from './utils/aggrid-filters-utils';
 
 export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilterParams {
     filterEnums?: FilterEnumsType;
@@ -31,7 +32,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
     const getUniqueValues = useCallback(() => {
         const uniqueValues = new Set<string>();
         api.forEachNode((node) => {
-            const value = node.data[field];
+            const value = getNestedField(node.data, field);
             if (value) {
                 uniqueValues.add(value);
             }
