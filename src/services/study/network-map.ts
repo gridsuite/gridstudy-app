@@ -8,7 +8,7 @@
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
-import { EquipmentInfos, EquipmentType, createFilter } from '@gridsuite/commons-ui';
+import { EquipmentInfos, EquipmentType, createFilter, NewFilterType } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
@@ -175,14 +175,7 @@ export async function createMapFilter(
     selectedEquipmentsIds: string[],
     nominalVoltages: number[]
 ) {
-    let equipmentFilters: {
-        id: string | null;
-        type: string;
-        equipmentType: string;
-        filterEquipmentsAttributes?: {
-            equipmentID: string;
-        }[];
-    } = {
+    let equipmentFilters: NewFilterType = {
         id: null,
         type: '',
         equipmentType: '',
