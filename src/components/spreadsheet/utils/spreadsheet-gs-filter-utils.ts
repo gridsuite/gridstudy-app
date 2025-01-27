@@ -39,9 +39,9 @@ export const initialSpreadsheetGsFilterForm: Record<string, ExpertFilterForm[]> 
 export const isExpertFilter = (obj: unknown): obj is ExpertFilter =>
     typeof obj === 'object' && obj !== null && (obj as ExpertFilter).id !== undefined;
 
-export const convertToExpertFilter = (input: unknown): ExpertFilter[] =>
+export const toExpertFilter = (input: unknown): ExpertFilter[] =>
     Array.isArray(input) && input.every(isExpertFilter) ? input : [];
 
-export const convertToExpertFilterForm = (input: ExpertFilter[]): Record<string, ExpertFilterForm[]> => ({
+export const toFormFormat = (input: ExpertFilter[]): Record<string, ExpertFilterForm[]> => ({
     [SPREADSHEET_GS_FILTER]: input.map(({ id, name }) => ({ id, name })),
 });

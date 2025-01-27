@@ -18,8 +18,8 @@ import { saveSpreadsheetGsFilters } from '../../redux/actions';
 import { ExpertFilter } from '../../services/study/filter';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import {
-    convertToExpertFilter,
-    convertToExpertFilterForm,
+    toExpertFilter,
+    toFormFormat,
     initialSpreadsheetGsFilterForm,
     SpreadsheetGsFilterForm,
     spreadsheetGsFilterFormSchema,
@@ -43,7 +43,7 @@ export const SpreadsheetGsFilter = ({ equipmentType, applyGsFilter }: Spreadshee
         resolver: yupResolver(spreadsheetGsFilterFormSchema),
     });
     const { reset, watch } = formMethods;
-    const spreadsheetGsFilterWatcher = watch()[SPREADSHEET_GS_FILTER];
+    const spreadsheetGsFilterWatcher = watch(SPREADSHEET_GS_FILTER);
 
     const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -53,12 +53,12 @@ export const SpreadsheetGsFilter = ({ equipmentType, applyGsFilter }: Spreadshee
     const handleClose = useCallback(() => {
         setAnchorEl(null);
         filterConfigOpen.setFalse();
-        dispatch(saveSpreadsheetGsFilters(equipmentType, convertToExpertFilter(spreadsheetGsFilterWatcher)));
+        dispatch(saveSpreadsheetGsFilters(equipmentType, toExpertFilter(spreadsheetGsFilterWatcher)));
     }, [dispatch, equipmentType, filterConfigOpen, spreadsheetGsFilterWatcher]);
 
     useEffect(() => {
         const filters = gsFilterSpreadsheetState[equipmentType] || [];
-        reset(convertToExpertFilterForm(filters));
+        reset(toFormFormat(filters));
         applyGsFilter(filters);
     }, [equipmentType, reset, gsFilterSpreadsheetState, applyGsFilter]);
 
@@ -69,8 +69,12 @@ export const SpreadsheetGsFilter = ({ equipmentType, applyGsFilter }: Spreadshee
                 badgeContent={spreadsheetGsFilterWatcher?.length}
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-                <Button sx={spreadsheetStyles.spreadsheetButton} size="small" onClick={handlePopoverOpen}>
-                    <ArticleIcon />
+                <Button
+                    sx={spreadsheetStyles.spreadsheetButton}
+                    size="small"
+                    onClick={handlePopoverOpen}
+                    startIcon={<ArticleIcon />}
+                >
                     <FormattedMessage id="spreadsheet/filter/config" />
                 </Button>
             </Badge>
