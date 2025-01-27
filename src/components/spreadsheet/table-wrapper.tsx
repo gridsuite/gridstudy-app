@@ -195,14 +195,13 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [updateLockedColumnsConfig]);
 
     const cleanTableState = useCallback(() => {
-        applyGsFilter([]);
         gridRef?.current?.api.setFilterModel(null);
         // reset aggrid column definitions
         gridRef.current?.api.setGridOption('columnDefs', []);
         gridRef?.current?.api.applyColumnState({
             defaultState: { sort: null },
         });
-    }, [applyGsFilter]);
+    }, []);
 
     const { filters } = useFilterSelector(FilterType.Spreadsheet, currentTabName());
 
