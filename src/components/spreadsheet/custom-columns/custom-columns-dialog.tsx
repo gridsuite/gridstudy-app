@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Box,
@@ -23,12 +23,14 @@ import {
     CancelButton,
     CustomFormProvider,
     ExpandingTextField,
+    MultipleAutocompleteInput,
     SubmitButton,
     TextInput,
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useForm, useWatch } from 'react-hook-form';
 import {
+    COLUMN_DEPENDENCIES,
     COLUMN_NAME,
     CustomColumnForm,
     customColumnFormSchema,
@@ -43,6 +45,7 @@ import { ColumnWithFormula } from 'types/custom-columns.types';
 import { AppState } from 'redux/reducer';
 import { setUpdateCustomColumDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
+import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -114,11 +117,24 @@ export default function CustomColumnDialog({
                     return;
                 }
             }
+
+            if (customColumnsDefinitions) {
+                const newItems: Item[] = [...customColumnsDefinitions, newParams];
+                if (hasCyclicDependencies(newItems)) {
+                    setError(COLUMN_DEPENDENCIES, {
+                        type: 'validate',
+                        message: 'spreadsheet/custom_column/creates_cyclic_dependency',
+                    });
+                    return;
+                }
+            }
+
             dispatch(
                 setUpdateCustomColumDefinitions(tablesNames[tabIndex], {
                     id: customColumnsDefinition?.id || crypto.randomUUID(),
                     name: newParams.name,
                     formula: newParams.formula,
+                    dependencies: newParams.dependencies,
                 })
             );
             reset(initialCustomColumnForm);
@@ -143,6 +159,7 @@ export default function CustomColumnDialog({
             reset({
                 [COLUMN_NAME]: customColumnsDefinition.name,
                 [FORMULA]: customColumnsDefinition.formula,
+                [COLUMN_DEPENDENCIES]: customColumnsDefinition.dependencies,
             });
         } else {
             reset(initialCustomColumnForm);
@@ -189,6 +206,15 @@ export default function CustomColumnDialog({
                         </Grid>
                         <Grid item sx={styles.field}>
                             {formulaField}
+                        </Grid>
+                        <Grid item sx={styles.field}>
+                            <MultipleAutocompleteInput
+                                label={intl.formatMessage({ id: 'spreadsheet/custom_column/column_dependencies' })}
+                                name={COLUMN_DEPENDENCIES}
+                                options={customColumnsDefinitions?.map((definition) => definition.name) ?? []}
+                                disableClearable={false}
+                                disableCloseOnSelect
+                            />
                         </Grid>
                     </Grid>
                 </DialogContent>

@@ -13,6 +13,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/edit_columns': 'Éditer une colonne',
     'spreadsheet/custom_column/column_name': 'Nom de la colonne',
     'spreadsheet/custom_column/column_content': 'Entrer la formule',
+    'spreadsheet/custom_column/column_dependencies': 'Entrer les dépendances de la formule',
     'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau). Exemple : maxP - p pour afficher la réserve de puissance active dans le tableur des groupes`,
     'spreadsheet/custom_column/error/not_unique': 'Les noms de colonne doivent être uniques',
     'spreadsheet/custom_column/error/name_exceeds_length': 'Le nom de colonne ne peut dépasser 60 caractères',
@@ -20,10 +21,13 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/delete_custom_column': 'Supprimer colonne',
     'spreadsheet/custom_column/delete_custom_column_confirmation':
         'Êtes-vous sûr de vouloir supprimer la colonne "{columnName}" ?',
+    'spreadsheet/custom_column/dependencies': "La formule fait référence à d'autres colonnes",
     'spreadsheet/custom_column/column_name_already_exist': 'Nom de colonne déjà existant',
     'spreadsheet/custom_column/nodes': 'Nœuds',
     'spreadsheet/custom_column/parameter_nodes': 'Parametrer les alias de nœuds',
     'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
+    'spreadsheet/custom_column/creates_cyclic_dependency':
+        'Les dépendances de la colonne créent un cycle de dépendances',
     'spreadsheet/save/button': 'Enregistrer',
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/csv': 'Export CSV',
