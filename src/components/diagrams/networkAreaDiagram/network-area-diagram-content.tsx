@@ -152,7 +152,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const svgRef = useRef();
 
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
     const nadNodeMovementsRef = useRef<NadNodeMovement[]>([]);
@@ -313,7 +312,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         props.svg,
         props.svgMetadata,
         props.svgScalingFactor,
-        currentNode,
         diagramSizeSetter,
         onMoveNodeCallback,
         OnToggleHoverCallback,
