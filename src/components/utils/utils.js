@@ -258,3 +258,8 @@ export function toggleElementFromList(elementToToggle, list, getFieldId) {
 export const comparatorStrIgnoreCase = (str1, str2) => {
     return str1.toLowerCase().localeCompare(str2.toLowerCase());
 };
+
+export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
+    const length = (stop - start) / step + 1;
+    return Array.from({ length }, (_, index) => start + index * step);
+}

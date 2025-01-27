@@ -29,7 +29,6 @@ import {
     COMMON_APP_NAME,
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_FLUX_CONVENTION,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
     PARAM_THEME,
@@ -55,7 +54,6 @@ import {
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
-    selectFluxConvention,
     selectLanguage,
     selectLimitReduction,
     selectTheme,
@@ -122,9 +120,6 @@ const App = () => {
                         break;
                     case PARAM_LIMIT_REDUCTION:
                         dispatch(selectLimitReduction(param.value));
-                        break;
-                    case PARAM_FLUX_CONVENTION:
-                        dispatch(selectFluxConvention(param.value));
                         break;
                     case PARAM_DEVELOPER_MODE:
                         dispatch(selectEnableDeveloperMode(param.value === 'true'));
@@ -196,7 +191,7 @@ const App = () => {
 
                     const index = param.index;
 
-                    const equipmentAllColumnsIds = tablesDefinitionIndexes.get(index).columns.map((item) => item.id);
+                    const equipmentAllColumnsIds = tablesDefinitionIndexes.get(index).columns.map((item) => item.colId);
 
                     const equipmentReorderedColumnsIds = JSON.parse(reorderedColumnsParams[index].value);
                     const equipmentNewColumnsIds = equipmentAllColumnsIds.filter(

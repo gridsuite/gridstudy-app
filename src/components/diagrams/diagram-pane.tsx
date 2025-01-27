@@ -29,7 +29,7 @@ import {
 } from './diagram-common';
 import { getEstimatedNbVoltageLevels, makeDiagramSorter } from './diagram-utils';
 import { isNodeBuilt, isNodeInNotificationList } from '../graph/util/model-functions';
-import { AutoSizer } from 'react-virtualized';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
@@ -341,6 +341,8 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
     const previousNetworkAreaDiagramDepth = useRef(networkAreaDiagramDepth);
 
     const networkAreaDiagramNbVoltageLevels = useSelector((state: AppState) => state.networkAreaDiagramNbVoltageLevels);
+    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const initNadWithGeoDataRef = useRef(networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
 
     const { translate } = useLocalizedCountries();
 
@@ -542,6 +544,10 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
 
     const updateNAD = useCallback(
         (diagramStates: DiagramState[]) => {
+            const initNadWithGeoDataParamHasChanged =
+                initNadWithGeoDataRef.current !== networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData;
+            initNadWithGeoDataRef.current = networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData;
+
             previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
             const networkAreaIds: UUID[] = [];
             let networkAreaViewState = ViewState.OPENED;
@@ -558,7 +564,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                         diagramView.ids?.toString() === networkAreaIds.toString() &&
                         diagramView.depth === networkAreaDiagramDepth
                 );
-                if (!isSameNadAlreadyPresentInViews) {
+                if (!isSameNadAlreadyPresentInViews || initNadWithGeoDataParamHasChanged) {
                     addOrReplaceNAD(networkAreaIds, networkAreaViewState, networkAreaDiagramDepth);
                 }
             } else if (
@@ -568,7 +574,12 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                 removeNAD();
             }
         },
-        [addOrReplaceNAD, removeNAD, networkAreaDiagramDepth]
+        [
+            networkAreaDiagramDepth,
+            networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+            addOrReplaceNAD,
+            removeNAD,
+        ]
     );
 
     // Update the state of the diagrams (opened, minimized, etc) in the 'views'
@@ -819,18 +830,14 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
      */
 
     // This function is called by the diagram's contents, when they get their sizes from the backend.
-    const setDiagramSize = (diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
-        // Let's update the stored values if they are new
-        const storedValues = diagramContentSizes?.get(diagramType + diagramId);
-        if (!storedValues || storedValues.width !== width || storedValues.height !== height) {
-            let newDiagramContentSizes = new Map(diagramContentSizes);
-            newDiagramContentSizes.set(diagramType + diagramId, {
+    const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
+        setDiagramContentSizes((oldContentSizes) => {
+            return new Map(oldContentSizes).set(diagramType + diagramId, {
                 width: width,
                 height: height,
             });
-            setDiagramContentSizes(newDiagramContentSizes);
-        }
-    };
+        });
+    }, []);
 
     const getDefaultHeightByDiagramType = (diagramType: DiagramType) => {
         switch (diagramType) {

@@ -13,7 +13,7 @@ import { ResultViewTab } from './result-view-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
-import TableWrapper from './spreadsheet/table-wrapper';
+import { TableWrapper } from './spreadsheet/table-wrapper';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 
@@ -51,7 +51,7 @@ export const StudyView = {
     PARAMETERS: 'Parameters',
 };
 
-const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
+const StudyPane = ({ studyUuid, currentNode, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -93,7 +93,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     tableEquipment={tableEquipment}
                     onTableEquipementChanged={(newTableEquipment) => setTableEquipment(newTableEquipment)}
                     onChangeTab={props.onChangeTab}
-                    setErrorMessage={setErrorMessage}
                 ></MapViewer>
             </div>
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
