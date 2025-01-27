@@ -15,15 +15,14 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { Box, Grid, Tab, Tabs } from '@mui/material';
-import { LabelledButton, styles, TabPanel, useParameterState } from '../parameters';
+import { Box, Grid } from '@mui/material';
+import { LabelledButton, styles, useParameterState } from '../parameters';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../../utils/functions';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
-    MuiSelectInput,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -54,19 +53,11 @@ import {
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
-import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from 'utils/config-params';
-import LoadFlowGeneralParameters from './load-flow-general-parameters';
-import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
-import ParameterLineSlider from '../widget/parameter-line-slider';
-import { getTabStyle } from 'components/utils/tab-utils';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { LoadFlowProvider } from './load-flow-parameters-context';
-import {
-    alertThresholdMarks,
-    COMMON_PARAMETERS,
-    MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
-    SPECIFIC_PARAMETERS,
-    TYPES,
-} from './constants';
+import { COMMON_PARAMETERS, SPECIFIC_PARAMETERS, TYPES } from './constants';
+import LoadFlowParametersHeader from './load-flow-parameters-header';
+import LoadFlowParametersContent from './load-flow-parameters-content';
 const LoadFlowParameters: FunctionComponent<{
     parametersBackend: UseParametersBackendReturnProps<ComputingType.LOAD_FLOW>;
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
@@ -283,26 +274,26 @@ const LoadFlowParameters: FunctionComponent<{
         });
     }, [params, reset, specificParamsDescriptions]);
 
-    const [tabSelected, setTabSelected] = useState(TAB_VALUES.GENERAL);
+    const [selectedTab, setSelectedTab] = useState(TAB_VALUES.GENERAL);
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: TAB_VALUES) => {
-        setTabSelected(newValue);
+        setSelectedTab(newValue);
     }, []);
 
     const onValidationError = useCallback(
         (errors: FieldErrors) => {
             const tabsInError = [];
-            if (errors?.[LIMIT_REDUCTIONS_FORM] && TAB_VALUES.LIMIT_REDUCTIONS !== tabSelected) {
+            if (errors?.[LIMIT_REDUCTIONS_FORM] && TAB_VALUES.LIMIT_REDUCTIONS !== selectedTab) {
                 tabsInError.push(TAB_VALUES.LIMIT_REDUCTIONS);
             }
             if (
                 (errors?.[SPECIFIC_PARAMETERS] || errors?.[COMMON_PARAMETERS] || errors?.[PROVIDER]) &&
-                TAB_VALUES.GENERAL !== tabSelected
+                TAB_VALUES.GENERAL !== selectedTab
             ) {
                 tabsInError.push(TAB_VALUES.GENERAL);
             }
             setTabIndexesWithError(tabsInError);
         },
-        [tabSelected]
+        [selectedTab]
     );
 
     const watchProvider = formMethods.watch('provider');
@@ -332,87 +323,21 @@ const LoadFlowParameters: FunctionComponent<{
                             flexDirection: 'column',
                         }}
                     >
-                        <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
-                            <Grid
-                                container
-                                spacing={1}
-                                sx={{
-                                    padding: 0,
-                                    paddingBottom: 0,
-                                    height: 'fit-content',
-                                }}
-                                justifyContent={'space-between'}
-                            >
-                                <Grid item xs={5} sx={styles.parameterName}>
-                                    <FormattedMessage id="Provider" />
-                                </Grid>
-                                <Grid item xs={'auto'} sx={styles.controlItem}>
-                                    <MuiSelectInput
-                                        name={PROVIDER}
-                                        size="small"
-                                        options={Object.values(formattedProviders)}
-                                    />
-                                </Grid>
-                                <LineSeparator />
-                                <Grid item sx={{ width: '100%' }}>
-                                    <Tabs value={tabSelected} onChange={handleTabChange}>
-                                        <Tab
-                                            label={<FormattedMessage id={TAB_VALUES.GENERAL} />}
-                                            value={TAB_VALUES.GENERAL}
-                                            sx={getTabStyle(tabIndexesWithError, TAB_VALUES.GENERAL)}
-                                        />
-                                        {enableDeveloperMode && (
-                                            <Tab
-                                                label={<FormattedMessage id={TAB_VALUES.LIMIT_REDUCTIONS} />}
-                                                value={TAB_VALUES.LIMIT_REDUCTIONS}
-                                                sx={getTabStyle(tabIndexesWithError, TAB_VALUES.LIMIT_REDUCTIONS)}
-                                            />
-                                        )}
-                                    </Tabs>
-                                </Grid>
-                            </Grid>
-                        </Box>
-                        <Box
-                            sx={{
-                                flexGrow: 1,
-                                overflow: 'auto',
-                                paddingLeft: 1,
-                            }}
-                        >
-                            <Grid
-                                container
-                                sx={mergeSx(styles.scrollableGrid, {
-                                    maxHeight: '100%',
-                                })}
-                            >
-                                <Grid item sx={{ width: '100%' }}>
-                                    <TabPanel value={tabSelected} index={TAB_VALUES.GENERAL}>
-                                        <LoadFlowGeneralParameters
-                                            provider={watchProvider}
-                                            specificParams={specificParameters}
-                                        />
-                                    </TabPanel>
-                                    {enableDeveloperMode && (
-                                        <TabPanel value={tabSelected} index={TAB_VALUES.LIMIT_REDUCTIONS}>
-                                            <Grid container sx={{ width: '100%' }}>
-                                                {currentProvider === 'OpenLoadFlow' ? (
-                                                    <LimitReductionsTableForm
-                                                        limits={params?.limitReductions ?? defaultLimitReductions}
-                                                    />
-                                                ) : (
-                                                    <ParameterLineSlider
-                                                        paramNameId={PARAM_LIMIT_REDUCTION}
-                                                        label="LimitReduction"
-                                                        marks={alertThresholdMarks}
-                                                        minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
-                                                    />
-                                                )}
-                                            </Grid>
-                                        </TabPanel>
-                                    )}
-                                </Grid>
-                            </Grid>
-                        </Box>
+                        <LoadFlowParametersHeader
+                            selectedTab={selectedTab}
+                            handleTabChange={handleTabChange}
+                            tabIndexesWithError={tabIndexesWithError}
+                            enableDeveloperMode={enableDeveloperMode}
+                            formattedProviders={formattedProviders}
+                        />
+                        <LoadFlowParametersContent
+                            selectedTab={selectedTab}
+                            currentProvider={currentProvider ?? ''}
+                            specificParameters={specificParameters}
+                            params={params}
+                            enableDeveloperMode={enableDeveloperMode}
+                            defaultLimitReductions={defaultLimitReductions}
+                        />
                         <Box sx={{ flexGrow: 0 }}>
                             <LineSeparator />
                             <Grid
