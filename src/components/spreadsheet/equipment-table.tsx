@@ -9,14 +9,7 @@ import { FunctionComponent, Ref, useCallback, useMemo } from 'react';
 import { useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import {
-    ColDef,
-    ColumnMovedEvent,
-    GetRowIdParams,
-    GridOptions,
-    RowClassParams,
-    RowStyle,
-} from 'ag-grid-community';
+import { ColDef, ColumnMovedEvent, GetRowIdParams, GridOptions, RowClassParams, RowStyle } from 'ag-grid-community';
 import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 
