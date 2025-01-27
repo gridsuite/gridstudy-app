@@ -42,14 +42,13 @@ export const SpreadsheetGsFilter = ({ equipmentType, applyGsFilter }: Spreadshee
         defaultValues: initialSpreadsheetGsFilterForm,
         resolver: yupResolver(spreadsheetGsFilterFormSchema),
     });
+    const { reset, watch } = formMethods;
+    const spreadsheetGsFilterWatcher = watch()[SPREADSHEET_GS_FILTER];
 
     const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
         filterConfigOpen.setTrue();
     };
-
-    const { reset, watch } = formMethods;
-    const spreadsheetGsFilterWatcher = watch()[SPREADSHEET_GS_FILTER];
 
     const handleClose = useCallback(() => {
         setAnchorEl(null);
