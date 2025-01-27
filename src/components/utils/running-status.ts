@@ -106,9 +106,9 @@ export function getDynamicSimulationRunningStatus(dynamicSimulationStatus: strin
 
 export function getDynamicSecurityAnalysisRunningStatus(dynamicSecurityAnalysisStatus: string): RunningStatus {
     switch (dynamicSecurityAnalysisStatus) {
-        case 'CONVERGED':
+        case 'SUCCEED':
             return RunningStatus.SUCCEED;
-        case 'DIVERGED':
+        case 'FAILED':
             return RunningStatus.FAILED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
