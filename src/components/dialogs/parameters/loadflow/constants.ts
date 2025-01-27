@@ -38,6 +38,7 @@ export const DC_USE_TRANSFORMER_RATIO = 'dcUseTransformerRatio';
 export const DC_POWER_FACTOR = 'dcPowerFactor';
 
 export const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 50;
+const MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 100;
 
 export const alertThresholdMarks = [
     {
@@ -45,7 +46,7 @@ export const alertThresholdMarks = [
         label: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION.toString(),
     },
     {
-        value: 100,
+        value: MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
         label: '100',
     },
 ];

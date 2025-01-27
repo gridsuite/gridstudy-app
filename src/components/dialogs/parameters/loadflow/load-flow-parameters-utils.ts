@@ -80,7 +80,11 @@ export const getAdvancedLoadFlowParametersFormSchema = () => {
         [DISTRIBUTED_SLACK]: yup.boolean().required(),
         [SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON]: yup.boolean().required(),
         [DC_USE_TRANSFORMER_RATIO]: yup.boolean().required(),
-        [DC_POWER_FACTOR]: yup.number().required().min(0).max(1),
+        [DC_POWER_FACTOR]: yup
+            .number()
+            .required()
+            .min(0, 'dcPowerFactorValidationErrorMessage')
+            .max(1, 'dcPowerFactorValidationErrorMessage'),
     });
 };
 

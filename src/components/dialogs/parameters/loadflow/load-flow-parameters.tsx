@@ -211,31 +211,31 @@ const LoadFlowParameters: FunctionComponent<{
     const { handleSubmit, formState, reset } = formMethods;
 
     const updateLFParameters = useCallback(
-        (formLimits: Record<string, any>) => {
+        (formData: Record<string, any>) => {
             if (params) {
                 setTabIndexesWithError([]);
                 updateParameters({
                     ...params,
-                    provider: formLimits[PROVIDER],
+                    provider: formData[PROVIDER],
                     commonParameters: {
                         ...params.commonParameters,
-                        ...formLimits[COMMON_PARAMETERS],
+                        ...formData[COMMON_PARAMETERS],
                     },
                     specificParametersPerProvider: {
-                        [formLimits.provider]: Object.keys(formLimits[SPECIFIC_PARAMETERS]).reduce(
+                        [formData.provider]: Object.keys(formData[SPECIFIC_PARAMETERS]).reduce(
                             (acc: Record<string, any>, key: string) => {
                                 if (
                                     specificParametersValues[key].toString() !==
-                                    formLimits[SPECIFIC_PARAMETERS][key].toString()
+                                    formData[SPECIFIC_PARAMETERS][key].toString()
                                 ) {
-                                    acc[key] = formLimits[SPECIFIC_PARAMETERS][key].toString();
+                                    acc[key] = formData[SPECIFIC_PARAMETERS][key].toString();
                                 }
                                 return acc;
                             },
                             {} as Record<string, any>
                         ),
                     },
-                    limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
+                    limitReductions: toLimitReductions(formData[LIMIT_REDUCTIONS_FORM]),
                 });
             }
         },

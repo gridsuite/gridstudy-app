@@ -86,7 +86,7 @@ const basicParams: ParameterDescription[] = [
     },
 ];
 
-const fieldsToShow: ParameterDescription[] = [
+const advancedParams: ParameterDescription[] = [
     {
         name: VOLTAGE_INIT_MODE,
         type: TYPES.STRING,
@@ -167,7 +167,7 @@ const LoadFlowGeneralParameters: FunctionComponent<LoadFlowGeneralParametersProp
                 onClick={setShowAdvancedLfParams}
             >
                 {showAdvancedLfParams &&
-                    fieldsToShow.map((item) => (
+                    advancedParams.map((item) => (
                         <LoadFlowParameterField id={COMMON_PARAMETERS} {...item} key={item.name} />
                     ))}
             </ParameterGroup>

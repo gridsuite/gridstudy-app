@@ -472,6 +472,7 @@
     "descLfDistributedSlack": "Activer la compensation",
     "descLfDcUseTransformerRatio": "Prise en compte de la valeur des rapports de transformation dans l'équation de transit en actif seul",
     "descLfDcPowerFactor": "Facteur de puissance en actif seul (cos phi)",
+    "dcPowerFactorValidationErrorMessage": "Le facteur de puissance en actif seul doit être compris entre 0 et 1",
     "descLfBalanceType": "Mode de compensation proportionnel à",
     "descLfBalanceTypeGenP": "puissance de consigne des groupes",
     "descLfBalanceTypeGenPMax": "puissance maximale des groupes",
