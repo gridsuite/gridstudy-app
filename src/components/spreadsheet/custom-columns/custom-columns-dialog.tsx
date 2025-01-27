@@ -214,6 +214,7 @@ export default function CustomColumnDialog({
                                 options={customColumnsDefinitions?.map((definition) => definition.name) ?? []}
                                 disableClearable={false}
                                 disableCloseOnSelect
+                                freeSolo={false}
                             />
                         </Grid>
                     </Grid>

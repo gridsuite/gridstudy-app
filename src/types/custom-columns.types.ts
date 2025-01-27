@@ -9,6 +9,13 @@
 
 import { SpreadsheetEquipmentType } from '../components/spreadsheet/config/spreadsheet.type';
 
+export type ColumnWithFormulaDto = {
+    id: string;
+    name: string;
+    formula: string;
+    dependencies: string | null;
+};
+
 export type ColumnWithFormula = {
     id: string;
     name: string;
