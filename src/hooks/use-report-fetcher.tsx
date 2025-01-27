@@ -175,15 +175,19 @@ export const useReportFetcher = (
             if (!studyUuid) {
                 return;
             }
+            if (!currentRootNetwork) {
+                return;
+            }
             let fetchPromise: (reportId: string) => Promise<SeverityLevel[]>;
             if (reportType === ReportType.GLOBAL) {
-                fetchPromise = () => fetchNodeSeverities(studyUuid, currentNode!.id, null, true);
+                fetchPromise = () => fetchNodeSeverities(studyUuid, currentNode!.id, currentRootNetwork, null, true);
             } else {
-                fetchPromise = (reportId: string) => fetchNodeSeverities(studyUuid, currentNode!.id, reportId, false);
+                fetchPromise = (reportId: string) =>
+                    fetchNodeSeverities(studyUuid, currentNode!.id, currentRootNetwork, reportId, false);
             }
             return fetchPromise(reportId);
         },
-        [currentNode, studyUuid]
+        [currentNode, studyUuid, currentRootNetwork]
     );
 
     return [isLoading, fetchRawParentReport, fetchReportLogs, fetchReportSeverities];

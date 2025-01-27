@@ -415,6 +415,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
                     setModificationInProgress={setModificationInProgress}

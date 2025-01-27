@@ -136,12 +136,24 @@ export function fetchNodeReportLogs(
     return backendFetchJson(url);
 }
 
-export function fetchNodeSeverities(studyUuid: UUID, nodeUuid: UUID, reportId: string | null, isGlobalLogs: boolean) {
+export function fetchNodeSeverities(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    reportId: string | null,
+    isGlobalLogs: boolean
+) {
     let url;
     if (isGlobalLogs) {
-        url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/aggregated-severities';
+        url =
+            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+            '/report/aggregated-severities';
     } else {
-        url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/' + reportId + '/aggregated-severities';
+        url =
+            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+            '/report/' +
+            reportId +
+            '/aggregated-severities';
     }
     return backendFetchJson(url);
 }

@@ -63,7 +63,7 @@ export type MenuBranchProps = {
     onOpenDynamicSimulationEventDialog?: (id: string, type: EquipmentType | null, dialogTitle: string) => void;
     currentNode?: CurrentTreeNode;
     studyUuid?: UUID;
-    currentRootNetworkUuid?: UUID;
+    currentRootNetworkUuid?: UUID | null;
     modificationInProgress?: boolean;
     setModificationInProgress?: (progress: boolean) => void;
 };
