@@ -70,7 +70,7 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
                             tab: mappingTabs(sensiKind, nOrNkIndex),
                             updateFilterCallback: onFilter,
                         },
-                        options: filterOptions,
+                        customOptions: filterOptions,
                     },
                 },
                 filterParams: {
