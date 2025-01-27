@@ -11,23 +11,23 @@ import { FILTERS, ID, NAME, SPREADSHEET_GS_FILTER } from '../../utils/field-cons
 
 export type ExpertFilterForm = Omit<ExpertFilter, 'type' | 'equipmentType' | 'topologyKind' | 'rules'>;
 
-export const spreadsheetGsFilterFormSchema = yup.object().shape({
-    [SPREADSHEET_GS_FILTER]: yup.array().of(
-        yup
-            .object()
-            .shape({
+export const spreadsheetGsFilterFormSchema = yup.object({
+    [SPREADSHEET_GS_FILTER]: yup
+        .array()
+        .of(
+            yup.object({
                 [FILTERS]: yup
                     .array()
                     .of(
-                        yup.object().shape({
+                        yup.object({
                             [ID]: yup.string().required(),
                             [NAME]: yup.string().required(),
                         })
                     )
                     .min(1, 'FilterInputMinError'),
             })
-            .required()
-    ),
+        )
+        .required(),
 });
 
 export type SpreadsheetGsFilterForm = yup.InferType<typeof spreadsheetGsFilterFormSchema>;
@@ -36,28 +36,12 @@ export const initialSpreadsheetGsFilterForm: Record<string, ExpertFilterForm[]> 
     [SPREADSHEET_GS_FILTER]: [],
 };
 
-function isExpertFilter(obj: unknown): obj is ExpertFilter {
-    if (typeof obj !== 'object' || obj === null) {
-        return false;
-    }
-    const expertFilter = obj as ExpertFilter;
-    if (expertFilter.id === undefined) {
-        return false;
-    }
-    return true;
-}
+export const isExpertFilter = (obj: unknown): obj is ExpertFilter =>
+    typeof obj === 'object' && obj !== null && (obj as ExpertFilter).id !== undefined;
 
-export function convertToExpertFilter(input: unknown): ExpertFilter[] {
-    if (Array.isArray(input) && input.every(isExpertFilter)) {
-        return input;
-    }
-    return [];
-}
+export const convertToExpertFilter = (input: unknown): ExpertFilter[] =>
+    Array.isArray(input) && input.every(isExpertFilter) ? input : [];
 
-export function convertToExpertFilterForm(input: ExpertFilter[]): Record<string, ExpertFilterForm[]> {
-    const filters = input?.map((filter) => {
-        return { id: filter.id, name: filter.name };
-    });
-
-    return { [SPREADSHEET_GS_FILTER]: filters };
-}
+export const convertToExpertFilterForm = (input: ExpertFilter[]): Record<string, ExpertFilterForm[]> => ({
+    [SPREADSHEET_GS_FILTER]: input.map(({ id, name }) => ({ id, name })),
+});

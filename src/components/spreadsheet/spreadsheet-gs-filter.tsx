@@ -5,19 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, DirectoryItemsInput, ElementType, useStateBoolean } from '@gridsuite/commons-ui';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { SPREADSHEET_GS_FILTER } from '../utils/field-constants';
-import { useCallback, useEffect, useState } from 'react';
-import { ExpertFilter } from '../../services/study/filter';
 import { Badge, Button, Popover } from '@mui/material';
-import { spreadsheetStyles } from './utils/style';
-import { FormattedMessage } from 'react-intl';
 import ArticleIcon from '@mui/icons-material/Article';
+import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
+import { CustomFormProvider, DirectoryItemsInput, ElementType, useStateBoolean } from '@gridsuite/commons-ui';
 import { AppState } from '../../redux/reducer';
 import { saveSpreadsheetGsFilters } from '../../redux/actions';
+import { ExpertFilter } from '../../services/study/filter';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import {
     convertToExpertFilter,
@@ -26,6 +24,8 @@ import {
     SpreadsheetGsFilterForm,
     spreadsheetGsFilterFormSchema,
 } from './utils/spreadsheet-gs-filter-utils';
+import { SPREADSHEET_GS_FILTER } from '../utils/field-constants';
+import { spreadsheetStyles } from './utils/style';
 
 interface SpreadsheetGsFilterProps {
     equipmentType: SpreadsheetEquipmentType;
@@ -35,9 +35,9 @@ interface SpreadsheetGsFilterProps {
 export const SpreadsheetGsFilter = ({ equipmentType, applyGsFilter }: SpreadsheetGsFilterProps) => {
     const dispatch = useDispatch();
     const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
-
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const filterConfigOpen = useStateBoolean(false);
+
     const formMethods = useForm<SpreadsheetGsFilterForm>({
         defaultValues: initialSpreadsheetGsFilterForm,
         resolver: yupResolver(spreadsheetGsFilterFormSchema),
@@ -57,27 +57,19 @@ export const SpreadsheetGsFilter = ({ equipmentType, applyGsFilter }: Spreadshee
     }, [dispatch, equipmentType, filterConfigOpen, spreadsheetGsFilterWatcher]);
 
     useEffect(() => {
-        let filters: ExpertFilter[] = [];
-        if (gsFilterSpreadsheetState[equipmentType]?.length > 0) {
-            filters = gsFilterSpreadsheetState[equipmentType];
-            reset(convertToExpertFilterForm(filters));
-        } else {
-            reset(initialSpreadsheetGsFilterForm);
-        }
-        applyGsFilter(convertToExpertFilter(filters));
+        const filters = gsFilterSpreadsheetState[equipmentType] || [];
+        reset(convertToExpertFilterForm(filters));
+        applyGsFilter(filters);
     }, [equipmentType, reset, gsFilterSpreadsheetState, applyGsFilter]);
 
     return (
         <>
             <Badge
                 color="secondary"
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
                 badgeContent={spreadsheetGsFilterWatcher?.length}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-                <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handlePopoverOpen}>
+                <Button sx={spreadsheetStyles.spreadsheetButton} size="small" onClick={handlePopoverOpen}>
                     <ArticleIcon />
                     <FormattedMessage id="spreadsheet/filter/config" />
                 </Button>
@@ -86,23 +78,15 @@ export const SpreadsheetGsFilter = ({ equipmentType, applyGsFilter }: Spreadshee
             <Popover
                 open={filterConfigOpen.value}
                 anchorEl={anchorEl}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
                 onClose={handleClose}
-                slotProps={{
-                    paper: { sx: { minWidth: '200px' } },
-                }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+                slotProps={{ paper: { sx: { minWidth: '200px' } } }}
             >
                 <CustomFormProvider validationSchema={spreadsheetGsFilterFormSchema} {...formMethods}>
                     <DirectoryItemsInput
                         name={SPREADSHEET_GS_FILTER}
-                        titleId={'FiltersListsSelection'}
+                        titleId="FiltersListsSelection"
                         label="filter"
                         elementType={ElementType.FILTER}
                         equipmentTypes={[equipmentType]}
