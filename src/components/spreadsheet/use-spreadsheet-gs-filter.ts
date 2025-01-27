@@ -18,40 +18,27 @@ export const useSpreadsheetGsFilter = () => {
     const [filterIds, setFilterIds] = useState<string[]>([]);
 
     const applyGsFilter = useCallback(
-        (filters: ExpertFilter[]) => {
-            if (filters.length === 0) {
+        async (filters: ExpertFilter[]) => {
+            if (!filters.length || !currentNode?.id) {
                 setFilterIds([]);
                 return;
             }
 
-            if (currentNode?.id) {
-                const filtersUuid: UUID[] = filters
-                    .filter((filter) => filter.id !== undefined)
-                    .map((filter) => filter.id) as UUID[];
-                if (filtersUuid.length > 0) {
-                    evaluateFilters(studyUuid as UUID, currentNode.id, filtersUuid).then((response) => {
-                        const equipmentsIds: string[] = [];
-                        response.forEach((filterEquipments) =>
-                            filterEquipments.identifiableAttributes.map((identifiableAttribute) =>
-                                equipmentsIds.push(identifiableAttribute.id)
-                            )
-                        );
-                        setFilterIds(equipmentsIds);
-                    });
-                }
+            const filtersUuid = filters.filter((filter) => filter.id).map((filter) => filter.id as UUID);
+            if (filtersUuid.length > 0) {
+                const response = await evaluateFilters(studyUuid as UUID, currentNode.id, filtersUuid);
+                const equipmentsIds = response.flatMap((filterEquipments) =>
+                    filterEquipments.identifiableAttributes.map((attr) => attr.id)
+                );
+                setFilterIds(equipmentsIds);
             }
         },
         [currentNode?.id, studyUuid]
     );
 
-    const doesFormulaFilteringPass = useCallback(
-        (node: IRowNode) => {
-            return filterIds.includes(node.data.id);
-        },
-        [filterIds]
-    );
+    const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
-    const isExternalFilterPresent = useCallback(() => !!filterIds.length, [filterIds.length]);
+    const isExternalFilterPresent = useCallback(() => filterIds.length > 0, [filterIds.length]);
 
     return { applyGsFilter, doesFormulaFilteringPass, isExternalFilterPresent };
 };
