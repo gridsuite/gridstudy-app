@@ -45,7 +45,7 @@ import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/netwo
 
 const phaseTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [ENABLED]: yup.bool().required(),
+        [ENABLED]: yup.bool().nullable().required(),
         [REGULATION_MODE]: yup
             .string()
             .nullable()
@@ -166,7 +166,7 @@ const phaseTapChangerValidationSchema = (id) => ({
 
 const phaseTapChangerModificationValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [ENABLED]: yup.bool().required(),
+        [ENABLED]: yup.bool().nullable().required(),
         [REGULATION_MODE]: yup.string().nullable(),
         [REGULATION_TYPE]: yup.string().nullable(),
         [REGULATION_SIDE]: yup.string().nullable(),
@@ -223,9 +223,9 @@ export const getPhaseTapChangerModificationValidationSchema = (id = PHASE_TAP_CH
     return phaseTapChangerModificationValidationSchema(id);
 };
 
-const phaseTapChangerEmptyFormData = (id) => ({
+const phaseTapChangerEmptyFormData = (id, isModification) => ({
     [id]: {
-        [ENABLED]: false,
+        [ENABLED]: isModification ? null : false,
         [REGULATION_MODE]: null,
         [REGULATION_TYPE]: null,
         [REGULATION_SIDE]: SIDE.SIDE1.id,
@@ -240,13 +240,14 @@ const phaseTapChangerEmptyFormData = (id) => ({
     },
 });
 
-export const getPhaseTapChangerEmptyFormData = (id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerEmptyFormData(id);
+export const getPhaseTapChangerEmptyFormData = (isModification = false, id = PHASE_TAP_CHANGER) => {
+    return phaseTapChangerEmptyFormData(id, isModification);
 };
 
 export const getPhaseTapChangerFormData = (
     {
-        enabled = false,
+        isModification = false,
+        enabled = isModification ? null : false,
         regulationMode = null,
         regulationType = null,
         regulationSide = SIDE.SIDE1.id,

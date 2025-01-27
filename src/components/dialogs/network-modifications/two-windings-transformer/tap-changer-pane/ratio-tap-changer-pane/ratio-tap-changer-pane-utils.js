@@ -44,7 +44,7 @@ import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/netwo
 
 const ratioTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [ENABLED]: yup.bool().required(),
+        [ENABLED]: yup.bool().nullable().required(),
         [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
         [REGULATION_MODE]: yup
             .string()
@@ -177,7 +177,7 @@ const ratioTapChangerValidationSchema = (id) => ({
 
 const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
     [id]: yup.object().shape({
-        [ENABLED]: yup.bool().required(),
+        [ENABLED]: yup.bool().nullable().required(),
         [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().nullable(),
         [REGULATION_MODE]: yup.string().nullable(),
         [REGULATION_TYPE]: yup.string().nullable(),
@@ -234,9 +234,9 @@ export const getRatioTapChangerModificationValidationSchema = (previousValues, i
     return ratioTapChangerModificationValidationSchema(previousValues, id);
 };
 
-const ratioTapChangerEmptyFormData = (id) => ({
+const ratioTapChangerEmptyFormData = (id, isModification) => ({
     [id]: {
-        [ENABLED]: false,
+        [ENABLED]: isModification ? null : false,
         [LOAD_TAP_CHANGING_CAPABILITIES]: false,
         [REGULATION_MODE]: null,
         [REGULATION_TYPE]: null,
@@ -251,13 +251,14 @@ const ratioTapChangerEmptyFormData = (id) => ({
     },
 });
 
-export const getRatioTapChangerEmptyFormData = (id = RATIO_TAP_CHANGER) => {
-    return ratioTapChangerEmptyFormData(id);
+export const getRatioTapChangerEmptyFormData = (isModification = false, id = RATIO_TAP_CHANGER) => {
+    return ratioTapChangerEmptyFormData(id, isModification);
 };
 
 export const getRatioTapChangerFormData = (
     {
-        enabled = false,
+        isModification = false,
+        enabled = isModification ? null : false,
         hasLoadTapChangingCapabilities = false,
         regulationMode = null,
         regulationType = null,
