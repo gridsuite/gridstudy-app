@@ -30,7 +30,6 @@ export const styles = {
     parameterLine: {
         display: 'flex',
     },
-    parameterValue: {},
 };
 
 /**
@@ -41,13 +40,13 @@ export const styles = {
 export default function UserSettingsDialog({ open, onClose }: Readonly<UserSettingsDialogProps>) {
     const dispatch = useDispatch();
 
-    const [enableDeveloperMode, handleChangeEnableDeveloperModeLocal] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [enableDeveloperMode, handleChangeEnableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [developerMode, setDeveloperMode] = useState<boolean>(enableDeveloperMode);
 
     const handleValidate = () => {
         dispatch(selectEnableDeveloperMode(developerMode));
-        handleChangeEnableDeveloperModeLocal(developerMode);
+        handleChangeEnableDeveloperMode(developerMode);
         onClose();
     };
 
@@ -68,7 +67,7 @@ export default function UserSettingsDialog({ open, onClose }: Readonly<UserSetti
                     <Box sx={styles.parameterName}>
                         <FormattedMessage id="EnableDeveloperMode" />
                     </Box>
-                    <Box sx={styles.parameterValue}>
+                    <Box>
                         <Switch
                             checked={developerMode}
                             onChange={(_event, isChecked) => setDeveloperMode(isChecked)}
