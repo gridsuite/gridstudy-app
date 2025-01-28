@@ -8,7 +8,7 @@
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
-import { EquipmentInfos, EquipmentType, createFilter } from '@gridsuite/commons-ui';
+import { EquipmentInfos, EquipmentType, createFilter, NewFilterType } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
@@ -157,6 +157,7 @@ export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID) {
  */
 function createEquipmentIdentifierList(equipmentType: EquipmentType, equipmentList: string[]) {
     return {
+        id: null,
         type: 'IDENTIFIER_LIST',
         equipmentType: equipmentType,
         filterEquipmentsAttributes: equipmentList.map((eqId) => {
@@ -174,13 +175,12 @@ export async function createMapFilter(
     selectedEquipmentsIds: string[],
     nominalVoltages: number[]
 ) {
-    let equipmentFilters: {
-        type?: string;
-        equipmentType?: EquipmentType;
-        filterEquipmentsAttributes?: {
-            equipmentID: string;
-        }[];
-    } = {};
+    let equipmentFilters: NewFilterType = {
+        id: null,
+        type: '',
+        equipmentType: '',
+    };
+
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:
         case EquipmentType.LINE:
