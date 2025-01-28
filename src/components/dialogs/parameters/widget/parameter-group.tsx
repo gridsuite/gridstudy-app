@@ -24,44 +24,44 @@ export const ParameterGroup: FunctionComponent<PropsWithChildren<ParameterGroupP
     const [mouseHover, setMouseHover] = useState(false);
 
     return (
-        <>
-            <Grid item xs={12} sx={styles.subgroupParameters}>
-                <Accordion
-                    sx={styles.subgroupParametersAccordion}
-                    expanded={props.state}
-                    onChange={(event, showed) => props.onClick(showed)}
-                    disableGutters
-                    elevation={0}
-                    square
-                    TransitionProps={{
+        <Grid item xs={12} sx={styles.subgroupParameters}>
+            <Accordion
+                sx={styles.subgroupParametersAccordion}
+                expanded={props.state}
+                onChange={(event, showed) => props.onClick(showed)}
+                disableGutters
+                elevation={0}
+                square
+                slotProps={{
+                    transition: {
                         unmountOnExit: props.unmountOnExit || false,
-                    }}
-                    disabled={props.disabled || undefined}
+                    },
+                }}
+                disabled={props.disabled || undefined}
+            >
+                <AccordionSummary
+                    sx={styles.subgroupParametersAccordionSummary}
+                    expandIcon={mouseHover ? <ExpandCircleDown /> : <ExpandMore />}
+                    onMouseEnter={(event) => setMouseHover(true)}
+                    onMouseLeave={(event) => setMouseHover(false)}
                 >
-                    <AccordionSummary
-                        sx={styles.subgroupParametersAccordionSummary}
-                        expandIcon={mouseHover ? <ExpandCircleDown /> : <ExpandMore />}
-                        onMouseEnter={(event) => setMouseHover(true)}
-                        onMouseLeave={(event) => setMouseHover(false)}
-                    >
-                        <SettingsIcon />
-                        <Typography sx={{ width: '66%', flexShrink: 0 }}>
-                            <FormattedMessage id={props.label} />
+                    <SettingsIcon />
+                    <Typography sx={{ width: '66%', flexShrink: 0 }}>
+                        <FormattedMessage id={props.label} />
+                    </Typography>
+                    {props.infoText && (
+                        <Typography
+                            sx={{ color: 'text.secondary', width: '34%' }}
+                            noWrap={true}
+                            align="right"
+                            variant="body2"
+                        >
+                            {props.infoText}
                         </Typography>
-                        {props.infoText && (
-                            <Typography
-                                sx={{ color: 'text.secondary', width: '34%' }}
-                                noWrap={true}
-                                align="right"
-                                variant="body2"
-                            >
-                                {props.infoText}
-                            </Typography>
-                        )}
-                    </AccordionSummary>
-                    <AccordionDetails sx={styles.subgroupParametersAccordionDetails}>{props.children}</AccordionDetails>
-                </Accordion>
-            </Grid>
-        </>
+                    )}
+                </AccordionSummary>
+                <AccordionDetails sx={styles.subgroupParametersAccordionDetails}>{props.children}</AccordionDetails>
+            </Accordion>
+        </Grid>
     );
 };

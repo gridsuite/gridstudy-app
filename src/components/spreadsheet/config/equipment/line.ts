@@ -10,7 +10,12 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import {
+    booleanColumnDefinition,
+    enumColumnDefinition,
+    numberColumnDefinition,
+    textColumnDefinition,
+} from '../common-column-definitions';
 
 const tab = 'Lines';
 
@@ -42,12 +47,12 @@ export const LINE_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'Country1',
             field: 'country1',
-            ...textColumnDefinition('Country 1', tab),
+            ...enumColumnDefinition('Country 1', tab),
         },
         {
             colId: 'Country2',
             field: 'country2',
-            ...textColumnDefinition('Country 2', tab),
+            ...enumColumnDefinition('Country 2', tab),
         },
         {
             colId: 'nominalVoltage1KV',
