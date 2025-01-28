@@ -9,7 +9,12 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import {
+    booleanColumnDefinition,
+    enumColumnDefinition,
+    numberColumnDefinition,
+    textColumnDefinition,
+} from '../common-column-definitions';
 
 const tab = 'ThreeWindingsTransformers';
 
@@ -36,7 +41,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'voltageLevelId3',
             ...textColumnDefinition('Voltage level ID 3', tab),
         },
-        { colId: 'Country', field: 'country', ...textColumnDefinition('Country', tab) },
+        { colId: 'Country', field: 'country', ...enumColumnDefinition('Country', tab) },
         {
             colId: 'NominalVT3WSide1',
             field: 'nominalV1',
@@ -133,7 +138,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'RegulatingMode1',
             field: 'regulationModeName1',
-            ...textColumnDefinition('Phase regulation mode 1', tab),
+            ...enumColumnDefinition('Phase regulation mode 1', tab),
         },
         {
             colId: 'RegulatingPhase1',
@@ -153,7 +158,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'RegulatingMode2',
             field: 'regulationModeName2',
-            ...textColumnDefinition('Phase regulation mode 2', tab),
+            ...enumColumnDefinition('Phase regulation mode 2', tab),
         },
         {
             colId: 'RegulatingPhase2',
@@ -173,7 +178,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'RegulatingMode3',
             field: 'regulationModeName3',
-            ...textColumnDefinition('Phase regulation mode 3', tab),
+            ...enumColumnDefinition('Phase regulation mode 3', tab),
         },
         {
             colId: 'RegulatingPhase3',
