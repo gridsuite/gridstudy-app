@@ -82,7 +82,7 @@ const styles = {
     },
     chipVoltageLevel: {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
-            backgroundColor: '#1e88e5 !important',
+            backgroundColor: '#9c27b0 !important',
         },
         '& .MuiChip-deleteIcon': {
             color: '#bbdefb',
