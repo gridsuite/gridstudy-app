@@ -19,7 +19,6 @@ export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilter
 export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutocompleteFilterParams> = ({
     api,
     colId,
-    field,
     filterParams,
     filterEnums,
     getEnumLabel,
