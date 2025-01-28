@@ -572,7 +572,7 @@
     "loadingReport": "Loading logs in progress...",
 
     "ComponentLibrary": "Component library selection",
-    "Advanced": "Advanced",
+    "UserSettings": "User settings",
     "EnableDeveloperMode": "Enable developer mode",
     "initNadWithGeoData": "Initialize with geographical data",
     "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",

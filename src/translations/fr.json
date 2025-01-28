@@ -574,7 +574,7 @@
     "loadingReport": "Chargement des logs en cours...",
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants",
-    "Advanced": "Avancés",
+    "UserSettings": "Paramètres utilisateur",
     "EnableDeveloperMode": "Activer mode développeur",
     "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques",
     "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
