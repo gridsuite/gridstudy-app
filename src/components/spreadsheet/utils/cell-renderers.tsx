@@ -5,38 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Checkbox, Tooltip, IconButton, Box } from '@mui/material';
+import { Box, Checkbox, Tooltip } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
-import EditIcon from '@mui/icons-material/Edit';
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import CheckIcon from '@mui/icons-material/Check';
-import ClearIcon from '@mui/icons-material/Clear';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { useSelector } from 'react-redux';
-import { isNodeReadOnly } from '../../graph/util/model-functions';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 
 import { mergeSx } from '../../utils/functions';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
-import { AppState } from '../../../redux/reducer';
 import { IntlShape } from 'react-intl';
 import { ICellRendererParams } from 'ag-grid-community';
+import { CustomCellRendererProps } from 'ag-grid-react';
 
 const styles = {
-    editCell: {
-        position: 'absolute',
-        left: 0,
-        display: 'flex',
-        justifyContent: 'center',
-        width: '100%',
-        height: '100%',
-    },
-    referenceEditRow: (theme: Theme) => ({
-        '& button': {
-            color: theme.palette.primary.main,
-            cursor: 'initial',
-        },
-    }),
     tableCell: (theme: Theme) => ({
         fontSize: 'small',
         cursor: 'initial',
@@ -54,31 +33,18 @@ const styles = {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
     },
-    valueInvalid: {
-        opacity: INVALID_LOADFLOW_OPACITY,
-    },
     numericValue: {
         marginLeft: 'inherit',
     },
-    leftFade: (theme: Theme) => ({
-        background:
-            'linear-gradient(to right, ' +
-            theme.palette.primary.main +
-            ' 0%, ' +
-            theme.palette.primary.main +
-            ' 2%, rgba(0,0,0,0) 12%)',
-        borderBottomLeftRadius: theme.spacing(0.8),
-        borderTopLeftRadius: theme.spacing(0.8),
-    }),
 };
 
 export const NA_Value = 'N/A';
 
 export const BooleanCellRenderer = (props: any) => {
-    const isChecked = Boolean(props.value);
+    const isChecked = props.value;
     return (
         <div>
-            {isChecked !== undefined && (
+            {props.value !== undefined && (
                 <Checkbox style={{ padding: 0 }} color="default" checked={isChecked} disableRipple={true} />
             )}
         </div>
@@ -99,6 +65,13 @@ export const BooleanNullableCellRenderer = (props: any) => {
     );
 };
 
+const formatNumericCell = (value: number, fractionDigits?: number) => {
+    if (value === null || isNaN(value)) {
+        return { value: null };
+    }
+    return { value: value.toFixed(fractionDigits ?? 2), tooltip: value };
+};
+
 export const formatCell = (props: any) => {
     let value = props?.valueFormatted || props.value;
     let tooltipValue = undefined;
@@ -106,9 +79,6 @@ export const formatCell = (props: any) => {
         value = props?.context?.network
             ? props.colDef.valueGetter(props, props.context.network)
             : props.colDef.valueGetter(props);
-    }
-    if (props.applyFluxConvention) {
-        value = props.applyFluxConvention(value);
     }
     if (value != null && props.colDef.numeric && props.colDef.fractionDigits) {
         // only numeric rounded cells have a tooltip (their raw numeric value)
@@ -140,8 +110,12 @@ export const convertDuration = (duration: number) => {
     return `${minutes}' ${seconds}"`;
 };
 
-export const DefaultCellRenderer = (props: any) => {
-    const cellValue = formatCell(props);
+export interface NumericCellRendererProps extends CustomCellRendererProps {
+    fractionDigits?: number;
+}
+
+export const NumericCellRenderer = (props: NumericCellRendererProps) => {
+    const cellValue = formatNumericCell(props.value, props.fractionDigits);
     return (
         <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip
@@ -149,13 +123,18 @@ export const DefaultCellRenderer = (props: any) => {
                 disableTouchListener
                 title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
             >
-                <Box
-                    sx={mergeSx(
-                        styles.overflow,
-                        props?.colDef?.cellRendererParams?.isValueInvalid ? styles.valueInvalid : undefined
-                    )}
-                    children={cellValue.value}
-                />
+                <Box sx={styles.overflow} children={cellValue.value} />
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
+    const cellValue = formatCell(props);
+    return (
+        <Box sx={mergeSx(styles.tableCell)}>
+            <Tooltip disableFocusListener disableTouchListener title={cellValue.value}>
+                <Box sx={styles.overflow} children={cellValue.value?.toString()} />
             </Tooltip>
         </Box>
     );
@@ -283,65 +262,6 @@ export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNo
             <Tooltip title={<div style={{ whiteSpace: 'pre-line' }}>{tooltipValue}</div>}>
                 <Box sx={styles.overflow} children={cellValue} />
             </Tooltip>
-        </Box>
-    );
-};
-
-export const EditableCellRenderer = (props: any) => {
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const isRootNode = useMemo(() => isNodeReadOnly(currentNode), [currentNode]);
-
-    const handleStartEditing = useCallback(() => {
-        props.setEditingData({
-            ...props.data,
-            metadata: {
-                equipmentType: props.equipmentType,
-            },
-        });
-    }, [props]);
-
-    return (
-        <Box sx={styles.editCell}>
-            <IconButton size={'small'} onClick={handleStartEditing} disabled={isRootNode || props.context.isEditing}>
-                <EditIcon />
-            </IconButton>
-        </Box>
-    );
-};
-
-export const ReferenceLineCellRenderer = () => {
-    return (
-        <Box sx={mergeSx(styles.referenceEditRow, styles.leftFade, styles.editCell)}>
-            <IconButton size={'small'} style={{ backgroundColor: 'transparent' }} disableRipple>
-                <MoreHorizIcon />
-            </IconButton>
-        </Box>
-    );
-};
-
-export const EditingCellRenderer = (props: any) => {
-    const validateEdit = useCallback(() => {
-        props.handleSubmitEditing(props);
-    }, [props]);
-
-    const resetEdit = useCallback(() => {
-        props.rollbackEdit();
-    }, [props]);
-
-    const isFormInvalid = useMemo(
-        () => Object.entries(props.context.editErrors).length !== 0,
-        [props.context.editErrors]
-    );
-
-    return (
-        <Box sx={mergeSx(styles.leftFade, styles.editCell)}>
-            <IconButton size={'small'} onClick={validateEdit} disabled={isFormInvalid}>
-                <CheckIcon />
-            </IconButton>
-
-            <IconButton size={'small'} onClick={resetEdit}>
-                <ClearIcon />
-            </IconButton>
         </Box>
     );
 };

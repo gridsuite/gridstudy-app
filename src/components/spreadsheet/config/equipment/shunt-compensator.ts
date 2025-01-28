@@ -5,164 +5,98 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    getDefaultEnumConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
-import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { typeAndFetchers } from './common-config';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-export const SHUNT_COMPENSATOR_TAB_DEF = {
+const tab = 'ShuntCompensators';
+
+export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 7,
-    name: 'ShuntCompensators',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('ID', tab),
         },
         {
-            id: 'Name',
+            colId: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
-            ...editableColumnConfig,
-            columnWidth: MIN_COLUMN_WIDTH,
+            ...textColumnDefinition('Name', tab),
         },
         {
-            id: 'VoltageLevelId',
+            colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID', tab),
         },
         {
-            id: 'Country',
+            colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...textColumnDefinition('Country', tab),
         },
         {
-            id: 'NominalV',
+            colId: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         {
-            id: 'ReactivePower',
+            colId: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            fractionDigits: 1,
-            ...defaultNumericFilterConfig,
-            canBeInvalidated: true,
-            withFluxConvention: true,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('q (MVar)', tab, 1),
         },
         {
-            id: 'maximumSectionCount',
+            colId: 'maximumSectionCount',
             field: 'maximumSectionCount',
-            ...editableColumnConfig,
-            numeric: true,
-            ...numericalCellEditorConfig((params) => params.data.maximumSectionCount),
-            ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                minExpression: 1,
-            },
+            ...numberColumnDefinition('Maximum number of sections', tab),
         },
         {
-            id: 'sectionCount',
+            colId: 'sectionCount',
             field: 'sectionCount',
-            ...editableColumnConfig,
-            numeric: true,
-            ...numericalCellEditorConfig((params) => params.data.sectionCount),
-            ...defaultNumericFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                minExpression: 0,
-                maxExpression: 'maximumSectionCount',
-            },
+            ...numberColumnDefinition('Current number of sections', tab),
         },
         {
-            id: 'Type',
+            colId: 'Type',
             field: 'type',
-            ...getDefaultEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
-            ...editableColumnConfig,
-            ...enumCellEditorConfig((params) => params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
+            ...textColumnDefinition('Type', tab),
         },
         {
-            id: 'maxQAtNominalV',
+            colId: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
-            ...editableColumnConfig,
-            numeric: true,
-            ...numericalCellEditorConfig((params) => params.data.maxQAtNominalV),
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
-            crossValidation: {
-                minExpression: 0,
-            },
+            ...numberColumnDefinition('Qmax available at nominal voltage', tab, 1),
         },
         {
-            id: 'SwitchedOnMaxQAtNominalV',
-            field: 'switchedOnQAtNominalV',
-            numeric: true,
+            colId: 'SwitchedOnMaxQAtNominalV',
+            field: 'switchedOnQAtNominalV', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Switch-on Q at nominal voltage', tab, 1),
         },
         {
-            id: 'maxSusceptance',
-            ...editableColumnConfig,
+            colId: 'maxSusceptance',
             field: 'maxSusceptance',
-            numeric: true,
-            ...numericalCellEditorConfig((params) => params.data.maxSusceptance),
-            ...defaultNumericFilterConfig,
-            fractionDigits: 5,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Maximal susceptance available', tab, 5),
         },
         {
-            id: 'SwitchedOnMaxSusceptance',
-            field: 'switchedOnSusceptance',
-            numeric: true,
+            colId: 'SwitchedOnMaxSusceptance',
+            field: 'switchedOnSusceptance', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 5,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Switch-on susceptance', tab, 5),
         },
         {
-            id: 'voltageSetpoint',
+            colId: 'voltageSetpoint',
             field: 'targetV',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Target V (kV)', tab, 1),
         },
         {
-            id: 'connected',
+            colId: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Connected', tab),
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

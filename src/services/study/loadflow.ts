@@ -8,13 +8,12 @@
 import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { SortConfigType } from 'hooks/use-aggrid-sort';
 import { GlobalFilter } from '../../components/results/loadflow/load-flow-result-tab';
+import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 
 interface QueryParams {
-    sort?: SortConfigType[];
-    filters: FilterSelectorType[] | null;
+    sort?: SortConfig[];
+    filters: FilterConfig[] | null;
     globalFilters?: GlobalFilter;
 }
 

@@ -574,9 +574,6 @@
     "loadingReport": "Chargement des logs en cours...",
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants",
-    "FluxConvention": "Convention des flux actifs et réactifs dans les tableurs",
-    "FluxConvention.iidm": "IIDM",
-    "FluxConvention.target": "Métier",
     "Advanced": "Avancés",
     "EnableDeveloperMode": "Activer mode développeur",
     "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques",
@@ -666,6 +663,7 @@
     "TabularModificationError": "Erreur lors de la modification tabulaire",
     "TabularModificationShuntWarning": "La modification tabulaire contient des valeurs pour la puissance réactive installée (et/ou le type) et la susceptance installée d'un même MCS. La susceptance installée sera donc ignorée.",
     "equipmentId": "ID",
+    "substationName": "Nom du site",
     "activePower": "p (MW)",
     "maxActivePower": "P max (MW)",
     "maxP": "P max (MW)",
@@ -1449,4 +1447,3 @@
     "StateEstimationQuality": "Qualité: ",
     "Or": "ou"
 }
-

@@ -347,7 +347,7 @@ export const ShortCircuitParameters: FunctionComponent<ShortCircuitParametersPro
                             id: 'showSelectParameterDialog',
                         })}
                         onlyLeaves={true}
-                        multiselect={false}
+                        multiSelect={false}
                         validationButtonText={intl.formatMessage({
                             id: 'validate',
                         })}

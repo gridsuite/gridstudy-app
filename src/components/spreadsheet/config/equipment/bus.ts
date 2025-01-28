@@ -5,73 +5,59 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import {
-    countryEnumFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { typeAndFetchers } from './common-config';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-export const BUS_TAB_DEF = {
+const tab = 'Buses';
+
+export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
     index: 14,
-    name: 'Buses',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.BUS),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('ID', tab),
         },
         {
-            id: 'Magnitude',
+            colId: 'Magnitude',
             field: 'v',
-            numeric: true,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            ...defaultNumericFilterConfig,
+            ...numberColumnDefinition('Voltage magnitude', tab, 1),
         },
         {
-            id: 'Angle',
+            colId: 'Angle',
             field: 'angle',
-            numeric: true,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            ...defaultNumericFilterConfig,
+            ...numberColumnDefinition('Voltage angle', tab, 1),
         },
         {
-            id: 'ConnectedComponent',
+            colId: 'ConnectedComponent',
             field: 'connectedComponentNum',
-            ...defaultNumericFilterConfig,
+            ...numberColumnDefinition('Connected component', tab, 0),
         },
         {
-            id: 'SynchronousComponent',
+            colId: 'SynchronousComponent',
             field: 'synchronousComponentNum',
-            ...defaultNumericFilterConfig,
+            ...numberColumnDefinition('Synchronous component', tab, 0),
         },
         {
-            id: 'VoltageLevelId',
+            colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID', tab),
         },
         {
-            id: 'Country',
+            colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...textColumnDefinition('Country', tab),
         },
         {
-            id: 'NominalV',
+            colId: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            fractionDigits: 0,
-            ...defaultNumericFilterConfig,
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};
