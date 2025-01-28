@@ -10,6 +10,7 @@
 import { SpreadsheetEquipmentType } from '../components/spreadsheet/config/spreadsheet.type';
 
 export type ColumnWithFormula = {
+    uuid: string;
     id: string;
     name: string;
     formula: string;
