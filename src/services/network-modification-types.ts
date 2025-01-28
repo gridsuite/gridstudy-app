@@ -293,6 +293,7 @@ export interface VoltageLeveInfo {
 }
 
 export interface VoltageLeveCreationlInfo extends VoltageLeveInfo {
+    substationCreation?: SubstationCreationInfo | null;
     ipMin: number | null;
     ipMax: number | null;
 }

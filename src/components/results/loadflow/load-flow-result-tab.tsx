@@ -19,8 +19,6 @@ import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { useAgGridSort } from 'hooks/use-aggrid-sort';
-import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import {
     convertFilterValues,
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
@@ -34,15 +32,16 @@ import {
 } from './load-flow-result-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
-import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { setLoadflowResultFilter } from 'redux/actions';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
 import ResultsGlobalFilter, { Filter, FilterType } from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
-import { LOADFLOW_RESULT_SORT_STORE, LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 
 const styles = {
     flexWrapper: {
@@ -76,14 +75,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
     const [tabIndex, setTabIndex] = useState(0);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(LOADFLOW_RESULT_SORT_STORE, mappingTabs(tabIndex));
+    const sortConfig = useSelector(
+        (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
+    );
 
-    const { updateFilter, filterSelector } = useAggridRowFilter({
-        filterType: LOADFLOW_RESULT_STORE_FIELD,
-        filterTab: mappingTabs(tabIndex),
-        // @ts-expect-error TODO: found how to have Action type in props type
-        filterStoreAction: setLoadflowResultFilter,
-    });
+    const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const [countriesFilter, setCountriesFilter] = useState<Filter[]>([]);
     const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<Filter[]>([]);
@@ -161,7 +157,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
     const fetchLimitViolationsWithParameters = useCallback(() => {
         const limitTypeValues =
             tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE];
-        const initialFilters = filterSelector || [];
+        const initialFilters = filters || [];
         let updatedFilters = convertFilterValues(initialFilters, intl);
         let limitTypeFilter = initialFilters.find((f) => f.column === 'limitType');
 
@@ -182,14 +178,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
             filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
             globalFilters: getGlobalFilterParameter(globalFilter),
         });
-    }, [studyUuid, nodeUuid, sortConfig, filterSelector, tabIndex, globalFilter, getGlobalFilterParameter, intl]);
+    }, [tabIndex, filters, intl, studyUuid, nodeUuid, sortConfig, getGlobalFilterParameter, globalFilter]);
 
     const fetchloadflowResultWithParameters = useCallback(() => {
         return fetchLoadFlowResult(studyUuid, nodeUuid, {
             sort: sortConfig,
-            filters: filterSelector,
+            filters,
         });
-    }, [studyUuid, nodeUuid, sortConfig, filterSelector]);
+    }, [studyUuid, nodeUuid, sortConfig, filters]);
 
     const fetchResult = useMemo(() => {
         if (tabIndex === 0 || tabIndex === 1) {
@@ -209,28 +205,15 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
     const loadFlowLimitViolationsColumns = useMemo(() => {
         switch (tabIndex) {
             case 0:
-                return loadFlowCurrentViolationsColumnsDefinition(
-                    intl,
-                    { onSortChanged, sortConfig },
-                    { updateFilter, filterSelector },
-                    filterEnums,
-                    getEnumLabel
-                );
+                return loadFlowCurrentViolationsColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex);
             case 1:
-                return loadFlowVoltageViolationsColumnsDefinition(
-                    intl,
-                    { onSortChanged, sortConfig },
-                    { updateFilter, filterSelector },
-                    filterEnums,
-                    getEnumLabel
-                );
+                return loadFlowVoltageViolationsColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex);
             case 2:
                 return loadFlowResultColumnsDefinition(
                     intl,
-                    { onSortChanged, sortConfig },
-                    { updateFilter, filterSelector },
                     filterEnums,
                     getEnumLabel,
+                    tabIndex,
                     StatusCellRender,
                     NumberCellRenderer
                 );
@@ -238,7 +221,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
             default:
                 return [];
         }
-    }, [tabIndex, intl, onSortChanged, sortConfig, updateFilter, filterSelector, filterEnums, getEnumLabel]);
+    }, [tabIndex, intl, filterEnums, getEnumLabel]);
 
     const resetResultStates = useCallback(() => {
         setResult(null);

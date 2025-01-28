@@ -18,12 +18,12 @@ import { RunningStatus } from 'components/utils/running-status';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
-    PAGE_OPTIONS,
+    convertFilterValues,
     DEFAULT_PAGE_COUNT,
     FROM_COLUMN_TO_FIELD,
     FROM_COLUMN_TO_FIELD_ONE_BUS,
     mappingTabs,
-    convertFilterValues,
+    PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -31,18 +31,14 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-header.type';
-import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
-import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
-import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import {
-    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
-} from 'utils/store-sort-filter-fields';
+import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType from '../../computing-status/computing-type';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { FilterType } from '../../../types/custom-aggrid-types';
+import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -81,23 +77,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         ? FROM_COLUMN_TO_FIELD_ONE_BUS
         : FROM_COLUMN_TO_FIELD;
 
-    const { onSortChanged, sortConfig } = useAgGridSort(
-        SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-        mappingTabs(analysisType)
-    );
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
     }, []);
 
-    const { updateFilter, filterSelector } = useAggridRowFilter(
-        {
-            filterType: SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
-            filterTab: mappingTabs(analysisType),
-            // @ts-expect-error TODO: found how to have Action type in props type
-            filterStoreAction: setShortcircuitAnalysisResultFilter,
-        },
-        memoizedSetPageCallback
+    const sortConfig = useSelector(
+        (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(analysisType)]
     );
+
+    const { filters } = useFilterSelector(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -129,7 +117,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));
 
-        const updatedFilters = filterSelector ? convertFilterValues(filterSelector) : null;
+        const updatedFilters = filters ? convertFilterValues(filters) : null;
 
         const selector = {
             page,
@@ -176,7 +164,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         studyUuid,
         currentNode?.id,
         intl,
-        filterSelector,
+        filters,
         sortConfig,
         fromFrontColumnToBackKeys,
     ]);
@@ -233,15 +221,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 result={result}
                 analysisType={analysisType}
                 isFetching={isFetching}
-                sortProps={{
-                    onSortChanged,
-                    sortConfig,
-                }}
-                filterProps={{
-                    updateFilter,
-                    filterSelector,
-                }}
                 filterEnums={filterEnums}
+                onFilter={memoizedSetPageCallback}
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
             />

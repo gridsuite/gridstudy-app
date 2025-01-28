@@ -5,162 +5,75 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
-import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import {
-    countryEnumFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { numericalCellEditorConfig } from '../common/cell-editors';
-import { convertInputValue, convertOutputValue, FieldType } from '@gridsuite/commons-ui';
+import { typeAndFetchers } from './common-config';
+import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { enumColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-function generateEditableNumericColumnDefinition<
-    TId extends string,
-    TField extends string,
-    TMin extends string | undefined,
-    TMax extends string | undefined
->(id: TId, field: TField, minExpression: TMin, maxExpression: TMax) {
-    return {
-        colId: id,
-        field: field,
-        ...defaultNumericFilterConfig,
-        context: {
-            ...defaultNumericFilterConfig.context,
-            numeric: true,
-            fractionDigits: 1,
-            crossValidation: {
-                optional: true,
-                minExpression: minExpression,
-                maxExpression: maxExpression,
-            },
-        },
-        ...editableColumnConfig,
-        ...numericalCellEditorConfig((params) => params.data[field]),
-        getQuickFilterText: excludeFromGlobalFilter,
-    } as const satisfies ReadonlyDeep<CustomColDef>;
-}
+const tab = 'VoltageLevels';
 
-export const VOLTAGE_LEVEL_TAB_DEF = {
+export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
     index: 1,
-    name: 'VoltageLevels',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
     columns: [
         {
             colId: 'ID',
             field: 'id',
-            ...defaultTextFilterConfig,
-            context: {
-                ...defaultTextFilterConfig.context,
-                isDefaultSort: true,
-            },
+            ...textColumnDefinition('ID', tab),
         },
         {
             colId: 'Name',
             field: 'name',
-            ...editableColumnConfig,
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Name', tab),
         },
         {
             colId: 'SubstationId',
             field: 'substationId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Substation ID', tab),
         },
         {
             colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...enumColumnDefinition('Country', tab),
         },
         {
             colId: 'NominalV',
             field: 'nominalV',
-            ...defaultNumericFilterConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 0,
-            },
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.nominalV),
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
-        generateEditableNumericColumnDefinition('LowVoltageLimitkV', 'lowVoltageLimit', undefined, 'highVoltageLimit'),
-        generateEditableNumericColumnDefinition('HighVoltageLimitkV', 'highVoltageLimit', 'lowVoltageLimit', undefined),
+        {
+            colId: 'lowVoltageLimit',
+            field: 'lowVoltageLimit',
+            ...numberColumnDefinition('Low voltage limit (kV)', tab, 1),
+        },
+        {
+            colId: 'highVoltageLimit',
+            field: 'highVoltageLimit',
+            ...numberColumnDefinition('High voltage limit (kV)', tab, 1),
+        },
         {
             colId: 'IpMin',
-            field: 'identifiableShortCircuit.ipMin',
-            ...defaultNumericFilterConfig,
-            ...editableColumnConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-                crossValidation: {
-                    optional: true,
-                },
-            },
-            ...numericalCellEditorConfig((params) =>
-                convertInputValue(
-                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    params.data?.identifiableShortCircuit?.ipMin
-                )
-            ),
+            field: 'identifiableShortCircuit.ipMin', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMin
                 ),
-            valueSetter: (params) => {
-                params.data.identifiableShortCircuit = {
-                    ...params.data.identifiableShortCircuit,
-                    ipMin: convertOutputValue(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
-                };
-                return true;
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('ISC min (kA)', tab, 1),
         },
         {
             colId: 'IpMax',
-            field: 'identifiableShortCircuit.ipMax',
-            ...defaultNumericFilterConfig,
-            ...editableColumnConfig,
-            context: {
-                ...defaultNumericFilterConfig.context,
-                numeric: true,
-                fractionDigits: 1,
-                crossValidation: {
-                    requiredOn: {
-                        dependencyColumn: 'identifiableShortCircuit.ipMin',
-                    },
-                },
-            },
-            ...numericalCellEditorConfig((params) =>
-                convertInputValue(
-                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    params.data?.identifiableShortCircuit?.ipMax
-                )
-            ),
+            field: 'identifiableShortCircuit.ipMax', // TODO: useless for AgGrid used only for static/custom columns export
             valueGetter: (params) =>
                 convertInputValue(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMax
                 ),
-            valueSetter: (params) => {
-                params.data.identifiableShortCircuit = {
-                    ...params.data.identifiableShortCircuit,
-                    ipMax: convertOutputValue(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
-                };
-                return true;
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('ISC max (kA)', tab, 1),
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};
