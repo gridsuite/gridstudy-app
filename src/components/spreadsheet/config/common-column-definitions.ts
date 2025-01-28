@@ -20,6 +20,7 @@ import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { FilterType } from '../../../types/custom-aggrid-types';
+import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 
 export const textColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {
@@ -38,6 +39,41 @@ export const textColumnDefinition = (displayName: string, tab: string): ColDef =
                     updateFilterCallback: updateFilters,
                     dataType: FILTER_DATA_TYPES.TEXT,
                     comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    debounceMs: 200,
+                },
+            },
+        },
+        cellRenderer: DefaultCellRenderer,
+    };
+};
+
+export const enumColumnDefinition = (displayName: string, tab: string): ColDef => {
+    return {
+        filterParams: {
+            filterOptions: [
+                {
+                    displayKey: 'customInRange',
+                    displayName: 'customInRange',
+                    predicate: (filterValues: string[], cellValue: string) =>
+                        // We receive here the filter enum values as a string (filterValue)
+                        filterValues[0]?.includes(cellValue) ?? false,
+                },
+            ],
+        },
+        headerComponent: CustomHeaderComponent,
+        headerComponentParams: {
+            displayName,
+            sortParams: {
+                table: SPREADSHEET_SORT_STORE,
+                tab,
+            },
+            filterComponent: CustomAggridAutocompleteFilter,
+            filterComponentParams: {
+                filterParams: {
+                    type: FilterType.Spreadsheet,
+                    tab,
+                    updateFilterCallback: updateFilters,
+                    dataType: FILTER_DATA_TYPES.TEXT,
                     debounceMs: 200,
                 },
             },
