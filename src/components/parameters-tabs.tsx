@@ -43,7 +43,6 @@ import { ShortCircuitParameters, useGetShortCircuitParameters } from './dialogs/
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import LoadFlowParameters from './dialogs/parameters/loadflow/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
-import { NetworkParameters } from './dialogs/parameters/network-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import {
     fetchDefaultNonEvacuatedEnergyProvider,
