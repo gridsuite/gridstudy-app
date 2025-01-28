@@ -120,7 +120,7 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick }: LogTab
     }, [severityFilter, fetchReportLogs, selectedReport, messageFilter, resetSearch]);
 
     useEffect(() => {
-        if (filters?.length === 0 && severities && severities.length > 0) {
+        if (severities && severities.length > 0) {
             dispatch(
                 setLogsFilter(reportType, [
                     {
@@ -132,7 +132,7 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick }: LogTab
                 ])
             );
         }
-    }, [severities, dispatch, reportType, filters, fetchNodeSeverities, selectedReport]);
+    }, [severities, dispatch, reportType, fetchNodeSeverities, selectedReport]);
 
     useEffect(() => {
         if (selectedReport.id && selectedReport.type) {
