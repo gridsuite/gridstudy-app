@@ -10,7 +10,12 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import type { ValueGetterFunc } from 'ag-grid-community';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import {
+    booleanColumnDefinition,
+    enumColumnDefinition,
+    numberColumnDefinition,
+    textColumnDefinition,
+} from '../common-column-definitions';
 
 const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
@@ -53,7 +58,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'Country',
             field: 'country',
-            ...textColumnDefinition('Country', tab),
+            ...enumColumnDefinition('Country', tab),
         },
         {
             colId: 'NominalV',
@@ -63,7 +68,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'energySource',
             field: 'energySource',
-            ...textColumnDefinition('Energy Source', tab),
+            ...enumColumnDefinition('Energy Source', tab),
         },
         {
             colId: 'activePower',
@@ -162,7 +167,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'RegulationTypeText',
             field: 'RegulationTypeText',
-            ...textColumnDefinition('Regulation type', tab),
+            ...enumColumnDefinition('Regulation type', tab),
         },
         {
             colId: 'RegulatingTerminalGenerator',
