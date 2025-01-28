@@ -223,9 +223,9 @@ export const getPhaseTapChangerModificationValidationSchema = (id = PHASE_TAP_CH
     return phaseTapChangerModificationValidationSchema(id);
 };
 
-const phaseTapChangerEmptyFormData = (id, isModification) => ({
+const phaseTapChangerEmptyFormData = (id) => ({
     [id]: {
-        [ENABLED]: isModification ? null : false,
+        [ENABLED]: false,
         [REGULATION_MODE]: null,
         [REGULATION_TYPE]: null,
         [REGULATION_SIDE]: SIDE.SIDE1.id,
@@ -240,14 +240,13 @@ const phaseTapChangerEmptyFormData = (id, isModification) => ({
     },
 });
 
-export const getPhaseTapChangerEmptyFormData = (isModification = false, id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerEmptyFormData(id, isModification);
+export const getPhaseTapChangerEmptyFormData = (id = PHASE_TAP_CHANGER) => {
+    return phaseTapChangerEmptyFormData(id);
 };
 
 export const getPhaseTapChangerFormData = (
     {
-        isModification = false,
-        enabled = isModification ? null : false,
+        enabled = false,
         regulationMode = null,
         regulationType = null,
         regulationSide = SIDE.SIDE1.id,
@@ -334,4 +333,18 @@ export const getComputedPhaseRegulationTypeId = (twt) => {
 export const getComputedPreviousPhaseRegulationType = (previousValues) => {
     const previousRegulationType = getComputedPhaseRegulationType(previousValues);
     return previousRegulationType?.id || null;
+};
+
+export const getStepsPhaseTapChanger = (twt, editData, isNodeBuilt) => {
+    if (!isNodeBuilt) {
+        if (editData === undefined) {
+            return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
+        }
+        if (editData?.phaseTapChanger?.enabled === undefined || editData?.phaseTapChanger?.enabled?.value === false) {
+            return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
+        }
+        return editData?.phaseTapChanger?.steps;
+    } else {
+        return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
+    }
 };

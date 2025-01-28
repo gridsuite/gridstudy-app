@@ -104,6 +104,7 @@ import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerModificationValidationSchema,
+    getStepsPhaseTapChanger,
 } from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { modifyTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 import {
@@ -111,6 +112,7 @@ import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
     getRatioTapChangerModificationValidationSchema,
+    getStepsRatioTapChanger,
 } from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
@@ -138,8 +140,8 @@ const emptyFormData = {
     ...getCont1Cont2WithPositionEmptyFormData(true),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(),
-    ...getRatioTapChangerEmptyFormData(true),
-    ...getPhaseTapChangerEmptyFormData(true),
+    ...getRatioTapChangerEmptyFormData(),
+    ...getPhaseTapChangerEmptyFormData(),
     ...emptyProperties,
 };
 
@@ -209,29 +211,31 @@ const TwoWindingsTransformerModificationDialog = ({
     };
 
     const isRatioTapChangerEnabled = useCallback(
-        (twtToModify) => {
-            const ratioTapEnabledInEditData = getValues(`${RATIO_TAP_CHANGER}.${ENABLED}`);
-            const ratioTapEnabledInTwtToModify = twtToModify?.ratioTapChanger ?? null;
-            if (ratioTapEnabledInEditData === null || !ratioTapEnabledInEditData) {
-                return ratioTapEnabledInTwtToModify !== null;
+        (twtToModify, isNodeBuilt) => {
+            if (!isNodeBuilt) {
+                if (editData?.ratioTapChanger?.enabled === undefined) {
+                    return !!twtToModify.ratioTapChanger;
+                }
+                return editData?.ratioTapChanger?.enabled?.value;
             } else {
-                return ratioTapEnabledInEditData;
+                return !!twtToModify.ratioTapChanger;
             }
         },
-        [getValues]
+        [editData?.ratioTapChanger?.enabled]
     );
 
     const isPhaseTapChangerEnabled = useCallback(
-        (twtToModify) => {
-            const phaseTapEnabledInEditData = getValues(`${PHASE_TAP_CHANGER}.${ENABLED}`);
-            const phaseTapEnabledInTwtToModify = twtToModify?.phaseTapChanger ?? null;
-            if (phaseTapEnabledInEditData === null || !phaseTapEnabledInEditData) {
-                return phaseTapEnabledInTwtToModify !== null;
+        (twtToModify, isNodeBuilt) => {
+            if (!isNodeBuilt) {
+                if (editData?.phaseTapChanger?.enabled === undefined) {
+                    return !!twtToModify.phaseTapChanger;
+                }
+                return editData?.phaseTapChanger?.enabled?.value;
             } else {
-                return phaseTapEnabledInEditData;
+                return !!twtToModify.phaseTapChanger;
             }
         },
-        [getValues]
+        [editData?.phaseTapChanger?.enabled]
     );
 
     const fromEditDataToFormValues = useCallback(
@@ -265,7 +269,6 @@ const TwoWindingsTransformerModificationDialog = ({
                     ),
                 }),
                 ...getRatioTapChangerFormData({
-                    isModification: true,
                     enabled: twt?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
                     hasLoadTapChangingCapabilities:
                         twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES]?.value ?? null,
@@ -283,7 +286,6 @@ const TwoWindingsTransformerModificationDialog = ({
                     voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId?.value,
                 }),
                 ...getPhaseTapChangerFormData({
-                    isModification: true,
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value,
                     regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
                     regulationType: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_TYPE]?.value,
@@ -610,10 +612,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
                                 }),
                                 ...getRatioTapChangerFormData({
-                                    isModification: true,
-                                    enabled: !isNodeBuilt(currentNode)
-                                        ? getValues(`${RATIO_TAP_CHANGER}.${ENABLED}`)
-                                        : isRatioTapChangerEnabled(twt),
+                                    enabled: isRatioTapChangerEnabled(twt, editData, isNodeBuilt(currentNode)),
                                     hasLoadTapChangingCapabilities: getValues(
                                         `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
                                     ),
@@ -626,19 +625,14 @@ const TwoWindingsTransformerModificationDialog = ({
                                     highTapPosition: getValues(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
                                     tapPosition: getValues(`${RATIO_TAP_CHANGER}.${TAP_POSITION}`),
                                     steps: addSelectedFieldToRows(
-                                        !isNodeBuilt(currentNode)
-                                            ? getValues(`${RATIO_TAP_CHANGER}.${STEPS}`)
-                                            : twt?.[RATIO_TAP_CHANGER]?.[STEPS]
+                                        getStepsRatioTapChanger(twt, editData, isNodeBuilt(currentNode))
                                     ),
                                     equipmentId: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
                                     equipmentType: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
                                     voltageLevelId: getValues(`${RATIO_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
                                 }),
                                 ...getPhaseTapChangerFormData({
-                                    isModification: true,
-                                    enabled: !isNodeBuilt(currentNode)
-                                        ? getValues(`${PHASE_TAP_CHANGER}.${ENABLED}`)
-                                        : isPhaseTapChangerEnabled(twt),
+                                    enabled: isPhaseTapChangerEnabled(twt, isNodeBuilt(currentNode)),
                                     regulationMode: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_MODE}`),
                                     regulationType: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_TYPE}`),
                                     regulationSide: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_SIDE}`),
@@ -655,9 +649,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     ),
                                     tapPosition: getValues(`${PHASE_TAP_CHANGER}.${TAP_POSITION}`),
                                     steps: addSelectedFieldToRows(
-                                        !isNodeBuilt(currentNode)
-                                            ? getValues(`${PHASE_TAP_CHANGER}.${STEPS}`)
-                                            : twt?.[PHASE_TAP_CHANGER]?.[STEPS]
+                                        getStepsPhaseTapChanger(twt, editData, isNodeBuilt(currentNode))
                                     ),
                                     equipmentId: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
                                     equipmentType: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
@@ -689,7 +681,7 @@ const TwoWindingsTransformerModificationDialog = ({
             isRatioTapChangerEnabled,
             currentNode,
             isPhaseTapChangerEnabled,
-            editData?.equipmentId,
+            editData,
         ]
     );
 
