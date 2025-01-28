@@ -13,7 +13,7 @@ import { StudyView } from './study-pane';
 import { Badge, Box, Button, Tab, Tabs, Tooltip } from '@mui/material';
 import { Search, Settings } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
+import { PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME, PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
@@ -29,6 +29,7 @@ import { useComputationResultsCount } from '../hooks/use-computation-results-cou
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
+import UserSettingsDialog from './dialogs/parameters/user-settings/user-settings-dialog';
 
 const styles = {
     currentNodeBox: {
@@ -80,6 +81,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
+    const [enableDeveloperModeLocal] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isUserSettingsDialogOpen, setIsUserSettingsDialogOpen] = useState(false);
+
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
@@ -111,11 +115,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 user={user}
                 appsAndUrls={appsAndUrls}
                 onThemeClick={handleChangeTheme}
+                onUserSettingsClick={() => setIsUserSettingsDialogOpen(true)}
                 appVersion={AppPackage.version}
                 appLicense={AppPackage.license}
                 globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
                 additionalModulesPromise={getServersInfos}
                 theme={themeLocal}
+                developerMode={enableDeveloperModeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 onLanguageClick={handleChangeLanguage}
@@ -179,6 +185,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             />
                         </Box>
                     </Box>
+                )}
+                {isUserSettingsDialogOpen && (
+                    <UserSettingsDialog
+                        open={isUserSettingsDialogOpen}
+                        onClose={() => setIsUserSettingsDialogOpen(false)}
+                    />
                 )}
             </TopBar>
 
