@@ -351,17 +351,3 @@ export const getComputedTapSideId = (twt) => {
         return null;
     }
 };
-
-export const getStepsRatioTapChanger = (twt, editData, isNodeBuilt) => {
-    if (!isNodeBuilt) {
-        if (editData === undefined) {
-            return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
-        }
-        if (editData?.ratioTapChanger?.enabled === undefined || editData?.ratioTapChanger?.enabled?.value === false) {
-            return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
-        }
-        return editData?.ratioTapChanger?.steps;
-    } else {
-        return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
-    }
-};

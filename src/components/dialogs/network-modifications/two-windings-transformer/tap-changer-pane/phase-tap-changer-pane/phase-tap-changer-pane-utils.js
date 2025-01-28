@@ -45,7 +45,7 @@ import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/netwo
 
 const phaseTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [ENABLED]: yup.bool().nullable().required(),
+        [ENABLED]: yup.bool().required(),
         [REGULATION_MODE]: yup
             .string()
             .nullable()
@@ -166,7 +166,7 @@ const phaseTapChangerValidationSchema = (id) => ({
 
 const phaseTapChangerModificationValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [ENABLED]: yup.bool().nullable().required(),
+        [ENABLED]: yup.bool().required(),
         [REGULATION_MODE]: yup.string().nullable(),
         [REGULATION_TYPE]: yup.string().nullable(),
         [REGULATION_SIDE]: yup.string().nullable(),
@@ -333,18 +333,4 @@ export const getComputedPhaseRegulationTypeId = (twt) => {
 export const getComputedPreviousPhaseRegulationType = (previousValues) => {
     const previousRegulationType = getComputedPhaseRegulationType(previousValues);
     return previousRegulationType?.id || null;
-};
-
-export const getStepsPhaseTapChanger = (twt, editData, isNodeBuilt) => {
-    if (!isNodeBuilt) {
-        if (editData === undefined) {
-            return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
-        }
-        if (editData?.phaseTapChanger?.enabled === undefined || editData?.phaseTapChanger?.enabled?.value === false) {
-            return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
-        }
-        return editData?.phaseTapChanger?.steps;
-    } else {
-        return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
-    }
 };
