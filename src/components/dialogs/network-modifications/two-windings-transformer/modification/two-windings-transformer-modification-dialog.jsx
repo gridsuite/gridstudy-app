@@ -611,7 +611,9 @@ const TwoWindingsTransformerModificationDialog = ({
                                 }),
                                 ...getRatioTapChangerFormData({
                                     isModification: true,
-                                    enabled: isRatioTapChangerEnabled(twt),
+                                    enabled: !isNodeBuilt(currentNode)
+                                        ? getValues(`${RATIO_TAP_CHANGER}.${ENABLED}`)
+                                        : isRatioTapChangerEnabled(twt),
                                     hasLoadTapChangingCapabilities: getValues(
                                         `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
                                     ),
@@ -634,7 +636,9 @@ const TwoWindingsTransformerModificationDialog = ({
                                 }),
                                 ...getPhaseTapChangerFormData({
                                     isModification: true,
-                                    enabled: isPhaseTapChangerEnabled(twt),
+                                    enabled: !isNodeBuilt(currentNode)
+                                        ? getValues(`${PHASE_TAP_CHANGER}.${ENABLED}`)
+                                        : isPhaseTapChangerEnabled(twt),
                                     regulationMode: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_MODE}`),
                                     regulationType: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_TYPE}`),
                                     regulationSide: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_SIDE}`),
