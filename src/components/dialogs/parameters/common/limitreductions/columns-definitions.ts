@@ -115,7 +115,7 @@ export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
 
 export const getSAParametersFromSchema = (limitReductions?: ILimitReductionsByVoltageLevel[]) => {
     const limitReductionsSchema = getLimitReductionsFormSchema(
-        limitReductions ? limitReductions[0].temporaryLimitReductions.length : 0
+        limitReductions?.length ? limitReductions[0].temporaryLimitReductions.length : 0
     );
 
     const thresholdsSchema = yup.object().shape({
