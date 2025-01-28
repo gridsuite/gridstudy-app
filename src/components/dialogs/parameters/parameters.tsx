@@ -32,6 +32,7 @@ import { UUID } from 'crypto';
 import { User } from 'oidc-client';
 import { ParametersInfos, SpecificParametersInfos, UseParametersBackendReturnProps } from './parameters.type';
 import { formatComputingTypeLabel } from '../../computing-status/computing-type';
+import { ILimitReductionsByVoltageLevel } from './common/limitreductions/columns-definitions';
 
 interface CloseButtonProps extends ButtonProps {
     hideParameters: React.MouseEventHandler<HTMLButtonElement>;
@@ -274,7 +275,8 @@ export const useParametersBackend = <T extends ComputingType>(
     backendUpdateProvider: ((studyUuid: UUID, newProvider: string) => Promise<void>) | null,
     backendFetchParameters: (studyUuid: UUID) => Promise<ParametersInfos<T>>,
     backendUpdateParameters?: (studyUuid: UUID, newParam: ParametersInfos<T> | null) => Promise<any>,
-    backendFetchSpecificParametersDescription?: () => Promise<SpecificParametersInfos>
+    backendFetchSpecificParametersDescription?: () => Promise<SpecificParametersInfos>,
+    backendFetchDefaultLimitReductions?: () => Promise<ILimitReductionsByVoltageLevel[]>
 ): UseParametersBackendReturnProps<T> => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
@@ -288,6 +290,7 @@ export const useParametersBackend = <T extends ComputingType>(
 
     const [params, setParams] = useState<ParametersInfos<T> | null>(null);
     const [specificParamsDescription, setSpecificParamsDescription] = useState<Record<string, any> | null>(null);
+    const [defaultLimitReductions, setDefaultLimitReductions] = useState<ILimitReductionsByVoltageLevel[]>([]);
 
     const optionalServiceStatusRef = useRef(optionalServiceStatus);
     optionalServiceStatusRef.current = optionalServiceStatus;
@@ -428,6 +431,25 @@ export const useParametersBackend = <T extends ComputingType>(
         }
     }, [optionalServiceStatus, studyUuid, fetchSpecificParametersDescription]);
 
+    // Default limit reductions
+    const fetchDefaultLimitReductions = useCallback(() => {
+        backendFetchDefaultLimitReductions?.()
+            .then((defaultLimits: ILimitReductionsByVoltageLevel[]) => {
+                setDefaultLimitReductions(defaultLimits);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'fetchDefaultLimitReductionsError',
+                });
+            });
+    }, [backendFetchDefaultLimitReductions, snackError]);
+
+    // We just need to fetch default limit reductions once
+    useEffect(() => {
+        fetchDefaultLimitReductions();
+    }, [fetchDefaultLimitReductions]);
+
     // PARAMETERS UPDATE
     const backendUpdateParametersCb = useCallback(
         (studyUuid: UUID, newParams: ParametersInfos<T>, oldParams: ParametersInfos<T> | null) => {
@@ -542,6 +564,7 @@ export const useParametersBackend = <T extends ComputingType>(
         updateParameter,
         resetParameters,
         specificParamsDescription,
+        defaultLimitReductions,
     ];
 };
 
