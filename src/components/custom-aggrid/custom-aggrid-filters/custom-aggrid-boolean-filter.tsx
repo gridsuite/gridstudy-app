@@ -11,9 +11,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { mergeSx } from 'components/utils/functions';
-import { useCustomAggridFilter } from '../hooks/use-custom-aggrid-filter';
-import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
-import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
+import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
+import { CustomAggridFilterParams, FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
+import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 
 export enum BooleanFilterValue {
     TRUE = 'true',
@@ -29,14 +29,22 @@ const styles = {
     },
 };
 
-export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterParams> = ({ field, filterParams }) => {
+export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterParams> = ({
+    api,
+    colId,
+    filterParams,
+}) => {
     const intl = useIntl();
 
-    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(field, filterParams);
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, colId, filterParams);
 
     const handleValueChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value;
-        handleChangeFilterValue({ value: newValue, type: FILTER_TEXT_COMPARATORS.EQUALS });
+        handleChangeFilterValue({
+            value: newValue,
+            type: FILTER_TEXT_COMPARATORS.EQUALS,
+            dataType: FILTER_DATA_TYPES.BOOLEAN,
+        });
     };
 
     const handleClearFilter = () => {
@@ -57,7 +65,7 @@ export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterPara
                 },
             })}
             endAdornment={
-                isStringOrNonEmptyArray(selectedFilterData) && (
+                isNonEmptyStringOrArray(selectedFilterData) && (
                     <IconButton onClick={handleClearFilter}>
                         <ClearIcon fontSize={'small'} />
                     </IconButton>

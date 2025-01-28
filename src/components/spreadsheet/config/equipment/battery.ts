@@ -5,177 +5,89 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
+import { typeAndFetchers } from './common-config';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-export const BATTERY_TAB_DEF = {
+const tab = 'Batteries';
+
+export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
     index: 9,
-    name: 'Batteries',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.BATTERY),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('ID', tab),
         },
         {
-            id: 'Name',
+            colId: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
-            ...editableColumnConfig,
+            ...textColumnDefinition('Name', tab),
         },
         {
-            id: 'VoltageLevelId',
+            colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID', tab),
         },
         {
-            id: 'Country',
+            colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...textColumnDefinition('Country', tab),
         },
         {
-            id: 'NominalV',
+            colId: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         {
-            id: 'activePower',
+            colId: 'activePower',
             field: 'p',
-            numeric: true,
-            fractionDigits: 1,
-            ...defaultNumericFilterConfig,
-            canBeInvalidated: true,
-            withFluxConvention: true,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('p (MW)', tab, 1),
         },
         {
-            id: 'ReactivePower',
+            colId: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            fractionDigits: 1,
-            ...defaultNumericFilterConfig,
-            canBeInvalidated: true,
-            withFluxConvention: true,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('q (MVar)', tab, 1),
         },
         {
-            id: 'ActivePowerControl',
+            colId: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            ...editableColumnConfig,
-            valueSetter: (params) => {
-                params.data.activePowerControl = {
-                    ...(params.data.activePowerControl || {}),
-                    participate: params.newValue,
-                };
-                return true;
-            },
-            ...booleanCellEditorConfig((params) => params.data?.activePowerControl?.participate ?? false),
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Active power control', tab),
         },
         {
-            id: 'DroopColumnName',
+            colId: 'DroopColumnName',
             field: 'activePowerControl.droop',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
-            valueGetter: (params) => params.data?.activePowerControl?.droop,
-            valueSetter: (params) => {
-                params.data.activePowerControl = {
-                    ...(params.data.activePowerControl || {}),
-                    droop: params.newValue,
-                };
-                return true;
-            },
-            crossValidation: {
-                requiredOn: {
-                    dependencyColumn: 'activePowerControl.participate',
-                    columnValue: true,
-                },
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Droop (%)', tab, 1),
         },
         {
-            id: 'minP',
+            colId: 'minP',
             field: 'minP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.minP),
-            crossValidation: {
-                maxExpression: 'maxP',
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Min P (MW)', tab, 1),
         },
         {
-            id: 'maxP',
+            colId: 'maxP',
             field: 'maxP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.maxP),
-            crossValidation: {
-                minExpression: 'minP',
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Max P (MW)', tab, 1),
         },
         {
-            id: 'activePowerSetpoint',
+            colId: 'activePowerSetpoint',
             field: 'targetP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.targetP),
-            crossValidation: {
-                minExpression: 'minP',
-                maxExpression: 'maxP',
-                allowZero: true,
-            },
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Target P (MW)', tab, 1),
         },
         {
-            id: 'reactivePowerSetpoint',
+            colId: 'reactivePowerSetpoint',
             field: 'targetQ',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.targetQ),
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Target Q (MVar)', tab, 1),
         },
         {
-            id: 'connected',
+            colId: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Connected', tab),
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

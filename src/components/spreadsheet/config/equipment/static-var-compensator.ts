@@ -5,100 +5,69 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { NOMINAL_V } from '../../../utils/field-constants';
-import { genericColumnOfProperties } from '../common/column-properties';
+import { typeAndFetchers } from './common-config';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
+const tab = 'StaticVarCompensators';
+
+export const STATIC_VAR_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 8,
-    name: 'StaticVarCompensators',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('ID', tab),
         },
         {
-            id: 'Name',
+            colId: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Name', tab),
         },
         {
-            id: 'VoltageLevelId',
+            colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID', tab),
         },
         {
-            id: 'Country',
+            colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...textColumnDefinition('Country', tab),
         },
         {
-            id: 'NominalV',
-            field: NOMINAL_V,
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            colId: 'NominalV',
+            field: 'nominalV',
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         {
-            id: 'activePower',
+            colId: 'activePower',
             field: 'p',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('p (MW)', tab, 1),
         },
         {
-            id: 'ReactivePower',
+            colId: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('q (MVar)', tab, 1),
         },
         {
-            id: 'VoltageSetpointKV',
+            colId: 'VoltageSetpointKV',
             field: 'voltageSetpoint',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Voltage set point (kV)', tab, 1),
         },
         {
-            id: 'ReactivePowerSetpointMVAR',
+            colId: 'ReactivePowerSetpointMVAR',
             field: 'reactivePowerSetpoint',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Reactive power set point (MVar)', tab, 1),
         },
         {
-            id: 'connected',
+            colId: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Connected', tab),
         },
-        genericColumnOfProperties,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};

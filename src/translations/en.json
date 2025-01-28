@@ -572,9 +572,6 @@
     "loadingReport": "Loading logs in progress...",
 
     "ComponentLibrary": "Component library selection",
-    "FluxConvention": "Active and reactive flux convention used in spreadsheets",
-    "FluxConvention.iidm": "IIDM",
-    "FluxConvention.target": "Target",
     "Advanced": "Advanced",
     "EnableDeveloperMode": "Enable developer mode",
     "initNadWithGeoData": "Initialize with geographical data",
@@ -666,6 +663,7 @@
     "TabularModificationError": "Error while creating tabular modification",
     "TabularModificationShuntWarning": "Both maximum reactive power (and/or type) and maximum susceptance have been submitted for the same shunt compensator. Maximum susceptance will thus be ignored.",
     "equipmentId": "ID",
+    "substationName": "Substation name",
     "activePower": "p (MW)",
     "maxActivePower": "Max P (MW)",
     "maxP": "Max P (MW)",

@@ -5,119 +5,74 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    getDefaultEnumConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { LOAD_TYPES } from '../../../network/constants';
-import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { typeAndFetchers } from './common-config';
+import { genericColumnOfPropertiesReadonly } from './column-properties';
+import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
-export const LOAD_TAB_DEF = {
+const tab = 'Loads';
+
+export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
     index: 6,
-    name: 'Loads',
+    name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.LOAD),
     columns: [
         {
-            id: 'ID',
+            colId: 'ID',
             field: 'id',
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('ID', tab),
         },
         {
-            id: 'Name',
+            colId: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
-            columnWidth: MEDIUM_COLUMN_WIDTH,
-            ...editableColumnConfig,
+            ...textColumnDefinition('Name', tab),
         },
         {
-            id: 'loadType',
+            colId: 'loadType',
             field: 'type',
-            ...getDefaultEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]),
-            ...editableColumnConfig,
-            ...enumCellEditorConfig(
-                (params) => params.data?.type,
-                [...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]
-            ),
+            ...textColumnDefinition('Type', tab),
         },
         {
-            id: 'VoltageLevelId',
+            colId: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            ...textColumnDefinition('Voltage level ID', tab),
         },
         {
-            id: 'Country',
+            colId: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            ...textColumnDefinition('Country', tab),
         },
         {
-            id: 'NominalV',
+            colId: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            ...numberColumnDefinition('Nominal V', tab, 0),
         },
         {
-            id: 'activePower',
+            colId: 'activePower',
             field: 'p',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('p (MW)', tab, 1),
         },
         {
-            id: 'ReactivePower',
+            colId: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('q (MVar)', tab, 1),
         },
         {
-            id: 'p0',
+            colId: 'p0',
             field: 'p0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.p0),
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Constant P (MW)', tab, 1),
         },
         {
-            id: 'q0',
+            colId: 'q0',
             field: 'q0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            ...editableColumnConfig,
-            ...numericalCellEditorConfig((params) => params.data.q0),
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...numberColumnDefinition('Constant Q (MVar)', tab, 1),
         },
         {
-            id: 'connected',
+            colId: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
-            getQuickFilterText: excludeFromGlobalFilter,
+            ...booleanColumnDefinition('Connected', tab),
         },
-        genericColumnOfPropertiesEditPopup,
+        genericColumnOfPropertiesReadonly(tab),
     ],
-} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
+};
