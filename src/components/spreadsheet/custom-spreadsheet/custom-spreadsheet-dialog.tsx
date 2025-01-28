@@ -37,7 +37,7 @@ import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import { getSpreadsheetModel } from 'services/spreadsheet';
+import { getSpreadsheetModel } from 'services/study-config';
 import { typeAndFetchers } from '../config/equipment/common-config';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 import { SortWay } from '../../../types/custom-aggrid-types';

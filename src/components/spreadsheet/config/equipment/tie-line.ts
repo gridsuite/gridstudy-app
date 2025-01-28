@@ -10,7 +10,12 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { booleanColumnDefinition, textColumnDefinition, numberColumnDefinition } from '../common-column-definitions';
+import {
+    booleanColumnDefinition,
+    textColumnDefinition,
+    numberColumnDefinition,
+    enumColumnDefinition,
+} from '../common-column-definitions';
 
 const tab = 'TieLines';
 
@@ -35,8 +40,8 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'voltageLevelId2',
             ...textColumnDefinition('Voltage level ID 2', tab),
         },
-        { colId: 'Country1', field: 'country1', ...textColumnDefinition('Country 1', tab) },
-        { colId: 'Country2', field: 'country2', ...textColumnDefinition('Country 2', tab) },
+        { colId: 'Country1', field: 'country1', ...enumColumnDefinition('Country 1', tab) },
+        { colId: 'Country2', field: 'country2', ...enumColumnDefinition('Country 2', tab) },
         {
             colId: 'nominalVoltage1KV',
             field: 'nominalVoltage1',
