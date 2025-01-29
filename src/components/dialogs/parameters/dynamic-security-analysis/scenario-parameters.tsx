@@ -14,7 +14,7 @@ export const SCENARIO_DURATION = 'scenarioDuration';
 export const formSchema = yup
     .object()
     .shape({
-        [SCENARIO_DURATION]: yup.number().required().nonNullable(),
+        [SCENARIO_DURATION]: yup.number().required(),
     })
     .required();
 

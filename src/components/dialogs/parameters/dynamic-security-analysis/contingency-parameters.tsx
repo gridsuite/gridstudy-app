@@ -16,7 +16,7 @@ export const CONTINGENCIES_START_TIME = 'contingenciesStartTime';
 export const CONTINGENCIES_LIST_INFOS = 'contingencyListInfos';
 
 export const formSchema = yup.object().shape({
-    [CONTINGENCIES_START_TIME]: yup.number().required().nonNullable(),
+    [CONTINGENCIES_START_TIME]: yup.number().required(),
     [CONTINGENCIES_LIST_INFOS]: yup
         .array()
         .of(

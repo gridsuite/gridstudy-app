@@ -13,7 +13,7 @@ export const START_TIME = 'startTime';
 export const STOP_TIME = 'stopTime';
 
 export const formSchema = yup.object().shape({
-    [START_TIME]: yup.number().required().nonNullable(),
+    [START_TIME]: yup.number().required(),
     [STOP_TIME]: yup
         .number()
         .required()

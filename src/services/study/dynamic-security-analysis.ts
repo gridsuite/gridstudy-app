@@ -122,11 +122,15 @@ export function updateDynamicSecurityAnalysisParameters(
     console.debug(url);
 
     // send to back contingency list uuids instead of contingency list infos
-    const newParameters = {
-        ...newParams,
-        contingencyListIds: newParams?.contingencyListInfos?.map((info) => info.id),
-    };
-    delete newParameters.contingencyListInfos;
+    const newParameters =
+        newParams != null
+            ? {
+                  ...newParams,
+                  contingencyListIds: newParams?.contingencyListInfos?.map((info) => info.id),
+              }
+            : newParams;
+
+    delete newParameters?.contingencyListInfos;
 
     return backendFetch(url, {
         method: 'POST',
