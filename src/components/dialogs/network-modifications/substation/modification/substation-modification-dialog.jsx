@@ -57,6 +57,7 @@ const SubstationModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
+    currentRootNetworkUuid,
     studyUuid,
     isUpdate,
     editDataFetchStatus,
@@ -101,6 +102,7 @@ const SubstationModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.SUBSTATION,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -125,7 +127,7 @@ const SubstationModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getValues, editData]
+        [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, editData]
     );
 
     useEffect(() => {
@@ -183,6 +185,7 @@ const SubstationModificationDialog = ({
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.SUBSTATION}

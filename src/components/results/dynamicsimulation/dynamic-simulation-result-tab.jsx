@@ -25,7 +25,7 @@ const TAB_INDEX_TIMELINE = 'DynamicSimulationTabTimeline';
 const TAB_INDEX_STATUS = 'DynamicSimulationTabStatus';
 const TAB_INDEX_LOGS = 'ComputationResultsLogs';
 
-const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
+const DynamicSimulationResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUuid }) => {
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(TAB_INDEX_TIME_SERIES);
@@ -66,13 +66,25 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
             </Box>
             <Box sx={styles.resultContainer}>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_TIME_SERIES}>
-                    <DynamicSimulationResultTimeSeries studyUuid={studyUuid} nodeUuid={nodeUuid} />
+                    <DynamicSimulationResultTimeSeries
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
+                    />
                 </TabPanelLazy>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_TIMELINE}>
-                    <DynamicSimulationResultTimeline studyUuid={studyUuid} nodeUuid={nodeUuid} />
+                    <DynamicSimulationResultTimeline
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
+                    />
                 </TabPanelLazy>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_STATUS}>
-                    <DynamicSimulationResultSynthesis studyUuid={studyUuid} nodeUuid={nodeUuid} />
+                    <DynamicSimulationResultSynthesis
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
+                    />
                 </TabPanelLazy>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_LOGS}>
                     <DynamicSimulationResultLogs />

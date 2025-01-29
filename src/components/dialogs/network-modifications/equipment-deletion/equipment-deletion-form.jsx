@@ -25,7 +25,7 @@ import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useGetLabelEquipmentTypes from '../../../../hooks/use-get-label-equipment-types';
 import GridItem from '../../commons/grid-item';
 
-const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
+const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, editData }) => {
     const { snackError } = useSnackMessage();
     const editedIdRef = useRef(null);
     const currentTypeRef = useRef(null);
@@ -66,7 +66,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                 currentTypeRef.current = watchType;
             }
             let ignore = false;
-            fetchEquipmentsIds(studyUuid, currentNode?.id, undefined, watchType, true)
+            fetchEquipmentsIds(studyUuid, currentNode?.id, currentRootNetworkUuid, undefined, watchType, true)
                 .then((vals) => {
                     // check race condition here
                     if (!ignore) {
@@ -83,10 +83,10 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                 ignore = true;
             };
         }
-    }, [studyUuid, currentNode?.id, watchType, snackError]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, watchType, snackError]);
 
     useEffect(() => {
-        if (studyUuid && currentNode?.id) {
+        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
             if (editData?.equipmentId) {
                 if (editedIdRef.current === null) {
                     // The first time we render an edition, we want to merge the
@@ -104,6 +104,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                 hvdcLccSpecificUpdate(
                     studyUuid,
                     currentNode?.id,
+                    currentRootNetworkUuid,
                     watchEquipmentId,
                     watchEquipmentId === editedIdRef.current ? editData : null
                 );
@@ -111,7 +112,16 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                 setValue(DELETION_SPECIFIC_DATA, null);
             }
         }
-    }, [studyUuid, currentNode?.id, watchEquipmentId, snackError, setValue, hvdcLccSpecificUpdate, editData]);
+    }, [
+        studyUuid,
+        currentNode?.id,
+        currentRootNetworkUuid,
+        watchEquipmentId,
+        snackError,
+        setValue,
+        hvdcLccSpecificUpdate,
+        editData,
+    ]);
 
     const handleChange = useCallback(() => {
         setValue(EQUIPMENT_ID, null);
