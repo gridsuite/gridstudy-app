@@ -70,6 +70,7 @@ const formSchema = yup
  * Dialog to attach a line to a (possibly new) voltage level.
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -79,6 +80,7 @@ const LinesAttachToSplitLinesDialog = ({
     editData,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -159,7 +161,11 @@ const LinesAttachToSplitLinesDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <LinesAttachToSplitLinesForm currentNode={currentNode} studyUuid={studyUuid} />
+                <LinesAttachToSplitLinesForm
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
             </ModificationDialog>
         </CustomFormProvider>
     );
@@ -169,6 +175,7 @@ LinesAttachToSplitLinesDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editDataFetchStatus: PropTypes.string,
 };

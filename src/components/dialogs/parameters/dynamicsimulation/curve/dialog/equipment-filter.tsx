@@ -56,6 +56,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         const studyUuid = useSelector((state: AppState) => state.studyUuid);
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+        const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
 
         const intl = useIntl();
         const equipmentsRef = useRef<AgGridReact<IdentifiableAttributes>>(null);
@@ -87,11 +88,11 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         // fetching options in different criterias
         useEffect(() => {
-            if (!studyUuid || !currentNode?.id) {
+            if (!currentRootNetwork || !studyUuid || !currentNode?.id) {
                 return;
             }
             // Load voltage level IDs
-            fetchVoltageLevelsMapInfos(studyUuid, currentNode.id)
+            fetchVoltageLevelsMapInfos(studyUuid, currentNode.id, currentRootNetwork)
                 .then((voltageLevels) => {
                     const vlMap = new Map<string, string | undefined>();
                     const nvSet = new Set<number>();
@@ -111,7 +112,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                 });
 
             // load countries
-            fetchAllCountries(studyUuid, currentNode.id)
+            fetchAllCountries(studyUuid, currentNode.id, currentRootNetwork)
                 .then((countryCodes) => setCountries(countryCodes))
                 .catch((error) => {
                     snackError({
@@ -119,11 +120,11 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                         headerId: 'FetchCountryError',
                     });
                 });
-        }, [studyUuid, currentNode?.id, snackError]);
+        }, [studyUuid, currentNode?.id, snackError, currentRootNetwork]);
 
         // build fetcher which filters equipments
         const filteringEquipmentsFetcher = useMemo(() => {
-            if (!studyUuid || !currentNode?.id) {
+            if (!studyUuid || !currentRootNetwork || !currentNode?.id) {
                 return;
             }
             const expertFilter = buildExpertFilter(
@@ -134,10 +135,11 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
             );
 
             // the fetcher which evaluates a filter by filter-server
-            return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter);
+            return evaluateJsonFilter(studyUuid, currentNode.id, currentRootNetwork, expertFilter);
         }, [
             studyUuid,
             currentNode?.id,
+            currentRootNetwork,
             equipmentType,
             selectedVoltageLevelIds,
             selectedCountries,

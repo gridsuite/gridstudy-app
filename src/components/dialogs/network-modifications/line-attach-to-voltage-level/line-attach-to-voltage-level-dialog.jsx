@@ -80,6 +80,7 @@ const formSchema = yup
  * Dialog to attach line to voltage level in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -88,6 +89,7 @@ const formSchema = yup
 const LineAttachToVoltageLevelDialog = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     editData,
     isUpdate,
     editDataFetchStatus,
@@ -192,11 +194,11 @@ const LineAttachToVoltageLevelDialog = ({
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then((values) => {
+            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid).then((values) => {
                 setVoltageLevelOptions(values.sort((a, b) => a?.id?.localeCompare(b?.id)));
             });
         }
-    }, [studyUuid, currentNode?.id]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -325,6 +327,7 @@ const LineAttachToVoltageLevelDialog = ({
                 <LineAttachToVoltageLevelForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     onLineCreationDo={onLineCreationDo}
                     lineToEdit={attachmentLine}
                     onVoltageLevelCreationDo={onVoltageLevelCreationDo}
@@ -340,6 +343,7 @@ LineAttachToVoltageLevelDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     editDataFetchStatus: PropTypes.string,
     isUpdate: PropTypes.bool,
 };

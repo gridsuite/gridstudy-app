@@ -169,6 +169,7 @@ export const TwoWindingsTransformerModificationDialogTab = {
  * @param studyUuid the study we are currently working on
  * @param defaultIdValue the default two windings transformer id
  * @param currentNode The node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param isUpdate check if edition form
  * @param editData the data to edit
  * @param editDataFetchStatus indicates the status of fetching EditData
@@ -178,6 +179,7 @@ const TwoWindingsTransformerModificationDialog = ({
     studyUuid,
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
+    currentRootNetworkUuid,
     isUpdate,
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     editDataFetchStatus,
@@ -196,7 +198,8 @@ const TwoWindingsTransformerModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
     const { reset, getValues, setValue } = formMethods;
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
+
     const computeRatioTapChangerRegulationMode = (ratioTapChangerFormValues) => {
         if (ratioTapChangerFormValues?.[REGULATING]?.value == null) {
             return null;
@@ -602,6 +605,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -690,14 +694,15 @@ const TwoWindingsTransformerModificationDialog = ({
         [
             studyUuid,
             currentNodeUuid,
+            currentRootNetworkUuid,
             setConnectivityValue,
             getValues,
             reset,
             isRatioTapChangerEnabled,
             getRatioTapChangerSteps,
-            editData,
             isPhaseTapChangerEnabled,
             getPhaseTapChangerSteps,
+            editData?.equipmentId,
         ]
     );
 
@@ -745,6 +750,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
@@ -756,6 +762,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             <BranchConnectivityForm
                                 studyUuid={studyUuid}
                                 currentNode={currentNode}
+                                currentRootNetworkUuid={currentRootNetworkUuid}
                                 withPosition={true}
                                 isModification={true}
                                 previousValues={twtToModify}
@@ -806,6 +813,7 @@ const TwoWindingsTransformerModificationDialog = ({
 TwoWindingsTransformerModificationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editData: PropTypes.object,
     editDataFetchStatus: PropTypes.string,
