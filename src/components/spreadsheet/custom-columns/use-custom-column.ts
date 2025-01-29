@@ -10,9 +10,10 @@ import { all, bignumber, create } from 'mathjs';
 import { useSelector } from 'react-redux';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import { ValueGetterParams } from 'ag-grid-community';
+import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 
 export function useCustomColumn(tabIndex: number) {
     const tablesNames = useSelector((state: AppState) => state.tables.names);
@@ -76,7 +77,7 @@ export function useCustomColumn(tabIndex: number) {
 
     const createValueGetter = useCallback(
         (colWithFormula: ColumnWithFormula) =>
-            (params: { data: Record<string, unknown> }): string => {
+            (params: ValueGetterParams): string => {
                 try {
                     const { data } = params;
 
@@ -88,6 +89,9 @@ export function useCustomColumn(tabIndex: number) {
                         }
                         return acc;
                     }, {} as Record<string, unknown>);
+                    colWithFormula.dependencies.forEach((dep) => {
+                        scope[dep] = params.getValue(dep);
+                    });
 
                     return math.limitedEvaluate(colWithFormula.formula, scope);
                 } catch (e) {
@@ -100,12 +104,11 @@ export function useCustomColumn(tabIndex: number) {
     const createCustomColumn = useCallback(() => {
         return customColumnsDefinitions.map((colWithFormula): CustomColDef => {
             return {
-                colId: colWithFormula.id,
+                colId: colWithFormula.name,
                 headerName: colWithFormula.name,
                 headerTooltip: colWithFormula.name,
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
-                    field: colWithFormula.name,
                     sortParams: {
                         table: SPREADSHEET_SORT_STORE,
                         tab: tablesDefinitionIndexes.get(tabIndex)!.name,

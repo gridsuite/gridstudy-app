@@ -10,11 +10,13 @@ import yup from '../../../components/utils/yup-config';
 export const COLUMN_ID = 'id';
 export const COLUMN_NAME = 'name';
 export const FORMULA = 'formula';
+export const COLUMN_DEPENDENCIES = 'dependencies';
 
 export const initialCustomColumnForm: CustomColumnForm = {
     [COLUMN_ID]: '',
     [COLUMN_NAME]: '',
     [FORMULA]: '',
+    [COLUMN_DEPENDENCIES]: [],
 };
 
 export const customColumnFormSchema = yup.object().shape({
@@ -25,6 +27,7 @@ export const customColumnFormSchema = yup.object().shape({
         .matches(/^[^\s$]+$/, 'spreadsheet/custom_column/error/id_not_conform'),
     [COLUMN_NAME]: yup.string().required().max(60, 'spreadsheet/custom_column/error/name_le_60'),
     [FORMULA]: yup.string().required(),
+    [COLUMN_DEPENDENCIES]: yup.array().of(yup.string().required()).required(),
 });
 
 export type CustomColumnForm = yup.InferType<typeof customColumnFormSchema>;
