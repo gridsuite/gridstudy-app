@@ -6,7 +6,7 @@
  */
 
 import yup from '../../../utils/yup-config';
-import { Grid, SelectChangeEvent, Tab, Tabs } from '@mui/material';
+import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
@@ -33,13 +33,14 @@ import ComputingType from '../../../computing-status/computing-type';
 import LineSeparator from '../../commons/line-separator';
 import { User } from 'oidc-client';
 
-import { DropDown, LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
+import { LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
 import ContingencyParameters, {
     CONTINGENCIES_LIST_INFOS,
     CONTINGENCIES_START_TIME,
     emptyFormData as contingencyEmptyFormData,
     formSchema as contingencyFormSchema,
 } from './contingency-parameters';
+import ProviderParameter from '../common/provider-parameter';
 
 enum TAB_VALUES {
     SCENARIO = 'scenario',
@@ -84,13 +85,6 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
 
     const [tabIndex, setTabIndex] = useState(TAB_VALUES.SCENARIO);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
-
-    const handleUpdateProvider = useCallback(
-        (evt: SelectChangeEvent) => {
-            updateProvider(evt.target.value);
-        },
-        [updateProvider]
-    );
 
     const handleResetParametersAndProvider = useCallback(() => {
         resetProvider();
@@ -172,31 +166,8 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
                         paddingTop: 0,
                     })}
                 >
-                    <Grid
-                        xl={6}
-                        container
-                        sx={{
-                            height: 'fit-content',
-                            justifyContent: 'space-between',
-                        }}
-                    >
-                        {providers && provider && (
-                            <DropDown
-                                value={provider}
-                                label="Provider"
-                                values={Object.entries(providers).reduce<Record<string, string>>(
-                                    (obj, [key, value]) => {
-                                        obj[key] = `DynamicSecurityAnalysisProvider${value}`;
-                                        return obj;
-                                    },
-                                    {}
-                                )}
-                                callback={handleUpdateProvider}
-                            />
-                        )}
-                    </Grid>
-
-                    <Grid container paddingTop={1} xl={6}>
+                    <ProviderParameter providers={providers} provider={provider} onChangeProvider={updateProvider} />
+                    <Grid container paddingTop={1} xl={8}>
                         <LineSeparator />
                     </Grid>
 

@@ -6,7 +6,7 @@
  */
 
 import yup from '../../../utils/yup-config';
-import { Grid, Typography, Box, useTheme } from '@mui/material';
+import { Box, Grid, Typography, useTheme } from '@mui/material';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
 import { useIntl } from 'react-intl';
@@ -154,7 +154,7 @@ const CurveParameters = ({ path }: { path: string }) => {
 
     return (
         <>
-            <Grid container direction={'column'} sx={{ height: 460 }}>
+            <Grid container direction={'column'} sx={{ height: 640 }}>
                 {/* header toolbar of the aggrid */}
                 <Grid container item sx={{ marginBottom: theme.spacing(1) }}>
                     <Grid container item xs={'auto'}>

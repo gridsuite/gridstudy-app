@@ -42,7 +42,7 @@ const defParams = {
 
 function ContingencyParameters({ path }: Readonly<{ path: string }>) {
     return (
-        <Grid xl={6} container>
+        <Grid xl={8} container>
             {makeComponents(defParams, path)}
             <ParameterLineDirectoryItemsInput
                 name={`${path}.${CONTINGENCIES_LIST_INFOS}`}

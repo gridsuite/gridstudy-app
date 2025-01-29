@@ -31,7 +31,7 @@ const defParams = {
 
 function ScenarioParameters({ path }: Readonly<{ path: string }>) {
     return (
-        <Grid xl={6} container>
+        <Grid xl={8} container>
             {makeComponents(defParams, path)}
         </Grid>
     );

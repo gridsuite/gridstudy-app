@@ -6,7 +6,7 @@
  */
 
 import yup from '../../../utils/yup-config';
-import { Grid, SelectChangeEvent, Tab, Tabs } from '@mui/material';
+import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
@@ -27,7 +27,7 @@ import MappingParameters, {
     formSchema as mappingFormSchema,
     MAPPING,
 } from './mapping-parameters';
-import { DropDown, LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
+import { LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
 import NetworkParameters, {
     emptyFormData as networkEmptyFormData,
     formSchema as networkFormSchema,
@@ -57,6 +57,7 @@ import ComputingType from '../../../computing-status/computing-type';
 import LineSeparator from '../../commons/line-separator';
 import { User } from 'oidc-client';
 import { SolverInfos } from 'services/study/dynamic-simulation.type';
+import ProviderParameter from '../common/provider-parameter';
 
 enum TAB_VALUES {
     TIME_DELAY = 'timeDelay',
@@ -103,13 +104,6 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     const [tabValue, setTabValue] = useState(TAB_VALUES.TIME_DELAY);
 
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
-
-    const handleUpdateProvider = useCallback(
-        (evt: SelectChangeEvent<string>) => {
-            updateProvider(evt.target.value);
-        },
-        [updateProvider]
-    );
 
     const handleResetParametersAndProvider = useCallback(() => {
         resetProvider();
@@ -225,31 +219,8 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                         paddingTop: 0,
                     })}
                 >
-                    <Grid
-                        xl={6}
-                        container
-                        sx={{
-                            height: 'fit-content',
-                            justifyContent: 'space-between',
-                        }}
-                    >
-                        {providers && provider && (
-                            <DropDown
-                                value={provider}
-                                label="Provider"
-                                values={Object.entries(providers).reduce<Record<string, string>>(
-                                    (obj, [key, value]) => {
-                                        obj[key] = `DynamicSimulationProvider${value}`;
-                                        return obj;
-                                    },
-                                    {}
-                                )}
-                                callback={handleUpdateProvider}
-                            />
-                        )}
-                    </Grid>
-
-                    <Grid container paddingTop={1} xl={tabValue === TAB_VALUES.CURVE ? 12 : 6.01}>
+                    <ProviderParameter providers={providers} provider={provider} onChangeProvider={updateProvider} />
+                    <Grid container paddingTop={1} xl={tabValue === TAB_VALUES.CURVE ? 12 : 8}>
                         <LineSeparator />
                     </Grid>
 

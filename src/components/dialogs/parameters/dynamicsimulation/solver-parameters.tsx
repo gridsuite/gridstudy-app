@@ -90,7 +90,7 @@ const SolverParameters: FunctionComponent<SolverParametersProps> = ({ solver, pa
     };
 
     return (
-        <Grid xl={6} container>
+        <Grid xl={8} container>
             {makeComponents(defParams, path)}
             <TabPanel value={selectedSolver?.type} index={SolverTypeInfos.IDA}>
                 <IdaSolverParameters path={`${path}.${SOLVERS}[0]`} />

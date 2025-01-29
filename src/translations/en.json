@@ -226,6 +226,7 @@
     "maxSelection": "selections maximum",
     "options": "options",
 
+    "Dynawo": "Dynawo",
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
@@ -254,7 +255,6 @@
     "DynamicSimulationSeriesListAvailableCurves": "Available curves",
     "DynamicSimulationSeriesListRightAxis": "Right axis",
     "DynamicSimulationResultLayoutCols": "Columns",
-    "DynamicSimulationProviderDynawo": "Dynawo",
     "DynamicSimulationTimeDelay": "Time delay",
     "DynamicSimulationSolver": "Solver",
     "DynamicSimulationMapping": "Mapping",
@@ -372,7 +372,6 @@
 
     "startDynamicSecurityAnalysisError": "An error occurred while starting the dynamic security analysis",
     "DynamicSecurityAnalysis": "Dynamic security analysis",
-    "DynamicSecurityAnalysisProviderDynawo": "Dynawo",
     "DynamicSecurityAnalysisRunError": "An error occurred while executing the dynamic security analysis",
     "DynamicSecurityAnalysisContingency": "Contingency",
     "DynamicSecurityAnalysisScenario": "Scenario",

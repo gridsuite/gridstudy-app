@@ -163,7 +163,7 @@ const defParams = {
 
 const NetworkParameters = ({ path }: { path: string }) => {
     return (
-        <Grid sx={{ height: '100%' }} xl={6} container>
+        <Grid sx={{ height: '100%' }} xl={8} container>
             {makeComponents(defParams, path)}
         </Grid>
     );
