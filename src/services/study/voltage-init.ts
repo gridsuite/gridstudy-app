@@ -87,7 +87,7 @@ export function getVoltageInitModifications(studyUuid: UUID, currentNodeId: UUID
     console.info('get voltage init modifications');
     const getVoltageInitModifications =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeId, currentRootNetworkUuid) +
-        'network-modifications/voltage-init';
+        '/network-modifications/voltage-init';
     console.debug(getVoltageInitModifications);
     return backendFetchJson(getVoltageInitModifications);
 }
@@ -96,7 +96,7 @@ export function cloneVoltageInitModifications(studyUuid: UUID, currentNodeId: UU
     console.info('cloning voltage init modifications');
     const cloneVoltageInitModificationsUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeId, currentRootNetworkUuid) +
-        'network-modifications/voltage-init';
+        '/network-modifications/voltage-init';
 
     return backendFetch(cloneVoltageInitModificationsUrl, {
         method: 'POST',
