@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
 import { EquipmentInfos, EquipmentType, createFilter, NewFilterType } from '@gridsuite/commons-ui';
@@ -14,14 +14,19 @@ import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
 import { UUID } from 'crypto';
 
-export function fetchHvdcLineWithShuntCompensators(studyUuid: UUID, currentNodeUuid: UUID, hvdcLineId: string) {
+export function fetchHvdcLineWithShuntCompensators(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    hvdcLineId: string
+) {
     console.info(
-        `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
     const fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-map' +
         '/hvdc-lines/' +
         hvdcLineId +
@@ -31,13 +36,18 @@ export function fetchHvdcLineWithShuntCompensators(studyUuid: UUID, currentNodeU
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
-export function fetchAllEquipments(studyUuid: UUID, currentNodeUuid: UUID, substationsIds: string[]) {
+export function fetchAllEquipments(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds: string[]
+) {
     console.info(
-        `Fetching all equipments of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+        `Fetching all equipments of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
     );
 
     const fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-map/all' +
         '?' +
         getQueryParamsList(substationsIds, 'substationId');
@@ -48,12 +58,13 @@ export function fetchAllEquipments(studyUuid: UUID, currentNodeUuid: UUID, subst
 export function fetchVoltageLevelEquipments(
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     substationsIds: string[],
     voltageLevelId: string,
     inUpstreamBuiltParentNode: boolean
 ) {
     console.info(
-        `Fetching equipments of study '${studyUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}' with substations ids '${substationsIds}'...`
+        `Fetching equipments of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}' with substations ids '${substationsIds}'...`
     );
     const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
@@ -61,7 +72,7 @@ export function fetchVoltageLevelEquipments(
     }
 
     const fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-map' +
         '/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
@@ -76,6 +87,7 @@ export function fetchVoltageLevelEquipments(
 export function fetchEquipmentsIds(
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     substationsIds: string[],
     equipmentType: EquipmentType,
     inUpstreamBuiltParentNode: boolean,
@@ -85,7 +97,7 @@ export function fetchEquipmentsIds(
     const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
 
     console.info(
-        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' for ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
+        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' for ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
     );
     let urlSearchParams = new URLSearchParams();
 
@@ -93,7 +105,7 @@ export function fetchEquipmentsIds(
     const nominalVoltagesParamsList = nominalVoltages && nominalVoltages.length > 0 ? '&' + nominalVoltagesParams : '';
 
     let fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-map/' +
         'equipments-ids' +
         '?' +
@@ -115,31 +127,36 @@ export function fetchEquipmentsIds(
 export function fetchVoltageLevelIdForLineOrTransformerBySide(
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     equipmentId: string,
     side: string
 ) {
     console.info(
-        `Fetching voltage level ID for equipment '${equipmentId}' in study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching voltage level ID for equipment '${equipmentId}' in study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
     );
 
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
     urlSearchParams.append('side', side);
 
-    const fetchEquipmentInfosUrl = `${getStudyUrlWithNodeUuid(
+    const fetchEquipmentInfosUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
-        currentNodeUuid
+        currentNodeUuid,
+        currentRootNetworkUuid
     )}/network-map/branch-or-3wt/${encodeURIComponent(equipmentId)}/voltage-level-id?${urlSearchParams.toString()}`;
 
     console.debug(fetchEquipmentInfosUrl);
     return backendFetchText(fetchEquipmentInfosUrl);
 }
 
-export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info(`Fetching all countries of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
+export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching all countries of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
+    );
 
     const fetchCountriesUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-map/countries?inUpstreamBuiltParentNode=true';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network-map/countries?inUpstreamBuiltParentNode=true';
     console.debug(fetchCountriesUrl);
     return backendFetchJson(fetchCountriesUrl);
 }
@@ -172,6 +189,7 @@ export async function createMapFilter(
     destinationDirectoryId: UUID,
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     selectedEquipmentsIds: string[],
     nominalVoltages: number[]
 ) {
@@ -195,6 +213,7 @@ export async function createMapFilter(
             const elementsIds = await fetchEquipmentsIds(
                 studyUuid,
                 currentNodeUuid,
+                currentRootNetworkUuid,
                 selectedEquipmentsIds,
                 equipmentType,
                 false,
@@ -220,6 +239,7 @@ export async function createMapContingencyList(
     destinationDirectoryId: UUID,
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     selectedEquipments: EquipmentInfos[],
     nominalVoltages: number[]
 ) {
@@ -240,6 +260,7 @@ export async function createMapContingencyList(
             const elementsIds = await fetchNetworkElementsInfos<EquipmentInfos[]>(
                 studyUuid,
                 currentNodeUuid,
+                currentRootNetworkUuid,
                 selectedEquipmentsIds,
                 equipmentType,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
@@ -263,11 +284,13 @@ export async function createMapContingencyList(
     return createContingencyList(equipmentContingencyList, elementName, '', destinationDirectoryId);
 }
 
-export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info(`Fetching all nominal voltages of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
+export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching all nominal voltages of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
+    );
 
     const fetchNominalVoltagesUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-map/nominal-voltages?inUpstreamBuiltParentNode=true';
     console.debug(fetchNominalVoltagesUrl);
     return backendFetchJson(fetchNominalVoltagesUrl);

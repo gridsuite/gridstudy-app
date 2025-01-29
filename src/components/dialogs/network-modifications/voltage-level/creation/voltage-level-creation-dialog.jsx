@@ -163,6 +163,7 @@ const VoltageLevelCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     onCreateVoltageLevel = createVoltageLevel,
@@ -256,6 +257,7 @@ const VoltageLevelCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: (data) => data,
         setFormValues: fromExternalDataToFormValues,
         elementType: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
@@ -340,13 +342,18 @@ const VoltageLevelCreationDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <VoltageLevelCreationForm currentNode={currentNode} studyUuid={studyUuid} />
+                <VoltageLevelCreationForm
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
@@ -357,6 +364,7 @@ VoltageLevelCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     onCreateVoltageLevel: PropTypes.func,
     editDataFetchStatus: PropTypes.string,

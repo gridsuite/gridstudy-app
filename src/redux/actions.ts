@@ -269,6 +269,14 @@ export function mapEquipmentsCreated(
     };
 }
 
+export const RESET_MAP_EQUIPMENTS = 'RESET_MAP_EQUIPMENTS';
+export type ResetMapEquipmentsAction = Readonly<Action<typeof RESET_MAP_EQUIPMENTS>>;
+export function resetMapEquipment(): ResetMapEquipmentsAction {
+    return {
+        type: RESET_MAP_EQUIPMENTS,
+    };
+}
+
 export const LOAD_NETWORK_MODIFICATION_TREE_SUCCESS = 'LOAD_NETWORK_MODIFICATION_TREE_SUCCESS';
 export type LoadNetworkModificationTreeSuccessAction = Readonly<
     Action<typeof LOAD_NETWORK_MODIFICATION_TREE_SUCCESS>
@@ -663,6 +671,17 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     return {
         type: CURRENT_TREE_NODE,
         currentTreeNode: currentTreeNode,
+    };
+}
+
+export const CURRENT_ROOT_NETWORK = 'CURRENT_ROOT_NETWORK';
+export type CurrentRootNetworkAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK>> & {
+    currentRootNetwork: UUID;
+};
+export function setCurrentRootNetwork(currentRootNetwork: UUID): CurrentRootNetworkAction {
+    return {
+        type: CURRENT_ROOT_NETWORK,
+        currentRootNetwork: currentRootNetwork,
     };
 }
 

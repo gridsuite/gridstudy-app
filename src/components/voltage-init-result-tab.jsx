@@ -15,12 +15,13 @@ import RunningStatus from './utils/running-status';
 
 const voltageInitResultInvalidations = ['voltageInitResult'];
 
-export const VoltageInitResultTab = ({ studyUuid, nodeUuid }) => {
+export const VoltageInitResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUuid }) => {
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
 
     const [voltageInitResult, isWaiting] = useNodeData(
         studyUuid,
         nodeUuid,
+        currentRootNetworkUuid,
         fetchVoltageInitResult,
         voltageInitResultInvalidations
     );
