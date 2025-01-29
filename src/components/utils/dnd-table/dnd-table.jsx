@@ -175,8 +175,7 @@ const DndTable = ({
         let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;
         return (
             <CustomTableCell
-                // getValues added to the key in order to force a rerender when the value is modified from outside this class
-                key={rowId + column.dataKey + getValues(`${arrayFormName}[${rowIndex}].${column.dataKey}`)}
+                key={rowId + column.dataKey}
                 arrayFormName={arrayFormName}
                 rowIndex={rowIndex}
                 column={column}

@@ -77,24 +77,28 @@ export function LimitsPane({
         limitsGroups: OperationalLimitsGroup[],
         selectedTabIndex: number | null,
         formName: string,
-        currentLimits: CurrentLimits | null
+        previousCurrentLimits: CurrentLimits | null
     ) =>
         indexSelectedLimitSet1 !== null &&
         limitsGroups.map(
             (operationalLimitsGroup: OperationalLimitsGroup, index: number) =>
                 selectedTabIndex != null &&
                 index === selectedTabIndex &&
-                renderSidePane(operationalLimitsGroup.id + id, `${formName}[${index}].${CURRENT_LIMITS}`, currentLimits)
+                renderSidePane(
+                    operationalLimitsGroup.id + id,
+                    `${formName}[${index}].${CURRENT_LIMITS}`,
+                    previousCurrentLimits
+                )
         );
 
-    const renderSidePane = (id: string, formName: string, currentLimits: CurrentLimits | null) => {
+    const renderSidePane = (id: string, formName: string, previousCurrentLimits: CurrentLimits | null) => {
         return (
             <LimitsSidePane
                 key={id}
                 limitsGroupFormName={formName}
                 clearableFields={clearableFields}
-                permanentCurrentLimitPreviousValue={currentLimits?.permanentLimit}
-                temporaryLimitsPreviousValues={currentLimits?.temporaryLimits}
+                permanentCurrentLimitPreviousValue={previousCurrentLimits?.permanentLimit}
+                temporaryLimitsPreviousValues={previousCurrentLimits?.temporaryLimits}
                 currentNode={currentNode}
                 onlySelectedLimitsGroup={onlySelectedLimitsGroup}
             />
