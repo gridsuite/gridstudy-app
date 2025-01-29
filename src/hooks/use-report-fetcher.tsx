@@ -81,6 +81,7 @@ export const useReportFetcher = (
     const [isLoading, setIsLoading] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const { snackError } = useSnackMessage();
 
@@ -116,11 +117,12 @@ export const useReportFetcher = (
 
     const fetchRawParentReport = useCallback(
         (nodeOnlyReport?: boolean) => {
-            if (currentNode !== null && studyUuid) {
+            if (currentNode !== null && studyUuid && currentRootNetwork) {
                 return fetch(() =>
                     fetchParentNodesReport(
                         studyUuid,
                         currentNode.id,
+                        currentRootNetwork,
                         nodeOnlyReport ?? true,
                         getContainerDefaultSeverityList(),
                         computingAndNetworkModificationType
@@ -129,27 +131,43 @@ export const useReportFetcher = (
             }
             return Promise.resolve(undefined);
         },
-        [currentNode, fetch, computingAndNetworkModificationType, studyUuid]
+        [currentNode, currentRootNetwork, fetch, computingAndNetworkModificationType, studyUuid]
     );
 
     const fetchReportLogs = useCallback(
         (reportId: string, severityList: string[], reportType: ReportType, messageFilter: string) => {
-            if (!studyUuid) {
+            if (!studyUuid || !currentRootNetwork) {
                 return;
             }
             let fetchPromise: (severityList: string[], reportId: string) => Promise<ReportLog[]>;
             if (reportType === ReportType.GLOBAL) {
                 fetchPromise = (severityList: string[]) =>
-                    fetchNodeReportLogs(studyUuid, currentNode!.id, null, severityList, messageFilter, true);
+                    fetchNodeReportLogs(
+                        studyUuid,
+                        currentNode!.id,
+                        currentRootNetwork,
+                        null,
+                        severityList,
+                        messageFilter,
+                        true
+                    );
             } else {
                 fetchPromise = (severityList: string[], reportId: string) =>
-                    fetchNodeReportLogs(studyUuid, currentNode!.id, reportId, severityList, messageFilter, false);
+                    fetchNodeReportLogs(
+                        studyUuid,
+                        currentNode!.id,
+                        currentRootNetwork,
+                        reportId,
+                        severityList,
+                        messageFilter,
+                        false
+                    );
             }
             return fetchPromise(severityList, reportId).then((r) => {
                 return mapReportLogs(prettifyReportLogMessage(r, nodesNames));
             });
         },
-        [currentNode, studyUuid, nodesNames]
+        [currentNode, currentRootNetwork, studyUuid, nodesNames]
     );
 
     const fetchReportSeverities = useCallback(
@@ -157,15 +175,19 @@ export const useReportFetcher = (
             if (!studyUuid) {
                 return;
             }
+            if (!currentRootNetwork) {
+                return;
+            }
             let fetchPromise: (reportId: string) => Promise<SeverityLevel[]>;
             if (reportType === ReportType.GLOBAL) {
-                fetchPromise = () => fetchNodeSeverities(studyUuid, currentNode!.id, null, true);
+                fetchPromise = () => fetchNodeSeverities(studyUuid, currentNode!.id, currentRootNetwork, null, true);
             } else {
-                fetchPromise = (reportId: string) => fetchNodeSeverities(studyUuid, currentNode!.id, reportId, false);
+                fetchPromise = (reportId: string) =>
+                    fetchNodeSeverities(studyUuid, currentNode!.id, currentRootNetwork, reportId, false);
             }
             return fetchPromise(reportId);
         },
-        [currentNode, studyUuid]
+        [currentNode, studyUuid, currentRootNetwork]
     );
 
     return [isLoading, fetchRawParentReport, fetchReportLogs, fetchReportSeverities];
