@@ -127,6 +127,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const diagramViewerRef = useRef<SingleLineDiagramViewer>();
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
@@ -147,7 +149,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         isDiagramRunningOneBusShortcircuitAnalysis,
         displayOneBusShortcircuitAnalysisLoader,
         resetOneBusShortcircuitAnalysisLoader,
-    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode?.id!);
+    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode?.id!, currentRootNetworkUuid!);
 
     // dynamic simulation event configuration states
     const [equipmentToConfigDynamicSimulationEvent, setEquipmentToConfigDynamicSimulationEvent] =
@@ -299,7 +301,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
             displayOneBusShortcircuitAnalysisLoader();
             dispatch(setComputationStarting(true));
-            startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
+            startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, busId)
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -319,6 +321,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             displayOneBusShortcircuitAnalysisLoader,
             studyUuid,
             currentNode?.id,
+            currentRootNetworkUuid,
             snackError,
             resetOneBusShortcircuitAnalysisLoader,
         ]
@@ -349,6 +352,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode?.id,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.MAP.type,
                     equipmentId,
@@ -370,7 +374,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     });
             }
         },
-        [studyUuid, currentNode?.id, snackError, handleOpenDeletionDialog, removeEquipment]
+        [studyUuid, currentNode?.id, currentRootNetworkUuid, snackError, handleOpenDeletionDialog, removeEquipment]
     );
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
@@ -411,6 +415,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
                     setModificationInProgress={setModificationInProgress}
@@ -484,6 +489,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 open={true}
                 studyUuid={studyUuid}
                 currentNode={currentNode}
+                currentRootNetworkUuid={currentRootNetworkUuid}
                 defaultIdValue={equipmentToModify?.equipmentId}
                 isUpdate={true}
                 onClose={() => closeModificationDialog()}
@@ -501,6 +507,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultIdValue={equipmentToDelete?.equipmentId}
                         isUpdate={true}
                         onClose={() => closeDeletionDialog()}

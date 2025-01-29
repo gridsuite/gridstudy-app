@@ -41,7 +41,11 @@ const styles = {
 
 export const NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS = ['nonEvacuatedEnergyResult'];
 
-export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTabProps> = ({ studyUuid, nodeUuid }) => {
+export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTabProps> = ({
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
+}) => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const RESULTS_TAB_INDEX = 0;
@@ -54,6 +58,7 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTa
     const [nonEvacuatedEnergyResult] = useNodeData(
         studyUuid,
         nodeUuid,
+        currentRootNetworkUuid,
         fetchNonEvacuatedEnergyResult,
         NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS
     );

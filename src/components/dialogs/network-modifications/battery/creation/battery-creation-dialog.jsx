@@ -93,7 +93,15 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-const BatteryCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
+const BatteryCreationDialog = ({
+    editData,
+    currentNode,
+    studyUuid,
+    currentRootNetworkUuid,
+    isUpdate,
+    editDataFetchStatus,
+    ...dialogProps
+}) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
@@ -135,6 +143,7 @@ const BatteryCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, edi
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.BATTERY,
@@ -235,7 +244,11 @@ const BatteryCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, edi
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <BatteryCreationForm studyUuid={studyUuid} currentNode={currentNode} />
+                <BatteryCreationForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
 
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
@@ -243,6 +256,7 @@ const BatteryCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, edi
                     equipmentType={'BATTERY'}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
@@ -253,6 +267,7 @@ BatteryCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editDataFetchStatus: PropTypes.string,
 };

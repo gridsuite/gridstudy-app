@@ -63,6 +63,7 @@ export type MenuBranchProps = {
     onOpenDynamicSimulationEventDialog?: (id: string, type: EquipmentType | null, dialogTitle: string) => void;
     currentNode?: CurrentTreeNode;
     studyUuid?: UUID;
+    currentRootNetworkUuid?: UUID | null;
     modificationInProgress?: boolean;
     setModificationInProgress?: (progress: boolean) => void;
 };
@@ -81,6 +82,7 @@ const withOperatingStatusMenu =
         onOpenDynamicSimulationEventDialog,
         currentNode,
         studyUuid,
+        currentRootNetworkUuid,
         modificationInProgress,
         setModificationInProgress,
     }: MenuBranchProps) => {
@@ -103,6 +105,7 @@ const withOperatingStatusMenu =
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode?.id,
+                    currentRootNetworkUuid,
                     equipmentType,
                     EQUIPMENT_INFOS_TYPES.OPERATING_STATUS.type,
                     equipment.id,
@@ -113,7 +116,7 @@ const withOperatingStatusMenu =
                     }
                 });
             }
-        }, [studyUuid, currentNode?.id, equipmentType, equipment?.id]);
+        }, [studyUuid, currentNode?.id, currentRootNetworkUuid, equipmentType, equipment?.id]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -403,6 +406,7 @@ withOperatingStatusMenu.propTypes = {
     onOpenDynamicSimulationEventDialog: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
+    currentRootNetworkUuid: PropTypes.string.isRequired,
     modificationInProgress: PropTypes.func,
     setModificationInProgress: PropTypes.func,
 };

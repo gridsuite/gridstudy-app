@@ -28,6 +28,7 @@ interface VscModificationFormProps {
     tabIndex: number;
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
     equipmentId: string;
     vscToModify: VscModificationInfo | null;
     setTabIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -40,6 +41,7 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
     setTabIndex,
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     equipmentId,
     vscToModify,
     tabIndexesWithError,
@@ -95,6 +97,7 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
                 <ConverterStationPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     id={CONVERTER_STATION_1}
                     stationLabel={'converterStation1'}
                     isModification
@@ -108,6 +111,7 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
                 <ConverterStationPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     id={CONVERTER_STATION_2}
                     stationLabel={'converterStation2'}
                     isModification

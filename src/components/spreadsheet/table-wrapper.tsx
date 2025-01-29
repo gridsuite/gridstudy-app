@@ -75,6 +75,7 @@ const styles = {
 interface TableWrapperProps {
     studyUuid: string;
     currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: string;
     equipmentId: string;
     equipmentType: SpreadsheetEquipmentType;
     equipmentChanged: boolean;
@@ -88,6 +89,7 @@ interface RecursiveIdentifiable extends Identifiable {
 export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     equipmentId,
     equipmentType,
     equipmentChanged,

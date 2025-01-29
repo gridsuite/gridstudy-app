@@ -17,9 +17,15 @@ import { Box } from '@mui/material';
 interface VscCreationFormProps {
     tabIndex: number;
     studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
     currentNode: CurrentTreeNode;
 }
-const VscCreationForm: FunctionComponent<VscCreationFormProps> = ({ tabIndex, studyUuid, currentNode }) => {
+const VscCreationForm: FunctionComponent<VscCreationFormProps> = ({
+    tabIndex,
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+}) => {
     return (
         <>
             <Box hidden={tabIndex !== VSC_CREATION_TABS.HVDC_LINE_TAB} p={1}>
@@ -29,6 +35,7 @@ const VscCreationForm: FunctionComponent<VscCreationFormProps> = ({ tabIndex, st
                 <ConverterStationPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     id={CONVERTER_STATION_1}
                     stationLabel={'converterStation1'}
                 />
@@ -37,6 +44,7 @@ const VscCreationForm: FunctionComponent<VscCreationFormProps> = ({ tabIndex, st
                 <ConverterStationPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     id={CONVERTER_STATION_2}
                     stationLabel={'converterStation2'}
                 />
