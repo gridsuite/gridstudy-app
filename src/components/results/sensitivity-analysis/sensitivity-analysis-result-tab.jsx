@@ -10,16 +10,13 @@ import PropTypes from 'prop-types';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
-import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import {
     COMPUTATION_RESULTS_LOGS,
     FUNCTION_TYPES,
-    mappingTabs,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result-utils';
-import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -31,11 +28,6 @@ import { downloadZipFile } from '../../../services/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
-import { setSensitivityAnalysisResultFilter } from 'redux/actions';
-import {
-    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
-    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
-} from 'utils/store-sort-filter-fields';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -43,7 +35,7 @@ export const SensitivityResultTabs = [
 ];
 
 function getDisplayedColumns(params) {
-    return params.api.columnModel.columnDefs.map((c) => c.headerComponentParams.displayName);
+    return params.api.getColumnDefs()?.map((c) => c.headerComponentParams.displayName);
 }
 
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
@@ -55,17 +47,6 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [page, setPage] = useState(0);
     const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
-
-    const { updateFilter, filterSelector } = useAggridRowFilter({
-        filterType: SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
-        filterTab: mappingTabs(sensiKind, nOrNkIndex),
-        filterStoreAction: setSensitivityAnalysisResultFilter,
-    });
-
-    const { onSortChanged, sortConfig } = useAgGridSort(
-        SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
-        mappingTabs(sensiKind, nOrNkIndex)
-    );
 
     const initTable = () => {
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
@@ -104,7 +85,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
 
     const handleRowDataUpdated = useCallback((params) => {
         if (params?.api) {
-            setIsCsvButtonDisabled(params.api.getModel().getRowCount() === 0);
+            setIsCsvButtonDisabled(params.api.getDisplayedRowCount() === 0);
         }
     }, []);
 
@@ -165,14 +146,6 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         nodeUuid={nodeUuid}
                         page={page}
                         setPage={setPage}
-                        sortProps={{
-                            onSortChanged,
-                            sortConfig,
-                        }}
-                        filterProps={{
-                            updateFilter,
-                            filterSelector,
-                        }}
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
                     />

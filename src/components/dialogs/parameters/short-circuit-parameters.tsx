@@ -19,11 +19,11 @@ import {
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import {
-    fetchShortCircuitParameters,
     getShortCircuitParameters,
     invalidateShortCircuitStatus,
     setShortCircuitParameters,
 } from '../../../services/study/short-circuit-analysis';
+import { fetchShortCircuitParameters } from '../../../services/short-circuit-analysis';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import { mergeSx } from '../../utils/functions';
@@ -347,7 +347,7 @@ export const ShortCircuitParameters: FunctionComponent<ShortCircuitParametersPro
                             id: 'showSelectParameterDialog',
                         })}
                         onlyLeaves={true}
-                        multiselect={false}
+                        multiSelect={false}
                         validationButtonText={intl.formatMessage({
                             id: 'validate',
                         })}
