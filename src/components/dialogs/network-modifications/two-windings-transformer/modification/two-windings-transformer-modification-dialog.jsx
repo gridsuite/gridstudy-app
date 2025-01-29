@@ -612,7 +612,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
                                 }),
                                 ...getRatioTapChangerFormData({
-                                    enabled: isRatioTapChangerEnabled(twt, editData, isNodeBuilt(currentNode)),
+                                    enabled: isRatioTapChangerEnabled(twt, isNodeBuilt(currentNode)),
                                     hasLoadTapChangingCapabilities: getValues(
                                         `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
                                     ),

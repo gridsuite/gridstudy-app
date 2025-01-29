@@ -45,7 +45,7 @@ import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/netwo
 
 const phaseTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [ENABLED]: yup.bool().nullable().required(),
+        [ENABLED]: yup.bool().required(),
         [REGULATION_MODE]: yup
             .string()
             .nullable()
@@ -166,7 +166,7 @@ const phaseTapChangerValidationSchema = (id) => ({
 
 const phaseTapChangerModificationValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [ENABLED]: yup.bool().nullable().required(),
+        [ENABLED]: yup.bool().required(),
         [REGULATION_MODE]: yup.string().nullable(),
         [REGULATION_TYPE]: yup.string().nullable(),
         [REGULATION_SIDE]: yup.string().nullable(),
