@@ -135,6 +135,8 @@ export function OperationalLimitsGroupsTabs({
         [setEditingTabIndex, handleCloseMenu]
     );
 
+    // synchronisation of the selected limit set : tabs combine both side 1 and side 2 limits sets which are different
+    // therefore both have separated selection indexes
     useEffect(() => {
         if (selectedLimitGroupTabIndex != null && selectedLimitGroupTabIndex < limitsGroups1.length) {
             const selectedGroupStr: string = limitsGroups1[selectedLimitGroupTabIndex].id;
@@ -160,6 +162,12 @@ export function OperationalLimitsGroupsTabs({
         setIndexSelectedLimitSet1,
         setIndexSelectedLimitSet2,
     ]);
+    useEffect(() => {
+        // as long as there are limit sets, one should be selected
+        if (selectedLimitGroupTabIndex === null && limitsGroups1.length > 0) {
+            setSelectedLimitGroupTabIndex(0);
+        }
+    }, [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex, limitsGroups1]);
 
     // synchronizeOperationalLimitsGroups : all the limit sets from both sides have to be
     // in both limitsGroups1 and limitsGroups2, even if they don't contain any data
@@ -256,9 +264,6 @@ export function OperationalLimitsGroupsTabs({
     const addNewLimitSet = useCallback(() => {
         const newIndex: number = limitsGroups1.length;
         let newName: string = `LIMIT_SET`;
-        if (newIndex > 0) {
-            newName += `(${limitsGroups1.length > 0 ? newIndex : ''})`;
-        }
         // new limit sets are created with 5 empty limits by default
         const emptyTemporaryLimit = {
             [TEMPORARY_LIMIT_NAME]: '',

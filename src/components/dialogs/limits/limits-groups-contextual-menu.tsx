@@ -81,13 +81,11 @@ export function LimitsGroupsContextualMenu({
     };
 
     const handleDuplicateTab = () => {
-        const numberOfLimitsGroups = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`).length;
-        const newName: string = editedLimitGroupName + ` (${numberOfLimitsGroups})`;
         if (indexSelectedLimitSet1 !== null) {
             const duplicatedLimits1 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`);
             const newLimitsGroup1: OperationalLimitsGroup = {
                 ...duplicatedLimits1,
-                [ID]: newName,
+                [ID]: editedLimitGroupName,
             };
             appendToLimitsGroups1(newLimitsGroup1);
         }
@@ -96,7 +94,7 @@ export function LimitsGroupsContextualMenu({
             const duplicatedLimits2 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`);
             const newLimitsGroup2: OperationalLimitsGroup = {
                 ...duplicatedLimits2,
-                [ID]: newName,
+                [ID]: editedLimitGroupName,
             };
             appendToLimitsGroups2(newLimitsGroup2);
         }
