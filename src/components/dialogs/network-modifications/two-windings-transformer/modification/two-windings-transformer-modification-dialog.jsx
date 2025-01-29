@@ -574,7 +574,7 @@ const TwoWindingsTransformerModificationDialog = ({
         [setValue]
     );
 
-    const getStepsPhaseTapChanger = useCallback(
+    const getPhaseTapChangerSteps = useCallback(
         (twt, isNodeBuilt) => {
             if (!isNodeBuilt) {
                 if (editData === undefined) {
@@ -594,7 +594,7 @@ const TwoWindingsTransformerModificationDialog = ({
         [editData]
     );
 
-    const getStepsRatioTapChanger = useCallback(
+    const getRatioTapChangerSteps = useCallback(
         (twt, isNodeBuilt) => {
             if (!isNodeBuilt) {
                 if (editData === undefined) {
@@ -663,7 +663,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     highTapPosition: getValues(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
                                     tapPosition: getValues(`${RATIO_TAP_CHANGER}.${TAP_POSITION}`),
                                     steps: addSelectedFieldToRows(
-                                        getStepsRatioTapChanger(twt, editData, isNodeBuilt(currentNode))
+                                        getRatioTapChangerSteps(twt, isNodeBuilt(currentNode))
                                     ),
                                     equipmentId: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
                                     equipmentType: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
@@ -687,7 +687,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     ),
                                     tapPosition: getValues(`${PHASE_TAP_CHANGER}.${TAP_POSITION}`),
                                     steps: addSelectedFieldToRows(
-                                        getStepsPhaseTapChanger(twt, editData, isNodeBuilt(currentNode))
+                                        getPhaseTapChangerSteps(twt, isNodeBuilt(currentNode))
                                     ),
                                     equipmentId: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
                                     equipmentType: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
@@ -718,10 +718,10 @@ const TwoWindingsTransformerModificationDialog = ({
             reset,
             isRatioTapChangerEnabled,
             currentNode,
-            getStepsRatioTapChanger,
+            getRatioTapChangerSteps,
             editData,
             isPhaseTapChangerEnabled,
-            getStepsPhaseTapChanger,
+            getPhaseTapChangerSteps,
         ]
     );
 
