@@ -24,6 +24,7 @@ import type { AppState } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetchers } from './config/equipment/common-config';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 export type EquipmentProps = {
     type: SpreadsheetEquipmentType;
@@ -43,6 +44,9 @@ export const useSpreadsheetEquipments = (
     const customColumnsDefinitions = useSelector((state: AppState) => state.tables.allCustomColumnsDefinitions);
     const customColumnsNodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const isNetworkModificationTreeModelUpToDate = useSelector(
+        (state: AppState) => state.isNetworkModificationTreeModelUpToDate
+    );
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
@@ -135,7 +139,14 @@ export const useSpreadsheetEquipments = (
     ]);
 
     useEffect(() => {
-        if (shouldFetchEquipments && studyUuid && currentRootNetworkUuid && currentNode?.id) {
+        if (
+            shouldFetchEquipments &&
+            studyUuid &&
+            currentRootNetworkUuid &&
+            currentNode?.id &&
+            isNetworkModificationTreeModelUpToDate &&
+            isNodeBuilt(currentNode)
+        ) {
             setErrorMessage(null);
             setIsFetching(true);
             Promise.all(
@@ -158,9 +169,9 @@ export const useSpreadsheetEquipments = (
         equipment,
         shouldFetchEquipments,
         studyUuid,
-        currentNode?.id,
+        currentNode,
         currentRootNetworkUuid,
-
+        isNetworkModificationTreeModelUpToDate,
         dispatch,
         formatFetchedEquipments,
         customColumnsDefinitions,
