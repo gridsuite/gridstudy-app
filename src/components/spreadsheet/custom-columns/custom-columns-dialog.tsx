@@ -95,9 +95,7 @@ export default function CustomColumnDialog({
         <TextInput name={COLUMN_NAME} label={'spreadsheet/custom_column/column_name'} formProps={{ autoFocus: true }} />
     );
 
-    const columnIdField = (
-        <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} formProps={{ autoFocus: true }} />
-    );
+    const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
 
     const formulaField = (
         <ExpandingTextField
