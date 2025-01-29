@@ -21,7 +21,7 @@ export const useSpreadsheetGsFilter = (equipmentType: SpreadsheetEquipmentType) 
 
     const applyGsFilter = useCallback(
         async (filters: ExpertFilter[]) => {
-            if (!filters || filters?.length === 0 || !currentNode?.id) {
+            if (!filters?.length || !currentNode?.id) {
                 setFilterIds([]);
                 return;
             }
