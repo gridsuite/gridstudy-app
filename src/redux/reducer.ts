@@ -282,9 +282,9 @@ import {
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import {
+    EQUIPMENT_TYPES as NetworkViewerEquipmentType,
     LineFlowColorMode,
     LineFlowMode,
-    EQUIPMENT_TYPES as NetworkViewerEquipmentType,
 } from '@powsybl/network-viewer';
 import type { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';

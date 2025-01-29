@@ -9,8 +9,8 @@ import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { makeComponents, TYPES } from '../util/make-component-utils';
 import ParameterLineDirectoryItemsInput from '../widget/parameter-line-directory-items-input';
-import { ElementType, NAME } from '@gridsuite/commons-ui';
-import { ID } from '../../../utils/field-constants';
+import { ElementType } from '@gridsuite/commons-ui';
+import { ID, NAME } from '../../../utils/field-constants';
 
 export const CONTINGENCIES_START_TIME = 'contingenciesStartTime';
 export const CONTINGENCIES_LIST_INFOS = 'contingencyListInfos';

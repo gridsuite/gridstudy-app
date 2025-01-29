@@ -86,7 +86,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
 
     const handleUpdateProvider = useCallback(
-        (evt: SelectChangeEvent<string>) => {
+        (evt: SelectChangeEvent) => {
             updateProvider(evt.target.value);
         },
         [updateProvider]

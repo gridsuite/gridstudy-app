@@ -62,13 +62,6 @@ export function fetchDynamicSecurityAnalysisStatus(studyUuid: UUID, currentNodeU
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSecurityAnalysisProvider(studyUuid: UUID) {
-    console.info('fetch dynamic security analysis provider');
-    const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/provider';
-    console.debug(url);
-    return backendFetchText(url);
-}
-
 export function fetchDefaultDynamicSecurityAnalysisProvider() {
     console.info('fetch default dynamic security analysis provider');
     const url = PREFIX_STUDY_QUERIES + '/v1/dynamic-security-analysis-default-provider';
