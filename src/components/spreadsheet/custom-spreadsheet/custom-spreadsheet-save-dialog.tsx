@@ -37,7 +37,12 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const customColumns = useMemo(() => {
-        return customColumnsDefinitions.map(({ id, name, formula }) => ({ id, name, formula }));
+        return customColumnsDefinitions.map(({ id, name, formula, dependencies }) => ({
+            id,
+            name,
+            formula,
+            dependencies: JSON.stringify(dependencies),
+        }));
     }, [customColumnsDefinitions]);
 
     const staticColumnIdToField = useMemo(() => {

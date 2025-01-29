@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 export type Item = {
-    name: string;
+    id: string;
     dependencies: string[];
 };
 
 export const hasCyclicDependencies = (items: Item[]): boolean => {
-    const dependenciesPerItemName = items.reduce((acc, item) => {
-        acc[item.name] = item.dependencies || [];
+    const dependenciesPerItemId = items.reduce((acc, item) => {
+        acc[item.id] = item.dependencies || [];
         return acc;
     }, {} as Record<string, string[]>);
 
@@ -30,7 +30,7 @@ export const hasCyclicDependencies = (items: Item[]): boolean => {
         visited.add(node);
         stack.add(node);
 
-        for (const dep of dependenciesPerItemName[node]) {
+        for (const dep of dependenciesPerItemId[node]) {
             if (dfs(dep)) {
                 return true;
             }
@@ -42,8 +42,8 @@ export const hasCyclicDependencies = (items: Item[]): boolean => {
 
     // Run DFS from each node
     for (const item of items) {
-        if (!visited.has(item.name)) {
-            if (dfs(item.name)) {
+        if (!visited.has(item.id)) {
+            if (dfs(item.id)) {
                 return true;
             }
         }

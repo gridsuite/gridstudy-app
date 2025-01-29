@@ -219,7 +219,7 @@ export default function CustomColumnDialog({
                             <MultipleAutocompleteInput
                                 label={intl.formatMessage({ id: 'spreadsheet/custom_column/column_dependencies' })}
                                 name={COLUMN_DEPENDENCIES}
-                                options={customColumnsDefinitions?.map((definition) => definition.name) ?? []}
+                                options={customColumnsDefinitions?.map((definition) => definition.id) ?? []}
                                 disableClearable={false}
                                 disableCloseOnSelect
                                 freeSolo={false}

@@ -104,7 +104,7 @@ export function useCustomColumn(tabIndex: number) {
     const createCustomColumn = useCallback(() => {
         return customColumnsDefinitions.map((colWithFormula): CustomColDef => {
             return {
-                colId: colWithFormula.name,
+                colId: colWithFormula.id,
                 headerName: colWithFormula.name,
                 headerTooltip: colWithFormula.name,
                 headerComponent: CustomHeaderComponent,
