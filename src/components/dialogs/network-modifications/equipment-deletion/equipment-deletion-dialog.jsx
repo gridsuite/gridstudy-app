@@ -47,6 +47,7 @@ const emptyFormData = {
 const EquipmentDeletionDialog = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     editData,
     isUpdate,
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD/map
@@ -135,7 +136,12 @@ const EquipmentDeletionDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <DeleteEquipmentForm studyUuid={studyUuid} currentNode={currentNode} editData={editData} />
+                <DeleteEquipmentForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    editData={editData}
+                />
             </ModificationDialog>
         </CustomFormProvider>
     );
@@ -144,6 +150,7 @@ const EquipmentDeletionDialog = ({
 EquipmentDeletionDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     editData: PropTypes.object,
     isUpdate: PropTypes.bool,
     defaultIdValue: PropTypes.string,
