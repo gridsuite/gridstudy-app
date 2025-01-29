@@ -186,7 +186,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
                                 label="Provider"
                                 values={Object.entries(providers).reduce<Record<string, string>>(
                                     (obj, [key, value]) => {
-                                        obj[key] = `DynamicSimulationProvider${value}`;
+                                        obj[key] = `DynamicSecurityAnalysisProvider${value}`;
                                         return obj;
                                     },
                                     {}

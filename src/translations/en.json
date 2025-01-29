@@ -372,6 +372,7 @@
 
     "startDynamicSecurityAnalysisError": "An error occurred while starting the dynamic security analysis",
     "DynamicSecurityAnalysis": "Dynamic security analysis",
+    "DynamicSecurityAnalysisProviderDynawo": "Dynawo",
     "DynamicSecurityAnalysisRunError": "An error occurred while executing the dynamic security analysis",
     "DynamicSecurityAnalysisContingency": "Contingency",
     "DynamicSecurityAnalysisScenario": "Scenario",
