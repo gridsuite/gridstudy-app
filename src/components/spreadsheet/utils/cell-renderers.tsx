@@ -80,12 +80,12 @@ export const formatCell = (props: any) => {
             ? props.colDef.valueGetter(props, props.context.network)
             : props.colDef.valueGetter(props);
     }
-    if (value != null && props.colDef.numeric && props.colDef.fractionDigits) {
+    if (value != null && props.colDef.context?.numeric && props.colDef.context?.fractionDigits) {
         // only numeric rounded cells have a tooltip (their raw numeric value)
         tooltipValue = value;
-        value = parseFloat(value).toFixed(props.colDef.fractionDigits);
+        value = parseFloat(value).toFixed(props.colDef.context.fractionDigits);
     }
-    if (props.colDef.numeric && isNaN(value)) {
+    if (props.colDef.context?.numeric && isNaN(value)) {
         value = null;
     }
     return { value: value, tooltip: tooltipValue };

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { FunctionComponent, SyntheticEvent, useMemo } from 'react';
+import React, { FunctionComponent, SyntheticEvent, useMemo, useEffect, useState, useCallback } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
@@ -25,18 +25,42 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
 }) => {
     const intl = useIntl();
     const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, colId, filterParams);
+    const [computedFilterOptions, setComputedFilterOptions] = useState<string[]>([]);
+
+    const getUniqueValues = useCallback(() => {
+        const uniqueValues = new Set<string>();
+        api.forEachNode((node) => {
+            const value = api.getCellValue({
+                rowNode: node,
+                colKey: colId,
+            });
+            if (value) {
+                uniqueValues.add(value);
+            }
+        });
+        return Array.from(uniqueValues);
+    }, [api, colId]);
+
+    useEffect(() => {
+        if (!filterEnums) {
+            setComputedFilterOptions(getUniqueValues());
+        }
+    }, [filterEnums, getUniqueValues]);
 
     const handleFilterAutoCompleteChange = (_: SyntheticEvent, data: string[]) => {
         handleChangeFilterValue({ value: data, type: FILTER_TEXT_COMPARATORS.EQUALS });
     };
 
-    const filterOption = useMemo(() => filterEnums?.[colId] ?? [], [colId, filterEnums]);
+    const filterOptions = useMemo(
+        () => filterEnums?.[colId] ?? computedFilterOptions,
+        [colId, computedFilterOptions, filterEnums]
+    );
 
     return (
         <Autocomplete
             multiple
             value={Array.isArray(selectedFilterData) ? selectedFilterData : []}
-            options={filterOption}
+            options={filterOptions}
             getOptionLabel={getEnumLabel}
             onChange={handleFilterAutoCompleteChange}
             size="small"

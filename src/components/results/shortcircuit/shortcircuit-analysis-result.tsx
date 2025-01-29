@@ -70,6 +70,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
 
     const isOneBusShortCircuitAnalysisType = analysisType === ShortCircuitAnalysisType.ONE_BUS;
 
@@ -107,7 +108,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         if (analysisStatus !== RunningStatus.SUCCEED) {
             return;
         }
-
+        if (!currentRootNetworkUuid) {
+            return;
+        }
         let active = true; // to manage race condition
         setIsFetching(true);
         updateResult(null);
@@ -129,6 +132,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         fetchShortCircuitAnalysisPagedResults({
             studyUuid,
             currentNodeUuid: currentNode?.id,
+            currentRootNetworkUuid,
             type: analysisType,
             selector,
         })
@@ -163,6 +167,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         updateResult,
         studyUuid,
         currentNode?.id,
+        currentRootNetworkUuid,
         intl,
         filters,
         sortConfig,
@@ -170,7 +175,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     ]);
 
     useEffect(() => {
-        if (analysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
+        if (analysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
             return;
         }
 
@@ -183,7 +188,13 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         const filterTypes = isOneBusShortCircuitAnalysisType ? oneBusFilterTypes : allBusesFilterTypes;
 
         const promises = filterTypes.map((filter) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, currentComputingType, filter)
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                currentComputingType,
+                filter
+            )
         );
 
         Promise.all(promises)
@@ -207,7 +218,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [analysisStatus, intl, snackError, isOneBusShortCircuitAnalysisType, studyUuid, currentNode?.id]);
+    }, [
+        analysisStatus,
+        intl,
+        snackError,
+        isOneBusShortCircuitAnalysisType,
+        studyUuid,
+        currentNode?.id,
+        currentRootNetworkUuid,
+    ]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,

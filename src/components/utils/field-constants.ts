@@ -7,6 +7,10 @@
 
 export const EQUIPMENT_ID = 'equipmentId';
 export const EQUIPMENT_NAME = 'equipmentName';
+export const SUBSTATION_NAME = 'substationName';
+export const SUBSTATION_CREATION_ID = 'substationCreationId';
+export const ADD_SUBSTATION_CREATION = 'addSubstationCreationId';
+export const SUBSTATION_CREATION = 'substationCreation';
 export const LOAD_TYPE = 'loadType';
 export const CONNECTIVITY = 'connectivity';
 export const SETPOINTS_LIMITS = 'setpointsLimits';
@@ -19,6 +23,8 @@ export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
 export const FOLDER_ID = 'folderId';
 export const DESCRIPTION = 'description';
+export const CASE_NAME = 'caseName';
+export const CASE_ID = 'caseId';
 export const SUBSTATION_ID = 'substationId';
 export const NOMINAL_VOLTAGE = 'nominalVoltage';
 export const NOMINAL_V = 'nominalV';

@@ -47,7 +47,7 @@ const STRING_LIST = 'STRING_LIST';
  * @param {String} title Title of the dialog
  */
 
-const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) => {
+const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, rootNetworkUuid, title }) => {
     const [formatsWithParameters, setFormatsWithParameters] = useState([]);
     const [selectedFormat, setSelectedFormat] = useState('');
     const [loading, setLoading] = useState(false);
@@ -122,7 +122,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
     }, []);
     const handleExportClick = () => {
         if (selectedFormat) {
-            const downloadUrl = getExportUrl(studyUuid, nodeUuid, selectedFormat);
+            const downloadUrl = getExportUrl(studyUuid, nodeUuid, rootNetworkUuid, selectedFormat);
             let suffix;
             const urlSearchParams = new URLSearchParams();
             if (Object.keys(currentParameters).length > 0) {
@@ -245,6 +245,7 @@ ExportDialog.propTypes = {
     onClick: PropTypes.func.isRequired,
     studyUuid: PropTypes.string,
     nodeUuid: PropTypes.string,
+    rootNetworkUuid: PropTypes.string,
     title: PropTypes.string.isRequired,
 };
 
