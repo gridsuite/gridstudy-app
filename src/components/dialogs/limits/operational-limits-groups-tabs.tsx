@@ -30,6 +30,7 @@ import { OperationalLimitsGroup } from '../../../services/network-modification-t
 import MenuIcon from '@mui/icons-material/Menu';
 import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
+import { FormattedMessage } from 'react-intl';
 
 export const limitsStyles = {
     limitsBackground: {
@@ -75,6 +76,7 @@ export function OperationalLimitsGroupsTabs({
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const [activatedByMenuTabIndex, setActivatedByMenuTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
+    const [editionError, setEditionError] = useState<string>('');
     const editLimitGroupRef = useRef<HTMLInputElement>(null);
     const { setValue } = useFormContext();
     const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
@@ -129,6 +131,7 @@ export function OperationalLimitsGroupsTabs({
 
     const startEditingLimitsGroup = useCallback(
         (index: number) => {
+            setEditionError('');
             setEditingTabIndex(index);
             handleCloseMenu();
         },
@@ -207,6 +210,19 @@ export function OperationalLimitsGroupsTabs({
 
     const finishEditingLimitsGroup = useCallback(() => {
         if (editingTabIndex !== null) {
+            if (isBlankOrEmpty(editedLimitGroupName)) {
+                setEditionError('LimitSetCreationEmptyError');
+                return;
+            }
+            // checks if a limit set with that name already exists
+            if (
+                limitsGroups1.find((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === editedLimitGroupName) ||
+                limitsGroups2.find((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === editedLimitGroupName)
+            ) {
+                setEditionError('LimitSetCreationDuplicateError');
+                return;
+            }
+
             // get the old name of the modified limit set in order to update it on both sides (and the selected sides if needed)
             const oldName: string = limitsGroups1[editingTabIndex].id;
             const indexInLs1: number | undefined = limitsGroups1.findIndex(
@@ -236,6 +252,7 @@ export function OperationalLimitsGroupsTabs({
             }
             setSelectedLimitGroupTabIndex(editingTabIndex);
             setEditingTabIndex(null);
+            setEditionError('');
         }
     }, [
         id,
@@ -312,7 +329,9 @@ export function OperationalLimitsGroupsTabs({
                                     onChange={handleLimitsGroupNameChange}
                                     onKeyDown={handleKeyDown}
                                     inputRef={editLimitGroupRef}
-                                    autoFocus
+                                    onBlur={() => setEditingTabIndex(null)}
+                                    error={!!editionError}
+                                    helperText={!!editionError && <FormattedMessage id={editionError} />}
                                     size="small"
                                     fullWidth
                                 />

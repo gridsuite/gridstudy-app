@@ -691,6 +691,8 @@
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
     "StaticVarCompensatorCreationError": "Erreur lors de la création d'un cspr",
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
+    "LimitSetCreationDuplicateError": "Les noms de limit sets doivent être uniques.",
+    "LimitSetCreationEmptyError": "Les noms de limits sets ne peuvent pas être vides.",
 
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",

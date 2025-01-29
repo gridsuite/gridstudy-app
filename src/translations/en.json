@@ -691,6 +691,8 @@
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
     "StaticVarCompensatorCreationError": "Error while creating static var compensator",
     "LccCreationError": "Error while creating HVDC (LCC)",
+    "LimitSetCreationDuplicateError": "Limit sets names have to be unique",
+    "LimitSetCreationEmptyError": "Limit sets names can't be empty",
 
     "CreateBattery": "Create battery",
     "ModifyBattery": "Modify battery",
