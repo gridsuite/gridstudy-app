@@ -21,6 +21,7 @@ import GridSection from '../commons/grid-section';
 const SetPointsForm = ({
     studyUuid,
     currentNodeUuid,
+    currentRootNetworkUuid,
     voltageLevelOptions,
     isEquipmentModification = false,
     previousValues,
@@ -78,6 +79,7 @@ const SetPointsForm = ({
         <VoltageRegulation
             voltageLevelOptions={voltageLevelOptions}
             currentNodeUuid={currentNodeUuid}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             studyUuid={studyUuid}
             previousValues={previousValues}
             isEquipmentModification={isEquipmentModification}

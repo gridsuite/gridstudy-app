@@ -40,7 +40,7 @@ import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selectio
 import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
 
-const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
+const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
     const { setValue } = useFormContext();
@@ -55,12 +55,14 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     }, [watchAddSubstationCreation]);
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchEquipmentsIds(studyUuid, currentNodeUuid, undefined, 'SUBSTATION', true).then((values) => {
-                setSubstations(values.sort((a, b) => a.localeCompare(b)));
-            });
+        if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
+            fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, 'SUBSTATION', true).then(
+                (values) => {
+                    setSubstations(values.sort((a, b) => a.localeCompare(b)));
+                }
+            );
         }
-    }, [studyUuid, currentNodeUuid]);
+    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const voltageLevelIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />

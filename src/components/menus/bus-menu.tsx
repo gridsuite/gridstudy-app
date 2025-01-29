@@ -75,6 +75,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
 
     // to check is node editable
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const isNodeEditable = useMemo(
@@ -86,6 +87,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         fetchNetworkElementInfos(
             studyUuid,
             currentNode?.id,
+            currentRootNetworkUuid,
             EQUIPMENT_TYPES.BUSBAR_SECTION,
             EQUIPMENT_INFOS_TYPES.OPERATING_STATUS.type,
             busId,
@@ -95,7 +97,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 setEquipmentInfos(value);
             }
         });
-    }, [studyUuid, currentNode?.id, busId]);
+    }, [studyUuid, currentRootNetworkUuid, currentNode?.id, busId]);
 
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
 
