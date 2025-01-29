@@ -109,6 +109,7 @@ const LineModificationDialog = ({
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     displayConnectivity = false,
     isUpdate,
     editDataFetchStatus,
@@ -285,6 +286,7 @@ const LineModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -336,7 +338,16 @@ const LineModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, editData, reset, emptyFormData, getValues, setConnectivityValue]
+        [
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            editData,
+            reset,
+            emptyFormData,
+            getValues,
+            setConnectivityValue,
+        ]
     );
 
     useEffect(() => {
@@ -430,6 +441,7 @@ const LineModificationDialog = ({
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.LINE}
