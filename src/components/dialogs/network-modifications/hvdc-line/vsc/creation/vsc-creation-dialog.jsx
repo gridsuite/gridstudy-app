@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, HvdcType, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -271,7 +271,10 @@ const VscCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
+                    equipmentType={{
+                        type: EquipmentType.HVDC_LINE,
+                        subtype: HvdcType.VSC,
+                    }}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
