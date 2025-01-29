@@ -37,11 +37,9 @@ const DynamicSecurityAnalysisResultLogs = memo(() => {
         }
     }, [dynamicSecurityAnalysisStatus, messages]);
     return (
-        <>
-            <Overlay message={overlayMessage}>
-                <ComputationReportViewer reportType={ComputingType.DYNAMIC_SECURITY_ANALYSIS} />
-            </Overlay>
-        </>
+        <Overlay message={overlayMessage}>
+            <ComputationReportViewer reportType={ComputingType.DYNAMIC_SECURITY_ANALYSIS} />
+        </Overlay>
     );
 });
 

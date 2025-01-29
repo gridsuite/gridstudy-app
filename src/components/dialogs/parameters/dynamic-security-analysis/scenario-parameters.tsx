@@ -29,7 +29,7 @@ const defParams = {
     },
 };
 
-function ScenarioParameters({ path }: { path: string }) {
+function ScenarioParameters({ path }: Readonly<{ path: string }>) {
     return (
         <Grid xl={6} container>
             {makeComponents(defParams, path)}

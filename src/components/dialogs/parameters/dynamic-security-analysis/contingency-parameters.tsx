@@ -40,7 +40,7 @@ const defParams = {
     },
 };
 
-function ContingencyParameters({ path }: { path: string }) {
+function ContingencyParameters({ path }: Readonly<{ path: string }>) {
     return (
         <Grid xl={6} container>
             {makeComponents(defParams, path)}
@@ -48,7 +48,7 @@ function ContingencyParameters({ path }: { path: string }) {
                 name={`${path}.${CONTINGENCIES_LIST_INFOS}`}
                 elementType={ElementType.CONTINGENCY_LIST}
                 label={'ContingencyListsSelection'}
-                hideErrorMessage
+                hideErrorMessage={true}
             />
         </Grid>
     );

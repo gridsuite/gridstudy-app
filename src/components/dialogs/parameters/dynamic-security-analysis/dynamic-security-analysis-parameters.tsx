@@ -106,7 +106,6 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
 
     const onError = useCallback(
         (errors: FieldErrors<DynamicSecurityAnalysisParametersForm>) => {
-            // TODO: this does not work if formSchema keys does not match tab values
             const tabsInError = [];
             // do not show error when being in the current tab
             if (errors?.[TAB_VALUES.SCENARIO] && TAB_VALUES.SCENARIO !== tabIndex) {
