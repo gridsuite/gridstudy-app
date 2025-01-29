@@ -571,10 +571,7 @@ const TwoWindingsTransformerModificationDialog = ({
             if (editData === undefined) {
                 return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
             }
-            if (
-                editData?.phaseTapChanger?.enabled === undefined ||
-                editData?.phaseTapChanger?.enabled?.value === false
-            ) {
+            if (editData?.phaseTapChanger?.steps === null || editData?.phaseTapChanger?.enabled?.value === false) {
                 return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
             }
             return editData?.phaseTapChanger?.steps;
@@ -587,10 +584,24 @@ const TwoWindingsTransformerModificationDialog = ({
             if (editData === undefined) {
                 return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
             }
-            if (editData?.ratioTapChanger?.steps === null || editData?.ratioTapChanger?.enabled?.value === false) {
+            if (
+                editData?.ratioTapChanger?.steps === null ||
+                editData?.ratioTapChanger?.steps === undefined ||
+                editData?.ratioTapChanger?.enabled?.value === false
+            ) {
                 return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
             }
             return editData?.ratioTapChanger?.steps;
+        },
+        [editData]
+    );
+
+    const getLoadRatioTapChangingCapabilities = useCallback(
+        (twt) => {
+            if (editData === undefined) {
+                return twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES];
+            }
+            return editData?.ratioTapChanger?.loadTapChangingCapabilities;
         },
         [editData]
     );
@@ -632,9 +643,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 }),
                                 ...getRatioTapChangerFormData({
                                     enabled: isRatioTapChangerEnabled(twt),
-                                    hasLoadTapChangingCapabilities: getValues(
-                                        `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
-                                    ),
+                                    hasLoadTapChangingCapabilities: getLoadRatioTapChangingCapabilities(twt),
                                     regulationMode: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_MODE}`),
                                     regulationType: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_TYPE}`),
                                     regulationSide: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_SIDE}`),
@@ -694,10 +703,11 @@ const TwoWindingsTransformerModificationDialog = ({
             getValues,
             reset,
             isRatioTapChangerEnabled,
+            getLoadRatioTapChangingCapabilities,
             getRatioTapChangerSteps,
-            editData,
             isPhaseTapChangerEnabled,
             getPhaseTapChangerSteps,
+            editData?.equipmentId,
         ]
     );
 
