@@ -6,7 +6,13 @@
  */
 
 import { useCallback, useEffect, useMemo } from 'react';
-import { Equipment, EquipmentType, getEquipmentsInfosForSearchBar, useElementSearch } from '@gridsuite/commons-ui';
+import {
+    Equipment,
+    EquipmentType,
+    getEquipmentsInfosForSearchBar,
+    HvdcType,
+    useElementSearch,
+} from '@gridsuite/commons-ui';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { searchEquipmentsInfos } from '../../services/study';
 import { UUID } from 'crypto';
@@ -15,7 +21,7 @@ interface UseSearchMatchingEquipmentsProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     inUpstreamBuiltParentNode?: boolean;
-    equipmentType?: EquipmentType;
+    equipmentType: { type: EquipmentType; subtype: HvdcType };
 }
 
 export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsProps) => {

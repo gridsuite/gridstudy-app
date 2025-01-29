@@ -14,7 +14,7 @@ import {
 } from '../utils';
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, HvdcType } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfo } from '../../components/graph/menus/network-modification-menu.type';
 import { ComputingType } from '../../components/computing-status/computing-type';
 
@@ -139,7 +139,7 @@ export function searchEquipmentsInfos(
     searchTerm: string,
     getUseNameParameterKey: () => 'name' | 'id',
     inUpstreamBuiltParentNode?: boolean,
-    equipmentType?: EquipmentType
+    equipmentType?: { type: EquipmentType; subtype?: HvdcType }
 ) {
     console.info("Fetching equipments infos matching with '%s' term ... ", searchTerm);
     let urlSearchParams = new URLSearchParams();
@@ -149,7 +149,12 @@ export function searchEquipmentsInfos(
         urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode.toString());
     }
     if (equipmentType !== undefined) {
-        urlSearchParams.append('equipmentType', equipmentType);
+        if (equipmentType?.type !== undefined) {
+            urlSearchParams.append('equipmentType', equipmentType.type);
+        }
+        if (equipmentType?.subtype !== undefined) {
+            urlSearchParams.append('equipmentSubType', equipmentType.subtype);
+        }
     }
     return backendFetchJson(
         getStudyUrl(studyUuid) + '/nodes/' + encodeURIComponent(nodeUuid) + '/search?' + urlSearchParams.toString()
