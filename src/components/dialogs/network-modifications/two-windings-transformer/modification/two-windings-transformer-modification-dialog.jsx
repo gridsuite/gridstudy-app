@@ -601,7 +601,7 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const getLoadRatioTapChangingCapabilities = useCallback(
         (twt) => {
-            if (editData === undefined) {
+            if (editData === undefined || editData?.ratioTapChanger?.loadTapChangingCapabilities === undefined) {
                 return twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES];
             }
             return editData?.ratioTapChanger?.loadTapChangingCapabilities;
