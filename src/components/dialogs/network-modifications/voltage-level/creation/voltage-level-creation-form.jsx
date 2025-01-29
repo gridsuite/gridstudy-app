@@ -25,7 +25,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
 import { AutocompleteInput, FloatInput, IntegerInput, TextInput } from '@gridsuite/commons-ui';
-import { Box, Grid, Paper } from '@mui/material';
+import { Box, Grid, Paper, Tooltip } from '@mui/material';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
@@ -182,9 +182,15 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
                             {substationCreationCountryField}
                         </Grid>
                         <Grid item xs={1}>
-                            <IconButton onClick={handleDeleteButton}>
-                                <DeleteIcon />
-                            </IconButton>
+                            <Tooltip
+                                title={intl.formatMessage({
+                                    id: 'DeleteRows',
+                                })}
+                            >
+                                <IconButton onClick={handleDeleteButton}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
                         </Grid>
                     </Grid>
                     <PropertiesForm id={SUBSTATION_CREATION} networkElementType={'substation'} />

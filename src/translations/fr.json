@@ -65,6 +65,7 @@
     "paramsChangingError": "Une erreur est survenue lors de la modification des paramètres",
     "paramsChangingDenied": "Les changements demandés ont été rejetés",
     "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
+    "paramsCreatingError": "Une erreur est survenue lors de la création des paramètres",
     "optionalServicesRetrievingError": "Une erreur est survenue lors de la récupération de l'état des services optionnels",
     "defaultSensiResultsThresholdRetrievingError": "Une erreur est survenue lors de la récupération du seuil par défaut des résultats de l'analyse de sensibilité",
     "fetchDefaultLimitReductionsError": "Une erreur est survenue lors de la récupération des abattements par défaut",

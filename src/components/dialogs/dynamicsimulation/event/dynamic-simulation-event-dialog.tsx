@@ -38,7 +38,6 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const currentNodeId = currentNode?.id;
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [event, setEvent] = useState<Event>();
@@ -87,15 +86,15 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
 
     // load event for equipment
     useEffect(() => {
-        if (!studyUuid || !currentNodeId || !currentRootNetworkUuid) {
+        if (!studyUuid || !currentNodeId) {
             return;
         }
         setDataFetchStatus(FetchStatus.RUNNING);
-        fetchDynamicSimulationEvent(studyUuid, currentNodeId, currentRootNetworkUuid, equipmentId).then((event) => {
+        fetchDynamicSimulationEvent(studyUuid, currentNodeId, equipmentId).then((event) => {
             setDataFetchStatus(FetchStatus.SUCCEED);
             setEvent(event);
         });
-    }, [currentNodeId, equipmentId, currentRootNetworkUuid, studyUuid, reset]);
+    }, [currentNodeId, equipmentId, studyUuid, reset]);
 
     // reset form data when event available after fetch
     useEffect(() => {
@@ -118,7 +117,7 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
     // submit form
     const handleSubmit = useCallback(
         (formObj: { [KEY in EventPropertyName]: any }) => {
-            if (!studyUuid || !currentNodeId || !currentRootNetworkUuid) {
+            if (!studyUuid || !currentNodeId) {
                 return;
             }
             // formObj to EventProperty[]
@@ -161,24 +160,14 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
                       properties,
                   };
 
-            saveDynamicSimulationEvent(studyUuid, currentNodeId, currentRootNetworkUuid, submitEvent).catch((error) => {
+            saveDynamicSimulationEvent(studyUuid, currentNodeId, submitEvent).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'DynamicSimulationEventSaveError',
                 });
             });
         },
-        [
-            currentNodeId,
-            equipmentId,
-            currentRootNetworkUuid,
-            equipmentType,
-            snackError,
-            studyUuid,
-            eventType,
-            event,
-            eventDefinition,
-        ]
+        [currentNodeId, equipmentId, equipmentType, snackError, studyUuid, eventType, event, eventDefinition]
     );
 
     const waitingOpen = useOpenShortWaitFetching({

@@ -15,8 +15,6 @@ import { UUID } from 'crypto';
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../components/utils/constants';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 
-const PREFIX_SHORT_CIRCUIT_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/shortcircuit';
-
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
     currentNodeUuid?: UUID;
@@ -49,10 +47,6 @@ interface ShortCircuitParameters {
         initialVoltageProfileMode: NonNullable<INITIAL_VOLTAGE | undefined>;
         voltageRanges?: VoltageRanges;
     };
-}
-
-function getShortCircuitUrl() {
-    return `${PREFIX_SHORT_CIRCUIT_SERVER_QUERIES}/v1/`;
 }
 
 export function startShortCircuitAnalysis(
@@ -212,12 +206,6 @@ export function setShortCircuitParameters(studyUuid: UUID | null, newParams: Sho
         },
         body: newParams ? JSON.stringify(newParams) : null,
     });
-}
-
-export function fetchShortCircuitParameters(parameterUuid: string) {
-    console.info('get short circuit analysis parameters');
-    const url = getShortCircuitUrl() + 'parameters/' + encodeURIComponent(parameterUuid);
-    return backendFetchJson(url);
 }
 
 export function invalidateShortCircuitStatus(studyUuid: UUID | null) {
