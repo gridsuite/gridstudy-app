@@ -44,7 +44,7 @@ import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/netwo
 
 const ratioTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [ENABLED]: yup.bool().nullable().required(),
+        [ENABLED]: yup.bool().required(),
         [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
         [REGULATION_MODE]: yup
             .string()
@@ -349,19 +349,5 @@ export const getComputedTapSideId = (twt) => {
         return ratioTapChangerValues?.regulatingTerminalVlId === twt?.voltageLevelId1 ? SIDE.SIDE1.id : SIDE.SIDE2.id;
     } else {
         return null;
-    }
-};
-
-export const getStepsRatioTapChanger = (twt, editData, isNodeBuilt) => {
-    if (!isNodeBuilt) {
-        if (editData === undefined) {
-            return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
-        }
-        if (editData?.ratioTapChanger?.enabled === undefined || editData?.ratioTapChanger?.enabled?.value === false) {
-            return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
-        }
-        return editData?.ratioTapChanger?.steps;
-    } else {
-        return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
     }
 };

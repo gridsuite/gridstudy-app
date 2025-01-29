@@ -104,7 +104,6 @@ import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerModificationValidationSchema,
-    getStepsPhaseTapChanger,
 } from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { modifyTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 import {
@@ -112,7 +111,6 @@ import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
     getRatioTapChangerModificationValidationSchema,
-    getStepsRatioTapChanger,
 } from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
@@ -576,6 +574,46 @@ const TwoWindingsTransformerModificationDialog = ({
         [setValue]
     );
 
+    const getStepsPhaseTapChanger = useCallback(
+        (twt, isNodeBuilt) => {
+            if (!isNodeBuilt) {
+                if (editData === undefined) {
+                    return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
+                }
+                if (
+                    editData?.phaseTapChanger?.enabled === undefined ||
+                    editData?.phaseTapChanger?.enabled?.value === false
+                ) {
+                    return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
+                }
+                return editData?.phaseTapChanger?.steps;
+            } else {
+                return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
+            }
+        },
+        [editData]
+    );
+
+    const getStepsRatioTapChanger = useCallback(
+        (twt, isNodeBuilt) => {
+            if (!isNodeBuilt) {
+                if (editData === undefined) {
+                    return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
+                }
+                if (
+                    editData?.ratioTapChanger?.enabled === undefined ||
+                    editData?.ratioTapChanger?.enabled?.value === false
+                ) {
+                    return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
+                }
+                return editData?.ratioTapChanger?.steps;
+            } else {
+                return twt?.[RATIO_TAP_CHANGER]?.[STEPS];
+            }
+        },
+        [editData]
+    );
+
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -680,8 +718,10 @@ const TwoWindingsTransformerModificationDialog = ({
             reset,
             isRatioTapChangerEnabled,
             currentNode,
-            isPhaseTapChangerEnabled,
+            getStepsRatioTapChanger,
             editData,
+            isPhaseTapChangerEnabled,
+            getStepsPhaseTapChanger,
         ]
     );
 
