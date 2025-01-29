@@ -1761,9 +1761,9 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(UPDATE_CUSTOM_COLUMNS_DEFINITION, (state, action: UpdateCustomColumnsDefinitionsAction) => {
         state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
             action.table
-        ].columns.some((column) => column.id === action.definition.id)
+        ].columns.some((column) => column.uuid === action.definition.uuid)
             ? state.tables.allCustomColumnsDefinitions[action.table].columns.map((column) =>
-                  column.id === action.definition.id ? action.definition : column
+                  column.uuid === action.definition.uuid ? action.definition : column
               )
             : [...state.tables.allCustomColumnsDefinitions[action.table].columns, action.definition];
     });
