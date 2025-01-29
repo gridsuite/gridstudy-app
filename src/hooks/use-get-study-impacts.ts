@@ -20,6 +20,7 @@ interface StudyImpactsWithReset extends NetworkImpactsInfos {
  */
 export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const dispatch = useDispatch();
 
     const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<UUID[]>([]);
@@ -40,6 +41,10 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
 
     useEffect(() => {
         if (studyUpdatedForce.type === NotificationType.STUDY) {
+            const rootNetworkUuid = studyUpdatedForce?.eventData?.headers?.['rootNetwork'];
+            if (rootNetworkUuid && rootNetworkUuid !== currentRootNetworkUuid) {
+                return;
+            }
             const {
                 impactedSubstationsIds: substationsIds,
                 deletedEquipments,
@@ -59,7 +64,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
                 setImpactedSubstationsIds(substationsIds);
             }
         }
-    }, [dispatch, studyUpdatedForce]);
+    }, [dispatch, studyUpdatedForce, currentRootNetworkUuid]);
 
     return {
         impactedSubstationsIds,

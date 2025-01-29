@@ -73,6 +73,7 @@ const styles = {
 export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabProps> = ({
     studyUuid,
     nodeUuid,
+    currentRootNetworkUuid,
     openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
@@ -154,14 +155,26 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
             }
 
-            return fetchSecurityAnalysisResult(studyUuid, nodeUuid, queryParams);
+            return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
-        [page, tabIndex, rowsPerPage, sortConfig, filters, resultType, intl, enableDeveloperMode]
+
+        [
+            page,
+            tabIndex,
+            rowsPerPage,
+            sortConfig,
+            currentRootNetworkUuid,
+            filters,
+            resultType,
+            intl,
+            enableDeveloperMode,
+        ]
     );
 
     const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(
         studyUuid,
         nodeUuid,
+        currentRootNetworkUuid,
         fetchSecurityAnalysisResultWithQueryParams,
         SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
         null
@@ -275,6 +288,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
+                            rootNetworkUuid={currentRootNetworkUuid}
                             csvHeaders={csvHeaders}
                             resultType={resultType}
                             disabled={isExportButtonDisabled}

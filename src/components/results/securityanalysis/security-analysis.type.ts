@@ -121,6 +121,7 @@ export interface SecurityAnalysisNmkResult {
 export interface SecurityAnalysisTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     openVoltageLevelDiagram: (id: string) => void;
 }
 

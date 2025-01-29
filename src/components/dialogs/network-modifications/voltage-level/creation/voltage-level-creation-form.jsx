@@ -25,7 +25,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
 import { AutocompleteInput, FloatInput, IntegerInput, TextInput } from '@gridsuite/commons-ui';
-import { Box, Grid, Paper } from '@mui/material';
+import { Box, Grid, Paper, Tooltip } from '@mui/material';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
@@ -40,7 +40,7 @@ import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selectio
 import DeleteIcon from '@mui/icons-material/Delete';
 import LineSeparator from '../../../commons/line-separator';
 
-const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
+const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
     const { setValue } = useFormContext();
@@ -55,12 +55,14 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     }, [watchAddSubstationCreation]);
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchEquipmentsIds(studyUuid, currentNodeUuid, undefined, 'SUBSTATION', true).then((values) => {
-                setSubstations(values.sort((a, b) => a.localeCompare(b)));
-            });
+        if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
+            fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, 'SUBSTATION', true).then(
+                (values) => {
+                    setSubstations(values.sort((a, b) => a.localeCompare(b)));
+                }
+            );
         }
-    }, [studyUuid, currentNodeUuid]);
+    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const voltageLevelIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
@@ -180,9 +182,15 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
                             {substationCreationCountryField}
                         </Grid>
                         <Grid item xs={1}>
-                            <IconButton onClick={handleDeleteButton}>
-                                <DeleteIcon />
-                            </IconButton>
+                            <Tooltip
+                                title={intl.formatMessage({
+                                    id: 'DeleteRows',
+                                })}
+                            >
+                                <IconButton onClick={handleDeleteButton}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
                         </Grid>
                     </Grid>
                     <PropertiesForm id={SUBSTATION_CREATION} networkElementType={'substation'} />

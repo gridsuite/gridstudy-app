@@ -28,13 +28,14 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
     const dispatch = useDispatch<AppDispatch>();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const networkAreaDiagramNbVoltageLevels = useSelector((state: AppState) => state.networkAreaDiagramNbVoltageLevels);
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
 
     const centerOnSubstationCB = useCallback(
         (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.stopPropagation();
-            if (!studyUuid || !currentNode) {
+            if (!studyUuid || !currentNode || !currentRootNetworkUuid) {
                 return;
             }
             let substationIdPromise;
@@ -42,7 +43,12 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
             if (element.type === EQUIPMENT_TYPES.SUBSTATION) {
                 substationIdPromise = Promise.resolve(element.id);
             } else {
-                substationIdPromise = fetchSubstationIdForVoltageLevel(studyUuid, currentNode.id, element.id);
+                substationIdPromise = fetchSubstationIdForVoltageLevel(
+                    studyUuid,
+                    currentNode.id,
+                    currentRootNetworkUuid,
+                    element.id
+                );
             }
             substationIdPromise.then((substationId) => {
                 dispatch(centerOnSubstation(substationId));
@@ -50,7 +56,7 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
                 e.stopPropagation();
             });
         },
-        [studyUuid, currentNode, element.type, element.id, dispatch, onClose]
+        [studyUuid, currentNode, currentRootNetworkUuid, element.type, element.id, dispatch, onClose]
     );
 
     const openNetworkAreaDiagramCB = useCallback(

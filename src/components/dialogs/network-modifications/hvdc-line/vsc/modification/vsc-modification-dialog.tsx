@@ -102,6 +102,7 @@ const VscModificationDialog: React.FC<any> = ({
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map or spreadsheet
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -163,6 +164,7 @@ const VscModificationDialog: React.FC<any> = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -234,7 +236,16 @@ const VscModificationDialog: React.FC<any> = ({
                     });
             }
         },
-        [setValuesAndEmptyOthers, studyUuid, currentNode, setValue, reset, getValues, editData?.equipmentId]
+        [
+            setValuesAndEmptyOthers,
+            currentRootNetworkUuid,
+            studyUuid,
+            currentNode,
+            setValue,
+            reset,
+            getValues,
+            editData?.equipmentId,
+        ]
     );
 
     useEffect(() => {
@@ -342,6 +353,7 @@ const VscModificationDialog: React.FC<any> = ({
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         defaultValue={equipmentId}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         setSelectedId={setEquipmentId}
                         equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
                         fillerHeight={17}
@@ -352,6 +364,7 @@ const VscModificationDialog: React.FC<any> = ({
                         tabIndex={tabIndex}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={equipmentId}
                         setTabIndex={setTabIndex}
                         vscToModify={vscToModify}
