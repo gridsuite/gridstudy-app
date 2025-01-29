@@ -44,7 +44,7 @@ import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/netwo
 
 const ratioTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [ENABLED]: yup.bool().required(),
+        [ENABLED]: yup.bool().nullable().required(),
         [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
         [REGULATION_MODE]: yup
             .string()
