@@ -125,6 +125,7 @@ import {
     ResetEquipmentsPostLoadflowAction,
     ResetLogsFilterAction,
     ResetMapReloadedAction,
+    ResetMapEquipmentsAction,
     ResetNetworkAreaDiagramDepthAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
     SecurityAnalysisResultFilterAction,
@@ -190,6 +191,9 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    CURRENT_ROOT_NETWORK,
+    CurrentRootNetworkAction,
+    RESET_MAP_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -319,6 +323,8 @@ export interface OneBusShortCircuitAnalysisDiagram {
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
     parentNode: UUID;
+    rootNetwork: UUID;
+    rootNetworks: UUID[];
     timestamp: number;
     updateType?: string;
     node?: UUID;
@@ -464,6 +470,7 @@ export interface AppState extends CommonStoreState {
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
+    currentRootNetwork: UUID | null;
     computingStatus: ComputingStatus;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
@@ -484,6 +491,7 @@ export interface AppState extends CommonStoreState {
     nodeSelectionForCopy: NodeSelectionForCopy;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
+    isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
@@ -635,6 +643,7 @@ const initialTablesState: TablesState = {
 const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
+    currentRootNetwork: null,
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
@@ -645,6 +654,8 @@ const initialState: AppState = {
     mapEquipments: undefined,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
+    // used when switching root network, will be set to false as long as the tree has not been updated
+    isNetworkModificationTreeModelUpToDate: false,
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
@@ -873,6 +884,11 @@ export const reducer = createReducer(initialState, (builder) => {
         state.mapEquipments = newMapEquipments;
     });
 
+    builder.addCase(RESET_MAP_EQUIPMENTS, (state, action: ResetMapEquipmentsAction) => {
+        state.mapEquipments = undefined;
+        state.isMapEquipmentsInitialized = false;
+    });
+
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
         const { newTableDefinition, customColumns } = action.payload;
         const updatedDefinitions = [...state.tables.definitions];
@@ -911,6 +927,7 @@ export const reducer = createReducer(initialState, (builder) => {
         (state, action: LoadNetworkModificationTreeSuccessAction) => {
             state.networkModificationTreeModel = action.networkModificationTreeModel;
             state.networkModificationTreeModel.setBuildingStatus();
+            state.isNetworkModificationTreeModelUpToDate = true;
         }
     );
 
@@ -1165,6 +1182,11 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
         state.reloadMap = true;
+    });
+
+    builder.addCase(CURRENT_ROOT_NETWORK, (state, action: CurrentRootNetworkAction) => {
+        state.currentRootNetwork = action.currentRootNetwork;
+        state.isNetworkModificationTreeModelUpToDate = false;
     });
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
@@ -1742,9 +1764,9 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(UPDATE_CUSTOM_COLUMNS_DEFINITION, (state, action: UpdateCustomColumnsDefinitionsAction) => {
         state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
             action.table
-        ].columns.some((column) => column.id === action.definition.id)
+        ].columns.some((column) => column.uuid === action.definition.uuid)
             ? state.tables.allCustomColumnsDefinitions[action.table].columns.map((column) =>
-                  column.id === action.definition.id ? action.definition : column
+                  column.uuid === action.definition.uuid ? action.definition : column
               )
             : [...state.tables.allCustomColumnsDefinitions[action.table].columns, action.definition];
     });

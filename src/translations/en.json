@@ -1458,5 +1458,18 @@
     "qualityPerRegionResults": "Quality region",
     "StateEstimationStatus": "Status : ",
     "StateEstimationQuality": "Quality : ",
-    "Or": "or"
+    "Or": "or",
+
+    "chooseCase": "Select a case",
+    "addNetwork": "Add network",
+    "rootName": "Network name",
+    "rootNetworksCount": "{count, plural, =1 {# network} other {# networks}}",
+    "deletingRootNetwork": "Deleting root network ...",
+    "creatingRootNetwork": "Creating root network ...",
+    "rootNetworkCreated": "The root network has been created successfully",
+    "deleteRootNetworkError": "An error occurred while deleting root networks",
+    "rootNetworknameValidityCheckError": "An error occurred while checking root network name",
+    "rootNetworkDirectoryFetchingError": "An error occurred while fetching root directory",
+    "rootNetworkNotFound": "No root network was found for the study with ID \"{studyUuid}\"",
+    "createRootNetworksError": "An error occurred while creating the root network"
 }

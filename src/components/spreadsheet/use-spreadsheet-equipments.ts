@@ -24,10 +24,11 @@ import type { AppState } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetchers } from './config/equipment/common-config';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 export type EquipmentProps = {
     type: SpreadsheetEquipmentType;
-    fetchers: Array<(studyUuid: UUID, currentNodeId: UUID) => Promise<Identifiable>>;
+    fetchers: Array<(studyUuid: UUID, currentNodeId: UUID, currentRootNetworkUuid: UUID) => Promise<Identifiable>>;
 };
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
@@ -43,6 +44,10 @@ export const useSpreadsheetEquipments = (
     const customColumnsDefinitions = useSelector((state: AppState) => state.tables.allCustomColumnsDefinitions);
     const customColumnsNodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const isNetworkModificationTreeModelUpToDate = useSelector(
+        (state: AppState) => state.isNetworkModificationTreeModelUpToDate
+    );
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const [errorMessage, setErrorMessage] = useState<string | null>();
@@ -86,11 +91,13 @@ export const useSpreadsheetEquipments = (
             }
             resetImpactedElementTypes();
         }
-        if (impactedSubstationsIds.length > 0 && studyUuid && currentNode?.id) {
+        if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid && currentNode?.id) {
             // The formatting of the fetched equipments is done in the reducer
-            fetchAllEquipments(studyUuid, currentNode.id, impactedSubstationsIds).then((values) => {
-                dispatch(updateEquipments(values));
-            });
+            fetchAllEquipments(studyUuid, currentNode.id, currentRootNetworkUuid, impactedSubstationsIds).then(
+                (values) => {
+                    dispatch(updateEquipments(values));
+                }
+            );
             resetImpactedSubstationsIds();
         }
         if (deletedEquipments.length > 0) {
@@ -122,6 +129,7 @@ export const useSpreadsheetEquipments = (
         deletedEquipments,
         impactedElementTypes,
         studyUuid,
+        currentRootNetworkUuid,
         currentNode?.id,
         dispatch,
         allEquipments,
@@ -131,10 +139,19 @@ export const useSpreadsheetEquipments = (
     ]);
 
     useEffect(() => {
-        if (shouldFetchEquipments && studyUuid && currentNode?.id) {
+        if (
+            shouldFetchEquipments &&
+            studyUuid &&
+            currentRootNetworkUuid &&
+            currentNode?.id &&
+            isNetworkModificationTreeModelUpToDate &&
+            isNodeBuilt(currentNode)
+        ) {
             setErrorMessage(null);
             setIsFetching(true);
-            Promise.all(equipment.fetchers.map((fetcher) => fetcher(studyUuid, currentNode?.id)))
+            Promise.all(
+                equipment.fetchers.map((fetcher) => fetcher(studyUuid, currentNode?.id, currentRootNetworkUuid))
+            )
                 .then((results) => {
                     let fetchedEquipments = results.flat();
                     if (formatFetchedEquipments) {
@@ -152,7 +169,9 @@ export const useSpreadsheetEquipments = (
         equipment,
         shouldFetchEquipments,
         studyUuid,
-        currentNode?.id,
+        currentNode,
+        currentRootNetworkUuid,
+        isNetworkModificationTreeModelUpToDate,
         dispatch,
         formatFetchedEquipments,
         customColumnsDefinitions,
@@ -162,10 +181,10 @@ export const useSpreadsheetEquipments = (
         if (studyUuid && equipments != null) {
             let fetchers: Promise<unknown>[] = [];
             let additionalEquipmentsByNodes: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>> = {};
-            if (equipment.type) {
+            if (equipment.type && currentRootNetworkUuid) {
                 customColumnsNodesAliases.forEach((aliasInfo) => {
                     const fetcherPromises = getFetchers(equipment.type).map((fetcher) =>
-                        fetcher(studyUuid, aliasInfo.id, [])
+                        fetcher(studyUuid, aliasInfo.id, currentRootNetworkUuid, [])
                     );
                     fetchers.push(fetcherPromises[0]);
                     fetcherPromises[0].then((res) => {
@@ -193,6 +212,7 @@ export const useSpreadsheetEquipments = (
         dispatch,
         equipments,
         studyUuid,
+        currentRootNetworkUuid,
         formatFetchedEquipments,
         treeModel,
         customColumnsNodesAliases,

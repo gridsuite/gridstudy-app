@@ -1457,5 +1457,18 @@
     "qualityPerRegionResults": "Qualité par région",
     "StateEstimationStatus": "Statut : ",
     "StateEstimationQuality": "Qualité: ",
-    "Or": "ou"
+    "Or": "ou",
+
+    "chooseCase": "Choisir une situation",
+    "addNetwork": "Ajouter un réseau",
+    "rootName": "Nom du réseau",
+    "rootNetworksCount": "{count, plural, =1 {# réseau} other {# réseaux}}",
+    "deletingRootNetwork": "Suppression du réseau racine en cours ...",
+    "creatingRootNetwork": "Création du réseau racine en cours ...",
+    "rootNetworkCreated": "Le réseau racine a été créé avec succès",
+    "deleteRootNetworkError": "Une erreur est survenue lors de la suppression des réseaux racines",
+    "rootNetworknameValidityCheckError": "Une erreur est survenue lors de la vérification du nom de réseau racine",
+    "rootNetworkDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier du réseau",
+    "RootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
+    "createRootNetworksError": "Une erreur est survenue lors de la création du réseau racine"
 }

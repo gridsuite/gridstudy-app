@@ -43,68 +43,72 @@ const defaultColDef = {
 type DynamicSimulationResultSynthesisProps = {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
 };
 
-const DynamicSimulationResultSynthesis = memo(({ nodeUuid, studyUuid }: DynamicSimulationResultSynthesisProps) => {
-    const intl = useIntl();
+const DynamicSimulationResultSynthesis = memo(
+    ({ nodeUuid, studyUuid, currentRootNetworkUuid }: DynamicSimulationResultSynthesisProps) => {
+        const intl = useIntl();
 
-    const [result, isLoading] = useNodeData(
-        studyUuid,
-        nodeUuid,
-        fetchDynamicSimulationStatus,
-        dynamicSimulationResultInvalidations,
-        null,
-        (status: RunningStatus) =>
-            status && [
-                {
-                    status,
-                },
-            ]
-    );
+        const [result, isLoading] = useNodeData(
+            studyUuid,
+            nodeUuid,
+            currentRootNetworkUuid,
+            fetchDynamicSimulationStatus,
+            dynamicSimulationResultInvalidations,
+            null,
+            (status: RunningStatus) =>
+                status && [
+                    {
+                        status,
+                    },
+                ]
+        );
 
-    const columnDefs = useMemo(
-        () => [
-            makeAgGridCustomHeaderColumn({
-                headerName: intl.formatMessage({
-                    id: 'status',
+        const columnDefs = useMemo(
+            () => [
+                makeAgGridCustomHeaderColumn({
+                    headerName: intl.formatMessage({
+                        id: 'status',
+                    }),
+                    colId: 'status',
+                    field: 'status',
+                    width: MEDIUM_COLUMN_WIDTH,
+                    cellRenderer: StatusCellRender,
                 }),
-                colId: 'status',
-                field: 'status',
-                width: MEDIUM_COLUMN_WIDTH,
-                cellRenderer: StatusCellRender,
-            }),
-        ],
-        [intl]
-    );
+            ],
+            [intl]
+        );
 
-    // messages to show when no data
-    const dynamicSimulationStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
-    );
-    const messages = useIntlResultStatusMessages(intl, true);
-    const overlayMessage = useMemo(
-        () => getNoRowsMessage(messages, result, dynamicSimulationStatus, !isLoading),
-        [messages, result, dynamicSimulationStatus, isLoading]
-    );
+        // messages to show when no data
+        const dynamicSimulationStatus = useSelector(
+            (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+        );
+        const messages = useIntlResultStatusMessages(intl, true);
+        const overlayMessage = useMemo(
+            () => getNoRowsMessage(messages, result, dynamicSimulationStatus, !isLoading),
+            [messages, result, dynamicSimulationStatus, isLoading]
+        );
 
-    const rowDataToShow = useMemo(() => (overlayMessage ? [] : result), [result, overlayMessage]);
+        const rowDataToShow = useMemo(() => (overlayMessage ? [] : result), [result, overlayMessage]);
 
-    return (
-        <>
-            {isLoading && (
-                <Box sx={styles.loader}>
-                    <LinearProgress />
-                </Box>
-            )}
-            <CustomAGGrid
-                rowData={rowDataToShow}
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDef}
-                overlayNoRowsTemplate={overlayMessage}
-                enableCellTextSelection
-            />
-        </>
-    );
-});
+        return (
+            <>
+                {isLoading && (
+                    <Box sx={styles.loader}>
+                        <LinearProgress />
+                    </Box>
+                )}
+                <CustomAGGrid
+                    rowData={rowDataToShow}
+                    columnDefs={columnDefs}
+                    defaultColDef={defaultColDef}
+                    overlayNoRowsTemplate={overlayMessage}
+                    enableCellTextSelection
+                />
+            </>
+        );
+    }
+);
 
 export default DynamicSimulationResultSynthesis;

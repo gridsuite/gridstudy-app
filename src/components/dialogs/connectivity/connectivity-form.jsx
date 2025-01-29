@@ -42,6 +42,7 @@ import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } fro
  * @param newBusOrBusbarSectionOptions list of bus or bus bar sections for the newly created voltage level
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param onVoltageLevelChangeCallback callback to be called when the voltage level changes
  * @param isEquipmentModification connectivity form is used in a modification form or not
  * @param previousValues previous values of connectivity form's fields
@@ -57,6 +58,7 @@ export const ConnectivityForm = ({
     newBusOrBusbarSectionOptions = [],
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     onVoltageLevelChangeCallback = undefined,
     isEquipmentModification = false,
     previousValues,
@@ -79,16 +81,28 @@ export const ConnectivityForm = ({
             return;
         }
         if (watchVoltageLevelId) {
-            fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then(
-                (busesOrbusbarSections) => {
-                    setBusOrBusbarSectionOptions(busesOrbusbarSections);
-                }
-            );
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                watchVoltageLevelId
+            ).then((busesOrbusbarSections) => {
+                setBusOrBusbarSectionOptions(busesOrbusbarSections);
+            });
         } else {
             setBusOrBusbarSectionOptions([]);
             setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
         }
-    }, [watchVoltageLevelId, studyUuid, currentNodeUuid, voltageLevelOptions, setValue, id, isEquipmentModification]);
+    }, [
+        watchVoltageLevelId,
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        voltageLevelOptions,
+        setValue,
+        id,
+        isEquipmentModification,
+    ]);
 
     useEffect(() => {
         if (isEquipmentModification) {
@@ -295,6 +309,7 @@ export const ConnectivityForm = ({
                 onClose={handleCloseDiagramPane}
                 voltageLevelId={{ id: watchVoltageLevelId }}
                 currentNodeUuid={currentNodeUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
             />
         </>
     );
