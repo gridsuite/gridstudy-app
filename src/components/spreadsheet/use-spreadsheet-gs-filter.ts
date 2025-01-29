@@ -5,21 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { IRowNode } from 'ag-grid-community';
 import { evaluateFilters, ExpertFilter } from '../../services/study/filter';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
+import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 
-export const useSpreadsheetGsFilter = () => {
+export const useSpreadsheetGsFilter = (equipmentType: SpreadsheetEquipmentType) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [filterIds, setFilterIds] = useState<string[]>([]);
+    const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
 
     const applyGsFilter = useCallback(
         async (filters: ExpertFilter[]) => {
-            if (!filters.length || !currentNode?.id) {
+            if (!filters || filters?.length === 0 || !currentNode?.id) {
                 setFilterIds([]);
                 return;
             }
@@ -36,9 +38,13 @@ export const useSpreadsheetGsFilter = () => {
         [currentNode?.id, studyUuid]
     );
 
+    useEffect(() => {
+        applyGsFilter(gsFilterSpreadsheetState[equipmentType]);
+    }, [applyGsFilter, equipmentType, gsFilterSpreadsheetState]);
+
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
     const isExternalFilterPresent = useCallback(() => filterIds.length > 0, [filterIds.length]);
 
-    return { applyGsFilter, doesFormulaFilteringPass, isExternalFilterPresent };
+    return { doesFormulaFilteringPass, isExternalFilterPresent };
 };

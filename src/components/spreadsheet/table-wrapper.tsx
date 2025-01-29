@@ -62,6 +62,7 @@ const styles = {
     },
     toolbar: (theme: Theme) => ({
         marginTop: theme.spacing(2),
+        alignItems: 'center',
     }),
     filter: (theme: Theme) => ({
         marginLeft: theme.spacing(1),
@@ -131,8 +132,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [mergedColumnData, setMergedColumnData] = useState<ColDef[]>([]);
 
     const { createCustomColumn } = useCustomColumn(tabIndex);
-
-    const { applyGsFilter, isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter();
 
     const currentColumns = useCallback(() => {
         const equipment = tablesDefinitionIndexes.get(tabIndex);
@@ -216,6 +215,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }),
         [currentTabType, tablesDefinitionIndexes, tabIndex]
     );
+
+    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(equipmentDefinition.type);
 
     const formatFetchedEquipmentsHandler = useCallback(
         (fetchedEquipments: any) => {
@@ -426,7 +427,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 <EquipmentTabs disabled={disabled} tabIndex={tabIndex} handleSwitchTab={handleSwitchTab} />
                 <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.selectColumns}>
-                        <SpreadsheetGsFilter equipmentType={equipmentDefinition.type} applyGsFilter={applyGsFilter} />
+                        <SpreadsheetGsFilter equipmentType={equipmentDefinition.type} />
                     </Grid>
                     <Grid item>
                         <ColumnsConfig
