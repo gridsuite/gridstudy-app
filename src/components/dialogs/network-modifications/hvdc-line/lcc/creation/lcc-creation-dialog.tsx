@@ -114,6 +114,7 @@ export interface LccCreationDialogProps extends Partial<DialogProps> {
     editData: LccCreationInfos;
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
     isUpdate: boolean;
     editDataFetchStatus: FetchStatus;
 }
@@ -122,6 +123,7 @@ export function LccCreationDialog({
     editData,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -159,6 +161,7 @@ export function LccCreationDialog({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: fromSearchCopyToFormValues,
         setFormValues: (data: LccCreationSchemaForm) => {
             reset(data, { keepDefaultValues: true });
@@ -267,13 +270,19 @@ export function LccCreationDialog({
                 }}
                 {...dialogProps}
             >
-                <LccCreationForm studyUuid={studyUuid} currentNode={currentNode} tabIndex={tabIndex} />
+                <LccCreationForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    tabIndex={tabIndex}
+                />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     equipmentType={EquipmentType.HVDC_LINE}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>

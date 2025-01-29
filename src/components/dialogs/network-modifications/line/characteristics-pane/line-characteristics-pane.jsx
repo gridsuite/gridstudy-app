@@ -36,13 +36,14 @@ const LineCharacteristicsPane = ({
     id = CHARACTERISTICS,
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     displayConnectivity,
     lineToModify,
     clearableFields = false,
     isModification = false,
 }) => {
     const currentNodeUuid = currentNode.id;
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const seriesResistanceField = (
         <FloatInput
@@ -109,6 +110,7 @@ const LineCharacteristicsPane = ({
             id={`${id}.${CONNECTIVITY_1}`}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
         />
@@ -119,6 +121,7 @@ const LineCharacteristicsPane = ({
             id={`${id}.${CONNECTIVITY_2}`}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
         />
