@@ -48,7 +48,7 @@ import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 
 // Returns a callback that returns a promise
-const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
+const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRootNetworkUuid: UUID) => {
     const { snackError } = useSnackMessage();
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const { getNameOrId } = useNameOrId();
@@ -61,6 +61,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
                 ? getVoltageLevelSingleLineDiagram({
                       studyUuid: studyUuid,
                       currentNodeUuid: currentNode?.id,
+                      currentRootNetworkUuid: currentRootNetworkUuid,
                       voltageLevelId: voltageLevelId,
                       useName: paramUseName,
                       centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
@@ -73,6 +74,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
         [
             currentNode,
             studyUuid,
+            currentRootNetworkUuid,
             paramUseName,
             networkVisuParams.singleLineDiagramParameters.centerLabel,
             networkVisuParams.singleLineDiagramParameters.diagonalLabel,
@@ -87,6 +89,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
                 ? getSubstationSingleLineDiagram({
                       studyUuid: studyUuid,
                       currentNodeUuid: currentNode?.id,
+                      currentRootNetworkUuid: currentRootNetworkUuid,
                       substationId: voltageLevelId,
                       useName: paramUseName,
                       centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
@@ -104,6 +107,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
             networkVisuParams.singleLineDiagramParameters.substationLayout,
             paramUseName,
             currentNode,
+            currentRootNetworkUuid,
             language,
         ]
     );
@@ -113,12 +117,18 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
                 ? getNetworkAreaDiagramUrl(
                       studyUuid,
                       currentNode?.id,
+                      currentRootNetworkUuid,
                       voltageLevelsIds,
                       depth,
                       networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData
                   )
                 : null,
-        [studyUuid, currentNode, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
+        [
+            studyUuid,
+            currentNode,
+            currentRootNetworkUuid,
+            networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+        ]
     );
 
     // this callback returns a promise
@@ -306,6 +316,7 @@ const styles = {
 interface DiagramPaneProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     visible: boolean;
 }
@@ -325,18 +336,25 @@ type DiagramView = {
     depth?: number;
     error?: string;
     nodeId?: UUID;
+    rootNetworkId?: UUID;
     additionalMetadata?: any;
     fetchSvg?: () => Promise<Partial<DiagramView>>;
 };
 
-export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible }: DiagramPaneProps) {
+export function DiagramPane({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+    showInSpreadsheet,
+    visible,
+}: DiagramPaneProps) {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [views, setViews] = useState<DiagramView[]>([]);
     const fullScreenDiagram = useSelector((state: AppState) => state.fullScreenDiagram);
-    const createView = useDisplayView(studyUuid, currentNode);
+    const createView = useDisplayView(studyUuid, currentNode, currentRootNetworkUuid);
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
     const previousNetworkAreaDiagramDepth = useRef(networkAreaDiagramDepth);
@@ -357,7 +375,8 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
     const { openDiagramView, closeDiagramView, closeDiagramViews } = useDiagram();
     const currentNodeRef = useRef<CurrentTreeNode>();
     currentNodeRef.current = currentNode;
-
+    const currentRootNetworkRef = useRef<UUID>();
+    currentRootNetworkRef.current = currentRootNetworkUuid;
     const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;
     /**
@@ -812,6 +831,9 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            if (studyUpdatedForce.eventData.headers['rootNetwork'] !== currentRootNetworkRef.current) {
+                return;
+            }
             if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult') {
                 //TODO reload data more intelligently
                 updateDiagramsByCurrentNode();
