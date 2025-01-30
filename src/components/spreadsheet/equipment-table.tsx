@@ -9,7 +9,7 @@ import { FunctionComponent, Ref, useCallback, useMemo } from 'react';
 import { useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import { ColDef, ColumnMovedEvent, GetRowIdParams, RowClassParams, RowClickedEvent, RowStyle } from 'ag-grid-community';
+import { ColDef, ColumnMovedEvent, GetRowIdParams, RowClassParams, RowClickedEvent, GridOptions, RowStyle } from 'ag-grid-community';
 import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 
@@ -38,6 +38,8 @@ interface EquipmentTableProps {
     fetched: boolean;
     shouldHidePinnedHeaderRightBorder: boolean;
     onRowClicked?: (event: RowClickedEvent) => void;
+    isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
+    doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
 }
 
 const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
@@ -53,6 +55,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     fetched,
     shouldHidePinnedHeaderRightBorder,
     onRowClicked,
+    isExternalFilterPresent,
+    doesExternalFilterPass,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -120,6 +124,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             loadingOverlayComponent={loadingOverlayComponent}
             loadingOverlayComponentParams={loadingOverlayComponentParams}
             showOverlay={true}
+            isExternalFilterPresent={isExternalFilterPresent}
+            doesExternalFilterPass={doesExternalFilterPass}
         />
     );
 };
