@@ -574,7 +574,11 @@ const TwoWindingsTransformerModificationDialog = ({
             if (editData === undefined) {
                 return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
             }
-            if (editData?.phaseTapChanger?.steps === null || editData?.phaseTapChanger?.enabled?.value === false) {
+            if (
+                editData?.phaseTapChanger?.steps === null ||
+                editData?.phaseTapChanger?.steps === undefined ||
+                editData?.phaseTapChanger?.enabled?.value === false
+            ) {
                 return twt?.[PHASE_TAP_CHANGER]?.[STEPS];
             }
             return editData?.phaseTapChanger?.steps;
