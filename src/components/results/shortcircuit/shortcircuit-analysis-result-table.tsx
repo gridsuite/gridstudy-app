@@ -96,7 +96,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 
     const columns = useMemo(() => {
         const isAllBusesAnalysisType = analysisType === ShortCircuitAnalysisType.ALL_BUSES;
-        const isOneBusAnalysisType = analysisType === ShortCircuitAnalysisType.ONE_BUS;
+
+        const onlyIfIsAllBuses = <T,>(data: T, defaultData: T | undefined = {} as T) =>
+            isAllBusesAnalysisType ? data : defaultData;
+
+        const onlyIfIsOneBus = <T,>(data: T, defaultData: T | undefined = {} as T) =>
+            !isAllBusesAnalysisType ? data : defaultData;
 
         const sortParams: ColumnContext['sortParams'] = {
             table: SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
@@ -119,9 +124,33 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             comparators: Object.values(FILTER_NUMBER_COMPARATORS),
         };
 
-        const autoCompleteFilterParams = {
-            dataType: FILTER_DATA_TYPES.TEXT,
-            filterEnums,
+        const inputFilterParams = (
+            filterDefinition: Pick<
+                Required<ColumnContext>['filterComponentParams']['filterParams'],
+                'dataType' | 'comparators'
+            >
+        ) => {
+            return {
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        ...filterDefinition,
+                        ...filterParams,
+                    },
+                },
+            };
+        };
+
+        const autocompleteFilterParams = {
+            filterComponent: CustomAggridAutocompleteFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterParams,
+                },
+                filterEnums,
+                getEnumLabel,
+            },
         };
 
         return [
@@ -130,14 +159,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 colId: 'elementId',
                 field: 'elementId',
                 context: {
-                    sortParams,
-                    filterComponent: CustomAggridComparatorFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            ...textFilterParams,
-                            ...filterParams,
-                        },
-                    },
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(textFilterParams) }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -145,16 +167,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 colId: 'faultType',
                 field: 'faultType',
                 context: {
-                    sortParams,
-                    filterComponent: CustomAggridAutocompleteFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            dataType: autoCompleteFilterParams.dataType,
-                            ...filterParams,
-                        },
-                        options: autoCompleteFilterParams.filterEnums['faultType'] ?? [],
-                        getOptionLabel: getEnumLabel,
-                    },
+                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -162,14 +175,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 colId: 'connectableId',
                 field: 'connectableId',
                 context: {
-                    sortParams: isAllBusesAnalysisType ? { ...sortParams, isChildren: true } : sortParams,
-                    filterComponent: CustomAggridComparatorFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            ...textFilterParams,
-                            ...filterParams,
-                        },
-                    },
+                    sortParams: onlyIfIsAllBuses({ ...sortParams, isChildren: true }, sortParams),
+                    ...inputFilterParams(textFilterParams),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -180,13 +187,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     numeric: true,
                     fractionDigits: 2,
                     sortParams,
-                    filterComponent: CustomAggridComparatorFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            ...numericFilterParams,
-                            ...filterParams,
-                        },
-                    },
+                    ...inputFilterParams(numericFilterParams),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.current),
             }),
@@ -194,18 +195,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 headerName: intl.formatMessage({ id: 'Side' }),
                 colId: 'side',
                 field: 'side',
-                hide: !isOneBusAnalysisType,
+                hide: isAllBusesAnalysisType,
                 context: {
-                    sortParams,
-                    filterComponent: CustomAggridAutocompleteFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            dataType: autoCompleteFilterParams.dataType,
-                            ...filterParams,
-                        },
-                        options: autoCompleteFilterParams.filterEnums['side'] ?? [],
-                        getOptionLabel: getEnumLabel,
-                    },
+                    ...onlyIfIsOneBus({ sortParams, ...autocompleteFilterParams }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -213,16 +205,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 colId: 'limitType',
                 field: 'limitType',
                 context: {
-                    sortParams,
-                    filterComponent: CustomAggridAutocompleteFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            dataType: autoCompleteFilterParams.dataType,
-                            ...filterParams,
-                        },
-                        options: autoCompleteFilterParams.filterEnums['limitType'] ?? [],
-                        getOptionLabel: getEnumLabel,
-                    },
+                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -232,14 +215,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    sortParams,
-                    filterComponent: CustomAggridComparatorFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            ...numericFilterParams,
-                            ...filterParams,
-                        },
-                    },
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMin),
             }),
@@ -250,14 +226,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    sortParams,
-                    filterComponent: CustomAggridComparatorFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            ...numericFilterParams,
-                            ...filterParams,
-                        },
-                    },
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMax),
             }),
@@ -268,14 +237,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    sortParams,
-                    filterComponent: CustomAggridComparatorFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            ...numericFilterParams,
-                            ...filterParams,
-                        },
-                    },
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -285,14 +247,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    sortParams,
-                    filterComponent: CustomAggridComparatorFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            ...numericFilterParams,
-                            ...filterParams,
-                        },
-                    },
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMin),
             }),
@@ -303,14 +258,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 context: {
                     numeric: true,
                     fractionDigits: 2,
-                    sortParams,
-                    filterComponent: CustomAggridComparatorFilter,
-                    filterComponentParams: {
-                        filterParams: {
-                            ...numericFilterParams,
-                            ...filterParams,
-                        },
-                    },
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
                 },
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMax),
             }),

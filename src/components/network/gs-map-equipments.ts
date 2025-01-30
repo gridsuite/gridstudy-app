@@ -21,11 +21,35 @@ export default class GSMapEquipments extends MapEquipments {
     dispatch: AppDispatch;
     errHandler?: UseSnackMessageReturn['snackError'];
 
-    initEquipments(studyUuid: UUID, currentNodeUuid: UUID) {
-        const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false);
-        const fetchLinesMapInfosPromise = fetchLinesMapInfos(studyUuid, currentNodeUuid, undefined, false);
-        const fetchTieLinesMapInfosPromise = fetchTieLinesMapInfos(studyUuid, currentNodeUuid, undefined, false);
-        const fetchHvdcLinesMapInfosPromise = fetchHvdcLinesMapInfos(studyUuid, currentNodeUuid, undefined, false);
+    initEquipments(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+        const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            undefined,
+            false
+        );
+        const fetchLinesMapInfosPromise = fetchLinesMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            undefined,
+            false
+        );
+        const fetchTieLinesMapInfosPromise = fetchTieLinesMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            undefined,
+            false
+        );
+        const fetchHvdcLinesMapInfosPromise = fetchHvdcLinesMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            undefined,
+            false
+        );
 
         this.dispatch(setMapEquipementsInitialized(false));
 
@@ -98,20 +122,50 @@ export default class GSMapEquipments extends MapEquipments {
     constructor(
         studyUuid: UUID,
         currentNodeUuid: UUID,
+        currentRootNetworkUuid: UUID,
         errHandler: UseSnackMessageReturn['snackError'],
         dispatch: AppDispatch
     ) {
         super();
         this.dispatch = dispatch;
         this.errHandler = errHandler;
-        this.initEquipments(studyUuid, currentNodeUuid);
+        this.initEquipments(studyUuid, currentNodeUuid, currentRootNetworkUuid);
     }
 
-    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[] | undefined) {
-        const updatedSubstations = fetchSubstationsMapInfos(studyUuid, currentNode?.id, substationsIds, true);
-        const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
-        const updatedTieLines = fetchTieLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
-        const updatedHvdcLines = fetchHvdcLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
+    reloadImpactedSubstationsEquipments(
+        studyUuid: UUID,
+        currentNode: any,
+        currentRootNetworkUuid: UUID,
+        substationsIds: string[] | undefined
+    ) {
+        const updatedSubstations = fetchSubstationsMapInfos(
+            studyUuid,
+            currentNode?.id,
+            currentRootNetworkUuid,
+            substationsIds,
+            true
+        );
+        const updatedLines = fetchLinesMapInfos(
+            studyUuid,
+            currentNode?.id,
+            currentRootNetworkUuid,
+            substationsIds,
+            true
+        );
+        const updatedTieLines = fetchTieLinesMapInfos(
+            studyUuid,
+            currentNode?.id,
+            currentRootNetworkUuid,
+            substationsIds,
+            true
+        );
+        const updatedHvdcLines = fetchHvdcLinesMapInfos(
+            studyUuid,
+            currentNode?.id,
+            currentRootNetworkUuid,
+            substationsIds,
+            true
+        );
         updatedSubstations.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
