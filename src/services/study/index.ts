@@ -21,6 +21,7 @@ import { ComputingType } from '../../components/computing-status/computing-type'
 export function safeEncodeURIComponent(value: string | null | undefined): string {
     return value != null ? encodeURIComponent(value) : '';
 }
+
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
 export const getStudyUrl = (studyUuid: UUID | null) =>
@@ -34,6 +35,14 @@ export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/root-networks/${safeEncodeURIComponent(
         rootNetworkUuid
     )}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
+
+export const getStudyUrlWithRootNetworkUuid = (
+    studyUuid: string | null | undefined,
+    rootNetworkUuid: string | undefined | null
+) =>
+    `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/root-networks/${safeEncodeURIComponent(
+        rootNetworkUuid
+    )}`;
 
 export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: string | undefined) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
