@@ -25,27 +25,6 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
 }) => {
     const intl = useIntl();
     const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, colId, filterParams);
-    const [computedFilterOptions, setComputedFilterOptions] = useState<string[]>([]);
-
-    const getUniqueValues = useCallback(() => {
-        const uniqueValues = new Set<string>();
-        api.forEachNode((node) => {
-            const value = api.getCellValue({
-                rowNode: node,
-                colKey: colId,
-            });
-            if (value) {
-                uniqueValues.add(value);
-            }
-        });
-        return Array.from(uniqueValues);
-    }, [api, colId]);
-
-    useEffect(() => {
-        if (!filterEnums) {
-            setComputedFilterOptions(getUniqueValues());
-        }
-    }, [filterEnums, getUniqueValues]);
 
     const handleFilterAutoCompleteChange = (_: SyntheticEvent, data: string[]) => {
         handleChangeFilterValue({ value: data, type: FILTER_TEXT_COMPARATORS.EQUALS });
