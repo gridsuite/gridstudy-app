@@ -7,7 +7,7 @@
 
 import { backendFetchJson, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid, getStudyUrlWithRootNetworkUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
@@ -53,13 +53,18 @@ export function evaluateJsonFilter(
     });
 }
 
-export function evaluateFilters(studyUuid: UUID, currentNodeUuid: UUID, filters: UUID[]): Promise<FilterEquipments[]> {
-    console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
+export function evaluateFilters(
+    studyUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    filters: UUID[]
+): Promise<FilterEquipments[]> {
+    console.info(`Get matched elements of study '${studyUuid}' with a root network '${currentRootNetworkUuid}' ...`);
 
     const filtersListsQueryParams = getRequestParamFromList(filters, 'filtersUuid');
     const urlSearchParams = new URLSearchParams(filtersListsQueryParams);
 
-    const evaluateFilterUrl = getStudyUrl(studyUuid) + `/filters/elements?${urlSearchParams}`;
+    const evaluateFilterUrl =
+        getStudyUrlWithRootNetworkUuid(studyUuid, currentRootNetworkUuid) + `/filters/elements?${urlSearchParams}`;
     console.debug(evaluateFilterUrl);
     return backendFetchJson(evaluateFilterUrl, {
         method: 'get',

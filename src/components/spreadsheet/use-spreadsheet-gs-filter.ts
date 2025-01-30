@@ -15,27 +15,27 @@ import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 
 export const useSpreadsheetGsFilter = (equipmentType: SpreadsheetEquipmentType) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
     const [filterIds, setFilterIds] = useState<string[]>([]);
     const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
 
     const applyGsFilter = useCallback(
         async (filters: ExpertFilter[]) => {
-            if (!filters?.length || !currentNode?.id) {
+            if (!filters?.length || !currentRootNetwork) {
                 setFilterIds([]);
                 return;
             }
 
             const filtersUuid = filters.filter((filter) => filter.id).map((filter) => filter.id as UUID);
             if (filtersUuid.length > 0) {
-                const response = await evaluateFilters(studyUuid as UUID, currentNode.id, filtersUuid);
+                const response = await evaluateFilters(studyUuid as UUID, currentRootNetwork, filtersUuid);
                 const equipmentsIds = response.flatMap((filterEquipments) =>
                     filterEquipments.identifiableAttributes.map((attr) => attr.id)
                 );
                 setFilterIds(equipmentsIds);
             }
         },
-        [currentNode?.id, studyUuid]
+        [currentRootNetwork, studyUuid]
     );
 
     useEffect(() => {
