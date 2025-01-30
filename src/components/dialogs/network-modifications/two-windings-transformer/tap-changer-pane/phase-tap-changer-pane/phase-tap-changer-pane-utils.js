@@ -35,7 +35,7 @@ import {
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { areNumbersOrdered, areArrayElementsUnique } from 'components/utils/utils';
+import { areArrayElementsUnique, areNumbersOrdered } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
@@ -164,7 +164,7 @@ const phaseTapChangerValidationSchema = (id) => ({
     }),
 });
 
-const phaseTapChangerModificationValidationSchema = (id) => ({
+const phaseTapChangerModificationValidationSchema = (previousValues, id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
         [REGULATION_MODE]: yup.string().nullable(),
@@ -219,8 +219,8 @@ export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
     return phaseTapChangerValidationSchema(id);
 };
 
-export const getPhaseTapChangerModificationValidationSchema = (id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerModificationValidationSchema(id);
+export const getPhaseTapChangerModificationValidationSchema = (previousValues, id = PHASE_TAP_CHANGER) => {
+    return phaseTapChangerModificationValidationSchema(previousValues, id);
 };
 
 const phaseTapChangerEmptyFormData = (id) => ({

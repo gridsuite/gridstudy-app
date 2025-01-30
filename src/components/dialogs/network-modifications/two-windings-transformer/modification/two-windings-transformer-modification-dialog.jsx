@@ -678,9 +678,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     ),
                                     targetDeadband: getValues(`${PHASE_TAP_CHANGER}.${TARGET_DEADBAND}`),
                                     lowTapPosition: getValues(`${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`),
-                                    highTapPosition: computeHighTapPosition(
-                                        twt?.[PHASE_TAP_CHANGER]?.[HIGH_TAP_POSITION]
-                                    ),
+                                    highTapPosition: getValues(`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
                                     tapPosition: getValues(`${PHASE_TAP_CHANGER}.${TAP_POSITION}`),
                                     steps: addSelectedFieldToRows(getPhaseTapChangerSteps(twt)),
                                     equipmentId: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
@@ -801,6 +799,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             <RatioTapChangerPane
                                 studyUuid={studyUuid}
                                 currentNode={currentNode}
+                                currentRootNetworkUuid={currentRootNetworkUuid}
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify}
                                 editData={editData}
@@ -811,6 +810,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             <PhaseTapChangerPane
                                 studyUuid={studyUuid}
                                 currentNode={currentNode}
+                                currentRootNetworkUuid={currentRootNetworkUuid}
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify}
                                 editData={editData}
