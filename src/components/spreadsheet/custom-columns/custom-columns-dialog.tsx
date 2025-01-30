@@ -30,8 +30,8 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm, useWatch } from 'react-hook-form';
 import {
-    COLUMN_ID,
     COLUMN_DEPENDENCIES,
+    COLUMN_ID,
     COLUMN_NAME,
     CustomColumnForm,
     customColumnFormSchema,
@@ -217,11 +217,16 @@ export default function CustomColumnDialog({
                         </Grid>
                         <Grid item sx={styles.field}>
                             <MultipleAutocompleteInput
-                                label={intl.formatMessage({ id: 'spreadsheet/custom_column/column_dependencies' })}
+                                label="spreadsheet/custom_column/column_dependencies"
                                 name={COLUMN_DEPENDENCIES}
-                                options={customColumnsDefinitions?.map((definition) => definition.id) ?? []}
+                                options={
+                                    customColumnsDefinitions
+                                        ?.map((definition) => definition.id)
+                                        .filter((id) => id !== columnId) ?? []
+                                }
                                 disableClearable={false}
                                 disableCloseOnSelect
+                                allowNewValue={false}
                                 freeSolo={false}
                             />
                         </Grid>
