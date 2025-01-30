@@ -35,7 +35,7 @@ import {
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { areArrayElementsUnique, areNumbersOrdered } from 'components/utils/utils';
+import { areNumbersOrdered, areArrayElementsUnique } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
@@ -223,12 +223,12 @@ export const getPhaseTapChangerModificationValidationSchema = (previousValues, i
     return phaseTapChangerModificationValidationSchema(previousValues, id);
 };
 
-const phaseTapChangerEmptyFormData = (id) => ({
+const phaseTapChangerEmptyFormData = (isModification, id) => ({
     [id]: {
         [ENABLED]: false,
         [REGULATION_MODE]: null,
         [REGULATION_TYPE]: null,
-        [REGULATION_SIDE]: SIDE.SIDE1.id,
+        [REGULATION_SIDE]: isModification ? null : SIDE.SIDE1.id,
         [CURRENT_LIMITER_REGULATING_VALUE]: null,
         [FLOW_SET_POINT_REGULATING_VALUE]: null,
         [TARGET_DEADBAND]: null,
@@ -240,8 +240,8 @@ const phaseTapChangerEmptyFormData = (id) => ({
     },
 });
 
-export const getPhaseTapChangerEmptyFormData = (id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerEmptyFormData(id);
+export const getPhaseTapChangerEmptyFormData = (isModification = false, id = PHASE_TAP_CHANGER) => {
+    return phaseTapChangerEmptyFormData(isModification, id);
 };
 
 export const getPhaseTapChangerFormData = (

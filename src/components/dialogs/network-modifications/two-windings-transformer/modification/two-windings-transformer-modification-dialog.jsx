@@ -138,8 +138,8 @@ const emptyFormData = {
     ...getCont1Cont2WithPositionEmptyFormData(true),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(),
-    ...getRatioTapChangerEmptyFormData(),
-    ...getPhaseTapChangerEmptyFormData(),
+    ...getRatioTapChangerEmptyFormData(true),
+    ...getPhaseTapChangerEmptyFormData(true),
     ...emptyProperties,
 };
 
