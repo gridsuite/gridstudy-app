@@ -1461,6 +1461,6 @@
     "deleteRootNetworkError": "Une erreur est survenue lors de la suppression des réseaux racines",
     "rootNetworknameValidityCheckError": "Une erreur est survenue lors de la vérification du nom de réseau racine",
     "rootNetworkDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier du réseau",
-    "RootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
+    "rootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
     "createRootNetworksError": "Une erreur est survenue lors de la création du réseau racine"
 }
