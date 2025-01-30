@@ -55,7 +55,7 @@ const PagedSensitivityAnalysisResult = ({
         (state) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.ShortcircuitAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
 
     const filtersDef = useMemo(() => {
         const baseFilters = [

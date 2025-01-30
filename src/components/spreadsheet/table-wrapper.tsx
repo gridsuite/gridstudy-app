@@ -32,9 +32,11 @@ import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
+import { SpreadsheetGsFilter } from './spreadsheet-gs-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterType } from '../../types/custom-aggrid-types';
 import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -60,6 +62,7 @@ const styles = {
     },
     toolbar: (theme: Theme) => ({
         marginTop: theme.spacing(2),
+        alignItems: 'center',
     }),
     filter: (theme: Theme) => ({
         marginLeft: theme.spacing(1),
@@ -214,6 +217,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }),
         [currentTabType, tablesDefinitionIndexes, tabIndex]
     );
+
+    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(equipmentDefinition.type);
 
     const formatFetchedEquipmentsHandler = useCallback(
         (fetchedEquipments: any) => {
@@ -424,6 +429,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 <EquipmentTabs disabled={disabled} tabIndex={tabIndex} handleSwitchTab={handleSwitchTab} />
                 <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.selectColumns}>
+                        <SpreadsheetGsFilter equipmentType={equipmentDefinition.type} />
+                    </Grid>
+                    <Grid item>
                         <ColumnsConfig
                             tabIndex={tabIndex}
                             disabled={disabled || currentColumns().length === 0}
@@ -473,6 +481,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         handleColumnDrag={handleColumnDrag}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
+                        isExternalFilterPresent={isExternalFilterPresent}
+                        doesExternalFilterPass={doesFormulaFilteringPass}
                     />
                 </Box>
             )}
