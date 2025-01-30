@@ -35,13 +35,58 @@ import {
 import { modifyByFormula } from '../../../../../services/study/network-modifications';
 import { getFormulaInitialValue, getFormulaSchema } from './formula/formula-utils';
 
-function getFieldOrConvertedUnitValue(input, fieldType) {
+function getFieldOrConvertedUnitValue(input, fieldType, convert) {
     const value = input.replace(',', '.');
     const isNumber = !isNaN(parseFloat(value));
-    return {
-        [VALUE]: isNumber ? convertOutputValue(fieldType, value) : null,
-        [EQUIPMENT_FIELD]: isNumber ? null : input,
-    };
+
+    if (isNumber) {
+        return { [VALUE]: convert ? convertOutputValue(fieldType, value) : value, [EQUIPMENT_FIELD]: null };
+    } else {
+        return { [VALUE]: null, [EQUIPMENT_FIELD]: input };
+    }
+}
+
+export function shouldConvert(fieldType, input1, input2, operator) {
+    const isNumber1 = input1 && (!isNaN(input1) || !isNaN(parseFloat(input1.replace(',', '.'))));
+    const isNumber2 = input2 && (!isNaN(input2) || !isNaN(parseFloat(input2.replace(',', '.'))));
+
+    let convert1 = true;
+    let convert2 = true;
+
+    switch (operator) {
+        case 'MULTIPLICATION':
+            // if we have 2 number multiply first one only
+            if (isNumber1 && isNumber2) {
+                convert2 = false;
+                break;
+            }
+            // if 1 number and one field do not multiply number
+            if (isNumber1 !== isNumber2) {
+                convert1 = false;
+                convert2 = false;
+            }
+            break;
+        case 'DIVISION':
+            // if we have 2 number multiply first one only
+            if (isNumber1 && isNumber2) {
+                convert2 = false;
+                break;
+            }
+
+            // if 1 number and one field do not convert number
+            if (isNumber1 !== isNumber2) {
+                convert1 = false;
+                convert2 = false;
+            }
+            break;
+        case 'PERCENTAGE': //do not convert
+            convert1 = false;
+            convert2 = false;
+            break;
+        default:
+            return { convert1: true, convert2: true };
+    }
+    return { convert1: convert1, convert2: convert2 };
 }
 
 const formSchema = yup
@@ -77,14 +122,26 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
     useEffect(() => {
         if (editData) {
             const formulas = editData.formulaInfosList?.map((formula) => {
-                const valueConverted1 = convertInputValue(
-                    FieldType[formula[EDITED_FIELD]],
-                    formula?.fieldOrValue1?.value
+                console.log('formula : ', formula);
+                console.log('formula?.fieldOrValue1 : ', formula?.fieldOrValue1.value);
+                console.log('formula?.fieldOrValue2 : ', formula?.fieldOrValue2.value);
+                console.log('FieldType[formula[EDITED_FIELD]] : ', FieldType[formula[EDITED_FIELD]]);
+                console.log('formula?.operator : ', formula?.operator);
+
+                const shouldConverts = shouldConvert(
+                    formula?.editedField,
+                    formula?.fieldOrValue1?.value,
+                    formula?.fieldOrValue2?.value,
+                    formula?.operator
                 );
-                const valueConverted2 = convertInputValue(
-                    FieldType[formula[EDITED_FIELD]],
-                    formula?.fieldOrValue2?.value
-                );
+
+                const valueConverted1 = shouldConverts.convert1
+                    ? convertInputValue(FieldType[formula[EDITED_FIELD]], formula?.fieldOrValue1?.value)
+                    : formula?.fieldOrValue1?.value;
+                const valueConverted2 = shouldConverts.convert1
+                    ? convertInputValue(FieldType[formula[EDITED_FIELD]], formula?.fieldOrValue2?.value)
+                    : formula?.fieldOrValue2.value;
+
                 const ref1 = valueConverted1?.toString() ?? formula?.fieldOrValue1?.equipmentField;
                 const ref2 = valueConverted2?.toString() ?? formula?.fieldOrValue2?.equipmentField;
                 return {
@@ -109,14 +166,23 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
     const onSubmit = useCallback(
         (data) => {
             const formulas = data[FORMULAS].map((formula) => {
+                const shouldConverts = shouldConvert(
+                    FieldType[formula[EDITED_FIELD]],
+                    formula[REFERENCE_FIELD_OR_VALUE_1],
+                    formula[REFERENCE_FIELD_OR_VALUE_2],
+                    formula[OPERATOR]
+                );
                 const fieldOrValue1 = getFieldOrConvertedUnitValue(
                     formula[REFERENCE_FIELD_OR_VALUE_1],
-                    FieldType[formula[EDITED_FIELD]]
+                    FieldType[formula[EDITED_FIELD]],
+                    shouldConverts.convert1
                 );
                 const fieldOrValue2 = getFieldOrConvertedUnitValue(
                     formula[REFERENCE_FIELD_OR_VALUE_2],
-                    FieldType[formula[EDITED_FIELD]]
+                    FieldType[formula[EDITED_FIELD]],
+                    shouldConverts.convert2
                 );
+
                 return {
                     fieldOrValue1,
                     fieldOrValue2,
