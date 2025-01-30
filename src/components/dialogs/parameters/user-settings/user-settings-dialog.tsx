@@ -84,7 +84,7 @@ export default function UserSettingsDialog({ open, onClose }: Readonly<UserSetti
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button onClick={handleValidate} disabled={false} variant="outlined">
+                <Button onClick={handleValidate} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
