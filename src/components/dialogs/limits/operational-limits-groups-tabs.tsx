@@ -37,7 +37,7 @@ export const limitsStyles = {
         p: 1,
     },
     copyLimitsToRightBackground: {
-        height: '50%',
+        height: 200,
         display: 'flex',
     },
     copyLimitsToLeftBackground: {

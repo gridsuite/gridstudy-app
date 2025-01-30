@@ -192,24 +192,22 @@ export function LimitsSidePane({
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
-            {
-                <DndTable
-                    arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
-                    useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
-                    createRows={createRows}
-                    columnsDefinition={columnsDefinition}
-                    withLeftButtons={false}
-                    withAddRowsDialog={false}
-                    withBottomButtons={onlySelectedLimitsGroup}
-                    withCheckboxes={onlySelectedLimitsGroup}
-                    withButtonOnTheRight={!onlySelectedLimitsGroup}
-                    previousValues={temporaryLimitsPreviousValues}
-                    disableTableCell={disableTableCell}
-                    getPreviousValue={getPreviousValue}
-                    isValueModified={isValueModified}
-                    tableHeight={onlySelectedLimitsGroup ? 270 : 400}
-                />
-            }
+            <DndTable
+                arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
+                useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
+                createRows={createRows}
+                columnsDefinition={columnsDefinition}
+                withLeftButtons={false}
+                withAddRowsDialog={false}
+                withBottomButtons={onlySelectedLimitsGroup}
+                withCheckboxes={onlySelectedLimitsGroup}
+                withButtonOnTheRight={!onlySelectedLimitsGroup}
+                previousValues={temporaryLimitsPreviousValues}
+                disableTableCell={disableTableCell}
+                getPreviousValue={getPreviousValue}
+                isValueModified={isValueModified}
+                tableHeight={onlySelectedLimitsGroup ? 270 : 400}
+            />
         </Box>
     );
 }
