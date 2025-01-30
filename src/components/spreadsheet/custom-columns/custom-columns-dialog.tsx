@@ -228,6 +228,7 @@ export default function CustomColumnDialog({
                                 disableCloseOnSelect
                                 allowNewValue={false}
                                 freeSolo={false}
+                                onBlur={undefined}
                             />
                         </Grid>
                     </Grid>
