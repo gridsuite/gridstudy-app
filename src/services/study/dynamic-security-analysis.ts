@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
@@ -28,12 +28,13 @@ export function fetchDynamicSecurityAnalysisProviders() {
     return backendFetchJson(url);
 }
 
-export function startDynamicSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID) {
+export function startDynamicSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(`Running dynamic security analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
-    const startDynamicSecurityAnalysisUrl = `${getStudyUrlWithNodeUuid(
+    const startDynamicSecurityAnalysisUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
-        currentNodeUuid
+        currentNodeUuid,
+        currentRootNetworkUuid
     )}/dynamic-security-analysis/run`;
 
     console.debug({ startDynamicSecurityAnalysisUrl });
@@ -47,17 +48,24 @@ export function startDynamicSecurityAnalysis(studyUuid: UUID, currentNodeUuid: U
     });
 }
 
-export function stopDynamicSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID) {
+export function stopDynamicSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(`Stopping dynamic security analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`);
     const stopDynamicSecurityAnalysisUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/dynamic-security-analysis/stop';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/dynamic-security-analysis/stop';
     console.debug(stopDynamicSecurityAnalysisUrl);
     return backendFetch(stopDynamicSecurityAnalysisUrl, { method: 'put' });
 }
 
-export function fetchDynamicSecurityAnalysisStatus(studyUuid: UUID, currentNodeUuid: UUID) {
+export function fetchDynamicSecurityAnalysisStatus(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+) {
     console.info(`Fetching dynamic security analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`);
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/dynamic-security-analysis/status';
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/dynamic-security-analysis/status';
     console.debug(url);
     return backendFetchJson(url);
 }

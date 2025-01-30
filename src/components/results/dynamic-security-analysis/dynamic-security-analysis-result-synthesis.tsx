@@ -43,15 +43,17 @@ const defaultColDef = {
 type DynamicSecurityAnalysisResultSynthesisProps = {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
 };
 
 const DynamicSecurityAnalysisResultSynthesis = memo(
-    ({ nodeUuid, studyUuid }: DynamicSecurityAnalysisResultSynthesisProps) => {
+    ({ nodeUuid, studyUuid, currentRootNetworkUuid }: DynamicSecurityAnalysisResultSynthesisProps) => {
         const intl = useIntl();
 
         const [result, isLoading] = useNodeData(
             studyUuid,
             nodeUuid,
+            currentRootNetworkUuid,
             fetchDynamicSecurityAnalysisStatus,
             dynamicSecurityAnalysisResultInvalidations,
             null,

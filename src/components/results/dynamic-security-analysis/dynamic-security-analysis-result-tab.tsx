@@ -25,9 +25,14 @@ const TAB_INDEX_LOGS = 'ComputationResultsLogs';
 interface DynamicSecurityAnalysisResultTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
 }
 
-function DynamicSecurityAnalysisResultTab({ studyUuid, nodeUuid }: Readonly<DynamicSecurityAnalysisResultTabProps>) {
+function DynamicSecurityAnalysisResultTab({
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
+}: Readonly<DynamicSecurityAnalysisResultTabProps>) {
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(TAB_INDEX_STATUS);
@@ -56,7 +61,11 @@ function DynamicSecurityAnalysisResultTab({ studyUuid, nodeUuid }: Readonly<Dyna
             </Box>
             <Box sx={styles.resultContainer}>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_STATUS}>
-                    <DynamicSecurityAnalysisResultSynthesis studyUuid={studyUuid} nodeUuid={nodeUuid} />
+                    <DynamicSecurityAnalysisResultSynthesis
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
+                    />
                 </TabPanelLazy>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_LOGS}>
                     <DynamicSecurityAnalysisResultLogs />

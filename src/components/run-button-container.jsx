@@ -278,7 +278,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
                         null,
-                        () => startDynamicSecurityAnalysis(studyUuid, currentNode?.id),
+                        () => startDynamicSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
                         'startDynamicSecurityAnalysisError'
@@ -286,7 +286,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.DYNAMIC_SECURITY_ANALYSIS, () =>
-                        stopDynamicSecurityAnalysis(studyUuid, currentNode?.id)
+                        stopDynamicSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid)
                     );
                 },
             },
