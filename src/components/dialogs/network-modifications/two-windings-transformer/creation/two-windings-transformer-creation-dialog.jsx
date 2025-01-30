@@ -114,6 +114,7 @@ import {
  * Dialog to create a two windings transformer in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -157,6 +158,7 @@ const TwoWindingsTransformerCreationDialog = ({
     editData,
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -408,6 +410,7 @@ const TwoWindingsTransformerCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
@@ -669,6 +672,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 <TwoWindingsTransformerCreationCharacteristicsPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     tabIndex={tabIndex}
                 />
 
@@ -678,6 +682,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
@@ -688,6 +693,7 @@ TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editDataFetchStatus: PropTypes.string,
 };

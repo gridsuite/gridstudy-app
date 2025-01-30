@@ -55,6 +55,7 @@ import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
+import { ExpertFilter } from '../services/study/filter';
 
 type MutableUnknownArray = unknown[];
 
@@ -137,7 +138,8 @@ export type AppActions =
     | UpdateCustomColumnsNodesAliasesAction
     | AddEquipmentsByNodesForCustomColumnsAction
     | UpdateNetworkVisualizationParametersAction
-    | StateEstimationResultFilterAction;
+    | StateEstimationResultFilterAction
+    | SaveSpreadSheetGsFilterAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -266,6 +268,14 @@ export function mapEquipmentsCreated(
         newTieLines: newTieLines,
         newSubstations: newSubstations,
         newHvdcLines: newHvdcLines,
+    };
+}
+
+export const RESET_MAP_EQUIPMENTS = 'RESET_MAP_EQUIPMENTS';
+export type ResetMapEquipmentsAction = Readonly<Action<typeof RESET_MAP_EQUIPMENTS>>;
+export function resetMapEquipment(): ResetMapEquipmentsAction {
+    return {
+        type: RESET_MAP_EQUIPMENTS,
     };
 }
 
@@ -666,6 +676,17 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     };
 }
 
+export const CURRENT_ROOT_NETWORK = 'CURRENT_ROOT_NETWORK';
+export type CurrentRootNetworkAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK>> & {
+    currentRootNetwork: UUID;
+};
+export function setCurrentRootNetwork(currentRootNetwork: UUID): CurrentRootNetworkAction {
+    return {
+        type: CURRENT_ROOT_NETWORK,
+        currentRootNetwork: currentRootNetwork,
+    };
+}
+
 export const NODE_SELECTION_FOR_COPY = 'NODE_SELECTION_FOR_COPY';
 export type NodeSelectionForCopyAction = Readonly<Action<typeof NODE_SELECTION_FOR_COPY>> & {
     nodeSelectionForCopy: NonNullable<NodeSelectionForCopy>;
@@ -916,6 +937,7 @@ export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
     connectionShiftX: number;
     connectionShiftY: number;
 };
+
 export function storeNetworkAreaDiagramTextNodeMovement(
     nadIdentifier: string,
     equipmentId: string,
@@ -934,6 +956,7 @@ export function storeNetworkAreaDiagramTextNodeMovement(
         connectionShiftY: connectionShiftY,
     };
 }
+
 export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS = 'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
 export type NetworkAreaDiagramNbVoltageLevelsAction = Readonly<
     Action<typeof NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS>
@@ -1290,5 +1313,22 @@ export function setStateEstimationResultFilter(
         type: STATEESTIMATION_RESULT_FILTER,
         filterTab: filterTab,
         [STATEESTIMATION_RESULT_STORE_FIELD]: stateEstimationResultFilter,
+    };
+}
+
+export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
+export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
+    equipmentType: SpreadsheetEquipmentType;
+    filters: ExpertFilter[];
+};
+
+export function saveSpreadsheetGsFilters(
+    equipmentType: SpreadsheetEquipmentType,
+    filters: ExpertFilter[]
+): SaveSpreadSheetGsFilterAction {
+    return {
+        type: SAVE_SPREADSHEET_GS_FILTER,
+        equipmentType: equipmentType,
+        filters: filters,
     };
 }

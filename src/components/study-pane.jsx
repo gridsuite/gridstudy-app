@@ -51,7 +51,7 @@ export const StudyView = {
     PARAMETERS: 'Parameters',
 };
 
-const StudyPane = ({ studyUuid, currentNode, ...props }) => {
+const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -88,6 +88,7 @@ const StudyPane = ({ studyUuid, currentNode, ...props }) => {
                 <MapViewer
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     view={props.view}
                     openDiagramView={openDiagramView}
                     tableEquipment={tableEquipment}
@@ -101,6 +102,7 @@ const StudyPane = ({ studyUuid, currentNode, ...props }) => {
                     <TableWrapper
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
@@ -108,7 +110,6 @@ const StudyPane = ({ studyUuid, currentNode, ...props }) => {
                     />
                 </Paper>
             </TabPanelLazy>
-
             <Box
                 sx={{
                     height: '100%',
@@ -120,6 +121,7 @@ const StudyPane = ({ studyUuid, currentNode, ...props }) => {
                     <ResultViewTab
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         openVoltageLevelDiagram={openVoltageLevelDiagram}
                         disabled={disabled}
                         view={props.view}

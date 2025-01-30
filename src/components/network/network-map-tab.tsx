@@ -34,7 +34,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { type Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNode, isSameNodeAndBuilt } from '../graph/util/model-functions';
-import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
+import { resetMapEquipment, resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, LinearProgress, useTheme } from '@mui/material';
 import { UPDATE_TYPE_HEADER } from '../study-container';
@@ -83,6 +83,7 @@ type NetworkMapTabProps = {
     networkMapRef: RefObject<NetworkMapRef>;
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
     visible: boolean;
     lineFullPath: boolean;
     lineParallelPath: boolean;
@@ -103,6 +104,7 @@ export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     /* visual*/
     visible,
     lineFullPath,
@@ -128,6 +130,9 @@ export const NetworkMapTab = ({
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const centerOnSubstation = useSelector((state: AppState) => state.centerOnSubstation);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const isNetworkModificationTreeUpToDate = useSelector(
+        (state: AppState) => state.isNetworkModificationTreeModelUpToDate
+    );
 
     const theme = useTheme();
 
@@ -184,6 +189,8 @@ export const NetworkMapTab = ({
 
     const [position, setPosition] = useState([-1, -1]);
     const currentNodeRef = useRef<CurrentTreeNode | null>(null);
+    const currentRootNetworkUuidRef = useRef<UUID | null>(null);
+
     const [updatedLines, setUpdatedLines] = useState<MapLine[]>([]);
     const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLine[]>([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
@@ -205,6 +212,7 @@ export const NetworkMapTab = ({
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         isUpdate={true}
                         defaultIdValue={equipmentToModify?.id}
                         onClose={() => closeModificationDialog()}
@@ -218,6 +226,7 @@ export const NetworkMapTab = ({
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         isUpdate={true}
                         defaultIdValue={equipmentToModify?.id}
                         onClose={() => closeModificationDialog()}
@@ -231,6 +240,7 @@ export const NetworkMapTab = ({
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultIdValue={equipmentToModify?.id}
                         isUpdate={true}
                         onClose={() => closeModificationDialog()}
@@ -251,6 +261,7 @@ export const NetworkMapTab = ({
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultIdValue={equipmentToModify?.id}
                         isUpdate={true}
                         onClose={() => closeModificationDialog()}
@@ -413,13 +424,23 @@ export const NetworkMapTab = ({
     const getMissingEquipmentsPositions = useCallback(
         (
             notFoundEquipmentsIds: string[],
-            fetchEquipmentCB: (studyUuid: UUID, nodeId: UUID, equipmentIds: string[]) => Promise<any[]>
+            fetchEquipmentCB: (
+                studyUuid: UUID,
+                nodeId: UUID,
+                currentRootNetworkUuid: UUID,
+                equipmentIds: string[]
+            ) => Promise<any[]>
         ) => {
-            if (notFoundEquipmentsIds.length === 0 || !currentNodeRef.current) {
+            if (notFoundEquipmentsIds.length === 0 || !currentNodeRef.current || !currentRootNetworkUuidRef.current) {
                 return Promise.resolve([]);
             }
 
-            return fetchEquipmentCB(studyUuid, currentNodeRef.current!.id, notFoundEquipmentsIds);
+            return fetchEquipmentCB(
+                studyUuid,
+                currentNodeRef.current!.id,
+                currentRootNetworkUuidRef.current,
+                notFoundEquipmentsIds
+            );
         },
         [studyUuid]
     );
@@ -562,31 +583,40 @@ export const NetworkMapTab = ({
         studyUuid,
         getEquipmentsNotFoundIds,
         getMissingEquipmentsPositions,
-        mapEquipments?.substations,
-        mapEquipments?.lines,
+        mapEquipments,
         updateSubstationsTemporaryGeoData,
         updateLinesTemporaryGeoData,
     ]);
-
+    const handleFilteredNominalVoltagesChange = useCallback<NominalVoltageFilterProps['onChange']>(
+        (newValues) => {
+            setFilteredNominalVoltages(newValues);
+            onNominalVoltagesChange(newValues);
+        },
+        [onNominalVoltagesChange]
+    );
     // loads all root node geo-data then saves them in redux
     // it will be considered as the source of truth to check whether we need to fetch geo-data for a specific equipment or not
     const loadRootNodeGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         dispatch(setMapDataLoading(true));
+        setGeoData(undefined);
+        geoDataRef.current = null;
 
         // @ts-expect-error TODO: manage rootNodeId undefined case
-        const substationPositionsDone = fetchSubstationPositions(studyUuid, rootNodeId).then((data) => {
-            console.info(`Received substations of study '${studyUuid}'...`);
-            const newGeoData = new GeoData(new Map(), geoDataRef.current?.linePositionsById || new Map());
-            newGeoData.setSubstationPositions(data);
-            setGeoData(newGeoData);
-            geoDataRef.current = newGeoData;
-        });
+        const substationPositionsDone = fetchSubstationPositions(studyUuid, rootNodeId, currentRootNetworkUuid).then(
+            (data) => {
+                console.info(`Received substations of study '${studyUuid}'...`);
+                const newGeoData = new GeoData(new Map(), geoDataRef.current?.linePositionsById || new Map());
+                newGeoData.setSubstationPositions(data);
+                setGeoData(newGeoData);
+                geoDataRef.current = newGeoData;
+            }
+        );
 
         const linePositionsDone = !lineFullPath
             ? Promise.resolve()
             : // @ts-expect-error TODO: manage rootNodeId undefined case
-              fetchLinePositions(studyUuid, rootNodeId).then((data) => {
+              fetchLinePositions(studyUuid, rootNodeId, currentRootNetworkUuid).then((data) => {
                   console.info(`Received lines of study '${studyUuid}'...`);
                   const newGeoData = new GeoData(geoDataRef.current?.substationPositionsById || new Map(), new Map());
                   newGeoData.setLinePositions(data);
@@ -597,6 +627,7 @@ export const NetworkMapTab = ({
         Promise.all([substationPositionsDone, linePositionsDone])
             .then(() => {
                 temporaryGeoDataIdsRef.current = new Set();
+                networkMapRef.current?.resetZoomAndPosition();
                 setIsRootNodeGeoDataLoaded(true);
             })
             .catch(function (error) {
@@ -609,7 +640,7 @@ export const NetworkMapTab = ({
             .finally(() => {
                 dispatch(setMapDataLoading(false));
             });
-    }, [rootNodeId, lineFullPath, studyUuid, dispatch, snackError]);
+    }, [rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch, snackError, networkMapRef]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
@@ -644,11 +675,17 @@ export const NetworkMapTab = ({
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
-        const gSMapEquipments = new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch);
+        const gSMapEquipments = new GSMapEquipments(
+            studyUuid,
+            currentNode?.id,
+            currentRootNetworkUuid,
+            snackError,
+            dispatch
+        );
         if (gSMapEquipments) {
             dispatch(resetMapReloaded());
         }
-    }, [currentNode, dispatch, snackError, studyUuid]);
+    }, [currentNode, currentRootNetworkUuid, dispatch, snackError, studyUuid]);
 
     const reloadMapEquipments = useCallback(
         (currentNodeAtReloadCalling: CurrentTreeNode | null, substationsIds: UUID[] | undefined) => {
@@ -661,7 +698,12 @@ export const NetworkMapTab = ({
             }
 
             const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } = mapEquipments
-                ? mapEquipments.reloadImpactedSubstationsEquipments(studyUuid, currentNode, substationsIds)
+                ? mapEquipments.reloadImpactedSubstationsEquipments(
+                      studyUuid,
+                      currentNode,
+                      currentRootNetworkUuid,
+                      substationsIds
+                  )
                 : {
                       updatedSubstations: Promise.resolve([]),
                       updatedLines: Promise.resolve([]),
@@ -695,10 +737,13 @@ export const NetworkMapTab = ({
                 }
             });
             return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(() => {
+                if (isFullReload) {
+                    handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
+                }
                 dispatch(setMapDataLoading(false));
             });
         },
-        [currentNode, dispatch, mapEquipments, studyUuid]
+        [currentNode, handleFilteredNominalVoltagesChange, currentRootNetworkUuid, dispatch, mapEquipments, studyUuid]
     );
 
     const updateMapEquipments = useCallback(
@@ -754,7 +799,6 @@ export const NetworkMapTab = ({
             dispatch(resetMapReloaded());
             return;
         }
-
         updateMapEquipments(currentNodeAtReloadCalling).then(() => {
             if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                 loadGeoData();
@@ -764,7 +808,11 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         if (isInitialized && studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult') {
+            const rootNetworkUuidFromNotification = studyUpdatedForce.eventData.headers['rootNetwork'];
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
+                rootNetworkUuidFromNotification === currentRootNetworkUuid
+            ) {
                 reloadMapEquipments(currentNodeRef.current, undefined).catch((e) =>
                     snackError({
                         messageTxt: e.message,
@@ -772,7 +820,7 @@ export const NetworkMapTab = ({
                 );
             }
         }
-    }, [isInitialized, studyUpdatedForce, reloadMapEquipments, snackError]);
+    }, [isInitialized, studyUpdatedForce, currentRootNetworkUuid, reloadMapEquipments, snackError]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
@@ -789,17 +837,31 @@ export const NetworkMapTab = ({
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
+        let previousCurrentRootNetworkUuid = currentRootNetworkUuidRef.current;
+        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
         let previousNodeStatus = isCurrentNodeBuiltRef.current;
         isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
-        // if only renaming, do not reload geo data
-        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+        // as long as rootNodeId is not set, we don't fetch any geodata
+        if (!rootNodeId) {
+            return;
+        }
+        // when root network has just been changed, we reset map equipment and geo data, they will be loaded as if we were opening a new study
+        if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
+            setInitialized(false);
+            setIsRootNodeGeoDataLoaded(false);
+            dispatch(resetMapEquipment());
             return;
         }
         if (disabled) {
             return;
         }
-        // as long as rootNodeId is not set, we don't fetch any geodata
-        if (!rootNodeId) {
+        // if only renaming, do not reload geo data
+        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+            return;
+        }
+        // when switching of root network, networkModificationTree takes some time to load
+        // we need to wait for the request to respond to load data, in order to have up to date nodes build status
+        if (!isNetworkModificationTreeUpToDate) {
             return;
         }
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
@@ -820,6 +882,7 @@ export const NetworkMapTab = ({
             // this reloads the mapEquipments when, in manual refresh mode, the current node is built.
             if (
                 isSameNode(previousCurrentNode, currentNode) && // must be the same node
+                previousCurrentRootNetworkUuid === currentRootNetworkUuid && // must be the same root network
                 !previousNodeStatus && // must change from unbuilt ...
                 isCurrentNodeBuiltRef.current // ... to built
             ) {
@@ -836,9 +899,12 @@ export const NetworkMapTab = ({
         disabled,
         studyUuid,
         currentNode,
+        currentRootNetworkUuid,
         loadMapEquipments,
+        dispatch,
         updateMapEquipmentsAndGeoData,
         loadRootNodeGeoData,
+        isNetworkModificationTreeUpToDate,
         isRootNodeGeoDataLoaded,
         isMapEquipmentsInitialized,
         isInitialized,
@@ -849,10 +915,21 @@ export const NetworkMapTab = ({
         // when root node geodata are loaded, we fetch current node missing geo-data
         // we check if equipments are done initializing because they are checked to fetch accurate missing geo data
         if (isRootNodeGeoDataLoaded && isMapEquipmentsInitialized && !isInitialized) {
+            // when root networks are changed, mapEquipments are recreated. when they are done recreating, the map is zoomed around the new network
+            if (mapEquipments) {
+                handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
+            }
             loadMissingGeoData();
             setInitialized(true);
         }
-    }, [isRootNodeGeoDataLoaded, isMapEquipmentsInitialized, isInitialized, loadMissingGeoData]);
+    }, [
+        handleFilteredNominalVoltagesChange,
+        mapEquipments,
+        isRootNodeGeoDataLoaded,
+        isMapEquipmentsInitialized,
+        isInitialized,
+        loadMissingGeoData,
+    ]);
 
     // Reload geo data (if necessary) when we switch on full path
     useEffect(() => {
@@ -861,7 +938,7 @@ export const NetworkMapTab = ({
         if (isInitialized && lineFullPath && !prevLineFullPath) {
             loadGeoData();
         }
-    }, [isInitialized, lineFullPath, loadGeoData]);
+    }, [isInitialized, lineFullPath, loadGeoData, currentRootNetworkUuid]);
 
     const choiceVoltageLevelsSubstation = choiceVoltageLevelsSubstationId
         ? mapEquipments?.getSubstation(choiceVoltageLevelsSubstationId)
@@ -993,14 +1070,6 @@ export const NetworkMapTab = ({
             }}
             shouldDisableToolTip={!visible || isInDrawingMode}
         />
-    );
-
-    const handleFilteredNominalVoltagesChange = useCallback<NominalVoltageFilterProps['onChange']>(
-        (newValues) => {
-            setFilteredNominalVoltages(newValues);
-            onNominalVoltagesChange(newValues);
-        },
-        [onNominalVoltagesChange]
     );
 
     // Set up filteredNominalVoltages once at map initialization
