@@ -18,52 +18,66 @@ import VoltageLevelModificationDialog from 'components/dialogs/network-modificat
 import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 interface UseEquipmentModificationProps {
     studyUuid: string;
-    tabIndex: number;
+    equipmentType: SpreadsheetEquipmentType;
 }
 
-const EQUIPMENT_DIALOG_MAPPING: Record<string, React.FC<any>> = {
-    Substations: SubstationModificationDialog,
-    VoltageLevels: VoltageLevelModificationDialog,
-    Lines: LineModificationDialog,
-    TwoWindingsTransformers: TwoWindingsTransformerModificationDialog,
-    Generators: GeneratorModificationDialog,
-    Loads: LoadModificationDialog,
-    Batteries: BatteryModificationDialog,
-    ShuntCompensators: ShuntCompensatorModificationDialog,
-    HvdcLines: VscModificationDialog,
+type EditableEquipmentType = Exclude<
+    SpreadsheetEquipmentType,
+    | EQUIPMENT_TYPES.TIE_LINE
+    | EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER
+    | EQUIPMENT_TYPES.BUS
+    | EQUIPMENT_TYPES.BUSBAR_SECTION
+    | EQUIPMENT_TYPES.DANGLING_LINE
+    | EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR
+    | EQUIPMENT_TYPES.VSC_CONVERTER_STATION
+    | EQUIPMENT_TYPES.LCC_CONVERTER_STATION
+>;
+
+const EQUIPMENT_DIALOG_MAPPING: Record<EditableEquipmentType, React.FC<any>> = {
+    [EQUIPMENT_TYPES.SUBSTATION]: SubstationModificationDialog,
+    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: VoltageLevelModificationDialog,
+    [EQUIPMENT_TYPES.LINE]: LineModificationDialog,
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: TwoWindingsTransformerModificationDialog,
+    [EQUIPMENT_TYPES.GENERATOR]: GeneratorModificationDialog,
+    [EQUIPMENT_TYPES.LOAD]: LoadModificationDialog,
+    [EQUIPMENT_TYPES.BATTERY]: BatteryModificationDialog,
+    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: ShuntCompensatorModificationDialog,
+    [EQUIPMENT_TYPES.HVDC_LINE]: VscModificationDialog,
 };
 
-export const useEquipmentModification = ({ studyUuid, tabIndex }: UseEquipmentModificationProps) => {
+export const useEquipmentModification = ({ studyUuid, equipmentType }: UseEquipmentModificationProps) => {
     const [modificationDialog, setModificationDialog] = useState<React.ReactElement | null>(null);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
 
     const createDialogWithProps = useCallback(
-        (Dialog: React.FC<any>, defaultIdValue?: string) => {
+        (Dialog: React.FC<any>, equipmentId: string) => {
             return (
                 <Dialog
                     onClose={() => setModificationDialog(null)}
                     onValidated={() => {}}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     editData={undefined}
                     isUpdate={false}
                     editDataFetchStatus={FetchStatus.IDLE}
-                    defaultIdValue={defaultIdValue}
+                    defaultIdValue={equipmentId}
                 />
             );
         },
-        [currentNode, studyUuid]
+        [currentNode, studyUuid, currentRootNetworkUuid]
     );
 
     const getDialogForEquipment = useCallback(
         (equipmentId: string) => {
-            const tableName = tablesNames[tabIndex];
-            const DialogComponent = EQUIPMENT_DIALOG_MAPPING[tableName];
+            const DialogComponent = EQUIPMENT_DIALOG_MAPPING[equipmentType as EditableEquipmentType];
 
             if (!DialogComponent) {
                 return null;
@@ -71,7 +85,7 @@ export const useEquipmentModification = ({ studyUuid, tabIndex }: UseEquipmentMo
 
             return createDialogWithProps(DialogComponent, equipmentId);
         },
-        [tabIndex, tablesNames, createDialogWithProps]
+        [createDialogWithProps, equipmentType]
     );
 
     const handleOpenModificationDialog = useCallback(

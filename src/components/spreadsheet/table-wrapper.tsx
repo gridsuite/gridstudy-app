@@ -424,7 +424,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setColumnData(generateTableColumns());
     }, [generateTableColumns]);
 
-    const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({ studyUuid, tabIndex });
+    const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({
+        studyUuid,
+        equipmentType: currentTabType(),
+    });
 
     const onRowClicked = useCallback(
         (event: RowClickedEvent) => {
