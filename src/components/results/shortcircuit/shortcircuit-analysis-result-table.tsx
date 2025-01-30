@@ -141,16 +141,18 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             };
         };
 
-        const autocompleteFilterParams = {
-            filterComponent: CustomAggridAutocompleteFilter,
-            filterComponentParams: {
-                filterParams: {
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    ...filterParams,
+        const autocompleteFilterParams = (colId: string) => {
+            return {
+                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        ...filterParams,
+                    },
+                    options: filterEnums[colId] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
-                filterEnums,
-                getEnumLabel,
-            },
+            };
         };
 
         return [
@@ -167,7 +169,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 colId: 'faultType',
                 field: 'faultType',
                 context: {
-                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams }),
+                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('faultType') }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -197,7 +199,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 field: 'side',
                 hide: isAllBusesAnalysisType,
                 context: {
-                    ...onlyIfIsOneBus({ sortParams, ...autocompleteFilterParams }),
+                    ...onlyIfIsOneBus({ sortParams, ...autocompleteFilterParams('side') }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -205,7 +207,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 colId: 'limitType',
                 field: 'limitType',
                 context: {
-                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams }),
+                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('limitType') }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
