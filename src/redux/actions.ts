@@ -909,13 +909,15 @@ export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
     equipmentId: string;
     x: number;
     y: number;
+    scalingFactor: number;
 };
 
 export function storeNetworkAreaDiagramNodeMovement(
     nadIdentifier: string,
     equipmentId: string,
     x: number,
-    y: number
+    y: number,
+    scalingFactor: number
 ): StoreNetworkAreaDiagramNodeMovementAction {
     return {
         type: STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
@@ -923,6 +925,7 @@ export function storeNetworkAreaDiagramNodeMovement(
         equipmentId: equipmentId,
         x: x,
         y: y,
+        scalingFactor: scalingFactor,
     };
 }
 
