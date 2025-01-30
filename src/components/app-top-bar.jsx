@@ -71,6 +71,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const theme = useSelector((state) => state[PARAM_THEME]);
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
 
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [appsAndUrls, setAppsAndUrls] = useState([]);
@@ -181,6 +182,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             <RunButtonContainer
                                 studyUuid={studyUuid}
                                 currentNode={currentNode}
+                                currentRootNetworkUuid={currentRootNetworkUuid}
                                 disabled={!isNodeBuilt(currentNode) || isNodeReadOnly(currentNode)}
                             />
                         </Box>

@@ -37,7 +37,12 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const customColumns = useMemo(() => {
-        return customColumnsDefinitions.map(({ name, formula }) => ({ name, formula }));
+        return customColumnsDefinitions.map(({ id, name, formula, dependencies }) => ({
+            id,
+            name,
+            formula,
+            dependencies: JSON.stringify(dependencies),
+        }));
     }, [customColumnsDefinitions]);
 
     const staticColumnIdToField = useMemo(() => {
@@ -57,6 +62,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
             ? reorderedStaticColumnIds.map((colId: string) => ({
                   name: colId,
                   formula: staticColumnIdToField.get(colId),
+                  id: staticColumnIdToField.get(colId),
               }))
             : [];
     }, [reorderedStaticColumnIds, staticColumnIdToField]);

@@ -5,18 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson } from '../utils';
+import { backendFetchJson, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid, getStudyUrlWithRootNetworkUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 export interface ExpertFilter {
     id?: UUID;
+    name?: string;
     type: 'EXPERT';
     equipmentType: string; // TODO must be EquipmentType enum
     rules: RuleGroupTypeExport;
     topologyKind?: string; // TODO must be TopologyKind enum
+}
+
+export interface FilterEquipments {
+    filterId: UUID;
+    identifiableAttributes: IdentifiableAttributes[];
+    notFoundEquipments: string[];
 }
 
 export interface IdentifiableAttributes {
@@ -28,16 +35,39 @@ export interface IdentifiableAttributes {
 export function evaluateJsonFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     filter: ExpertFilter // at moment only ExpertFilter but in futur may add others filter types to compose a union type
 ): Promise<IdentifiableAttributes[]> {
-    console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    console.info(
+        `Get matched elements of study '${studyUuid}'  with a root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
 
     const evaluateFilterUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/filters/evaluate?inUpstreamBuiltParentNode=true';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/filters/evaluate?inUpstreamBuiltParentNode=true';
     console.debug(evaluateFilterUrl);
     return backendFetchJson(evaluateFilterUrl, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filter),
+    });
+}
+
+export function evaluateFilters(
+    studyUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    filters: UUID[]
+): Promise<FilterEquipments[]> {
+    console.info(`Get matched elements of study '${studyUuid}' with a root network '${currentRootNetworkUuid}' ...`);
+
+    const filtersListsQueryParams = getRequestParamFromList(filters, 'filtersUuid');
+    const urlSearchParams = new URLSearchParams(filtersListsQueryParams);
+
+    const evaluateFilterUrl =
+        getStudyUrlWithRootNetworkUuid(studyUuid, currentRootNetworkUuid) + `/filters/elements?${urlSearchParams}`;
+    console.debug(evaluateFilterUrl);
+    return backendFetchJson(evaluateFilterUrl, {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
     });
 }

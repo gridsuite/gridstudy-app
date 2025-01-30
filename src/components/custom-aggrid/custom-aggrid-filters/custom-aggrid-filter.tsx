@@ -84,7 +84,7 @@ export const CustomAggridFilter = <F extends CustomAggridFilterParams>({
                     paper: {
                         //Test for specific parameter presence to apply a style
                         sx: styles[
-                            !!(filterComponentParams as unknown as CustomAggridAutocompleteFilterParams)?.filterEnums
+                            !!(filterComponentParams as unknown as CustomAggridAutocompleteFilterParams)?.options
                                 ? 'autoCompleteInput'
                                 : 'input'
                         ],
