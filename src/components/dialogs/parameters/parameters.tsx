@@ -581,9 +581,10 @@ export function useParameterState(paramName: UseParameterStateParamName) {
         setParamLocalState(paramGlobalState);
     }, [paramGlobalState]);
 
-    const backendupdateConfigParameterCb = useCallback(
-        (paramName: string, newParams: any) => {
-            updateConfigParameter(paramName, newParams).catch((error) => {
+    const handleChangeParamLocalState = useCallback(
+        (value: any) => {
+            setParamLocalState(value);
+            updateConfigParameter(paramName, value).catch((error) => {
                 setParamLocalState(paramGlobalState);
                 snackError({
                     messageTxt: error.message,
@@ -591,17 +592,7 @@ export function useParameterState(paramName: UseParameterStateParamName) {
                 });
             });
         },
-        [paramGlobalState, snackError]
-    );
-
-    const debouncedBackendupdateConfigParameterCb = useDebounce(backendupdateConfigParameterCb, 1000);
-
-    const handleChangeParamLocalState = useCallback(
-        (value: any) => {
-            setParamLocalState(value);
-            debouncedBackendupdateConfigParameterCb(paramName, value);
-        },
-        [debouncedBackendupdateConfigParameterCb, paramName]
+        [paramName, snackError, setParamLocalState, paramGlobalState]
     );
 
     return [paramLocalState, handleChangeParamLocalState];

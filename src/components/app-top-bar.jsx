@@ -81,7 +81,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
-    const [enableDeveloperModeLocal] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [isUserSettingsDialogOpen, setIsUserSettingsDialogOpen] = useState(false);
 
     const showVoltageLevelDiagram = useCallback(
@@ -121,7 +121,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
                 additionalModulesPromise={getServersInfos}
                 theme={themeLocal}
-                developerMode={enableDeveloperModeLocal}
+                developerMode={enableDeveloperMode}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 onLanguageClick={handleChangeLanguage}
