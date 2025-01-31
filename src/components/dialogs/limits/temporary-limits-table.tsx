@@ -6,10 +6,9 @@
  */
 
 import { useState } from 'react';
-import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { RawReadOnlyInput } from '@gridsuite/commons-ui';
-import PropTypes from 'prop-types';
 import { ErrorInput } from '@gridsuite/commons-ui';
 import { FieldErrorAlert } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
@@ -18,7 +17,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { SELECTED } from '../../utils/field-constants';
 import { TableNumericalInput } from '../../utils/rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../../utils/rhf-inputs/table-inputs/table-text-input';
-import { MAX_ROWS_NUMBER } from '../../utils/dnd-table/dnd-table';
+import { ILimitColumnDef } from './limits-side-pane';
+import { TemporaryLimit } from '../../../services/network-modification-types';
 
 const styles = {
     columnsStyle: {
@@ -30,7 +30,16 @@ const styles = {
     },
 };
 
-function DefaultTableCell({ key, name, column, ...props }) {
+interface CustomTableCellProps {
+    key: string;
+    name: string;
+    column: ILimitColumnDef;
+    disabled: boolean;
+    previousValue: number | string | null | undefined;
+    valueModified: boolean;
+}
+
+function DefaultTableCell({ key, name, column, ...props }: Readonly<CustomTableCellProps>) {
     return (
         <TableCell key={key} sx={{ padding: 1 }}>
             <RawReadOnlyInput name={name} {...props} />
@@ -38,47 +47,79 @@ function DefaultTableCell({ key, name, column, ...props }) {
     );
 }
 
-function EditableTableCell({ key, name, column, previousValue, valueModified, ...props }) {
+function EditableTableCell({
+    key,
+    name,
+    column,
+    previousValue,
+    valueModified,
+    ...props
+}: Readonly<CustomTableCellProps>) {
     return (
         <TableCell key={key} sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
             {column.numeric ? (
                 <TableNumericalInput
+                    style={undefined}
+                    inputProps={undefined}
+                    adornment={undefined}
                     name={name}
                     previousValue={previousValue}
                     valueModified={valueModified}
-                    adornment={column?.adornment}
-                    isClearable={column?.clearable}
-                    style={{
-                        textAlign: column?.textAlign,
-                    }}
                     {...props}
                 />
             ) : (
-                <TableTextInput name={name} showErrorMsg={column.showErrorMsg} {...props} />
+                <TableTextInput
+                    style={undefined}
+                    inputProps={undefined}
+                    name={name}
+                    showErrorMsg={column.showErrorMsg}
+                    {...props}
+                />
             )}
         </TableCell>
     );
 }
 
-const TemporaryLimitsTable = ({
+interface TemporaryLimitsTableProps {
+    arrayFormName: string;
+    columnsDefinition: ILimitColumnDef[];
+    createRow: () => any[];
+    disabled?: boolean;
+    previousValues: TemporaryLimit[];
+    disableTableCell: (
+        rowIndex: number,
+        column: ILimitColumnDef,
+        arrayFormName: string,
+        temporaryLimits: TemporaryLimit[]
+    ) => boolean;
+    getPreviousValue: (
+        rowIndex: number,
+        column: ILimitColumnDef,
+        arrayFormName: string,
+        temporaryLimits: TemporaryLimit[]
+    ) => number | undefined;
+    isValueModified: (rowIndex: number, arrayFormName: string) => boolean;
+    disableAddingRows?: boolean;
+}
+
+function TemporaryLimitsTable({
     arrayFormName,
-    columnsDefinition, // ILimitColumnDef[]
-    createRows,
+    columnsDefinition,
+    createRow,
     disabled = false,
     previousValues,
     disableTableCell,
     getPreviousValue,
     isValueModified,
     disableAddingRows = false,
-}) => {
-    const { setError, clearErrors } = useFormContext();
+}: Readonly<TemporaryLimitsTableProps>) {
     const { append, remove } = useFieldArray({ name: arrayFormName });
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
     const temporaryLimits /*: TemporaryLimit[]*/ = useWatch({
         name: arrayFormName,
     });
 
-    function renderTableCell(rowId, rowIndex, column) {
+    function renderTableCell(rowId: string, rowIndex: number, column: ILimitColumnDef) {
         let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;
         const name = `${arrayFormName}[${rowIndex}].${column.dataKey}`;
         return (
@@ -98,20 +139,7 @@ const TemporaryLimitsTable = ({
     }
 
     function handleAddRowButton() {
-        // checking if not exceeding 100 steps
-        if (temporaryLimits.length >= MAX_ROWS_NUMBER) {
-            setError(arrayFormName, {
-                type: 'custom',
-                message: {
-                    id: 'MaximumRowNumberError',
-                    value: MAX_ROWS_NUMBER,
-                },
-            });
-            return;
-        }
-        clearErrors(arrayFormName);
-
-        const rowsToAdd = createRows(1).map((row) => {
+        const rowsToAdd = createRow().map((row) => {
             return { ...row, [SELECTED]: false };
         });
 
@@ -123,12 +151,9 @@ const TemporaryLimitsTable = ({
         return (
             <TableHead>
                 <TableRow>
-                    {columnsDefinition.map((column) => (
+                    {columnsDefinition.map((column: ILimitColumnDef) => (
                         <TableCell key={column.dataKey} sx={{ width: column.width, maxWidth: column.maxWidth }}>
-                            <Box sx={styles.columnsStyle}>
-                                {column.label}
-                                {column.extra}
-                            </Box>
+                            <Box sx={styles.columnsStyle}>{column.label}</Box>
                         </TableCell>
                     ))}
                     <TableCell>
@@ -145,13 +170,9 @@ const TemporaryLimitsTable = ({
         );
     }
 
-    const renderTableRow = (temporaryLimit, index) => (
+    const renderTableRow = (temporaryLimit: TemporaryLimit, index: number) => (
         <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
-            {
-                columnsDefinition.map((column) =>
-                    renderTableCell(arrayFormName + temporaryLimit.name, index, column)
-                ) /* TODO ajouter le om du limit set dans la key ??*/
-            }
+            {columnsDefinition.map((column) => renderTableCell(arrayFormName + temporaryLimit.name, index, column))}
             {index === hoveredRowIndex && (
                 <TableCell>
                     <IconButton color="primary" onClick={() => remove(index)}>
@@ -165,7 +186,9 @@ const TemporaryLimitsTable = ({
     function renderTableBody() {
         return (
             <TableBody>
-                {temporaryLimits.map((temporaryLimit, index) => renderTableRow(temporaryLimit, index))}
+                {temporaryLimits.map((temporaryLimit: TemporaryLimit, index: number) =>
+                    renderTableRow(temporaryLimit, index)
+                )}
             </TableBody>
         );
     }
@@ -188,14 +211,6 @@ const TemporaryLimitsTable = ({
             </Grid>
         </Grid>
     );
-};
-
-TemporaryLimitsTable.propTypes = {
-    arrayFormName: PropTypes.string.isRequired,
-    columnsDefinition: PropTypes.array.isRequired,
-    allowedToAddRows: PropTypes.func,
-    createRows: PropTypes.func.isRequired,
-    disabled: PropTypes.bool,
-};
+}
 
 export default TemporaryLimitsTable;

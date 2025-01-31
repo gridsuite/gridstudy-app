@@ -21,13 +21,13 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
-import TemporaryLimitsTable from './temporary-limits-table';
 import DndTable from '../../utils/dnd-table/dnd-table';
+import TemporaryLimitsTable from './temporary-limits-table';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
     permanentCurrentLimitPreviousValue: any;
-    temporaryLimitsPreviousValues: any;
+    temporaryLimitsPreviousValues: TemporaryLimit[];
     clearableFields: boolean | undefined;
     currentNode: any;
     onlySelectedLimitsGroup: boolean;
@@ -39,6 +39,9 @@ export interface ILimitColumnDef {
     initialValue: string | null;
     editable: boolean;
     numeric: boolean;
+    width?: number;
+    maxWidth?: number;
+    showErrorMsg?: boolean;
 }
 
 export function LimitsSidePane({
@@ -62,6 +65,7 @@ export function LimitsSidePane({
                 initialValue: '',
                 editable: true,
                 numeric: false,
+                maxWidth: 200,
             },
             {
                 label: 'TemporaryLimitDuration',
@@ -69,6 +73,7 @@ export function LimitsSidePane({
                 initialValue: null,
                 editable: true,
                 numeric: true,
+                maxWidth: 100,
             },
             {
                 label: 'TemporaryLimitValue',
@@ -76,6 +81,7 @@ export function LimitsSidePane({
                 initialValue: null,
                 editable: true,
                 numeric: true,
+                maxWidth: 100,
             },
         ].map((column) => ({
             ...column,
@@ -210,7 +216,7 @@ export function LimitsSidePane({
             ) : (
                 <TemporaryLimitsTable
                     arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
-                    createRows={createRows}
+                    createRow={createRows}
                     columnsDefinition={columnsDefinition}
                     previousValues={temporaryLimitsPreviousValues}
                     disableTableCell={disableTableCell}
