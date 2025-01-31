@@ -99,16 +99,18 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 }) => {
     const dispatch = useDispatch();
     const gridRef = useRef<AgGridReact>(null);
-    const timerRef = useRef<NodeJS.Timeout>();
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState<number>(0);
 
-    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates);
-    const formattedDisplayedColumnsNames = useMemo(() => columnsStates[tabIndex], [columnsStates, tabIndex]);
-    const lockedColumns = useSelector((state: AppState) => state.allLockedColumnsNames);
-    const formattedLockedColumns = useMemo(
-        () => new Set(lockedColumns[tabIndex] ? JSON.parse(lockedColumns[tabIndex]) : []),
-        [lockedColumns, tabIndex]
+    const allDisplayedColumnsNames = useSelector((state: AppState) => state.tables.columnsNames);
+    const formattedDisplayedColumnsNames = useMemo(
+        () => allDisplayedColumnsNames[tabIndex],
+        [allDisplayedColumnsNames, tabIndex]
+    );
+    const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
+    const formattedLockedColumnsNames = useMemo(
+        () => new Set(allLockedColumnsNames[tabIndex] ? JSON.parse(allLockedColumnsNames[tabIndex]) : []),
+        [allLockedColumnsNames, tabIndex]
     );
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const additionalEquipmentsByNodesForCustomColumns = useSelector(
@@ -120,7 +122,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const [rowData, setRowData] = useState<Identifiable[]>([]);
 
-    const isLockedColumnNamesEmpty = useMemo(() => formattedLockedColumns.size === 0, [formattedLockedColumns.size]);
+    const isLockedColumnNamesEmpty = useMemo(
+        () => formattedLockedColumnsNames.size === 0,
+        [formattedLockedColumnsNames.size]
+    );
 
     const tableDefinition = useMemo(() => tablesDefinitions[tabIndex], [tabIndex, tablesDefinitions]);
     const columnData = useMemo(() => {
@@ -145,7 +150,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const updateLockedColumnsConfig = useCallback(() => {
         const lockedColumnsConfig = tableDefinition.columns
-            .filter((column) => formattedLockedColumns.has(column.colId))
+            .filter((column) => formattedLockedColumnsNames.has(column.colId!))
             .map((column) => {
                 const s: ColumnState = {
                     colId: column.colId ?? '',
@@ -157,7 +162,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             state: lockedColumnsConfig,
             defaultState: { pinned: null },
         });
-    }, [formattedLockedColumns, tableDefinition.columns]);
+    }, [formattedLockedColumnsNames, tableDefinition.columns]);
 
     useEffect(() => {
         gridRef.current?.api?.setGridOption('columnDefs', mergedColumnData);
@@ -194,10 +199,11 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition.type]
     );
 
-    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
+    const { equipments, errorMessage } = useSpreadsheetEquipments(
         tableDefinition.type,
         tableDefinition.fetchers,
-        formatFetchedEquipmentsHandler
+        formatFetchedEquipmentsHandler,
+        tabIndex
     );
 
     useEffect(() => {
@@ -239,16 +245,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         // This ensures that the grid correctly displays data specific to the custom tab.
         if (gridRef.current?.api) {
             gridRef.current.api.setGridOption('rowData', equipmentsWithCustomColumnInfo);
-            updateSortConfig();
         }
-    }, [
-        tabIndex,
-        disabled,
-        equipments,
-        additionalEquipmentsByNodesForCustomColumns,
-        tableDefinition.type,
-        updateSortConfig,
-    ]);
+    }, [tabIndex, disabled, equipments, additionalEquipmentsByNodesForCustomColumns, tableDefinition.type]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
@@ -297,18 +295,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         scrollToEquipmentIndex,
         tablesDefinitions,
     ]);
-
-    const handleRowDataUpdated = useCallback(() => {
-        scrollToEquipmentIndex();
-        // wait a moment  before removing the loading message.
-        timerRef.current = setTimeout(() => {
-            gridRef.current?.api?.hideOverlay();
-            if (rowData.length === 0 && !isFetching) {
-                // we need to call showNoRowsOverlay in order to show message when rowData is empty
-                gridRef.current?.api?.showNoRowsOverlay();
-            }
-        }, 50);
-    }, [scrollToEquipmentIndex, isFetching, rowData]);
 
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
@@ -387,7 +373,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         columnData={mergedColumnData}
                         fetched={!!equipments || !!errorMessage}
                         handleColumnDrag={handleColumnDrag}
-                        handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
                         onRowClicked={onRowClicked}
                         isExternalFilterPresent={isExternalFilterPresent}

@@ -44,5 +44,11 @@ export const TABLES_DEFINITIONS: SpreadsheetTabDefinition[] = [
     BUSBAR_SECTION_TAB_DEF,
 ];
 
+export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
+export type TablesDefinitionsNames = TablesDefinitionsType[number]['name'];
+
+export type GenericTablesDefinitions = SpreadsheetTabDefinition[];
+export type GenericTablesColumnsNames = { colId: string; visible: boolean }[][];
+
 export const TABLES_NAMES = TABLES_DEFINITIONS.map((tabDef) => tabDef.name);
 export const TABLES_TYPES = TABLES_DEFINITIONS.map((tabDef) => tabDef.type);

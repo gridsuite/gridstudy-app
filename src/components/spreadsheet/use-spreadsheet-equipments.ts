@@ -7,6 +7,7 @@
 
 import { Identifiable } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { UUID } from 'crypto';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,7 +31,8 @@ type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
     fetchers: EquipmentFetcher[],
-    formatFetchedEquipments: FormatFetchedEquipments
+    formatFetchedEquipments: FormatFetchedEquipments,
+    tabIndex: number
 ) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);

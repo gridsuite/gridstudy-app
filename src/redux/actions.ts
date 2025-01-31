@@ -51,11 +51,7 @@ import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
-import {
-    ColumnState,
-    SpreadsheetEquipmentType,
-    SpreadsheetTabDefinition,
-} from '../components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
@@ -617,11 +613,11 @@ export function setFullScreenDiagram(
 
 export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
 export type ChangeDisplayedColumnsNamesAction = Readonly<Action<typeof CHANGE_DISPLAYED_COLUMNS_NAMES>> & {
-    displayedColumnsNamesParams: TableValue<ColumnState[]>;
+    displayedColumnsNamesParams: TableValue<{ colId: string; visible: boolean }[]>;
 };
 
 export function changeDisplayedColumns(
-    displayedColumnsParams: TableValue<ColumnState[]>
+    displayedColumnsParams: TableValue<{ colId: string; visible: boolean }[]>
 ): ChangeDisplayedColumnsNamesAction {
     return {
         type: CHANGE_DISPLAYED_COLUMNS_NAMES,

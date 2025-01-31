@@ -12,7 +12,6 @@ import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { SpreadsheetConfig } from '../../../types/custom-columns.types';
-import { v4 as uuid4 } from 'uuid';
 
 export type CustomSpreadsheetSaveDialogProps = {
     tabIndex: number;
@@ -25,11 +24,10 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
     );
-    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
+    const allReorderedTableDefinitionIndexes = useSelector((state: AppState) => state.tables.columnsNames);
 
     const customColumns = useMemo(() => {
         return customColumnsDefinitions.map(({ id, name, formula, dependencies }) => ({
-            uuid: uuid4(),
             id,
             name,
             formula,
@@ -39,14 +37,15 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
 
     const staticColumnIdToField = useMemo(() => {
         return tableDefinition.columns.reduce((acc, item) => {
-            acc[item.colId] = item.field ?? '';
+            acc[item.colId!] = item.field ?? '';
             return acc;
         }, {} as Record<string, string>);
     }, [tableDefinition.columns]);
 
     const reorderedStaticColumnIds = useMemo(() => {
-        return columnsStates.map((col) => col.colId);
-    }, [columnsStates]);
+        const allReorderedColumns = allReorderedTableDefinitionIndexes[tabIndex];
+        return allReorderedColumns.map((col) => col.colId);
+    }, [allReorderedTableDefinitionIndexes, tabIndex]);
 
     const staticColumnFormulas = useMemo(() => {
         return reorderedStaticColumnIds && staticColumnIdToField
@@ -54,8 +53,6 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
                   name: colId,
                   formula: staticColumnIdToField[colId],
                   id: staticColumnIdToField[colId],
-                  uuid: uuid4(),
-                  dependencies: null,
               }))
             : [];
     }, [reorderedStaticColumnIds, staticColumnIdToField]);

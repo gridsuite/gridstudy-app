@@ -6,6 +6,7 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
+import { useIntl } from 'react-intl';
 import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -19,6 +20,7 @@ interface EquipmentTabsProps {
 }
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex, handleSwitchTab, disabled }) => {
+    const intl = useIntl();
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
 
@@ -38,9 +40,17 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
                     }}
                     aria-label="tables"
                 >
-                    {tablesDefinitions.map((def) => (
-                        <Tab key={def.name} label={def.name} disabled={disabled} />
-                    ))}
+                    {tablesDefinitions
+                        .map((def) => def.name)
+                        .map((tabName) => (
+                            <Tab
+                                key={tabName}
+                                label={intl.formatMessage({
+                                    id: tabName,
+                                })}
+                                disabled={disabled}
+                            />
+                        ))}
                 </Tabs>
             </Grid>
         </Grid>
