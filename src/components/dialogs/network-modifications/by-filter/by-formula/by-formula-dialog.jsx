@@ -52,7 +52,7 @@ function getFieldOrConvertedUnitValue(input, fieldType, convert) {
     }
 }
 
-export function shouldConvert(fieldType, input1, input2, operator) {
+export function shouldConvert(input1, input2, operator) {
     const isNumber1 = input1 && (!isNaN(input1) || !isNaN(parseFloat(input1.replace(',', '.'))));
     const isNumber2 = input2 && (!isNaN(input2) || !isNaN(parseFloat(input2.replace(',', '.'))));
 
@@ -107,7 +107,6 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
         if (editData) {
             const formulas = editData.formulaInfosList?.map((formula) => {
                 const shouldConverts = shouldConvert(
-                    formula?.editedField,
                     formula?.fieldOrValue1?.value,
                     formula?.fieldOrValue2?.value,
                     formula?.operator
@@ -145,7 +144,6 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
         (data) => {
             const formulas = data[FORMULAS].map((formula) => {
                 const shouldConverts = shouldConvert(
-                    FieldType[formula[EDITED_FIELD]],
                     formula[REFERENCE_FIELD_OR_VALUE_1],
                     formula[REFERENCE_FIELD_OR_VALUE_2],
                     formula[OPERATOR]
