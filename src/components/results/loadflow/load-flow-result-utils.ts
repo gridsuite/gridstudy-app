@@ -33,9 +33,9 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 
 export const convertMillisecondsToMinutesSeconds = (durationInMilliseconds: number): string => {
     const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
@@ -356,8 +356,8 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-                    filterEnums: filterEnums,
-                    getEnumLabel: getEnumLabel,
+                    options: filterEnums['side'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -404,8 +404,8 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-                    filterEnums: filterEnums,
-                    getEnumLabel: getEnumLabel,
+                    options: filterEnums['limitType'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
             valueGetter: (value: ValueGetterParams) => {
@@ -488,8 +488,8 @@ export const loadFlowResultColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-                    filterEnums: filterEnums,
-                    getEnumLabel: getEnumLabel,
+                    options: filterEnums['status'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
             cellRenderer: statusCellRender,
