@@ -55,10 +55,7 @@ export function shouldConvert(fieldType, input1, input2, operator) {
 
     switch (operator) {
         case 'DIVISION':
-            if (isNumber1 && isNumber2) {
-                return { convert1: true, convert2: false };
-            }
-            if (isNumber1 && !isNumber2) {
+            if ((isNumber1 && isNumber2) || (isNumber1 && !isNumber2)) {
                 return { convert1: true, convert2: false };
             }
             break;
