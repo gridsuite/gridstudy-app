@@ -50,40 +50,20 @@ export function shouldConvert(fieldType, input1, input2, operator) {
     const isNumber1 = input1 && (!isNaN(input1) || !isNaN(parseFloat(input1.replace(',', '.'))));
     const isNumber2 = input2 && (!isNaN(input2) || !isNaN(parseFloat(input2.replace(',', '.'))));
 
-    let convert1 = true;
-    let convert2 = true;
+    let convert1 = false;
+    let convert2 = false;
 
     switch (operator) {
         case 'MULTIPLICATION':
-            // if we have 2 number multiply first one only
-            if (isNumber1 && isNumber2) {
-                convert2 = false;
-                break;
-            }
-            // if 1 number and one field do not multiply number
-            if (isNumber1 !== isNumber2) {
-                convert1 = false;
-                convert2 = false;
-            }
-            break;
         case 'DIVISION':
             // if we have 2 number multiply first one only
             if (isNumber1 && isNumber2) {
-                convert2 = false;
-                break;
-            }
-
-            // if 1 number and one field do not convert number
-            if (isNumber1 !== isNumber2) {
-                convert1 = false;
-                convert2 = false;
+                return { convert1: true, convert2: false };
             }
             break;
         case 'PERCENTAGE': //do not convert
-            convert1 = false;
-            convert2 = false;
             break;
-        default:
+        default: // Any Other case : convert
             return { convert1: true, convert2: true };
     }
     return { convert1: convert1, convert2: convert2 };
@@ -122,12 +102,6 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
     useEffect(() => {
         if (editData) {
             const formulas = editData.formulaInfosList?.map((formula) => {
-                console.log('formula : ', formula);
-                console.log('formula?.fieldOrValue1 : ', formula?.fieldOrValue1.value);
-                console.log('formula?.fieldOrValue2 : ', formula?.fieldOrValue2.value);
-                console.log('FieldType[formula[EDITED_FIELD]] : ', FieldType[formula[EDITED_FIELD]]);
-                console.log('formula?.operator : ', formula?.operator);
-
                 const shouldConverts = shouldConvert(
                     formula?.editedField,
                     formula?.fieldOrValue1?.value,
