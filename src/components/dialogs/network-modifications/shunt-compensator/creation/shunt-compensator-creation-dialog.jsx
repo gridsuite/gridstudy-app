@@ -239,7 +239,11 @@ const ShuntCompensatorCreationDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <ShuntCompensatorCreationForm studyUuid={studyUuid} currentNode={currentNode} />
+                <ShuntCompensatorCreationForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}

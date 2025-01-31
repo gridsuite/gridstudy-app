@@ -26,7 +26,7 @@ import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
-import { ColDef, ColumnMovedEvent, ColumnState } from 'ag-grid-community';
+import { ColDef, ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
@@ -36,6 +36,7 @@ import { SpreadsheetGsFilter } from './spreadsheet-gs-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterType } from '../../types/custom-aggrid-types';
 import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import { useEquipmentModification } from './equipment-modification/use-equipment-modification';
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
 
 const styles = {
@@ -423,6 +424,19 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setColumnData(generateTableColumns());
     }, [generateTableColumns]);
 
+    const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({
+        studyUuid,
+        equipmentType: currentTabType(),
+    });
+
+    const onRowClicked = useCallback(
+        (event: RowClickedEvent) => {
+            const equipmentId = event.data.id;
+            handleOpenModificationDialog(equipmentId);
+        },
+        [handleOpenModificationDialog]
+    );
+
     return (
         <>
             <Grid container justifyContent={'space-between'}>
@@ -481,11 +495,13 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         handleColumnDrag={handleColumnDrag}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
+                        onRowClicked={onRowClicked}
                         isExternalFilterPresent={isExternalFilterPresent}
                         doesExternalFilterPass={doesFormulaFilteringPass}
                     />
                 </Box>
             )}
+            {modificationDialog}
         </>
     );
 };
