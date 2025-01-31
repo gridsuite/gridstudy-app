@@ -5,37 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo, useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
-import {
-    Box,
-    Checkbox,
-    Grid,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Tooltip,
-} from '@mui/material';
+import { useState } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useIntl } from 'react-intl';
-import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
-import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
-import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-input';
-import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
-import { AutocompleteInput, CheckboxInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
-import { SELECTED } from '../field-constants';
 import { ErrorInput } from '@gridsuite/commons-ui';
 import { FieldErrorAlert } from '@gridsuite/commons-ui';
-import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
-import ChipItemsInput from '../rhf-inputs/chip-items-input';
+import IconButton from '@mui/material/IconButton';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { SELECTED } from '../../utils/field-constants';
+import { TableNumericalInput } from '../../utils/rhf-inputs/table-inputs/table-numerical-input';
+import { TableTextInput } from '../../utils/rhf-inputs/table-inputs/table-text-input';
+import ChipItemsInput from '../../utils/rhf-inputs/chip-items-input';
+import { MAX_ROWS_NUMBER } from '../../utils/dnd-table/dnd-table';
 
-export const MAX_ROWS_NUMBER = 100;
 const styles = {
     columnsStyle: {
         display: 'inline-flex',
@@ -45,31 +34,6 @@ const styles = {
         textTransform: 'none',
     },
 };
-export const addSelectedFieldToRows = (rows) => {
-    return rows?.map((row) => {
-        return { ...row, [SELECTED]: false };
-    });
-};
-
-function MultiCheckbox({ arrayFormName, handleClickCheck, handleClickUncheck, ...props }) {
-    const arrayToWatch = useWatch({
-        name: arrayFormName,
-    });
-
-    const allRowSelected = useMemo(() => arrayToWatch.every((row) => row[SELECTED]), [arrayToWatch]);
-    const someRowSelected = useMemo(() => arrayToWatch.some((row) => row[SELECTED]), [arrayToWatch]);
-
-    return (
-        <Checkbox
-            checked={arrayToWatch.length > 0 && allRowSelected}
-            indeterminate={someRowSelected && !allRowSelected}
-            onChange={(event) => {
-                event.target.checked ? handleClickCheck() : handleClickUncheck();
-            }}
-            {...props}
-        />
-    );
-}
 
 function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
     return (
@@ -129,21 +93,12 @@ function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, val
     );
 }
 
-const DndTable = ({
+const TemporaryLimitsTable = ({
     arrayFormName,
-    useFieldArrayOutput,
     columnsDefinition,
-    tableHeight,
     allowedToAddRows = () => Promise.resolve(true),
     createRows,
-    handleUploadButton,
-    uploadButtonMessageId,
-    handleResetButton,
-    resetButtonMessageId,
     disabled = false,
-    withResetButton = false,
-    withLeftButtons = true,
-    withAddRowsDialog = true,
     previousValues,
     disableTableCell,
     getPreviousValue,
@@ -152,7 +107,7 @@ const DndTable = ({
 }) => {
     const intl = useIntl();
 
-    const { getValues, setValue, setError, clearErrors } = useFormContext();
+    const { getValues, setError, clearErrors } = useFormContext();
 
     const {
         fields: currentRows, // don't use it to access form data ! check doc
@@ -160,9 +115,9 @@ const DndTable = ({
         swap,
         append,
         remove,
-    } = useFieldArrayOutput;
+    } = useFieldArray({ name: arrayFormName });
 
-    const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
+    const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
 
     function renderTableCell(rowId, rowIndex, column) {
         let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;
@@ -186,18 +141,9 @@ const DndTable = ({
     function handleAddRowsButton() {
         allowedToAddRows().then((isAllowed) => {
             if (isAllowed) {
-                if (withAddRowsDialog) {
-                    setOpenAddRowsDialog(true);
-                } else {
-                    // directly add a single row
-                    addNewRows(1);
-                }
+                addNewRows(1);
             }
         });
-    }
-
-    function handleCloseAddRowsDialog() {
-        setOpenAddRowsDialog(false);
     }
 
     function addNewRows(numberOfRows) {
@@ -233,18 +179,6 @@ const DndTable = ({
         }
 
         remove(rowsToDelete);
-    }
-
-    function selectAllRows() {
-        for (let i = 0; i < currentRows.length; i++) {
-            setValue(`${arrayFormName}[${i}].${SELECTED}`, true);
-        }
-    }
-
-    function unselectAllRows() {
-        for (let i = 0; i < currentRows.length; i++) {
-            setValue(`${arrayFormName}[${i}].${SELECTED}`, false);
-        }
     }
 
     function moveUpSelectedRows() {
@@ -291,14 +225,6 @@ const DndTable = ({
             <TableHead>
                 <TableRow>
                     <TableCell sx={{ width: '3%' }}>{/* empty cell for the drag and drop column */}</TableCell>
-                    <TableCell sx={{ width: '5%', textAlign: 'center' }}>
-                        <MultiCheckbox
-                            arrayFormName={arrayFormName}
-                            handleClickCheck={selectAllRows}
-                            handleClickUncheck={unselectAllRows}
-                            disabled={disabled || currentRows.length === 0}
-                        />
-                    </TableCell>
                     {columnsDefinition.map((column) => (
                         <TableCell key={column.dataKey} sx={{ width: column.width, maxWidth: column.maxWidth }}>
                             <Box sx={styles.columnsStyle}>
@@ -307,40 +233,54 @@ const DndTable = ({
                             </Box>
                         </TableCell>
                     ))}
+                    <TableCell>
+                        <IconButton
+                            color="primary"
+                            onClick={handleAddRowsButton}
+                            disabled={disabled || disableAddingRows}
+                        >
+                            <AddCircleIcon />
+                        </IconButton>
+                    </TableCell>
                 </TableRow>
             </TableHead>
         );
     }
+
+    const renderTableRow = (row, provided, index) => (
+        <TableRow
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            onMouseEnter={() => setHoveredRowIndex(index)}
+            onMouseLeave={() => setHoveredRowIndex(-1)}
+        >
+            <Tooltip
+                title={intl.formatMessage({
+                    id: 'DragAndDrop',
+                })}
+                placement="right"
+            >
+                <TableCell sx={{ textAlign: 'center' }} {...(disabled ? {} : { ...provided.dragHandleProps })}>
+                    <DragIndicatorIcon />
+                </TableCell>
+            </Tooltip>
+            {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
+            {index === hoveredRowIndex && (
+                <TableCell>
+                    <IconButton color="primary" onClick={() => remove(index)}>
+                        <DeleteIcon />
+                    </IconButton>
+                </TableCell>
+            )}
+        </TableRow>
+    );
 
     function renderTableBody(providedDroppable) {
         return (
             <TableBody>
                 {currentRows.map((row, index) => (
                     <Draggable key={row.id} draggableId={row.id.toString()} index={index}>
-                        {(provided, snapshot) => (
-                            <TableRow ref={provided.innerRef} {...provided.draggableProps}>
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'DragAndDrop',
-                                    })}
-                                    placement="right"
-                                >
-                                    <TableCell
-                                        sx={{ textAlign: 'center' }}
-                                        {...(disabled ? {} : { ...provided.dragHandleProps })}
-                                    >
-                                        <DragIndicatorIcon />
-                                    </TableCell>
-                                </Tooltip>
-                                <TableCell sx={{ textAlign: 'center' }}>
-                                    <CheckboxInput
-                                        name={`${arrayFormName}[${index}].${SELECTED}`}
-                                        formProps={{ disabled }}
-                                    />
-                                </TableCell>
-                                {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
-                            </TableRow>
-                        )}
+                        {(provided, snapshot) => renderTableRow(row, provided, index)}
                     </Draggable>
                 ))}
                 {providedDroppable.placeholder}
@@ -358,7 +298,7 @@ const DndTable = ({
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                                 sx={{
-                                    height: tableHeight,
+                                    height: 400,
                                     border: 'solid 1px rgba(0,0,0,0.1)',
                                 }}
                             >
@@ -372,49 +312,16 @@ const DndTable = ({
                 </DragDropContext>
                 <ErrorInput name={arrayFormName} InputField={FieldErrorAlert} />
             </Grid>
-            <Grid container item>
-                {withLeftButtons && (
-                    <DndTableBottomLeftButtons
-                        handleUploadButton={handleUploadButton}
-                        uploadButtonMessageId={uploadButtonMessageId}
-                        handleResetButton={handleResetButton}
-                        resetButtonMessageId={resetButtonMessageId}
-                        withResetButton={withResetButton}
-                        disableUploadButton={disableAddingRows}
-                        disabled={disabled}
-                    />
-                )}
-                <DndTableBottomRightButtons
-                    arrayFormName={arrayFormName}
-                    handleAddButton={handleAddRowsButton}
-                    handleDeleteButton={deleteSelectedRows}
-                    handleMoveUpButton={moveUpSelectedRows}
-                    handleMoveDownButton={moveDownSelectedRows}
-                    disableAddingRows={disableAddingRows}
-                    disabled={disabled}
-                />
-            </Grid>
-            <DndTableAddRowsDialog
-                open={openAddRowsDialog}
-                handleAddButton={addNewRows}
-                onClose={handleCloseAddRowsDialog}
-            />
         </Grid>
     );
 };
 
-DndTable.prototype = {
+TemporaryLimitsTable.propTypes = {
     arrayFormName: PropTypes.string.isRequired,
-    useFieldArrayOutput: PropTypes.object.isRequired,
-    columnsDefinition: PropTypes.object.isRequired,
-    tableHeight: PropTypes.number.isRequired,
+    columnsDefinition: PropTypes.array.isRequired,
     allowedToAddRows: PropTypes.func,
     createRows: PropTypes.func.isRequired,
-    handleUploadButton: PropTypes.func.isRequired,
-    uploadButtonMessageId: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
-    withLeftButtons: PropTypes.bool,
-    withAddRowsDialog: PropTypes.bool,
 };
 
-export default DndTable;
+export default TemporaryLimitsTable;

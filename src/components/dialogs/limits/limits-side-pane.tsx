@@ -20,8 +20,9 @@ import { useCallback, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
-import DndTable from '../../utils/dnd-table/dnd-table';
 import { TemporaryLimit } from '../../../services/network-modification-types';
+import TemporaryLimitsTable from './temporary-limits-table';
+import DndTable from '../../utils/dnd-table/dnd-table';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
@@ -192,22 +193,34 @@ export function LimitsSidePane({
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
-            <DndTable
-                arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
-                useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
-                createRows={createRows}
-                columnsDefinition={columnsDefinition}
-                withLeftButtons={false}
-                withAddRowsDialog={false}
-                withBottomButtons={onlySelectedLimitsGroup}
-                withCheckboxes={onlySelectedLimitsGroup}
-                withButtonOnTheRight={!onlySelectedLimitsGroup}
-                previousValues={temporaryLimitsPreviousValues}
-                disableTableCell={disableTableCell}
-                getPreviousValue={getPreviousValue}
-                isValueModified={isValueModified}
-                tableHeight={onlySelectedLimitsGroup ? 270 : 400}
-            />
+            {onlySelectedLimitsGroup ? (
+                <DndTable
+                    arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
+                    useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
+                    createRows={createRows}
+                    columnsDefinition={columnsDefinition}
+                    withLeftButtons={false}
+                    withAddRowsDialog={false}
+                    withBottomButtons={onlySelectedLimitsGroup}
+                    withCheckboxes={onlySelectedLimitsGroup}
+                    withButtonOnTheRight={!onlySelectedLimitsGroup}
+                    previousValues={temporaryLimitsPreviousValues}
+                    disableTableCell={disableTableCell}
+                    getPreviousValue={getPreviousValue}
+                    isValueModified={isValueModified}
+                    tableHeight={270}
+                />
+            ) : (
+                <TemporaryLimitsTable
+                    arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
+                    createRows={createRows}
+                    columnsDefinition={columnsDefinition}
+                    previousValues={temporaryLimitsPreviousValues}
+                    disableTableCell={disableTableCell}
+                    getPreviousValue={getPreviousValue}
+                    isValueModified={isValueModified}
+                />
+            )}
         </Box>
     );
 }
