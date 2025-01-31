@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { useFieldArray, useWatch } from 'react-hook-form';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { RawReadOnlyInput } from '@gridsuite/commons-ui';
 import { ErrorInput } from '@gridsuite/commons-ui';
@@ -113,11 +113,12 @@ function TemporaryLimitsTable({
     isValueModified,
     disableAddingRows = false,
 }: Readonly<TemporaryLimitsTableProps>) {
-    const { append, remove } = useFieldArray({ name: arrayFormName });
+    const { watch } = useForm();
+    const { fields, append, remove } = useFieldArray({ name: arrayFormName });
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
-    const temporaryLimits /*: TemporaryLimit[]*/ = useWatch({
+    /*const temporaryLimits: TemporaryLimit[] = useWatch({
         name: arrayFormName,
-    });
+    });*/
 
     function renderTableCell(rowId: string, rowIndex: number, column: ILimitColumnDef) {
         let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;
@@ -170,9 +171,9 @@ function TemporaryLimitsTable({
         );
     }
 
-    const renderTableRow = (index: number) => (
+    const renderTableRow = (id: string, index: number) => (
         <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
-            {columnsDefinition.map((column) => renderTableCell(arrayFormName + index, index, column))}
+            {columnsDefinition.map((column) => renderTableCell(id, index, column))}
             {index === hoveredRowIndex && (
                 <TableCell>
                     <IconButton color="primary" onClick={() => remove(index)}>
@@ -186,7 +187,7 @@ function TemporaryLimitsTable({
     function renderTableBody() {
         return (
             <TableBody>
-                {temporaryLimits.map((_temporaryLimit: TemporaryLimit, index: number) => renderTableRow(index))}
+                {fields.map((value: Record<'id', string>, index: number) => renderTableRow(value.id, index))}
             </TableBody>
         );
     }
