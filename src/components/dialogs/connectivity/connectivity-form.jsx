@@ -81,14 +81,23 @@ export const ConnectivityForm = ({
             return;
         }
         if (watchVoltageLevelId) {
-            fetchBusesOrBusbarSectionsForVoltageLevel(
-                studyUuid,
-                currentNodeUuid,
-                currentRootNetworkUuid,
-                watchVoltageLevelId
-            ).then((busesOrbusbarSections) => {
-                setBusOrBusbarSectionOptions(busesOrbusbarSections);
-            });
+            const existingVoltageLevelOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
+            if (existingVoltageLevelOption) {
+                fetchBusesOrBusbarSectionsForVoltageLevel(
+                    studyUuid,
+                    currentNodeUuid,
+                    currentRootNetworkUuid,
+                    watchVoltageLevelId
+                ).then((busesOrbusbarSections) => {
+                    setBusOrBusbarSectionOptions(busesOrbusbarSections || []);
+                    if (!busesOrbusbarSections?.length) {
+                        setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
+                    }
+                });
+            } else {
+                setBusOrBusbarSectionOptions([]);
+                setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
+            }
         } else {
             setBusOrBusbarSectionOptions([]);
             setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
