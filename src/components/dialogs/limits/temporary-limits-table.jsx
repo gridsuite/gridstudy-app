@@ -6,9 +6,9 @@
  */
 
 import { useState } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { AutocompleteInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
+import { RawReadOnlyInput } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { ErrorInput } from '@gridsuite/commons-ui';
 import { FieldErrorAlert } from '@gridsuite/commons-ui';
@@ -30,20 +30,20 @@ const styles = {
     },
 };
 
-function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
+function DefaultTableCell({ key, name, column, ...props }) {
     return (
-        <TableCell key={column.dataKey} sx={{ padding: 1 }}>
-            <RawReadOnlyInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
+        <TableCell key={key} sx={{ padding: 1 }}>
+            <RawReadOnlyInput name={name} {...props} />
         </TableCell>
     );
 }
 
-function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, valueModified, ...props }) {
+function EditableTableCell({ key, name, column, previousValue, valueModified, ...props }) {
     return (
-        <TableCell key={column.dataKey} sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
-            {column.numeric && (
+        <TableCell key={key} sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
+            {column.numeric ? (
                 <TableNumericalInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    name={name}
                     previousValue={previousValue}
                     valueModified={valueModified}
                     adornment={column?.adornment}
@@ -53,24 +53,8 @@ function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, val
                     }}
                     {...props}
                 />
-            )}
-            {!column.numeric && !column.directoryItems && !column.chipItems && !column.autocomplete && (
-                <TableTextInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    showErrorMsg={column.showErrorMsg}
-                    {...props}
-                />
-            )}
-            {column.autocomplete && (
-                <AutocompleteInput
-                    forcePopupIcon
-                    freeSolo
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    options={column.options}
-                    inputTransform={(value) => (value === null ? '' : value)}
-                    outputTransform={(value) => value}
-                    size={'small'}
-                />
+            ) : (
+                <TableTextInput name={name} showErrorMsg={column.showErrorMsg} {...props} />
             )}
         </TableCell>
     );
@@ -78,7 +62,7 @@ function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, val
 
 const TemporaryLimitsTable = ({
     arrayFormName,
-    columnsDefinition,
+    columnsDefinition, // ILimitColumnDef[]
     createRows,
     disabled = false,
     previousValues,
@@ -88,20 +72,19 @@ const TemporaryLimitsTable = ({
     disableAddingRows = false,
 }) => {
     const { setError, clearErrors } = useFormContext();
-    const {
-        fields: currentRows, // don't use it to access form data ! check doc
-        append,
-        remove,
-    } = useFieldArray({ name: arrayFormName });
+    const { append, remove } = useFieldArray({ name: arrayFormName });
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
+    const temporaryLimits /*: TemporaryLimit[]*/ = useWatch({
+        name: arrayFormName,
+    });
 
     function renderTableCell(rowId, rowIndex, column) {
         let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;
+        const name = `${arrayFormName}[${rowIndex}].${column.dataKey}`;
         return (
             <CustomTableCell
                 key={rowId + column.dataKey}
-                arrayFormName={arrayFormName}
-                rowIndex={rowIndex}
+                name={name}
                 column={column}
                 disabled={
                     disableTableCell ? disableTableCell(rowIndex, column, arrayFormName, previousValues) : disabled
@@ -116,7 +99,7 @@ const TemporaryLimitsTable = ({
 
     function handleAddRowButton() {
         // checking if not exceeding 100 steps
-        if (currentRows.length >= MAX_ROWS_NUMBER) {
+        if (temporaryLimits.length >= MAX_ROWS_NUMBER) {
             setError(arrayFormName, {
                 type: 'custom',
                 message: {
@@ -162,9 +145,13 @@ const TemporaryLimitsTable = ({
         );
     }
 
-    const renderTableRow = (row, index) => (
+    const renderTableRow = (temporaryLimit, index) => (
         <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
-            {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
+            {
+                columnsDefinition.map((column) =>
+                    renderTableCell(arrayFormName + temporaryLimit.name, index, column)
+                ) /* TODO ajouter le om du limit set dans la key ??*/
+            }
             {index === hoveredRowIndex && (
                 <TableCell>
                     <IconButton color="primary" onClick={() => remove(index)}>
@@ -176,7 +163,11 @@ const TemporaryLimitsTable = ({
     );
 
     function renderTableBody() {
-        return <TableBody>{currentRows.map((row, index) => renderTableRow(row, index))}</TableBody>;
+        return (
+            <TableBody>
+                {temporaryLimits.map((temporaryLimit, index) => renderTableRow(temporaryLimit, index))}
+            </TableBody>
+        );
     }
 
     return (
