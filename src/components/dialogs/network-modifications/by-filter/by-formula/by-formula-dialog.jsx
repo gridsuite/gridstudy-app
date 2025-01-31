@@ -39,10 +39,11 @@ function getFieldOrConvertedUnitValue(input, fieldType, convert) {
     const value = input.replace(',', '.');
     const isNumber = !isNaN(parseFloat(value));
 
-    return {
-        [VALUE]: !isNumber ? null : convert ? convertOutputValue(fieldType, value) : value,
-        [EQUIPMENT_FIELD]: isNumber ? null : input,
-    };
+    if (isNumber) {
+        return { [VALUE]: convert ? convertOutputValue(fieldType, value) : value, [EQUIPMENT_FIELD]: null };
+    } else {
+        return { [VALUE]: null, [EQUIPMENT_FIELD]: input };
+    }
 }
 
 export function shouldConvert(fieldType, input1, input2, operator) {
