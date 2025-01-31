@@ -29,6 +29,7 @@ const styles = {
 export const EquipmentIdSelector = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     defaultValue,
     setSelectedId,
     equipmentType,
@@ -43,10 +44,12 @@ export const EquipmentIdSelector = ({
     const [selectedValue, setSelectedValue] = useState(null);
 
     useEffect(() => {
-        fetchEquipmentsIds(studyUuid, currentNodeUuid, undefined, equipmentType, true).then((values) => {
-            setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
-        });
-    }, [studyUuid, currentNodeUuid, equipmentType]);
+        fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, equipmentType, true).then(
+            (values) => {
+                setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
+            }
+        );
+    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid, equipmentType]);
 
     // We go through this effect to force a rerender and display the loading icon.
     useEffect(() => {

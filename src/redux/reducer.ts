@@ -125,7 +125,10 @@ import {
     ResetEquipmentsPostLoadflowAction,
     ResetLogsFilterAction,
     ResetMapReloadedAction,
+    ResetMapEquipmentsAction,
     ResetNetworkAreaDiagramDepthAction,
+    SAVE_SPREADSHEET_GS_FILTER,
+    SaveSpreadSheetGsFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
     SecurityAnalysisResultFilterAction,
     SELECT_COMPUTED_LANGUAGE,
@@ -190,6 +193,9 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    CURRENT_ROOT_NETWORK,
+    CurrentRootNetworkAction,
+    RESET_MAP_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -297,6 +303,7 @@ import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
+import { ExpertFilter } from '../services/study/filter';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -319,6 +326,8 @@ export interface OneBusShortCircuitAnalysisDiagram {
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
     parentNode: UUID;
+    rootNetwork: UUID;
+    rootNetworks: UUID[];
     timestamp: number;
     updateType?: string;
     node?: UUID;
@@ -339,6 +348,7 @@ export interface NetworkImpactsInfos {
     deletedEquipments: DeletedEquipment[];
     impactedElementTypes: string[];
 }
+
 // EventData
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
@@ -426,6 +436,7 @@ export type NadNodeMovement = {
     equipmentId: string;
     x: number;
     y: number;
+    scalingFactor: number;
 };
 
 export type NadTextMovement = {
@@ -463,6 +474,7 @@ export interface AppState extends CommonStoreState {
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
+    currentRootNetwork: UUID | null;
     computingStatus: ComputingStatus;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
@@ -483,6 +495,7 @@ export interface AppState extends CommonStoreState {
     nodeSelectionForCopy: NodeSelectionForCopy;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
+    isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
@@ -502,6 +515,7 @@ export interface AppState extends CommonStoreState {
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     additionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState;
+    gsFilterSpreadsheetState: GsFilterSpreadsheetState;
     customColumnsNodesAliases: NodeAlias[];
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
@@ -601,6 +615,9 @@ export type AdditionalEquipmentsByNodesForCustomColumnsState = Record<
 const initialAdditionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState = {};
 const initialCustomColumnsNodesAliases: NodeAlias[] = [];
 
+export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
+const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
+
 export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
 
 interface TablesState {
@@ -633,6 +650,7 @@ const initialTablesState: TablesState = {
 const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
+    currentRootNetwork: null,
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
@@ -643,6 +661,8 @@ const initialState: AppState = {
     mapEquipments: undefined,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
+    // used when switching root network, will be set to false as long as the tree has not been updated
+    isNetworkModificationTreeModelUpToDate: false,
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
@@ -670,6 +690,7 @@ const initialState: AppState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     additionalEquipmentsByNodesForCustomColumns: initialAdditionalEquipmentsByNodesForCustomColumns,
+    gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
     customColumnsNodesAliases: initialCustomColumnsNodesAliases,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
@@ -870,6 +891,11 @@ export const reducer = createReducer(initialState, (builder) => {
         state.mapEquipments = newMapEquipments;
     });
 
+    builder.addCase(RESET_MAP_EQUIPMENTS, (state, action: ResetMapEquipmentsAction) => {
+        state.mapEquipments = undefined;
+        state.isMapEquipmentsInitialized = false;
+    });
+
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
         const { newTableDefinition, customColumns } = action.payload;
         const updatedDefinitions = [...state.tables.definitions];
@@ -908,6 +934,7 @@ export const reducer = createReducer(initialState, (builder) => {
         (state, action: LoadNetworkModificationTreeSuccessAction) => {
             state.networkModificationTreeModel = action.networkModificationTreeModel;
             state.networkModificationTreeModel.setBuildingStatus();
+            state.isNetworkModificationTreeModelUpToDate = true;
         }
     );
 
@@ -1162,6 +1189,11 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
         state.reloadMap = true;
+    });
+
+    builder.addCase(CURRENT_ROOT_NETWORK, (state, action: CurrentRootNetworkAction) => {
+        state.currentRootNetwork = action.currentRootNetwork;
+        state.isNetworkModificationTreeModelUpToDate = false;
     });
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
@@ -1492,10 +1524,12 @@ export const reducer = createReducer(initialState, (builder) => {
                     equipmentId: action.equipmentId,
                     x: action.x,
                     y: action.y,
+                    scalingFactor: action.scalingFactor,
                 });
             } else {
                 correspondingMovement[0].x = action.x;
                 correspondingMovement[0].y = action.y;
+                correspondingMovement[0].scalingFactor = action.scalingFactor;
             }
         }
     );
@@ -1750,6 +1784,10 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
             action.table
         ].columns.filter((column) => column.id !== action.definitionId);
+    });
+
+    builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
+        state.gsFilterSpreadsheetState[action.equipmentType] = action.filters;
     });
 });
 

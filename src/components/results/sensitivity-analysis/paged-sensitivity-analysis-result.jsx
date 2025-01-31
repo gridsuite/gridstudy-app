@@ -32,7 +32,16 @@ import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sor
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
 
-const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, nodeUuid, page, setPage, ...props }) => {
+const PagedSensitivityAnalysisResult = ({
+    nOrNkIndex,
+    sensiKind,
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
+    page,
+    setPage,
+    ...props
+}) => {
     const intl = useIntl();
 
     const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_COUNT);
@@ -46,7 +55,7 @@ const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, node
         (state) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
-    const { filters } = useFilterSelector(AgGridFilterType.ShortcircuitAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
 
     const filtersDef = useMemo(() => {
         const baseFilters = [
@@ -102,7 +111,7 @@ const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, node
             functionType: FUNCTION_TYPES[sensiKind],
         };
 
-        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, selector)
+        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
             .then((res) => {
                 setOptions(res);
             })
@@ -114,7 +123,7 @@ const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, node
                     }),
                 });
             });
-    }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, snackError, intl]);
+    }, [nOrNkIndex, sensiKind, studyUuid, currentRootNetworkUuid, nodeUuid, snackError, intl]);
 
     const fetchResult = useCallback(() => {
         const sortSelector = sortConfig?.length
@@ -142,7 +151,7 @@ const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, node
             ...sortSelector,
         };
         setIsLoading(true);
-        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
+        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
             .then((res) => {
                 const { filteredSensitivitiesCount = 0 } = res || {};
 
@@ -160,7 +169,19 @@ const PagedSensitivityAnalysisResult = ({ nOrNkIndex, sensiKind, studyUuid, node
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [nOrNkIndex, sensiKind, page, rowsPerPage, filters, sortConfig, studyUuid, nodeUuid, snackError, intl]);
+    }, [
+        nOrNkIndex,
+        sensiKind,
+        page,
+        rowsPerPage,
+        filters,
+        sortConfig,
+        studyUuid,
+        nodeUuid,
+        currentRootNetworkUuid,
+        snackError,
+        intl,
+    ]);
 
     useEffect(() => {
         if (sensiStatus === RunningStatus.RUNNING) {

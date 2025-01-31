@@ -60,7 +60,7 @@ const dynamicSimulationStatusCompletions = ['dynamicSimulationResult', 'dynamicS
 const voltageInitStatusCompletions = ['voltageInitResult', 'voltageInit_failed'];
 const stateEstimationStatusCompletions = ['stateEstimationResult', 'stateEstimation_failed'];
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
-export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): void => {
+export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): void => {
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
@@ -72,6 +72,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         fetchLoadFlowStatus,
         loadFlowStatusInvalidations,
         loadFlowStatusCompletions,
@@ -82,6 +83,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         fetchSecurityAnalysisStatus,
         securityAnalysisStatusInvalidations,
         securityAnalysisStatusCompletions,
@@ -93,6 +95,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         fetchSensitivityAnalysisStatus,
         sensitivityAnalysisStatusInvalidations,
         sensitivityAnalysisStatusCompletions,
@@ -104,6 +107,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         fetchNonEvacuatedEnergyStatus,
         nonEvacuatedEnergyStatusInvalidations,
         nonEvacuatedEnergyStatusCompletions,
@@ -115,6 +119,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         fetchShortCircuitAnalysisStatus,
         shortCircuitAnalysisStatusInvalidations,
         shortCircuitAnalysisStatusCompletions,
@@ -126,6 +131,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         fetchOneBusShortCircuitAnalysisStatus,
         oneBusShortCircuitAnalysisStatusInvalidations,
         oneBusShortCircuitAnalysisStatusCompletions,
@@ -137,6 +143,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         fetchDynamicSimulationStatus,
         dynamicSimulationStatusInvalidations,
         dynamicSimulationStatusCompletions,
@@ -148,6 +155,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         fetchVoltageInitStatus,
         voltageInitStatusInvalidations,
         voltageInitStatusCompletions,
@@ -159,6 +167,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         fetchStateEstimationStatus,
         stateEstimationStatusInvalidations,
         stateEstimationStatusCompletions,

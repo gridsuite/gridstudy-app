@@ -22,14 +22,12 @@ const LoadFlowParametersContent = ({
     currentProvider,
     specificParameters,
     params,
-    enableDeveloperMode,
     defaultLimitReductions,
 }: {
     selectedTab: TAB_VALUES;
     currentProvider: string;
     specificParameters: ParameterDescription[];
     params: LoadFlowParametersInfos | null;
-    enableDeveloperMode: boolean;
     defaultLimitReductions: ILimitReductionsByVoltageLevel[];
 }) => {
     return (
@@ -50,24 +48,20 @@ const LoadFlowParametersContent = ({
                     <TabPanel value={selectedTab} index={TAB_VALUES.GENERAL}>
                         <LoadFlowGeneralParameters provider={currentProvider} specificParams={specificParameters} />
                     </TabPanel>
-                    {enableDeveloperMode && (
-                        <TabPanel value={selectedTab} index={TAB_VALUES.LIMIT_REDUCTIONS}>
-                            <Grid container sx={{ width: '100%' }}>
-                                {currentProvider === PARAM_PROVIDER_OPENLOADFLOW ? (
-                                    <LimitReductionsTableForm
-                                        limits={params?.limitReductions ?? defaultLimitReductions}
-                                    />
-                                ) : (
-                                    <ParameterLineSlider
-                                        paramNameId={PARAM_LIMIT_REDUCTION}
-                                        label="LimitReduction"
-                                        marks={alertThresholdMarks}
-                                        minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
-                                    />
-                                )}
-                            </Grid>
-                        </TabPanel>
-                    )}
+                    <TabPanel value={selectedTab} index={TAB_VALUES.LIMIT_REDUCTIONS}>
+                        <Grid container sx={{ width: '100%' }}>
+                            {currentProvider === PARAM_PROVIDER_OPENLOADFLOW ? (
+                                <LimitReductionsTableForm limits={params?.limitReductions ?? defaultLimitReductions} />
+                            ) : (
+                                <ParameterLineSlider
+                                    paramNameId={PARAM_LIMIT_REDUCTION}
+                                    label="LimitReduction"
+                                    marks={alertThresholdMarks}
+                                    minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                                />
+                            )}
+                        </Grid>
+                    </TabPanel>
                 </Grid>
             </Grid>
         </Box>
