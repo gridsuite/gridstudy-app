@@ -27,3 +27,10 @@ export function fetchSecurityAnalysisParameters(parameterUuid: UUID) {
     console.debug(url);
     return backendFetchJson(url);
 }
+
+export function getSecurityAnalysisDefaultLimitReductions() {
+    console.info('get security analysis default limit reductions');
+    const url = getSecurityAnalysisUrl() + 'parameters/default-limit-reductions';
+    console.debug(url);
+    return backendFetchJson(url);
+}
