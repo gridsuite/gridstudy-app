@@ -44,17 +44,17 @@ import {
     CenterOnSubstationAction,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
-    CHANGE_REORDERED_COLUMNS,
     ChangeDisplayedColumnsNamesAction,
     ChangeLockedColumnsNamesAction,
-    ChangeReorderedColumnsAction,
     CLOSE_DIAGRAM,
     CLOSE_DIAGRAMS,
     CLOSE_STUDY,
     CloseDiagramAction,
     CloseDiagramsAction,
     CloseStudyAction,
+    CURRENT_ROOT_NETWORK,
     CURRENT_TREE_NODE,
+    CurrentRootNetworkAction,
     CurrentTreeNodeAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
@@ -118,14 +118,15 @@ import {
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
     RESET_LOGS_FILTER,
+    RESET_MAP_EQUIPMENTS,
     RESET_MAP_RELOADED,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
     ResetLogsFilterAction,
-    ResetMapReloadedAction,
     ResetMapEquipmentsAction,
+    ResetMapReloadedAction,
     ResetNetworkAreaDiagramDepthAction,
     SAVE_SPREADSHEET_GS_FILTER,
     SaveSpreadSheetGsFilterAction,
@@ -193,9 +194,6 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    CURRENT_ROOT_NETWORK,
-    CurrentRootNetworkAction,
-    RESET_MAP_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -206,16 +204,8 @@ import {
 } from './session-storage/local-storage';
 import {
     type GenericTablesColumnsNames,
-    type GenericTablesColumnsNamesJson,
-    type GenericTablesDefinitionIndexes,
     type GenericTablesDefinitions,
-    type GenericTablesDefinitionTypes,
-    type GenericTablesNames,
-    type GenericTablesNamesIndexes,
-    TABLES_COLUMNS_NAMES,
     TABLES_DEFINITIONS,
-    TABLES_NAMES,
-    type TablesDefinitionsNames,
 } from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
@@ -288,14 +278,14 @@ import {
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import {
+    EQUIPMENT_TYPES as NetworkViewerEquipmentType,
     LineFlowColorMode,
     LineFlowMode,
-    EQUIPMENT_TYPES as NetworkViewerEquipmentType,
 } from '@powsybl/network-viewer';
 import type { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
-import { CustomEntry } from 'types/custom-columns.types';
+import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
@@ -505,7 +495,6 @@ export interface AppState extends CommonStoreState {
         svgType?: DiagramType;
     };
     allLockedColumnsNames: string[];
-    allReorderedTableDefinitionIndexes: string[];
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
@@ -618,33 +607,20 @@ const initialCustomColumnsNodesAliases: NodeAlias[] = [];
 export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
-export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
-
 interface TablesState {
     definitions: GenericTablesDefinitions;
     columnsNames: GenericTablesColumnsNames;
-    columnsNamesJson: GenericTablesColumnsNamesJson;
-    names: GenericTablesNames;
-    namesIndexes: GenericTablesNamesIndexes;
-    definitionTypes: GenericTablesDefinitionTypes;
-    definitionIndexes: GenericTablesDefinitionIndexes;
-    allCustomColumnsDefinitions: Record<TypeOfArrayElement<GenericTablesNames>, CustomEntry>;
+    allCustomColumnsDefinitions: ColumnWithFormula[][];
 }
 
-const TableDefinitionIndexes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.index, tabDef]));
-const TableDefinitionTypes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.type, tabDef]));
 const initialTablesState: TablesState = {
     definitions: TABLES_DEFINITIONS,
-    columnsNames: TABLES_COLUMNS_NAMES,
-    columnsNamesJson: TABLES_COLUMNS_NAMES.map((cols) => JSON.stringify([...cols])),
-    names: TABLES_NAMES,
-    namesIndexes: new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.name, tabDef.index])),
-    definitionTypes: TableDefinitionTypes,
-    definitionIndexes: TableDefinitionIndexes,
-    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
-        (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
-        {} as Record<TablesDefinitionsNames, CustomEntry>
+    columnsNames: TABLES_DEFINITIONS.map((table) =>
+        table.columns.map((col) => {
+            return { colId: col.colId, visible: true };
+        })
     ),
+    allCustomColumnsDefinitions: TABLES_DEFINITIONS.map((_) => []),
 };
 
 const initialState: AppState = {
@@ -673,7 +649,6 @@ const initialState: AppState = {
     mapDataLoading: false,
     fullScreenDiagram: null,
     allLockedColumnsNames: [],
-    allReorderedTableDefinitionIndexes: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     isEventScenarioDrawerOpen: false,
@@ -900,31 +875,15 @@ export const reducer = createReducer(initialState, (builder) => {
         const { newTableDefinition, customColumns } = action.payload;
         const updatedDefinitions = [...state.tables.definitions];
         updatedDefinitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
-        const updatedColumnsNames = updatedDefinitions
-            .map((tabDef) => tabDef.columns)
-            .map((cols) => new Set(cols.map((c) => c.colId!)));
-        const updatedColumnsNamesJson = updatedColumnsNames.map((cols) => JSON.stringify([...cols]));
-        const updatedNames = updatedDefinitions.map((tabDef) => tabDef.name);
-        const updatedNamesIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.name, tabDef.index]));
-        const updatedDefinitionTypes = new Map(updatedDefinitions.map((tabDef) => [tabDef.type, tabDef]));
-        const updatedDefinitionIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.index, tabDef]));
         const updatedAllCustomColumnsDefinitions = {
             ...state.tables.allCustomColumnsDefinitions,
             [newTableDefinition.name]: {
                 columns: customColumns,
-                filter: {
-                    formula: '',
-                },
             },
         };
         state.tables = {
             definitions: updatedDefinitions,
-            columnsNames: updatedColumnsNames,
-            columnsNamesJson: updatedColumnsNamesJson,
-            names: updatedNames,
-            namesIndexes: updatedNamesIndexes,
-            definitionTypes: updatedDefinitionTypes,
-            definitionIndexes: updatedDefinitionIndexes,
+            columnsNames: state.tables.columnsNames,
             allCustomColumnsDefinitions: updatedAllCustomColumnsDefinitions,
         };
     });
@@ -1153,33 +1112,17 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(CHANGE_DISPLAYED_COLUMNS_NAMES, (state, action: ChangeDisplayedColumnsNamesAction) => {
-        const newDisplayedColumnsNames = [...state.tables.columnsNamesJson];
-        action.displayedColumnsNamesParams.forEach((param) => {
-            if (param) {
-                newDisplayedColumnsNames[param.index] = param.value;
-            }
-        });
-        state.tables.columnsNamesJson = newDisplayedColumnsNames;
+        const newDisplayedColumnsNames = [...state.tables.columnsNames];
+        newDisplayedColumnsNames[action.displayedColumnsNamesParams.index] = action.displayedColumnsNamesParams.value;
+        state.tables.columnsNames = newDisplayedColumnsNames;
     });
 
     builder.addCase(CHANGE_LOCKED_COLUMNS_NAMES, (state, action: ChangeLockedColumnsNamesAction) => {
         let newLockedColumnsNames = [...state.allLockedColumnsNames];
-        action.lockedColumnsNamesParams.forEach((param) => {
-            if (param) {
-                newLockedColumnsNames[param.index] = param.value;
-            }
-        });
+        newLockedColumnsNames[action.lockedColumnsNamesParams.index] = JSON.stringify(
+            Array.from(action.lockedColumnsNamesParams.value)
+        );
         state.allLockedColumnsNames = newLockedColumnsNames;
-    });
-
-    builder.addCase(CHANGE_REORDERED_COLUMNS, (state, action: ChangeReorderedColumnsAction) => {
-        let newReorderedColumns = [...state.allReorderedTableDefinitionIndexes];
-        action.reorderedColumnsParams.forEach((param) => {
-            if (param) {
-                newReorderedColumns[param.index] = param.value;
-            }
-        });
-        state.allReorderedTableDefinitionIndexes = newReorderedColumns;
     });
 
     builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action: FavoriteContingencyListsAction) => {
@@ -1771,19 +1714,23 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_CUSTOM_COLUMNS_DEFINITION, (state, action: UpdateCustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
-            action.table
-        ].columns.some((column) => column.uuid === action.definition.uuid)
-            ? state.tables.allCustomColumnsDefinitions[action.table].columns.map((column) =>
-                  column.uuid === action.definition.uuid ? action.definition : column
-              )
-            : [...state.tables.allCustomColumnsDefinitions[action.table].columns, action.definition];
+        state.tables.allCustomColumnsDefinitions[action.colWithFormula.index] =
+            state.tables.allCustomColumnsDefinitions[action.colWithFormula.index].some(
+                (column) => column.uuid === action.colWithFormula.value.uuid
+            )
+                ? state.tables.allCustomColumnsDefinitions[action.colWithFormula.index].map((column) =>
+                      column.uuid === action.colWithFormula.value.uuid ? action.colWithFormula.value : column
+                  )
+                : [
+                      ...state.tables.allCustomColumnsDefinitions[action.colWithFormula.index],
+                      action.colWithFormula.value,
+                  ];
     });
 
     builder.addCase(REMOVE_CUSTOM_COLUMNS_DEFINITION, (state, action: RemoveCustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
-            action.table
-        ].columns.filter((column) => column.id !== action.definitionId);
+        state.tables.allCustomColumnsDefinitions[action.definition.index] = state.tables.allCustomColumnsDefinitions[
+            action.definition.index
+        ].filter((column) => column.id !== action.definition.value);
     });
 
     builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {

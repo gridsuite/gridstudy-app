@@ -17,7 +17,7 @@ import {
 import { Action } from 'redux';
 import { GsLang, GsLangUser, GsTheme, Identifiable } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import type { LiteralUnion, UnknownArray } from 'type-fest';
+import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
@@ -47,7 +47,6 @@ import {
     SPREADSHEET_STORE_FIELD,
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
-import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
@@ -59,7 +58,7 @@ import { ExpertFilter } from '../services/study/filter';
 
 type MutableUnknownArray = unknown[];
 
-export type ColumnName<TValue = unknown> = {
+export type TableValue<TValue = unknown> = {
     index: number;
     value: TValue;
 };
@@ -97,7 +96,6 @@ export type AppActions =
     | SetFullscreenDiagramAction
     | ChangeDisplayedColumnsNamesAction
     | ChangeLockedColumnsNamesAction
-    | ChangeReorderedColumnsAction
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
@@ -273,6 +271,7 @@ export function mapEquipmentsCreated(
 
 export const RESET_MAP_EQUIPMENTS = 'RESET_MAP_EQUIPMENTS';
 export type ResetMapEquipmentsAction = Readonly<Action<typeof RESET_MAP_EQUIPMENTS>>;
+
 export function resetMapEquipment(): ResetMapEquipmentsAction {
     return {
         type: RESET_MAP_EQUIPMENTS,
@@ -614,11 +613,11 @@ export function setFullScreenDiagram(
 
 export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
 export type ChangeDisplayedColumnsNamesAction = Readonly<Action<typeof CHANGE_DISPLAYED_COLUMNS_NAMES>> & {
-    displayedColumnsNamesParams: ColumnName<string>[];
+    displayedColumnsNamesParams: TableValue<{ colId: string; visible: boolean }[]>;
 };
 
 export function changeDisplayedColumns(
-    displayedColumnsParams: ColumnName<string>[]
+    displayedColumnsParams: TableValue<{ colId: string; visible: boolean }[]>
 ): ChangeDisplayedColumnsNamesAction {
     return {
         type: CHANGE_DISPLAYED_COLUMNS_NAMES,
@@ -628,25 +627,13 @@ export function changeDisplayedColumns(
 
 export const CHANGE_LOCKED_COLUMNS_NAMES = 'CHANGE_LOCKED_COLUMNS_NAMES';
 export type ChangeLockedColumnsNamesAction = Readonly<Action<typeof CHANGE_LOCKED_COLUMNS_NAMES>> & {
-    lockedColumnsNamesParams: ColumnName<string>[];
+    lockedColumnsNamesParams: TableValue<Set<string>>;
 };
 
-export function changeLockedColumns(lockedColumnsParams: ColumnName<string>[]): ChangeLockedColumnsNamesAction {
+export function changeLockedColumns(lockedColumnsParams: TableValue<Set<string>>): ChangeLockedColumnsNamesAction {
     return {
         type: CHANGE_LOCKED_COLUMNS_NAMES,
         lockedColumnsNamesParams: lockedColumnsParams,
-    };
-}
-
-export const CHANGE_REORDERED_COLUMNS = 'CHANGE_REORDERED_COLUMNS';
-export type ChangeReorderedColumnsAction = Readonly<Action<typeof CHANGE_REORDERED_COLUMNS>> & {
-    reorderedColumnsParams: ColumnName<string>[];
-};
-
-export function changeReorderedColumns(reorderedColumnsParams: ColumnName<string>[]): ChangeReorderedColumnsAction {
-    return {
-        type: CHANGE_REORDERED_COLUMNS,
-        reorderedColumnsParams: reorderedColumnsParams,
     };
 }
 
@@ -680,6 +667,7 @@ export const CURRENT_ROOT_NETWORK = 'CURRENT_ROOT_NETWORK';
 export type CurrentRootNetworkAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK>> & {
     currentRootNetwork: UUID;
 };
+
 export function setCurrentRootNetwork(currentRootNetwork: UUID): CurrentRootNetworkAction {
     return {
         type: CURRENT_ROOT_NETWORK,
@@ -1222,35 +1210,27 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
 
 export const UPDATE_CUSTOM_COLUMNS_DEFINITION = 'UPDATE_CUSTOM_COLUMNS_DEFINITION';
 export type UpdateCustomColumnsDefinitionsAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_DEFINITION>> & {
-    table: LiteralUnion<TablesDefinitionsNames, string>;
-    definition: ColumnWithFormula;
+    colWithFormula: TableValue<ColumnWithFormula>;
 };
 
 export function setUpdateCustomColumDefinitions(
-    table: LiteralUnion<TablesDefinitionsNames, string>,
-    customColumn: ColumnWithFormula
+    colWithFormula: TableValue<ColumnWithFormula>
 ): UpdateCustomColumnsDefinitionsAction {
     return {
         type: UPDATE_CUSTOM_COLUMNS_DEFINITION,
-        table,
-        definition: customColumn,
+        colWithFormula,
     };
 }
 
 export const REMOVE_CUSTOM_COLUMNS_DEFINITION = 'REMOVE_CUSTOM_COLUMNS_DEFINITION';
 export type RemoveCustomColumnsDefinitionsAction = Readonly<Action<typeof REMOVE_CUSTOM_COLUMNS_DEFINITION>> & {
-    table: LiteralUnion<TablesDefinitionsNames, string>;
-    definitionId: string;
+    definition: TableValue<string>;
 };
 
-export function setRemoveCustomColumDefinitions(
-    table: LiteralUnion<TablesDefinitionsNames, string>,
-    definitionId: string
-): RemoveCustomColumnsDefinitionsAction {
+export function setRemoveCustomColumDefinitions(definition: TableValue<string>): RemoveCustomColumnsDefinitionsAction {
     return {
         type: REMOVE_CUSTOM_COLUMNS_DEFINITION,
-        table,
-        definitionId: definitionId,
+        definition,
     };
 }
 

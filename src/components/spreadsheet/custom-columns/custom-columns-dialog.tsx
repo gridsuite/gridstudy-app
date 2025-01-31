@@ -40,10 +40,9 @@ import {
 } from './custom-columns-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'redux/store';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import { AppState } from 'redux/reducer';
 import { setUpdateCustomColumDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
@@ -89,8 +88,6 @@ export default function CustomColumnDialog({
 
     const intl = useIntl();
 
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
-
     const columnNameField = (
         <TextInput name={COLUMN_NAME} label={'spreadsheet/custom_column/column_name'} formProps={{ autoFocus: true }} />
     );
@@ -133,12 +130,15 @@ export default function CustomColumnDialog({
             }
 
             dispatch(
-                setUpdateCustomColumDefinitions(tablesNames[tabIndex], {
-                    uuid: customColumnsDefinition?.uuid || crypto.randomUUID(),
-                    id: newParams.id,
-                    name: newParams.name,
-                    formula: newParams.formula,
-                    dependencies: newParams.dependencies,
+                setUpdateCustomColumDefinitions({
+                    index: tabIndex,
+                    value: {
+                        uuid: customColumnsDefinition?.uuid || crypto.randomUUID(),
+                        id: newParams.id,
+                        name: newParams.name,
+                        formula: newParams.formula,
+                        dependencies: newParams.dependencies,
+                    },
                 })
             );
             reset(initialCustomColumnForm);
@@ -147,7 +147,6 @@ export default function CustomColumnDialog({
         [
             customColumnsDefinitions,
             dispatch,
-            tablesNames,
             tabIndex,
             customColumnsDefinition?.uuid,
             reset,

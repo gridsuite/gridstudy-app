@@ -25,15 +25,6 @@ export type ColumnWithFormula = {
     dependencies: string[];
 };
 
-export type FormulaFilter = {
-    formula: string;
-};
-
-export type CustomEntry = {
-    columns: ColumnWithFormula[];
-    filter: FormulaFilter;
-};
-
 export type SpreadsheetConfig = {
     sheetType: SpreadsheetEquipmentType;
     customColumns: ColumnWithFormula[];

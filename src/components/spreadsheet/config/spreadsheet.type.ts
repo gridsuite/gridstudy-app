@@ -13,7 +13,7 @@ export type EquipmentFetcher = (
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[]
+    substationsIds?: string[]
 ) => Promise<any>;
 
 export type SpreadsheetEquipmentType = Exclude<

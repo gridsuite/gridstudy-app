@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { PopupConfirmationDialog, useStateBoolean } from '@gridsuite/commons-ui';
 import { CUSTOM_COLUMNS_MENU_DEFINITION, DELETE, UPDATE } from '../spreadsheet/constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CustomColumnDialog from '../spreadsheet/custom-columns/custom-columns-dialog';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { setRemoveCustomColumDefinitions } from 'redux/actions';
@@ -31,11 +31,10 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({
     anchorEl,
 }) => {
     const intl = useIntl();
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
     const dialogOpen = useStateBoolean(false);
     const [customColumnsDefinition, setCustomColumnsDefinition] = useState<ColumnWithFormula>();
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]]?.columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
     );
 
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
@@ -60,9 +59,14 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({
     const handleValidate = useCallback(() => {
         if (customColumnsDefinition?.id) {
             setConfirmationDialogOpen(false);
-            dispatch(setRemoveCustomColumDefinitions(tablesNames[tabIndex], customColumnsDefinition?.id));
+            dispatch(
+                setRemoveCustomColumDefinitions({
+                    index: tabIndex,
+                    value: customColumnsDefinition?.id,
+                })
+            );
         }
-    }, [customColumnsDefinition?.id, dispatch, tabIndex, tablesNames]);
+    }, [customColumnsDefinition?.id, dispatch, tabIndex]);
 
     return (
         <>

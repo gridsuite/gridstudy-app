@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from './spreadsheet.type';
+import type { SpreadsheetTabDefinition } from './spreadsheet.type';
 import { SUBSTATION_TAB_DEF } from './equipment/substation';
 import { VOLTAGE_LEVEL_TAB_DEF } from './equipment/voltage-level';
 import { LINE_TAB_DEF } from './equipment/line';
@@ -48,13 +48,7 @@ export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
 export type TablesDefinitionsNames = TablesDefinitionsType[number]['name'];
 
 export type GenericTablesDefinitions = SpreadsheetTabDefinition[];
-export type GenericTablesColumnsNames = Set<string>[];
-export type GenericTablesColumnsNamesJson = string[];
-export type GenericTablesNames = string[];
-export type GenericTablesNamesIndexes = Map<string, number>;
-export type GenericTablesDefinitionTypes = Map<SpreadsheetEquipmentType, SpreadsheetTabDefinition>;
-export type GenericTablesDefinitionIndexes = Map<number, SpreadsheetTabDefinition>;
+export type GenericTablesColumnsNames = { colId: string; visible: boolean }[][];
 
-export const TABLES_COLUMNS_NAMES = TABLES_DEFINITIONS.map((tabDef) => new Set(tabDef.columns.map((c) => c.colId!)));
 export const TABLES_NAMES = TABLES_DEFINITIONS.map((tabDef) => tabDef.name);
 export const TABLES_TYPES = TABLES_DEFINITIONS.map((tabDef) => tabDef.type);
