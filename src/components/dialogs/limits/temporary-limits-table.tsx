@@ -170,9 +170,9 @@ function TemporaryLimitsTable({
         );
     }
 
-    const renderTableRow = (temporaryLimit: TemporaryLimit, index: number) => (
+    const renderTableRow = (index: number) => (
         <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
-            {columnsDefinition.map((column) => renderTableCell(arrayFormName + temporaryLimit.name, index, column))}
+            {columnsDefinition.map((column) => renderTableCell(arrayFormName + index, index, column))}
             {index === hoveredRowIndex && (
                 <TableCell>
                     <IconButton color="primary" onClick={() => remove(index)}>
@@ -186,9 +186,7 @@ function TemporaryLimitsTable({
     function renderTableBody() {
         return (
             <TableBody>
-                {temporaryLimits.map((temporaryLimit: TemporaryLimit, index: number) =>
-                    renderTableRow(temporaryLimit, index)
-                )}
+                {temporaryLimits.map((_temporaryLimit: TemporaryLimit, index: number) => renderTableRow(index))}
             </TableBody>
         );
     }

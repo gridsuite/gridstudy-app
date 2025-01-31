@@ -98,7 +98,7 @@ export function LimitsPane({
                 limitsGroupFormName={formName}
                 clearableFields={clearableFields}
                 permanentCurrentLimitPreviousValue={previousCurrentLimits?.permanentLimit}
-                temporaryLimitsPreviousValues={previousCurrentLimits?.temporaryLimits}
+                temporaryLimitsPreviousValues={previousCurrentLimits?.temporaryLimits ?? []}
                 currentNode={currentNode}
                 onlySelectedLimitsGroup={onlySelectedLimitsGroup}
             />
