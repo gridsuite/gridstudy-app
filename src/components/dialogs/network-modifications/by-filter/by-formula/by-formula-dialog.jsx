@@ -40,9 +40,15 @@ function getFieldOrConvertedUnitValue(input, fieldType, convert) {
     const isNumber = !isNaN(parseFloat(value));
 
     if (isNumber) {
-        return { [VALUE]: convert ? convertOutputValue(fieldType, value) : value, [EQUIPMENT_FIELD]: null };
+        return {
+            [VALUE]: convert ? convertOutputValue(fieldType, value) : value,
+            [EQUIPMENT_FIELD]: null,
+        };
     } else {
-        return { [VALUE]: null, [EQUIPMENT_FIELD]: input };
+        return {
+            [VALUE]: null,
+            [EQUIPMENT_FIELD]: input,
+        };
     }
 }
 
