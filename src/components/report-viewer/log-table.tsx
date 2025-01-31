@@ -133,7 +133,7 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick, onFilter
                 ])
             );
         }
-    }, [severities, dispatch, reportType, fetchNodeSeverities, selectedReport]);
+    }, [severities, dispatch, reportType, fetchNodeSeverities]);
 
     useEffect(() => {
         if (selectedReport.id && selectedReport.type) {
