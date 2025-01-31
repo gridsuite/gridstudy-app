@@ -54,8 +54,15 @@ export function shouldConvert(fieldType, input1, input2, operator) {
     let convert2 = false;
 
     switch (operator) {
-        case 'MULTIPLICATION':
         case 'DIVISION':
+            if (isNumber1 && isNumber2) {
+                return { convert1: true, convert2: false };
+            }
+            if (isNumber1 && !isNumber2) {
+                return { convert1: true, convert2: false };
+            }
+            break;
+        case 'MULTIPLICATION':
             // if we have 2 number multiply first one only
             if (isNumber1 && isNumber2) {
                 return { convert1: true, convert2: false };
