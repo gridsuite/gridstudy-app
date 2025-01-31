@@ -55,17 +55,16 @@ export function shouldConvert(fieldType, input1, input2, operator) {
             if (isNumber1 && isNumber2) {
                 return { convertValue1: true, convertValue2: false };
             }
-            break;
+            return { convertValue1: false, convertValue2: false };
         case 'MULTIPLICATION':
         case 'PERCENTAGE':
             if (isNumber1 && isNumber2) {
                 return { convertValue1: false, convertValue2: true };
             }
-            break;
+            return { convertValue1: false, convertValue2: false };
         default: // Any Other case : convert
             return { convertValue1: true, convertValue2: true };
     }
-    return { convertValue1: false, convertValue2: false };
 }
 
 const formSchema = yup
