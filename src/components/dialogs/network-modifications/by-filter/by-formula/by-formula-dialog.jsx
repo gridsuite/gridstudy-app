@@ -112,7 +112,7 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
                 const valueConverted1 = shouldConverts.convert1
                     ? convertInputValue(FieldType[formula[EDITED_FIELD]], formula?.fieldOrValue1?.value)
                     : formula?.fieldOrValue1?.value;
-                const valueConverted2 = shouldConverts.convert1
+                const valueConverted2 = shouldConverts.convert2
                     ? convertInputValue(FieldType[formula[EDITED_FIELD]], formula?.fieldOrValue2?.value)
                     : formula?.fieldOrValue2.value;
 
