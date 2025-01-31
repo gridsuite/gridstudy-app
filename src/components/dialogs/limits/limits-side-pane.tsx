@@ -199,16 +199,13 @@ export function LimitsSidePane({
                     useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
                     createRows={createRows}
                     columnsDefinition={columnsDefinition}
+                    tableHeight={270}
                     withLeftButtons={false}
                     withAddRowsDialog={false}
-                    withBottomButtons={onlySelectedLimitsGroup}
-                    withCheckboxes={onlySelectedLimitsGroup}
-                    withButtonOnTheRight={!onlySelectedLimitsGroup}
                     previousValues={temporaryLimitsPreviousValues}
                     disableTableCell={disableTableCell}
                     getPreviousValue={getPreviousValue}
                     isValueModified={isValueModified}
-                    tableHeight={270}
                 />
             ) : (
                 <TemporaryLimitsTable

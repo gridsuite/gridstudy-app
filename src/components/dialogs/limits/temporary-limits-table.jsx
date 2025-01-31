@@ -7,22 +7,17 @@
 
 import { useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { useIntl } from 'react-intl';
+import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { AutocompleteInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { ErrorInput } from '@gridsuite/commons-ui';
 import { FieldErrorAlert } from '@gridsuite/commons-ui';
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { SELECTED } from '../../utils/field-constants';
 import { TableNumericalInput } from '../../utils/rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../../utils/rhf-inputs/table-inputs/table-text-input';
-import ChipItemsInput from '../../utils/rhf-inputs/chip-items-input';
 import { MAX_ROWS_NUMBER } from '../../utils/dnd-table/dnd-table';
 
 const styles = {
@@ -77,18 +72,6 @@ function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, val
                     size={'small'}
                 />
             )}
-            {column.directoryItems && (
-                <DirectoryItemsInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    equipmentTypes={column.equipmentTypes}
-                    elementType={column.elementType}
-                    titleId={column.titleId}
-                    hideErrorMessage={true}
-                />
-            )}
-            {column.chipItems && (
-                <ChipItemsInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} hideErrorMessage={true} />
-            )}
         </TableCell>
     );
 }
@@ -96,7 +79,6 @@ function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, val
 const TemporaryLimitsTable = ({
     arrayFormName,
     columnsDefinition,
-    allowedToAddRows = () => Promise.resolve(true),
     createRows,
     disabled = false,
     previousValues,
@@ -105,18 +87,12 @@ const TemporaryLimitsTable = ({
     isValueModified,
     disableAddingRows = false,
 }) => {
-    const intl = useIntl();
-
-    const { getValues, setError, clearErrors } = useFormContext();
-
+    const { setError, clearErrors } = useFormContext();
     const {
         fields: currentRows, // don't use it to access form data ! check doc
-        move,
-        swap,
         append,
         remove,
     } = useFieldArray({ name: arrayFormName });
-
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
 
     function renderTableCell(rowId, rowIndex, column) {
@@ -138,17 +114,9 @@ const TemporaryLimitsTable = ({
         );
     }
 
-    function handleAddRowsButton() {
-        allowedToAddRows().then((isAllowed) => {
-            if (isAllowed) {
-                addNewRows(1);
-            }
-        });
-    }
-
-    function addNewRows(numberOfRows) {
+    function handleAddRowButton() {
         // checking if not exceeding 100 steps
-        if (currentRows.length + numberOfRows > MAX_ROWS_NUMBER) {
+        if (currentRows.length >= MAX_ROWS_NUMBER) {
             setError(arrayFormName, {
                 type: 'custom',
                 message: {
@@ -160,7 +128,7 @@ const TemporaryLimitsTable = ({
         }
         clearErrors(arrayFormName);
 
-        const rowsToAdd = createRows(numberOfRows).map((row) => {
+        const rowsToAdd = createRows(1).map((row) => {
             return { ...row, [SELECTED]: false };
         });
 
@@ -168,63 +136,10 @@ const TemporaryLimitsTable = ({
         append(rowsToAdd);
     }
 
-    function deleteSelectedRows() {
-        const currentRowsValues = getValues(arrayFormName);
-
-        let rowsToDelete = [];
-        for (let i = 0; i < currentRowsValues.length; i++) {
-            if (currentRowsValues[i][SELECTED]) {
-                rowsToDelete.push(i);
-            }
-        }
-
-        remove(rowsToDelete);
-    }
-
-    function moveUpSelectedRows() {
-        const currentRowsValues = getValues(arrayFormName);
-
-        if (currentRowsValues[0][SELECTED]) {
-            // we can't move up more the rows, so we stop
-            return;
-        }
-
-        for (let i = 1; i < currentRowsValues.length; i++) {
-            if (currentRowsValues[i][SELECTED]) {
-                swap(i - 1, i);
-            }
-        }
-    }
-
-    function moveDownSelectedRows() {
-        const currentRowsValues = getValues(arrayFormName);
-
-        if (currentRowsValues[currentRowsValues.length - 1][SELECTED]) {
-            // we can't move down more the rows, so we stop
-            return;
-        }
-
-        for (let i = currentRowsValues.length - 2; i >= 0; i--) {
-            if (currentRowsValues[i][SELECTED]) {
-                swap(i, i + 1);
-            }
-        }
-    }
-
-    function onDragEnd(result) {
-        // dropped outside the list
-        if (!result.destination) {
-            return;
-        }
-
-        move(result.source.index, result.destination.index);
-    }
-
     function renderTableHead() {
         return (
             <TableHead>
                 <TableRow>
-                    <TableCell sx={{ width: '3%' }}>{/* empty cell for the drag and drop column */}</TableCell>
                     {columnsDefinition.map((column) => (
                         <TableCell key={column.dataKey} sx={{ width: column.width, maxWidth: column.maxWidth }}>
                             <Box sx={styles.columnsStyle}>
@@ -236,7 +151,7 @@ const TemporaryLimitsTable = ({
                     <TableCell>
                         <IconButton
                             color="primary"
-                            onClick={handleAddRowsButton}
+                            onClick={handleAddRowButton}
                             disabled={disabled || disableAddingRows}
                         >
                             <AddCircleIcon />
@@ -247,23 +162,8 @@ const TemporaryLimitsTable = ({
         );
     }
 
-    const renderTableRow = (row, provided, index) => (
-        <TableRow
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            onMouseEnter={() => setHoveredRowIndex(index)}
-            onMouseLeave={() => setHoveredRowIndex(-1)}
-        >
-            <Tooltip
-                title={intl.formatMessage({
-                    id: 'DragAndDrop',
-                })}
-                placement="right"
-            >
-                <TableCell sx={{ textAlign: 'center' }} {...(disabled ? {} : { ...provided.dragHandleProps })}>
-                    <DragIndicatorIcon />
-                </TableCell>
-            </Tooltip>
+    const renderTableRow = (row, index) => (
+        <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
             {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
             {index === hoveredRowIndex && (
                 <TableCell>
@@ -275,41 +175,24 @@ const TemporaryLimitsTable = ({
         </TableRow>
     );
 
-    function renderTableBody(providedDroppable) {
-        return (
-            <TableBody>
-                {currentRows.map((row, index) => (
-                    <Draggable key={row.id} draggableId={row.id.toString()} index={index}>
-                        {(provided, snapshot) => renderTableRow(row, provided, index)}
-                    </Draggable>
-                ))}
-                {providedDroppable.placeholder}
-            </TableBody>
-        );
+    function renderTableBody() {
+        return <TableBody>{currentRows.map((row, index) => renderTableRow(row, index))}</TableBody>;
     }
 
     return (
         <Grid item container spacing={1}>
             <Grid item container>
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="tapTable" isDropDisabled={disabled}>
-                        {(provided, snapshot) => (
-                            <TableContainer
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                sx={{
-                                    height: 400,
-                                    border: 'solid 1px rgba(0,0,0,0.1)',
-                                }}
-                            >
-                                <Table stickyHeader size="small" padding="none">
-                                    {renderTableHead()}
-                                    {renderTableBody(provided)}
-                                </Table>
-                            </TableContainer>
-                        )}
-                    </Droppable>
-                </DragDropContext>
+                <TableContainer
+                    sx={{
+                        height: 400,
+                        border: 'solid 1px rgba(0,0,0,0.1)',
+                    }}
+                >
+                    <Table stickyHeader size="small" padding="none">
+                        {renderTableHead()}
+                        {renderTableBody()}
+                    </Table>
+                </TableContainer>
                 <ErrorInput name={arrayFormName} InputField={FieldErrorAlert} />
             </Grid>
         </Grid>
