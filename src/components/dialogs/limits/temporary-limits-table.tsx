@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { useFieldArray } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { RawReadOnlyInput } from '@gridsuite/commons-ui';
 import { ErrorInput } from '@gridsuite/commons-ui';
@@ -113,12 +113,8 @@ function TemporaryLimitsTable({
     isValueModified,
     disableAddingRows = false,
 }: Readonly<TemporaryLimitsTableProps>) {
-    const { watch } = useForm();
     const { fields, append, remove } = useFieldArray({ name: arrayFormName });
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
-    /*const temporaryLimits: TemporaryLimit[] = useWatch({
-        name: arrayFormName,
-    });*/
 
     function renderTableCell(rowId: string, rowIndex: number, column: ILimitColumnDef) {
         let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;

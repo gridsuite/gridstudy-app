@@ -377,8 +377,14 @@ const TwoWindingsTransformerModificationDialog = ({
             const limits = twt[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
-                twtToModify?.currentLimits1?.temporaryLimits,
-                editData?.currentLimits1?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    twtToModify?.currentLimits1,
+                    twtToModify?.selectedOperationalLimitsGroup1
+                )?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    editData?.currentLimits1,
+                    editData?.selectedOperationalLimitsGroup1
+                )?.temporaryLimits,
                 currentNode
             );
             let currentLimits1 = null;
@@ -390,8 +396,14 @@ const TwoWindingsTransformerModificationDialog = ({
             }
             const temporaryLimits2 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
-                twtToModify?.currentLimits2?.temporaryLimits,
-                editData?.currentLimits2?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    twtToModify?.currentLimits2,
+                    twtToModify?.selectedOperationalLimitsGroup2
+                )?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    editData?.currentLimits2,
+                    editData?.selectedOperationalLimitsGroup2
+                )?.temporaryLimits,
                 currentNode
             );
             let currentLimits2 = null;
