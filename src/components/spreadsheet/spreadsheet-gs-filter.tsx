@@ -59,7 +59,6 @@ export const SpreadsheetGsFilter = ({ equipmentType }: SpreadsheetGsFilterProps)
         <CustomFormProvider validationSchema={spreadsheetGsFilterFormSchema} {...formMethods}>
             <div style={styles.inputContainer}>
                 <DirectoryItemsInput
-                    selectorKey={equipmentType}
                     name={SPREADSHEET_GS_FILTER}
                     titleId="FiltersListsSelection"
                     label="filter"
