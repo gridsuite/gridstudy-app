@@ -99,6 +99,7 @@ export const VSC_MODIFICATION_TABS = {
 
 const VscModificationDialog: React.FC<any> = ({
     editData,
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map or spreadsheet
     currentNode,
     studyUuid,
     currentRootNetworkUuid,
@@ -108,7 +109,7 @@ const VscModificationDialog: React.FC<any> = ({
 }) => {
     const [tabIndex, setTabIndex] = useState(VSC_MODIFICATION_TABS.HVDC_LINE_TAB);
 
-    const [equipmentId, setEquipmentId] = useState<string | null>(null); // add defaultIdValue to preselect an equipment ? see GeneratorModificationDialog for an example
+    const [equipmentId, setEquipmentId] = useState<string | null>(defaultIdValue ?? null);
     const [vscToModify, setVcsToModify] = useState<VscModificationInfo | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const formMethods = useForm({
