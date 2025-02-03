@@ -69,7 +69,7 @@ const formatNumericCell = (value: number, fractionDigits?: number) => {
     if (value === null || isNaN(value)) {
         return { value: null };
     }
-    return { value: value.toFixed(fractionDigits ?? 2), tooltip: value };
+    return { value: value.toFixed(fractionDigits ?? 2), tooltip: value?.toString() };
 };
 
 export const formatCell = (props: any) => {
@@ -121,9 +121,9 @@ export const NumericCellRenderer = (props: NumericCellRendererProps) => {
             <Tooltip
                 disableFocusListener
                 disableTouchListener
-                title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
+                title={cellValue.tooltip ? cellValue.tooltip : cellValue.value?.toString()}
             >
-                <Box sx={styles.overflow} children={cellValue.value} />
+                <Box sx={styles.overflow}>{cellValue.value}</Box>
             </Tooltip>
         </Box>
     );
@@ -133,8 +133,8 @@ export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
     const cellValue = formatCell(props);
     return (
         <Box sx={mergeSx(styles.tableCell)}>
-            <Tooltip disableFocusListener disableTouchListener title={cellValue.value}>
-                <Box sx={styles.overflow} children={cellValue.value?.toString()} />
+            <Tooltip disableFocusListener disableTouchListener title={cellValue.value?.toString()}>
+                <Box sx={styles.overflow}>{cellValue.value?.toString()}</Box>
             </Tooltip>
         </Box>
     );
@@ -237,14 +237,8 @@ export const PropertiesCellRenderer = (props: any) => {
     // tooltip message contains properties in seperated lines
     return (
         <Box sx={mergeSx(styles.tableCell)}>
-            <Tooltip
-                title={
-                    <div style={{ whiteSpace: 'pre-line' }}>
-                        {cellValue.value && cellValue.value.replaceAll(' | ', '\n')}
-                    </div>
-                }
-            >
-                <Box sx={styles.overflow} children={cellValue.value} />
+            <Tooltip title={<div style={{ whiteSpace: 'pre-line' }}>{cellValue.value?.replaceAll(' | ', '\n')}</div>}>
+                <Box sx={styles.overflow}>{cellValue.value}</Box>
             </Tooltip>
         </Box>
     );
@@ -260,7 +254,7 @@ export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNo
     return (
         <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip title={<div style={{ whiteSpace: 'pre-line' }}>{tooltipValue}</div>}>
-                <Box sx={styles.overflow} children={cellValue} />
+                <Box sx={styles.overflow}>{cellValue}</Box>
             </Tooltip>
         </Box>
     );

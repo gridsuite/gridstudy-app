@@ -24,6 +24,8 @@ import {
     CustomFormProvider,
     ExpandingTextField,
     MultipleAutocompleteInput,
+    IntegerInput,
+    SelectInput,
     SubmitButton,
     TextInput,
     UseStateBooleanReturn,
@@ -33,10 +35,12 @@ import {
     COLUMN_DEPENDENCIES,
     COLUMN_ID,
     COLUMN_NAME,
+    COLUMN_TYPE,
     CustomColumnForm,
     customColumnFormSchema,
     FORMULA,
     initialCustomColumnForm,
+    PRECISION,
 } from './custom-columns-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -47,6 +51,7 @@ import { AppState } from 'redux/reducer';
 import { setUpdateCustomColumDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
+import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -59,7 +64,7 @@ export type CustomColumnDialogProps = {
 const styles = {
     dialogContent: {
         width: '40%',
-        height: '55%',
+        height: '65%',
         maxWidth: 'none',
         margin: 'auto',
     },
@@ -82,6 +87,7 @@ export default function CustomColumnDialog({
 
     const { setError, control } = formMethods;
     const columnId = useWatch({ control, name: COLUMN_ID });
+    const watchColumnType = useWatch({ control, name: COLUMN_TYPE });
     const hasColumnIdChanged = columnId !== customColumnsDefinition?.[COLUMN_ID];
 
     const { handleSubmit, reset } = formMethods;
@@ -96,6 +102,27 @@ export default function CustomColumnDialog({
     );
 
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
+
+    const columnType = (
+        <SelectInput
+            name={COLUMN_TYPE}
+            label={'spreadsheet/custom_column/column_type'}
+            options={Object.values(COLUMN_TYPES).map((type) => ({
+                id: type,
+                label: type,
+            }))}
+            size="small"
+            fullWidth
+        />
+    );
+
+    const precisionField = (
+        <IntegerInput
+            name={PRECISION}
+            label="spreadsheet/custom_column/column_precision"
+            formProps={{ size: 'small' }}
+        />
+    );
 
     const formulaField = (
         <ExpandingTextField
@@ -137,6 +164,8 @@ export default function CustomColumnDialog({
                     uuid: customColumnsDefinition?.uuid || crypto.randomUUID(),
                     id: newParams.id,
                     name: newParams.name,
+                    type: COLUMN_TYPES[newParams.type as keyof typeof COLUMN_TYPES],
+                    precision: newParams.precision,
                     formula: newParams.formula,
                     dependencies: newParams.dependencies,
                 })
@@ -163,6 +192,8 @@ export default function CustomColumnDialog({
             reset({
                 [COLUMN_NAME]: customColumnsDefinition.name,
                 [COLUMN_ID]: customColumnsDefinition.id,
+                [COLUMN_TYPE]: customColumnsDefinition.type,
+                [PRECISION]: customColumnsDefinition.precision,
                 [FORMULA]: customColumnsDefinition.formula,
                 [COLUMN_DEPENDENCIES]: customColumnsDefinition.dependencies,
             });
@@ -212,6 +243,14 @@ export default function CustomColumnDialog({
                         <Grid item sx={styles.field}>
                             {columnIdField}
                         </Grid>
+                        <Grid item sx={styles.field}>
+                            {columnType}
+                        </Grid>
+                        {watchColumnType === COLUMN_TYPES.NUMBER && (
+                            <Grid item sx={styles.field}>
+                                {precisionField}
+                            </Grid>
+                        )}
                         <Grid item sx={styles.field}>
                             {formulaField}
                         </Grid>

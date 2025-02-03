@@ -137,6 +137,7 @@ export default function CustomSpreadsheetConfigDialog({
                                     selectedModel.customColumns.map((col) => {
                                         return {
                                             ...col,
+                                            uuid: crypto.randomUUID(),
                                             [COLUMN_DEPENDENCIES]: JSON.parse(col.dependencies || '[]'), // empty strings and null will be converted to empty array
                                         } satisfies ColumnWithFormula;
                                     })

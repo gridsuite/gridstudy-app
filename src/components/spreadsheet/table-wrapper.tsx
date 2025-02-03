@@ -180,7 +180,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [tabIndex, customColumnsDefinitions, createCustomColumn]);
 
     useEffect(() => {
-        const mergedColumns = [...columnData, ...customColumnData];
+        // Merge columnData and customColumnData, removing the columnType attribute to respect ColDef type
+        const mergedColumns = [...columnData, ...customColumnData].map(({ columnType, ...rest }) => rest);
         setMergedColumnData(mergedColumns);
         gridRef.current?.api?.setGridOption('columnDefs', mergedColumns);
         updateSortConfig();

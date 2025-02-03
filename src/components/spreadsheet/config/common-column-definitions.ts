@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    COLUMN_TYPES,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -22,8 +23,13 @@ import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/a
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 
-export const textColumnDefinition = (displayName: string, tab: string): ColDef => {
+interface CommonColDef extends ColDef {
+    columnType: COLUMN_TYPES;
+}
+
+export const textColumnDefinition = (displayName: string, tab: string): CommonColDef => {
     return {
+        columnType: COLUMN_TYPES.TEXT,
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             displayName,
@@ -47,8 +53,9 @@ export const textColumnDefinition = (displayName: string, tab: string): ColDef =
     };
 };
 
-export const enumColumnDefinition = (displayName: string, tab: string): ColDef => {
+export const enumColumnDefinition = (displayName: string, tab: string): CommonColDef => {
     return {
+        columnType: COLUMN_TYPES.ENUM,
         filterParams: {
             filterOptions: [
                 {
@@ -82,8 +89,9 @@ export const enumColumnDefinition = (displayName: string, tab: string): ColDef =
     };
 };
 
-export const numberColumnDefinition = (displayName: string, tab: string, fractionDigits?: number): ColDef => {
+export const numberColumnDefinition = (displayName: string, tab: string, fractionDigits?: number): CommonColDef => {
     return {
+        columnType: COLUMN_TYPES.NUMBER,
         filter: 'agNumberColumnFilter',
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
@@ -111,8 +119,9 @@ export const numberColumnDefinition = (displayName: string, tab: string, fractio
     };
 };
 
-export const booleanColumnDefinition = (displayName: string, tab: string): ColDef => {
+export const booleanColumnDefinition = (displayName: string, tab: string): CommonColDef => {
     return {
+        columnType: COLUMN_TYPES.BOOLEAN,
         filterParams: {
             filterOptions: [
                 {

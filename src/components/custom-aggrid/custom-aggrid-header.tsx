@@ -88,7 +88,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid container item flex="1">
+                <Grid container flex="1" wrap="nowrap">
                     {filterComponent && (
                         <CustomAggridFilter
                             filterComponent={filterComponent}

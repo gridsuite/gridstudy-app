@@ -10,6 +10,13 @@ import React, { ComponentType } from 'react';
 import { FilterParams } from '../../types/custom-aggrid-types';
 import { CustomColumnConfigProps } from './custom-column-menu';
 
+export enum COLUMN_TYPES {
+    TEXT = 'TEXT',
+    ENUM = 'ENUM',
+    NUMBER = 'NUMBER',
+    BOOLEAN = 'BOOLEAN',
+}
+
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
     NUMBER = 'number',
@@ -63,5 +70,6 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
 export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
     extends ColDef<TData, TValue> {
     colId: string;
+    columnType?: COLUMN_TYPES;
     context?: ColumnContext<F>;
 }

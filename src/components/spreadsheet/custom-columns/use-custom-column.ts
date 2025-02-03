@@ -8,12 +8,17 @@ import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
 import { all, bignumber, create } from 'mathjs';
 import { useSelector } from 'react-redux';
-import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
-import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
-import { ValueGetterParams } from 'ag-grid-community';
+import { COLUMN_TYPES, CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import { ColDef, ValueGetterParams } from 'ag-grid-community';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
+import {
+    booleanColumnDefinition,
+    enumColumnDefinition,
+    numberColumnDefinition,
+    textColumnDefinition,
+} from '../config/common-column-definitions';
+import { validateFormulaResult } from './formula-validator';
 
 export function useCustomColumn(tabIndex: number) {
     const tablesNames = useSelector((state: AppState) => state.tables.names);
@@ -77,7 +82,7 @@ export function useCustomColumn(tabIndex: number) {
 
     const createValueGetter = useCallback(
         (colWithFormula: ColumnWithFormula) =>
-            (params: ValueGetterParams): string => {
+            (params: ValueGetterParams): any => {
                 try {
                     const { data } = params;
 
@@ -93,9 +98,16 @@ export function useCustomColumn(tabIndex: number) {
                         scope[dep] = params.getValue(dep);
                     });
 
-                    return math.limitedEvaluate(colWithFormula.formula, scope);
+                    const result = math.limitedEvaluate(colWithFormula.formula, scope);
+                    const validation = validateFormulaResult(result, colWithFormula.type);
+
+                    if (!validation.isValid) {
+                        return undefined;
+                    }
+
+                    return result;
                 } catch (e) {
-                    return '';
+                    return undefined;
                 }
             },
         [math, nodesAliases, processNode, processValue]
@@ -103,16 +115,46 @@ export function useCustomColumn(tabIndex: number) {
 
     const createCustomColumn = useCallback(() => {
         return customColumnsDefinitions.map((colWithFormula): CustomColDef => {
+            let baseDefinition: ColDef;
+
+            switch (colWithFormula.type) {
+                case COLUMN_TYPES.NUMBER:
+                    baseDefinition = numberColumnDefinition(
+                        colWithFormula.name,
+                        tablesDefinitionIndexes.get(tabIndex)!.name,
+                        colWithFormula.precision
+                    );
+                    break;
+                case COLUMN_TYPES.TEXT:
+                    baseDefinition = textColumnDefinition(
+                        colWithFormula.name,
+                        tablesDefinitionIndexes.get(tabIndex)!.name
+                    );
+                    break;
+                case COLUMN_TYPES.BOOLEAN:
+                    baseDefinition = booleanColumnDefinition(
+                        colWithFormula.name,
+                        tablesDefinitionIndexes.get(tabIndex)!.name
+                    );
+                    break;
+                case COLUMN_TYPES.ENUM:
+                    baseDefinition = enumColumnDefinition(
+                        colWithFormula.name,
+                        tablesDefinitionIndexes.get(tabIndex)!.name
+                    );
+                    break;
+                default:
+                    baseDefinition = {};
+            }
+
             return {
+                ...baseDefinition,
                 colId: colWithFormula.id,
+                columnType: colWithFormula.type,
                 headerName: colWithFormula.name,
                 headerTooltip: colWithFormula.name,
-                headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
-                    sortParams: {
-                        table: SPREADSHEET_SORT_STORE,
-                        tab: tablesDefinitionIndexes.get(tabIndex)!.name,
-                    },
+                    ...baseDefinition.headerComponentParams,
                     menu: {
                         Menu: CustomColumnMenu,
                         menuParams: {

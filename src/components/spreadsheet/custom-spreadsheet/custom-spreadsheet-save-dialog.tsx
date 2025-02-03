@@ -37,17 +37,32 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const customColumns = useMemo(() => {
-        return customColumnsDefinitions.map(({ id, name, formula, dependencies }) => ({
+        return customColumnsDefinitions.map(({ id, name, type, precision, formula, dependencies }) => ({
             id,
             name,
+            type,
+            precision,
             formula,
             dependencies: JSON.stringify(dependencies),
         }));
     }, [customColumnsDefinitions]);
 
-    const staticColumnIdToField = useMemo(() => {
+    const staticColumnIdToColInfos = useMemo(() => {
         const equipment = tablesDefinitionIndexes.get(tabIndex);
-        return equipment ? new Map<string, string>(equipment.columns.map((c) => [c.colId!, c.field ?? ''])) : null;
+        return equipment
+            ? new Map<string, any>(
+                  equipment.columns.map((c) => [
+                      c.colId!,
+                      {
+                          id: c.field ?? '',
+                          name: c.colId!,
+                          type: c.columnType,
+                          precision: c.cellRendererParams?.fractionDigits,
+                          formula: c.field ?? '',
+                      },
+                  ])
+              )
+            : null;
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const reorderedStaticColumnIds = useMemo(() => {
@@ -58,14 +73,10 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     }, [allReorderedTableDefinitionIndexes, tabIndex, tablesDefinitionIndexes]);
 
     const staticColumnFormulas = useMemo(() => {
-        return reorderedStaticColumnIds && staticColumnIdToField
-            ? reorderedStaticColumnIds.map((colId: string) => ({
-                  name: colId,
-                  formula: staticColumnIdToField.get(colId),
-                  id: staticColumnIdToField.get(colId),
-              }))
+        return reorderedStaticColumnIds && staticColumnIdToColInfos
+            ? reorderedStaticColumnIds.map((colId: string) => staticColumnIdToColInfos.get(colId))
             : [];
-    }, [reorderedStaticColumnIds, staticColumnIdToField]);
+    }, [reorderedStaticColumnIds, staticColumnIdToColInfos]);
 
     const saveSpreadsheetColumnsConfiguration = ({
         name,
