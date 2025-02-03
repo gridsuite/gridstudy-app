@@ -6,10 +6,9 @@
  */
 
 import { ColDef } from 'ag-grid-community';
-import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { UUID } from 'crypto';
-import { SortConfigType } from 'hooks/use-aggrid-sort';
 import { BranchSide } from '../../utils/constants';
+import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 
 export interface ComponentResult {
     componentResultUuid: UUID;
@@ -31,7 +30,7 @@ export interface LoadFlowResult {
     componentResults: ComponentResult[];
 }
 
-export type QueryParamsType = Record<string, string | number | SortConfigType | FilterSelectorType[]>;
+export type QueryParamsType = Record<string, string | number | SortConfig | FilterConfig[]>;
 
 export enum LimitTypes {
     HIGH_VOLTAGE = 'HIGH_VOLTAGE',
@@ -41,6 +40,7 @@ export enum LimitTypes {
 export interface LoadFlowTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
 }
 
 export interface LoadflowResultTap {

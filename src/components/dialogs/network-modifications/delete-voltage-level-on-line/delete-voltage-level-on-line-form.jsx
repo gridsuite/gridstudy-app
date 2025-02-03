@@ -20,20 +20,22 @@ import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
 
-const DeleteVoltageLevelOnLineForm = ({ studyUuid, currentNode }) => {
+const DeleteVoltageLevelOnLineForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
     const [linesOptions, setLinesOptions] = useState([]);
 
     useEffect(() => {
-        fetchEquipmentsIds(studyUuid, currentNode.id, undefined, 'LINE', true).then((values) => {
-            setLinesOptions(
-                values
-                    .sort((a, b) => a.localeCompare(b))
-                    .map((value) => {
-                        return { id: value };
-                    })
-            );
-        });
-    }, [studyUuid, currentNode?.id]);
+        fetchEquipmentsIds(studyUuid, currentNode.id, currentRootNetworkUuid, undefined, 'LINE', true).then(
+            (values) => {
+                setLinesOptions(
+                    values
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((value) => {
+                            return { id: value };
+                        })
+                );
+            }
+        );
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     const lineToAttachTo1Field = (
         <AutocompleteInput

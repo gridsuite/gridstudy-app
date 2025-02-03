@@ -74,6 +74,10 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
         [reportTreeMap]
     );
 
+    const onFiltersChanged = useCallback(() => {
+        setHighlightedReportId(undefined);
+    }, [setHighlightedReportId]);
+
     const handleSelectedItem = useCallback(
         (report: ReportItem) => {
             setSelectedReport((prevSelectedReport) => {
@@ -82,6 +86,7 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
                 }
                 return prevSelectedReport;
             });
+            setHighlightedReportId(undefined);
         },
         [reportTreeMap]
     );
@@ -110,6 +115,7 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
                     reportType={reportType}
                     severities={severities}
                     onRowClick={onLogRowClick}
+                    onFiltersChanged={onFiltersChanged}
                 />
             </Grid>
         </Grid>

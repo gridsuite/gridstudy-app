@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useIntl } from 'react-intl';
 import { ElementType, useSnackMessage, UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
 import { useMemo } from 'react';
@@ -22,7 +21,6 @@ export type CustomSpreadsheetSaveDialogProps = {
 
 export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly<CustomSpreadsheetSaveDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
-    const intl = useIntl();
 
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
@@ -39,12 +37,17 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const customColumns = useMemo(() => {
-        return customColumnsDefinitions.map(({ name, formula }) => ({ name, formula }));
+        return customColumnsDefinitions.map(({ id, name, formula, dependencies }) => ({
+            id,
+            name,
+            formula,
+            dependencies: JSON.stringify(dependencies),
+        }));
     }, [customColumnsDefinitions]);
 
     const staticColumnIdToField = useMemo(() => {
         const equipment = tablesDefinitionIndexes.get(tabIndex);
-        return equipment ? new Map<string, string>(equipment.columns.map((c) => [c.colId, c.field ?? ''])) : null;
+        return equipment ? new Map<string, string>(equipment.columns.map((c) => [c.colId!, c.field ?? ''])) : null;
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const reorderedStaticColumnIds = useMemo(() => {
@@ -57,11 +60,12 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     const staticColumnFormulas = useMemo(() => {
         return reorderedStaticColumnIds && staticColumnIdToField
             ? reorderedStaticColumnIds.map((colId: string) => ({
-                  name: intl.formatMessage({ id: colId }),
+                  name: colId,
                   formula: staticColumnIdToField.get(colId),
+                  id: staticColumnIdToField.get(colId),
               }))
             : [];
-    }, [reorderedStaticColumnIds, staticColumnIdToField, intl]);
+    }, [reorderedStaticColumnIds, staticColumnIdToField]);
 
     const saveSpreadsheetColumnsConfiguration = ({
         name,

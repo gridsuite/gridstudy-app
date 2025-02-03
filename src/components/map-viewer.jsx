@@ -131,6 +131,7 @@ export const Content = () => (
 const MapViewer = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     view,
     openDiagramView,
     tableEquipment,
@@ -258,7 +259,11 @@ const MapViewer = ({
                     }}
                 >
                     <ReactFlowProvider>
-                        <NetworkModificationTreePane studyUuid={studyUuid} studyMapTreeDisplay={studyDisplayMode} />
+                        <NetworkModificationTreePane
+                            studyUuid={studyUuid}
+                            studyMapTreeDisplay={studyDisplayMode}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
+                        />
                     </ReactFlowProvider>
                 </Box>
                 {/* Map */}
@@ -305,6 +310,7 @@ const MapViewer = ({
                                     lineFlowAlertThreshold={networkVisuParams.mapParameters.lineFlowAlertThreshold}
                                     openVoltageLevel={openVoltageLevel}
                                     currentNode={currentNode}
+                                    currentRootNetworkUuid={currentRootNetworkUuid}
                                     onChangeTab={onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     onDrawPolygonModeActive={onDrawingModeEnter}
@@ -331,6 +337,7 @@ const MapViewer = ({
                                 studyUuid={studyUuid}
                                 showInSpreadsheet={showInSpreadsheet}
                                 currentNode={currentNode}
+                                currentRootNetworkUuid={currentRootNetworkUuid}
                                 visible={
                                     !isInDrawingMode &&
                                     view === StudyView.MAP &&

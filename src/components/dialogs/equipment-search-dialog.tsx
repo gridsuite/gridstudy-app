@@ -28,6 +28,7 @@ interface EquipmentSearchDialogProps {
     onSelectionChange: (equipment: EquipmentInfos) => void;
     equipmentType: { type: EquipmentType; subtype: HvdcType };
     currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
 }
 
 /**
@@ -37,6 +38,7 @@ interface EquipmentSearchDialogProps {
  * @param {Function} onSelectionChange: callback when the selection changes
  * @param {String} equipmentType: the type of equipment we want to search
  * @param {String} currentNodeUuid: the node selected
+ * @param {String} currentRootNetworkUuid: the root network UUID
  */
 const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
     open,
@@ -44,6 +46,7 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
     onSelectionChange,
     equipmentType,
     currentNodeUuid,
+    currentRootNetworkUuid,
 }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -51,6 +54,7 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
         // @ts-expect-error TODO: manage null case
         studyUuid: studyUuid,
         nodeUuid: currentNodeUuid,
+        currentRootNetworkUuid: currentRootNetworkUuid,
         inUpstreamBuiltParentNode: true,
         equipmentType: equipmentType,
     });

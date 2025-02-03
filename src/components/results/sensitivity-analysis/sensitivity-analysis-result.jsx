@@ -8,7 +8,6 @@
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo, useRef } from 'react';
-import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
@@ -18,8 +17,12 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
-import { SENSITIVITY_AT_NODE, SUFFIX_TYPES } from './sensitivity-analysis-result-utils';
+import { mappingTabs, SENSITIVITY_AT_NODE, SUFFIX_TYPES } from './sensitivity-analysis-result-utils';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -31,16 +34,7 @@ function makeRows(resultRecord) {
     });
 }
 
-const SensitivityAnalysisResult = ({
-    result,
-    nOrNkIndex,
-    sensiKind,
-    filtersDef,
-    sortProps,
-    filterProps,
-    isLoading,
-    ...props
-}) => {
+const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, onFilter, isLoading, ...props }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
     const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
@@ -50,41 +44,36 @@ const SensitivityAnalysisResult = ({
 
     const makeColumn = useCallback(
         ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
-            const { onSortChanged = () => {}, sortConfig } = sortProps || {};
-
-            const isSortActive = !!sortConfig?.find((value) => value.colId === field);
-
             const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
 
-            return {
-                field,
-                numeric: isNum,
-                fractionDigits: isNum ? 2 : undefined,
-                headerComponent: CustomHeaderComponent,
-                headerComponentParams: {
-                    field,
-                    displayName: intl.formatMessage({ id: labelId }),
-                    isSortable: !!sortProps,
+            return makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: labelId }),
+                colId: field,
+                field: field,
+                context: {
+                    numeric: isNum,
+                    fractionDigits: isNum ? 2 : undefined,
                     sortParams: {
-                        sortConfig,
-                        onSortChanged,
+                        table: SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+                        tab: mappingTabs(sensiKind, nOrNkIndex),
                     },
+                    filterComponent: isNum ? null : CustomAggridAutocompleteFilter,
                     filterComponentParams: {
                         filterParams: {
-                            ...filterProps,
-                            customFilterOptions: filterOptions,
+                            type: AgGridFilterType.SensitivityAnalysis,
+                            tab: mappingTabs(sensiKind, nOrNkIndex),
+                            updateFilterCallback: onFilter,
                         },
+                        options: filterOptions,
                     },
                 },
-                minWidth: isSortActive ? 95 : 65,
                 maxWidth: maxWidth,
                 wrapHeaderText: true,
                 autoHeaderHeight: true,
                 pinned: pinned,
-                headerTooltip: intl.formatMessage({ id: labelId }),
-            };
+            });
         },
-        [filtersDef, intl, sortProps, filterProps]
+        [filtersDef, intl, nOrNkIndex, onFilter, sensiKind]
     );
 
     const columnsDefs = useMemo(() => {
@@ -212,9 +201,8 @@ SensitivityAnalysisResult.propTypes = {
     result: PropTypes.array,
     nOrNkIndex: PropTypes.number,
     sensiKind: PropTypes.string,
-    sortProps: PropTypes.object,
-    filterProps: PropTypes.object,
     isLoading: PropTypes.bool,
+    onFilter: PropTypes.func,
 };
 
 export default SensitivityAnalysisResult;

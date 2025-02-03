@@ -18,12 +18,12 @@ import { RunningStatus } from 'components/utils/running-status';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
-    PAGE_OPTIONS,
+    convertFilterValues,
     DEFAULT_PAGE_COUNT,
     FROM_COLUMN_TO_FIELD,
     FROM_COLUMN_TO_FIELD_ONE_BUS,
     mappingTabs,
-    convertFilterValues,
+    PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -31,18 +31,14 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-header.type';
-import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
-import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
-import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import {
-    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
-} from 'utils/store-sort-filter-fields';
+import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType from '../../computing-status/computing-type';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { FilterType } from '../../../types/custom-aggrid-types';
+import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -74,6 +70,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
 
     const isOneBusShortCircuitAnalysisType = analysisType === ShortCircuitAnalysisType.ONE_BUS;
 
@@ -81,23 +78,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         ? FROM_COLUMN_TO_FIELD_ONE_BUS
         : FROM_COLUMN_TO_FIELD;
 
-    const { onSortChanged, sortConfig } = useAgGridSort(
-        SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-        mappingTabs(analysisType)
-    );
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
     }, []);
 
-    const { updateFilter, filterSelector } = useAggridRowFilter(
-        {
-            filterType: SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
-            filterTab: mappingTabs(analysisType),
-            // @ts-expect-error TODO: found how to have Action type in props type
-            filterStoreAction: setShortcircuitAnalysisResultFilter,
-        },
-        memoizedSetPageCallback
+    const sortConfig = useSelector(
+        (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(analysisType)]
     );
+
+    const { filters } = useFilterSelector(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -119,7 +108,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         if (analysisStatus !== RunningStatus.SUCCEED) {
             return;
         }
-
+        if (!currentRootNetworkUuid) {
+            return;
+        }
         let active = true; // to manage race condition
         setIsFetching(true);
         updateResult(null);
@@ -129,7 +120,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));
 
-        const updatedFilters = filterSelector ? convertFilterValues(filterSelector) : null;
+        const updatedFilters = filters ? convertFilterValues(filters) : null;
 
         const selector = {
             page,
@@ -141,6 +132,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         fetchShortCircuitAnalysisPagedResults({
             studyUuid,
             currentNodeUuid: currentNode?.id,
+            currentRootNetworkUuid,
             type: analysisType,
             selector,
         })
@@ -175,14 +167,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         updateResult,
         studyUuid,
         currentNode?.id,
+        currentRootNetworkUuid,
         intl,
-        filterSelector,
+        filters,
         sortConfig,
         fromFrontColumnToBackKeys,
     ]);
 
     useEffect(() => {
-        if (analysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
+        if (analysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
             return;
         }
 
@@ -195,7 +188,13 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         const filterTypes = isOneBusShortCircuitAnalysisType ? oneBusFilterTypes : allBusesFilterTypes;
 
         const promises = filterTypes.map((filter) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, currentComputingType, filter)
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                currentComputingType,
+                filter
+            )
         );
 
         Promise.all(promises)
@@ -219,7 +218,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [analysisStatus, intl, snackError, isOneBusShortCircuitAnalysisType, studyUuid, currentNode?.id]);
+    }, [
+        analysisStatus,
+        intl,
+        snackError,
+        isOneBusShortCircuitAnalysisType,
+        studyUuid,
+        currentNode?.id,
+        currentRootNetworkUuid,
+    ]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,
@@ -233,15 +240,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 result={result}
                 analysisType={analysisType}
                 isFetching={isFetching}
-                sortProps={{
-                    onSortChanged,
-                    sortConfig,
-                }}
-                filterProps={{
-                    updateFilter,
-                    filterSelector,
-                }}
                 filterEnums={filterEnums}
+                onFilter={memoizedSetPageCallback}
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
             />

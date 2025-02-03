@@ -29,10 +29,12 @@ import {
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
+    ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
     ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
+    AddEquipmentsByNodesForCustomColumnsAction,
     AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
     AddSortForNewSpreadsheetAction,
@@ -54,10 +56,6 @@ import {
     CloseStudyAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
-    UPDATE_CUSTOM_COLUMNS_DEFINITION,
-    REMOVE_CUSTOM_COLUMNS_DEFINITION,
-    UpdateCustomColumnsDefinitionsAction,
-    RemoveCustomColumnsDefinitionsAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
@@ -68,8 +66,6 @@ import {
     EnableDeveloperModeAction,
     FAVORITE_CONTINGENCY_LISTS,
     FavoriteContingencyListsAction,
-    FLUX_CONVENTION,
-    FluxConventionAction,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     IncrementNetworkAreaDiagramDepthAction,
     LIMIT_REDUCTION,
@@ -97,22 +93,26 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
-    NETWORK_MODIFICATION_TREE_NODES_UPDATED,
     NETWORK_MODIFICATION_TREE_NODES_REORDER,
+    NETWORK_MODIFICATION_TREE_NODES_UPDATED,
     NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
     NetworkModificationTreeNodesRemovedAction,
-    NetworkModificationTreeNodesUpdatedAction,
     NetworkModificationTreeNodesReorderAction,
+    NetworkModificationTreeNodesUpdatedAction,
+    NODE_SELECTION_FOR_COPY,
+    NodeSelectionForCopyAction,
     OPEN_DIAGRAM,
     OPEN_NAD_LIST,
     OPEN_STUDY,
     OpenDiagramAction,
     OpenNadListAction,
     OpenStudyAction,
+    REMOVE_CUSTOM_COLUMNS_DEFINITION,
     REMOVE_NOTIFICATION_BY_NODE,
+    RemoveCustomColumnsDefinitionsAction,
     RemoveNotificationByNodeAction,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
@@ -125,15 +125,16 @@ import {
     ResetEquipmentsPostLoadflowAction,
     ResetLogsFilterAction,
     ResetMapReloadedAction,
+    ResetMapEquipmentsAction,
     ResetNetworkAreaDiagramDepthAction,
+    SAVE_SPREADSHEET_GS_FILTER,
+    SaveSpreadSheetGsFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
     SecurityAnalysisResultFilterAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
     SELECT_THEME,
     SelectComputedLanguageAction,
-    NODE_SELECTION_FOR_COPY,
-    NodeSelectionForCopyAction,
     SelectLanguageAction,
     SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
@@ -166,6 +167,8 @@ import {
     ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
     SpreadsheetFilterAction,
+    STATEESTIMATION_RESULT_FILTER,
+    StateEstimationResultFilterAction,
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
     STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
@@ -178,20 +181,21 @@ import {
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
+    UPDATE_CUSTOM_COLUMNS_DEFINITION,
+    UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
     UPDATE_EQUIPMENTS,
+    UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UPDATE_TABLE_DEFINITION,
+    UpdateCustomColumnsDefinitionsAction,
+    UpdateCustomColumnsNodesAliasesAction,
     UpdateEquipmentsAction,
+    UpdateNetworkVisualizationParametersAction,
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    STATEESTIMATION_RESULT_FILTER,
-    StateEstimationResultFilterAction,
-    ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
-    AddEquipmentsByNodesForCustomColumnsAction,
-    UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
-    UpdateCustomColumnsNodesAliasesAction,
-    UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
-    UpdateNetworkVisualizationParametersAction,
+    CURRENT_ROOT_NETWORK,
+    CurrentRootNetworkAction,
+    RESET_MAP_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -212,7 +216,6 @@ import {
     TABLES_DEFINITIONS,
     TABLES_NAMES,
     type TablesDefinitionsNames,
-    type TablesDefinitionsType,
 } from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
@@ -224,7 +227,6 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_FLUX_CONVENTION,
     PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
@@ -241,7 +243,6 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
@@ -277,12 +278,12 @@ import {
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_SORT_STORE,
     SPREADSHEET_STORE_FIELD,
-    TABLE_SORT_STORE,
-    TIMELINE,
-    STATEESTIMATION_RESULT_STORE_FIELD,
-    STATEESTIMATION_RESULT_SORT_STORE,
     STATEESTIMATION_QUALITY_CRITERION,
     STATEESTIMATION_QUALITY_PER_REGION,
+    STATEESTIMATION_RESULT_SORT_STORE,
+    STATEESTIMATION_RESULT_STORE_FIELD,
+    TABLE_SORT_STORE,
+    TIMELINE,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
@@ -291,9 +292,8 @@ import {
     LineFlowMode,
     EQUIPMENT_TYPES as NetworkViewerEquipmentType,
 } from '@powsybl/network-viewer';
-import type { UnknownArray, ValueOf, WritableDeep } from 'type-fest';
+import type { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
-import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
@@ -302,6 +302,8 @@ import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
+import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
+import { ExpertFilter } from '../services/study/filter';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -324,6 +326,8 @@ export interface OneBusShortCircuitAnalysisDiagram {
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
     parentNode: UUID;
+    rootNetwork: UUID;
+    rootNetworks: UUID[];
     timestamp: number;
     updateType?: string;
     node?: UUID;
@@ -344,6 +348,7 @@ export interface NetworkImpactsInfos {
     deletedEquipments: DeletedEquipment[];
     impactedElementTypes: string[];
 }
+
 // EventData
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
@@ -405,7 +410,7 @@ export interface ComputingStatus {
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
 
-export type TableSortConfig = Record<string, SortConfigType[]>;
+export type TableSortConfig = Record<string, SortConfig[]>;
 export type TableSort = {
     [SPREADSHEET_SORT_STORE]: TableSortConfig;
     [LOADFLOW_RESULT_SORT_STORE]: TableSortConfig;
@@ -417,7 +422,7 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetFilterState = Record<string, UnknownArray>;
+export type SpreadsheetFilterState = Record<string, FilterConfig[]>;
 
 export type DiagramState = {
     id: UUID;
@@ -431,6 +436,7 @@ export type NadNodeMovement = {
     equipmentId: string;
     x: number;
     y: number;
+    scalingFactor: number;
 };
 
 export type NadTextMovement = {
@@ -468,6 +474,7 @@ export interface AppState extends CommonStoreState {
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
+    currentRootNetwork: UUID | null;
     computingStatus: ComputingStatus;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
@@ -488,6 +495,7 @@ export interface AppState extends CommonStoreState {
     nodeSelectionForCopy: NodeSelectionForCopy;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
+    isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
@@ -507,6 +515,7 @@ export interface AppState extends CommonStoreState {
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     additionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState;
+    gsFilterSpreadsheetState: GsFilterSpreadsheetState;
     customColumnsNodesAliases: NodeAlias[];
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
@@ -527,45 +536,44 @@ export interface AppState extends CommonStoreState {
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
     [PARAM_COMPONENT_LIBRARY]: unknown | null;
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: UnknownArray;
-    [PARAM_FLUX_CONVENTION]: FluxConventions;
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: UnknownArray;
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: UnknownArray;
-        [LOADFLOW_RESULT]: UnknownArray;
+        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
+        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: FilterConfig[];
+        [LOADFLOW_RESULT]: FilterConfig[];
     };
     [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SECURITY_ANALYSIS_RESULT_N]: UnknownArray;
-        [SECURITY_ANALYSIS_RESULT_N_K]: UnknownArray;
+        [SECURITY_ANALYSIS_RESULT_N]: FilterConfig[];
+        [SECURITY_ANALYSIS_RESULT_N_K]: FilterConfig[];
     };
     [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SENSITIVITY_IN_DELTA_MW_N]: UnknownArray;
-        [SENSITIVITY_IN_DELTA_MW_N_K]: UnknownArray;
-        [SENSITIVITY_IN_DELTA_A_N]: UnknownArray;
-        [SENSITIVITY_IN_DELTA_A_N_K]: UnknownArray;
-        [SENSITIVITY_AT_NODE_N]: UnknownArray;
-        [SENSITIVITY_AT_NODE_N_K]: UnknownArray;
+        [SENSITIVITY_IN_DELTA_MW_N]: FilterConfig[];
+        [SENSITIVITY_IN_DELTA_MW_N_K]: FilterConfig[];
+        [SENSITIVITY_IN_DELTA_A_N]: FilterConfig[];
+        [SENSITIVITY_IN_DELTA_A_N_K]: FilterConfig[];
+        [SENSITIVITY_AT_NODE_N]: FilterConfig[];
+        [SENSITIVITY_AT_NODE_N_K]: FilterConfig[];
     };
     [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
-        [ONE_BUS]: UnknownArray;
-        [ALL_BUSES]: UnknownArray;
+        [ONE_BUS]: FilterConfig[];
+        [ALL_BUSES]: FilterConfig[];
     };
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
-        [TIMELINE]: UnknownArray;
+        [TIMELINE]: FilterConfig[];
     };
     [STATEESTIMATION_RESULT_STORE_FIELD]: {
-        [STATEESTIMATION_QUALITY_CRITERION]: UnknownArray;
-        [STATEESTIMATION_QUALITY_PER_REGION]: UnknownArray;
+        [STATEESTIMATION_QUALITY_CRITERION]: FilterConfig[];
+        [STATEESTIMATION_QUALITY_PER_REGION]: FilterConfig[];
     };
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
 }
 
-export type LogsFilterState = Record<string, unknown[]>;
+export type LogsFilterState = Record<string, FilterConfig[]>;
 const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
@@ -607,6 +615,9 @@ export type AdditionalEquipmentsByNodesForCustomColumnsState = Record<
 const initialAdditionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState = {};
 const initialCustomColumnsNodesAliases: NodeAlias[] = [];
 
+export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
+const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
+
 export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
 
 interface TablesState {
@@ -623,13 +634,13 @@ interface TablesState {
 const TableDefinitionIndexes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.index, tabDef]));
 const TableDefinitionTypes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.type, tabDef]));
 const initialTablesState: TablesState = {
-    definitions: TABLES_DEFINITIONS as WritableDeep<TablesDefinitionsType>,
+    definitions: TABLES_DEFINITIONS,
     columnsNames: TABLES_COLUMNS_NAMES,
     columnsNamesJson: TABLES_COLUMNS_NAMES.map((cols) => JSON.stringify([...cols])),
     names: TABLES_NAMES,
     namesIndexes: new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.name, tabDef.index])),
-    definitionTypes: TableDefinitionTypes as WritableDeep<typeof TableDefinitionTypes>,
-    definitionIndexes: TableDefinitionIndexes as WritableDeep<typeof TableDefinitionIndexes>,
+    definitionTypes: TableDefinitionTypes,
+    definitionIndexes: TableDefinitionIndexes,
     allCustomColumnsDefinitions: TABLES_NAMES.reduce(
         (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
         {} as Record<TablesDefinitionsNames, CustomEntry>
@@ -639,6 +650,7 @@ const initialTablesState: TablesState = {
 const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
+    currentRootNetwork: null,
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
@@ -649,6 +661,8 @@ const initialState: AppState = {
     mapEquipments: undefined,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
+    // used when switching root network, will be set to false as long as the tree has not been updated
+    isNetworkModificationTreeModelUpToDate: false,
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
@@ -676,6 +690,7 @@ const initialState: AppState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     additionalEquipmentsByNodesForCustomColumns: initialAdditionalEquipmentsByNodesForCustomColumns,
+    gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
     customColumnsNodesAliases: initialCustomColumnsNodesAliases,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
@@ -714,7 +729,6 @@ const initialState: AppState = {
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout.HORIZONTAL,
     [PARAM_COMPONENT_LIBRARY]: null,
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
-    [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
     [PARAM_INIT_NAD_WITH_GEO_DATA]: true,
     [PARAMS_LOADED]: false,
@@ -877,13 +891,18 @@ export const reducer = createReducer(initialState, (builder) => {
         state.mapEquipments = newMapEquipments;
     });
 
+    builder.addCase(RESET_MAP_EQUIPMENTS, (state, action: ResetMapEquipmentsAction) => {
+        state.mapEquipments = undefined;
+        state.isMapEquipmentsInitialized = false;
+    });
+
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
         const { newTableDefinition, customColumns } = action.payload;
         const updatedDefinitions = [...state.tables.definitions];
         updatedDefinitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
         const updatedColumnsNames = updatedDefinitions
             .map((tabDef) => tabDef.columns)
-            .map((cols) => new Set(cols.map((c) => c.colId)));
+            .map((cols) => new Set(cols.map((c) => c.colId!)));
         const updatedColumnsNamesJson = updatedColumnsNames.map((cols) => JSON.stringify([...cols]));
         const updatedNames = updatedDefinitions.map((tabDef) => tabDef.name);
         const updatedNamesIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.name, tabDef.index]));
@@ -915,6 +934,7 @@ export const reducer = createReducer(initialState, (builder) => {
         (state, action: LoadNetworkModificationTreeSuccessAction) => {
             state.networkModificationTreeModel = action.networkModificationTreeModel;
             state.networkModificationTreeModel.setBuildingStatus();
+            state.isNetworkModificationTreeModelUpToDate = true;
         }
     );
 
@@ -1083,10 +1103,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.user = action.user;
     });
 
-    builder.addCase(FLUX_CONVENTION, (state, action: FluxConventionAction) => {
-        state[PARAM_FLUX_CONVENTION] = action[PARAM_FLUX_CONVENTION];
-    });
-
     builder.addCase(ENABLE_DEVELOPER_MODE, (state, action: EnableDeveloperModeAction) => {
         state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
     });
@@ -1173,6 +1189,11 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
         state.reloadMap = true;
+    });
+
+    builder.addCase(CURRENT_ROOT_NETWORK, (state, action: CurrentRootNetworkAction) => {
+        state.currentRootNetwork = action.currentRootNetwork;
+        state.isNetworkModificationTreeModelUpToDate = false;
     });
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
@@ -1503,10 +1524,12 @@ export const reducer = createReducer(initialState, (builder) => {
                     equipmentId: action.equipmentId,
                     x: action.x,
                     y: action.y,
+                    scalingFactor: action.scalingFactor,
                 });
             } else {
                 correspondingMovement[0].x = action.x;
                 correspondingMovement[0].y = action.y;
+                correspondingMovement[0].scalingFactor = action.scalingFactor;
             }
         }
     );
@@ -1750,9 +1773,9 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(UPDATE_CUSTOM_COLUMNS_DEFINITION, (state, action: UpdateCustomColumnsDefinitionsAction) => {
         state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
             action.table
-        ].columns.some((column) => column.id === action.definition.id)
+        ].columns.some((column) => column.uuid === action.definition.uuid)
             ? state.tables.allCustomColumnsDefinitions[action.table].columns.map((column) =>
-                  column.id === action.definition.id ? action.definition : column
+                  column.uuid === action.definition.uuid ? action.definition : column
               )
             : [...state.tables.allCustomColumnsDefinitions[action.table].columns, action.definition];
     });
@@ -1761,6 +1784,10 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
             action.table
         ].columns.filter((column) => column.id !== action.definitionId);
+    });
+
+    builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
+        state.gsFilterSpreadsheetState[action.equipmentType] = action.filters;
     });
 });
 

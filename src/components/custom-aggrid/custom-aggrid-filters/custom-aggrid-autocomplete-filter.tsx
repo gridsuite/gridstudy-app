@@ -4,39 +4,59 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { FunctionComponent, SyntheticEvent, useMemo } from 'react';
+import React, { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { useCustomAggridFilter } from '../hooks/use-custom-aggrid-filter';
-import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
-import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS, FilterEnumsType } from '../custom-aggrid-header.type';
+import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
+import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
+import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 
 export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilterParams {
-    filterEnums?: FilterEnumsType;
-    getEnumLabel?: (value: string) => string; // Used for translation of enum values in the filter
+    getOptionLabel?: (value: string) => string; // Used for translation of enum values in the filter
+    options?: string[];
 }
 
 export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutocompleteFilterParams> = ({
+    api,
     colId,
     filterParams,
-    filterEnums,
-    getEnumLabel,
+    getOptionLabel,
+    options,
 }) => {
     const intl = useIntl();
-    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(colId, filterParams);
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(api, colId, filterParams);
+    const [computedFilterOptions, setComputedFilterOptions] = useState<string[]>(options ?? []);
+
+    const getUniqueValues = useCallback(() => {
+        const uniqueValues = new Set<string>();
+        api.forEachNode((node) => {
+            const value = api.getCellValue({
+                rowNode: node,
+                colKey: colId,
+            });
+            if (value) {
+                uniqueValues.add(value);
+            }
+        });
+        return Array.from(uniqueValues);
+    }, [api, colId]);
+
+    useEffect(() => {
+        if (!options) {
+            setComputedFilterOptions(getUniqueValues());
+        }
+    }, [options, getUniqueValues]);
 
     const handleFilterAutoCompleteChange = (_: SyntheticEvent, data: string[]) => {
         handleChangeFilterValue({ value: data, type: FILTER_TEXT_COMPARATORS.EQUALS });
     };
 
-    const filterOption = useMemo(() => filterEnums?.[colId] ?? [], [colId, filterEnums]);
-
     return (
         <Autocomplete
             multiple
             value={Array.isArray(selectedFilterData) ? selectedFilterData : []}
-            options={filterOption}
-            getOptionLabel={getEnumLabel}
+            options={computedFilterOptions}
+            getOptionLabel={getOptionLabel}
             onChange={handleFilterAutoCompleteChange}
             size="small"
             disableCloseOnSelect
@@ -44,7 +64,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
                 <TextField
                     {...params}
                     placeholder={
-                        !isStringOrNonEmptyArray(selectedFilterData)
+                        !isNonEmptyStringOrArray(selectedFilterData)
                             ? intl.formatMessage({
                                   id: 'filter.filterOoo',
                               })

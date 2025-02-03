@@ -5,16 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { SortConfigType } from 'hooks/use-aggrid-sort';
 import { GlobalFilter } from '../../components/results/loadflow/load-flow-result-tab';
+import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 
 interface QueryParams {
-    sort?: SortConfigType[];
-    filters: FilterSelectorType[] | null;
+    sort?: SortConfig[];
+    filters: FilterConfig[] | null;
     globalFilters?: GlobalFilter;
 }
 
@@ -60,34 +59,61 @@ export function setLoadFlowProvider(studyUuid: UUID, newProvider: string) {
     });
 }
 
-export function startLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, limitReduction: number) {
+export function startLoadFlow(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    limitReduction: number
+) {
     console.info(
-        'Running loadflow on ' + studyUuid + ' and node ' + currentNodeUuid + ' with limit reduction ' + limitReduction
+        'Running loadflow on ' +
+            studyUuid +
+            ' on root network ' +
+            currentRootNetworkUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' with limit reduction ' +
+            limitReduction
     );
     const startLoadFlowUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/loadflow/run?limitReduction=' +
         limitReduction.toString();
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
-export function stopLoadFlow(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info(`Stopping loadFlow on '${studyUuid}' and node '${currentNodeUuid}' ...`);
-    const stopLoadFlowUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/stop';
+export function stopLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Stopping loadFlow on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopLoadFlowUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/loadflow/stop';
     console.debug(stopLoadFlowUrl);
     return backendFetch(stopLoadFlowUrl, { method: 'put' });
 }
 
-export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info(`Fetching loadFlow status on '${studyUuid}' and node '${currentNodeUuid}' ...`);
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/status';
+export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching loadFlow status on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/loadflow/status';
     console.debug(url);
     return backendFetchText(url);
 }
 
-export function fetchLoadFlowResult(studyUuid: UUID, currentNodeUuid: UUID, queryParams: QueryParams) {
-    console.info(`Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+export function fetchLoadFlowResult(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    queryParams: QueryParams
+) {
+    console.info(
+        `Fetching loadflow result on '${studyUuid}', node '${currentNodeUuid}' and current root network '${currentRootNetworkUuid}' ...`
+    );
     const { sort, filters } = queryParams || {};
     const params = new URLSearchParams({});
 
@@ -96,13 +122,20 @@ export function fetchLoadFlowResult(studyUuid: UUID, currentNodeUuid: UUID, quer
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
     }
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/result';
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/loadflow/result';
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);
 }
 
-export function fetchLimitViolations(studyUuid: UUID, currentNodeUuid: UUID, queryParams: QueryParams) {
+export function fetchLimitViolations(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    queryParams: QueryParams
+) {
     console.info(`Fetching limit violations ...`);
     const { sort, filters, globalFilters } = queryParams || {};
     const params = new URLSearchParams({});
@@ -117,7 +150,9 @@ export function fetchLimitViolations(studyUuid: UUID, currentNodeUuid: UUID, que
         params.append('globalFilters', JSON.stringify(globalFilters));
     }
 
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/limit-violations';
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/limit-violations';
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);

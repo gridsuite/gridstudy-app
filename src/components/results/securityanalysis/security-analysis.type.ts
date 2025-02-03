@@ -8,9 +8,8 @@
 import * as React from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
-import { SortConfigType } from '../../../hooks/use-aggrid-sort';
 import { UUID } from 'crypto';
-import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -77,7 +76,7 @@ export interface PreContingencyResult {
     limitViolation?: LimitViolation;
 }
 
-export type QueryParamsType = Record<string, string | number | SortConfigType[] | FilterSelectorType[]>;
+export type QueryParamsType = Record<string, string | number | SortConfig[] | FilterConfig[]>;
 
 type Sort = {
     empty?: boolean;
@@ -122,6 +121,7 @@ export interface SecurityAnalysisNmkResult {
 export interface SecurityAnalysisTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     openVoltageLevelDiagram: (id: string) => void;
 }
 

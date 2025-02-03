@@ -13,7 +13,7 @@ import { ResultViewTab } from './result-view-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
-import TableWrapper from './spreadsheet/table-wrapper';
+import { TableWrapper } from './spreadsheet/table-wrapper';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 
@@ -51,7 +51,7 @@ export const StudyView = {
     PARAMETERS: 'Parameters',
 };
 
-const StudyPane = ({ studyUuid, currentNode, ...props }) => {
+const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -82,6 +82,7 @@ const StudyPane = ({ studyUuid, currentNode, ...props }) => {
                 <MapViewer
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     view={props.view}
                     openDiagramView={openDiagramView}
                     tableEquipment={tableEquipment}
@@ -95,6 +96,7 @@ const StudyPane = ({ studyUuid, currentNode, ...props }) => {
                     <TableWrapper
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
@@ -102,7 +104,6 @@ const StudyPane = ({ studyUuid, currentNode, ...props }) => {
                     />
                 </Paper>
             </TabPanelLazy>
-
             <Box
                 sx={{
                     height: '100%',
@@ -114,6 +115,7 @@ const StudyPane = ({ studyUuid, currentNode, ...props }) => {
                     <ResultViewTab
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         openVoltageLevelDiagram={openVoltageLevelDiagram}
                         disabled={disabled}
                         view={props.view}

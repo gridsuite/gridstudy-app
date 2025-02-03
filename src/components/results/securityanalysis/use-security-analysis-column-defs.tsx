@@ -19,8 +19,7 @@ import {
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
-import { SortPropsType } from 'hooks/use-aggrid-sort';
-import { FilterEnumsType, FilterParams } from '../../custom-aggrid/custom-aggrid-header.type';
+import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 
@@ -36,25 +35,25 @@ export interface SecurityAnalysisFilterEnumsType {
 }
 
 type UseSecurityAnalysisColumnsDefsProps = (
-    sortProps: SortPropsType,
-    filterProps: FilterParams,
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
-    openVoltageLevelDiagram: (id: string) => void
-) => ColDef<any>[];
+    openVoltageLevelDiagram: (id: string) => void,
+    tabIndex: number,
+    onFilter: () => void
+) => ColDef[];
 
 export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps = (
-    sortProps,
-    filterProps,
     filterEnums,
     resultType,
-    openVoltageLevelDiagram
+    openVoltageLevelDiagram,
+    tabIndex,
+    onFilter
 ) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const nodeUuid = currentNode?.id;
 
     const getEnumLabel = useCallback(
@@ -69,7 +68,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
     // for nmk views, click handler on subjectId cell
     const onClickNmKConstraint = useCallback(
         (row: SecurityAnalysisNmkTableRow, column?: ColDef) => {
-            if (studyUuid && nodeUuid) {
+            if (studyUuid && nodeUuid && currentRootNetworkUuid) {
                 if (column?.field === 'subjectId') {
                     let vlId: string | undefined = '';
                     const { subjectId, side } = row || {};
@@ -86,6 +85,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     fetchVoltageLevelIdForLineOrTransformerBySide(
                         studyUuid,
                         nodeUuid,
+                        currentRootNetworkUuid,
                         subjectId ?? '',
                         getBranchSide(side) ?? BranchSide.ONE
                     )
@@ -115,7 +115,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                 }
             }
         },
-        [nodeUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
+        [nodeUuid, currentRootNetworkUuid, openVoltageLevelDiagram, snackError, studyUuid, intl]
     );
 
     // for nmk views, custom view for subjectId cell
@@ -145,30 +145,24 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                 return securityAnalysisTableNmKContingenciesColumnsDefinition(
                     intl,
                     SubjectIdRenderer,
-                    filterProps,
-                    sortProps,
                     filterEnums.nmk,
-                    getEnumLabel
+                    getEnumLabel,
+                    tabIndex,
+                    onFilter
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
                     intl,
                     SubjectIdRenderer,
-                    filterProps,
-                    sortProps,
                     filterEnums.nmk,
-                    getEnumLabel
+                    getEnumLabel,
+                    tabIndex,
+                    onFilter
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(
-                    intl,
-                    sortProps,
-                    filterProps,
-                    filterEnums.n,
-                    getEnumLabel
-                );
+                return securityAnalysisTableNColumnsDefinition(intl, filterEnums.n, getEnumLabel, tabIndex, onFilter);
         }
-    }, [resultType, intl, SubjectIdRenderer, filterProps, sortProps, filterEnums.nmk, filterEnums.n, getEnumLabel]);
+    }, [resultType, intl, SubjectIdRenderer, filterEnums.nmk, filterEnums.n, getEnumLabel, tabIndex, onFilter]);
 
     return columnDefs;
 };

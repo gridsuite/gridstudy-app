@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { WritableDeep } from 'type-fest';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, SxProps, Theme } from '@mui/material';
 import {
@@ -33,15 +32,16 @@ import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
 import { NEW_SPREADSHEET_CREATION_OPTIONS } from '../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
-import { TABLES_DEFINITIONS, TABLES_TYPES, type TablesDefinitionsType } from '../config/config-tables';
+import { TABLES_DEFINITIONS, TABLES_TYPES } from '../config/config-tables';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
-import { ColumnWithFormula } from 'types/custom-columns.types';
-import { getSpreadsheetModel } from 'services/spreadsheet';
-import { SortWay } from 'hooks/use-aggrid-sort';
+import { ColumnWithFormula, ColumnWithFormulaDto } from 'types/custom-columns.types';
+import { getSpreadsheetModel } from 'services/study-config';
 import { typeAndFetchers } from '../config/equipment/common-config';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
+import { SortWay } from '../../../types/custom-aggrid-types';
+import { COLUMN_DEPENDENCIES } from '../custom-columns/custom-columns-form';
 
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
@@ -88,9 +88,7 @@ export default function CustomSpreadsheetConfigDialog({
     const { handleSubmit, reset, setValue, getValues } = formMethods;
 
     const getTableColumns = useCallback((type: SpreadsheetEquipmentType) => {
-        const tableDef = (TABLES_DEFINITIONS as WritableDeep<TablesDefinitionsType>).find(
-            (tabDef) => tabDef.type === type
-        );
+        const tableDef = TABLES_DEFINITIONS.find((tabDef) => tabDef.type === type);
         return tableDef ? tableDef.columns : [];
     }, []);
 
@@ -122,7 +120,7 @@ export default function CustomSpreadsheetConfigDialog({
                 getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id)
                     .then(
                         (selectedModel: {
-                            customColumns: ColumnWithFormula[];
+                            customColumns: ColumnWithFormulaDto[];
                             sheetType: SpreadsheetEquipmentType;
                         }) => {
                             const tabIndex = tablesDefinitionIndexes.size;
@@ -133,7 +131,17 @@ export default function CustomSpreadsheetConfigDialog({
                                 ...typeAndFetchers(selectedModel.sheetType),
                                 columns: [],
                             };
-                            dispatch(updateTableDefinition(newTableDefinition, selectedModel.customColumns));
+                            dispatch(
+                                updateTableDefinition(
+                                    newTableDefinition,
+                                    selectedModel.customColumns.map((col) => {
+                                        return {
+                                            ...col,
+                                            [COLUMN_DEPENDENCIES]: JSON.parse(col.dependencies || '[]'), // empty strings and null will be converted to empty array
+                                        } satisfies ColumnWithFormula;
+                                    })
+                                )
+                            );
                             dispatch(addFilterForNewSpreadsheet(tabName, []));
                             dispatch(
                                 addSortForNewSpreadsheet(tabName, [

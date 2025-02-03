@@ -86,7 +86,15 @@ export const VSC_CREATION_TABS = {
     CONVERTER_STATION_2: 2,
 };
 
-const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
+const VscCreationDialog = ({
+    editData,
+    currentNode,
+    studyUuid,
+    currentRootNetworkUuid,
+    isUpdate,
+    editDataFetchStatus,
+    ...dialogProps
+}) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState(VSC_CREATION_TABS.HVDC_LINE_TAB);
@@ -131,6 +139,7 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.HVDC_LINE,
@@ -253,7 +262,12 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <VscCreationForm tabIndex={tabIndex} currentNode={currentNode} studyUuid={studyUuid} />
+                <VscCreationForm
+                    tabIndex={tabIndex}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
@@ -263,6 +277,7 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
                     }}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>

@@ -26,26 +26,33 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button';
 import { UUID } from 'crypto';
-import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     view: string;
 }
 
-function getDisplayedColumns(params: any) {
-    return params.api.columnModel.columnDefs.filter((c: any) => !c.hide).map((c: any) => c.headerName);
-}
+const getDisplayedColumns = (params: GridReadyEvent) => {
+    return (
+        (params.api
+            ?.getColumnDefs()
+            ?.filter((col: ColDef) => !col.hide)
+            ?.map((col) => col.headerName) as string[]) ?? []
+    );
+};
 
 export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalysisResultTabProps> = ({
     studyUuid,
     nodeUuid,
+    currentRootNetworkUuid,
     view,
 }) => {
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
 
-    const [csvHeaders, setCsvHeaders] = useState([]);
+    const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
 
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
@@ -144,6 +151,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                         <ShortCircuitExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
                             csvHeaders={csvHeaders}
                             analysisType={tabIndex}
                             disabled={isCsvButtonDisabled}

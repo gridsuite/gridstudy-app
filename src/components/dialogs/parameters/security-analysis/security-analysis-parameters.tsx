@@ -249,7 +249,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                         id: 'showSelectParameterDialog',
                     })}
                     onlyLeaves={true}
-                    multiselect={false}
+                    multiSelect={false}
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}

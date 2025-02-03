@@ -12,10 +12,11 @@ import {
     DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
+    mappingTabs,
     PAGE_OPTIONS,
     SENSITIVITY_AT_NODE,
 } from './sensitivity-analysis-result-utils';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
@@ -27,17 +28,18 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
-import { SortWay } from 'hooks/use-aggrid-sort';
+import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { useFilterSelector } from '../../../hooks/use-filter-selector';
+import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
     sensiKind,
     studyUuid,
     nodeUuid,
+    currentRootNetworkUuid,
     page,
     setPage,
-    sortProps,
-    filterProps,
     ...props
 }) => {
     const intl = useIntl();
@@ -49,8 +51,11 @@ const PagedSensitivityAnalysisResult = ({
     const [isLoading, setIsLoading] = useState(false);
     const sensiStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
 
-    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
-    const { updateFilter, filterSelector } = filterProps || {};
+    const sortConfig = useSelector(
+        (state) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
+    );
+
+    const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
 
     const filtersDef = useMemo(() => {
         const baseFilters = [
@@ -96,13 +101,9 @@ const PagedSensitivityAnalysisResult = ({
         [setPage]
     );
 
-    const handleUpdateFilter = useCallback(
-        (field, value) => {
-            setPage(0);
-            updateFilter(field, value);
-        },
-        [setPage, updateFilter]
-    );
+    const onFilter = useCallback(() => {
+        setPage(0);
+    }, [setPage]);
 
     const fetchFilterOptions = useCallback(() => {
         const selector = {
@@ -110,7 +111,7 @@ const PagedSensitivityAnalysisResult = ({
             functionType: FUNCTION_TYPES[sensiKind],
         };
 
-        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, selector)
+        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
             .then((res) => {
                 setOptions(res);
             })
@@ -122,7 +123,7 @@ const PagedSensitivityAnalysisResult = ({
                     }),
                 });
             });
-    }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, snackError, intl]);
+    }, [nOrNkIndex, sensiKind, studyUuid, currentRootNetworkUuid, nodeUuid, snackError, intl]);
 
     const fetchResult = useCallback(() => {
         const sortSelector = sortConfig?.length
@@ -143,14 +144,14 @@ const PagedSensitivityAnalysisResult = ({
             offset: page * rowsPerPage,
             pageSize: rowsPerPage,
             pageNumber: page,
-            ...filterSelector?.reduce((acc, curr) => {
+            ...filters?.reduce((acc, curr) => {
                 acc[DATA_KEY_TO_FILTER_KEY[curr.column]] = curr.value;
                 return acc;
             }, {}),
             ...sortSelector,
         };
         setIsLoading(true);
-        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
+        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
             .then((res) => {
                 const { filteredSensitivitiesCount = 0 } = res || {};
 
@@ -168,7 +169,19 @@ const PagedSensitivityAnalysisResult = ({
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [nOrNkIndex, sensiKind, page, rowsPerPage, filterSelector, sortConfig, studyUuid, nodeUuid, snackError, intl]);
+    }, [
+        nOrNkIndex,
+        sensiKind,
+        page,
+        rowsPerPage,
+        filters,
+        sortConfig,
+        studyUuid,
+        nodeUuid,
+        currentRootNetworkUuid,
+        snackError,
+        intl,
+    ]);
 
     useEffect(() => {
         if (sensiStatus === RunningStatus.RUNNING) {
@@ -186,14 +199,7 @@ const PagedSensitivityAnalysisResult = ({
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
                 sensiKind={sensiKind}
-                sortProps={{
-                    onSortChanged,
-                    sortConfig,
-                }}
-                filterProps={{
-                    updateFilter: handleUpdateFilter,
-                    filterSelector,
-                }}
+                onFilter={onFilter}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
                 {...props}
@@ -215,8 +221,6 @@ PagedSensitivityAnalysisResult.propTypes = {
     sensiKind: PropTypes.string.isRequired,
     studyUuid: PropTypes.string.isRequired,
     nodeUuid: PropTypes.string.isRequired,
-    filterProps: PropTypes.object,
-    sortProps: PropTypes.object,
     page: PropTypes.number.isRequired,
     setPage: PropTypes.func.isRequired,
 };

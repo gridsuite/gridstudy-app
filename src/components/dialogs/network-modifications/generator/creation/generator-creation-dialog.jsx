@@ -127,6 +127,7 @@ const GeneratorCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -193,6 +194,7 @@ const GeneratorCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.GENERATOR,
@@ -328,7 +330,11 @@ const GeneratorCreationDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <GeneratorCreationForm studyUuid={studyUuid} currentNode={currentNode} />
+                <GeneratorCreationForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
 
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
@@ -336,6 +342,7 @@ const GeneratorCreationDialog = ({
                     equipmentType={'GENERATOR'}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
