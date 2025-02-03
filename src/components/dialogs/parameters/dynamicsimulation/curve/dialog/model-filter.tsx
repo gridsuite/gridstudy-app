@@ -7,7 +7,7 @@
 
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Grid, Box, Typography, Theme } from '@mui/material';
+import { Box, Grid, Theme, Typography } from '@mui/material';
 import CheckboxSelect from '../common/checkbox-select';
 import CheckboxTreeview, { GetSelectedItemsHandle } from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
@@ -170,8 +170,6 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
         const intl = useIntl();
 
         const studyUuid = useSelector((state: AppState) => state.studyUuid);
-        const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-        const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
 
         const [allModels, setAllModels] = useState<DynamicSimulationModel[]>([]);
         const [allVariables, setAllVariables] = useState<
@@ -217,26 +215,21 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
             [variables, selectedModels, associatedModels]
         );
 
-        // fetch all associated models and variables for current node and study
+        // fetch all associated models and variables for study
         useEffect(() => {
-            if (!currentNode?.id || !currentRootNetworkUuid) {
-                return;
-            }
-            fetchDynamicSimulationModels(studyUuid, currentNode.id, currentRootNetworkUuid).then(
-                (models: DynamicSimulationModelBack[]) => {
-                    setAllModels(
-                        models.map((model) => ({
-                            name: model.modelName,
-                            equipmentType: model.equipmentType,
-                        }))
-                    );
+            fetchDynamicSimulationModels(studyUuid).then((models: DynamicSimulationModelBack[]) => {
+                setAllModels(
+                    models.map((model) => ({
+                        name: model.modelName,
+                        equipmentType: model.equipmentType,
+                    }))
+                );
 
-                    // transform models to variables tree representation
-                    const variablesTree = modelsToVariablesTree(models);
-                    setAllVariables(variablesTree);
-                }
-            );
-        }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
+                // transform models to variables tree representation
+                const variablesTree = modelsToVariablesTree(models);
+                setAllVariables(variablesTree);
+            });
+        }, [studyUuid]);
 
         // expose some api for the component by using ref
         useImperativeHandle(
