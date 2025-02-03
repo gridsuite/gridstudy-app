@@ -127,6 +127,8 @@ import {
     ResetMapReloadedAction,
     ResetMapEquipmentsAction,
     ResetNetworkAreaDiagramDepthAction,
+    SAVE_SPREADSHEET_GS_FILTER,
+    SaveSpreadSheetGsFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
     SecurityAnalysisResultFilterAction,
     SELECT_COMPUTED_LANGUAGE,
@@ -301,6 +303,7 @@ import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
+import { ExpertFilter } from '../services/study/filter';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -345,6 +348,7 @@ export interface NetworkImpactsInfos {
     deletedEquipments: DeletedEquipment[];
     impactedElementTypes: string[];
 }
+
 // EventData
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
@@ -433,6 +437,7 @@ export type NadNodeMovement = {
     equipmentId: string;
     x: number;
     y: number;
+    scalingFactor: number;
 };
 
 export type NadTextMovement = {
@@ -511,6 +516,7 @@ export interface AppState extends CommonStoreState {
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     additionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState;
+    gsFilterSpreadsheetState: GsFilterSpreadsheetState;
     customColumnsNodesAliases: NodeAlias[];
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
@@ -611,6 +617,9 @@ export type AdditionalEquipmentsByNodesForCustomColumnsState = Record<
 const initialAdditionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState = {};
 const initialCustomColumnsNodesAliases: NodeAlias[] = [];
 
+export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
+const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
+
 export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
 
 interface TablesState {
@@ -683,6 +692,7 @@ const initialState: AppState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     additionalEquipmentsByNodesForCustomColumns: initialAdditionalEquipmentsByNodesForCustomColumns,
+    gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
     customColumnsNodesAliases: initialCustomColumnsNodesAliases,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
@@ -1517,10 +1527,12 @@ export const reducer = createReducer(initialState, (builder) => {
                     equipmentId: action.equipmentId,
                     x: action.x,
                     y: action.y,
+                    scalingFactor: action.scalingFactor,
                 });
             } else {
                 correspondingMovement[0].x = action.x;
                 correspondingMovement[0].y = action.y;
+                correspondingMovement[0].scalingFactor = action.scalingFactor;
             }
         }
     );
@@ -1775,6 +1787,10 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
             action.table
         ].columns.filter((column) => column.id !== action.definitionId);
+    });
+
+    builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
+        state.gsFilterSpreadsheetState[action.equipmentType] = action.filters;
     });
 });
 

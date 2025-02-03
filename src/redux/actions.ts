@@ -55,6 +55,7 @@ import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
+import { ExpertFilter } from '../services/study/filter';
 
 type MutableUnknownArray = unknown[];
 
@@ -137,7 +138,8 @@ export type AppActions =
     | UpdateCustomColumnsNodesAliasesAction
     | AddEquipmentsByNodesForCustomColumnsAction
     | UpdateNetworkVisualizationParametersAction
-    | StateEstimationResultFilterAction;
+    | StateEstimationResultFilterAction
+    | SaveSpreadSheetGsFilterAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -907,13 +909,15 @@ export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
     equipmentId: string;
     x: number;
     y: number;
+    scalingFactor: number;
 };
 
 export function storeNetworkAreaDiagramNodeMovement(
     nadIdentifier: string,
     equipmentId: string,
     x: number,
-    y: number
+    y: number,
+    scalingFactor: number
 ): StoreNetworkAreaDiagramNodeMovementAction {
     return {
         type: STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
@@ -921,6 +925,7 @@ export function storeNetworkAreaDiagramNodeMovement(
         equipmentId: equipmentId,
         x: x,
         y: y,
+        scalingFactor: scalingFactor,
     };
 }
 
@@ -935,6 +940,7 @@ export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
     connectionShiftX: number;
     connectionShiftY: number;
 };
+
 export function storeNetworkAreaDiagramTextNodeMovement(
     nadIdentifier: string,
     equipmentId: string,
@@ -953,6 +959,7 @@ export function storeNetworkAreaDiagramTextNodeMovement(
         connectionShiftY: connectionShiftY,
     };
 }
+
 export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS = 'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
 export type NetworkAreaDiagramNbVoltageLevelsAction = Readonly<
     Action<typeof NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS>
@@ -1309,5 +1316,22 @@ export function setStateEstimationResultFilter(
         type: STATEESTIMATION_RESULT_FILTER,
         filterTab: filterTab,
         [STATEESTIMATION_RESULT_STORE_FIELD]: stateEstimationResultFilter,
+    };
+}
+
+export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
+export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
+    equipmentType: SpreadsheetEquipmentType;
+    filters: ExpertFilter[];
+};
+
+export function saveSpreadsheetGsFilters(
+    equipmentType: SpreadsheetEquipmentType,
+    filters: ExpertFilter[]
+): SaveSpreadSheetGsFilterAction {
+    return {
+        type: SAVE_SPREADSHEET_GS_FILTER,
+        equipmentType: equipmentType,
+        filters: filters,
     };
 }

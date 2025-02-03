@@ -19,13 +19,11 @@ const LoadFlowParametersHeader = ({
     selectedTab,
     handleTabChange,
     tabIndexesWithError,
-    enableDeveloperMode,
     formattedProviders,
 }: {
     selectedTab: string;
     handleTabChange: (event: React.SyntheticEvent, newValue: TAB_VALUES) => void;
     tabIndexesWithError: TAB_VALUES[];
-    enableDeveloperMode: boolean;
     formattedProviders: { id: string; label: string }[];
 }) => (
     <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
@@ -53,13 +51,11 @@ const LoadFlowParametersHeader = ({
                         value={TAB_VALUES.GENERAL}
                         sx={getTabStyle(tabIndexesWithError, TAB_VALUES.GENERAL)}
                     />
-                    {enableDeveloperMode && (
-                        <Tab
-                            label={<FormattedMessage id={TAB_VALUES.LIMIT_REDUCTIONS} />}
-                            value={TAB_VALUES.LIMIT_REDUCTIONS}
-                            sx={getTabStyle(tabIndexesWithError, TAB_VALUES.LIMIT_REDUCTIONS)}
-                        />
-                    )}
+                    <Tab
+                        label={<FormattedMessage id={TAB_VALUES.LIMIT_REDUCTIONS} />}
+                        value={TAB_VALUES.LIMIT_REDUCTIONS}
+                        sx={getTabStyle(tabIndexesWithError, TAB_VALUES.LIMIT_REDUCTIONS)}
+                    />
                 </Tabs>
             </Grid>
         </Grid>

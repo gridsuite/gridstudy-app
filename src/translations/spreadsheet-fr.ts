@@ -15,7 +15,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/column_id': 'ID de la colonne',
     'spreadsheet/custom_column/column_content': 'Entrer la formule',
     'spreadsheet/custom_column/column_dependencies': 'Entrer les dépendances de la formule',
-    'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau). Exemple : maxP - p pour afficher la réserve de puissance active dans le tableur des groupes`,
+    'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau), des IDs de colonnes (pour faire référence au contenu d'une autre colonne) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau). Exemple : maxP - p pour afficher la réserve de puissance active dans le tableur des groupes`,
     'spreadsheet/custom_column/error/id_not_conform': 'Un ID de colonne ne doit contenir ni espace ni symbole $',
     'spreadsheet/custom_column/error/id_le_60': 'Un ID de colonne ne peut dépasser 60 caractères',
     'spreadsheet/custom_column/error/name_le_60': 'Un nom de colonne ne peut dépasser 60 caractères',
@@ -55,6 +55,7 @@ const spreadsheetFr = {
     'spreadsheet/parameter_aliases/no_special_characters': 'Ne doit pas contenir de caractères spéciaux',
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'Aucun nœud avec ce nom',
     'spreadsheet/parameter_aliases/unique_aliases': 'Les alias doivent être unique',
+    'spreadsheet/filter/config': 'Filtres Gridsuite',
 };
 
 export default spreadsheetFr;
