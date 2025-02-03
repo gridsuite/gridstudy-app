@@ -26,7 +26,8 @@ interface EquipmentSearchDialogProps {
     open: boolean;
     onClose: () => void;
     onSelectionChange: (equipment: EquipmentInfos) => void;
-    equipmentType: { type: EquipmentType; subtype: HvdcType };
+    equipmentType: EquipmentType;
+    equipmentSubType: HvdcType;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
 }
@@ -45,6 +46,7 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
     onClose,
     onSelectionChange,
     equipmentType,
+    equipmentSubType,
     currentNodeUuid,
     currentRootNetworkUuid,
 }) => {
@@ -57,6 +59,7 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
         currentRootNetworkUuid: currentRootNetworkUuid,
         inUpstreamBuiltParentNode: true,
         equipmentType: equipmentType,
+        equipmentSubType: equipmentSubType,
     });
 
     return (

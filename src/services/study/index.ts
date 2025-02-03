@@ -179,7 +179,8 @@ export function searchEquipmentsInfos(
     searchTerm: string,
     getUseNameParameterKey: () => 'name' | 'id',
     inUpstreamBuiltParentNode?: boolean,
-    equipmentType?: { type: EquipmentType; subtype?: HvdcType }
+    equipmentType?: EquipmentType,
+    equipmentSubType?: HvdcType
 ) {
     console.info("Fetching equipments infos matching with '%s' term ... ", searchTerm);
     let urlSearchParams = new URLSearchParams();
@@ -189,13 +190,12 @@ export function searchEquipmentsInfos(
         urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode.toString());
     }
     if (equipmentType !== undefined) {
-        if (equipmentType?.type !== undefined) {
-            urlSearchParams.append('equipmentType', equipmentType.type);
-        }
-        if (equipmentType?.subtype !== undefined) {
-            urlSearchParams.append('equipmentSubType', equipmentType.subtype);
+        urlSearchParams.append('equipmentType', equipmentType);
+        if (equipmentSubType !== undefined) {
+            urlSearchParams.append('equipmentSubType', equipmentSubType);
         }
     }
+
     return backendFetchJson(
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
             '/search?' +

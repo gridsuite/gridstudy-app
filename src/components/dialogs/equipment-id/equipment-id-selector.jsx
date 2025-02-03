@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { filledTextField } from '../dialog-utils';
-import { Autocomplete, TextField, Grid, CircularProgress, Box } from '@mui/material';
+import { Autocomplete, Box, CircularProgress, Grid, TextField } from '@mui/material';
 import { FieldLabel } from '@gridsuite/commons-ui';
 import { FormFiller } from '../commons/formFiller';
 import { FormattedMessage } from 'react-intl';
@@ -33,6 +33,7 @@ export const EquipmentIdSelector = ({
     defaultValue,
     setSelectedId,
     equipmentType,
+    equipmentSubType,
     readOnly = false,
     fillerHeight,
     fillerMessageId = 'idSelector.idNeeded',
@@ -44,12 +45,19 @@ export const EquipmentIdSelector = ({
     const [selectedValue, setSelectedValue] = useState(null);
 
     useEffect(() => {
-        fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, equipmentType, true).then(
-            (values) => {
-                setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
-            }
-        );
-    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid, equipmentType]);
+        fetchEquipmentsIds(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            undefined,
+            equipmentType,
+            true,
+            undefined,
+            equipmentSubType
+        ).then((values) => {
+            setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
+        });
+    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid, equipmentType, equipmentSubType]);
 
     // We go through this effect to force a rerender and display the loading icon.
     useEffect(() => {

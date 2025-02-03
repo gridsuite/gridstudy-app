@@ -61,7 +61,7 @@ import {
     setCurrentReactiveCapabilityCurveTable,
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, HvdcType, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -355,8 +355,9 @@ const VscModificationDialog: React.FC<any> = ({
                         defaultValue={equipmentId}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         setSelectedId={setEquipmentId}
-                        equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
+                        equipmentType={EquipmentType.HVDC_LINE}
                         fillerHeight={17}
+                        equipmentSubType={HvdcType.VSC}
                     />
                 )}
                 {equipmentId !== null && (

@@ -280,10 +280,8 @@ export function LccCreationDialog({
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     onSelectionChange={searchCopy.handleSelectionChange}
-                    equipmentType={{
-                        type: EquipmentType.HVDC_LINE,
-                        subtype: HvdcType.LCC,
-                    }}
+                    equipmentType={EquipmentType.HVDC_LINE}
+                    equipmentSubType={HvdcType.LCC}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />

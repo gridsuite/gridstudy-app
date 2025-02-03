@@ -8,7 +8,7 @@
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
-import { EquipmentInfos, EquipmentType, createFilter, NewFilterType } from '@gridsuite/commons-ui';
+import { EquipmentInfos, EquipmentType, createFilter, NewFilterType, HvdcType } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
@@ -91,7 +91,8 @@ export function fetchEquipmentsIds(
     substationsIds: string[],
     equipmentType: EquipmentType,
     inUpstreamBuiltParentNode: boolean,
-    nominalVoltages?: number[]
+    nominalVoltages?: number[],
+    equipmentSubType?: HvdcType
 ) {
     const substationsCount = substationsIds ? substationsIds.length : 0;
     const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
@@ -112,6 +113,9 @@ export function fetchEquipmentsIds(
         'equipmentType=' +
         equipmentType +
         nominalVoltagesParamsList;
+    if (equipmentSubType !== undefined) {
+        urlSearchParams.append('equipmentSubType', equipmentSubType);
+    }
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode.toString());
         fetchEquipmentsUrl = fetchEquipmentsUrl + '&' + urlSearchParams.toString();

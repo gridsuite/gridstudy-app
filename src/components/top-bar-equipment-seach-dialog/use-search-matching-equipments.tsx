@@ -22,11 +22,13 @@ interface UseSearchMatchingEquipmentsProps {
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     inUpstreamBuiltParentNode?: boolean;
-    equipmentType: { type: EquipmentType; subtype: HvdcType };
+    equipmentType?: EquipmentType;
+    equipmentSubType?: HvdcType;
 }
 
 export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsProps) => {
-    const { studyUuid, nodeUuid, currentRootNetworkUuid, inUpstreamBuiltParentNode, equipmentType } = props;
+    const { studyUuid, nodeUuid, currentRootNetworkUuid, inUpstreamBuiltParentNode, equipmentType, equipmentSubType } =
+        props;
 
     const { getUseNameParameterKey, getNameOrId } = useNameOrId();
 
@@ -39,9 +41,18 @@ export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsPr
                 newSearchTerm,
                 getUseNameParameterKey,
                 inUpstreamBuiltParentNode,
-                equipmentType
+                equipmentType,
+                equipmentSubType
             ),
-        [equipmentType, getUseNameParameterKey, inUpstreamBuiltParentNode, nodeUuid, studyUuid, currentRootNetworkUuid]
+        [
+            studyUuid,
+            nodeUuid,
+            currentRootNetworkUuid,
+            getUseNameParameterKey,
+            inUpstreamBuiltParentNode,
+            equipmentType,
+            equipmentSubType,
+        ]
     );
 
     const { elementsFound, isLoading, searchTerm, updateSearchTerm } = useElementSearch({

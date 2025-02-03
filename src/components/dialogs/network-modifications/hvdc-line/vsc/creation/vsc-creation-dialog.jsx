@@ -271,10 +271,8 @@ const VscCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={{
-                        type: EquipmentType.HVDC_LINE,
-                        subtype: HvdcType.VSC,
-                    }}
+                    equipmentType={EquipmentType.HVDC_LINE}
+                    equipmentSubType={HvdcType.VSC}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
