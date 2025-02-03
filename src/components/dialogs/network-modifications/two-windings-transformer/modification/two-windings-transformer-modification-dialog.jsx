@@ -758,7 +758,6 @@ const TwoWindingsTransformerModificationDialog = ({
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
@@ -770,7 +769,6 @@ const TwoWindingsTransformerModificationDialog = ({
                             <BranchConnectivityForm
                                 studyUuid={studyUuid}
                                 currentNode={currentNode}
-                                currentRootNetworkUuid={currentRootNetworkUuid}
                                 withPosition={true}
                                 isModification={true}
                                 previousValues={twtToModify}
@@ -821,7 +819,6 @@ const TwoWindingsTransformerModificationDialog = ({
 TwoWindingsTransformerModificationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
-    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editData: PropTypes.object,
     editDataFetchStatus: PropTypes.string,

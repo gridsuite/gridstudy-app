@@ -326,15 +326,7 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            setConnectivityValue,
-            getValues,
-            reset,
-            editData?.equipmentId,
-            emptyFormData,
-        ]
+        [studyUuid, currentNodeUuid, setConnectivityValue, getValues, reset, editData?.equipmentId, emptyFormData]
     );
 
     useEffect(() => {
