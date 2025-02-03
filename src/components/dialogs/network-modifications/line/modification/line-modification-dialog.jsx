@@ -122,7 +122,6 @@ const LineModificationDialog = ({
     const [lineToModify, setLineToModify] = useState(null);
     const [tabIndex, setTabIndex] = useState(LineModificationDialogTab.CONNECTIVITY_TAB);
     const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
-
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
@@ -277,10 +276,7 @@ const LineModificationDialog = ({
 
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
-            if (!equipmentId) {
-                setLineToModify(null);
-                reset(emptyFormData, { keepDefaultValues: true });
-            } else {
+            if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
@@ -298,32 +294,23 @@ const LineModificationDialog = ({
                             setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
                             setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
                             const updatedTemporaryLimits1 = updateTemporaryLimits(
-                                formatTemporaryLimits(getValues(`${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
                                 formatTemporaryLimits(line?.currentLimits1?.temporaryLimits)
                             );
                             const updatedTemporaryLimits2 = updateTemporaryLimits(
-                                formatTemporaryLimits(getValues(`${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
                                 formatTemporaryLimits(line?.currentLimits2?.temporaryLimits)
                             );
-                            reset(
-                                (formValues) => ({
-                                    ...formValues,
-                                    ...getLimitsFormData({
-                                        temporaryLimits1: addSelectedFieldToRows(
-                                            updatedTemporaryLimits1
-                                                ? updatedTemporaryLimits1
-                                                : formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
-                                        ),
-                                        temporaryLimits2: addSelectedFieldToRows(
-                                            updatedTemporaryLimits2
-                                                ? updatedTemporaryLimits2
-                                                : formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
-                                        ),
-                                    }),
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
+                            reset((formValues) => ({
+                                ...formValues,
+                                ...getLimitsFormData({
+                                    permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
+                                    permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
+                                    temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
+                                    temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
                                 }),
-                                { keepDefaultValues: true }
-                            );
+                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
+                            }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -334,9 +321,12 @@ const LineModificationDialog = ({
                             reset(emptyFormData);
                         }
                     });
+            } else {
+                setLineToModify(null);
+                reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, editData, reset, emptyFormData, getValues, setConnectivityValue]
+        [studyUuid, currentNodeUuid, setConnectivityValue, getValues, reset, editData?.equipmentId, emptyFormData]
     );
 
     useEffect(() => {
