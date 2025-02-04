@@ -37,7 +37,7 @@ export function useCustomColumn(tabIndex: number) {
         []
     );
 
-    const customColumns = useMemo(
+    return useMemo(
         () =>
             customColumnsDefinitions.map((colWithFormula): CustomColDef => {
                 return {
@@ -65,6 +65,4 @@ export function useCustomColumn(tabIndex: number) {
             }),
         [customColumnsDefinitions, tableDefinition.name, tabIndex, createValueGetter]
     );
-
-    return customColumns;
 }
