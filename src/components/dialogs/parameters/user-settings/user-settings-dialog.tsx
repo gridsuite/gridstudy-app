@@ -4,11 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useState, SyntheticEvent } from 'react';
+import { SyntheticEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { Alert, Dialog, Switch, Button, DialogActions, DialogContent, DialogTitle, Box, Theme } from '@mui/material';
-import { CancelButton } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 import { useParameterState } from '../parameters';
 import { selectEnableDeveloperMode } from '../../../../redux/actions';
@@ -42,12 +41,9 @@ export default function UserSettingsDialog({ open, onClose }: Readonly<UserSetti
 
     const [enableDeveloperMode, handleChangeEnableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const [developerMode, setDeveloperMode] = useState<boolean>(enableDeveloperMode);
-
-    const handleValidate = () => {
-        dispatch(selectEnableDeveloperMode(developerMode));
-        handleChangeEnableDeveloperMode(developerMode);
-        onClose();
+    const handleSwichDeveloperMode = (enabled: boolean) => {
+        dispatch(selectEnableDeveloperMode(enabled));
+        handleChangeEnableDeveloperMode(enabled);
     };
 
     const handleClose = (_: SyntheticEvent, reason?: string) => {
@@ -69,23 +65,22 @@ export default function UserSettingsDialog({ open, onClose }: Readonly<UserSetti
                     </Box>
                     <Box>
                         <Switch
-                            checked={developerMode}
-                            onChange={(_event, isChecked) => setDeveloperMode(isChecked)}
-                            value={developerMode}
+                            checked={enableDeveloperMode}
+                            onChange={(_event, isChecked) => handleSwichDeveloperMode(isChecked)}
+                            value={enableDeveloperMode}
                             inputProps={{ 'aria-label': 'primary checkbox' }}
                         />
                     </Box>
                 </Box>
-                {developerMode && (
+                {enableDeveloperMode && (
                     <Alert severity="warning">
                         <FormattedMessage id="DeveloperModeWarningMsg" />
                     </Alert>
                 )}
             </DialogContent>
             <DialogActions>
-                <CancelButton onClick={handleClose} />
-                <Button onClick={handleValidate} variant="outlined">
-                    <FormattedMessage id="validate" />
+                <Button onClick={handleClose} variant="outlined">
+                    <FormattedMessage id="Close" />
                 </Button>
             </DialogActions>
         </Dialog>
