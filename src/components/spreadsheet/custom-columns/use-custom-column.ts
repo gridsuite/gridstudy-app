@@ -26,7 +26,7 @@ export function useCustomColumn(tabIndex: number) {
         (colWithFormula: ColumnWithFormula) =>
             (params: ValueGetterParams): string => {
                 try {
-                    const scope = params.data
+                    const scope = params.data;
                     colWithFormula.dependencies.forEach((dep) => {
                         scope[dep] = params.getValue(dep);
                     });
