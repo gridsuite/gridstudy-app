@@ -12,6 +12,7 @@ import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { SpreadsheetConfig } from '../../../types/custom-columns.types';
+import { v4 as uuid4 } from 'uuid';
 
 export type CustomSpreadsheetSaveDialogProps = {
     tabIndex: number;
@@ -28,10 +29,11 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
 
     const customColumns = useMemo(() => {
         return customColumnsDefinitions.map(({ id, name, formula, dependencies }) => ({
+            uuid: uuid4(),
             id,
             name,
             formula,
-            dependencies: JSON.stringify(dependencies),
+            dependencies,
         }));
     }, [customColumnsDefinitions]);
 
@@ -53,6 +55,8 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
                   name: colId,
                   formula: staticColumnIdToField[colId],
                   id: staticColumnIdToField[colId],
+                  dependencies: [],
+                  uuid: uuid4(),
               }))
             : [];
     }, [reorderedStaticColumnIds, staticColumnIdToField]);
