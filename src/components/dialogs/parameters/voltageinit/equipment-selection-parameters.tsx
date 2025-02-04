@@ -5,21 +5,74 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ElementType } from '@gridsuite/commons-ui';
-import { DialogContent } from '@mui/material';
+import { ElementType, RadioInput } from '@gridsuite/commons-ui';
+import { Alert, DialogContent, Grid } from '@mui/material';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { FIXED_GENERATORS, VARIABLE_SHUNT_COMPENSATORS, VARIABLE_TRANSFORMERS } from 'components/utils/field-constants';
+import {
+    GENERATORS_SELECTION_TYPE,
+    SHUNT_COMPENSATORS_SELECTION_TYPE,
+    TRANSFORMERS_SELECTION_TYPE,
+    VARIABLE_Q_GENERATORS,
+    VARIABLE_SHUNT_COMPENSATORS,
+    VARIABLE_TRANSFORMERS,
+} from 'components/utils/field-constants';
 import ParameterLineDirectoryItemsInput from '../widget/parameter-line-directory-items-input';
+import { FormattedMessage } from 'react-intl';
+import { useMemo } from 'react';
+import { Box, Theme } from '@mui/system';
+
+const equipmentsSelectionStyles = {
+    alert: (theme: Theme) => ({
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: theme.spacing(2),
+    }),
+    choice: (theme: Theme) => ({
+        marginTop: theme.spacing(4),
+        display: 'flex',
+        justifyContent: 'right',
+    }),
+};
+
+export const intlEquipmentsSelectionType = () => {
+    return {
+        ALL_EXCEPT: {
+            id: 'ALL_EXCEPT',
+            label: 'allExcept',
+        },
+        NONE_EXCEPT: {
+            id: 'NONE_EXCEPT',
+            label: 'noneExcept',
+        },
+    };
+};
+
 const EquipmentSelectionParameters = () => {
+    const initialEquipmentsSelectionType = useMemo(() => {
+        return intlEquipmentsSelectionType();
+    }, []);
+
     return (
         <DialogContent>
+            <Alert sx={equipmentsSelectionStyles.alert} severity="info" variant="outlined">
+                <FormattedMessage id="VoltageInitParametersEquipmentsSelectionAlert" />
+            </Alert>
+            <Box sx={equipmentsSelectionStyles.choice}>
+                <RadioInput name={GENERATORS_SELECTION_TYPE} options={Object.values(initialEquipmentsSelectionType)} />
+            </Box>
             <ParameterLineDirectoryItemsInput
-                name={FIXED_GENERATORS}
+                name={VARIABLE_Q_GENERATORS}
                 equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
                 elementType={ElementType.FILTER}
-                label={'FixedGenerators'}
+                label={'VariableGenerators'}
                 hideErrorMessage
             />
+            <Grid sx={equipmentsSelectionStyles.choice}>
+                <RadioInput
+                    name={TRANSFORMERS_SELECTION_TYPE}
+                    options={Object.values(initialEquipmentsSelectionType)}
+                />
+            </Grid>
             <ParameterLineDirectoryItemsInput
                 name={VARIABLE_TRANSFORMERS}
                 equipmentTypes={[EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]}
@@ -27,6 +80,12 @@ const EquipmentSelectionParameters = () => {
                 label={'VariableTransformers'}
                 hideErrorMessage
             />
+            <Grid sx={equipmentsSelectionStyles.choice}>
+                <RadioInput
+                    name={SHUNT_COMPENSATORS_SELECTION_TYPE}
+                    options={Object.values(initialEquipmentsSelectionType)}
+                />
+            </Grid>
             <ParameterLineDirectoryItemsInput
                 name={VARIABLE_SHUNT_COMPENSATORS}
                 equipmentTypes={[EQUIPMENT_TYPES.SHUNT_COMPENSATOR]}
