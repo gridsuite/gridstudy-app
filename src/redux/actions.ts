@@ -165,15 +165,21 @@ export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS =
 export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<
     Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>
 > & {
-    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>;
+    alias: string;
+    equipmentType: SpreadsheetEquipmentType;
+    identifiables: Identifiable[];
 };
 
 export function addAdditionalEquipmentsByNodesForCustomColumns(
-    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>
+    alias: string,
+    type: SpreadsheetEquipmentType,
+    identifiables: Identifiable[]
 ): AddEquipmentsByNodesForCustomColumnsAction {
     return {
         type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
-        equipments: equipments,
+        alias,
+        equipmentType: type,
+        identifiables,
     };
 }
 

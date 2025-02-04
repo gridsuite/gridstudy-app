@@ -254,17 +254,15 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setManualTabSwitch(false);
     }, [equipmentChanged]);
 
-    const scrollToEquipmentIndex = useCallback(() => {
-        if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
-            //calculate row index to scroll to
-            //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
-            const selectedRow = gridRef.current?.api?.getRowNode(equipmentId);
-            if (selectedRow) {
-                gridRef.current?.api?.ensureNodeVisible(selectedRow, 'top');
-                selectedRow.setSelected(true, true);
-            }
+    const scrollToEquipmentIndex = useCallback((equipmentId: string) => {
+        //calculate row index to scroll to
+        //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
+        const selectedRow = gridRef.current?.api?.getRowNode(equipmentId);
+        if (selectedRow) {
+            gridRef.current?.api?.ensureNodeVisible(selectedRow, 'top');
+            selectedRow.setSelected(true, true);
         }
-    }, [manualTabSwitch, equipmentId, equipmentType]);
+    }, []);
 
     useEffect(() => {
         if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
@@ -272,7 +270,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             if (definition) {
                 if (tabIndex === definition.index) {
                     // already in expected tab => explicit call to scroll to expected row
-                    scrollToEquipmentIndex();
+                    scrollToEquipmentIndex(equipmentId);
                 } else {
                     // select the right table type. This will trigger handleRowDataUpdated + scrollToEquipmentIndex
                     setTabIndex(definition.index);

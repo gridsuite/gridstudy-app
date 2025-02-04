@@ -1516,7 +1516,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
         (state, action: AddEquipmentsByNodesForCustomColumnsAction) => {
-            state.additionalEquipmentsByNodesForCustomColumns = action.equipments;
+            state.additionalEquipmentsByNodesForCustomColumns = {
+                ...state.additionalEquipmentsByNodesForCustomColumns,
+                [action.alias]: {
+                    ...state.additionalEquipmentsByNodesForCustomColumns[action.alias],
+                    [action.equipmentType]: action.identifiables,
+                },
+            };
         }
     );
 
