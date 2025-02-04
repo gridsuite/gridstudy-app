@@ -71,8 +71,18 @@ const limitsValidationSchema = (id, onlySelectedLimits = true) => {
     };
 
     const limitsGroupSchema = {
-        [OPERATIONAL_LIMITS_GROUPS_1]: yup.array(yup.object().shape(limitsGroupValidationSchema())),
-        [OPERATIONAL_LIMITS_GROUPS_2]: yup.array(yup.object().shape(limitsGroupValidationSchema())),
+        [OPERATIONAL_LIMITS_GROUPS_1]: yup
+            .array(yup.object().shape(limitsGroupValidationSchema()))
+            .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
+                const namesArray = array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
+                return areArrayElementsUnique(namesArray);
+            }),
+        [OPERATIONAL_LIMITS_GROUPS_2]: yup
+            .array(yup.object().shape(limitsGroupValidationSchema()))
+            .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
+                const namesArray = array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
+                return areArrayElementsUnique(namesArray);
+            }),
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
     };
