@@ -329,11 +329,12 @@ export function OperationalLimitsGroupsTabs({
                                     onChange={handleLimitsGroupNameChange}
                                     onKeyDown={handleKeyDown}
                                     inputRef={editLimitGroupRef}
-                                    onBlur={() => setEditingTabIndex(null)}
+                                    onBlur={() => finishEditingLimitsGroup()}
                                     error={!!editionError}
                                     helperText={!!editionError && <FormattedMessage id={editionError} />}
                                     size="small"
                                     fullWidth
+                                    autoFocus
                                 />
                             ) : (
                                 <Box

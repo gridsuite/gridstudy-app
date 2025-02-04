@@ -98,7 +98,7 @@ export function LimitsGroupsContextualMenu({
             };
             appendToLimitsGroups2(newLimitsGroup2);
         }
-        handleCloseMenu();
+        startEditingLimitsGroup(getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`).length - 1);
     };
 
     return (
