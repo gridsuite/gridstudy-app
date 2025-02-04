@@ -42,6 +42,7 @@ import { typeAndFetchers } from '../config/equipment/common-config';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 import { SortWay } from '../../../types/custom-aggrid-types';
 import { COLUMN_DEPENDENCIES } from '../custom-columns/custom-columns-form';
+import { v4 as uuid4 } from 'uuid';
 
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
@@ -137,7 +138,7 @@ export default function CustomSpreadsheetConfigDialog({
                                     selectedModel.customColumns.map((col) => {
                                         return {
                                             ...col,
-                                            uuid: crypto.randomUUID(),
+                                            uuid: uuid4(),
                                             [COLUMN_DEPENDENCIES]: JSON.parse(col.dependencies || '[]'), // empty strings and null will be converted to empty array
                                         } satisfies ColumnWithFormula;
                                     })

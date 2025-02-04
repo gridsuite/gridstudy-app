@@ -11,7 +11,7 @@ import CustomHeaderComponent from './custom-aggrid-header';
 export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
     context,
     ...props // agGrid column props
-}: CustomColDef<any, any, F>) => {
+}: CustomColDef<any, F>) => {
     const {
         sortParams,
         forceDisplayFilterIcon,

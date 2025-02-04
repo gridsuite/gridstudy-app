@@ -21,7 +21,7 @@ export type ColumnWithFormulaDto = {
 };
 
 export type ColumnWithFormula = {
-    uuid: string;
+    uuid?: string;
     id: string;
     name: string;
     type: COLUMN_TYPES;

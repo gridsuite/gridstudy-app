@@ -23,13 +23,8 @@ import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/a
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 
-interface CommonColDef extends ColDef {
-    columnType: COLUMN_TYPES;
-}
-
-export const textColumnDefinition = (displayName: string, tab: string): CommonColDef => {
+export const textColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {
-        columnType: COLUMN_TYPES.TEXT,
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             displayName,
@@ -50,12 +45,14 @@ export const textColumnDefinition = (displayName: string, tab: string): CommonCo
             },
         },
         cellRenderer: DefaultCellRenderer,
+        context: {
+            columnType: COLUMN_TYPES.TEXT,
+        },
     };
 };
 
-export const enumColumnDefinition = (displayName: string, tab: string): CommonColDef => {
+export const enumColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {
-        columnType: COLUMN_TYPES.ENUM,
         filterParams: {
             filterOptions: [
                 {
@@ -86,12 +83,14 @@ export const enumColumnDefinition = (displayName: string, tab: string): CommonCo
             },
         },
         cellRenderer: DefaultCellRenderer,
+        context: {
+            columnType: COLUMN_TYPES.ENUM,
+        },
     };
 };
 
-export const numberColumnDefinition = (displayName: string, tab: string, fractionDigits?: number): CommonColDef => {
+export const numberColumnDefinition = (displayName: string, tab: string, fractionDigits?: number): ColDef => {
     return {
-        columnType: COLUMN_TYPES.NUMBER,
         filter: 'agNumberColumnFilter',
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
@@ -116,12 +115,14 @@ export const numberColumnDefinition = (displayName: string, tab: string, fractio
         cellRendererParams: {
             fractionDigits,
         },
+        context: {
+            columnType: COLUMN_TYPES.NUMBER,
+        },
     };
 };
 
-export const booleanColumnDefinition = (displayName: string, tab: string): CommonColDef => {
+export const booleanColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {
-        columnType: COLUMN_TYPES.BOOLEAN,
         filterParams: {
             filterOptions: [
                 {
@@ -163,5 +164,8 @@ export const booleanColumnDefinition = (displayName: string, tab: string): Commo
             },
         },
         cellRenderer: BooleanCellRenderer,
+        context: {
+            columnType: COLUMN_TYPES.BOOLEAN,
+        },
     };
 };

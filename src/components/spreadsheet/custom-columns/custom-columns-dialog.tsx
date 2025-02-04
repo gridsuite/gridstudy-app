@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Box,
@@ -25,10 +25,10 @@ import {
     ExpandingTextField,
     MultipleAutocompleteInput,
     IntegerInput,
-    SelectInput,
     SubmitButton,
     TextInput,
     UseStateBooleanReturn,
+    AutocompleteInput,
 } from '@gridsuite/commons-ui';
 import { useForm, useWatch } from 'react-hook-form';
 import {
@@ -52,6 +52,7 @@ import { setUpdateCustomColumDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { v4 as uuid4 } from 'uuid';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -104,13 +105,11 @@ export default function CustomColumnDialog({
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
 
     const columnType = (
-        <SelectInput
+        <AutocompleteInput
             name={COLUMN_TYPE}
             label={'spreadsheet/custom_column/column_type'}
-            options={Object.values(COLUMN_TYPES).map((type) => ({
-                id: type,
-                label: type,
-            }))}
+            options={Object.keys(COLUMN_TYPES)}
+            getOptionLabel={(option: any) => intl.formatMessage({ id: option })}
             size="small"
             fullWidth
         />
@@ -161,10 +160,10 @@ export default function CustomColumnDialog({
 
             dispatch(
                 setUpdateCustomColumDefinitions(tablesNames[tabIndex], {
-                    uuid: customColumnsDefinition?.uuid || crypto.randomUUID(),
+                    uuid: customColumnsDefinition?.uuid || uuid4(),
                     id: newParams.id,
                     name: newParams.name,
-                    type: COLUMN_TYPES[newParams.type as keyof typeof COLUMN_TYPES],
+                    type: COLUMN_TYPES[newParams.type],
                     precision: newParams.precision,
                     formula: newParams.formula,
                     dependencies: newParams.dependencies,

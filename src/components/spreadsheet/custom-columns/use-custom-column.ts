@@ -82,7 +82,7 @@ export function useCustomColumn(tabIndex: number) {
 
     const createValueGetter = useCallback(
         (colWithFormula: ColumnWithFormula) =>
-            (params: ValueGetterParams): any => {
+            (params: ValueGetterParams): boolean | string | number | undefined => {
                 try {
                     const { data } = params;
 
@@ -150,7 +150,6 @@ export function useCustomColumn(tabIndex: number) {
             return {
                 ...baseDefinition,
                 colId: colWithFormula.id,
-                columnType: colWithFormula.type,
                 headerName: colWithFormula.name,
                 headerTooltip: colWithFormula.name,
                 headerComponentParams: {

@@ -53,6 +53,7 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
     agGridFilterParams?: {
         filterOptions: IFilterOptionDef[];
     };
+    columnType?: COLUMN_TYPES;
     columnWidth?: number;
     fractionDigits?: number;
     isDefaultSort?: boolean;
@@ -67,9 +68,13 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
     sortParams?: SortParams;
 }
 
-export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
-    extends ColDef<TData, TValue> {
+export type CustomCellType = {
+    cellValue: number;
+    tooltipValue: number;
+};
+
+export interface CustomColDef<TData = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
+    extends ColDef<TData, boolean | string | number | CustomCellType> {
     colId: string;
-    columnType?: COLUMN_TYPES;
     context?: ColumnContext<F>;
 }
