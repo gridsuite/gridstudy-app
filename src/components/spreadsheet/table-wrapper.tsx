@@ -202,8 +202,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { equipments, errorMessage } = useSpreadsheetEquipments(
         tableDefinition.type,
         tableDefinition.fetchers,
-        formatFetchedEquipmentsHandler,
-        tabIndex
+        formatFetchedEquipmentsHandler
     );
 
     useEffect(() => {
