@@ -13,7 +13,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/edit_columns': 'Éditer une colonne',
     'spreadsheet/custom_column/column_name': 'Nom de la colonne',
     'spreadsheet/custom_column/column_id': 'ID de la colonne',
-    'spreadsheet/custom_column/column_type': 'Type de colonne',
+    'spreadsheet/custom_column/column_type': 'Type de la colonne',
     'spreadsheet/custom_column/column_precision': 'Précision',
     'spreadsheet/custom_column/column_content': 'Entrer la formule',
     'spreadsheet/custom_column/column_dependencies': 'Entrer les dépendances de la formule',
