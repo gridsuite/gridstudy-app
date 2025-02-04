@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'crypto';
-import { EquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
+import { EquipmentType, type GsLang, HvdcType, type Identifiable } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
@@ -211,7 +211,8 @@ export function fetchNetworkElementInfos(
     elementType: EquipmentType | EQUIPMENT_TYPES,
     infoType: string,
     elementId: string,
-    inUpstreamBuiltParentNode: boolean
+    inUpstreamBuiltParentNode: boolean,
+    equipmentSubType?: HvdcType
 ) {
     console.info(
         `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
@@ -219,6 +220,9 @@ export function fetchNetworkElementInfos(
     const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append('inUpstreamBuiltParentNode', String(inUpstreamBuiltParentNode));
+    }
+    if (equipmentSubType !== undefined) {
+        urlSearchParams.append('equipmentSubType', equipmentSubType);
     }
     urlSearchParams.append('elementType', elementType);
     urlSearchParams.append('infoType', infoType);

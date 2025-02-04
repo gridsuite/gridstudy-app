@@ -168,7 +168,8 @@ const VscModificationDialog: React.FC<any> = ({
                     EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
-                    true
+                    true,
+                    HvdcType.VSC
                 )
                     .then((value: any) => {
                         if (value) {
