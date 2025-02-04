@@ -29,7 +29,6 @@ import { useComputationResultsCount } from '../hooks/use-computation-results-cou
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
-import UserSettingsDialog from './dialogs/parameters/user-settings/user-settings-dialog';
 
 const styles = {
     currentNodeBox: {
@@ -82,8 +81,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [isUserSettingsDialogOpen, setIsUserSettingsDialogOpen] = useState(false);
+    const [enableDeveloperMode, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -116,12 +114,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 user={user}
                 appsAndUrls={appsAndUrls}
                 onThemeClick={handleChangeTheme}
-                onUserSettingsClick={() => setIsUserSettingsDialogOpen(true)}
                 appVersion={AppPackage.version}
                 appLicense={AppPackage.license}
                 globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
                 additionalModulesPromise={getServersInfos}
                 theme={themeLocal}
+                onDeveloperModeClick={handleChangeDeveloperMode}
                 developerMode={enableDeveloperMode}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
@@ -187,12 +185,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             />
                         </Box>
                     </Box>
-                )}
-                {isUserSettingsDialogOpen && (
-                    <UserSettingsDialog
-                        open={isUserSettingsDialogOpen}
-                        onClose={() => setIsUserSettingsDialogOpen(false)}
-                    />
                 )}
             </TopBar>
 
