@@ -81,6 +81,7 @@ export const ConnectivityForm = ({
             return;
         }
         if (watchVoltageLevelId) {
+            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
             const existingVoltageLevelOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
             if (existingVoltageLevelOption) {
                 fetchBusesOrBusbarSectionsForVoltageLevel(
@@ -90,13 +91,9 @@ export const ConnectivityForm = ({
                     watchVoltageLevelId
                 ).then((busesOrbusbarSections) => {
                     setBusOrBusbarSectionOptions(busesOrbusbarSections || []);
-                    if (!busesOrbusbarSections?.length) {
-                        setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
-                    }
                 });
             } else {
                 setBusOrBusbarSectionOptions([]);
-                setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
             }
         } else {
             setBusOrBusbarSectionOptions([]);
