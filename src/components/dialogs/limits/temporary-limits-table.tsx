@@ -168,13 +168,11 @@ function TemporaryLimitsTable({
     const renderTableRow = (id: string, index: number) => (
         <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
             {columnsDefinition.map((column) => renderTableCell(id, index, column))}
-            {index === hoveredRowIndex && (
-                <TableCell>
-                    <IconButton color="primary" onClick={() => remove(index)}>
-                        <DeleteIcon />
-                    </IconButton>
-                </TableCell>
-            )}
+            <TableCell>
+                <IconButton color="primary" onClick={() => remove(index)}>
+                    <DeleteIcon visibility={index === hoveredRowIndex ? 'visible' : 'hidden'} />
+                </IconButton>
+            </TableCell>
         </TableRow>
     );
 

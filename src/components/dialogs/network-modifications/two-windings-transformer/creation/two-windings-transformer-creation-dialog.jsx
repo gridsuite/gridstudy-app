@@ -308,7 +308,7 @@ const TwoWindingsTransformerCreationDialog = ({
     );
 
     const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
-        let formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
+        const formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
         if (completeLimitsGroups) {
             completeLimitsGroups.forEach((elt) =>
                 formattedCompleteLimitsGroups.push({

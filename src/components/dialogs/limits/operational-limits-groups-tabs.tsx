@@ -7,7 +7,7 @@
 
 import { Box, Tab, Tabs, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     CURRENT_LIMITS,
     ID,
@@ -77,7 +77,6 @@ export function OperationalLimitsGroupsTabs({
     const [activatedByMenuTabIndex, setActivatedByMenuTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
     const [editionError, setEditionError] = useState<string>('');
-    const editLimitGroupRef = useRef<HTMLInputElement>(null);
     const { setValue } = useFormContext();
     const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
@@ -92,12 +91,16 @@ export function OperationalLimitsGroupsTabs({
         name: `${id}.${SELECTED_LIMITS_GROUP_2}`,
     });
 
-    // focus on the edited tab
+    // control of the focus on the edited tab
+    const [editLimitGroupRef, setEditLimitGroupRef] = useState<HTMLInputElement>();
+    const onRefSet = useCallback((ref: HTMLInputElement) => {
+        setEditLimitGroupRef(ref);
+    }, []);
     useEffect(() => {
-        if (editingTabIndex && editLimitGroupRef.current) {
-            editLimitGroupRef.current.focus();
+        if (editingTabIndex && editLimitGroupRef) {
+            editLimitGroupRef.focus();
         }
-    }, [editingTabIndex]);
+    }, [editingTabIndex, editLimitGroupRef]);
 
     const handleTabChange = useCallback(
         (event: React.SyntheticEvent, newValue: number): void => {
@@ -114,14 +117,13 @@ export function OperationalLimitsGroupsTabs({
     );
 
     const handleOpenMenu = useCallback(
-        (event: React.MouseEvent<HTMLButtonElement>, index: number, name: string): void => {
+        (event: React.MouseEvent<HTMLButtonElement>, index: number): void => {
             event.stopPropagation();
             setMenuAnchorEl(event.currentTarget);
             setSelectedLimitGroupTabIndex(index);
             setActivatedByMenuTabIndex(index);
-            setEditedLimitGroupName(name);
         },
-        [setMenuAnchorEl, setSelectedLimitGroupTabIndex, setActivatedByMenuTabIndex, setEditedLimitGroupName]
+        [setMenuAnchorEl, setSelectedLimitGroupTabIndex, setActivatedByMenuTabIndex]
     );
 
     const handleCloseMenu = useCallback(() => {
@@ -130,12 +132,16 @@ export function OperationalLimitsGroupsTabs({
     }, [setMenuAnchorEl, setActivatedByMenuTabIndex]);
 
     const startEditingLimitsGroup = useCallback(
-        (index: number) => {
+        (index: number, name: string | null) => {
+            if (name === null) {
+                name = limitsGroups1[index].id;
+            }
             setEditionError('');
             setEditingTabIndex(index);
+            setEditedLimitGroupName(name);
             handleCloseMenu();
         },
-        [setEditingTabIndex, handleCloseMenu]
+        [setEditingTabIndex, handleCloseMenu, limitsGroups1]
     );
 
     // synchronisation of the selected limit set : tabs combine both side 1 and side 2 limits sets which are different
@@ -214,20 +220,29 @@ export function OperationalLimitsGroupsTabs({
                 setEditionError('LimitSetCreationEmptyError');
                 return;
             }
-            // checks if a limit set with that name already exists
-            if (
-                limitsGroups1.find((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === editedLimitGroupName) ||
-                limitsGroups2.find((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === editedLimitGroupName)
-            ) {
-                setEditionError('LimitSetCreationDuplicateError');
-                return;
-            }
 
             // get the old name of the modified limit set in order to update it on both sides (and the selected sides if needed)
             const oldName: string = limitsGroups1[editingTabIndex].id;
             const indexInLs1: number | undefined = limitsGroups1.findIndex(
                 (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
             );
+            const indexInLs2: number | undefined = limitsGroups2.findIndex(
+                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
+            );
+
+            // checks if a limit set with that name already exists
+            const sameNameInLs1 = limitsGroups1
+                .filter((ls, index: number) => index !== indexInLs1)
+                .find((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === editedLimitGroupName);
+            const sameNameInLs2 = limitsGroups2
+                .filter((ls, index: number) => index !== indexInLs1)
+                .find((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === editedLimitGroupName);
+
+            if (sameNameInLs1 || sameNameInLs2) {
+                setEditionError('LimitSetCreationDuplicateError');
+                return;
+            }
+
             if (indexInLs1 !== undefined) {
                 updateLimitsGroups1(indexInLs1, {
                     ...limitsGroups1[indexInLs1],
@@ -237,10 +252,6 @@ export function OperationalLimitsGroupsTabs({
                     setValue(`${id}.${SELECTED_LIMITS_GROUP_1}`, editedLimitGroupName);
                 }
             }
-
-            const indexInLs2: number | undefined = limitsGroups2.findIndex(
-                (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
-            );
             if (indexInLs2 !== undefined) {
                 updateLimitsGroups2(indexInLs2, {
                     ...limitsGroups2[indexInLs2],
@@ -280,7 +291,6 @@ export function OperationalLimitsGroupsTabs({
 
     const addNewLimitSet = useCallback(() => {
         const newIndex: number = limitsGroups1.length;
-        let newName: string = `LIMIT_SET`;
         // new limit sets are created with 5 empty limits by default
         const emptyTemporaryLimit = {
             [TEMPORARY_LIMIT_NAME]: '',
@@ -290,7 +300,7 @@ export function OperationalLimitsGroupsTabs({
             [SELECTED]: false,
         };
         const newLimitsGroup: OperationalLimitsGroup = {
-            [ID]: newName,
+            [ID]: '',
             [CURRENT_LIMITS]: {
                 [TEMPORARY_LIMITS]: [
                     emptyTemporaryLimit,
@@ -304,8 +314,7 @@ export function OperationalLimitsGroupsTabs({
         };
         appendToLimitsGroups1(newLimitsGroup);
         appendToLimitsGroups2(newLimitsGroup);
-        setEditedLimitGroupName(newName);
-        startEditingLimitsGroup(newIndex);
+        startEditingLimitsGroup(newIndex, `LIMIT_SET`);
     }, [appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1, startEditingLimitsGroup]);
 
     return (
@@ -328,13 +337,12 @@ export function OperationalLimitsGroupsTabs({
                                     value={editedLimitGroupName}
                                     onChange={handleLimitsGroupNameChange}
                                     onKeyDown={handleKeyDown}
-                                    inputRef={editLimitGroupRef}
+                                    inputRef={onRefSet}
                                     onBlur={() => finishEditingLimitsGroup()}
                                     error={!!editionError}
                                     helperText={!!editionError && <FormattedMessage id={editionError} />}
                                     size="small"
                                     fullWidth
-                                    autoFocus
                                 />
                             ) : (
                                 <Box
@@ -351,7 +359,7 @@ export function OperationalLimitsGroupsTabs({
                                             size="small"
                                             hidden
                                             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                                                handleOpenMenu(e, index, set.id)
+                                                handleOpenMenu(e, index)
                                             }
                                         >
                                             <MenuIcon fontSize="small" />

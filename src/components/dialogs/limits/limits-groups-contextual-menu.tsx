@@ -32,7 +32,7 @@ export interface LimitsGroupsContextualMenuProps {
     menuAnchorEl: any;
     handleCloseMenu: () => void;
     activatedByMenuTabIndex: number | null;
-    startEditingLimitsGroup: (index: number) => void;
+    startEditingLimitsGroup: (index: number, name: string | null) => void;
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
     editedLimitGroupName: string;
@@ -85,7 +85,7 @@ export function LimitsGroupsContextualMenu({
             const duplicatedLimits1 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`);
             const newLimitsGroup1: OperationalLimitsGroup = {
                 ...duplicatedLimits1,
-                [ID]: editedLimitGroupName,
+                [ID]: '',
             };
             appendToLimitsGroups1(newLimitsGroup1);
         }
@@ -94,17 +94,19 @@ export function LimitsGroupsContextualMenu({
             const duplicatedLimits2 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`);
             const newLimitsGroup2: OperationalLimitsGroup = {
                 ...duplicatedLimits2,
-                [ID]: editedLimitGroupName,
+                [ID]: '',
             };
             appendToLimitsGroups2(newLimitsGroup2);
         }
-        startEditingLimitsGroup(getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`).length - 1);
+        startEditingLimitsGroup(getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`).length - 1, '');
     };
 
     return (
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
             <MenuItem
-                onClick={() => activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex)}
+                onClick={() =>
+                    activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null)
+                }
             >
                 <ListItemIcon>
                     <Edit fontSize="small" />

@@ -152,7 +152,7 @@ const LineCreationDialog = ({
     const { reset, setValue } = formMethods;
 
     const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
-        let formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
+        const formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
         if (completeLimitsGroups) {
             completeLimitsGroups.forEach((elt) => {
                 if (!isBlankOrEmpty(elt.id)) {
