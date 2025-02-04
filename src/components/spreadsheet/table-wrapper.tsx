@@ -102,15 +102,12 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState<number>(0);
 
-    const allDisplayedColumnsNames = useSelector((state: AppState) => state.tables.columnsNames);
-    const formattedDisplayedColumnsNames = useMemo(
-        () => allDisplayedColumnsNames[tabIndex],
-        [allDisplayedColumnsNames, tabIndex]
-    );
-    const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
-    const formattedLockedColumnsNames = useMemo(
-        () => new Set(allLockedColumnsNames[tabIndex] ? JSON.parse(allLockedColumnsNames[tabIndex]) : []),
-        [allLockedColumnsNames, tabIndex]
+    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates);
+    const formattedDisplayedColumnsNames = useMemo(() => columnsStates[tabIndex], [columnsStates, tabIndex]);
+    const lockedColumns = useSelector((state: AppState) => state.allLockedColumnsNames);
+    const formattedLockedColumns = useMemo(
+        () => new Set(lockedColumns[tabIndex] ? JSON.parse(lockedColumns[tabIndex]) : []),
+        [lockedColumns, tabIndex]
     );
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const additionalEquipmentsByNodesForCustomColumns = useSelector(
@@ -122,10 +119,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const [rowData, setRowData] = useState<Identifiable[]>([]);
 
-    const isLockedColumnNamesEmpty = useMemo(
-        () => formattedLockedColumnsNames.size === 0,
-        [formattedLockedColumnsNames.size]
-    );
+    const isLockedColumnNamesEmpty = useMemo(() => formattedLockedColumns.size === 0, [formattedLockedColumns.size]);
 
     const tableDefinition = useMemo(() => tablesDefinitions[tabIndex], [tabIndex, tablesDefinitions]);
     const columnData = useMemo(() => {
@@ -150,7 +144,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const updateLockedColumnsConfig = useCallback(() => {
         const lockedColumnsConfig = tableDefinition.columns
-            .filter((column) => formattedLockedColumnsNames.has(column.colId!))
+            .filter((column) => formattedLockedColumns.has(column.colId!))
             .map((column) => {
                 const s: ColumnState = {
                     colId: column.colId ?? '',
@@ -162,7 +156,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             state: lockedColumnsConfig,
             defaultState: { pinned: null },
         });
-    }, [formattedLockedColumnsNames, tableDefinition.columns]);
+    }, [formattedLockedColumns, tableDefinition.columns]);
 
     useEffect(() => {
         gridRef.current?.api?.setGridOption('columnDefs', mergedColumnData);

@@ -36,3 +36,5 @@ export interface SpreadsheetTabDefinition<
     columns: CustomColDef<TData, TValue, F>[];
     groovyEquipmentGetter?: string;
 }
+
+export type ColumnState = { colId: string; visible: boolean };
