@@ -96,7 +96,6 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                     <TableWrapper
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
