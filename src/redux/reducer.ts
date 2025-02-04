@@ -202,11 +202,7 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import {
-    type GenericTablesColumnsNames,
-    type GenericTablesDefinitions,
-    TABLES_DEFINITIONS,
-} from '../components/spreadsheet/config/config-tables';
+import { TABLES_DEFINITIONS } from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -290,7 +286,11 @@ import { NetworkModificationNodeData, NodeType, RootNodeData } from '../componen
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
-import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import {
+    ColumnState,
+    SpreadsheetEquipmentType,
+    SpreadsheetTabDefinition,
+} from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
@@ -608,14 +608,14 @@ export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
 interface TablesState {
-    definitions: GenericTablesDefinitions;
-    columnsNames: GenericTablesColumnsNames;
+    definitions: SpreadsheetTabDefinition[];
+    columnsStates: ColumnState[][];
     allCustomColumnsDefinitions: ColumnWithFormula[][];
 }
 
 const initialTablesState: TablesState = {
     definitions: TABLES_DEFINITIONS,
-    columnsNames: TABLES_DEFINITIONS.map((table) =>
+    columnsStates: TABLES_DEFINITIONS.map((table) =>
         table.columns.map((col) => {
             return { colId: col.colId, visible: true };
         })
@@ -883,7 +883,7 @@ export const reducer = createReducer(initialState, (builder) => {
         };
         state.tables = {
             definitions: updatedDefinitions,
-            columnsNames: state.tables.columnsNames,
+            columnsStates: state.tables.columnsStates,
             allCustomColumnsDefinitions: updatedAllCustomColumnsDefinitions,
         };
     });
@@ -1112,9 +1112,9 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(CHANGE_DISPLAYED_COLUMNS_NAMES, (state, action: ChangeDisplayedColumnsNamesAction) => {
-        const newDisplayedColumnsNames = [...state.tables.columnsNames];
+        const newDisplayedColumnsNames = [...state.tables.columnsStates];
         newDisplayedColumnsNames[action.displayedColumnsNamesParams.index] = action.displayedColumnsNamesParams.value;
-        state.tables.columnsNames = newDisplayedColumnsNames;
+        state.tables.columnsStates = newDisplayedColumnsNames;
     });
 
     builder.addCase(CHANGE_LOCKED_COLUMNS_NAMES, (state, action: ChangeLockedColumnsNamesAction) => {

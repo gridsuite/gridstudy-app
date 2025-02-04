@@ -25,7 +25,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
     );
-    const allReorderedTableDefinitionIndexes = useSelector((state: AppState) => state.tables.columnsNames);
+    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
 
     const customColumns = useMemo(() => {
         return customColumnsDefinitions.map(({ id, name, formula, dependencies }) => ({
@@ -45,9 +45,8 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     }, [tableDefinition.columns]);
 
     const reorderedStaticColumnIds = useMemo(() => {
-        const allReorderedColumns = allReorderedTableDefinitionIndexes[tabIndex];
-        return allReorderedColumns.map((col) => col.colId);
-    }, [allReorderedTableDefinitionIndexes, tabIndex]);
+        return columnsStates.map((col) => col.colId);
+    }, [columnsStates]);
 
     const staticColumnFormulas = useMemo(() => {
         return reorderedStaticColumnIds && staticColumnIdToField
