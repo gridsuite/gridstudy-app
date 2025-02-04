@@ -592,7 +592,7 @@ export function useParameterState(paramName: UseParameterStateParamName) {
                 });
             });
         },
-        [paramName, snackError, setParamLocalState, paramGlobalState]
+        [paramName, snackError, paramGlobalState]
     );
 
     return [paramLocalState, handleChangeParamLocalState];
