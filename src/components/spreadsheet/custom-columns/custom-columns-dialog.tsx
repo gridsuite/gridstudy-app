@@ -53,6 +53,8 @@ import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { v4 as uuid4 } from 'uuid';
+import { useFilterSelector } from 'hooks/use-filter-selector';
+import { FilterType } from 'types/custom-aggrid-types';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -133,6 +135,8 @@ export default function CustomColumnDialog({
         />
     );
 
+    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, tablesNames[tabIndex]);
+
     const onSubmit = useCallback(
         (newParams: CustomColumnForm) => {
             const existingColumn = customColumnsDefinitions?.find((column) => column.id === newParams.id);
@@ -145,6 +149,9 @@ export default function CustomColumnDialog({
                     });
                     return;
                 }
+                // if we are editing an existing column, we need to remove the existing filter
+                const updatedFilters = filters.filter((filter) => filter.column !== existingColumn.id);
+                dispatchFilters(updatedFilters);
             }
 
             if (customColumnsDefinitions) {
@@ -182,6 +189,8 @@ export default function CustomColumnDialog({
             open,
             isCreate,
             hasColumnIdChanged,
+            filters,
+            dispatchFilters,
             setError,
         ]
     );

@@ -15,7 +15,7 @@ export const validateFormulaResult = (value: any, type: COLUMN_TYPES): Validatio
     switch (type) {
         case COLUMN_TYPES.NUMBER:
             return {
-                isValid: typeof value === 'number' || !isNaN(Number(value)),
+                isValid: typeof value === 'number' || (typeof value !== 'boolean' && !isNaN(Number(value))),
                 error: 'Formula must evaluate to a number',
             };
         case COLUMN_TYPES.BOOLEAN:

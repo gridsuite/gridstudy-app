@@ -12,7 +12,7 @@ import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { ColumnWithFormula, SpreadsheetConfig } from '../../../types/custom-columns.types';
+import { ColumnWithFormulaDto, SpreadsheetConfig } from '../../../types/custom-columns.types';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 
 export type CustomSpreadsheetSaveDialogProps = {
@@ -51,7 +51,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     const staticColumnIdToColInfos = useMemo(() => {
         const equipment = tablesDefinitionIndexes.get(tabIndex);
         return equipment
-            ? new Map<string, ColumnWithFormula>(
+            ? new Map<string, ColumnWithFormulaDto>(
                   equipment.columns.map((c) => [
                       c.colId!,
                       {
@@ -60,7 +60,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
                           type: c.context?.columnType ?? COLUMN_TYPES.TEXT,
                           precision: c.cellRendererParams?.fractionDigits,
                           formula: c.field ?? '',
-                          dependencies: [],
+                          dependencies: null,
                       },
                   ])
               )

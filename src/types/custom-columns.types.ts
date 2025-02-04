@@ -11,7 +11,7 @@ import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type
 import { SpreadsheetEquipmentType } from '../components/spreadsheet/config/spreadsheet.type';
 
 export type ColumnWithFormulaDto = {
-    uuid: string;
+    uuid?: string;
     id: string;
     name: string;
     type: COLUMN_TYPES;
@@ -21,7 +21,7 @@ export type ColumnWithFormulaDto = {
 };
 
 export type ColumnWithFormula = {
-    uuid?: string;
+    uuid: string;
     id: string;
     name: string;
     type: COLUMN_TYPES;
