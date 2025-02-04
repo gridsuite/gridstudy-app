@@ -251,6 +251,7 @@ const LoadModificationDialog = ({
                     <LoadModificationForm
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         loadToModify={loadToModify}
                         equipmentId={selectedId}
                     />

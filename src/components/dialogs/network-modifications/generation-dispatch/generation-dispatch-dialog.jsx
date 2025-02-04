@@ -170,7 +170,7 @@ const GenerationDispatchDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <GenerationDispatchForm currentNode={currentNode} studyUuid={studyUuid} />
+                <GenerationDispatchForm />
             </ModificationDialog>
         </CustomFormProvider>
     );

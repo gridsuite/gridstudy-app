@@ -67,7 +67,12 @@ const LineAttachToVoltageLevelForm = ({
     };
 
     const lineToAttachToForm = (
-        <LineToAttachOrSplitForm label={'LineToAttachTo'} studyUuid={studyUuid} currentNode={currentNode} />
+        <LineToAttachOrSplitForm
+            label={'LineToAttachTo'}
+            studyUuid={studyUuid}
+            currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
+        />
     );
 
     const attachmentPointIdField = <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} />;

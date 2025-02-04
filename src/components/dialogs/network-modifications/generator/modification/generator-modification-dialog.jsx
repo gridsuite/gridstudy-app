@@ -404,6 +404,7 @@ const GeneratorModificationDialog = ({
                     <GeneratorModificationForm
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={selectedId}
                         generatorToModify={generatorToModify}
                         updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}

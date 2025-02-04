@@ -299,6 +299,7 @@ const ShuntCompensatorModificationDialog = ({
                         <ShuntCompensatorModificationForm
                             studyUuid={studyUuid}
                             currentNode={currentNode}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
                             shuntCompensatorInfos={shuntCompensatorInfos}
                             equipmentId={selectedId}
                         />

@@ -290,6 +290,7 @@ export const NetworkMapTab = ({
 
     type MenuProps = {
         currentNode: CurrentTreeNode;
+        currentRootNetworkUuid: UUID;
         studyUuid: UUID;
         equipmentType: EquipmentType;
     };
@@ -966,6 +967,7 @@ export const NetworkMapTab = ({
                     equipmentMenu.equipmentType === EquipmentType.HVDC_LINE) &&
                     withEquipment(MenuBranch, {
                         currentNode,
+                        currentRootNetworkUuid,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
