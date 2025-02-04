@@ -5,25 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
-import { TABLES_NAMES } from './config/config-tables';
-import {
-    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-} from './utils/constants';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { updateConfigParameter } from '../../services/config';
 import { AppState } from '../../redux/reducer';
 import { changeDisplayedColumns, changeLockedColumns, changeReorderedColumns } from 'redux/actions';
 import { spreadsheetStyles } from './utils/style';
@@ -82,7 +74,6 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
 
     const dispatch = useDispatch();
 
-    const { snackError } = useSnackMessage();
     const intl = useIntl();
 
     const handleOpenPopupSelectColumnNames = useCallback(() => {
@@ -113,78 +104,33 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
     ]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
-        const saveConfigParameter = async (
-            prefix: string,
-            value: any,
-            index: number,
-            setState: Function,
-            allState: any[],
-            dispatchAction: Function
-        ) => {
-            // for newly added tabs, we should not save the state in the database because the tabs are only persisted in the redux store
-            // we should only save the state in the redux store
-            if (index < TABLES_NAMES.length) {
-                updateConfigParameter(prefix + tablesNames[index], JSON.stringify(value)).catch((error) => {
-                    const allTemp = allState[index];
-                    setState(new Set(allTemp ? JSON.parse(allTemp) : []));
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsChangingError',
-                    });
-                });
-            } else {
-                const columns = new Array(tablesNames.length);
-                columns[index] = {
-                    index: index,
-                    value: JSON.stringify(value),
-                };
-                dispatch(dispatchAction(columns));
-            }
+        const dispatchConfigParameter = (value: any, index: number, dispatchAction: Function) => {
+            const columns = new Array(tablesNames.length);
+            columns[index] = {
+                index: index,
+                value: JSON.stringify(value),
+            };
+            dispatch(dispatchAction(columns));
         };
 
         const selectedColumnsArray = Array.from(selectedColumnsNames);
         const lockedColumnsToSave = [...lockedColumnsNames].filter((name) => selectedColumnsNames.has(name));
 
-        saveConfigParameter(
-            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-            selectedColumnsArray,
-            tabIndex,
-            setSelectedColumnsNames,
-            allDisplayedColumnsNames,
-            changeDisplayedColumns
-        );
-        saveConfigParameter(
-            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-            lockedColumnsToSave,
-            tabIndex,
-            setLockedColumnsNames,
-            allLockedColumnsNames,
-            changeLockedColumns
-        );
-        saveConfigParameter(
-            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-            reorderedTableDefinitionIndexes,
-            tabIndex,
-            () => {},
-            [],
-            changeReorderedColumns
-        );
+        dispatchConfigParameter(selectedColumnsArray, tabIndex, changeDisplayedColumns);
+        dispatchConfigParameter(lockedColumnsToSave, tabIndex, changeLockedColumns);
+        dispatchConfigParameter(reorderedTableDefinitionIndexes, tabIndex, changeReorderedColumns);
 
         handleCloseColumnsSettingDialog();
     }, [
         tabIndex,
         lockedColumnsNames,
         tablesNames,
-        setLockedColumnsNames,
         reorderedTableDefinitionIndexes,
         handleCloseColumnsSettingDialog,
         selectedColumnsNames,
-        allDisplayedColumnsNames,
-        setSelectedColumnsNames,
-        snackError,
         dispatch,
-        allLockedColumnsNames,
     ]);
+
     const handleToggle = (value: string) => () => {
         const newChecked = new Set(selectedColumnsNames.values());
         const newLocked = new Set(lockedColumnsNames.values());
