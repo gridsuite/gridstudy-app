@@ -189,6 +189,7 @@ const RootNetworkNodeEditor = () => {
                                 dispatch(setCurrentRootNetwork(rootNetwork.rootNetworkUuid));
                             }
                         }}
+                        disabled={rootNetwork.isCreating}
                     >
                         {isCurrentRootNetwork ? (
                             <Badge overlap="circular" color="primary" variant="dot">
