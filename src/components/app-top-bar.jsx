@@ -76,12 +76,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
     const notificationsCount = useComputationResultsCount();
+
     const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
     const [useNameLocal, handleChangeUseName] = useParameterState(PARAM_USE_NAME);
-
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
-
-    const [enableDeveloperMode, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -120,7 +119,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 additionalModulesPromise={getServersInfos}
                 theme={themeLocal}
                 onDeveloperModeClick={handleChangeDeveloperMode}
-                developerMode={enableDeveloperMode}
+                developerMode={enableDeveloperModeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 onLanguageClick={handleChangeLanguage}
