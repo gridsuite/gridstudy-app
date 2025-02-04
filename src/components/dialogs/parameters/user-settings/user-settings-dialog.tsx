@@ -23,9 +23,6 @@ export const styles = {
         marginTop: theme.spacing(1),
         flexGrow: 1,
     }),
-    controlItem: {
-        flexGrow: 1,
-    },
     parameterLine: {
         display: 'flex',
     },
