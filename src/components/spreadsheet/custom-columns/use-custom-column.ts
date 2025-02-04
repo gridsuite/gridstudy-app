@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -37,7 +37,7 @@ export function useCustomColumn(tabIndex: number) {
         []
     );
 
-    const customColumns = useMemo(
+    return useMemo(
         () =>
             customColumnsDefinitions.map((colWithFormula): CustomColDef => {
                 return {
@@ -65,6 +65,4 @@ export function useCustomColumn(tabIndex: number) {
             }),
         [customColumnsDefinitions, tableDefinition.name, tabIndex, createValueGetter]
     );
-
-    return customColumns;
 }
