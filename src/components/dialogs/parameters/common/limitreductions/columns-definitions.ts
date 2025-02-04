@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    PARAM_SA_PROVIDER,
     PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
@@ -44,6 +45,7 @@ export interface ILimitReductionsByVoltageLevel {
 }
 
 export interface ISAParameters {
+    [PARAM_SA_PROVIDER]: string;
     limitReductions: ILimitReductionsByVoltageLevel[];
     [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: number;
     [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: number;
@@ -114,6 +116,10 @@ export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
 };
 
 export const getSAParametersFromSchema = (limitReductions?: ILimitReductionsByVoltageLevel[]) => {
+    const providerSchema = yup.object().shape({
+        [PARAM_SA_PROVIDER]: yup.string().required(),
+    });
+
     const limitReductionsSchema = getLimitReductionsFormSchema(
         limitReductions?.length ? limitReductions[0].temporaryLimitReductions.length : 0
     );
@@ -139,6 +145,7 @@ export const getSAParametersFromSchema = (limitReductions?: ILimitReductionsByVo
     });
 
     return yup.object().shape({
+        ...providerSchema.fields,
         ...limitReductionsSchema.fields,
         ...thresholdsSchema.fields,
     });
