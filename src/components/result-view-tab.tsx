@@ -183,10 +183,14 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const renderDynamicSecurityAnalysisResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
-                <DynamicSecurityAnalysisResultTab studyUuid={studyUuid} nodeUuid={currentNode?.id} />
+                <DynamicSecurityAnalysisResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
     const renderStateEstimationResult = useMemo(() => {
         return (
