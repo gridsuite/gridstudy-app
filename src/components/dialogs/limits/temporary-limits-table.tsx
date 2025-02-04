@@ -8,9 +8,7 @@
 import { useState } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { RawReadOnlyInput } from '@gridsuite/commons-ui';
-import { ErrorInput } from '@gridsuite/commons-ui';
-import { FieldErrorAlert } from '@gridsuite/commons-ui';
+import { RawReadOnlyInput, ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
