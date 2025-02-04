@@ -404,7 +404,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     onClose={() => setShowDynamicSimulationParametersSelector(false)}
                     onStart={handleStartDynamicSimulation}
                     studyUuid={studyUuid}
-                    currentNodeUuid={currentNode?.id}
                 />
             )}
         </>
