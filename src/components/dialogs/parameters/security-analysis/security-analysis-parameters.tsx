@@ -5,15 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Dispatch, FunctionComponent, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Grid, SelectChangeEvent } from '@mui/material';
-import { DropDown, LabelledButton, styles } from '../parameters';
+import React, { Dispatch, FunctionComponent, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Grid } from '@mui/material';
+import { LabelledButton, styles } from '../parameters';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../../utils/functions';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    MuiSelectInput,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -35,8 +36,12 @@ import {
     PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_PROVIDER,
 } from 'utils/config-params';
-import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
+import {
+    toFormValueSaParameters,
+    toFormValuesLimitReductions,
+} from '../common/limitreductions/limit-reductions-form-util';
 import LineSeparator from '../../commons/line-separator';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import ComputingType from 'components/computing-status/computing-type';
@@ -44,22 +49,26 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SECURITY_ANALYSIS>;
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
 }> = ({ parametersBackend, setHaveDirtyFields }) => {
-    const [providers, provider, updateProvider, resetProvider, params, updateParameters, resetParameters] =
+    const [providers, provider, , resetProvider, params, updateParameters, resetParameters, , defaultLimitReductions] =
         parametersBackend;
 
-    const handleUpdateProvider = (evt: SelectChangeEvent<string>) => updateProvider(evt.target.value);
-
-    const updateProviderCallback = useCallback(handleUpdateProvider, [updateProvider]);
     const intl = useIntl();
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
+    const [currentProvider, setCurrentProvider] = useState<string | undefined>(params?.provider);
+
     const { snackError } = useSnackMessage();
 
     // TODO: remove this when DynaFlow is supported
     // DynaFlow is not supported at the moment for security analysis
-    const securityAnalysisProvider = Object.fromEntries(
-        Object.entries(providers).filter(([key]) => !key.includes('DynaFlow'))
-    );
+    const securityAnalysisFormattedProviders = useMemo(() => {
+        return Object.entries(providers)
+            .filter(([key]) => !key.includes('DynaFlow'))
+            .map(([key, value]) => ({
+                id: key,
+                label: value,
+            }));
+    }, [providers]);
 
     const resetSAParametersAndProvider = useCallback(() => {
         resetParameters();
@@ -97,6 +106,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
 
     const formMethods = useForm({
         defaultValues: {
+            [PARAM_SA_PROVIDER]: provider,
             [LIMIT_REDUCTIONS_FORM]: [],
             [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: null,
             [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: null,
@@ -106,6 +116,8 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         },
         resolver: yupResolver(formSchema),
     });
+
+    const watchProvider = formMethods.watch('provider');
 
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
@@ -136,6 +148,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         (formLimits: Record<string, any>) => {
             updateParameters({
                 ...params,
+                [PARAM_SA_PROVIDER]: formLimits[PARAM_SA_PROVIDER],
                 [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: formLimits[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] / 100,
                 [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]:
                     formLimits[PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
@@ -152,6 +165,20 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     useEffect(() => {
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
     }, [formState, setHaveDirtyFields]);
+
+    useEffect(() => {
+        const newProvider = formMethods.getValues(PARAM_SA_PROVIDER) as string;
+        if (newProvider !== currentProvider) {
+            setCurrentProvider(newProvider);
+            if (params !== null) {
+                params.limitReductions = defaultLimitReductions;
+            }
+            formMethods.setValue(
+                LIMIT_REDUCTIONS_FORM,
+                toFormValuesLimitReductions(defaultLimitReductions)[LIMIT_REDUCTIONS_FORM]
+            );
+        }
+    }, [watchProvider, currentProvider, formMethods, setCurrentProvider, defaultLimitReductions, params]);
 
     useEffect(() => {
         if (!params) {
@@ -182,12 +209,16 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                             }}
                             justifyContent={'space-between'}
                         >
-                            <DropDown
-                                value={provider ?? ''}
-                                label="Provider"
-                                values={securityAnalysisProvider}
-                                callback={updateProviderCallback}
-                            />
+                            <Grid item xs={'auto'} sx={styles.parameterName}>
+                                <FormattedMessage id="Provider" />
+                            </Grid>
+                            <Grid item xs={'auto'} sx={styles.controlItem}>
+                                <MuiSelectInput
+                                    name={PARAM_SA_PROVIDER}
+                                    size="small"
+                                    options={Object.values(securityAnalysisFormattedProviders)}
+                                />
+                            </Grid>
                             <LineSeparator />
                         </Grid>
                     </Box>
@@ -204,7 +235,10 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                                 maxHeight: '100%',
                             })}
                         >
-                            <SecurityAnalysisParametersSelector params={params} />
+                            <SecurityAnalysisParametersSelector
+                                params={params}
+                                currentProvider={currentProvider?.trim()}
+                            />
                         </Grid>
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
