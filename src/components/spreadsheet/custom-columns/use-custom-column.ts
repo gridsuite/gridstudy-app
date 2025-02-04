@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
