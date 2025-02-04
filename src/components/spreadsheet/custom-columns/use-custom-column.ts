@@ -82,7 +82,7 @@ export function useCustomColumn(tabIndex: number) {
 
     const createValueGetter = useCallback(
         (colWithFormula: ColumnWithFormula) =>
-            (params: ValueGetterParams): any => {
+            (params: ValueGetterParams): boolean | string | number | undefined => {
                 try {
                     const { data } = params;
 
