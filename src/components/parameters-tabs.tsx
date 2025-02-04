@@ -26,7 +26,7 @@ import {
     setLoadFlowParameters,
     setLoadFlowProvider,
 } from 'services/study/loadflow';
-import { fetchSecurityAnalysisProviders } from 'services/security-analysis';
+import { fetchSecurityAnalysisProviders, getSecurityAnalysisDefaultLimitReductions } from 'services/security-analysis';
 import {
     fetchDefaultSecurityAnalysisProvider,
     getSecurityAnalysisParameters,
@@ -195,7 +195,9 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         fetchDefaultSecurityAnalysisProvider,
         updateSecurityAnalysisProvider,
         getSecurityAnalysisParameters,
-        setSecurityAnalysisParameters
+        setSecurityAnalysisParameters,
+        undefined,
+        getSecurityAnalysisDefaultLimitReductions
     );
 
     const sensitivityAnalysisBackend = useParametersBackend(
