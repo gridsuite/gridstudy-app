@@ -135,18 +135,20 @@ export function LimitsSidePane({
     const getPreviousValue = useCallback(
         (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
             const formattedTemporaryLimits = formatTemporaryLimits(temporaryLimits);
-            if (shouldReturnPreviousValue(rowIndex, column, arrayFormName, formattedTemporaryLimits)) {
-                const temporaryLimit = findTemporaryLimit(rowIndex, arrayFormName, formattedTemporaryLimits);
-                if (temporaryLimit === undefined) {
-                    return undefined;
-                }
-                if (column.dataKey === TEMPORARY_LIMIT_VALUE) {
-                    return temporaryLimit?.value ?? Number.MAX_VALUE;
-                } else if (column.dataKey === TEMPORARY_LIMIT_DURATION) {
-                    return temporaryLimit?.acceptableDuration ?? Number.MAX_VALUE;
-                }
-            } else {
+            if (!temporaryLimits?.length) {
                 return undefined;
+            }
+            if (!shouldReturnPreviousValue(rowIndex, column, arrayFormName, formattedTemporaryLimits)) {
+                return undefined;
+            }
+            const temporaryLimit = findTemporaryLimit(rowIndex, arrayFormName, formattedTemporaryLimits);
+            if (temporaryLimit === undefined) {
+                return undefined;
+            }
+            if (column.dataKey === TEMPORARY_LIMIT_VALUE) {
+                return temporaryLimit?.value ?? Number.MAX_VALUE;
+            } else if (column.dataKey === TEMPORARY_LIMIT_DURATION) {
+                return temporaryLimit?.acceptableDuration ?? Number.MAX_VALUE;
             }
         },
         [findTemporaryLimit, shouldReturnPreviousValue]
