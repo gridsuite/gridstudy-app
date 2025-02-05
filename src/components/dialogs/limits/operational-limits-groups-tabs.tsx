@@ -289,32 +289,34 @@ export function OperationalLimitsGroupsTabs({
     );
 
     const addNewLimitSet = useCallback(() => {
-        const newIndex: number = limitsGroups1.length;
-        // new limit sets are created with 5 empty limits by default
-        const emptyTemporaryLimit = {
-            [TEMPORARY_LIMIT_NAME]: '',
-            [TEMPORARY_LIMIT_DURATION]: null,
-            [TEMPORARY_LIMIT_VALUE]: null,
-            modificationType: null,
-            [SELECTED]: false,
-        };
-        const newLimitsGroup: OperationalLimitsGroup = {
-            [ID]: '',
-            [CURRENT_LIMITS]: {
-                [TEMPORARY_LIMITS]: [
-                    emptyTemporaryLimit,
-                    emptyTemporaryLimit,
-                    emptyTemporaryLimit,
-                    emptyTemporaryLimit,
-                    emptyTemporaryLimit,
-                ],
-                [PERMANENT_LIMIT]: null,
-            },
-        };
-        appendToLimitsGroups1(newLimitsGroup);
-        appendToLimitsGroups2(newLimitsGroup);
-        startEditingLimitsGroup(newIndex, `LIMIT_SET`);
-    }, [appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1, startEditingLimitsGroup]);
+        if (editingTabIndex === null) {
+            const newIndex: number = limitsGroups1.length;
+            // new limit sets are created with 5 empty limits by default
+            const emptyTemporaryLimit = {
+                [TEMPORARY_LIMIT_NAME]: '',
+                [TEMPORARY_LIMIT_DURATION]: null,
+                [TEMPORARY_LIMIT_VALUE]: null,
+                modificationType: null,
+                [SELECTED]: false,
+            };
+            const newLimitsGroup: OperationalLimitsGroup = {
+                [ID]: '',
+                [CURRENT_LIMITS]: {
+                    [TEMPORARY_LIMITS]: [
+                        emptyTemporaryLimit,
+                        emptyTemporaryLimit,
+                        emptyTemporaryLimit,
+                        emptyTemporaryLimit,
+                        emptyTemporaryLimit,
+                    ],
+                    [PERMANENT_LIMIT]: null,
+                },
+            };
+            appendToLimitsGroups1(newLimitsGroup);
+            appendToLimitsGroups2(newLimitsGroup);
+            startEditingLimitsGroup(newIndex, `LIMIT_SET`);
+        }
+    }, [appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1, startEditingLimitsGroup, editingTabIndex]);
 
     return (
         <>
@@ -372,23 +374,25 @@ export function OperationalLimitsGroupsTabs({
                 ))}
                 <Tab
                     label={
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                width: '100%',
-                                flexGrow: 1,
-                            }}
-                        >
-                            <IconButton
-                                onClick={() => addNewLimitSet()}
+                        editingTabIndex === null && (
+                            <Box
                                 sx={{
-                                    align: 'right',
-                                    marginLeft: 'auto',
+                                    display: 'flex',
+                                    width: '100%',
+                                    flexGrow: 1,
                                 }}
                             >
-                                <AddCircleIcon />
-                            </IconButton>
-                        </Box>
+                                <IconButton
+                                    onClick={addNewLimitSet}
+                                    sx={{
+                                        align: 'right',
+                                        marginLeft: 'auto',
+                                    }}
+                                >
+                                    <AddCircleIcon />
+                                </IconButton>
+                            </Box>
+                        )
                     }
                 />
             </Tabs>
