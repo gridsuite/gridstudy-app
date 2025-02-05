@@ -160,26 +160,28 @@ export function loadEquipments(
     };
 }
 
+export type AdditionalNodeData = {
+    alias: string;
+    identifiables: Identifiable[];
+};
+
 export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS =
     'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
 export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<
     Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>
 > & {
-    alias: string;
     equipmentType: SpreadsheetEquipmentType;
-    identifiables: Identifiable[];
+    data: AdditionalNodeData[];
 };
 
 export function addAdditionalEquipmentsByNodesForCustomColumns(
-    alias: string,
     type: SpreadsheetEquipmentType,
-    identifiables: Identifiable[]
+    data: AdditionalNodeData[]
 ): AddEquipmentsByNodesForCustomColumnsAction {
     return {
         type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
-        alias,
         equipmentType: type,
-        identifiables,
+        data,
     };
 }
 

@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     addAdditionalEquipmentsByNodesForCustomColumns,
+    AdditionalNodeData,
     deleteEquipments,
     EquipmentToDelete,
     loadEquipments,
@@ -19,13 +20,22 @@ import {
     resetEquipmentsByTypes,
     updateEquipments,
 } from 'redux/actions';
-import type { AppState } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import type { EquipmentFetcher, SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetchers } from './config/equipment/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
+
+const filterUndefined = (
+    res: AdditionalNodeData | undefined
+): res is {
+    alias: string;
+    identifiables: Identifiable[];
+} => {
+    return res !== undefined;
+};
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -173,25 +183,29 @@ export const useSpreadsheetEquipments = (
 
     useEffect(() => {
         if (studyUuid && currentRootNetworkUuid) {
-            customColumnsNodesAliases.forEach((aliasInfo) => {
+            const fetchedEquipments = customColumnsNodesAliases.map(async (aliasInfo) => {
                 if (allAdditionalEquipments[aliasInfo.alias]?.[type] !== undefined) {
-                    return;
+                    return undefined;
                 }
                 // TODO: turn getFetchers into returning a single element
-                getFetchers(type)[0](studyUuid, aliasInfo.id, currentRootNetworkUuid).then((res) => {
-                    let fetchedEquipments = res.flat();
-                    fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
-                    dispatch(addAdditionalEquipmentsByNodesForCustomColumns(aliasInfo.alias, type, fetchedEquipments));
-                });
+                const res = await getFetchers(type)[0](studyUuid, aliasInfo.id, currentRootNetworkUuid);
+                return {
+                    alias: aliasInfo.alias,
+                    identifiables: formatFetchedEquipments(res.flat()),
+                } satisfies AdditionalNodeData;
+            });
+            Promise.all(fetchedEquipments).then((results) => {
+                const filteredResults = results.filter(filterUndefined);
+                if (filteredResults.length !== 0) {
+                    dispatch(addAdditionalEquipmentsByNodesForCustomColumns(type, filteredResults));
+                }
             });
         }
     }, [
         dispatch,
-        equipments,
         studyUuid,
         currentRootNetworkUuid,
         formatFetchedEquipments,
-        treeModel,
         customColumnsNodesAliases,
         type,
         allAdditionalEquipments,
