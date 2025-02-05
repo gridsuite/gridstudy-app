@@ -442,6 +442,7 @@ const LineModificationDialog = ({
                         <LineModificationDialogTabs
                             studyUuid={studyUuid}
                             currentNode={currentNode}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
                             lineToModify={lineToModify}
                             tabIndex={tabIndex}
                         />

@@ -34,11 +34,6 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
-import {
-    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-} from './spreadsheet/utils/constants';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
@@ -47,9 +42,6 @@ import { fetchConfigParameter, fetchConfigParameters } from '../services/config'
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
-    changeDisplayedColumns,
-    changeLockedColumns,
-    changeReorderedColumns,
     limitReductionModified,
     selectComputedLanguage,
     selectEnableDeveloperMode,
@@ -74,9 +66,6 @@ const App = () => {
 
     const user = useSelector((state) => state.user);
     const studyUuid = useSelector((state) => state.studyUuid);
-    const tablesNamesIndexes = useSelector((state) => state.tables.namesIndexes);
-    const tablesDefinitionIndexes = useSelector((state) => state.tables.definitionIndexes);
-
     const signInCallbackError = useSelector((state) => state.signInCallbackError);
     const authenticationRouterError = useSelector((state) => state.authenticationRouterError);
     const showAuthenticationRouterLogin = useSelector((state) => state.showAuthenticationRouterLogin);
@@ -102,13 +91,6 @@ const App = () => {
     const updateParams = useCallback(
         (params) => {
             console.debug('received UI parameters : ', params);
-            let displayedColumnsParams = new Array(tablesNamesIndexes.size);
-            let dispatchDisplayedColumns = false;
-            let lockedColumnsParams = new Array(tablesNamesIndexes.size);
-            let dispatchLockedColumns = false;
-            let reorderedColumnsParams = new Array(tablesNamesIndexes.size);
-            let dispatchReorderedColumns = false;
-
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAM_THEME:
@@ -131,90 +113,11 @@ const App = () => {
                         dispatch(selectFavoriteContingencyLists(param.value.split(',').filter((list) => list)));
                         break;
                     default:
-                        if (param.name.startsWith(DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE)) {
-                            let index = tablesNamesIndexes.get(
-                                param.name.slice(DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length)
-                            );
-                            displayedColumnsParams[index] = {
-                                index: index,
-                                value: param.value,
-                            };
-                            dispatchDisplayedColumns = true;
-                        }
-                        if (param.name.startsWith(LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE)) {
-                            let index = tablesNamesIndexes.get(
-                                param.name.slice(LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length)
-                            );
-                            lockedColumnsParams[index] = {
-                                index: index,
-                                value: param.value,
-                            };
-                            dispatchLockedColumns = true;
-                        }
-                        if (param.name.startsWith(REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE)) {
-                            let index = tablesNamesIndexes.get(
-                                param.name.slice(REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length)
-                            );
-                            reorderedColumnsParams[index] = {
-                                index: index,
-                                value: param.value,
-                            };
-                            dispatchReorderedColumns = true;
-                        }
+                        console.error('unsupported UI parameters : ', param.name);
                 }
             });
-            if (dispatchDisplayedColumns) {
-                if (dispatchReorderedColumns) {
-                    cleanEquipmentsColumnsParamsWithNewAndDeleted(displayedColumnsParams, reorderedColumnsParams);
-                }
-                dispatch(changeDisplayedColumns(displayedColumnsParams));
-            }
-            if (dispatchLockedColumns) {
-                if (dispatchReorderedColumns) {
-                    cleanEquipmentsColumnsParamsWithNewAndDeleted(lockedColumnsParams, reorderedColumnsParams, true);
-                }
-                dispatch(changeLockedColumns(lockedColumnsParams));
-            }
-            if (dispatchReorderedColumns) {
-                cleanEquipmentsColumnsParamsWithNewAndDeleted(reorderedColumnsParams, reorderedColumnsParams);
-                dispatch(changeReorderedColumns(reorderedColumnsParams));
-            }
-            function cleanEquipmentsColumnsParamsWithNewAndDeleted(
-                equipmentsColumnsParams,
-                reorderedColumnsParams,
-                deletedOnly = false
-            ) {
-                for (const param of equipmentsColumnsParams) {
-                    if (!param) {
-                        continue;
-                    }
-
-                    const index = param.index;
-
-                    const equipmentAllColumnsIds = tablesDefinitionIndexes.get(index).columns.map((item) => item.colId);
-
-                    const equipmentReorderedColumnsIds = JSON.parse(reorderedColumnsParams[index].value);
-                    const equipmentNewColumnsIds = equipmentAllColumnsIds.filter(
-                        (item) => !equipmentReorderedColumnsIds.includes(item)
-                    );
-
-                    const equipmentsParamColumnIds = JSON.parse(equipmentsColumnsParams[index].value);
-
-                    // Remove deleted ids
-                    const equipmentsNewParamColumnIds = equipmentsParamColumnIds.filter((item) =>
-                        equipmentAllColumnsIds.includes(item)
-                    );
-
-                    // Update columns
-                    if (deletedOnly) {
-                        param.value = JSON.stringify([...equipmentsNewParamColumnIds]);
-                    } else {
-                        param.value = JSON.stringify([...equipmentsNewParamColumnIds, ...equipmentNewColumnsIds]);
-                    }
-                }
-            }
         },
-        [dispatch, tablesNamesIndexes, tablesDefinitionIndexes]
+        [dispatch]
     );
 
     const updateConfig = useCallback(
