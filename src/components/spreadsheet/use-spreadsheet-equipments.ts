@@ -182,7 +182,6 @@ export const useSpreadsheetEquipments = (
     ]);
 
     useEffect(() => {
-        console.log(`custom nodes ${JSON.stringify(allAdditionalEquipments)}`);
         if (studyUuid && currentRootNetworkUuid) {
             // Clean nodes that are not loaded anymore
             const unwantedFetchedNodes = new Set(Object.keys(allAdditionalEquipments));
