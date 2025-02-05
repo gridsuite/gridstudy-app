@@ -36,7 +36,7 @@ export const customColumnFormSchema = yup.object().shape({
         .number()
         .integer()
         .when(COLUMN_TYPE, ([type]) => {
-            return type === COLUMN_TYPES.NUMBER ? yup.number().integer().required() : yup.number().integer();
+            return type === COLUMN_TYPES.NUMBER ? yup.number().integer().required() : yup.number().nullable().integer();
         }),
     [FORMULA]: yup.string().required(),
     [COLUMN_DEPENDENCIES]: yup.array().of(yup.string().required()).required(),
