@@ -49,7 +49,7 @@ import { AppState } from '../../../redux/reducer';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
-    customColumnName: string;
+    customColumnName?: string;
     tabIndex: number;
     isCreate?: boolean;
 };

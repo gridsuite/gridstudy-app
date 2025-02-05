@@ -42,11 +42,7 @@ export default function CustomColumnsConfig({ tabIndex }: Readonly<CustomColumns
                 </Button>
             </Badge>
 
-            <CustomColumnDialog
-                tabIndex={tabIndex}
-                open={dialogOpen}
-                customColumnsDefinitions={customColumnsDefinitions}
-            />
+            <CustomColumnDialog tabIndex={tabIndex} open={dialogOpen} />
         </>
     );
 }
