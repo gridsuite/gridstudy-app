@@ -126,10 +126,8 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
         const newLocked = new Set(localLockedColumns.values());
         if (localLockedColumns.has(value)) {
             newLocked.delete(value);
-        } else {
-            if (localLockedColumns.size < MAX_LOCKS_PER_TAB) {
-                newLocked.add(value);
-            }
+        } else if (localLockedColumns.size < MAX_LOCKS_PER_TAB) {
+            newLocked.add(value);
         }
         setLocalLockedColumns(newLocked);
     };

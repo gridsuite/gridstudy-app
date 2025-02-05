@@ -39,7 +39,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
 
     const staticColumnIdToField = useMemo(() => {
         return tableDefinition.columns.reduce((acc, item) => {
-            acc[item.colId!] = item.field ?? '';
+            acc[item.colId] = item.field ?? '';
             return acc;
         }, {} as Record<string, string>);
     }, [tableDefinition.columns]);
