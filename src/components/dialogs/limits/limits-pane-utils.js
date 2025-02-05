@@ -42,7 +42,6 @@ const temporaryLimitsValidationSchema = () => {
             .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
                 is: (limitValue, limitDuration) => limitValue || limitDuration,
                 then: () => yup.string().nullable().required(),
-                otherwise: () => yup.string().nullable(), // empty lines are ignored
             }),
     });
 };
@@ -64,7 +63,7 @@ const currentLimitsValidationSchema = () => ({
         }),
 });
 
-const limitsValidationSchema = (id, onlySelectedLimits = true) => {
+const limitsValidationSchema = (id, onlySelectedLimits) => {
     const currentLimitsSchema = {
         [CURRENT_LIMITS_1]: yup.object().shape(currentLimitsValidationSchema()),
         [CURRENT_LIMITS_2]: yup.object().shape(currentLimitsValidationSchema()),
