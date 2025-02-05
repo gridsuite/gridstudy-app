@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Box,
@@ -40,18 +40,17 @@ import {
 } from './custom-columns-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
-import { ColumnWithFormula } from 'types/custom-columns.types';
 import { setUpdateCustomColumDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
+import { AppState } from '../../../redux/reducer';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
+    customColumnName: string;
     tabIndex: number;
-    customColumnsDefinition?: ColumnWithFormula;
-    customColumnsDefinitions?: ColumnWithFormula[];
     isCreate?: boolean;
 };
 
@@ -69,9 +68,8 @@ const styles = {
 
 export default function CustomColumnDialog({
     open,
+    customColumnName,
     tabIndex,
-    customColumnsDefinition,
-    customColumnsDefinitions,
     isCreate = true,
 }: Readonly<CustomColumnDialogProps>) {
     const formMethods = useForm({
@@ -81,7 +79,14 @@ export default function CustomColumnDialog({
 
     const { setError, control } = formMethods;
     const columnId = useWatch({ control, name: COLUMN_ID });
-    const hasColumnIdChanged = columnId !== customColumnsDefinition?.[COLUMN_ID];
+    const customColumnsDefinitions = useSelector(
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
+    );
+    const customColumnDefinition = useMemo(
+        () => customColumnsDefinitions.find((column) => column.name === customColumnName),
+        [customColumnName, customColumnsDefinitions]
+    );
+    const hasColumnIdChanged = columnId !== customColumnDefinition?.[COLUMN_ID];
 
     const { handleSubmit, reset } = formMethods;
     const dispatch = useDispatch<AppDispatch>();
@@ -133,7 +138,7 @@ export default function CustomColumnDialog({
                 setUpdateCustomColumDefinitions({
                     index: tabIndex,
                     value: {
-                        uuid: customColumnsDefinition?.uuid || crypto.randomUUID(),
+                        uuid: customColumnDefinition?.uuid || crypto.randomUUID(),
                         id: newParams.id,
                         name: newParams.name,
                         formula: newParams.formula,
@@ -148,7 +153,7 @@ export default function CustomColumnDialog({
             customColumnsDefinitions,
             dispatch,
             tabIndex,
-            customColumnsDefinition?.uuid,
+            customColumnDefinition?.uuid,
             reset,
             open,
             isCreate,
@@ -158,17 +163,17 @@ export default function CustomColumnDialog({
     );
 
     useEffect(() => {
-        if (open.value && customColumnsDefinition) {
+        if (open.value && customColumnDefinition) {
             reset({
-                [COLUMN_NAME]: customColumnsDefinition.name,
-                [COLUMN_ID]: customColumnsDefinition.id,
-                [FORMULA]: customColumnsDefinition.formula,
-                [COLUMN_DEPENDENCIES]: customColumnsDefinition.dependencies,
+                [COLUMN_NAME]: customColumnDefinition.name,
+                [COLUMN_ID]: customColumnDefinition.id,
+                [FORMULA]: customColumnDefinition.formula,
+                [COLUMN_DEPENDENCIES]: customColumnDefinition.dependencies,
             });
         } else {
             reset(initialCustomColumnForm);
         }
-    }, [customColumnsDefinition, tabIndex, open.value, reset]);
+    }, [customColumnDefinition, tabIndex, open.value, reset]);
 
     return (
         <CustomFormProvider validationSchema={customColumnFormSchema} {...formMethods}>

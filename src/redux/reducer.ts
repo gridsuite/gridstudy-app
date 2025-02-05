@@ -873,18 +873,15 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
         const { newTableDefinition, customColumns } = action.payload;
-        const updatedDefinitions = [...state.tables.definitions];
-        updatedDefinitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
-        const updatedAllCustomColumnsDefinitions = {
-            ...state.tables.allCustomColumnsDefinitions,
-            [newTableDefinition.name]: {
-                columns: customColumns,
-            },
-        };
         state.tables = {
-            definitions: updatedDefinitions,
-            columnsStates: state.tables.columnsStates,
-            allCustomColumnsDefinitions: updatedAllCustomColumnsDefinitions,
+            definitions: [...state.tables.definitions, newTableDefinition],
+            columnsStates: [
+                ...state.tables.columnsStates,
+                newTableDefinition.columns.map((col) => {
+                    return { colId: col.colId, visible: true };
+                }),
+            ],
+            allCustomColumnsDefinitions: [...state.tables.allCustomColumnsDefinitions, customColumns],
         };
     });
 
