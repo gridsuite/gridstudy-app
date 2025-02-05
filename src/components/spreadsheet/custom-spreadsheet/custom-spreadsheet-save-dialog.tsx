@@ -11,8 +11,8 @@ import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { SpreadsheetConfig } from '../../../types/custom-columns.types';
+import { v4 as uuid4 } from 'uuid';
 
 export type CustomSpreadsheetSaveDialogProps = {
     tabIndex: number;
@@ -21,23 +21,15 @@ export type CustomSpreadsheetSaveDialogProps = {
 
 export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly<CustomSpreadsheetSaveDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
-
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
-    const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
+    const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
     );
-    const allReorderedTableDefinitionIndexes = useSelector(
-        (state: AppState) => state.allReorderedTableDefinitionIndexes
-    );
-
-    const currentType = useMemo(() => {
-        const equipment = tablesDefinitionIndexes.get(tabIndex);
-        return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
-    }, [tabIndex, tablesDefinitionIndexes]);
+    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
 
     const customColumns = useMemo(() => {
         return customColumnsDefinitions.map(({ id, name, formula, dependencies }) => ({
+            uuid: uuid4(),
             id,
             name,
             formula,
@@ -46,23 +38,24 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     }, [customColumnsDefinitions]);
 
     const staticColumnIdToField = useMemo(() => {
-        const equipment = tablesDefinitionIndexes.get(tabIndex);
-        return equipment ? new Map<string, string>(equipment.columns.map((c) => [c.colId!, c.field ?? ''])) : null;
-    }, [tabIndex, tablesDefinitionIndexes]);
+        return tableDefinition.columns.reduce((acc, item) => {
+            acc[item.colId] = item.field ?? '';
+            return acc;
+        }, {} as Record<string, string>);
+    }, [tableDefinition.columns]);
 
     const reorderedStaticColumnIds = useMemo(() => {
-        const allReorderedColumns = allReorderedTableDefinitionIndexes[tabIndex];
-        return allReorderedColumns
-            ? JSON.parse(allReorderedColumns)
-            : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.colId);
-    }, [allReorderedTableDefinitionIndexes, tabIndex, tablesDefinitionIndexes]);
+        return columnsStates.map((col) => col.colId);
+    }, [columnsStates]);
 
     const staticColumnFormulas = useMemo(() => {
         return reorderedStaticColumnIds && staticColumnIdToField
             ? reorderedStaticColumnIds.map((colId: string) => ({
                   name: colId,
-                  formula: staticColumnIdToField.get(colId),
-                  id: staticColumnIdToField.get(colId),
+                  formula: staticColumnIdToField[colId],
+                  id: staticColumnIdToField[colId],
+                  uuid: uuid4(),
+                  dependencies: null,
               }))
             : [];
     }, [reorderedStaticColumnIds, staticColumnIdToField]);
@@ -74,7 +67,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
         folderId,
     }: IElementCreationDialog) => {
         const spreadsheetConfig: SpreadsheetConfig = {
-            sheetType: currentType,
+            sheetType: tableDefinition.type,
             customColumns: [...staticColumnFormulas, ...customColumns],
         };
 

@@ -30,9 +30,11 @@ export const hasCyclicDependencies = (items: Item[]): boolean => {
         visited.add(node);
         stack.add(node);
 
-        for (const dep of dependenciesPerItemId[node]) {
-            if (dfs(dep)) {
-                return true;
+        if (dependenciesPerItemId[node]) {
+            for (const dep of dependenciesPerItemId[node]) {
+                if (dfs(dep)) {
+                    return true;
+                }
             }
         }
 
