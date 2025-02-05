@@ -109,7 +109,7 @@ export default function CustomSpreadsheetConfigDialog({
                 dispatch(
                     addSortForNewSpreadsheet(tabName, [
                         {
-                            colId: 'id',
+                            colId: 'ID',
                             sort: SortWay.ASC,
                         },
                     ])
