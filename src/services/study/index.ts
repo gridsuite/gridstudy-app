@@ -179,7 +179,7 @@ export function searchEquipmentsInfos(
     searchTerm: string,
     getUseNameParameterKey: () => 'name' | 'id',
     inUpstreamBuiltParentNode?: boolean,
-    equipmentType?: EquipmentType
+    equipmentType?: EquipmentType | string
 ) {
     console.info("Fetching equipments infos matching with '%s' term ... ", searchTerm);
     let urlSearchParams = new URLSearchParams();

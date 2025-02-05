@@ -47,6 +47,11 @@ export enum EQUIPMENT_TYPES {
     BREAKER = 'BREAKER',
 }
 
+export enum EQUIPMENT_HVDC_TYPE {
+    HVDC_LINE_LCC = 'HVDC_LINE_LCC',
+    HVDC_LINE_VSC = 'HVDC_LINE_VSC',
+}
+
 export interface VoltageLevel extends Identifiable {
     nominalV: number;
     subtationId?: string;

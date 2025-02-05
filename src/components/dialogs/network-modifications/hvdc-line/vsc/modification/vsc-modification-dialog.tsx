@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_HVDC_TYPE, EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { sanitizeString } from '../../../../dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -165,7 +165,7 @@ const VscModificationDialog: React.FC<any> = ({
                     studyUuid,
                     currentNode.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.HVDC_LINE,
+                    EQUIPMENT_HVDC_TYPE.HVDC_LINE_VSC,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -355,7 +355,7 @@ const VscModificationDialog: React.FC<any> = ({
                         defaultValue={equipmentId}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         setSelectedId={setEquipmentId}
-                        equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
+                        equipmentType={EQUIPMENT_HVDC_TYPE.HVDC_LINE_VSC}
                         fillerHeight={17}
                     />
                 )}

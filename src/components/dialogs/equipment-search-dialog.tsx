@@ -8,9 +8,9 @@
 import { useIntl } from 'react-intl';
 import {
     ElementSearchDialog,
-    equipmentStyles,
-    EquipmentItem,
     EquipmentInfos,
+    EquipmentItem,
+    equipmentStyles,
     EquipmentType,
 } from '@gridsuite/commons-ui';
 import { FC } from 'react';
@@ -25,7 +25,7 @@ interface EquipmentSearchDialogProps {
     open: boolean;
     onClose: () => void;
     onSelectionChange: (equipment: EquipmentInfos) => void;
-    equipmentType: EquipmentType;
+    equipmentType: EquipmentType | string;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
 }
