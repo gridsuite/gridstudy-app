@@ -26,12 +26,10 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    CURRENT_LIMITS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     G1,
     G2,
-    ID,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS_1,
     OPERATIONAL_LIMITS_GROUPS_2,
@@ -83,9 +81,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
-import { formatTemporaryLimits } from '../../../../utils/utils.js';
-import { addSelectedFieldToRows } from '../../../../utils/dnd-table/dnd-table.jsx';
-import { isBlankOrEmpty } from '../../../../utils/validation-functions.js';
+import { formatCompleteCurrentLimit } from '../../../../utils/utils.js';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -151,30 +147,12 @@ const LineCreationDialog = ({
 
     const { reset, setValue } = formMethods;
 
-    const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
-        const formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
-        if (completeLimitsGroups) {
-            completeLimitsGroups.forEach((elt) => {
-                if (!isBlankOrEmpty(elt.id)) {
-                    formattedCompleteLimitsGroups.push({
-                        [ID]: elt.id,
-                        [CURRENT_LIMITS]: {
-                            permanentLimit: elt.permanentLimit,
-                            temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
-                        },
-                    });
-                }
-            });
-        }
-        return formattedCompleteLimitsGroups;
-    };
-
     const fromSearchCopyToFormValues = (line) => {
         reset(
             {
                 ...getHeaderFormData({
-                    [EQUIPMENT_ID]: line.id + '(1)',
-                    [EQUIPMENT_NAME]: line.name ?? '',
+                    equipmentId: line.id + '(1)',
+                    equipmentName: line.name ?? '',
                 }),
                 ...getCharacteristicsFormData({
                     r: line.r,
@@ -220,8 +198,8 @@ const LineCreationDialog = ({
         (line) => {
             reset({
                 ...getHeaderFormData({
-                    [EQUIPMENT_ID]: line.equipmentId,
-                    [EQUIPMENT_NAME]: line.equipmentName,
+                    equipmentId: line.equipmentId,
+                    equipmentName: line.equipmentName,
                 }),
                 ...getCharacteristicsFormData({
                     r: line.r,

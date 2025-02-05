@@ -25,7 +25,6 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
-    CURRENT_LIMITS,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_ID,
@@ -102,7 +101,7 @@ import {
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
-import { computeHighTapPosition, formatTemporaryLimits } from 'components/utils/utils';
+import { computeHighTapPosition, formatCompleteCurrentLimit } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,
@@ -306,22 +305,6 @@ const TwoWindingsTransformerCreationDialog = ({
         },
         [reset]
     );
-
-    const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
-        const formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
-        if (completeLimitsGroups) {
-            completeLimitsGroups.forEach((elt) =>
-                formattedCompleteLimitsGroups.push({
-                    id: elt.id,
-                    [CURRENT_LIMITS]: {
-                        permanentLimit: elt.permanentLimit,
-                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
-                    },
-                })
-            );
-        }
-        return formattedCompleteLimitsGroups;
-    };
 
     const fromSearchCopyToFormValues = useCallback(
         (twt) => {
