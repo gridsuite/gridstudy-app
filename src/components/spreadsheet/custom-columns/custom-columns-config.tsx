@@ -21,9 +21,8 @@ export type CustomColumnsConfigProps = {
 
 export default function CustomColumnsConfig({ tabIndex }: Readonly<CustomColumnsConfigProps>) {
     const dialogOpen = useStateBoolean(false);
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
     );
     const theme = useSelector((state: AppState) => state.theme);
 
@@ -43,11 +42,7 @@ export default function CustomColumnsConfig({ tabIndex }: Readonly<CustomColumns
                 </Button>
             </Badge>
 
-            <CustomColumnDialog
-                tabIndex={tabIndex}
-                open={dialogOpen}
-                customColumnsDefinitions={customColumnsDefinitions}
-            />
+            <CustomColumnDialog tabIndex={tabIndex} open={dialogOpen} />
         </>
     );
 }
