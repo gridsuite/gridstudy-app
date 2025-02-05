@@ -6,7 +6,7 @@
  */
 
 import { LIMITS, OPERATIONAL_LIMITS_GROUPS_1, OPERATIONAL_LIMITS_GROUPS_2 } from '../../utils/field-constants';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Box, Button } from '@mui/material';
 import KeyboardDoubleArrowRight from '@mui/icons-material/KeyboardDoubleArrowRight';
