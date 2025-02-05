@@ -263,15 +263,17 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setManualTabSwitch(false);
     }, [equipmentChanged]);
 
-    const scrollToEquipmentIndex = useCallback((equipmentId: string) => {
-        //calculate row index to scroll to
-        //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
-        const selectedRow = gridRef.current?.api?.getRowNode(equipmentId);
-        if (selectedRow) {
-            gridRef.current?.api?.ensureNodeVisible(selectedRow, 'top');
-            selectedRow.setSelected(true, true);
+    const scrollToEquipmentIndex = useCallback(() => {
+        if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
+            //calculate row index to scroll to
+            //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
+            const selectedRow = gridRef.current?.api?.getRowNode(equipmentId);
+            if (selectedRow) {
+                gridRef.current?.api?.ensureNodeVisible(selectedRow, 'top');
+                selectedRow.setSelected(true, true);
+            }
         }
-    }, []);
+    }, [manualTabSwitch, equipmentId, equipmentType]);
 
     useEffect(() => {
         if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
@@ -279,7 +281,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             if (definition) {
                 if (tabIndex === definition.index) {
                     // already in expected tab => explicit call to scroll to expected row
-                    scrollToEquipmentIndex(equipmentId);
+                    scrollToEquipmentIndex();
                 } else {
                     // select the right table type. This will trigger handleRowDataUpdated + scrollToEquipmentIndex
                     setTabIndex(definition.index);
@@ -297,7 +299,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     ]);
 
     const handleRowDataUpdated = useCallback(() => {
-        scrollToEquipmentIndex(equipmentId);
+        scrollToEquipmentIndex();
         // wait a moment  before removing the loading message.
         timerRef.current = setTimeout(() => {
             gridRef.current?.api?.hideOverlay();
@@ -306,7 +308,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 gridRef.current?.api?.showNoRowsOverlay();
             }
         }, 50);
-    }, [scrollToEquipmentIndex, equipmentId, rowData.length, isFetching]);
+    }, [scrollToEquipmentIndex, isFetching, rowData]);
 
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
