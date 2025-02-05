@@ -27,5 +27,5 @@ export type ColumnWithFormula = {
 
 export type SpreadsheetConfig = {
     sheetType: SpreadsheetEquipmentType;
-    customColumns: ColumnWithFormula[];
+    customColumns: ColumnWithFormulaDto[];
 };

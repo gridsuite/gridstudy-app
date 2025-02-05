@@ -38,11 +38,9 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
                     }}
                     aria-label="tables"
                 >
-                    {tablesDefinitions
-                        .map((def) => def.name)
-                        .map((tabName) => (
-                            <Tab key={tabName} label={tabName} disabled={disabled} />
-                        ))}
+                    {tablesDefinitions.map((def) => (
+                        <Tab key={def.name} label={def.name} disabled={disabled} />
+                    ))}
                 </Tabs>
             </Grid>
         </Grid>
