@@ -25,6 +25,7 @@ import { useWatch } from 'react-hook-form';
 import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from '../../parameters-tabs';
+import { CopyLimits } from './copy-limits';
 
 export interface LimitsPaneProps {
     id?: string;
@@ -155,7 +156,15 @@ export function LimitsPane({
                               getCurrentLimits1(equipmentToModify)
                           )}
                 </Grid>
-                {!onlySelectedLimitsGroup && <Grid item xs={0.25} />}
+                {!onlySelectedLimitsGroup && (
+                    <Grid item xs={0.25}>
+                        <CopyLimits
+                            parentFormName={id}
+                            indexSelectedLimitSet1={indexSelectedLimitSet1}
+                            indexSelectedLimitSet2={indexSelectedLimitSet2}
+                        />
+                    </Grid>
+                )}
                 <Grid item xs={4} sx={tabStyles.parametersBox}>
                     {onlySelectedLimitsGroup
                         ? renderSidePane(

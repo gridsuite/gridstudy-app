@@ -21,7 +21,7 @@ export const TableNumericalInput = ({
     isClearable = true,
     ...props
 }) => {
-    const { trigger } = useFormContext();
+    const { trigger, watch } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
@@ -67,7 +67,7 @@ export const TableNumericalInput = ({
         trigger(name);
     };
 
-    const transformedValue = inputTransform(value);
+    const transformedValue = inputTransform(watch(name));
 
     const handleClearValue = () => {
         onChange(outputTransform(previousValue));
