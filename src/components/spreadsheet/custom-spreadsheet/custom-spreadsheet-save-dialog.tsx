@@ -11,7 +11,8 @@ import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { SpreadsheetConfig } from '../../../types/custom-columns.types';
+import { ColumnWithFormulaDto, SpreadsheetConfig } from '../../../types/custom-columns.types';
+import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { v4 as uuid4 } from 'uuid';
 
 export type CustomSpreadsheetSaveDialogProps = {
@@ -28,20 +29,29 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
 
     const customColumns = useMemo(() => {
-        return customColumnsDefinitions.map(({ id, name, formula, dependencies }) => ({
-            uuid: uuid4(),
+        return customColumnsDefinitions.map(({ id, name, type, precision, formula, dependencies }) => ({
             id,
             name,
+            type,
+            precision,
             formula,
             dependencies: JSON.stringify(dependencies),
         }));
     }, [customColumnsDefinitions]);
 
-    const staticColumnIdToField = useMemo(() => {
+    const staticColumnIdToColInfos = useMemo(() => {
         return tableDefinition.columns.reduce((acc, item) => {
-            acc[item.colId] = item.field ?? '';
+            acc[item.colId] = {
+                uuid: uuid4(),
+                id: item.field ?? '',
+                name: item.headerComponentParams?.displayName ?? item.colId,
+                type: item.context?.columnType ?? COLUMN_TYPES.TEXT,
+                precision: item.cellRendererParams?.fractionDigits,
+                formula: item.field ?? '',
+                dependencies: null,
+            };
             return acc;
-        }, {} as Record<string, string>);
+        }, {} as Record<string, ColumnWithFormulaDto>);
     }, [tableDefinition.columns]);
 
     const reorderedStaticColumnIds = useMemo(() => {
@@ -49,16 +59,10 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     }, [columnsStates]);
 
     const staticColumnFormulas = useMemo(() => {
-        return reorderedStaticColumnIds && staticColumnIdToField
-            ? reorderedStaticColumnIds.map((colId: string) => ({
-                  name: colId,
-                  formula: staticColumnIdToField[colId],
-                  id: staticColumnIdToField[colId],
-                  uuid: uuid4(),
-                  dependencies: null,
-              }))
+        return reorderedStaticColumnIds && staticColumnIdToColInfos
+            ? reorderedStaticColumnIds.map((colId: string) => staticColumnIdToColInfos[colId])
             : [];
-    }, [reorderedStaticColumnIds, staticColumnIdToField]);
+    }, [reorderedStaticColumnIds, staticColumnIdToColInfos]);
 
     const saveSpreadsheetColumnsConfiguration = ({
         name,
