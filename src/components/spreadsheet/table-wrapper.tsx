@@ -99,6 +99,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 }) => {
     const dispatch = useDispatch();
     const gridRef = useRef<AgGridReact>(null);
+    const timerRef = useRef<NodeJS.Timeout>();
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState<number>(0);
 
@@ -193,7 +194,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition.type]
     );
 
-    const { equipments, errorMessage } = useSpreadsheetEquipments(
+    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         tableDefinition.type,
         tableDefinition.fetchers,
         formatFetchedEquipmentsHandler
@@ -295,6 +296,18 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         tablesDefinitions,
     ]);
 
+    const handleRowDataUpdated = useCallback(() => {
+        scrollToEquipmentIndex();
+        // wait a moment  before removing the loading message.
+        timerRef.current = setTimeout(() => {
+            gridRef.current?.api?.hideOverlay();
+            if (rowData.length === 0 && !isFetching) {
+                // we need to call showNoRowsOverlay in order to show message when rowData is empty
+                gridRef.current?.api?.showNoRowsOverlay();
+            }
+        }, 50);
+    }, [scrollToEquipmentIndex, isFetching, rowData]);
+
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
             const colId = event.column?.getColId();
@@ -372,6 +385,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         columnData={mergedColumnData}
                         fetched={!!equipments || !!errorMessage}
                         handleColumnDrag={handleColumnDrag}
+                        handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
                         onRowClicked={onRowClicked}
                         isExternalFilterPresent={isExternalFilterPresent}

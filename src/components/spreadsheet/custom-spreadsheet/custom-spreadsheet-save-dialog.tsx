@@ -33,7 +33,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
             id,
             name,
             formula,
-            dependencies,
+            dependencies: JSON.stringify(dependencies),
         }));
     }, [customColumnsDefinitions]);
 
@@ -54,8 +54,8 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
                   name: colId,
                   formula: staticColumnIdToField[colId],
                   id: staticColumnIdToField[colId],
-                  dependencies: [],
                   uuid: uuid4(),
+                  dependencies: null,
               }))
             : [];
     }, [reorderedStaticColumnIds, staticColumnIdToField]);
