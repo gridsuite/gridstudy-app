@@ -297,7 +297,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     ]);
 
     const handleRowDataUpdated = useCallback(() => {
-        scrollToEquipmentIndex();
+        scrollToEquipmentIndex(equipmentId);
         // wait a moment  before removing the loading message.
         timerRef.current = setTimeout(() => {
             gridRef.current?.api?.hideOverlay();
@@ -306,7 +306,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 gridRef.current?.api?.showNoRowsOverlay();
             }
         }, 50);
-    }, [scrollToEquipmentIndex, isFetching, rowData]);
+    }, [scrollToEquipmentIndex, equipmentId, rowData.length, isFetching]);
 
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
