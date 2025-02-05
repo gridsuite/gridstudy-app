@@ -7,13 +7,11 @@
 
 import {
     ID,
-    LIMITS,
     OPERATIONAL_LIMITS_GROUPS_1,
     OPERATIONAL_LIMITS_GROUPS_2,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
 } from '../../utils/field-constants';
-import React from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -22,14 +20,15 @@ import { ContentCopy, Delete, Edit } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { PopoverProps } from '@mui/material/Popover';
 
 export interface LimitsGroupsContextualMenuProps {
-    id?: string;
+    parentFormName: string;
     indexSelectedLimitSet1: number | null;
     indexSelectedLimitSet2: number | null;
     setIndexSelectedLimitSet1: React.Dispatch<React.SetStateAction<number | null>>;
     setIndexSelectedLimitSet2: React.Dispatch<React.SetStateAction<number | null>>;
-    menuAnchorEl: any;
+    menuAnchorEl: PopoverProps['anchorEl'];
     handleCloseMenu: () => void;
     activatedByMenuTabIndex: number | null;
     startEditingLimitsGroup: (index: number, name: string | null) => void;
@@ -39,7 +38,7 @@ export interface LimitsGroupsContextualMenuProps {
 }
 
 export function LimitsGroupsContextualMenu({
-    id = LIMITS,
+    parentFormName,
     indexSelectedLimitSet1,
     indexSelectedLimitSet2,
     menuAnchorEl,
@@ -54,10 +53,10 @@ export function LimitsGroupsContextualMenu({
 }: Readonly<LimitsGroupsContextualMenuProps>) {
     const intl = useIntl();
     const { append: appendToLimitsGroups1, remove: removeLimitsGroups1 } = useFieldArray({
-        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
+        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`,
     });
     const { append: appendToLimitsGroups2, remove: removeLimitsGroups2 } = useFieldArray({
-        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
+        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
     const { getValues, setValue } = useFormContext();
 
@@ -65,14 +64,14 @@ export function LimitsGroupsContextualMenu({
         if (indexSelectedLimitSet1 !== null) {
             // if this operational limit was selected, deselect it
             if (selectedLimitsGroups1 === editedLimitGroupName) {
-                setValue(`${id}.${SELECTED_LIMITS_GROUP_1}`, '');
+                setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, '');
             }
             removeLimitsGroups1(indexSelectedLimitSet1);
             setIndexSelectedLimitSet1(null);
         }
         if (indexSelectedLimitSet2 !== null) {
             if (selectedLimitsGroups2 === editedLimitGroupName) {
-                setValue(`${id}.${SELECTED_LIMITS_GROUP_2}`, '');
+                setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, '');
             }
             removeLimitsGroups2(indexSelectedLimitSet2);
             setIndexSelectedLimitSet2(null);
@@ -82,7 +81,9 @@ export function LimitsGroupsContextualMenu({
 
     const handleDuplicateTab = () => {
         if (indexSelectedLimitSet1 !== null) {
-            const duplicatedLimits1 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`);
+            const duplicatedLimits1 = getValues(
+                `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`
+            );
             const newLimitsGroup1: OperationalLimitsGroup = {
                 ...duplicatedLimits1,
                 [ID]: '',
@@ -91,14 +92,16 @@ export function LimitsGroupsContextualMenu({
         }
 
         if (indexSelectedLimitSet2 !== null) {
-            const duplicatedLimits2 = getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`);
+            const duplicatedLimits2 = getValues(
+                `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`
+            );
             const newLimitsGroup2: OperationalLimitsGroup = {
                 ...duplicatedLimits2,
                 [ID]: '',
             };
             appendToLimitsGroups2(newLimitsGroup2);
         }
-        startEditingLimitsGroup(getValues(`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`).length - 1, '');
+        startEditingLimitsGroup(getValues(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`).length - 1, '');
     };
 
     return (

@@ -7,11 +7,10 @@
 
 import { Box, Tab, Tabs, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
     CURRENT_LIMITS,
     ID,
-    LIMITS,
     OPERATIONAL_LIMITS_GROUPS_1,
     OPERATIONAL_LIMITS_GROUPS_2,
     PERMANENT_LIMIT,
@@ -52,7 +51,7 @@ export const limitsStyles = {
 };
 
 export interface OperationalLimitsGroupsTabsProps {
-    id?: string;
+    parentFormName: string;
     limitsGroups1: OperationalLimitsGroup[];
     limitsGroups2: OperationalLimitsGroup[];
     indexSelectedLimitSet1: number | null;
@@ -62,7 +61,7 @@ export interface OperationalLimitsGroupsTabsProps {
 }
 
 export function OperationalLimitsGroupsTabs({
-    id = LIMITS,
+    parentFormName,
     limitsGroups1,
     limitsGroups2,
     setIndexSelectedLimitSet1,
@@ -79,16 +78,16 @@ export function OperationalLimitsGroupsTabs({
     const [editionError, setEditionError] = useState<string>('');
     const { setValue } = useFormContext();
     const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
-        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
+        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`,
     });
     const { append: appendToLimitsGroups2, update: updateLimitsGroups2 } = useFieldArray({
-        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
+        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
     const selectedLimitsGroups1: string = useWatch({
-        name: `${id}.${SELECTED_LIMITS_GROUP_1}`,
+        name: `${parentFormName}.${SELECTED_LIMITS_GROUP_1}`,
     });
     const selectedLimitsGroups2: string = useWatch({
-        name: `${id}.${SELECTED_LIMITS_GROUP_2}`,
+        name: `${parentFormName}.${SELECTED_LIMITS_GROUP_2}`,
     });
 
     // control of the focus on the edited tab
@@ -249,7 +248,7 @@ export function OperationalLimitsGroupsTabs({
                     [ID]: editedLimitGroupName,
                 });
                 if (selectedLimitsGroups1 === oldName) {
-                    setValue(`${id}.${SELECTED_LIMITS_GROUP_1}`, editedLimitGroupName);
+                    setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, editedLimitGroupName);
                 }
             }
             if (indexInLs2 !== undefined) {
@@ -258,7 +257,7 @@ export function OperationalLimitsGroupsTabs({
                     [ID]: editedLimitGroupName,
                 });
                 if (selectedLimitsGroups2 === oldName) {
-                    setValue(`${id}.${SELECTED_LIMITS_GROUP_2}`, editedLimitGroupName);
+                    setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, editedLimitGroupName);
                 }
             }
             setSelectedLimitGroupTabIndex(editingTabIndex);
@@ -266,7 +265,7 @@ export function OperationalLimitsGroupsTabs({
             setEditionError('');
         }
     }, [
-        id,
+        parentFormName,
         setValue,
         selectedLimitsGroups1,
         selectedLimitsGroups2,
@@ -326,11 +325,11 @@ export function OperationalLimitsGroupsTabs({
                 onChange={handleTabChange}
                 sx={tabStyles.listDisplay}
             >
-                {limitsGroups1.map((set: OperationalLimitsGroup, index: number) => (
+                {limitsGroups1.map((opLg: OperationalLimitsGroup, index: number) => (
                     <Tab
                         onMouseEnter={() => setHoveredRowIndex(index)}
                         onMouseLeave={() => setHoveredRowIndex(-1)}
-                        key={set.id + index}
+                        key={opLg.id + index}
                         label={
                             editingTabIndex === index ? (
                                 <TextField
@@ -353,7 +352,7 @@ export function OperationalLimitsGroupsTabs({
                                         width: '100%',
                                     }}
                                 >
-                                    {set.id}
+                                    {opLg.id}
                                     {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (
                                         <IconButton
                                             size="small"
@@ -394,6 +393,7 @@ export function OperationalLimitsGroupsTabs({
                 />
             </Tabs>
             <LimitsGroupsContextualMenu
+                parentFormName={parentFormName}
                 indexSelectedLimitSet1={indexSelectedLimitSet1}
                 indexSelectedLimitSet2={indexSelectedLimitSet2}
                 setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}

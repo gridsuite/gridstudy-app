@@ -27,7 +27,7 @@ import { CurrentTreeNode } from '../../../redux/reducer';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
-    permanentCurrentLimitPreviousValue: any;
+    permanentCurrentLimitPreviousValue: number | null | undefined;
     temporaryLimitsPreviousValues: TemporaryLimit[];
     clearableFields: boolean | undefined;
     currentNode?: CurrentTreeNode;
@@ -171,7 +171,7 @@ export function LimitsSidePane({
                     name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
                     label="PermanentCurrentLimitText"
                     adornment={AmpereAdornment}
-                    previousValue={permanentCurrentLimitPreviousValue}
+                    previousValue={permanentCurrentLimitPreviousValue ?? undefined}
                     clearable={clearableFields}
                 />
             </Box>

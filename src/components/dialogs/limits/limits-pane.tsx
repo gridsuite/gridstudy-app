@@ -20,7 +20,7 @@ import { FormattedMessage } from 'react-intl';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
 import { CurrentTreeNode } from '../../../redux/reducer';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
@@ -135,6 +135,7 @@ export function LimitsPane({
                 {!onlySelectedLimitsGroup && (
                     <Grid item xs={1.8}>
                         <OperationalLimitsGroupsTabs
+                            parentFormName={id}
                             limitsGroups1={limitsGroups1}
                             limitsGroups2={limitsGroups2}
                             indexSelectedLimitSet1={indexSelectedLimitSet1}
@@ -158,6 +159,7 @@ export function LimitsPane({
                 {!onlySelectedLimitsGroup && (
                     <Grid item xs={0.25}>
                         <CopyLimits
+                            parentFormName={id}
                             indexSelectedLimitSet1={indexSelectedLimitSet1}
                             indexSelectedLimitSet2={indexSelectedLimitSet2}
                         />
