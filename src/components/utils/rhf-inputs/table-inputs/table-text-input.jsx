@@ -6,14 +6,15 @@
  */
 
 import { TextField } from '@mui/material';
-import { useController } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 
 export const TableTextInput = ({ name, style, showErrorMsg, inputProps, ...props }) => {
     const {
-        field: { onChange, value, ref },
+        field: { onChange, ref },
         fieldState: { error },
     } = useController({ name });
+    const { watch } = useFormContext();
 
     const intl = useIntl();
 
@@ -27,7 +28,7 @@ export const TableTextInput = ({ name, style, showErrorMsg, inputProps, ...props
 
     return (
         <TextField
-            value={value}
+            value={watch(name)}
             onChange={handleInputChange}
             error={!!error?.message}
             helperText={showErrorMsg && (error?.message ? intl.formatMessage({ id: error.message }) : '')}

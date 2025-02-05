@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
@@ -97,6 +97,9 @@ function TemporaryLimitsTable({
 }: Readonly<TemporaryLimitsTableProps>) {
     const { fields, append, remove } = useFieldArray({ name: arrayFormName });
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
+    const temporaryLimits: TemporaryLimit[] = useWatch({
+        name: arrayFormName,
+    });
 
     function renderTableCell(rowId: string, rowIndex: number, column: ILimitColumnDef) {
         const name = `${arrayFormName}[${rowIndex}].${column.dataKey}`;
@@ -161,7 +164,9 @@ function TemporaryLimitsTable({
     function renderTableBody() {
         return (
             <TableBody>
-                {fields.map((value: Record<'id', string>, index: number) => renderTableRow(value.id, index))}
+                {temporaryLimits.map(
+                    (value: TemporaryLimit, index: number) => fields[index] && renderTableRow(fields[index].id, index)
+                )}
             </TableBody>
         );
     }
