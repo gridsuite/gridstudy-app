@@ -53,10 +53,10 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
         return equipment
             ? new Map<string, ColumnWithFormulaDto>(
                   equipment.columns.map((c) => [
-                      c.colId!,
+                      c.colId,
                       {
                           id: c.field ?? '',
-                          name: c.colId!,
+                          name: c.headerComponentParams?.displayName ?? c.colId,
                           type: c.context?.columnType ?? COLUMN_TYPES.TEXT,
                           precision: c.cellRendererParams?.fractionDigits,
                           formula: c.field ?? '',
