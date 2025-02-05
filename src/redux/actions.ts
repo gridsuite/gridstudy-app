@@ -185,6 +185,18 @@ export function addAdditionalEquipmentsByNodesForCustomColumns(
     };
 }
 
+export const REMOVE_NODE_DATA = 'REMOVE_NODE_DATA';
+export type RemoveNodeDataAction = Readonly<Action<typeof REMOVE_NODE_DATA>> & {
+    aliases: string[];
+};
+
+export function removeNodeData(aliases: string[]): RemoveNodeDataAction {
+    return {
+        type: REMOVE_NODE_DATA,
+        aliases,
+    };
+}
+
 export const UPDATE_CUSTOM_COLUMNS_NODES_ALIASES = 'UPDATE_CUSTOM_COLUMNS_NODES_ALIASES';
 export type UpdateCustomColumnsNodesAliasesAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_NODES_ALIASES>> & {
     nodesAliases: NodeAlias[];

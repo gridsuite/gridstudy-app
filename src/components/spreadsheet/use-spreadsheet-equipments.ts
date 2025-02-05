@@ -16,6 +16,7 @@ import {
     deleteEquipments,
     EquipmentToDelete,
     loadEquipments,
+    removeNodeData,
     resetEquipments,
     resetEquipmentsByTypes,
     updateEquipments,
@@ -54,7 +55,6 @@ export const useSpreadsheetEquipments = (
     );
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
     const {
@@ -182,7 +182,17 @@ export const useSpreadsheetEquipments = (
     ]);
 
     useEffect(() => {
+        console.log(`custom nodes ${JSON.stringify(allAdditionalEquipments)}`);
         if (studyUuid && currentRootNetworkUuid) {
+            // Clean nodes that are not loaded anymore
+            const unwantedFetchedNodes = new Set(Object.keys(allAdditionalEquipments));
+            const usedNodes = new Set(customColumnsNodesAliases);
+            usedNodes.forEach((node) => unwantedFetchedNodes.delete(node.alias));
+            if (unwantedFetchedNodes.size !== 0) {
+                dispatch(removeNodeData(Array.from(unwantedFetchedNodes)));
+            }
+
+            // Fetch new nodes for the current type if required
             const fetchedEquipments = customColumnsNodesAliases.map(async (aliasInfo) => {
                 if (allAdditionalEquipments[aliasInfo.alias]?.[type] !== undefined) {
                     return undefined;

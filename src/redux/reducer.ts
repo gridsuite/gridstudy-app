@@ -111,8 +111,10 @@ import {
     OpenNadListAction,
     OpenStudyAction,
     REMOVE_CUSTOM_COLUMNS_DEFINITION,
+    REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
     RemoveCustomColumnsDefinitionsAction,
+    RemoveNodeDataAction,
     RemoveNotificationByNodeAction,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
@@ -1526,6 +1528,17 @@ export const reducer = createReducer(initialState, (builder) => {
             };
         }
     );
+
+    builder.addCase(REMOVE_NODE_DATA, (state, action: RemoveNodeDataAction) => {
+        state.additionalEquipmentsByNodesForCustomColumns = Object.keys(
+            state.additionalEquipmentsByNodesForCustomColumns
+        )
+            .filter((alias) => !action.aliases.includes(alias))
+            .reduce((acc, alias) => {
+                acc[alias] = state.additionalEquipmentsByNodesForCustomColumns[alias];
+                return acc;
+            }, {} as AdditionalEquipmentsByNodesForCustomColumnsState);
+    });
 
     builder.addCase(UPDATE_CUSTOM_COLUMNS_NODES_ALIASES, (state, action: UpdateCustomColumnsNodesAliasesAction) => {
         state.customColumnsNodesAliases = action.nodesAliases;
