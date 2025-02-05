@@ -144,7 +144,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const updateLockedColumnsConfig = useCallback(() => {
         const lockedColumnsConfig = tableDefinition.columns
-            .filter((column) => formattedLockedColumns.has(column.colId!))
+            .filter((column) => formattedLockedColumns.has(column.colId))
             .map((column) => {
                 const s: ColumnState = {
                     colId: column.colId ?? '',
