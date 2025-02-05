@@ -75,11 +75,6 @@ const formatNumericCell = (value: number, fractionDigits?: number) => {
 export const formatCell = (props: any) => {
     let value = props?.valueFormatted || props.value;
     let tooltipValue = undefined;
-    if (props.colDef.valueGetter) {
-        value = props?.context?.network
-            ? props.colDef.valueGetter(props, props.context.network)
-            : props.colDef.valueGetter(props);
-    }
     if (value != null && props.colDef.context?.numeric && props.colDef.context?.fractionDigits) {
         // only numeric rounded cells have a tooltip (their raw numeric value)
         tooltipValue = value;
