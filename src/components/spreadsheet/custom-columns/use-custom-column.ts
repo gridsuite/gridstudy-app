@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { ColumnWithFormula } from 'types/custom-columns.types';
@@ -21,11 +21,10 @@ import {
 import { validateFormulaResult } from './formula-validator';
 
 export function useCustomColumn(tabIndex: number) {
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
+    const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
     );
-    const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
 
     const createValueGetter = useCallback(
         (colWithFormula: ColumnWithFormula) =>
@@ -50,61 +49,52 @@ export function useCustomColumn(tabIndex: number) {
         []
     );
 
-    const createCustomColumn = useCallback(() => {
-        return customColumnsDefinitions.map((colWithFormula): CustomColDef => {
-            let baseDefinition: ColDef;
+    return useMemo(
+        () =>
+            customColumnsDefinitions.map((colWithFormula): CustomColDef => {
+                let baseDefinition: ColDef;
 
-            switch (colWithFormula.type) {
-                case COLUMN_TYPES.NUMBER:
-                    baseDefinition = numberColumnDefinition(
-                        colWithFormula.name,
-                        tablesDefinitionIndexes.get(tabIndex)!.name,
-                        colWithFormula.precision
-                    );
-                    break;
-                case COLUMN_TYPES.TEXT:
-                    baseDefinition = textColumnDefinition(
-                        colWithFormula.name,
-                        tablesDefinitionIndexes.get(tabIndex)!.name
-                    );
-                    break;
-                case COLUMN_TYPES.BOOLEAN:
-                    baseDefinition = booleanColumnDefinition(
-                        colWithFormula.name,
-                        tablesDefinitionIndexes.get(tabIndex)!.name
-                    );
-                    break;
-                case COLUMN_TYPES.ENUM:
-                    baseDefinition = enumColumnDefinition(
-                        colWithFormula.name,
-                        tablesDefinitionIndexes.get(tabIndex)!.name
-                    );
-                    break;
-                default:
-                    baseDefinition = {};
-            }
+                switch (colWithFormula.type) {
+                    case COLUMN_TYPES.NUMBER:
+                        baseDefinition = numberColumnDefinition(
+                            colWithFormula.name,
+                            tableDefinition.name,
+                            colWithFormula.precision
+                        );
+                        break;
+                    case COLUMN_TYPES.TEXT:
+                        baseDefinition = textColumnDefinition(colWithFormula.name, tableDefinition.name);
+                        break;
+                    case COLUMN_TYPES.BOOLEAN:
+                        baseDefinition = booleanColumnDefinition(colWithFormula.name, tableDefinition.name);
+                        break;
+                    case COLUMN_TYPES.ENUM:
+                        baseDefinition = enumColumnDefinition(colWithFormula.name, tableDefinition.name);
+                        break;
+                    default:
+                        baseDefinition = {};
+                }
 
-            return {
-                ...baseDefinition,
-                colId: colWithFormula.id,
-                headerName: colWithFormula.name,
-                headerTooltip: colWithFormula.name,
-                headerComponentParams: {
-                    ...baseDefinition.headerComponentParams,
-                    menu: {
-                        Menu: CustomColumnMenu,
-                        menuParams: {
-                            tabIndex,
-                            customColumnName: colWithFormula.name,
+                return {
+                    ...baseDefinition,
+                    colId: colWithFormula.id,
+                    headerName: colWithFormula.name,
+                    headerTooltip: colWithFormula.name,
+                    headerComponentParams: {
+                        ...baseDefinition.headerComponentParams,
+                        menu: {
+                            Menu: CustomColumnMenu,
+                            menuParams: {
+                                tabIndex,
+                                customColumnName: colWithFormula.name,
+                            },
                         },
                     },
-                },
-                valueGetter: createValueGetter(colWithFormula),
-                editable: false,
-                suppressMovable: true,
-            };
-        });
-    }, [customColumnsDefinitions, tablesDefinitionIndexes, tabIndex, createValueGetter]);
-
-    return { createCustomColumn };
+                    valueGetter: createValueGetter(colWithFormula),
+                    editable: false,
+                    suppressMovable: true,
+                };
+            }),
+        [customColumnsDefinitions, tableDefinition.name, tabIndex, createValueGetter]
+    );
 }
