@@ -13,7 +13,7 @@ export type EquipmentFetcher = (
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[]
+    substationsIds?: string[]
 ) => Promise<any>;
 
 export type SpreadsheetEquipmentType = Exclude<
@@ -36,3 +36,5 @@ export interface SpreadsheetTabDefinition<
     columns: CustomColDef<TData, TValue, F>[];
     groovyEquipmentGetter?: string;
 }
+
+export type ColumnState = { colId: string; visible: boolean };
