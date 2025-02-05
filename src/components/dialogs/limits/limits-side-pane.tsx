@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -23,13 +23,14 @@ import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
 import DndTable from '../../utils/dnd-table/dnd-table';
 import TemporaryLimitsTable from './temporary-limits-table';
+import { CurrentTreeNode } from '../../../redux/reducer';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
     permanentCurrentLimitPreviousValue: any;
     temporaryLimitsPreviousValues: TemporaryLimit[];
     clearableFields: boolean | undefined;
-    currentNode: any;
+    currentNode?: CurrentTreeNode;
     onlySelectedLimitsGroup: boolean;
 }
 
@@ -183,7 +184,7 @@ export function LimitsSidePane({
             const temporaryLimit = getValues(arrayFormName)[rowIndex];
             if (
                 temporaryLimit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
-                !isNodeBuilt(currentNode)
+                !isNodeBuilt(currentNode ?? null)
             ) {
                 return false;
             } else {

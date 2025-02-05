@@ -127,7 +127,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getTwoWindingsTransformerEmptyFormData(),
-    ...getLimitsEmptyFormData(LIMITS, false),
+    ...getLimitsEmptyFormData(false),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
     ...emptyProperties,
@@ -139,7 +139,7 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
         ...getTwoWindingsTransformerValidationSchema(),
-        ...getLimitsValidationSchema(LIMITS, false),
+        ...getLimitsValidationSchema(false),
         ...getRatioTapChangerValidationSchema(),
         ...getPhaseTapChangerValidationSchema(),
     })

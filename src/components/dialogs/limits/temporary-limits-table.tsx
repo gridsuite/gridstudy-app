@@ -138,7 +138,6 @@ function TemporaryLimitsTable({
             return { ...row, [SELECTED]: false };
         });
 
-        // note : an id prop is automatically added in each row
         append(rowsToAdd);
     }
 

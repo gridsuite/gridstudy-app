@@ -90,7 +90,7 @@ import { isBlankOrEmpty } from '../../../../utils/validation-functions.js';
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
-    ...getLimitsEmptyFormData(LIMITS, false),
+    ...getLimitsEmptyFormData(false),
     ...emptyProperties,
 };
 
@@ -139,7 +139,7 @@ const LineCreationDialog = ({
         .shape({
             ...getHeaderValidationSchema(),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity),
-            ...getLimitsValidationSchema(LIMITS, false),
+            ...getLimitsValidationSchema(false),
         })
         .concat(creationPropertiesSchema)
         .required();

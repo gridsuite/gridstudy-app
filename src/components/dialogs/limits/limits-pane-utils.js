@@ -89,7 +89,7 @@ const limitsValidationSchema = (id, onlySelectedLimits = true) => {
     return { [id]: yup.object().shape(onlySelectedLimits ? currentLimitsSchema : limitsGroupSchema) };
 };
 
-export const getLimitsValidationSchema = (id = LIMITS, onlySelectedLimits = true) => {
+export const getLimitsValidationSchema = (onlySelectedLimits = true, id = LIMITS) => {
     return limitsValidationSchema(id, onlySelectedLimits);
 };
 
@@ -114,7 +114,7 @@ const limitsEmptyFormData = (id, onlySelectedLimits = true) => {
     return { [id]: onlySelectedLimits ? currentLimits : limitsGroup };
 };
 
-export const getLimitsEmptyFormData = (id = LIMITS, onlySelectedLimits = true) => {
+export const getLimitsEmptyFormData = (onlySelectedLimits = true, id = LIMITS) => {
     return limitsEmptyFormData(id, onlySelectedLimits);
 };
 

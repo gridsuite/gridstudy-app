@@ -233,12 +233,8 @@ const TwoWindingsTransformerModificationDialog = ({
                     ratedS: twt.ratedS?.value,
                 }),
                 ...getSelectedLimitsFormData({
-                    permanentLimit1:
-                        twt.currentLimits1?.permanentLimit ??
-                        getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
-                    permanentLimit2:
-                        twt.currentLimits2?.permanentLimit ??
-                        getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
+                    permanentLimit1: twt.currentLimits1?.permanentLimit,
+                    permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
                         formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
                     ),
@@ -289,7 +285,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getPropertiesFromModification(twt.properties),
             });
         },
-        [reset, getValues]
+        [reset]
     );
 
     useEffect(() => {
