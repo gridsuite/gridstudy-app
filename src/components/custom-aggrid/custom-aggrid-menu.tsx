@@ -31,7 +31,7 @@ export const CustomMenu = <T,>({ Menu, menuParams }: CustomMenuProps<T>) => {
 
     return (
         <>
-            <Grid item direction={'row'}>
+            <Grid container direction={'row'}>
                 <IconButton ref={menuButtonRef} size={'small'} onClick={() => setMenuOpen(true)}>
                     <Badge color="secondary">
                         <MoreVertIcon sx={styles.iconSize} />
