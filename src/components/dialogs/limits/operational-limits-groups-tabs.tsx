@@ -71,7 +71,7 @@ export function OperationalLimitsGroupsTabs({
 }: Readonly<OperationalLimitsGroupsTabsProps>) {
     const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number | null>(0);
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
-    const [editingTabIndex, setEditingTabIndex] = useState<number | null>(null);
+    const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const [activatedByMenuTabIndex, setActivatedByMenuTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
@@ -96,7 +96,7 @@ export function OperationalLimitsGroupsTabs({
         setEditLimitGroupRef(ref);
     }, []);
     useEffect(() => {
-        if (editingTabIndex && editLimitGroupRef) {
+        if (editingTabIndex !== -1 && editLimitGroupRef) {
             editLimitGroupRef.focus();
         }
     }, [editingTabIndex, editLimitGroupRef]);
@@ -181,7 +181,7 @@ export function OperationalLimitsGroupsTabs({
     // in both limitsGroups1 and limitsGroups2, even if they don't contain any data
     useEffect(() => {
         // no synchronization while editing
-        if (editingTabIndex === null) {
+        if (editingTabIndex === -1) {
             limitsGroups1.forEach((limitsGroup1: OperationalLimitsGroup) => {
                 if (
                     !isBlankOrEmpty(limitsGroup1.id) &&
@@ -214,7 +214,7 @@ export function OperationalLimitsGroupsTabs({
     }, [limitsGroups1, limitsGroups2, appendToLimitsGroups1, appendToLimitsGroups2, editingTabIndex]);
 
     const finishEditingLimitsGroup = useCallback(() => {
-        if (editingTabIndex !== null) {
+        if (editingTabIndex !== -1) {
             if (isBlankOrEmpty(editedLimitGroupName)) {
                 setEditionError('LimitSetCreationEmptyError');
                 return;
@@ -261,7 +261,7 @@ export function OperationalLimitsGroupsTabs({
                 }
             }
             setSelectedLimitGroupTabIndex(editingTabIndex);
-            setEditingTabIndex(null);
+            setEditingTabIndex(-1);
             setEditionError('');
         }
     }, [
@@ -289,7 +289,7 @@ export function OperationalLimitsGroupsTabs({
     );
 
     const addNewLimitSet = useCallback(() => {
-        if (editingTabIndex === null) {
+        if (editingTabIndex === -1) {
             const newIndex: number = limitsGroups1.length;
             // new limit sets are created with 5 empty limits by default
             const emptyTemporaryLimit = {
@@ -374,7 +374,7 @@ export function OperationalLimitsGroupsTabs({
                 ))}
                 <Tab
                     label={
-                        editingTabIndex === null && (
+                        editingTabIndex === -1 && (
                             <Box
                                 sx={{
                                     display: 'flex',

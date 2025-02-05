@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { RawReadOnlyInput, ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
+import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -29,7 +29,6 @@ const styles = {
 };
 
 interface CustomTableCellProps {
-    key: string;
     name: string;
     column: ILimitColumnDef;
     disabled: boolean;
@@ -37,24 +36,9 @@ interface CustomTableCellProps {
     valueModified: boolean;
 }
 
-function DefaultTableCell({ key, name, column, ...props }: Readonly<CustomTableCellProps>) {
+function EditableTableCell({ name, column, previousValue, valueModified, ...props }: Readonly<CustomTableCellProps>) {
     return (
-        <TableCell key={key} sx={{ padding: 1 }}>
-            <RawReadOnlyInput name={name} {...props} />
-        </TableCell>
-    );
-}
-
-function EditableTableCell({
-    key,
-    name,
-    column,
-    previousValue,
-    valueModified,
-    ...props
-}: Readonly<CustomTableCellProps>) {
-    return (
-        <TableCell key={key} sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
+        <TableCell sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
             {column.numeric ? (
                 <TableNumericalInput
                     style={undefined}
@@ -115,10 +99,9 @@ function TemporaryLimitsTable({
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
 
     function renderTableCell(rowId: string, rowIndex: number, column: ILimitColumnDef) {
-        let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;
         const name = `${arrayFormName}[${rowIndex}].${column.dataKey}`;
         return (
-            <CustomTableCell
+            <EditableTableCell
                 key={rowId + column.dataKey}
                 name={name}
                 column={column}
@@ -164,10 +147,10 @@ function TemporaryLimitsTable({
         );
     }
 
-    const renderTableRow = (id: string, index: number) => (
+    const renderTableRow = (rowId: string, index: number) => (
         <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
-            {columnsDefinition.map((column) => renderTableCell(id, index, column))}
-            <TableCell>
+            {columnsDefinition.map((column) => renderTableCell(rowId, index, column))}
+            <TableCell key={rowId + 'delete'}>
                 <IconButton color="primary" onClick={() => remove(index)}>
                     <DeleteIcon visibility={index === hoveredRowIndex ? 'visible' : 'hidden'} />
                 </IconButton>
