@@ -194,7 +194,6 @@ const SubstationModificationDialog = ({
                 )}
                 {selectedId != null && (
                     <SubstationModificationForm
-                        currentNode={currentNode}
                         studyUuid={studyUuid}
                         substationToModify={substationToModify}
                         equipmentId={selectedId}

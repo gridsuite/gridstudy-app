@@ -6,12 +6,11 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
 import { Alert, Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/constants';
 import { EquipmentTable } from './equipment-table';
 import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
@@ -19,7 +18,6 @@ import { ColumnsConfig } from './columns-config';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentTabs } from './equipment-tabs';
 import { EquipmentProps, useSpreadsheetEquipments } from './use-spreadsheet-equipments';
-import { updateConfigParameter } from '../../services/config';
 import { formatFetchedEquipments } from './utils/equipment-table-utils';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
@@ -38,6 +36,7 @@ import { FilterType } from '../../types/custom-aggrid-types';
 import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useEquipmentModification } from './equipment-modification/use-equipment-modification';
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
+import { changeReorderedColumns } from '../../redux/actions';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -102,6 +101,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const gridRef = useRef<AgGridReact>(null);
     const timerRef = useRef<NodeJS.Timeout>();
     const { snackError } = useSnackMessage();
+    const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState<number>(0);
 
     const allDisplayedColumnsNames = useSelector((state: AppState) => state.tables.columnsNamesJson);
@@ -382,16 +382,14 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     tmpIndexes.splice(destinationIndex, 0, reorderedItem);
                     if (reorderedTableDefinitionIndexes.toString() !== tmpIndexes.toString()) {
                         setReorderedTableDefinitionIndexes(tmpIndexes);
-                        updateConfigParameter(
-                            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + tablesNames[tabIndex],
-                            JSON.stringify(tmpIndexes)
-                        ).catch((error) => {
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'paramsChangingError',
-                            });
-                        });
-
+                        // update redux
+                        const columns = new Array(tablesNames.length);
+                        columns[tabIndex] = {
+                            index: tabIndex,
+                            value: JSON.stringify(tmpIndexes),
+                        };
+                        dispatch(changeReorderedColumns(columns));
+                        // update local data
                         let tmpData = Object.assign([], columnData);
                         const [reorderedColDef] = tmpData.splice(
                             tmpData.findIndex((obj: any) => {
@@ -405,7 +403,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 }
             }
         },
-        [columnData, reorderedTableDefinitionIndexes, snackError, tabIndex, tablesNames]
+        [columnData, dispatch, reorderedTableDefinitionIndexes, tabIndex, tablesNames.length]
     );
 
     const generateTableColumns = useCallback(() => {
