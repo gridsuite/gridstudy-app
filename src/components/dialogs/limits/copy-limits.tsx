@@ -14,7 +14,7 @@ import KeyboardDoubleArrowLeft from '@mui/icons-material/KeyboardDoubleArrowLeft
 import { limitsStyles } from './operational-limits-groups-tabs';
 
 export interface CopyLimitsProps {
-    id?: string;
+    id: string;
     indexSelectedLimitSet1: number | null;
     indexSelectedLimitSet2: number | null;
 }
