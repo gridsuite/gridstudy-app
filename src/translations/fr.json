@@ -496,7 +496,7 @@
     "LoadFlowResultsStatus": "Statut",
     "ComputationResultsLogs": "Logs",
 
-    "results.globalFilter.fillerText": "Pays ou niveau de tension",
+    "results.globalFilter.fillerText": "Filtrage",
     "results.globalFilter.recent": "Récents :",
 
     "connectedComponentNum": "Numéro de composante connexe",
