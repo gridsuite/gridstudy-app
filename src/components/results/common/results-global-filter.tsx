@@ -58,8 +58,13 @@ const styles = {
             padding: '0',
             color: 'white',
         },
+        '.MuiChip-deleteIcon': {
+            color: 'white',
+            opacity: 0.6,
+        },
         '.MuiChip-deleteIcon:hover': {
             color: 'white',
+            opacity: 1,
         },
         '&.Mui-focusVisible': {
             width: 'unset', // prevents the chip from changing size when selected with the keyboard
@@ -69,24 +74,24 @@ const styles = {
     },
     chipCountry: {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
-            backgroundColor: `var(--info-dark, #01579B) !important`,
-        },
-        '.MuiChip-deleteIcon': {
-            color: '#b2daf1',
+            backgroundColor: `var(--info-main, #0288D1) !important`,
         },
         '&.MuiChip-root:hover': {
-            backgroundColor: `var(--info-dark, #0E69B0) !important`,
+            backgroundColor: `var(--info-dark, #01579B) !important`,
+        },
+        '&.MuiChip-root:focus': {
+            backgroundColor: `var(--info-dark, #01579B) !important`,
         },
     },
     chipVoltageLevel: {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `var(--secondary-main, #9C27B0) !important`,
         },
-        '& .MuiChip-deleteIcon': {
-            color: '#bbdefb',
-        },
         '&.MuiChip-root:hover': {
-            backgroundColor: `var(--secondary-main, #B240C5) !important`,
+            backgroundColor: `var(--secondary-dark, #7B1FA2) !important`,
+        },
+        '&.MuiChip-root:focus': {
+            backgroundColor: `var(--secondary-dark, #7B1FA2) !important`,
         },
     },
 };
@@ -188,8 +193,8 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                     />
                 )}
                 // renderTags : the chips in the inputField
-                renderTags={(value, getTagsProps) =>
-                    value.map((element, index) => (
+                renderTags={(filters: Filter[], getTagsProps) =>
+                    filters.map((element: Filter, index: number) => (
                         <Chip
                             size={'small'}
                             label={getOptionLabel(element)}
