@@ -24,19 +24,23 @@ import {
     CustomFormProvider,
     ExpandingTextField,
     MultipleAutocompleteInput,
+    IntegerInput,
     SubmitButton,
     TextInput,
     UseStateBooleanReturn,
+    AutocompleteInput,
 } from '@gridsuite/commons-ui';
 import { useForm, useWatch } from 'react-hook-form';
 import {
     COLUMN_DEPENDENCIES,
     COLUMN_ID,
     COLUMN_NAME,
+    COLUMN_TYPE,
     CustomColumnForm,
     customColumnFormSchema,
     FORMULA,
     initialCustomColumnForm,
+    PRECISION,
 } from './custom-columns-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -45,7 +49,11 @@ import { AppDispatch } from 'redux/store';
 import { setUpdateCustomColumDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
-import { AppState } from '../../../redux/reducer';
+import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { v4 as uuid4 } from 'uuid';
+import { useFilterSelector } from 'hooks/use-filter-selector';
+import { FilterType } from 'types/custom-aggrid-types';
+import { AppState } from 'redux/reducer';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -57,7 +65,7 @@ export type CustomColumnDialogProps = {
 const styles = {
     dialogContent: {
         width: '40%',
-        height: '55%',
+        height: '65%',
         maxWidth: 'none',
         margin: 'auto',
     },
@@ -79,9 +87,12 @@ export default function CustomColumnDialog({
 
     const { setError, control } = formMethods;
     const columnId = useWatch({ control, name: COLUMN_ID });
+    const watchColumnType = useWatch({ control, name: COLUMN_TYPE });
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
     );
+    const tableName = useSelector((state: AppState) => state.tables.definitions[tabIndex].name);
+
     const customColumnDefinition = useMemo(
         () => customColumnsDefinitions.find((column) => column.name === customColumnName),
         [customColumnName, customColumnsDefinitions]
@@ -99,6 +110,25 @@ export default function CustomColumnDialog({
 
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
 
+    const columnType = (
+        <AutocompleteInput
+            name={COLUMN_TYPE}
+            label={'spreadsheet/custom_column/column_type'}
+            options={Object.keys(COLUMN_TYPES)}
+            getOptionLabel={(option: any) => intl.formatMessage({ id: option })}
+            size="small"
+            fullWidth
+        />
+    );
+
+    const precisionField = (
+        <IntegerInput
+            name={PRECISION}
+            label="spreadsheet/custom_column/column_precision"
+            formProps={{ size: 'small' }}
+        />
+    );
+
     const formulaField = (
         <ExpandingTextField
             name={FORMULA}
@@ -108,6 +138,8 @@ export default function CustomColumnDialog({
             sx={{ flexGrow: 1 }}
         />
     );
+
+    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, tableName);
 
     const onSubmit = useCallback(
         (newParams: CustomColumnForm) => {
@@ -121,6 +153,9 @@ export default function CustomColumnDialog({
                     });
                     return;
                 }
+                // if we are editing an existing column, we need to remove the existing filter
+                const updatedFilters = filters.filter((filter) => filter.column !== existingColumn.id);
+                dispatchFilters(updatedFilters);
             }
 
             if (customColumnsDefinitions) {
@@ -138,9 +173,11 @@ export default function CustomColumnDialog({
                 setUpdateCustomColumDefinitions({
                     index: tabIndex,
                     value: {
-                        uuid: customColumnDefinition?.uuid || crypto.randomUUID(),
+                        uuid: customColumnDefinition?.uuid || uuid4(),
                         id: newParams.id,
                         name: newParams.name,
+                        type: COLUMN_TYPES[newParams.type],
+                        precision: newParams.precision,
                         formula: newParams.formula,
                         dependencies: newParams.dependencies,
                     },
@@ -158,6 +195,8 @@ export default function CustomColumnDialog({
             open,
             isCreate,
             hasColumnIdChanged,
+            filters,
+            dispatchFilters,
             setError,
         ]
     );
@@ -167,6 +206,8 @@ export default function CustomColumnDialog({
             reset({
                 [COLUMN_NAME]: customColumnDefinition.name,
                 [COLUMN_ID]: customColumnDefinition.id,
+                [COLUMN_TYPE]: customColumnDefinition.type,
+                [PRECISION]: customColumnDefinition.precision,
                 [FORMULA]: customColumnDefinition.formula,
                 [COLUMN_DEPENDENCIES]: customColumnDefinition.dependencies,
             });
@@ -216,6 +257,14 @@ export default function CustomColumnDialog({
                         <Grid item sx={styles.field}>
                             {columnIdField}
                         </Grid>
+                        <Grid item sx={styles.field}>
+                            {columnType}
+                        </Grid>
+                        {watchColumnType === COLUMN_TYPES.NUMBER && (
+                            <Grid item sx={styles.field}>
+                                {precisionField}
+                            </Grid>
+                        )}
                         <Grid item sx={styles.field}>
                             {formulaField}
                         </Grid>

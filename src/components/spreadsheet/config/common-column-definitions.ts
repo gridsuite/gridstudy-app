@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    COLUMN_TYPES,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -44,6 +45,9 @@ export const textColumnDefinition = (displayName: string, tab: string): ColDef =
             },
         },
         cellRenderer: DefaultCellRenderer,
+        context: {
+            columnType: COLUMN_TYPES.TEXT,
+        },
     };
 };
 
@@ -79,6 +83,9 @@ export const enumColumnDefinition = (displayName: string, tab: string): ColDef =
             },
         },
         cellRenderer: DefaultCellRenderer,
+        context: {
+            columnType: COLUMN_TYPES.ENUM,
+        },
     };
 };
 
@@ -107,6 +114,9 @@ export const numberColumnDefinition = (displayName: string, tab: string, fractio
         cellRenderer: NumericCellRenderer,
         cellRendererParams: {
             fractionDigits,
+        },
+        context: {
+            columnType: COLUMN_TYPES.NUMBER,
         },
     };
 };
@@ -154,5 +164,8 @@ export const booleanColumnDefinition = (displayName: string, tab: string): ColDe
             },
         },
         cellRenderer: BooleanCellRenderer,
+        context: {
+            columnType: COLUMN_TYPES.BOOLEAN,
+        },
     };
 };
