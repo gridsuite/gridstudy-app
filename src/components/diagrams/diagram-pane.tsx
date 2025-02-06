@@ -1039,7 +1039,7 @@ export function DiagramPane({
         [currentNode]
     );
     return (
-        <AutoSizer>
+        <AutoSizer doNotBailOutOnEmptyChildren>
             {({ width, height }) => (
                 <Box
                     sx={mergeSx(styles.availableDiagramSurfaceArea, fullScreenDiagram?.id && styles.fullscreen)}
