@@ -160,20 +160,40 @@ export function loadEquipments(
     };
 }
 
+export type AdditionalNodeData = {
+    alias: string;
+    identifiables: Identifiable[];
+};
+
 export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS =
     'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
 export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<
     Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>
 > & {
-    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>;
+    equipmentType: SpreadsheetEquipmentType;
+    data: AdditionalNodeData[];
 };
 
 export function addAdditionalEquipmentsByNodesForCustomColumns(
-    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>
+    type: SpreadsheetEquipmentType,
+    data: AdditionalNodeData[]
 ): AddEquipmentsByNodesForCustomColumnsAction {
     return {
         type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
-        equipments: equipments,
+        equipmentType: type,
+        data,
+    };
+}
+
+export const REMOVE_NODE_DATA = 'REMOVE_NODE_DATA';
+export type RemoveNodeDataAction = Readonly<Action<typeof REMOVE_NODE_DATA>> & {
+    aliases: string[];
+};
+
+export function removeNodeData(aliases: string[]): RemoveNodeDataAction {
+    return {
+        type: REMOVE_NODE_DATA,
+        aliases,
     };
 }
 
