@@ -66,7 +66,6 @@ export const useSpreadsheetEquipments = (
     } = useGetStudyImpacts();
 
     const shouldFetchEquipments = !equipments;
-    const fetcher = getFetcher(type);
 
     useEffect(() => {
         // updating data related to impacted elements
@@ -154,7 +153,7 @@ export const useSpreadsheetEquipments = (
         ) {
             setErrorMessage(null);
             setIsFetching(true);
-            fetcher(studyUuid, currentNode?.id, currentRootNetworkUuid)
+            getFetcher(type)(studyUuid, currentNode?.id, currentRootNetworkUuid)
                 .then((results) => {
                     let fetchedEquipments = results.flat();
                     if (formatFetchedEquipments) {
@@ -177,7 +176,6 @@ export const useSpreadsheetEquipments = (
         dispatch,
         formatFetchedEquipments,
         customColumnsDefinitions,
-        fetcher,
         type,
     ]);
 
