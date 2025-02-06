@@ -494,7 +494,9 @@
     "ComputationResultsLogs": "Logs",
 
     "results.globalFilter.fillerText": "Filtering",
-    "results.globalFilter.recent": "Recent:",
+    "results.globalFilter.recent": "Recent",
+    "results.globalFilter.country": "Country",
+    "results.globalFilter.voltageLevel": "Voltage level",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",

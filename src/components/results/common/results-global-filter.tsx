@@ -41,18 +41,19 @@ const styles = {
         flexWrap: 'wrap',
         padding: '0.5em',
     },
-    recentBox: (theme: Theme) => ({
-        borderBottom: '1px solid',
+    filterTypeBox: (theme: Theme) => ({
+        borderTop: '1px solid',
         borderColor: theme.palette.divider,
     }),
-    recentLabel: (theme: Theme) => ({
+    groupLabel: (theme: Theme) => ({
         color: theme.palette.text.secondary,
-        fontSize: 'small',
+        fontSize: '0.9em',
         width: '100%',
         paddingLeft: 1,
     }),
     chip: {
         '&.MuiChip-root': {
+            borderRadius: '100px solid',
             margin: '4px 2px 4px 2px',
             padding: '0',
             color: 'white',
@@ -68,30 +69,24 @@ const styles = {
     },
     chipCountry: {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
-            backgroundColor: '#01579b !important',
+            backgroundColor: `var(--info-dark, #01579B) !important`,
         },
         '.MuiChip-deleteIcon': {
             color: '#b2daf1',
         },
         '&.MuiChip-root:hover': {
-            backgroundColor: '#0277bd !important',
-        },
-        '&.Mui-focusVisible': {
-            background: '#0288d1 !important',
+            backgroundColor: `var(--info-dark, #0E69B0) !important`,
         },
     },
     chipVoltageLevel: {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
-            backgroundColor: '#9c27b0 !important',
+            backgroundColor: `var(--secondary-main, #9C27B0) !important`,
         },
         '& .MuiChip-deleteIcon': {
             color: '#bbdefb',
         },
         '&.MuiChip-root:hover': {
-            backgroundColor: '#1976d2 !important',
-        },
-        '&.Mui-focusVisible': {
-            background: '#2196F3 !important',
+            backgroundColor: `var(--secondary-main, #B240C5) !important`,
         },
     },
 };
@@ -100,6 +95,8 @@ export enum FilterType {
     COUNTRY = 'country',
     VOLTAGE_LEVEL = 'voltageLevel',
 }
+
+const recentFilter: string = 'recent';
 
 export interface Filter {
     label: string;
@@ -165,7 +162,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                     })
                     .sort((obj) => (obj.recent ? -1 : 1))}
                 onChange={handleChange}
-                groupBy={(option: any) => option.recent}
+                groupBy={(option: Filter): string => (option.recent ? recentFilter : option.filterType)}
                 // renderInput : the inputfield that contains the chips, adornments and label
                 renderInput={(params) => (
                     <TextField
@@ -200,17 +197,12 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 // renderGroup : the box below that is visible when we focus on the AutoComplete
                 renderGroup={(item) => {
                     const { group, children } = item;
-                    const itemRecentAvailable = !!group;
+                    const recent: boolean = group === recentFilter;
                     return (
-                        <Box
-                            key={'keyBoxGroup_' + group}
-                            sx={mergeSx(styles.chipBox, itemRecentAvailable && styles.recentBox)}
-                        >
-                            {itemRecentAvailable && (
-                                <Box sx={styles.recentLabel}>
-                                    <FormattedMessage id="results.globalFilter.recent" />
-                                </Box>
-                            )}
+                        <Box key={'keyBoxGroup_' + group} sx={mergeSx(styles.chipBox, !recent && styles.filterTypeBox)}>
+                            <Box sx={styles.groupLabel}>
+                                <FormattedMessage id={'results.globalFilter.' + group} />
+                            </Box>
                             {children}
                         </Box>
                     );
