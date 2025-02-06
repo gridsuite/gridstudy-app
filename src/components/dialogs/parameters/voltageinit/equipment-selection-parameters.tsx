@@ -18,7 +18,6 @@ import {
 } from 'components/utils/field-constants';
 import ParameterLineDirectoryItemsInput from '../widget/parameter-line-directory-items-input';
 import { FormattedMessage } from 'react-intl';
-import { useMemo } from 'react';
 import { Box, Theme } from '@mui/system';
 
 const equipmentsSelectionStyles = {
@@ -34,24 +33,18 @@ const equipmentsSelectionStyles = {
     }),
 };
 
-export const intlEquipmentsSelectionType = () => {
-    return {
-        ALL_EXCEPT: {
-            id: 'ALL_EXCEPT',
-            label: 'allExcept',
-        },
-        NONE_EXCEPT: {
-            id: 'NONE_EXCEPT',
-            label: 'noneExcept',
-        },
-    };
+const initialEquipmentsSelectionType = {
+    ALL_EXCEPT: {
+        id: 'ALL_EXCEPT',
+        label: 'allExcept',
+    },
+    NONE_EXCEPT: {
+        id: 'NONE_EXCEPT',
+        label: 'noneExcept',
+    },
 };
 
 const EquipmentSelectionParameters = () => {
-    const initialEquipmentsSelectionType = useMemo(() => {
-        return intlEquipmentsSelectionType();
-    }, []);
-
     return (
         <DialogContent>
             <Alert sx={equipmentsSelectionStyles.alert} severity="info" variant="outlined">
