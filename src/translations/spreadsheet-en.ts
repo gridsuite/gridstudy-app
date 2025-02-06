@@ -14,6 +14,8 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/column_name': 'Column name',
     'spreadsheet/custom_column/column_id': 'Column ID',
     'spreadsheet/custom_column/column_dependencies': 'Enter formula dependencies',
+    'spreadsheet/custom_column/column_type': 'Column type',
+    'spreadsheet/custom_column/column_precision': 'Column precision',
     'spreadsheet/custom_column/column_content': 'Enter the formula',
     'spreadsheet/custom_column/column_content_description': `Column content is described with variable names (in order to reference grid data), column IDs (in order to reference the content of another column) and operators provided by <Link>MathJS</Link> library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet`,
     'spreadsheet/custom_column/error/id_not_conform': 'Column ID must not contain spaces or $ symbols',
@@ -55,6 +57,12 @@ const spreadsheetEn = {
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'No node with this name',
     'spreadsheet/parameter_aliases/unique_aliases': 'Aliases should be unique',
     'spreadsheet/filter/config': 'Gridsuite filters',
+
+    // Column types
+    TEXT: 'Text',
+    NUMBER: 'Number',
+    BOOLEAN: 'Boolean',
+    ENUM: 'Enum',
 };
 
 export default spreadsheetEn;
