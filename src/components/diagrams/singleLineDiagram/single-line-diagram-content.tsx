@@ -119,7 +119,7 @@ function applyInvalidStyles(svgContainer: HTMLElement) {
 }
 
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
-    const { diagramSizeSetter, studyUuid, visible } = props;
+    const { diagramSizeSetter, studyUuid, visible, showInSpreadsheet } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
@@ -273,15 +273,15 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         });
     }, []);
 
-    const handleViewInSpreadsheet = () => {
+    const handleViewInSpreadsheet = useCallback(() => {
         if (equipmentMenu.equipmentId && equipmentMenu.equipmentType) {
-            props.showInSpreadsheet({
+            showInSpreadsheet({
                 equipmentId: equipmentMenu.equipmentId,
                 equipmentType: convertToEquipmentType(equipmentMenu.equipmentType),
             });
         }
         closeEquipmentMenu();
-    };
+    }, [closeEquipmentMenu, equipmentMenu.equipmentId, equipmentMenu.equipmentType, showInSpreadsheet]);
 
     const removeEquipment = useCallback(
         (equipmentType: string, equipmentId: string) => {
