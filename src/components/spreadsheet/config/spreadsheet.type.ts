@@ -30,7 +30,6 @@ export interface SpreadsheetTabDefinition<TData = any, F extends CustomAggridFil
     type: SpreadsheetEquipmentType;
     fetchers: EquipmentFetcher[];
     columns: CustomColDef<TData, F>[];
-    groovyEquipmentGetter?: string;
 }
 
 export type ColumnState = { colId: string; visible: boolean };
