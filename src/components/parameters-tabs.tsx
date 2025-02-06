@@ -43,7 +43,6 @@ import { ShortCircuitParameters, useGetShortCircuitParameters } from './dialogs/
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import LoadFlowParameters from './dialogs/parameters/loadflow/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
-import { NetworkParameters } from './dialogs/parameters/network-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import {
     fetchDefaultNonEvacuatedEnergyProvider,
@@ -137,7 +136,6 @@ enum TAB_VALUES {
     nonEvacuatedEnergyParamsTabValue = 'NonEvacuatedEnergyAnalysis',
     shortCircuitParamsTabValue = 'ShortCircuit',
     dynamicSimulationParamsTabValue = 'DynamicSimulation',
-    advancedParamsTabValue = 'Advanced',
     voltageInitParamsTabValue = 'VoltageInit',
     networkVisualizationsParams = 'NetworkVisualizations',
 }
@@ -302,8 +300,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 return <DynamicSimulationParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.voltageInitParamsTabValue:
                 return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
-            case TAB_VALUES.advancedParamsTabValue:
-                return <NetworkParameters />;
             case TAB_VALUES.networkVisualizationsParams:
                 return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
         }
@@ -381,7 +377,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 label={<FormattedMessage id="NetworkVisualizations" />}
                                 value={TAB_VALUES.networkVisualizationsParams}
                             />
-                            <Tab label={<FormattedMessage id="Advanced" />} value={TAB_VALUES.advancedParamsTabValue} />
                         </Tabs>
                     </Grid>
                 </Grid>

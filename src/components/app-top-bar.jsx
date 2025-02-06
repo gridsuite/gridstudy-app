@@ -13,7 +13,7 @@ import { StudyView } from './study-pane';
 import { Badge, Box, Button, Tab, Tabs, Tooltip } from '@mui/material';
 import { Search, Settings } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
+import { PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME, PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
@@ -76,10 +76,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
     const notificationsCount = useComputationResultsCount();
+
     const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
     const [useNameLocal, handleChangeUseName] = useParameterState(PARAM_USE_NAME);
-
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
+    const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -117,6 +118,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
                 additionalModulesPromise={getServersInfos}
                 theme={themeLocal}
+                onDeveloperModeClick={handleChangeDeveloperMode}
+                developerMode={enableDeveloperModeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 onLanguageClick={handleChangeLanguage}
