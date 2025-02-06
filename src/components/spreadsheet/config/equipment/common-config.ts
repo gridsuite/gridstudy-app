@@ -66,8 +66,8 @@ export const getFetcher = (equipmentType: SpreadsheetEquipmentType): EquipmentFe
     }
 };
 
+// TODO to remove when no more static conf
 export const typeAndFetchers = <TEquipType extends SpreadsheetEquipmentType>(equipmentType: TEquipType) =>
     ({
         type: equipmentType,
-        fetcher: getFetcher(equipmentType),
     } as const);

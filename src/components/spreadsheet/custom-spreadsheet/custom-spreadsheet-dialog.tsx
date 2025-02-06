@@ -38,7 +38,6 @@ import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
 import { ColumnWithFormula, ColumnWithFormulaDto } from 'types/custom-columns.types';
 import { getSpreadsheetModel } from 'services/study-config';
-import { typeAndFetchers } from '../config/equipment/common-config';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 import { SortWay } from '../../../types/custom-aggrid-types';
 import { COLUMN_DEPENDENCIES } from '../custom-columns/custom-columns-form';
@@ -102,7 +101,7 @@ export default function CustomSpreadsheetConfigDialog({
                 const newTableDefinition: SpreadsheetTabDefinition = {
                     index: tabIndex,
                     name: tabName,
-                    ...typeAndFetchers(equipmentType),
+                    type: equipmentType,
                     columns: getTableColumns(equipmentType),
                 };
                 dispatch(updateTableDefinition(newTableDefinition, []));
@@ -128,7 +127,7 @@ export default function CustomSpreadsheetConfigDialog({
                             const newTableDefinition: SpreadsheetTabDefinition = {
                                 index: tabIndex,
                                 name: tabName,
-                                ...typeAndFetchers(selectedModel.sheetType),
+                                type: selectedModel.sheetType,
                                 columns: [],
                             };
                             dispatch(

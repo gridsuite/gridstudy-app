@@ -22,7 +22,7 @@ import {
     updateEquipments,
 } from 'redux/actions';
 import { AppState } from 'redux/reducer';
-import type { EquipmentFetcher, SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/equipment/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
@@ -40,7 +40,6 @@ const filterUndefined = (
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
-    fetcher: EquipmentFetcher,
     formatFetchedEquipments: FormatFetchedEquipments
 ) => {
     const dispatch = useDispatch();
@@ -67,6 +66,7 @@ export const useSpreadsheetEquipments = (
     } = useGetStudyImpacts();
 
     const shouldFetchEquipments = !equipments;
+    const fetcher = getFetcher(type);
 
     useEffect(() => {
         // updating data related to impacted elements

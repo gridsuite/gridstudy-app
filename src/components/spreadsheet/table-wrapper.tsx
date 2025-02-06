@@ -196,7 +196,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         tableDefinition.type,
-        tableDefinition.fetcher,
         formatFetchedEquipmentsHandler
     );
 
