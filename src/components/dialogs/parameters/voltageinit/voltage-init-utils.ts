@@ -9,7 +9,8 @@ import {
     FILTERS,
     FILTER_ID,
     FILTER_NAME,
-    FIXED_GENERATORS,
+    GENERATORS_SELECTION_TYPE,
+    VARIABLE_Q_GENERATORS,
     HIGH_VOLTAGE_LIMIT,
     ID,
     LOW_VOLTAGE_LIMIT,
@@ -17,7 +18,9 @@ import {
     PRIORITY,
     SELECTED,
     UPDATE_BUS_VOLTAGE,
+    SHUNT_COMPENSATORS_SELECTION_TYPE,
     VARIABLE_SHUNT_COMPENSATORS,
+    TRANSFORMERS_SELECTION_TYPE,
     VARIABLE_TRANSFORMERS,
     VOLTAGE_LIMITS_DEFAULT,
     VOLTAGE_LIMITS_MODIFICATION,
@@ -46,6 +49,11 @@ type VoltageLimitParam = {
     [HIGH_VOLTAGE_LIMIT]: number;
 };
 
+export enum EquipmentsSelectionType {
+    ALL_EXCEPT = 'ALL_EXCEPT',
+    NONE_EXCEPT = 'NONE_EXCEPT',
+}
+
 export type VoltageInitParam = {
     applyModifications: boolean;
     computationParameters: {
@@ -54,8 +62,11 @@ export type VoltageInitParam = {
         [SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD]: number;
         [VOLTAGE_LIMITS_MODIFICATION]: VoltageLimitParam[];
         [VOLTAGE_LIMITS_DEFAULT]: VoltageLimitParam[];
-        [FIXED_GENERATORS]: FilterIdentifier[];
+        [GENERATORS_SELECTION_TYPE]: EquipmentsSelectionType;
+        [VARIABLE_Q_GENERATORS]: FilterIdentifier[];
+        [TRANSFORMERS_SELECTION_TYPE]: EquipmentsSelectionType;
         [VARIABLE_TRANSFORMERS]: FilterIdentifier[];
+        [SHUNT_COMPENSATORS_SELECTION_TYPE]: EquipmentsSelectionType;
         [VARIABLE_SHUNT_COMPENSATORS]: FilterIdentifier[];
     };
 };
@@ -100,13 +111,18 @@ export const fromVoltageInitParametersFormToParamValues = (newParams: VoltageIni
                             }) ?? [],
                     };
                 }) ?? [],
-            [FIXED_GENERATORS]:
-                newParams[FIXED_GENERATORS]?.map((filter) => {
+            [GENERATORS_SELECTION_TYPE]:
+                (newParams[GENERATORS_SELECTION_TYPE] as EquipmentsSelectionType) ?? EquipmentsSelectionType.ALL_EXCEPT,
+            [VARIABLE_Q_GENERATORS]:
+                newParams[VARIABLE_Q_GENERATORS]?.map((filter) => {
                     return {
                         [FILTER_ID]: filter[ID] as UUID,
                         [FILTER_NAME]: filter[NAME],
                     };
                 }) ?? [],
+            [TRANSFORMERS_SELECTION_TYPE]:
+                (newParams[TRANSFORMERS_SELECTION_TYPE] as EquipmentsSelectionType) ??
+                EquipmentsSelectionType.NONE_EXCEPT,
             [VARIABLE_TRANSFORMERS]:
                 newParams[VARIABLE_TRANSFORMERS]?.map((filter) => {
                     return {
@@ -114,6 +130,9 @@ export const fromVoltageInitParametersFormToParamValues = (newParams: VoltageIni
                         [FILTER_NAME]: filter[NAME],
                     };
                 }) ?? [],
+            [SHUNT_COMPENSATORS_SELECTION_TYPE]:
+                (newParams[SHUNT_COMPENSATORS_SELECTION_TYPE] as EquipmentsSelectionType) ??
+                EquipmentsSelectionType.NONE_EXCEPT,
             [VARIABLE_SHUNT_COMPENSATORS]:
                 newParams[VARIABLE_SHUNT_COMPENSATORS]?.map((filter) => {
                     return {
@@ -163,18 +182,22 @@ export const fromVoltageInitParamsDataToFormValues = (
                     [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
                 };
             }) ?? [],
-        [FIXED_GENERATORS]: parameters?.[FIXED_GENERATORS]?.map((filter) => {
+        [GENERATORS_SELECTION_TYPE]: parameters?.[GENERATORS_SELECTION_TYPE] ?? EquipmentsSelectionType.ALL_EXCEPT,
+        [VARIABLE_Q_GENERATORS]: parameters?.[VARIABLE_Q_GENERATORS]?.map((filter) => {
             return {
                 [ID]: filter[FILTER_ID],
                 [NAME]: filter[FILTER_NAME],
             };
         }),
+        [TRANSFORMERS_SELECTION_TYPE]: parameters?.[TRANSFORMERS_SELECTION_TYPE] ?? EquipmentsSelectionType.NONE_EXCEPT,
         [VARIABLE_TRANSFORMERS]: parameters?.[VARIABLE_TRANSFORMERS]?.map((filter) => {
             return {
                 [ID]: filter[FILTER_ID],
                 [NAME]: filter[FILTER_NAME],
             };
         }),
+        [SHUNT_COMPENSATORS_SELECTION_TYPE]:
+            parameters?.[SHUNT_COMPENSATORS_SELECTION_TYPE] ?? EquipmentsSelectionType.NONE_EXCEPT,
         [VARIABLE_SHUNT_COMPENSATORS]: parameters?.[VARIABLE_SHUNT_COMPENSATORS]?.map((filter) => {
             return {
                 [ID]: filter[FILTER_ID],
@@ -221,18 +244,25 @@ export const fromStudyVoltageInitParamsDataToFormValues = (parameters: VoltageIn
                     [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
                 };
             }) ?? [],
-        [FIXED_GENERATORS]: parameters?.computationParameters?.[FIXED_GENERATORS]?.map((filter) => {
+        [GENERATORS_SELECTION_TYPE]:
+            parameters?.computationParameters?.[GENERATORS_SELECTION_TYPE] ?? EquipmentsSelectionType.ALL_EXCEPT,
+        [VARIABLE_Q_GENERATORS]: parameters?.computationParameters?.[VARIABLE_Q_GENERATORS]?.map((filter) => {
             return {
                 [ID]: filter[FILTER_ID],
                 [NAME]: filter[FILTER_NAME],
             };
         }),
+        [TRANSFORMERS_SELECTION_TYPE]:
+            parameters?.computationParameters?.[TRANSFORMERS_SELECTION_TYPE] ?? EquipmentsSelectionType.NONE_EXCEPT,
         [VARIABLE_TRANSFORMERS]: parameters?.computationParameters?.[VARIABLE_TRANSFORMERS]?.map((filter) => {
             return {
                 [ID]: filter[FILTER_ID],
                 [NAME]: filter[FILTER_NAME],
             };
         }),
+        [SHUNT_COMPENSATORS_SELECTION_TYPE]:
+            parameters?.computationParameters?.[SHUNT_COMPENSATORS_SELECTION_TYPE] ??
+            EquipmentsSelectionType.NONE_EXCEPT,
         [VARIABLE_SHUNT_COMPENSATORS]: parameters?.computationParameters?.[VARIABLE_SHUNT_COMPENSATORS]?.map(
             (filter) => {
                 return {
