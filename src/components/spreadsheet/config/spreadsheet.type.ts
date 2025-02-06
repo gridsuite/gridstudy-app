@@ -28,7 +28,7 @@ export interface SpreadsheetTabDefinition<TData = any, F extends CustomAggridFil
     index: number;
     name: string;
     type: SpreadsheetEquipmentType;
-    fetchers: EquipmentFetcher[];
+    fetcher: EquipmentFetcher;
     columns: CustomColDef<TData, F>[];
 }
 

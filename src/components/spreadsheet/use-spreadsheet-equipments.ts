@@ -24,7 +24,7 @@ import {
 import { AppState } from 'redux/reducer';
 import type { EquipmentFetcher, SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { getFetchers } from './config/equipment/common-config';
+import { getFetcher } from './config/equipment/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
@@ -40,7 +40,7 @@ const filterUndefined = (
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
-    fetchers: EquipmentFetcher[],
+    fetcher: EquipmentFetcher,
     formatFetchedEquipments: FormatFetchedEquipments
 ) => {
     const dispatch = useDispatch();
@@ -154,7 +154,7 @@ export const useSpreadsheetEquipments = (
         ) {
             setErrorMessage(null);
             setIsFetching(true);
-            Promise.all(fetchers.map((fetcher) => fetcher(studyUuid, currentNode?.id, currentRootNetworkUuid)))
+            fetcher(studyUuid, currentNode?.id, currentRootNetworkUuid)
                 .then((results) => {
                     let fetchedEquipments = results.flat();
                     if (formatFetchedEquipments) {
@@ -177,7 +177,7 @@ export const useSpreadsheetEquipments = (
         dispatch,
         formatFetchedEquipments,
         customColumnsDefinitions,
-        fetchers,
+        fetcher,
         type,
     ]);
 
@@ -196,11 +196,10 @@ export const useSpreadsheetEquipments = (
                 if (allAdditionalEquipments[aliasInfo.alias]?.[type] !== undefined) {
                     return undefined;
                 }
-                // TODO: turn getFetchers into returning a single element
-                const res = await getFetchers(type)[0](studyUuid, aliasInfo.id, currentRootNetworkUuid);
+                const identifiableList = await getFetcher(type)(studyUuid, aliasInfo.id, currentRootNetworkUuid);
                 return {
                     alias: aliasInfo.alias,
-                    identifiables: formatFetchedEquipments(res.flat()),
+                    identifiables: formatFetchedEquipments(identifiableList.flat()),
                 } satisfies AdditionalNodeData;
             });
             Promise.all(fetchedEquipments).then((results) => {
