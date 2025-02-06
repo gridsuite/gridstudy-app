@@ -5,34 +5,55 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-result-utils';
 
-export function startSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, contingencyListNames: string[]) {
-    console.info(`Running security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
-
+export function startSecurityAnalysis(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    contingencyListNames: string[]
+) {
+    console.info(
+        `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
+    );
     // Add params to Url
     const contingencyListsQueryParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
     const urlSearchParams = new URLSearchParams(contingencyListsQueryParams);
 
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/security-analysis/run?${urlSearchParams}`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/security-analysis/run?${urlSearchParams}`;
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
 
-export function stopSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID) {
+export function stopSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info('Stopping security analysis on ' + studyUuid + ' and node ' + currentNodeUuid + ' ...');
-    const stopSecurityAnalysisUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/security-analysis/stop';
+    const stopSecurityAnalysisUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/security-analysis/stop';
     console.debug(stopSecurityAnalysisUrl);
     return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
-export function fetchSecurityAnalysisResult(studyUuid: string, currentNodeUuid: string, queryParams: any) {
+export function fetchSecurityAnalysisResult(
+    studyUuid: string,
+    currentNodeUuid: string,
+    currentRootNetworkUuid: string,
+    queryParams: any
+) {
     console.info(`Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/security-analysis/result`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/security-analysis/result`;
 
     const { resultType, page, size, sort, filters } = queryParams || {};
 
@@ -57,12 +78,19 @@ export function fetchSecurityAnalysisResult(studyUuid: string, currentNodeUuid: 
 export function downloadSecurityAnalysisResultZippedCsv(
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     queryParams: { resultType: RESULT_TYPE },
     headers: string[] | undefined,
     enumValueTranslations: Record<string, string>
 ) {
-    console.info(`Fetching security analysis zipped csv on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/security-analysis/result/csv`;
+    console.info(
+        `Fetching security analysis zipped csv on ${studyUuid} on root network  ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/security-analysis/result/csv`;
 
     const { resultType } = queryParams || {};
 
@@ -83,10 +111,13 @@ export function downloadSecurityAnalysisResultZippedCsv(
     });
 }
 
-export function fetchSecurityAnalysisStatus(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info(`Fetching security analysis status on ${studyUuid} and node ${currentNodeUuid} ...`);
-
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/security-analysis/status';
+export function fetchSecurityAnalysisStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching security analysis status on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/security-analysis/status';
     console.debug(url);
     return backendFetchText(url);
 }

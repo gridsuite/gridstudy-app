@@ -44,17 +44,17 @@ import {
     CenterOnSubstationAction,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
-    CHANGE_REORDERED_COLUMNS,
     ChangeDisplayedColumnsNamesAction,
     ChangeLockedColumnsNamesAction,
-    ChangeReorderedColumnsAction,
     CLOSE_DIAGRAM,
     CLOSE_DIAGRAMS,
     CLOSE_STUDY,
     CloseDiagramAction,
     CloseDiagramsAction,
     CloseStudyAction,
+    CURRENT_ROOT_NETWORK,
     CURRENT_TREE_NODE,
+    CurrentRootNetworkAction,
     CurrentTreeNodeAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
@@ -118,14 +118,18 @@ import {
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
     RESET_LOGS_FILTER,
+    RESET_MAP_EQUIPMENTS,
     RESET_MAP_RELOADED,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
     ResetLogsFilterAction,
+    ResetMapEquipmentsAction,
     ResetMapReloadedAction,
     ResetNetworkAreaDiagramDepthAction,
+    SAVE_SPREADSHEET_GS_FILTER,
+    SaveSpreadSheetGsFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
     SecurityAnalysisResultFilterAction,
     SELECT_COMPUTED_LANGUAGE,
@@ -198,19 +202,7 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import {
-    type GenericTablesColumnsNames,
-    type GenericTablesColumnsNamesJson,
-    type GenericTablesDefinitionIndexes,
-    type GenericTablesDefinitions,
-    type GenericTablesDefinitionTypes,
-    type GenericTablesNames,
-    type GenericTablesNamesIndexes,
-    TABLES_COLUMNS_NAMES,
-    TABLES_DEFINITIONS,
-    TABLES_NAMES,
-    type TablesDefinitionsNames,
-} from '../components/spreadsheet/config/config-tables';
+import { TABLES_DEFINITIONS } from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -282,21 +274,26 @@ import {
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import {
+    EQUIPMENT_TYPES as NetworkViewerEquipmentType,
     LineFlowColorMode,
     LineFlowMode,
-    EQUIPMENT_TYPES as NetworkViewerEquipmentType,
 } from '@powsybl/network-viewer';
 import type { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
-import { CustomEntry } from 'types/custom-columns.types';
+import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
-import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import {
+    ColumnState,
+    SpreadsheetEquipmentType,
+    SpreadsheetTabDefinition,
+} from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
+import { ExpertFilter } from '../services/study/filter';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -319,6 +316,8 @@ export interface OneBusShortCircuitAnalysisDiagram {
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
     parentNode: UUID;
+    rootNetwork: UUID;
+    rootNetworks: UUID[];
     timestamp: number;
     updateType?: string;
     node?: UUID;
@@ -339,6 +338,7 @@ export interface NetworkImpactsInfos {
     deletedEquipments: DeletedEquipment[];
     impactedElementTypes: string[];
 }
+
 // EventData
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
@@ -426,6 +426,7 @@ export type NadNodeMovement = {
     equipmentId: string;
     x: number;
     y: number;
+    scalingFactor: number;
 };
 
 export type NadTextMovement = {
@@ -463,6 +464,7 @@ export interface AppState extends CommonStoreState {
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
+    currentRootNetwork: UUID | null;
     computingStatus: ComputingStatus;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
@@ -483,6 +485,7 @@ export interface AppState extends CommonStoreState {
     nodeSelectionForCopy: NodeSelectionForCopy;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
+    isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
@@ -492,7 +495,6 @@ export interface AppState extends CommonStoreState {
         svgType?: DiagramType;
     };
     allLockedColumnsNames: string[];
-    allReorderedTableDefinitionIndexes: string[];
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
@@ -502,6 +504,7 @@ export interface AppState extends CommonStoreState {
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     additionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState;
+    gsFilterSpreadsheetState: GsFilterSpreadsheetState;
     customColumnsNodesAliases: NodeAlias[];
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
@@ -601,38 +604,29 @@ export type AdditionalEquipmentsByNodesForCustomColumnsState = Record<
 const initialAdditionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState = {};
 const initialCustomColumnsNodesAliases: NodeAlias[] = [];
 
-export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
+export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
+const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
 interface TablesState {
-    definitions: GenericTablesDefinitions;
-    columnsNames: GenericTablesColumnsNames;
-    columnsNamesJson: GenericTablesColumnsNamesJson;
-    names: GenericTablesNames;
-    namesIndexes: GenericTablesNamesIndexes;
-    definitionTypes: GenericTablesDefinitionTypes;
-    definitionIndexes: GenericTablesDefinitionIndexes;
-    allCustomColumnsDefinitions: Record<TypeOfArrayElement<GenericTablesNames>, CustomEntry>;
+    definitions: SpreadsheetTabDefinition[];
+    columnsStates: ColumnState[][];
+    allCustomColumnsDefinitions: ColumnWithFormula[][];
 }
 
-const TableDefinitionIndexes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.index, tabDef]));
-const TableDefinitionTypes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.type, tabDef]));
 const initialTablesState: TablesState = {
     definitions: TABLES_DEFINITIONS,
-    columnsNames: TABLES_COLUMNS_NAMES,
-    columnsNamesJson: TABLES_COLUMNS_NAMES.map((cols) => JSON.stringify([...cols])),
-    names: TABLES_NAMES,
-    namesIndexes: new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.name, tabDef.index])),
-    definitionTypes: TableDefinitionTypes,
-    definitionIndexes: TableDefinitionIndexes,
-    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
-        (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
-        {} as Record<TablesDefinitionsNames, CustomEntry>
+    columnsStates: TABLES_DEFINITIONS.map((table) =>
+        table.columns.map((col) => {
+            return { colId: col.colId, visible: true };
+        })
     ),
+    allCustomColumnsDefinitions: TABLES_DEFINITIONS.map((_) => []),
 };
 
 const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
+    currentRootNetwork: null,
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
@@ -643,6 +637,8 @@ const initialState: AppState = {
     mapEquipments: undefined,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
+    // used when switching root network, will be set to false as long as the tree has not been updated
+    isNetworkModificationTreeModelUpToDate: false,
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
@@ -653,7 +649,6 @@ const initialState: AppState = {
     mapDataLoading: false,
     fullScreenDiagram: null,
     allLockedColumnsNames: [],
-    allReorderedTableDefinitionIndexes: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     isEventScenarioDrawerOpen: false,
@@ -670,6 +665,7 @@ const initialState: AppState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     additionalEquipmentsByNodesForCustomColumns: initialAdditionalEquipmentsByNodesForCustomColumns,
+    gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
     customColumnsNodesAliases: initialCustomColumnsNodesAliases,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
@@ -870,37 +866,16 @@ export const reducer = createReducer(initialState, (builder) => {
         state.mapEquipments = newMapEquipments;
     });
 
+    builder.addCase(RESET_MAP_EQUIPMENTS, (state, action: ResetMapEquipmentsAction) => {
+        state.mapEquipments = undefined;
+        state.isMapEquipmentsInitialized = false;
+    });
+
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
         const { newTableDefinition, customColumns } = action.payload;
-        const updatedDefinitions = [...state.tables.definitions];
-        updatedDefinitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
-        const updatedColumnsNames = updatedDefinitions
-            .map((tabDef) => tabDef.columns)
-            .map((cols) => new Set(cols.map((c) => c.colId!)));
-        const updatedColumnsNamesJson = updatedColumnsNames.map((cols) => JSON.stringify([...cols]));
-        const updatedNames = updatedDefinitions.map((tabDef) => tabDef.name);
-        const updatedNamesIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.name, tabDef.index]));
-        const updatedDefinitionTypes = new Map(updatedDefinitions.map((tabDef) => [tabDef.type, tabDef]));
-        const updatedDefinitionIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.index, tabDef]));
-        const updatedAllCustomColumnsDefinitions = {
-            ...state.tables.allCustomColumnsDefinitions,
-            [newTableDefinition.name]: {
-                columns: customColumns,
-                filter: {
-                    formula: '',
-                },
-            },
-        };
-        state.tables = {
-            definitions: updatedDefinitions,
-            columnsNames: updatedColumnsNames,
-            columnsNamesJson: updatedColumnsNamesJson,
-            names: updatedNames,
-            namesIndexes: updatedNamesIndexes,
-            definitionTypes: updatedDefinitionTypes,
-            definitionIndexes: updatedDefinitionIndexes,
-            allCustomColumnsDefinitions: updatedAllCustomColumnsDefinitions,
-        };
+        state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
+        state.tables.columnsStates.push(newTableDefinition.columns.map((col) => ({ colId: col.colId, visible: true })));
+        state.tables.allCustomColumnsDefinitions.push(customColumns);
     });
 
     builder.addCase(
@@ -908,6 +883,7 @@ export const reducer = createReducer(initialState, (builder) => {
         (state, action: LoadNetworkModificationTreeSuccessAction) => {
             state.networkModificationTreeModel = action.networkModificationTreeModel;
             state.networkModificationTreeModel.setBuildingStatus();
+            state.isNetworkModificationTreeModelUpToDate = true;
         }
     );
 
@@ -1126,33 +1102,17 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(CHANGE_DISPLAYED_COLUMNS_NAMES, (state, action: ChangeDisplayedColumnsNamesAction) => {
-        const newDisplayedColumnsNames = [...state.tables.columnsNamesJson];
-        action.displayedColumnsNamesParams.forEach((param) => {
-            if (param) {
-                newDisplayedColumnsNames[param.index] = param.value;
-            }
-        });
-        state.tables.columnsNamesJson = newDisplayedColumnsNames;
+        const newDisplayedColumnsNames = [...state.tables.columnsStates];
+        newDisplayedColumnsNames[action.displayedColumnsNamesParams.index] = action.displayedColumnsNamesParams.value;
+        state.tables.columnsStates = newDisplayedColumnsNames;
     });
 
     builder.addCase(CHANGE_LOCKED_COLUMNS_NAMES, (state, action: ChangeLockedColumnsNamesAction) => {
         let newLockedColumnsNames = [...state.allLockedColumnsNames];
-        action.lockedColumnsNamesParams.forEach((param) => {
-            if (param) {
-                newLockedColumnsNames[param.index] = param.value;
-            }
-        });
+        newLockedColumnsNames[action.lockedColumnsNamesParams.index] = JSON.stringify(
+            Array.from(action.lockedColumnsNamesParams.value)
+        );
         state.allLockedColumnsNames = newLockedColumnsNames;
-    });
-
-    builder.addCase(CHANGE_REORDERED_COLUMNS, (state, action: ChangeReorderedColumnsAction) => {
-        let newReorderedColumns = [...state.allReorderedTableDefinitionIndexes];
-        action.reorderedColumnsParams.forEach((param) => {
-            if (param) {
-                newReorderedColumns[param.index] = param.value;
-            }
-        });
-        state.allReorderedTableDefinitionIndexes = newReorderedColumns;
     });
 
     builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action: FavoriteContingencyListsAction) => {
@@ -1162,6 +1122,11 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
         state.reloadMap = true;
+    });
+
+    builder.addCase(CURRENT_ROOT_NETWORK, (state, action: CurrentRootNetworkAction) => {
+        state.currentRootNetwork = action.currentRootNetwork;
+        state.isNetworkModificationTreeModelUpToDate = false;
     });
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
@@ -1492,10 +1457,12 @@ export const reducer = createReducer(initialState, (builder) => {
                     equipmentId: action.equipmentId,
                     x: action.x,
                     y: action.y,
+                    scalingFactor: action.scalingFactor,
                 });
             } else {
                 correspondingMovement[0].x = action.x;
                 correspondingMovement[0].y = action.y;
+                correspondingMovement[0].scalingFactor = action.scalingFactor;
             }
         }
     );
@@ -1737,19 +1704,27 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_CUSTOM_COLUMNS_DEFINITION, (state, action: UpdateCustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
-            action.table
-        ].columns.some((column) => column.id === action.definition.id)
-            ? state.tables.allCustomColumnsDefinitions[action.table].columns.map((column) =>
-                  column.id === action.definition.id ? action.definition : column
-              )
-            : [...state.tables.allCustomColumnsDefinitions[action.table].columns, action.definition];
+        state.tables.allCustomColumnsDefinitions[action.colWithFormula.index] =
+            state.tables.allCustomColumnsDefinitions[action.colWithFormula.index].some(
+                (column) => column.uuid === action.colWithFormula.value.uuid
+            )
+                ? state.tables.allCustomColumnsDefinitions[action.colWithFormula.index].map((column) =>
+                      column.uuid === action.colWithFormula.value.uuid ? action.colWithFormula.value : column
+                  )
+                : [
+                      ...state.tables.allCustomColumnsDefinitions[action.colWithFormula.index],
+                      action.colWithFormula.value,
+                  ];
     });
 
     builder.addCase(REMOVE_CUSTOM_COLUMNS_DEFINITION, (state, action: RemoveCustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
-            action.table
-        ].columns.filter((column) => column.id !== action.definitionId);
+        state.tables.allCustomColumnsDefinitions[action.definition.index] = state.tables.allCustomColumnsDefinitions[
+            action.definition.index
+        ].filter((column) => column.id !== action.definition.value);
+    });
+
+    builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
+        state.gsFilterSpreadsheetState[action.equipmentType] = action.filters;
     });
 });
 

@@ -176,9 +176,8 @@ export const securityAnalysisTableNColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['limitType'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -290,9 +289,8 @@ export const securityAnalysisTableNColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['side'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -347,8 +345,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['status'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -381,9 +379,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['limitType'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -489,9 +486,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['side'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -570,9 +566,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['status'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -588,9 +583,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['limitType'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -696,9 +690,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['side'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -772,12 +765,18 @@ export const useFetchFiltersEnums = () => {
     });
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const securityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     useEffect(() => {
-        if (securityAnalysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
+        if (
+            securityAnalysisStatus !== RunningStatus.SUCCEED ||
+            !studyUuid ||
+            !currentNode?.id ||
+            !currentRootNetworkUuid
+        ) {
             return;
         }
 
@@ -790,7 +789,13 @@ export const useFetchFiltersEnums = () => {
         ];
 
         const promises = filterTypes.map((filterType) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, computingType.SECURITY_ANALYSIS, filterType)
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                currentRootNetworkUuid,
+                computingType.SECURITY_ANALYSIS,
+                filterType
+            )
         );
 
         setLoading(true);
@@ -822,7 +827,7 @@ export const useFetchFiltersEnums = () => {
             .finally(() => {
                 setLoading(false);
             });
-    }, [securityAnalysisStatus, studyUuid, currentNode?.id]);
+    }, [securityAnalysisStatus, studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     return { loading, result, error };
 };

@@ -49,6 +49,7 @@ const SubstationCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -78,6 +79,7 @@ const SubstationCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.SUBSTATION,
@@ -158,6 +160,7 @@ const SubstationCreationDialog = ({
                     equipmentType={EQUIPMENT_TYPES.SUBSTATION}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>

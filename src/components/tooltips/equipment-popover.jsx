@@ -29,15 +29,17 @@ const styles = {
 
 const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, equipmentType, loadFlowStatus }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
     const [equipmentInfo, setEquipmentInfo] = useState(null);
     const intl = useIntl();
     const [localAnchorEl, setLocalAnchorEl] = useState(null);
     const [localAnchorPosition, setLocalAnchorPosition] = useState(null);
     const getNetworkElementInfos = useCallback(
-        (equipmentId, equipmentType, currentNodeId, studyUuid) => {
+        (equipmentId, equipmentType, currentRootNetworkUuid, currentNodeId, studyUuid) => {
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNodeId,
+                currentRootNetworkUuid,
                 equipmentType,
                 EQUIPMENT_INFOS_TYPES.TOOLTIP.type,
                 equipmentId,
@@ -66,11 +68,11 @@ const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, eq
 
     useEffect(() => {
         if (equipmentId && equipmentId !== '') {
-            debouncedNetworkElementInfos(equipmentId, equipmentType, currentNode.id, studyUuid);
+            debouncedNetworkElementInfos(equipmentId, equipmentType, currentRootNetworkUuid, currentNode.id, studyUuid);
         } else {
             setEquipmentInfo(null);
         }
-    }, [debouncedNetworkElementInfos, equipmentId, equipmentType, currentNode.id, studyUuid]);
+    }, [debouncedNetworkElementInfos, equipmentId, equipmentType, currentNode.id, studyUuid, currentRootNetworkUuid]);
 
     const handlePopoverClose = () => {
         setEquipmentInfo(null);

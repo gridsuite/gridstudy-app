@@ -306,6 +306,7 @@ export interface Svg {
               substationId?: string;
               voltageLevels: { name: string; substationId: UUID }[];
               nbVoltageLevels?: number;
+              scalingFactor?: number;
           })
         | null;
     error?: string | null;

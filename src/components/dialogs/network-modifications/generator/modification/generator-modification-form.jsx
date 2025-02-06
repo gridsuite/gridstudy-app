@@ -34,13 +34,14 @@ import GridSection from '../../../commons/grid-section';
 const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     generatorToModify,
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
 }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const energySourceLabelId = getEnergySourceLabel(generatorToModify?.energySource);
     const previousEnergySourceLabel = energySourceLabelId
@@ -181,6 +182,7 @@ const GeneratorModificationForm = ({
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
             previousValues={generatorToModify}
         />
@@ -232,6 +234,7 @@ const GeneratorModificationForm = ({
             <SetPointsForm
                 studyUuid={studyUuid}
                 currentNodeUuid={currentNodeUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
                 voltageLevelOptions={voltageLevelOptions}
                 isEquipmentModification={true}
                 previousValues={generatorToModify}

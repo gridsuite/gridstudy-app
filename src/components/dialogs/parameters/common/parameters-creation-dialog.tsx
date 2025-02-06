@@ -6,7 +6,7 @@
  */
 
 import { FieldValues, UseFormGetValues } from 'react-hook-form';
-import { ElementType } from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { createParameter } from 'services/explore';
 import ElementCreationDialog, { IElementCreationDialog } from '../../element-creation-dialog';
 
@@ -25,8 +25,17 @@ const CreateParameterDialog = <T extends FieldValues>({
     parameterType,
     parameterFormatter,
 }: CreateParameterProps<T>) => {
-    const saveParameters = ({ name, description, folderName, folderId }: IElementCreationDialog) => {
-        createParameter(parameterFormatter(parameterValues()), name, parameterType, description, folderId);
+    const { snackError } = useSnackMessage();
+    const saveParameters = ({ name, description, folderId }: IElementCreationDialog) => {
+        createParameter(parameterFormatter(parameterValues()), name, parameterType, description, folderId).catch(
+            (error) => {
+                console.error(error);
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'paramsCreatingError',
+                });
+            }
+        );
     };
 
     return (

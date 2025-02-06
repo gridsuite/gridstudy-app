@@ -9,7 +9,12 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import {
+    booleanColumnDefinition,
+    enumColumnDefinition,
+    numberColumnDefinition,
+    textColumnDefinition,
+} from '../common-column-definitions';
 
 const tab = 'LccConverterStations';
 
@@ -36,7 +41,7 @@ export const LCC_CONVERTER_STATION_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'Country',
             field: 'country',
-            ...textColumnDefinition('Country', tab),
+            ...enumColumnDefinition('Country', tab),
         },
         {
             colId: 'NominalV',

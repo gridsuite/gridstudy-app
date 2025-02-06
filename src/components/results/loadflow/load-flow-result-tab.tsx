@@ -67,7 +67,11 @@ export interface GlobalFilter {
     limitViolationsTypes?: LimitTypes[];
 }
 
-export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUuid, nodeUuid }) => {
+export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
+}) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const loadflowResultInvalidations = ['loadflowResult'];
@@ -90,7 +94,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
 
     // load countries
     useEffect(() => {
-        fetchAllCountries(studyUuid, nodeUuid)
+        fetchAllCountries(studyUuid, nodeUuid, currentRootNetworkUuid)
             .then((countryCodes) => {
                 setCountriesFilter(
                     countryCodes.map((countryCode: string) => ({
@@ -105,7 +109,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                     headerId: 'FetchCountryError',
                 });
             });
-        fetchAllNominalVoltages(studyUuid, nodeUuid)
+
+        fetchAllNominalVoltages(studyUuid, nodeUuid, currentRootNetworkUuid)
             .then((nominalVoltages) => {
                 setVoltageLevelsFilter(
                     nominalVoltages.map((nominalV: number) => ({
@@ -120,7 +125,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                     headerId: 'FetchNominalVoltagesError',
                 });
             });
-    }, [nodeUuid, studyUuid, snackError, loadFlowStatus]);
+    }, [nodeUuid, studyUuid, currentRootNetworkUuid, snackError, loadFlowStatus]);
 
     const getGlobalFilterParameter = useCallback(
         (globalFilter: GlobalFilter | undefined) => {
@@ -170,7 +175,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                 value: limitTypeValues,
             });
         }
-        return fetchLimitViolations(studyUuid, nodeUuid, {
+        return fetchLimitViolations(studyUuid, nodeUuid, currentRootNetworkUuid, {
             sort: sortConfig.map((sort) => ({
                 ...sort,
                 colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
@@ -178,14 +183,24 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
             filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
             globalFilters: getGlobalFilterParameter(globalFilter),
         });
-    }, [tabIndex, filters, intl, studyUuid, nodeUuid, sortConfig, getGlobalFilterParameter, globalFilter]);
+    }, [
+        tabIndex,
+        filters,
+        intl,
+        studyUuid,
+        nodeUuid,
+        currentRootNetworkUuid,
+        sortConfig,
+        getGlobalFilterParameter,
+        globalFilter,
+    ]);
 
     const fetchloadflowResultWithParameters = useCallback(() => {
-        return fetchLoadFlowResult(studyUuid, nodeUuid, {
+        return fetchLoadFlowResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
             sort: sortConfig,
             filters,
         });
-    }, [studyUuid, nodeUuid, sortConfig, filters]);
+    }, [studyUuid, nodeUuid, currentRootNetworkUuid, sortConfig, filters]);
 
     const fetchResult = useMemo(() => {
         if (tabIndex === 0 || tabIndex === 1) {
@@ -198,6 +213,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
     const [loadflowResult, isLoadingResult, setResult] = useNodeData(
         studyUuid,
         nodeUuid,
+        currentRootNetworkUuid,
         fetchResult,
         loadflowResultInvalidations
     );

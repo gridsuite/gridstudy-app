@@ -24,8 +24,8 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 
-const BatteryCreationForm = ({ studyUuid, currentNode }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id);
+const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
 
     const batteryIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
@@ -39,6 +39,7 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
 

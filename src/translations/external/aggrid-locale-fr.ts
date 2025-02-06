@@ -45,6 +45,10 @@ const aggrid_locale_fr = {
     'grid.ariaFilterToValue': 'Filtre vers valeur',
     'grid.ariaFilterValue': 'Valeur de filtre',
     'grid.ariaLabelTooltip': 'Tooltip',
+    'grid.ariaRowSelectAll': 'Tout sélectionner',
+    'grid.ariaUnchecked': 'Non sélectionné',
+    'grid.ariaHeaderSelection': "Sélection de l'en-tête",
+    'grid.ariaFilterColumn': 'Colonne filtrée',
 };
 
 export default aggrid_locale_fr;

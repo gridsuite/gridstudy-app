@@ -11,6 +11,7 @@ import {
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_PROVIDER,
 } from 'utils/config-params';
 import {
     ILimitReductionsByVoltageLevel,
@@ -44,6 +45,9 @@ export const toFormValuesLimitReductions = (limits: ILimitReductionsByVoltageLev
 };
 
 export const toFormValueSaParameters = (params: ISAParameters) => {
+    const providerFormValues = {
+        [PARAM_SA_PROVIDER]: params[PARAM_SA_PROVIDER],
+    };
     const limitReductionFormValues = toFormValuesLimitReductions(params?.limitReductions);
     const SASpecificFormValues = {
         [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: params[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] * 100,
@@ -53,6 +57,7 @@ export const toFormValueSaParameters = (params: ISAParameters) => {
         [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: params[PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD],
     };
     return {
+        ...providerFormValues,
         ...limitReductionFormValues,
         ...SASpecificFormValues,
     };

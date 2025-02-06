@@ -29,14 +29,16 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
     id = CHARACTERISTICS,
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     tabIndex,
 }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
     const connectivity1Field = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_1}`}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
         />
@@ -47,6 +49,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
             id={`${id}.${CONNECTIVITY_2}`}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
         />
@@ -81,6 +84,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 <RatioTapChangerPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     voltageLevelOptions={voltageLevelOptions}
                 />
             </Box>
@@ -89,6 +93,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 <PhaseTapChangerPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     voltageLevelOptions={voltageLevelOptions}
                 />
             </Box>

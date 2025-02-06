@@ -33,9 +33,9 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 
 export const convertMillisecondsToMinutesSeconds = (durationInMilliseconds: number): string => {
     const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
@@ -179,17 +179,24 @@ export const useFetchFiltersEnums = (): {
     });
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     useEffect(() => {
-        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
+        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id || !currentRootNetwork) {
             return;
         }
 
         const filterTypes = ['computation-status', 'limit-types', 'branch-sides'];
 
         const promises = filterTypes.map((filterType) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, computingType.LOAD_FLOW, filterType)
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                currentRootNetwork,
+                computingType.LOAD_FLOW,
+                filterType
+            )
         );
 
         setLoading(true);
@@ -207,7 +214,7 @@ export const useFetchFiltersEnums = (): {
             .finally(() => {
                 setLoading(false);
             });
-    }, [loadFlowStatus, studyUuid, currentNode?.id]);
+    }, [loadFlowStatus, studyUuid, currentNode?.id, currentRootNetwork]);
 
     return { loading, result, error };
 };
@@ -349,8 +356,8 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-                    filterEnums: filterEnums,
-                    getEnumLabel: getEnumLabel,
+                    options: filterEnums['side'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -397,8 +404,8 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-                    filterEnums: filterEnums,
-                    getEnumLabel: getEnumLabel,
+                    options: filterEnums['limitType'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
             valueGetter: (value: ValueGetterParams) => {
@@ -481,8 +488,8 @@ export const loadFlowResultColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-                    filterEnums: filterEnums,
-                    getEnumLabel: getEnumLabel,
+                    options: filterEnums['status'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
             cellRenderer: statusCellRender,

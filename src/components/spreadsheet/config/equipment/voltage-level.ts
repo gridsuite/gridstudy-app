@@ -10,7 +10,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import { enumColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
 
 const tab = 'VoltageLevels';
 
@@ -37,7 +37,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'Country',
             field: 'country',
-            ...textColumnDefinition('Country', tab),
+            ...enumColumnDefinition('Country', tab),
         },
         {
             colId: 'NominalV',

@@ -14,10 +14,11 @@ import { TimeSeriesMetadata } from '../types/dynamic-simulation-result.type';
 import { dynamicSimulationResultInvalidations } from '../utils/dynamic-simulation-result-utils';
 import { fetchDynamicSimulationTimeSeriesMetadata } from '../../../../services/dynamic-simulation';
 
-const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
+const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID, currentRootNetworkUuid: UUID) => {
     const [result, isLoading] = useNodeData(
         studyUuid,
         nodeUuid,
+        currentRootNetworkUuid,
         fetchDynamicSimulationTimeSeriesMetadata,
         dynamicSimulationResultInvalidations,
         null,
@@ -50,7 +51,12 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
                     (indexValue) => result.timeseriesMetadatas[indexValue].name
                 );
 
-                return fetchDynamicSimulationResultTimeSeries(studyUuid, nodeUuid, timeSeriesNamesToLoad)
+                return fetchDynamicSimulationResultTimeSeries(
+                    studyUuid,
+                    nodeUuid,
+                    currentRootNetworkUuid,
+                    timeSeriesNamesToLoad
+                )
                     .then((newlyLoadedTimeSeries) => {
                         // insert one by one newly loaded timeserie into the cache
                         for (const newSeries of newlyLoadedTimeSeries) {
@@ -77,7 +83,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
                     });
             }
         },
-        [studyUuid, nodeUuid, result, snackError]
+        [studyUuid, nodeUuid, currentRootNetworkUuid, result, snackError]
     );
 
     return [result, lazyLoadTimeSeriesCb, isLoading];

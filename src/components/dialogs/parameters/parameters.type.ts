@@ -7,7 +7,7 @@
 
 import ComputingType from 'components/computing-status/computing-type';
 import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
-import { ISAParameters } from './common/limitreductions/columns-definitions';
+import { ILimitReductionsByVoltageLevel, ISAParameters } from './common/limitreductions/columns-definitions';
 import { NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
 import { DynamicSimulationParametersFetchReturn } from 'services/study/dynamic-simulation.type';
@@ -50,5 +50,6 @@ export type UseParametersBackendReturnProps<T extends ComputingType> = [
     ParametersInfos<T> | null,
     (newParams: ParametersInfos<T>) => void,
     () => Promise<void> | undefined,
-    Record<string, any> | null
+    Record<string, any> | null,
+    ILimitReductionsByVoltageLevel[]
 ];

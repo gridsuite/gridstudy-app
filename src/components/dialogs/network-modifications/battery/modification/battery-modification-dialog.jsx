@@ -110,6 +110,7 @@ const BatteryModificationDialog = ({
     editData,
     defaultIdValue,
     currentNode,
+    currentRootNetworkUuid,
     studyUuid,
     isUpdate,
     editDataFetchStatus,
@@ -199,6 +200,7 @@ const BatteryModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.BATTERY,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -245,7 +247,7 @@ const BatteryModificationDialog = ({
                 setBatteryToModify(null);
             }
         },
-        [studyUuid, currentNode, getValues, setValue, setValuesAndEmptyOthers, reset, editData]
+        [studyUuid, currentNode, currentRootNetworkUuid, getValues, setValue, setValuesAndEmptyOthers, reset, editData]
     );
 
     useEffect(() => {
@@ -323,6 +325,7 @@ const BatteryModificationDialog = ({
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.BATTERY}
@@ -333,6 +336,7 @@ const BatteryModificationDialog = ({
                     <BatteryModificationForm
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={selectedId}
                         batteryToModify={batteryToModify}
                         updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}

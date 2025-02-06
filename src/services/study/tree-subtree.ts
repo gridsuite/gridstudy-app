@@ -177,16 +177,21 @@ export function updateNodesColumnPositions(studyUuid: UUID, parentNodeId: UUID, 
     });
 }
 
-export function fetchNetworkModificationTreeNode(studyUuid: UUID, nodeUuid: UUID) {
+export function fetchNetworkModificationTreeNode(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) {
     console.info('Fetching network modification tree node : ', nodeUuid);
-    const url = getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid);
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.set('rootNetworkUuid', rootNetworkUuid);
+    const url =
+        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function fetchNetworkModificationTree(studyUuid: UUID) {
+export function fetchNetworkModificationTree(studyUuid: UUID, rootNetworkUuid: UUID) {
     console.info('Fetching network modification tree');
-    const url = getStudyUrl(studyUuid) + '/tree';
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.set('rootNetworkUuid', rootNetworkUuid);
+    const url = getStudyUrl(studyUuid) + '/tree?' + urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
 }

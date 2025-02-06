@@ -19,6 +19,7 @@ import GridItem from '../commons/grid-item';
 const VoltageRegulation = ({
     studyUuid,
     currentNodeUuid,
+    currentRootNetworkUuid,
     voltageLevelOptions,
     previousValues,
     isEquipmentModification,
@@ -78,6 +79,7 @@ const VoltageRegulation = ({
             voltageLevelOptions={voltageLevelOptions}
             equipmentSectionTypeDefaultValue={''}
             currentNodeUuid={currentNodeUuid}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             studyUuid={studyUuid}
             previousRegulatingTerminalValue={previousValues?.regulatingTerminalVlId}
             previousEquipmentSectionTypeValue={

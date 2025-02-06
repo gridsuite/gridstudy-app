@@ -13,14 +13,16 @@ import { EquipmentType } from '@gridsuite/commons-ui';
 interface UseTopBarSearchMatchingEquipmentProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     equipmentType?: EquipmentType;
 }
 
 export const useTopBarSearchMatchingEquipment = (props: UseTopBarSearchMatchingEquipmentProps) => {
-    const { nodeUuid, studyUuid, equipmentType } = props;
+    const { nodeUuid, studyUuid, currentRootNetworkUuid, equipmentType } = props;
     const { equipmentsFound, searchTerm, ...otherStates } = useSearchMatchingEquipments({
         studyUuid: studyUuid,
         nodeUuid: nodeUuid,
+        currentRootNetworkUuid: currentRootNetworkUuid,
         equipmentType: equipmentType ?? undefined,
     });
 

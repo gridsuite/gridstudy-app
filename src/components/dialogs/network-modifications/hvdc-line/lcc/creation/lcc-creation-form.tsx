@@ -16,8 +16,14 @@ interface LccCreationFormProps {
     tabIndex: number;
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
 }
-export default function LccCreationForm({ tabIndex, studyUuid, currentNode }: Readonly<LccCreationFormProps>) {
+export default function LccCreationForm({
+    tabIndex,
+    studyUuid,
+    currentRootNetworkUuid,
+    currentNode,
+}: Readonly<LccCreationFormProps>) {
     return (
         <>
             <Box hidden={tabIndex !== LccCreationDialogTab.HVDC_LINE_TAB} p={1}>
@@ -27,6 +33,7 @@ export default function LccCreationForm({ tabIndex, studyUuid, currentNode }: Re
                 <LccConverterStation
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     id={CONVERTER_STATION_1}
                     stationLabel={'converterStation1'}
                 />
@@ -35,6 +42,7 @@ export default function LccCreationForm({ tabIndex, studyUuid, currentNode }: Re
                 <LccConverterStation
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     id={CONVERTER_STATION_2}
                     stationLabel={'converterStation2'}
                 />

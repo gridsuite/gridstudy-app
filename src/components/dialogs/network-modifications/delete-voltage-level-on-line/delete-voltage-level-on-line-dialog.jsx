@@ -47,6 +47,7 @@ const formSchema = yup
  * Dialog to delete a voltage level on a line
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -55,6 +56,7 @@ const formSchema = yup
 const DeleteVoltageLevelOnLineDialog = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     editData,
     isUpdate,
     editDataFetchStatus,
@@ -133,7 +135,11 @@ const DeleteVoltageLevelOnLineDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <DeleteVoltageLevelOnLineForm studyUuid={studyUuid} currentNode={currentNode} />
+                <DeleteVoltageLevelOnLineForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
             </ModificationDialog>
         </CustomFormProvider>
     );
@@ -143,6 +149,7 @@ DeleteVoltageLevelOnLineDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editDataFetchStatus: PropTypes.string,
 };

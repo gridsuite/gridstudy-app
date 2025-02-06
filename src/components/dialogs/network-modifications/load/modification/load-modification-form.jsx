@@ -16,7 +16,7 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 
-const LoadModificationForm = ({ studyUuid, currentNode, loadToModify, equipmentId }) => {
+const LoadModificationForm = ({ studyUuid, currentNode, currentRootNetworkUuid, loadToModify, equipmentId }) => {
     const intl = useIntl();
 
     const loadIdField = (
@@ -86,6 +86,7 @@ const LoadModificationForm = ({ studyUuid, currentNode, loadToModify, equipmentI
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
             previousValues={loadToModify}
         />

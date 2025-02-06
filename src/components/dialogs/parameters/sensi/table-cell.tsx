@@ -43,7 +43,7 @@ function EditableTableCell(
             {column.menuItems && (
                 <MuiSelectInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    options={Object.values(column.equipmentTypes)}
+                    options={column.equipmentTypes}
                     size="small"
                     fullWidth
                 />

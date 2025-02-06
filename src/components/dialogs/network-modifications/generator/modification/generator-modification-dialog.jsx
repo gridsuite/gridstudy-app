@@ -135,6 +135,7 @@ const GeneratorModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
+    currentRootNetworkUuid,
     studyUuid,
     isUpdate,
     editDataFetchStatus,
@@ -242,6 +243,7 @@ const GeneratorModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.GENERATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -284,7 +286,7 @@ const GeneratorModificationDialog = ({
                 setGeneratorToModify(null);
             }
         },
-        [studyUuid, currentNode, reset, getValues, setValue, setValuesAndEmptyOthers, editData]
+        [studyUuid, currentNode, currentRootNetworkUuid, reset, getValues, setValue, setValuesAndEmptyOthers, editData]
     );
 
     useEffect(() => {
@@ -391,6 +393,7 @@ const GeneratorModificationDialog = ({
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.GENERATOR}
@@ -401,6 +404,7 @@ const GeneratorModificationDialog = ({
                     <GeneratorModificationForm
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={selectedId}
                         generatorToModify={generatorToModify}
                         updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}

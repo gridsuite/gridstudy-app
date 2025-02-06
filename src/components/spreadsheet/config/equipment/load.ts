@@ -9,7 +9,12 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import {
+    booleanColumnDefinition,
+    enumColumnDefinition,
+    numberColumnDefinition,
+    textColumnDefinition,
+} from '../common-column-definitions';
 
 const tab = 'Loads';
 
@@ -31,7 +36,7 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'loadType',
             field: 'type',
-            ...textColumnDefinition('Type', tab),
+            ...enumColumnDefinition('Type', tab),
         },
         {
             colId: 'VoltageLevelId',
@@ -41,7 +46,7 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'Country',
             field: 'country',
-            ...textColumnDefinition('Country', tab),
+            ...enumColumnDefinition('Country', tab),
         },
         {
             colId: 'NominalV',

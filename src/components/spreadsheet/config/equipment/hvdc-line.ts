@@ -9,7 +9,12 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { booleanColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import {
+    booleanColumnDefinition,
+    enumColumnDefinition,
+    numberColumnDefinition,
+    textColumnDefinition,
+} from '../common-column-definitions';
 
 const tab = 'HvdcLines';
 
@@ -41,7 +46,7 @@ export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'ConvertersMode',
             field: 'convertersMode',
-            ...textColumnDefinition('Converters mode', tab),
+            ...enumColumnDefinition('Converters mode', tab),
         },
         {
             colId: 'ConverterStationId1',
@@ -56,12 +61,12 @@ export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
         {
             colId: 'Country1',
             field: 'country1',
-            ...textColumnDefinition('Country 1', tab),
+            ...enumColumnDefinition('Country 1', tab),
         },
         {
             colId: 'Country2',
             field: 'country2',
-            ...textColumnDefinition('Country 2', tab),
+            ...enumColumnDefinition('Country 2', tab),
         },
         {
             colId: 'R',

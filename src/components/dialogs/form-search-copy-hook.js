@@ -11,7 +11,14 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 
-export const useFormSearchCopy = ({ studyUuid, currentNodeUuid, toFormValues, setFormValues, elementType }) => {
+export const useFormSearchCopy = ({
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+    toFormValues,
+    setFormValues,
+    elementType,
+}) => {
     const intl = useIntl();
 
     const { snackInfo, snackError } = useSnackMessage();
@@ -23,6 +30,7 @@ export const useFormSearchCopy = ({ studyUuid, currentNodeUuid, toFormValues, se
         const fetchElementPromise = fetchNetworkElementInfos(
             studyUuid,
             currentNodeUuid,
+            currentRootNetworkUuid,
             elementType,
             EQUIPMENT_INFOS_TYPES.FORM.type,
             element.id,

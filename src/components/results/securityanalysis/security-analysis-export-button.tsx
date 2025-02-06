@@ -18,13 +18,14 @@ import { PERMANENT_LIMIT_NAME } from '../common/utils';
 interface SecurityAnalysisExportButtonProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    rootNetworkUuid: UUID;
     csvHeaders?: string[];
     resultType: RESULT_TYPE;
     disabled?: boolean;
 }
 
 export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExportButtonProps> = (props) => {
-    const { studyUuid, nodeUuid, csvHeaders, disabled, resultType } = props;
+    const { studyUuid, nodeUuid, rootNetworkUuid, csvHeaders, disabled, resultType } = props;
     const { snackError } = useSnackMessage();
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
@@ -70,6 +71,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
         downloadSecurityAnalysisResultZippedCsv(
             studyUuid,
             nodeUuid,
+            rootNetworkUuid,
             {
                 resultType,
             },
@@ -89,7 +91,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
                 });
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [resultType, csvHeaders, enumValueTranslations, studyUuid, nodeUuid, snackError, intl]);
+    }, [resultType, csvHeaders, enumValueTranslations, studyUuid, nodeUuid, rootNetworkUuid, snackError, intl]);
 
     return (
         <ExportButton

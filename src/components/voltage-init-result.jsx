@@ -83,6 +83,7 @@ const VoltageInitResult = ({ result, status }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
     const { snackError } = useSnackMessage();
 
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
@@ -123,7 +124,7 @@ const VoltageInitResult = ({ result, status }) => {
     const applyModifications = () => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
-        cloneVoltageInitModifications(studyUuid, currentNode.id)
+        cloneVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
@@ -139,7 +140,7 @@ const VoltageInitResult = ({ result, status }) => {
     const previewModifications = useCallback(() => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
-        getVoltageInitModifications(studyUuid, currentNode.id)
+        getVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
             .then((modificationList) => {
                 // this endpoint returns a list, but we are expecting a single modification here
                 setVoltageInitModification(modificationList.at(0));
@@ -155,7 +156,14 @@ const VoltageInitResult = ({ result, status }) => {
                 setDisableApplyModifications(false);
                 setApplyingModifications(false);
             });
-    }, [currentNode?.id, snackError, studyUuid, setVoltageInitModification, setPreviewModificationsDialogOpen]);
+    }, [
+        currentNode?.id,
+        currentRootNetworkUuid,
+        snackError,
+        studyUuid,
+        setVoltageInitModification,
+        setPreviewModificationsDialogOpen,
+    ]);
 
     const [autoApplyModifications, setAutoApplyModifications] = useState(false);
 
