@@ -42,6 +42,7 @@ import { typeAndFetchers } from '../config/equipment/common-config';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 import { SortWay } from '../../../types/custom-aggrid-types';
 import { COLUMN_DEPENDENCIES } from '../custom-columns/custom-columns-form';
+import { v4 as uuid4 } from 'uuid';
 
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
@@ -62,9 +63,8 @@ export default function CustomSpreadsheetConfigDialog({
     open,
     selectedOption,
 }: Readonly<CustomSpreadsheetConfigDialogProps>) {
-    const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
-
+    const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
+    const tablesNames = useMemo(() => tablesDefinitions.map((def) => def.name), [tablesDefinitions]);
     const emptySpreadsheetFormSchema = useMemo(() => getEmptySpreadsheetFormSchema(tablesNames), [tablesNames]);
     const spreadsheetFromModelFormSchema = useMemo(() => getSpreadsheetFromModelFormSchema(tablesNames), [tablesNames]);
 
@@ -97,7 +97,7 @@ export default function CustomSpreadsheetConfigDialog({
             if (selectedOption?.id === NEW_SPREADSHEET_CREATION_OPTIONS.EMPTY.id) {
                 // New tab with default columns
                 const equipmentType = newParams.equipmentType as SpreadsheetEquipmentType;
-                const tabIndex = tablesDefinitionIndexes.size;
+                const tabIndex = tablesDefinitions.length;
                 const tabName = newParams[SPREADSHEET_NAME];
                 const newTableDefinition: SpreadsheetTabDefinition = {
                     index: tabIndex,
@@ -110,7 +110,7 @@ export default function CustomSpreadsheetConfigDialog({
                 dispatch(
                     addSortForNewSpreadsheet(tabName, [
                         {
-                            colId: 'id',
+                            colId: 'ID',
                             sort: SortWay.ASC,
                         },
                     ])
@@ -123,7 +123,7 @@ export default function CustomSpreadsheetConfigDialog({
                             customColumns: ColumnWithFormulaDto[];
                             sheetType: SpreadsheetEquipmentType;
                         }) => {
-                            const tabIndex = tablesDefinitionIndexes.size;
+                            const tabIndex = tablesDefinitions.length;
                             const tabName = newParams[SPREADSHEET_NAME];
                             const newTableDefinition: SpreadsheetTabDefinition = {
                                 index: tabIndex,
@@ -137,6 +137,7 @@ export default function CustomSpreadsheetConfigDialog({
                                     selectedModel.customColumns.map((col) => {
                                         return {
                                             ...col,
+                                            uuid: uuid4(),
                                             [COLUMN_DEPENDENCIES]: JSON.parse(col.dependencies || '[]'), // empty strings and null will be converted to empty array
                                         } satisfies ColumnWithFormula;
                                     })
@@ -163,7 +164,7 @@ export default function CustomSpreadsheetConfigDialog({
             open.setFalse();
         },
 
-        [dispatch, open, selectedOption?.id, snackError, tablesDefinitionIndexes.size, getTableColumns]
+        [selectedOption?.id, open, tablesDefinitions.length, getTableColumns, dispatch, snackError]
     );
 
     useEffect(() => {

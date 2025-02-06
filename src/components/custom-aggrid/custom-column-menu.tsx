@@ -5,15 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { PopupConfirmationDialog, useStateBoolean } from '@gridsuite/commons-ui';
 import { CUSTOM_COLUMNS_MENU_DEFINITION, DELETE, UPDATE } from '../spreadsheet/constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CustomColumnDialog from '../spreadsheet/custom-columns/custom-columns-dialog';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { ColumnWithFormula } from 'types/custom-columns.types';
 import { setRemoveCustomColumDefinitions } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
 import { DialogMenuProps } from './custom-aggrid-menu';
@@ -31,11 +30,13 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({
     anchorEl,
 }) => {
     const intl = useIntl();
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
     const dialogOpen = useStateBoolean(false);
-    const [customColumnsDefinition, setCustomColumnsDefinition] = useState<ColumnWithFormula>();
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]]?.columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
+    );
+    const customColumnDefinition = useMemo(
+        () => customColumnsDefinitions.find((column) => column.name === customColumnName),
+        [customColumnName, customColumnsDefinitions]
     );
 
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
@@ -43,7 +44,6 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({
 
     const handleMenuItemClick = useCallback(
         (option: { id: string; label: string }) => {
-            setCustomColumnsDefinition(customColumnsDefinitions.find((column) => column.name === customColumnName));
             onClose();
             switch (option.id) {
                 case UPDATE:
@@ -54,15 +54,20 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({
                     break;
             }
         },
-        [customColumnName, customColumnsDefinitions, dialogOpen, onClose]
+        [dialogOpen, onClose]
     );
 
     const handleValidate = useCallback(() => {
-        if (customColumnsDefinition?.id) {
+        if (customColumnDefinition?.id) {
             setConfirmationDialogOpen(false);
-            dispatch(setRemoveCustomColumDefinitions(tablesNames[tabIndex], customColumnsDefinition?.id));
+            dispatch(
+                setRemoveCustomColumDefinitions({
+                    index: tabIndex,
+                    value: customColumnDefinition?.id,
+                })
+            );
         }
-    }, [customColumnsDefinition?.id, dispatch, tabIndex, tablesNames]);
+    }, [customColumnDefinition?.id, dispatch, tabIndex]);
 
     return (
         <>
@@ -82,9 +87,8 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({
             {dialogOpen.value && (
                 <CustomColumnDialog
                     open={dialogOpen}
+                    customColumnName={customColumnName}
                     tabIndex={tabIndex}
-                    customColumnsDefinition={customColumnsDefinition}
-                    customColumnsDefinitions={customColumnsDefinitions}
                     isCreate={false}
                 />
             )}
@@ -94,7 +98,7 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({
                         {
                             id: 'spreadsheet/custom_column/delete_custom_column_confirmation',
                         },
-                        { columnName: customColumnsDefinition?.name }
+                        { columnName: customColumnDefinition?.name }
                     )}
                     openConfirmationPopup={confirmationDialogOpen}
                     setOpenConfirmationPopup={setConfirmationDialogOpen}
