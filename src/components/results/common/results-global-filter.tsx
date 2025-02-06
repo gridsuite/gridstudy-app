@@ -149,30 +149,22 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 size="small"
                 limitTags={3}
                 disableCloseOnSelect
-                options={filters
-                    .map((filter) => {
-                        let isRecent = false;
-                        if (recentGlobalFilters && recentGlobalFilters.length > 0) {
-                            isRecent = recentGlobalFilters.some(
-                                (recent: Filter) =>
-                                    recent.label === filter.label && recent.filterType === filter.filterType
-                            );
-                        }
-                        return { ...filter, recent: isRecent };
-                    })
-                    .sort((obj: Filter, obj2: Filter) => {
-                        // only the countries are sorted alphabetically
-                        if (obj.filterType === FilterType.COUNTRY && obj2.filterType === FilterType.COUNTRY) {
-                            if (translate(obj.label) < translate(obj2.label)) {
-                                return 1;
+                options={[
+                    ...recentGlobalFilters.map((filter) => {
+                        return { ...filter, recent: true };
+                    }),
+                    ...filters
+                        .map((filter) => {
+                            return { ...filter, recent: false };
+                        })
+                        .sort((a: Filter, b: Filter) => {
+                            // only the countries are sorted alphabetically
+                            if (a.filterType === FilterType.COUNTRY && b.filterType === FilterType.COUNTRY) {
+                                return translate(a.label).localeCompare(translate(b.label));
                             }
-                            if (translate(obj.label) > translate(obj2.label)) {
-                                return -1;
-                            }
-                        }
-                        return 0;
-                    })
-                    .sort((obj) => (obj.recent ? -1 : 1))}
+                            return 0;
+                        }),
+                ]}
                 onChange={handleChange}
                 groupBy={(option: Filter): string => (option.recent ? recentFilter : option.filterType)}
                 // renderInput : the inputfield that contains the chips, adornments and label
