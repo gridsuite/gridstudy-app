@@ -14,22 +14,13 @@ import { mergeSx } from '../../utils/functions';
 import { LabelledButton, styles, useParameterState } from './parameters';
 import ParameterLineSwitch from './widget/parameter-line-switch';
 import LineSeparator from '../commons/line-separator';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 
-export const NetworkParameters = () => {
-    const { snackError } = useSnackMessage();
+export const AdvancedParameters = () => {
     const [enableDeveloperMode, handleChangeEnableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const resetNetworkParameters = () => {
-        fetchDefaultParametersValues()
-            .then((defaultValues) => {
-                handleChangeEnableDeveloperMode(defaultValues?.enableDeveloperMode ?? false);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsRetrievingError',
-                });
-            });
+    const resetParameters = () => {
+        fetchDefaultParametersValues().then((defaultValues) => {
+            handleChangeEnableDeveloperMode(defaultValues.enableDeveloperMode);
+        });
     };
 
     return (
@@ -38,7 +29,7 @@ export const NetworkParameters = () => {
                 <Grid
                     container
                     spacing={1}
-                    key={'networkParameters'}
+                    key={'advancedParameters'}
                     sx={styles.scrollableGrid}
                     marginTop={-3}
                     justifyContent={'space-between'}
@@ -55,7 +46,7 @@ export const NetworkParameters = () => {
                 <LineSeparator />
             </Grid>
             <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
-                <LabelledButton callback={resetNetworkParameters} label="resetToDefault" />
+                <LabelledButton callback={resetParameters} label="resetToDefault" />
             </Grid>
         </>
     );

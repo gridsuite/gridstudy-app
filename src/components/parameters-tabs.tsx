@@ -43,7 +43,7 @@ import { ShortCircuitParameters, useGetShortCircuitParameters } from './dialogs/
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import LoadFlowParameters from './dialogs/parameters/loadflow/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
-import { NetworkParameters } from './dialogs/parameters/network-parameters';
+import { AdvancedParameters } from './dialogs/parameters/advanced-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import {
     fetchDefaultNonEvacuatedEnergyProvider,
@@ -303,7 +303,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             case TAB_VALUES.voltageInitParamsTabValue:
                 return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.advancedParamsTabValue:
-                return <NetworkParameters />;
+                return <AdvancedParameters />;
             case TAB_VALUES.networkVisualizationsParams:
                 return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
         }
