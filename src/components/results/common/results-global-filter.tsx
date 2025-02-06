@@ -115,7 +115,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch<AppDispatch>();
-    const recentGlobalFilters = useSelector((state: AppState) => state.recentGlobalFilters);
+    const recentGlobalFilters: Filter[] = useSelector((state: AppState) => state.recentGlobalFilters);
 
     const getOptionLabel = useCallback(
         (option: Filter) => (option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label + ' kV'),
@@ -159,6 +159,18 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                             );
                         }
                         return { ...filter, recent: isRecent };
+                    })
+                    .sort((obj: Filter, obj2: Filter) => {
+                        // only the countries are sorted alphabetically
+                        if (obj.filterType === FilterType.COUNTRY && obj2.filterType === FilterType.COUNTRY) {
+                            if (translate(obj.label) < translate(obj2.label)) {
+                                return 1;
+                            }
+                            if (translate(obj.label) > translate(obj2.label)) {
+                                return -1;
+                            }
+                        }
+                        return 0;
                     })
                     .sort((obj) => (obj.recent ? -1 : 1))}
                 onChange={handleChange}

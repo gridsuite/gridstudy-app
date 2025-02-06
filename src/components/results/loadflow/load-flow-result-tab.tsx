@@ -289,7 +289,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <ResultsGlobalFilter
                         onChange={handleGlobalFilterChange}
-                        filters={[...countriesFilter, ...voltageLevelsFilter]}
+                        filters={[...voltageLevelsFilter, ...countriesFilter]}
                     />
                 </Box>
                 <Box sx={styles.emptySpace}></Box>
