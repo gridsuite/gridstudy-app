@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { fetchStudyMetadata } from '@gridsuite/commons-ui';
+import { fetchStudyMetadata, StudyMetadata } from '@gridsuite/commons-ui';
 import { getUserToken } from '../redux/user-store';
 
 export const FetchStatus = {
@@ -16,6 +16,7 @@ export const FetchStatus = {
 type ErrorType = Error & {
     status?: number;
 };
+type DefaultParametersType = StudyMetadata['defaultParametersValues'];
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 
 export const getRequestParamFromList = (params: any[], paramName: string) => {
@@ -127,7 +128,7 @@ export function fetchVersion() {
 
 export const fetchDefaultParametersValues = () => {
     console.info('fetching study default parameters values from apps-metadata file');
-    const defaultValues = {
+    const defaultValues: DefaultParametersType = {
         enableDeveloperMode: false,
     };
     return fetchStudyMetadata()
