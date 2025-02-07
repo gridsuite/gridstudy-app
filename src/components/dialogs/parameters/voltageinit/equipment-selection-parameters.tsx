@@ -29,6 +29,9 @@ const equipmentsSelectionStyles = {
     choice: (theme: Theme) => ({
         marginTop: theme.spacing(4),
     }),
+    choiceContainer: {
+        paddingLeft: 1,
+    },
 };
 
 const initialEquipmentsSelectionType = {
@@ -48,8 +51,7 @@ const EquipmentSelectionParameters = () => {
             <Alert sx={equipmentsSelectionStyles.alert} severity="info" variant="outlined">
                 <FormattedMessage id="VoltageInitParametersEquipmentsSelectionAlert" />
             </Alert>
-            <Grid item container>
-                <Grid item xs={7}></Grid>
+            <Grid item container justifyContent="flex-end" sx={equipmentsSelectionStyles.choiceContainer}>
                 <Grid item xs={5} sx={equipmentsSelectionStyles.choice}>
                     <RadioInput
                         name={GENERATORS_SELECTION_TYPE}
@@ -64,8 +66,7 @@ const EquipmentSelectionParameters = () => {
                 label={'VariableGenerators'}
                 hideErrorMessage
             />
-            <Grid item container>
-                <Grid item xs={7}></Grid>
+            <Grid item container justifyContent="flex-end" sx={equipmentsSelectionStyles.choiceContainer}>
                 <Grid item xs={5} sx={equipmentsSelectionStyles.choice}>
                     <RadioInput
                         name={TRANSFORMERS_SELECTION_TYPE}
@@ -80,8 +81,7 @@ const EquipmentSelectionParameters = () => {
                 label={'VariableTransformers'}
                 hideErrorMessage
             />
-            <Grid item container>
-                <Grid item xs={7}></Grid>
+            <Grid item container justifyContent="flex-end" sx={equipmentsSelectionStyles.choiceContainer}>
                 <Grid item xs={5} sx={equipmentsSelectionStyles.choice}>
                     <RadioInput
                         name={SHUNT_COMPENSATORS_SELECTION_TYPE}
