@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { fetchAppsMetadata } from '@gridsuite/commons-ui';
+import { catchErrorHandler, fetchStudyMetadata, StudyMetadata } from '@gridsuite/commons-ui';
 import { getUserToken } from '../redux/user-store';
 
 export const FetchStatus = {
@@ -16,6 +16,7 @@ export const FetchStatus = {
 type ErrorType = Error & {
     status?: number;
 };
+type DefaultParameters = StudyMetadata['defaultParametersValues'];
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 
 export const getRequestParamFromList = (params: any[], paramName: string) => {
@@ -126,17 +127,20 @@ export function fetchVersion() {
 }
 
 export const fetchDefaultParametersValues = () => {
-    return fetchAppsMetadata().then((res) => {
-        console.info('fecthing default parameters values from apps-metadata file');
-        const studyMetadata = res.find((metadata) => metadata.name === 'Study');
-        if (!studyMetadata) {
-            return Promise.reject(new Error('Study entry could not be found in metadatas'));
-        }
-
-        //fetchAppsMetadata return a Metadata type and Metadata doesn't contain defaultParametersValues. Check if we need to change it to StudyMetadata.
-        // @ts-ignore
-        return studyMetadata.defaultParametersValues;
-    });
+    console.info('fetching study default parameters values from apps-metadata file');
+    const defaultValues: DefaultParameters = {
+        enableDeveloperMode: false,
+    };
+    return fetchStudyMetadata()
+        .then((studyMetadata) => {
+            return studyMetadata?.defaultParametersValues ?? defaultValues;
+        })
+        .catch((error: unknown) => {
+            catchErrorHandler(error, (message) => {
+                console.error(`fetching error (${message}), then default values will be used.`);
+            });
+            return defaultValues;
+        });
 };
 export const getQueryParamsList = (params: string[] | number[] | null | undefined, paramName: string) => {
     if (params != null && Array.isArray(params) && params.length > 0) {
