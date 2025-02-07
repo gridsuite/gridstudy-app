@@ -18,7 +18,7 @@ import {
 } from 'components/utils/field-constants';
 import ParameterLineDirectoryItemsInput from '../widget/parameter-line-directory-items-input';
 import { FormattedMessage } from 'react-intl';
-import { Box, Theme } from '@mui/system';
+import { Theme } from '@mui/system';
 
 const equipmentsSelectionStyles = {
     alert: (theme: Theme) => ({
@@ -28,8 +28,6 @@ const equipmentsSelectionStyles = {
     }),
     choice: (theme: Theme) => ({
         marginTop: theme.spacing(4),
-        display: 'flex',
-        justifyContent: 'right',
     }),
 };
 
@@ -50,9 +48,15 @@ const EquipmentSelectionParameters = () => {
             <Alert sx={equipmentsSelectionStyles.alert} severity="info" variant="outlined">
                 <FormattedMessage id="VoltageInitParametersEquipmentsSelectionAlert" />
             </Alert>
-            <Box sx={equipmentsSelectionStyles.choice}>
-                <RadioInput name={GENERATORS_SELECTION_TYPE} options={Object.values(initialEquipmentsSelectionType)} />
-            </Box>
+            <Grid item container>
+                <Grid item xs={7}></Grid>
+                <Grid item xs={5} sx={equipmentsSelectionStyles.choice}>
+                    <RadioInput
+                        name={GENERATORS_SELECTION_TYPE}
+                        options={Object.values(initialEquipmentsSelectionType)}
+                    />
+                </Grid>
+            </Grid>
             <ParameterLineDirectoryItemsInput
                 name={VARIABLE_Q_GENERATORS}
                 equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
@@ -60,11 +64,14 @@ const EquipmentSelectionParameters = () => {
                 label={'VariableGenerators'}
                 hideErrorMessage
             />
-            <Grid sx={equipmentsSelectionStyles.choice}>
-                <RadioInput
-                    name={TRANSFORMERS_SELECTION_TYPE}
-                    options={Object.values(initialEquipmentsSelectionType)}
-                />
+            <Grid item container>
+                <Grid item xs={7}></Grid>
+                <Grid item xs={5} sx={equipmentsSelectionStyles.choice}>
+                    <RadioInput
+                        name={TRANSFORMERS_SELECTION_TYPE}
+                        options={Object.values(initialEquipmentsSelectionType)}
+                    />
+                </Grid>
             </Grid>
             <ParameterLineDirectoryItemsInput
                 name={VARIABLE_TRANSFORMERS}
@@ -73,11 +80,14 @@ const EquipmentSelectionParameters = () => {
                 label={'VariableTransformers'}
                 hideErrorMessage
             />
-            <Grid sx={equipmentsSelectionStyles.choice}>
-                <RadioInput
-                    name={SHUNT_COMPENSATORS_SELECTION_TYPE}
-                    options={Object.values(initialEquipmentsSelectionType)}
-                />
+            <Grid item container>
+                <Grid item xs={7}></Grid>
+                <Grid item xs={5} sx={equipmentsSelectionStyles.choice}>
+                    <RadioInput
+                        name={SHUNT_COMPENSATORS_SELECTION_TYPE}
+                        options={Object.values(initialEquipmentsSelectionType)}
+                    />
+                </Grid>
             </Grid>
             <ParameterLineDirectoryItemsInput
                 name={VARIABLE_SHUNT_COMPENSATORS}
