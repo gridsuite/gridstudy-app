@@ -219,7 +219,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                                 <FormattedMessage id={'results.globalFilter.' + group} />
                             </Box>
                             {children}
-                            {!recent && numOfGroupOptions !== -1 && (
+                            {!recent && numOfGroupOptions - DEFAULT_NB_OPTIONS_DISPLAYED > 0 && (
                                 <Chip
                                     component="li"
                                     label={'+ ' + (numOfGroupOptions - DEFAULT_NB_OPTIONS_DISPLAYED)}
