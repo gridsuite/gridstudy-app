@@ -16,7 +16,7 @@ interface UseSearchMatchingEquipmentsProps {
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     inUpstreamBuiltParentNode?: boolean;
-    equipmentType?: EquipmentType | string;
+    equipmentType?: EquipmentType;
 }
 
 export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsProps) => {
