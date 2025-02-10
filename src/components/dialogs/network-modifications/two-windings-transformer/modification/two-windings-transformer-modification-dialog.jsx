@@ -79,14 +79,15 @@ import {
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import LimitsPane from '../../../limits/limits-pane';
+import { LimitsPane } from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
     getLimitsEmptyFormData,
-    getLimitsFormData,
+    getSelectedLimitsFormData,
     getLimitsValidationSchema,
     sanitizeLimitNames,
     updateTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -231,7 +232,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     ratedU2: twt.ratedU2?.value,
                     ratedS: twt.ratedS?.value,
                 }),
-                ...getLimitsFormData({
+                ...getSelectedLimitsFormData({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
@@ -372,8 +373,14 @@ const TwoWindingsTransformerModificationDialog = ({
             const limits = twt[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
-                twtToModify?.currentLimits1?.temporaryLimits,
-                editData?.currentLimits1?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    twtToModify?.currentLimits1,
+                    twtToModify?.selectedOperationalLimitsGroup1
+                )?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    editData?.currentLimits1,
+                    editData?.selectedOperationalLimitsGroup1
+                )?.temporaryLimits,
                 currentNode
             );
             let currentLimits1 = null;
@@ -385,8 +392,14 @@ const TwoWindingsTransformerModificationDialog = ({
             }
             const temporaryLimits2 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
-                twtToModify?.currentLimits2?.temporaryLimits,
-                editData?.currentLimits2?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    twtToModify?.currentLimits2,
+                    twtToModify?.selectedOperationalLimitsGroup2
+                )?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    editData?.currentLimits2,
+                    editData?.selectedOperationalLimitsGroup2
+                )?.temporaryLimits,
                 currentNode
             );
             let currentLimits2 = null;
@@ -633,17 +646,25 @@ const TwoWindingsTransformerModificationDialog = ({
                             setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, twt?.voltageLevelId2);
                             setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, twt?.busOrBusbarSectionId1);
                             setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, twt?.busOrBusbarSectionId2);
+                            const selectedCurrentLimits1 = completeCurrentLimitsGroupsToOnlySelected(
+                                twt?.currentLimits1,
+                                twt?.selectedOperationalLimitsGroup1
+                            );
+                            const selectedCurrentLimits2 = completeCurrentLimitsGroupsToOnlySelected(
+                                twt?.currentLimits2,
+                                twt?.selectedOperationalLimitsGroup2
+                            );
                             const updatedTemporaryLimits1 = updateTemporaryLimits(
                                 formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
-                                formatTemporaryLimits(twt?.currentLimits1?.temporaryLimits)
+                                formatTemporaryLimits(selectedCurrentLimits1?.temporaryLimits)
                             );
                             const updatedTemporaryLimits2 = updateTemporaryLimits(
                                 formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
-                                formatTemporaryLimits(twt?.currentLimits2?.temporaryLimits)
+                                formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
                             );
                             reset((formValues) => ({
                                 ...formValues,
-                                ...getLimitsFormData({
+                                ...getSelectedLimitsFormData({
                                     permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
                                     permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
                                     temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
@@ -793,7 +814,12 @@ const TwoWindingsTransformerModificationDialog = ({
                         </Box>
 
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.LIMITS_TAB} p={1}>
-                            <LimitsPane currentNode={currentNode} equipmentToModify={twtToModify} clearableFields />
+                            <LimitsPane
+                                currentNode={currentNode}
+                                equipmentToModify={twtToModify}
+                                clearableFields
+                                onlySelectedLimitsGroup
+                            />
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB} p={1}>
                             <RatioTapChangerPane
