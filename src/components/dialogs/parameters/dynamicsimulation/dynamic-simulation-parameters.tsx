@@ -49,7 +49,7 @@ import {
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { mergeSx } from '../../../utils/functions';
-import { CustomFormProvider, SubmitButton } from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
@@ -101,7 +101,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
             updateDynamicSimulationParameters
         );
 
-    const [tabValue, setTabValue] = useState(TAB_VALUES.TIME_DELAY);
+    const [tabIndex, setTabIndex] = useState(TAB_VALUES.TIME_DELAY);
 
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
 
@@ -129,26 +129,38 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
 
     const onError = useCallback(
         (errors: FieldErrors<DynamicSimulationForm>) => {
+            if (!errors || isObjectEmpty(errors)) {
+                return;
+            }
+
             const tabsInError = [];
             // do not show error when being in the current tab
-            if (errors?.[TAB_VALUES.TIME_DELAY] && TAB_VALUES.TIME_DELAY !== tabValue) {
+            if (errors?.[TAB_VALUES.TIME_DELAY] && TAB_VALUES.TIME_DELAY !== tabIndex) {
                 tabsInError.push(TAB_VALUES.TIME_DELAY);
             }
-            if (errors?.[TAB_VALUES.SOLVER] && TAB_VALUES.SOLVER !== tabValue) {
+            if (errors?.[TAB_VALUES.SOLVER] && TAB_VALUES.SOLVER !== tabIndex) {
                 tabsInError.push(TAB_VALUES.SOLVER);
             }
-            if (errors?.[TAB_VALUES.MAPPING] && TAB_VALUES.MAPPING !== tabValue) {
+            if (errors?.[TAB_VALUES.MAPPING] && TAB_VALUES.MAPPING !== tabIndex) {
                 tabsInError.push(TAB_VALUES.MAPPING);
             }
-            if (errors?.[TAB_VALUES.NETWORK] && TAB_VALUES.NETWORK !== tabValue) {
+            if (errors?.[TAB_VALUES.NETWORK] && TAB_VALUES.NETWORK !== tabIndex) {
                 tabsInError.push(TAB_VALUES.NETWORK);
             }
-            if (errors?.[TAB_VALUES.CURVE] && TAB_VALUES.CURVE !== tabValue) {
+            if (errors?.[TAB_VALUES.CURVE] && TAB_VALUES.CURVE !== tabIndex) {
                 tabsInError.push(TAB_VALUES.CURVE);
             }
-            setTabIndexesWithError(tabsInError);
+
+            if (tabsInError.includes(tabIndex)) {
+                // error in current tab => do not change tab systematically but remove current tab in error list
+                setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
+            } else if (tabsInError.length > 0) {
+                // switch to the first tab in the list then remove the tab in the error list
+                setTabIndex(tabsInError[0]);
+                setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
+            }
         },
-        [tabValue]
+        [tabIndex]
     );
 
     const onSubmit = useCallback(
@@ -202,7 +214,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     }, [reset, parameters]);
 
     const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
-        setTabValue(newValue);
+        setTabIndex(newValue);
     }, []);
 
     useEffect(() => {
@@ -220,12 +232,12 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                     })}
                 >
                     <ProviderParameter providers={providers} provider={provider} onChangeProvider={updateProvider} />
-                    <Grid container paddingTop={1} xl={tabValue === TAB_VALUES.CURVE ? 12 : 8}>
+                    <Grid container paddingTop={1} xl={tabIndex === TAB_VALUES.CURVE ? 12 : 8}>
                         <LineSeparator />
                     </Grid>
 
                     <Grid item width="100%">
-                        <Tabs value={tabValue} variant="scrollable" onChange={handleTabChange} aria-label="parameters">
+                        <Tabs value={tabIndex} variant="scrollable" onChange={handleTabChange} aria-label="parameters">
                             <Tab
                                 label={<FormattedMessage id="DynamicSimulationTimeDelay" />}
                                 value={TAB_VALUES.TIME_DELAY}
@@ -249,10 +261,10 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                             <Tab label={<FormattedMessage id="DynamicSimulationCurve" />} value={TAB_VALUES.CURVE} />
                         </Tabs>
 
-                        <TabPanel value={tabValue} index={TAB_VALUES.TIME_DELAY}>
+                        <TabPanel value={tabIndex} index={TAB_VALUES.TIME_DELAY}>
                             <TimeDelayParameters path={TAB_VALUES.TIME_DELAY} />
                         </TabPanel>
-                        <TabPanel value={tabValue} index={TAB_VALUES.SOLVER}>
+                        <TabPanel value={tabIndex} index={TAB_VALUES.SOLVER}>
                             <SolverParameters
                                 solver={
                                     parameters
@@ -266,7 +278,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                                 clearErrors={clearErrors}
                             />
                         </TabPanel>
-                        <TabPanel value={tabValue} index={TAB_VALUES.MAPPING}>
+                        <TabPanel value={tabIndex} index={TAB_VALUES.MAPPING}>
                             <MappingParameters
                                 mapping={
                                     parameters
@@ -278,10 +290,10 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                                 path={TAB_VALUES.MAPPING}
                             />
                         </TabPanel>
-                        <TabPanel value={tabValue} index={TAB_VALUES.NETWORK}>
+                        <TabPanel value={tabIndex} index={TAB_VALUES.NETWORK}>
                             <NetworkParameters path={TAB_VALUES.NETWORK} />
                         </TabPanel>
-                        <TabPanel value={tabValue} index={TAB_VALUES.CURVE}>
+                        <TabPanel value={tabIndex} index={TAB_VALUES.CURVE}>
                             <CurveParameters path={TAB_VALUES.CURVE} />
                         </TabPanel>
                     </Grid>

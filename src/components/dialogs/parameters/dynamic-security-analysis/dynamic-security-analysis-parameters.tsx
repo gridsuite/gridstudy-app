@@ -25,7 +25,7 @@ import {
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { mergeSx } from '../../../utils/functions';
-import { CustomFormProvider, SubmitButton } from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
@@ -100,6 +100,10 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
 
     const onError = useCallback(
         (errors: FieldErrors<DynamicSecurityAnalysisParametersForm>) => {
+            if (!errors || isObjectEmpty(errors)) {
+                return;
+            }
+
             const tabsInError = [];
             // do not show error when being in the current tab
             if (errors?.[TAB_VALUES.SCENARIO] && TAB_VALUES.SCENARIO !== tabIndex) {
