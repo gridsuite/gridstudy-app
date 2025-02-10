@@ -20,7 +20,6 @@ import {
     resetEquipments,
     resetEquipmentsPostLoadflow,
     setStudyIndexationStatus,
-    limitReductionModified,
     setCurrentRootNetwork,
 } from '../redux/actions';
 import { fetchRootNetworks } from 'services/root-network';
@@ -43,7 +42,6 @@ import { fetchCaseName, fetchStudyExists } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchStudyIndexationStatus } from '../services/study/network';
 import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
-import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
@@ -269,8 +267,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
     const wsRef = useRef();
-
-    const isLimitReductionModified = useSelector((state) => state.limitReductionModified);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -811,42 +807,25 @@ export function StudyContainer({ view, onChangeTab }) {
         // connectNotifications don't change
     }, [dispatch, studyUuid, connectNotifications, connectDeletedStudyNotifications]);
 
-    useEffect(() => {
-        if (studyUuid) {
-            if (isLimitReductionModified) {
-                // limit reduction param has changed : we invalidate the load flow status
-                invalidateLoadFlowStatus(studyUuid).catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'invalidateLoadFlowStatusError',
-                    });
-                });
-                dispatch(limitReductionModified(false));
-            }
-        }
-    }, [studyUuid, isLimitReductionModified, snackError, dispatch]);
-
     return (
-        <>
-            <WaitingLoader
-                errMessage={studyErrorMessage || errorMessage}
-                loading={
-                    studyPending ||
-                    !paramsLoaded ||
-                    !isStudyNetworkFound ||
-                    (studyIndexationStatus !== StudyIndexationStatus.INDEXED && isStudyIndexationPending)
-                } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
-                message={'LoadingRemoteData'}
-            >
-                <StudyPane
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    view={view}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                    onChangeTab={onChangeTab}
-                />
-            </WaitingLoader>
-        </>
+        <WaitingLoader
+            errMessage={studyErrorMessage || errorMessage}
+            loading={
+                studyPending ||
+                !paramsLoaded ||
+                !isStudyNetworkFound ||
+                (studyIndexationStatus !== StudyIndexationStatus.INDEXED && isStudyIndexationPending)
+            } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            message={'LoadingRemoteData'}
+        >
+            <StudyPane
+                studyUuid={studyUuid}
+                currentNode={currentNode}
+                view={view}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+                onChangeTab={onChangeTab}
+            />
+        </WaitingLoader>
     );
 }
 

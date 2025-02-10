@@ -11,6 +11,7 @@ import { UUID } from 'crypto';
 export interface LoadFlowParametersInfos {
     uuid: UUID;
     provider: string;
+    limitReduction: number;
     commonParameters: Record<string, boolean | string | string[] | number>;
     specificParametersPerProvider: Record<string, Record<string, string>>;
     limitReductions: ILimitReductionsByVoltageLevel[];
