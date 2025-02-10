@@ -77,6 +77,8 @@
     "loadingCreationStudy": "Creation in progress...",
     "LoadingOf": "Loading of {value}...",
 
+    "computationInProgress": "Computation in progress ...",
+
     "centerOnMap": "Center on the map",
     "openVoltageLevel": "Open the voltage level",
     "CBAll": "All",

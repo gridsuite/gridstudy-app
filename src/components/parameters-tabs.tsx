@@ -130,26 +130,15 @@ const styles = {
 };
 
 enum TAB_VALUES {
-    lfParamsTabValue = 'LoadFlow',
-    securityAnalysisParamsTabValue = 'SecurityAnalysis',
-    sensitivityAnalysisParamsTabValue = 'SensitivityAnalysis',
-    nonEvacuatedEnergyParamsTabValue = 'NonEvacuatedEnergyAnalysis',
-    shortCircuitParamsTabValue = 'ShortCircuit',
-    dynamicSimulationParamsTabValue = 'DynamicSimulation',
-    voltageInitParamsTabValue = 'VoltageInit',
-    networkVisualizationsParams = 'NetworkVisualizations',
+    lfParamsTabValue = 'LOAD_FLOW',
+    securityAnalysisParamsTabValue = 'SECURITY_ANALYSIS',
+    sensitivityAnalysisParamsTabValue = 'SENSITIVITY_ANALYSIS',
+    nonEvacuatedEnergyParamsTabValue = 'NON_EVACUATED_ENERGY_ANALYSIS',
+    shortCircuitParamsTabValue = 'SHORT_CIRCUIT',
+    dynamicSimulationParamsTabValue = 'DYNAMIC_SIMULATION',
+    voltageInitParamsTabValue = 'VOLTAGE_INITIALIZATION',
+    networkVisualizationsParams = 'networkVisualizationsParams',
 }
-
-const hasValidationTabs = [
-    TAB_VALUES.securityAnalysisParamsTabValue,
-    TAB_VALUES.sensitivityAnalysisParamsTabValue,
-    TAB_VALUES.nonEvacuatedEnergyParamsTabValue,
-    TAB_VALUES.shortCircuitParamsTabValue,
-    TAB_VALUES.dynamicSimulationParamsTabValue,
-    TAB_VALUES.voltageInitParamsTabValue,
-    TAB_VALUES.lfParamsTabValue,
-    TAB_VALUES.networkVisualizationsParams,
-];
 
 type OwnProps = {
     studyId: string;
@@ -227,7 +216,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
     const handleChangeTab = (newValue: string) => {
-        if (hasValidationTabs.includes(tabValue as TAB_VALUES) && haveDirtyFields) {
+        if (haveDirtyFields) {
             setNextTabValue(newValue);
             setIsPopupOpen(true);
         } else {
@@ -258,7 +247,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         });
     }, [enableDeveloperMode]);
 
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const computationStatus = useSelector((state: AppState) => state.computingStatus[tabValue as ComputingType]);
     const displayTab = useCallback(() => {
         switch (tabValue) {
             case TAB_VALUES.lfParamsTabValue:
@@ -334,7 +323,10 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                         >
                             <Tab
                                 label={<FormattedMessage id="LoadFlow" />}
-                                disabled={loadFlowStatus === RunningStatus.RUNNING}
+                                disabled={
+                                    computationStatus === RunningStatus.RUNNING &&
+                                    tabValue === TAB_VALUES.lfParamsTabValue
+                                }
                                 value={TAB_VALUES.lfParamsTabValue}
                             />
                             <Tab
@@ -382,7 +374,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 </Grid>
                 <Grid item xs={10} sx={styles.parametersBox}>
                     <GlassPane
-                        active={loadFlowStatus === RunningStatus.RUNNING && tabValue === TAB_VALUES.lfParamsTabValue}
+                        active={computationStatus === RunningStatus.RUNNING}
+                        loadingMessageText="computationInProgress"
                     >
                         <Box sx={styles.contentBox}>{displayTab()}</Box>
                     </GlassPane>
