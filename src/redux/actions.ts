@@ -52,7 +52,11 @@ import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
-import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import {
+    SpreadsheetEquipmentsByNodes,
+    SpreadsheetEquipmentType,
+    SpreadsheetTabDefinition,
+} from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
@@ -136,7 +140,6 @@ export type AppActions =
     | UpdateCustomColumnsDefinitionsAction
     | RemoveCustomColumnsDefinitionsAction
     | UpdateCustomColumnsNodesAliasesAction
-    | AddEquipmentsByNodesForCustomColumnsAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction;
@@ -144,34 +147,17 @@ export type AppActions =
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
     equipmentType: SpreadsheetEquipmentType;
-    equipments: Identifiable[];
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes;
 };
 
 export function loadEquipments(
     equipmentType: SpreadsheetEquipmentType,
-    equipments: Identifiable[]
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes
 ): LoadEquipmentsAction {
     return {
         type: LOAD_EQUIPMENTS,
         equipmentType: equipmentType,
-        equipments: equipments,
-    };
-}
-
-export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS =
-    'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
-export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<
-    Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>
-> & {
-    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>;
-};
-
-export function addAdditionalEquipmentsByNodesForCustomColumns(
-    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>
-): AddEquipmentsByNodesForCustomColumnsAction {
-    return {
-        type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
-        equipments: equipments,
+        spreadsheetEquipmentByNodes: spreadsheetEquipmentByNodes,
     };
 }
 
@@ -190,12 +176,17 @@ export function updateCustomColumnsNodesAliases(nodesAliases: NodeAlias[]): Upda
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
     equipments: Record<EquipmentUpdateType, Identifiable[]>;
+    nodeId: UUID;
 };
 
-export function updateEquipments(equipments: Record<EquipmentUpdateType, Identifiable[]>): UpdateEquipmentsAction {
+export function updateEquipments(
+    equipments: Record<EquipmentUpdateType, Identifiable[]>,
+    nodeId: UUID
+): UpdateEquipmentsAction {
     return {
         type: UPDATE_EQUIPMENTS,
         equipments: equipments,
+        nodeId: nodeId,
     };
 }
 
@@ -206,12 +197,14 @@ export type EquipmentToDelete = {
 export const DELETE_EQUIPMENTS = 'DELETE_EQUIPMENTS';
 export type DeleteEquipmentsAction = Readonly<Action<typeof DELETE_EQUIPMENTS>> & {
     equipments: EquipmentToDelete[];
+    nodeId: UUID;
 };
 
-export function deleteEquipments(equipments: EquipmentToDelete[]): DeleteEquipmentsAction {
+export function deleteEquipments(equipments: EquipmentToDelete[], nodeId: UUID): DeleteEquipmentsAction {
     return {
         type: DELETE_EQUIPMENTS,
         equipments,
+        nodeId,
     };
 }
 

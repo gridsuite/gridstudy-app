@@ -86,14 +86,9 @@ interface TableWrapperProps {
     disabled: boolean;
 }
 
-interface RecursiveIdentifiable extends Identifiable {
-    [alias: string]: Identifiable | string | undefined;
-}
-
 export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     studyUuid,
     currentNode,
-    currentRootNetworkUuid,
     equipmentId,
     equipmentType,
     equipmentChanged,
@@ -113,9 +108,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
-    const additionalEquipmentsByNodesForCustomColumns = useSelector(
-        (state: AppState) => state.additionalEquipmentsByNodesForCustomColumns
-    );
+    const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const tablesDefinitionTypes = useSelector((state: AppState) => state.tables.definitionTypes);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
@@ -231,8 +224,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         equipmentDefinition as EquipmentProps,
-        formatFetchedEquipmentsHandler,
-        tabIndex
+        formatFetchedEquipmentsHandler
     );
 
     useEffect(() => {
@@ -245,44 +237,31 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [errorMessage, snackError]);
 
     useEffect(() => {
-        if (disabled || !equipments) {
+        if (disabled || equipments.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
             return;
         }
-
-        let equipmentsWithCustomColumnInfo = [...equipments];
+        let localRowData = [];
         if (equipmentDefinition.type) {
-            Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach(([nodeAlias, equipments]) => {
-                const equipmentsToAdd = equipments[equipmentDefinition.type];
-                if (equipmentsToAdd) {
-                    equipmentsToAdd.forEach((equipmentToAdd) => {
-                        let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(
-                            (equipmentWithCustomColumnInfo) => equipmentWithCustomColumnInfo.id === equipmentToAdd.id
-                        );
-                        let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
-                        if (matchingEquipment) {
-                            let equipmentWithAddedInfo: RecursiveIdentifiable = { ...matchingEquipment };
-                            equipmentWithAddedInfo[nodeAlias] = equipmentToAdd;
-                            equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
-                        }
-                    });
-                }
+            equipments.equipmentsByNodeId[currentNode.id].forEach((equipment) => {
+                let equipmentToAdd = { ...equipment };
+                Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
+                    let matchingEquipment = equipments.find((eq) => eq.id === equipment.id);
+                    let nodeAlias = nodesAliases.find((value) => value.id === nodeId);
+                    if (nodeAlias !== undefined && matchingEquipment !== undefined) {
+                        equipmentToAdd[nodeAlias.alias] = matchingEquipment;
+                    }
+                });
+                localRowData.push(equipmentToAdd);
             });
         }
-        setRowData(equipmentsWithCustomColumnInfo);
 
         // To handle cases where a "customSpreadsheet" tab is opened.
         // This ensures that the grid correctly displays data specific to the custom tab.
         if (gridRef.current?.api) {
-            gridRef.current.api.setGridOption('rowData', equipmentsWithCustomColumnInfo);
+            gridRef.current.api.setGridOption('rowData', localRowData);
         }
-    }, [
-        tabIndex,
-        disabled,
-        equipments,
-        tablesNames,
-        additionalEquipmentsByNodesForCustomColumns,
-        equipmentDefinition.type,
-    ]);
+        setRowData(localRowData);
+    }, [tabIndex, disabled, equipments, tablesNames, equipmentDefinition.type, nodesAliases, currentNode.id]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
@@ -491,7 +470,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         currentNode={currentNode}
                         rowData={rowData}
                         columnData={mergedColumnData}
-                        fetched={!!equipments || !!errorMessage}
+                        fetched={
+                            equipments.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined ||
+                            !!errorMessage
+                        }
                         handleColumnDrag={handleColumnDrag}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
