@@ -72,28 +72,28 @@ const styles = {
             position: 'relative',
         },
     },
-    chipCountry: {
+    chipCountry: (theme: Theme) => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
-            backgroundColor: `var(--info-main, #0288D1) !important`,
+            backgroundColor: theme.palette.info.main + `!important`,
         },
         '&.MuiChip-root:hover': {
-            backgroundColor: `var(--info-dark, #01579B) !important`,
+            backgroundColor: theme.palette.info.dark + `!important`,
         },
         '&.MuiChip-root:focus': {
-            backgroundColor: `var(--info-dark, #01579B) !important`,
+            backgroundColor: theme.palette.info.dark + `!important`,
         },
-    },
-    chipVoltageLevel: {
+    }),
+    chipVoltageLevel: (theme: Theme) => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
-            backgroundColor: `var(--secondary-main, #9C27B0) !important`,
+            backgroundColor: theme.palette.secondary.main + `!important`,
         },
         '&.MuiChip-root:hover': {
-            backgroundColor: `var(--secondary-dark, #7B1FA2) !important`,
+            backgroundColor: theme.palette.secondary.dark + `!important`,
         },
         '&.MuiChip-root:focus': {
-            backgroundColor: `var(--secondary-dark, #7B1FA2) !important`,
+            backgroundColor: theme.palette.secondary.dark + `!important`,
         },
-    },
+    }),
 };
 
 export enum FilterType {
