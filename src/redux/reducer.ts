@@ -110,10 +110,10 @@ import {
     OpenDiagramAction,
     OpenNadListAction,
     OpenStudyAction,
-    REMOVE_CUSTOM_COLUMNS_DEFINITION,
+    REMOVE_COLUMN_DEFINITION,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
-    RemoveCustomColumnsDefinitionsAction,
+    RemoveColumnDefinitionAction,
     RemoveNodeDataAction,
     RemoveNotificationByNodeAction,
     RESET_EQUIPMENTS,
@@ -184,12 +184,12 @@ import {
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
-    UPDATE_CUSTOM_COLUMNS_DEFINITION,
+    UPDATE_COLUMNS_DEFINITION,
     UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UPDATE_TABLE_DEFINITION,
-    UpdateCustomColumnsDefinitionsAction,
+    UpdateColumnsDefinitionsAction,
     UpdateCustomColumnsNodesAliasesAction,
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
@@ -612,17 +612,15 @@ const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 interface TablesState {
     definitions: SpreadsheetTabDefinition[];
     columnsStates: ColumnState[][];
-    allCustomColumnsDefinitions: ColumnWithFormula[][];
 }
 
 const initialTablesState: TablesState = {
     definitions: TABLES_DEFINITIONS,
     columnsStates: TABLES_DEFINITIONS.map((table) =>
         table.columns.map((col) => {
-            return { colId: col.colId, visible: true };
+            return { colId: col.id, visible: true };
         })
     ),
-    allCustomColumnsDefinitions: TABLES_DEFINITIONS.map((_) => []),
 };
 
 const initialState: AppState = {
@@ -874,10 +872,9 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
-        const { newTableDefinition, customColumns } = action.payload;
+        const { newTableDefinition } = action;
         state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
-        state.tables.columnsStates.push(newTableDefinition.columns.map((col) => ({ colId: col.colId, visible: true })));
-        state.tables.allCustomColumnsDefinitions.push(customColumns);
+        state.tables.columnsStates.push(newTableDefinition.columns.map((col) => ({ colId: col.id, visible: true })));
     });
 
     builder.addCase(
@@ -1726,24 +1723,44 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableSort[SPREADSHEET_SORT_STORE][newTabName] = value;
     });
 
-    builder.addCase(UPDATE_CUSTOM_COLUMNS_DEFINITION, (state, action: UpdateCustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.colWithFormula.index] =
-            state.tables.allCustomColumnsDefinitions[action.colWithFormula.index].some(
-                (column) => column.uuid === action.colWithFormula.value.uuid
-            )
-                ? state.tables.allCustomColumnsDefinitions[action.colWithFormula.index].map((column) =>
-                      column.uuid === action.colWithFormula.value.uuid ? action.colWithFormula.value : column
-                  )
-                : [
-                      ...state.tables.allCustomColumnsDefinitions[action.colWithFormula.index],
-                      action.colWithFormula.value,
-                  ];
+    builder.addCase(UPDATE_COLUMNS_DEFINITION, (state, action: UpdateColumnsDefinitionsAction) => {
+        const { colData } = action;
+
+        // Retrieve the table definition by index
+        const tableDefinitionIndex = state.tables.definitions.findIndex((def) => def.index === colData.index);
+
+        if (tableDefinitionIndex !== -1) {
+            const existingColumnIndex = state.tables.definitions[tableDefinitionIndex].columns.findIndex(
+                (col) => col.id === colData.value.id
+            );
+
+            if (existingColumnIndex !== -1) {
+                // Update existing column
+                state.tables.definitions[tableDefinitionIndex].columns[existingColumnIndex] = colData.value;
+            } else {
+                // Add new column if not found
+                state.tables.definitions[tableDefinitionIndex].columns.push(colData.value);
+                state.tables.columnsStates[tableDefinitionIndex].push({
+                    colId: colData.value.id,
+                    visible: true,
+                });
+            }
+        }
     });
 
-    builder.addCase(REMOVE_CUSTOM_COLUMNS_DEFINITION, (state, action: RemoveCustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.definition.index] = state.tables.allCustomColumnsDefinitions[
-            action.definition.index
-        ].filter((column) => column.id !== action.definition.value);
+    builder.addCase(REMOVE_COLUMN_DEFINITION, (state, action: RemoveColumnDefinitionAction) => {
+        const { index, value } = action.definition;
+        const tableDefinitionIndex = state.tables.definitions.findIndex((def) => def.index === index);
+
+        if (tableDefinitionIndex !== -1) {
+            state.tables.definitions[tableDefinitionIndex].columns = state.tables.definitions[
+                tableDefinitionIndex
+            ].columns.filter((col) => col.id !== value);
+            // remove column from columnsStates
+            state.tables.columnsStates[tableDefinitionIndex] = state.tables.columnsStates[tableDefinitionIndex].filter(
+                (col) => col.colId !== value
+            );
+        }
     });
 
     builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {

@@ -10,6 +10,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 import { enumColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 
 const tab = 'Substations';
 
@@ -17,14 +18,37 @@ export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 0,
     name: tab,
     ...typeAndFetchers(EQUIPMENT_TYPES.SUBSTATION),
+    // columns: [
+    //     { colId: 'ID', field: 'id', ...textColumnDefinition('ID', tab) },
+    //     { colId: 'Name', field: 'name', ...textColumnDefinition('Name', tab) },
+    //     {
+    //         colId: 'Country',
+    //         field: 'country',
+    //         ...enumColumnDefinition('Country', tab),
+    //     },
+    //     genericColumnOfPropertiesReadonly(tab),
+    // ],
     columns: [
-        { colId: 'ID', field: 'id', ...textColumnDefinition('ID', tab) },
-        { colId: 'Name', field: 'name', ...textColumnDefinition('Name', tab) },
         {
-            colId: 'Country',
-            field: 'country',
-            ...enumColumnDefinition('Country', tab),
+            id: 'ID',
+            name: 'ID',
+            type: COLUMN_TYPES.TEXT,
+            formula: 'id',
+            dependencies: [],
         },
-        genericColumnOfPropertiesReadonly(tab),
+        {
+            id: 'Name',
+            name: 'Name',
+            type: COLUMN_TYPES.TEXT,
+            formula: 'name',
+            dependencies: [],
+        },
+        {
+            id: 'Country',
+            name: 'Country',
+            type: COLUMN_TYPES.ENUM,
+            formula: 'country',
+            dependencies: [],
+        },
     ],
 };

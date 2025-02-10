@@ -11,6 +11,7 @@ import { typeAndFetchers } from './common-config';
 import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
 import { genericColumnOfPropertiesReadonly } from './column-properties';
 import { enumColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 
 const tab = 'VoltageLevels';
 
@@ -20,60 +21,130 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
     columns: [
         {
-            colId: 'ID',
-            field: 'id',
-            ...textColumnDefinition('ID', tab),
+            id: 'ID',
+            name: 'ID',
+            type: COLUMN_TYPES.TEXT,
+            formula: 'id',
+            dependencies: [],
         },
         {
-            colId: 'Name',
-            field: 'name',
-            ...textColumnDefinition('Name', tab),
+            id: 'Name',
+            name: 'Name',
+            type: COLUMN_TYPES.TEXT,
+            formula: 'name',
+            dependencies: [],
         },
         {
-            colId: 'SubstationId',
-            field: 'substationId',
-            ...textColumnDefinition('Substation ID', tab),
+            id: 'SubstationId',
+            name: 'Substation ID',
+            type: COLUMN_TYPES.TEXT,
+            formula: 'substationId',
+            dependencies: [],
         },
         {
-            colId: 'Country',
-            field: 'country',
-            ...enumColumnDefinition('Country', tab),
+            id: 'Country',
+            name: 'Country',
+            type: COLUMN_TYPES.ENUM,
+            formula: 'country',
+            dependencies: [],
         },
         {
-            colId: 'NominalV',
-            field: 'nominalV',
-            ...numberColumnDefinition('Nominal V', tab, 0),
+            id: 'NominalV',
+            name: 'Nominal V',
+            type: COLUMN_TYPES.NUMBER,
+            formula: 'nominalV',
+            precision: 0,
+            dependencies: [],
         },
         {
-            colId: 'lowVoltageLimit',
-            field: 'lowVoltageLimit',
-            ...numberColumnDefinition('Low voltage limit (kV)', tab, 1),
+            id: 'LowVoltageLimit',
+            name: 'Low voltage limit (kV)',
+            type: COLUMN_TYPES.NUMBER,
+            formula: 'lowVoltageLimit',
+            precision: 1,
+            dependencies: [],
         },
         {
-            colId: 'highVoltageLimit',
-            field: 'highVoltageLimit',
-            ...numberColumnDefinition('High voltage limit (kV)', tab, 1),
+            id: 'HighVoltageLimit',
+            name: 'High voltage limit (kV)',
+            type: COLUMN_TYPES.NUMBER,
+            formula: 'highVoltageLimit',
+            precision: 1,
+            dependencies: [],
         },
         {
-            colId: 'IpMin',
-            field: 'identifiableShortCircuit.ipMin', // TODO: useless for AgGrid used only for static/custom columns export
-            valueGetter: (params) =>
-                convertInputValue(
-                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    params.data?.identifiableShortCircuit?.ipMin
-                ),
-            ...numberColumnDefinition('ISC min (kA)', tab, 1),
+            id: 'IpMin',
+            name: 'ISC min (kA)',
+            type: COLUMN_TYPES.NUMBER,
+            formula: 'identifiableShortCircuit.ipMin',
+            precision: 1,
+            dependencies: [],
         },
         {
-            colId: 'IpMax',
-            field: 'identifiableShortCircuit.ipMax', // TODO: useless for AgGrid used only for static/custom columns export
-            valueGetter: (params) =>
-                convertInputValue(
-                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    params.data?.identifiableShortCircuit?.ipMax
-                ),
-            ...numberColumnDefinition('ISC max (kA)', tab, 1),
+            id: 'IpMax',
+            name: 'ISC max (kA)',
+            type: COLUMN_TYPES.NUMBER,
+            formula: 'identifiableShortCircuit.ipMax',
+            precision: 1,
+            dependencies: [],
         },
-        genericColumnOfPropertiesReadonly(tab),
     ],
+    // columns: [
+    //     {
+    //         colId: 'ID',
+    //         field: 'id',
+    //         ...textColumnDefinition('ID', tab),
+    //     },
+    //     {
+    //         colId: 'Name',
+    //         field: 'name',
+    //         ...textColumnDefinition('Name', tab),
+    //     },
+    //     {
+    //         colId: 'SubstationId',
+    //         field: 'substationId',
+    //         ...textColumnDefinition('Substation ID', tab),
+    //     },
+    //     {
+    //         colId: 'Country',
+    //         field: 'country',
+    //         ...enumColumnDefinition('Country', tab),
+    //     },
+    //     {
+    //         colId: 'NominalV',
+    //         field: 'nominalV',
+    //         ...numberColumnDefinition('Nominal V', tab, 0),
+    //     },
+    //     {
+    //         colId: 'lowVoltageLimit',
+    //         field: 'lowVoltageLimit',
+    //         ...numberColumnDefinition('Low voltage limit (kV)', tab, 1),
+    //     },
+    //     {
+    //         colId: 'highVoltageLimit',
+    //         field: 'highVoltageLimit',
+    //         ...numberColumnDefinition('High voltage limit (kV)', tab, 1),
+    //     },
+    //     {
+    //         colId: 'IpMin',
+    //         field: 'identifiableShortCircuit.ipMin', // TODO: useless for AgGrid used only for static/custom columns export
+    //         valueGetter: (params) =>
+    //             convertInputValue(
+    //                 FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+    //                 params.data?.identifiableShortCircuit?.ipMin
+    //             ),
+    //         ...numberColumnDefinition('ISC min (kA)', tab, 1),
+    //     },
+    //     {
+    //         colId: 'IpMax',
+    //         field: 'identifiableShortCircuit.ipMax', // TODO: useless for AgGrid used only for static/custom columns export
+    //         valueGetter: (params) =>
+    //             convertInputValue(
+    //                 FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
+    //                 params.data?.identifiableShortCircuit?.ipMax
+    //             ),
+    //         ...numberColumnDefinition('ISC max (kA)', tab, 1),
+    //     },
+    //     genericColumnOfPropertiesReadonly(tab),
+    // ],
 };

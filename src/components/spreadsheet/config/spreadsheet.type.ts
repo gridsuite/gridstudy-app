@@ -7,7 +7,11 @@
 
 import type { UUID } from 'crypto';
 import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import type { CustomAggridFilterParams, CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import type {
+    COLUMN_TYPES,
+    CustomAggridFilterParams,
+    CustomColDef,
+} from '../../custom-aggrid/custom-aggrid-header.type';
 
 export type EquipmentFetcher = (
     studyUuid: UUID,
@@ -24,11 +28,23 @@ export type SpreadsheetEquipmentType = Exclude<
     | EQUIPMENT_TYPES.DISCONNECTOR
 >;
 
-export interface SpreadsheetTabDefinition<TData = any, F extends CustomAggridFilterParams = CustomAggridFilterParams> {
+export interface SpreadsheetTabDefinition {
     index: number;
     name: string;
     type: SpreadsheetEquipmentType;
-    columns: CustomColDef<TData, F>[];
+    // columns: CustomColDef<TData, F>[];
+    columns: ColumnDefinition[];
+    groovyEquipmentGetter?: string;
 }
+
+export type ColumnDefinition = {
+    uuid?: string;
+    id: string;
+    name: string;
+    type: COLUMN_TYPES;
+    precision?: number;
+    formula: string;
+    dependencies: string[];
+};
 
 export type ColumnState = { colId: string; visible: boolean };

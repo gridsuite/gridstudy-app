@@ -128,20 +128,15 @@ export default function CustomSpreadsheetConfigDialog({
                                 index: tabIndex,
                                 name: tabName,
                                 type: selectedModel.sheetType,
-                                columns: [],
+                                columns: selectedModel.customColumns.map((col) => {
+                                    return {
+                                        ...col,
+                                        uuid: uuid4(),
+                                        [COLUMN_DEPENDENCIES]: JSON.parse(col.dependencies || '[]'), // empty strings and null will be converted to empty array
+                                    } satisfies ColumnWithFormula;
+                                }),
                             };
-                            dispatch(
-                                updateTableDefinition(
-                                    newTableDefinition,
-                                    selectedModel.customColumns.map((col) => {
-                                        return {
-                                            ...col,
-                                            uuid: uuid4(),
-                                            [COLUMN_DEPENDENCIES]: JSON.parse(col.dependencies || '[]'), // empty strings and null will be converted to empty array
-                                        } satisfies ColumnWithFormula;
-                                    })
-                                )
-                            );
+                            dispatch(updateTableDefinition(newTableDefinition, []));
                             dispatch(addFilterForNewSpreadsheet(tabName, []));
                             dispatch(
                                 addSortForNewSpreadsheet(tabName, [
