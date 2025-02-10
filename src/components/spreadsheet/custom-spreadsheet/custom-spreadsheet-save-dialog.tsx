@@ -11,9 +11,9 @@ import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { ColumnWithFormulaDto, SpreadsheetConfig } from '../../../types/custom-columns.types';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { v4 as uuid4 } from 'uuid';
+import { ColumnDefinition, SpreadsheetConfig } from '../config/spreadsheet.type';
 
 export type CustomSpreadsheetSaveDialogProps = {
     tabIndex: number;
@@ -37,7 +37,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
                 dependencies: JSON.stringify(item.dependencies),
             };
             return acc;
-        }, {} as Record<string, ColumnWithFormulaDto>);
+        }, {} as Record<string, ColumnDefinition>);
     }, [tableDefinition.columns]);
 
     const reorderedColumnsIds = useMemo(() => {

@@ -78,6 +78,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             type: COLUMN_TYPES.NUMBER,
             formula: 'identifiableShortCircuit.ipMin',
             precision: 1,
+            conversion: FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
             dependencies: [],
         },
         {
@@ -86,6 +87,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             type: COLUMN_TYPES.NUMBER,
             formula: 'identifiableShortCircuit.ipMax',
             precision: 1,
+            conversion: FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
             dependencies: [],
         },
     ],

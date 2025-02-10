@@ -7,11 +7,8 @@
 
 import type { UUID } from 'crypto';
 import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import type {
-    COLUMN_TYPES,
-    CustomAggridFilterParams,
-    CustomColDef,
-} from '../../custom-aggrid/custom-aggrid-header.type';
+import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
+import { FieldType } from '@gridsuite/commons-ui';
 
 export type EquipmentFetcher = (
     studyUuid: UUID,
@@ -32,7 +29,6 @@ export interface SpreadsheetTabDefinition {
     index: number;
     name: string;
     type: SpreadsheetEquipmentType;
-    // columns: CustomColDef<TData, F>[];
     columns: ColumnDefinition[];
     groovyEquipmentGetter?: string;
 }
@@ -43,8 +39,14 @@ export type ColumnDefinition = {
     name: string;
     type: COLUMN_TYPES;
     precision?: number;
+    conversion?: FieldType;
     formula: string;
-    dependencies: string[];
+    dependencies: string[] | string;
 };
 
 export type ColumnState = { colId: string; visible: boolean };
+
+export type SpreadsheetConfig = {
+    sheetType: SpreadsheetEquipmentType;
+    customColumns: ColumnDefinition[];
+};

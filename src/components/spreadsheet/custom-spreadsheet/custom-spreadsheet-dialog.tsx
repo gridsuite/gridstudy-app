@@ -36,7 +36,6 @@ import { TABLES_DEFINITIONS, TABLES_TYPES } from '../config/config-tables';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
-import { ColumnWithFormula, ColumnWithFormulaDto } from 'types/custom-columns.types';
 import { getSpreadsheetModel } from 'services/study-config';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 import { SortWay } from '../../../types/custom-aggrid-types';
@@ -118,10 +117,7 @@ export default function CustomSpreadsheetConfigDialog({
                 // Load existing model into new tab
                 getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id)
                     .then(
-                        (selectedModel: {
-                            customColumns: ColumnWithFormulaDto[];
-                            sheetType: SpreadsheetEquipmentType;
-                        }) => {
+                        (selectedModel: { customColumns: ColumnDefinition[]; sheetType: SpreadsheetEquipmentType }) => {
                             const tabIndex = tablesDefinitions.length;
                             const tabName = newParams[SPREADSHEET_NAME];
                             const newTableDefinition: SpreadsheetTabDefinition = {
@@ -133,7 +129,7 @@ export default function CustomSpreadsheetConfigDialog({
                                         ...col,
                                         uuid: uuid4(),
                                         [COLUMN_DEPENDENCIES]: JSON.parse(col.dependencies || '[]'), // empty strings and null will be converted to empty array
-                                    } satisfies ColumnWithFormula;
+                                    } satisfies ColumnDefinition;
                                 }),
                             };
                             dispatch(updateTableDefinition(newTableDefinition, []));

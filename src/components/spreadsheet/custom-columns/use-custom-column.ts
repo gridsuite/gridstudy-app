@@ -7,7 +7,6 @@
 import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
-import { ColumnWithFormula } from 'types/custom-columns.types';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 import { COLUMN_TYPES, CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 import { limitedEvaluate } from './math';
@@ -20,6 +19,7 @@ import {
 } from '../config/common-column-definitions';
 import { validateFormulaResult } from './formula-validator';
 import { ColumnDefinition } from '../config/spreadsheet.type';
+import { convertInputValue } from '@gridsuite/commons-ui';
 
 export function useCustomColumn(tabIndex: number) {
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
@@ -29,7 +29,8 @@ export function useCustomColumn(tabIndex: number) {
             (params: ValueGetterParams): boolean | string | number | undefined => {
                 try {
                     const scope = { ...params.data };
-                    colDef.dependencies.forEach((dep) => {
+                    const colDependencies = colDef.dependencies as string[];
+                    colDependencies.forEach((dep) => {
                         scope[dep] = params.getValue(dep);
                     });
                     const result = limitedEvaluate(colDef.formula, scope);
@@ -37,6 +38,10 @@ export function useCustomColumn(tabIndex: number) {
 
                     if (!validation.isValid) {
                         return undefined;
+                    }
+
+                    if (colDef.type === COLUMN_TYPES.NUMBER && colDef?.conversion) {
+                        return convertInputValue(colDef.conversion, result);
                     }
 
                     return result;
@@ -91,52 +96,4 @@ export function useCustomColumn(tabIndex: number) {
             }),
         [tableDefinition.columns, tableDefinition.name, tabIndex, createValueGetter]
     );
-    // return useMemo(
-    //     () =>
-    //         customColumnsDefinitions.map((colWithFormula): CustomColDef => {
-    //             let baseDefinition: ColDef;
-
-    //             switch (colWithFormula.type) {
-    //                 case COLUMN_TYPES.NUMBER:
-    //                     baseDefinition = numberColumnDefinition(
-    //                         colWithFormula.name,
-    //                         tableDefinition.name,
-    //                         colWithFormula.precision
-    //                     );
-    //                     break;
-    //                 case COLUMN_TYPES.TEXT:
-    //                     baseDefinition = textColumnDefinition(colWithFormula.name, tableDefinition.name);
-    //                     break;
-    //                 case COLUMN_TYPES.BOOLEAN:
-    //                     baseDefinition = booleanColumnDefinition(colWithFormula.name, tableDefinition.name);
-    //                     break;
-    //                 case COLUMN_TYPES.ENUM:
-    //                     baseDefinition = enumColumnDefinition(colWithFormula.name, tableDefinition.name);
-    //                     break;
-    //                 default:
-    //                     baseDefinition = {};
-    //             }
-
-    //             return {
-    //                 ...baseDefinition,
-    //                 colId: colWithFormula.id,
-    //                 headerName: colWithFormula.name,
-    //                 headerTooltip: colWithFormula.name,
-    //                 headerComponentParams: {
-    //                     ...baseDefinition.headerComponentParams,
-    //                     menu: {
-    //                         Menu: CustomColumnMenu,
-    //                         menuParams: {
-    //                             tabIndex,
-    //                             customColumnName: colWithFormula.name,
-    //                         },
-    //                     },
-    //                 },
-    //                 valueGetter: createValueGetter(colWithFormula),
-    //                 editable: false,
-    //                 suppressMovable: true,
-    //             };
-    //         }),
-    //     [customColumnsDefinitions, tableDefinition.name, tabIndex, createValueGetter]
-    // );
 }
