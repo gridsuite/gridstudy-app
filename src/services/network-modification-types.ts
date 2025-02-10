@@ -498,6 +498,8 @@ export interface LineCreationInfo {
 export interface LineModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
+    modificationUuid: string;
+    isUpdate: boolean;
     lineId: string;
     lineName: string | null;
     r: number;
@@ -520,9 +522,15 @@ export interface LineModificationInfo {
     connectionPosition2: string | null;
     connected1: boolean;
     connected2: boolean;
-    isUpdate: boolean;
-    modificationUuid: string;
     properties?: Property[];
+    p1MeasurementValue: number | null;
+    p1MeasurementValidity: boolean | null;
+    q1MeasurementValue: number | null;
+    q1MeasurementValidity: boolean | null;
+    p2MeasurementValue: number | null;
+    p2MeasurementValidity: boolean | null;
+    q2MeasurementValue: number | null;
+    q2MeasurementValidity: boolean | null;
 }
 
 export interface TwoWindingsTransformerCreationInfo {
