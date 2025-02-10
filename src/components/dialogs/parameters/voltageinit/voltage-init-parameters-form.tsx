@@ -8,20 +8,24 @@
 import yup from '../../../utils/yup-config';
 import {
     FILTERS,
-    FIXED_GENERATORS,
+    GENERATORS_SELECTION_TYPE,
+    VARIABLE_Q_GENERATORS,
     HIGH_VOLTAGE_LIMIT,
     ID,
     LOW_VOLTAGE_LIMIT,
     NAME,
     SELECTED,
     UPDATE_BUS_VOLTAGE,
+    SHUNT_COMPENSATORS_SELECTION_TYPE,
     VARIABLE_SHUNT_COMPENSATORS,
+    TRANSFORMERS_SELECTION_TYPE,
     VARIABLE_TRANSFORMERS,
     VOLTAGE_LIMITS_DEFAULT,
     VOLTAGE_LIMITS_MODIFICATION,
 } from '../../../utils/field-constants';
 import { isBlankOrEmpty } from '../../../utils/validation-functions';
 import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
+import { EquipmentsSelectionType } from './voltage-init-utils';
 
 export const GENERAL = 'GENERAL';
 export const GENERAL_APPLY_MODIFICATIONS = 'GENERAL_APPLY_MODIFICATIONS';
@@ -46,8 +50,11 @@ export const initialVoltageInitParametersForm: VoltageInitParametersForm = {
     },
     [VOLTAGE_LIMITS_MODIFICATION]: [],
     [VOLTAGE_LIMITS_DEFAULT]: [],
-    [FIXED_GENERATORS]: [],
+    [GENERATORS_SELECTION_TYPE]: 'ALL_EXCEPT',
+    [VARIABLE_Q_GENERATORS]: [],
+    [TRANSFORMERS_SELECTION_TYPE]: 'NONE_EXCEPT',
     [VARIABLE_TRANSFORMERS]: [],
+    [SHUNT_COMPENSATORS_SELECTION_TYPE]: 'NONE_EXCEPT',
     [VARIABLE_SHUNT_COMPENSATORS]: [],
 };
 
@@ -107,18 +114,21 @@ export const voltageInitParametersFormSchema = yup.object().shape({
             [SELECTED]: yup.boolean().required(),
         })
     ),
-    [FIXED_GENERATORS]: yup.array().of(
+    [GENERATORS_SELECTION_TYPE]: yup.mixed<keyof typeof EquipmentsSelectionType>().required(),
+    [VARIABLE_Q_GENERATORS]: yup.array().of(
         yup.object().shape({
             [ID]: yup.string().required(),
             [NAME]: yup.string().required(),
         })
     ),
+    [TRANSFORMERS_SELECTION_TYPE]: yup.mixed<keyof typeof EquipmentsSelectionType>().required(),
     [VARIABLE_TRANSFORMERS]: yup.array().of(
         yup.object().shape({
             [ID]: yup.string().required(),
             [NAME]: yup.string().required(),
         })
     ),
+    [SHUNT_COMPENSATORS_SELECTION_TYPE]: yup.mixed<keyof typeof EquipmentsSelectionType>().required(),
     [VARIABLE_SHUNT_COMPENSATORS]: yup.array().of(
         yup.object().shape({
             [ID]: yup.string().required(),
