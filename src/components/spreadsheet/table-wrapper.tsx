@@ -83,6 +83,10 @@ interface TableWrapperProps {
     disabled: boolean;
 }
 
+interface RecursiveIdentifiable extends Identifiable {
+    [alias: string]: Identifiable | string | undefined;
+}
+
 export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     studyUuid,
     currentNode,
@@ -187,7 +191,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
-        equipmentDefinition as EquipmentProps,
         tableDefinition.type,
         formatFetchedEquipmentsHandler
     );
@@ -205,10 +208,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (disabled || equipments.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
             return;
         }
-        let localRowData = [];
+        let localRowData: Identifiable[] = [];
         if (tableDefinition.type) {
             equipments.equipmentsByNodeId[currentNode.id].forEach((equipment) => {
-                let equipmentToAdd = { ...equipment };
+                let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
                 Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
                     let matchingEquipment = equipments.find((eq) => eq.id === equipment.id);
                     let nodeAlias = nodesAliases.find((value) => value.id === nodeId);

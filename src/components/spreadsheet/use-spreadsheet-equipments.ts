@@ -9,10 +9,9 @@ import { Identifiable } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { UUID } from 'crypto';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    AdditionalNodeData,
     deleteEquipments,
     EquipmentToDelete,
     loadEquipments,
@@ -28,30 +27,17 @@ import { getFetcher } from './config/equipment/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
 
-export type EquipmentProps = {
-    type: SpreadsheetEquipmentType;
-    fetchers: Array<(studyUuid: UUID, currentNodeId: UUID, currentRootNetworkUuid: UUID) => Promise<Identifiable>>;
-};
-
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 
-const filterUndefined = (
-    res: AdditionalNodeData | undefined
-): res is {
-    alias: string;
-    identifiables: Identifiable[];
-} => {
-    return res !== undefined;
-};
-
 export const useSpreadsheetEquipments = (
-    equipment: EquipmentProps,
     type: SpreadsheetEquipmentType,
     formatFetchedEquipments: FormatFetchedEquipments
 ) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = allEquipments[type];
+    const allEquipmentsRef = useRef(allEquipments);
+    allEquipmentsRef.current = allEquipments;
     const customColumnsDefinitions = useSelector((state: AppState) => state.tables.allCustomColumnsDefinitions);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isNetworkModificationTreeModelUpToDate = useSelector(
@@ -62,7 +48,7 @@ export const useSpreadsheetEquipments = (
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
     const [shouldFetchEquipments, setShouldFetchEquipments] = useState(false);
-    const [nodesIdToFetch, setNodesIdToFetch] = useState<Set<UUID>>(new Set());
+    const [nodesIdToFetch, setNodesIdToFetch] = useState<Set<string>>(new Set());
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
 
     const {
@@ -76,15 +62,27 @@ export const useSpreadsheetEquipments = (
 
     useEffect(() => {
         const currentNodeId = currentNode?.id as UUID;
-        let nodesIdToFetch = new Set();
+
+        let unwantedFetchedNodes = new Set<string>();
+        Object.values(allEquipmentsRef.current).forEach((value) => {
+            unwantedFetchedNodes = new Set([...unwantedFetchedNodes, ...value.nodesId]);
+        });
+        const usedNodesId = new Set(nodesAliases.map((nodeAlias) => nodeAlias.id));
+        usedNodesId.add(currentNodeId);
+        usedNodesId.forEach((nodeId) => unwantedFetchedNodes.delete(nodeId));
+        if (unwantedFetchedNodes.size !== 0) {
+            dispatch(removeNodeData(Array.from(unwantedFetchedNodes)));
+        }
+
+        let nodesIdToFetch: Set<string> = new Set();
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
-        if (allEquipments[equipment.type].nodesId.find((nodeId) => nodeId === currentNodeId) === undefined) {
-            nodesIdToFetch.add(currentNodeId);
+        if (equipments.nodesId.find((nodeId) => nodeId === currentNodeId) === undefined) {
+            nodesIdToFetch.add(currentNode?.id as string);
         }
 
         //Then we do the same for the other nodes we need the data of (the ones defined in aliases)
         nodesAliases.forEach((nodeAlias) => {
-            if (allEquipments[equipment.type].nodesId.find((nodeId) => nodeId === nodeAlias.id) === undefined) {
+            if (equipments.nodesId.find((nodeId) => nodeId === nodeAlias.id) === undefined) {
                 nodesIdToFetch.add(nodeAlias.id);
             }
         });
@@ -92,7 +90,7 @@ export const useSpreadsheetEquipments = (
         if (nodesIdToFetch.size > 0) {
             setShouldFetchEquipments(true);
         }
-    }, [nodesAliases, currentNode, allEquipments, equipment.type]);
+    }, [dispatch, nodesAliases, currentNode, equipments]);
 
     useEffect(() => {
         // updating data related to impacted elements
@@ -190,7 +188,7 @@ export const useSpreadsheetEquipments = (
             };
 
             nodesIdToFetch.forEach((nodeId) => {
-                const fetcherPromises = getFetcher(equipment.type)(studyUuid, nodeId, currentRootNetworkUuid, []);
+                const fetcherPromises = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
                 fetchers.push(fetcherPromises);
                 fetcherPromises.then((results) => {
                     let fetchedEquipments = results.flat();
@@ -203,7 +201,7 @@ export const useSpreadsheetEquipments = (
             });
 
             Promise.all(fetchers).then(() => {
-                dispatch(loadEquipments(equipment.type, spreadsheetEquipmentsByNodes));
+                dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
                 setIsFetching(false);
                 setShouldFetchEquipments(false);
                 setNodesIdToFetch(new Set());
@@ -221,44 +219,6 @@ export const useSpreadsheetEquipments = (
         nodesIdToFetch,
         type,
     ]);
-
-    /*useEffect(() => {
-        if (studyUuid && currentRootNetworkUuid) {
-            // Clean nodes that are not loaded anymore
-            const unwantedFetchedNodes = new Set(Object.keys(allAdditionalEquipments));
-            const usedNodes = new Set(customColumnsNodesAliases);
-            usedNodes.forEach((node) => unwantedFetchedNodes.delete(node.alias));
-            if (unwantedFetchedNodes.size !== 0) {
-                dispatch(removeNodeData(Array.from(unwantedFetchedNodes)));
-            }
-
-            // Fetch new nodes for the current type if required
-            const fetchedEquipments = customColumnsNodesAliases.map(async (aliasInfo) => {
-                if (allAdditionalEquipments[aliasInfo.alias]?.[type] !== undefined) {
-                    return undefined;
-                }
-                const identifiableList = await getFetcher(type)(studyUuid, aliasInfo.id, currentRootNetworkUuid);
-                return {
-                    alias: aliasInfo.alias,
-                    identifiables: formatFetchedEquipments(identifiableList.flat()),
-                } satisfies AdditionalNodeData;
-            });
-            Promise.all(fetchedEquipments).then((results) => {
-                const filteredResults = results.filter(filterUndefined);
-                if (filteredResults.length !== 0) {
-                    dispatch(addAdditionalEquipmentsByNodesForCustomColumns(type, filteredResults));
-                }
-            });
-        }
-    }, [
-            dispatch,
-            studyUuid,
-            currentRootNetworkUuid,
-            formatFetchedEquipments,
-            customColumnsNodesAliases,
-            type,
-            allAdditionalEquipments,
-]);*/
 
     return { equipments, errorMessage, isFetching };
 };
