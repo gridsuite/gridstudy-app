@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Typography } from '@mui/material';
@@ -161,6 +161,18 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
 
+    const computationStatus = useSelector((state: AppState) => state.computingStatus[tabValue as ComputingType]);
+    const shortCircuitOneBusStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
+    );
+
+    const shouldDisplayGlassPane = useMemo(() => {
+        return (
+            computationStatus === RunningStatus.RUNNING ||
+            (tabValue === TAB_VALUES.shortCircuitParamsTabValue && shortCircuitOneBusStatus === RunningStatus.RUNNING)
+        );
+    }, [computationStatus, shortCircuitOneBusStatus, tabValue]);
+
     const loadFlowParametersBackend = useParametersBackend(
         user,
         ComputingType.LOAD_FLOW,
@@ -247,7 +259,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         });
     }, [enableDeveloperMode]);
 
-    const computationStatus = useSelector((state: AppState) => state.computingStatus[tabValue as ComputingType]);
     const displayTab = useCallback(() => {
         switch (tabValue) {
             case TAB_VALUES.lfParamsTabValue:
@@ -373,10 +384,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item xs={10} sx={tabStyles.parametersBox}>
-                    <GlassPane
-                        active={computationStatus === RunningStatus.RUNNING}
-                        loadingMessageText="computationInProgress"
-                    >
+                    <GlassPane active={shouldDisplayGlassPane} loadingMessageText="computationInProgress">
                         <Box sx={tabStyles.contentBox}>{displayTab()}</Box>
                     </GlassPane>
                 </Grid>
