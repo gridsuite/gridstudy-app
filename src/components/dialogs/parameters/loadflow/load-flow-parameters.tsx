@@ -174,6 +174,24 @@ const LoadFlowParameters: FunctionComponent<{
 
     const watchProvider = formMethods.watch('provider');
 
+    const mapLimitReductions = (
+        vlLimits: ILimitReductionsByVoltageLevel,
+        formLimits: Record<string, any>[],
+        indexVl: number
+    ): ILimitReductionsByVoltageLevel => {
+        let vlLNewLimits: ILimitReductionsByVoltageLevel = {
+            ...vlLimits,
+            permanentLimitReduction: formLimits[indexVl][IST_FORM],
+        };
+        vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
+            vlLNewLimits.temporaryLimitReductions[index] = {
+                ...temporaryLimit,
+                reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
+            };
+        });
+        return vlLNewLimits;
+    };
+
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
             if (formLimits?.length === 0) {
@@ -181,33 +199,13 @@ const LoadFlowParameters: FunctionComponent<{
             }
             if (watchProvider === PARAM_PROVIDER_OPENLOADFLOW) {
                 if (!params?.limitReductions) {
-                    return defaultLimitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
-                        let vlLNewLimits: ILimitReductionsByVoltageLevel = {
-                            ...vlLimits,
-                            permanentLimitReduction: formLimits[indexVl][IST_FORM],
-                        };
-                        vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
-                            vlLNewLimits.temporaryLimitReductions[index] = {
-                                ...temporaryLimit,
-                                reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
-                            };
-                        });
-                        return vlLNewLimits;
-                    });
+                    return defaultLimitReductions.map((vlLimits, indexVl) =>
+                        mapLimitReductions(vlLimits, formLimits, indexVl)
+                    );
                 }
-                return params?.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
-                    let vlLNewLimits: ILimitReductionsByVoltageLevel = {
-                        ...vlLimits,
-                        permanentLimitReduction: formLimits[indexVl][IST_FORM],
-                    };
-                    vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
-                        vlLNewLimits.temporaryLimitReductions[index] = {
-                            ...temporaryLimit,
-                            reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
-                        };
-                    });
-                    return vlLNewLimits;
-                });
+                return params?.limitReductions.map((vlLimits, indexVl) =>
+                    mapLimitReductions(vlLimits, formLimits, indexVl)
+                );
             }
             return [];
         },
