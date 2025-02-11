@@ -8,43 +8,41 @@
 import { ReactNode } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { FunctionComponent } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 const styles = {
-    wrapper: {
-        height: '100%',
-        width: '100%',
-    },
     glassPane: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'block',
+        display: 'flex',
         zIndex: 19,
         position: 'absolute',
-
+        flexDirection: 'column',
         height: '100%',
         width: '100%',
         textAlign: 'center',
-    },
-    circularProgress: {
-        position: 'relative',
-        top: 'calc(40% - 20px)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 1,
     },
 };
 
 interface GlassPaneProps {
     active: boolean;
     children: ReactNode;
+    loadingMessageText?: string;
 }
 
-const GlassPane: FunctionComponent<GlassPaneProps> = ({ active, children }) => {
+const GlassPane: FunctionComponent<GlassPaneProps> = ({ active, children, loadingMessageText }) => {
     return (
-        <Box sx={styles.wrapper}>
+        <>
             {active && (
                 <Box sx={styles.glassPane}>
-                    <CircularProgress size={64} sx={styles.circularProgress} />
+                    <CircularProgress size={64} />
+                    {loadingMessageText && <FormattedMessage id={loadingMessageText} />}
                 </Box>
             )}
             {children}
-        </Box>
+        </>
     );
 };
 
