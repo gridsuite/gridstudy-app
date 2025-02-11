@@ -78,6 +78,8 @@
     "loadingCreationStudy": "Création en cours...",
     "LoadingOf": "Chargement de {value}...",
 
+    "computationInProgress": "Calcul en cours ...",
+
     "centerOnMap": "Centrer sur la carte",
     "openVoltageLevel": "Ouvrir le poste",
     "CBAll": "Tous",
@@ -200,6 +202,7 @@
     "VoltageInitParametersGeneralApplyModificationsLabel": "Appliquer automatiquement la modification du plan de tension",
     "VoltageInitParametersGeneralSaveInfo": "Cette option ne sera pas enregistrée et sera mise à la valeur par défaut en cas d'insertion de paramètres depuis GridExplore",
     "VoltageInitParametersGeneralUpdateBusVoltageLabel": "Mettre à jour tension des nœuds électriques",
+    "VoltageInitParametersEquipmentsSelectionAlert": "Les consignes des CSPR et des stations VSC sont toujours considérées comme variables",
     "VoltageLimits": "Limites de tension",
     "VoltageLevelFilter": "Filtre poste",
     "LowVoltageLimitDefault": "Valeur par défaut limite basse",
@@ -210,7 +213,7 @@
     "FilterInputMinError": "Vous devez sélectionner au moins un filtre",
     "FilterEvaluationError": "Une erreur est survenue lors de l'évaluation du filtre",
     "EquipmentSelection": "Sélection des ouvrages",
-    "FixedGenerators": "Groupes à puissance réactive fixe",
+    "VariableGenerators": "Groupes à puissance réactive variable",
     "VariableTransformers": "Transformateurs variables",
     "VariableShuntCompensators": "MCS variables",
     "voltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
@@ -219,6 +222,8 @@
     "AdjustExistingLimits": "Modifier les limites existantes",
     "AdjustExistingLimitsInfo": "Merci de saisir une valeur positive pour augmenter une limite existante et une valeur négative pour abaisser une limite existante (nouvelle limite = limite existante + valeur saisie).",
     "SetDefaultLimits": "Valeurs par défaut pour compléter les limites manquantes",
+    "allExcept": "Tous sauf",
+    "noneExcept": "Aucun sauf",
 
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
@@ -551,6 +556,8 @@
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
     "ModifyFromMenu": "Modifier",
+    "Rename": "Renommer",
+    "Duplicate": "Dupliquer",
 
     "Provider": "Simulateur",
     "LimitReduction": "Abattement des seuils",
@@ -578,10 +585,7 @@
     "loadingReport": "Chargement des logs en cours...",
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants",
-    "Advanced": "Avancés",
-    "EnableDeveloperMode": "Activer mode développeur",
     "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques",
-    "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
     "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
 
     "Optional": " (optionnel)",
@@ -691,6 +695,8 @@
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
     "StaticVarCompensatorCreationError": "Erreur lors de la création d'un cspr",
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
+    "LimitSetCreationDuplicateError": "Les noms de limit sets doivent être uniques.",
+    "LimitSetCreationEmptyError": "Les noms de limits sets ne peuvent pas être vides.",
 
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",
@@ -920,6 +926,7 @@
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
+    "SelectedOperationalLimitGroup": "Set de limites actif",
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
     "powerFactorMinValueError": "La valeur du coefficient Q/P doit être supérieure à -1",

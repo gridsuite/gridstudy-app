@@ -7,7 +7,9 @@
 
 import { useEffect, useRef } from 'react';
 import { getIn } from 'yup';
-import { toNumber } from './validation-functions';
+import { isBlankOrEmpty, toNumber } from './validation-functions';
+import { CURRENT_LIMITS, ID } from './field-constants';
+import { addSelectedFieldToRows } from './dnd-table/dnd-table';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -133,6 +135,24 @@ export const formatTemporaryLimits = (temporaryLimits) =>
             modificationType: limit?.modificationType ?? null,
         };
     });
+
+export const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
+    const formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
+    if (completeLimitsGroups) {
+        completeLimitsGroups.forEach((elt) => {
+            if (!isBlankOrEmpty(elt.id)) {
+                formattedCompleteLimitsGroups.push({
+                    [ID]: elt.id,
+                    [CURRENT_LIMITS]: {
+                        permanentLimit: elt.permanentLimit,
+                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+                    },
+                });
+            }
+        });
+    }
+    return formattedCompleteLimitsGroups;
+};
 
 export const richTypeEquals = (a, b) => a === b;
 
