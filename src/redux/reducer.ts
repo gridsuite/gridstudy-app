@@ -1594,7 +1594,6 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(DELETE_EQUIPMENTS, (state, action: DeleteEquipmentsAction) => {
-        console.log('in delete equipments');
         action.equipments.forEach(({ equipmentType: equipmentToDeleteType, equipmentId: equipmentToDeleteId }) => {
             const currentEquipments =
                 state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId];

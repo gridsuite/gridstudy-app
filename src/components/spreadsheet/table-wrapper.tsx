@@ -227,9 +227,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         // This ensures that the grid correctly displays data specific to the custom tab.
         if (gridRef.current?.api) {
             gridRef.current.api.setGridOption('rowData', localRowData);
+            updateSortConfig();
         }
         setRowData(localRowData);
-    }, [tabIndex, disabled, equipments, tableDefinition.type, nodesAliases, currentNode.id]);
+    }, [tabIndex, disabled, equipments, tableDefinition.type, nodesAliases, currentNode.id, updateSortConfig]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
