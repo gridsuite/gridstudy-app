@@ -10,6 +10,7 @@ import { Mark } from '@mui/base/useSlider';
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { UseParameterStateParamName, styles } from '../parameters';
+import { sanitizePercentageValue } from 'components/dialogs/percentage-area/percentage-area-utils';
 
 type SliderParameterLineProps = {
     readonly paramNameId: UseParameterStateParamName;
@@ -39,9 +40,11 @@ const ParameterLineSlider = ({
                     min={minValue}
                     max={maxValue}
                     valueLabelDisplay="auto"
+                    step={0.01}
                     size="medium"
                     disabled={disabled ?? false}
                     marks={marks}
+                    valueLabelFormat={(value) => sanitizePercentageValue(value * 100)}
                 />
             </Grid>
         </>

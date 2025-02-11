@@ -52,7 +52,7 @@ import {
 } from './load-flow-parameters-utils';
 import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION, PARAM_PROVIDER_OPENLOADFLOW } from 'utils/config-params';
 import { LoadFlowProvider } from './load-flow-parameters-context';
-import { COMMON_PARAMETERS, SPECIFIC_PARAMETERS, TYPES } from './constants';
+import { COMMON_PARAMETERS, MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION, SPECIFIC_PARAMETERS, TYPES } from './constants';
 import LoadFlowParametersHeader from './load-flow-parameters-header';
 import LoadFlowParametersContent from './load-flow-parameters-content';
 const LoadFlowParameters: FunctionComponent<{
@@ -326,7 +326,7 @@ const LoadFlowParameters: FunctionComponent<{
                 );
                 formMethods.setValue(PARAM_LIMIT_REDUCTION, null);
             } else {
-                formMethods.setValue(PARAM_LIMIT_REDUCTION, 100);
+                formMethods.setValue(PARAM_LIMIT_REDUCTION, MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION);
                 formMethods.setValue(LIMIT_REDUCTIONS_FORM, []);
             }
         }
