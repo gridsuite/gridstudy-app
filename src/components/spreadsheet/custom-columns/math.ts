@@ -1,4 +1,3 @@
-import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 /**
  * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -7,6 +6,7 @@ import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
  */
 
 import { all, create } from 'mathjs';
+import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 
 const instance = create(all);
 
