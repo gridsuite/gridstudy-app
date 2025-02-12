@@ -216,7 +216,6 @@ const LineModificationDialog = ({
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
             const measurements = line[BRANCH_MEASUREMENTS];
-            console.log('DBG DBR', measurements);
             const limits = line[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
@@ -249,7 +248,6 @@ const LineModificationDialog = ({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid,
-                isUpdate: !!editData,
                 lineId: selectedId,
                 lineName: sanitizeString(line[EQUIPMENT_NAME]),
                 r: characteristics[R],
@@ -317,7 +315,6 @@ const LineModificationDialog = ({
                 )
                     .then((line) => {
                         if (line) {
-                            console.log('DBG DBG onEquipmentIdChange', line);
                             setLineToModify(line);
                             setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, line?.voltageLevelId1);
                             setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, line?.voltageLevelId2);

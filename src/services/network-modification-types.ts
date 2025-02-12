@@ -215,6 +215,7 @@ export interface StaticVarCompensatorCreationInfo {
 export interface TwoWindingsTransformerModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
+    modificationUuid?: string;
     twoWindingsTransformerId: string;
     twoWindingsTransformerName: AttributeModification<string> | null;
     r: AttributeModification<number> | null;
@@ -232,8 +233,6 @@ export interface TwoWindingsTransformerModificationInfo {
     busOrBusbarSectionId2?: string;
     ratioTapChanger: Record<string, any> | null;
     phaseTapChanger: Record<string, any> | null;
-    isUpdate?: boolean;
-    modificationUuid?: string;
     connectionName1?: string | null;
     connectionDirection1?: string | null;
     connectionName2?: string | null;
@@ -243,6 +242,14 @@ export interface TwoWindingsTransformerModificationInfo {
     connected1?: boolean;
     connected2?: boolean;
     properties: Property[];
+    p1MeasurementValue: number | null;
+    p1MeasurementValidity: boolean | null;
+    q1MeasurementValue: number | null;
+    q1MeasurementValidity: boolean | null;
+    p2MeasurementValue: number | null;
+    p2MeasurementValidity: boolean | null;
+    q2MeasurementValue: number | null;
+    q2MeasurementValidity: boolean | null;
 }
 
 export interface TemporaryLimit {
@@ -499,7 +506,6 @@ export interface LineModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
     modificationUuid: string;
-    isUpdate: boolean;
     lineId: string;
     lineName: string | null;
     r: number;
@@ -536,6 +542,8 @@ export interface LineModificationInfo {
 export interface TwoWindingsTransformerCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
+    isUpdate: boolean;
+    modificationUuid: string;
     twoWindingsTransformerId: string;
     twoWindingsTransformerName: string | null;
     r: number;
@@ -553,8 +561,6 @@ export interface TwoWindingsTransformerCreationInfo {
     busOrBusbarSectionId2: string;
     ratioTapChanger: any;
     phaseTapChanger: any;
-    isUpdate: boolean;
-    modificationUuid: string;
     connectionName1: string | null;
     connectionDirection1: string | null;
     connectionName2: string | null;
