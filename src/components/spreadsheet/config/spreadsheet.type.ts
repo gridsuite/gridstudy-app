@@ -7,6 +7,8 @@
 
 import type { UUID } from 'crypto';
 import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import type { CustomAggridFilterParams, CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import { Identifiable } from '@gridsuite/commons-ui';
 import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 
 export type EquipmentFetcher = (
@@ -40,6 +42,11 @@ export type ColumnDefinition = {
     precision?: number;
     formula: string;
     dependencies: string[] | string;
+};
+
+export type SpreadsheetEquipmentsByNodes = {
+    nodesId: string[];
+    equipmentsByNodeId: Record<string, Identifiable[]>;
 };
 
 export type ColumnState = { colId: string; visible: boolean };

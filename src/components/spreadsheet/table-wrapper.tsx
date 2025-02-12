@@ -108,10 +108,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         () => new Set(lockedColumns[tabIndex] ? JSON.parse(lockedColumns[tabIndex]) : []),
         [lockedColumns, tabIndex]
     );
+    const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
-    const additionalEquipmentsByNodesForCustomColumns = useSelector(
-        (state: AppState) => state.additionalEquipmentsByNodesForCustomColumns
-    );
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
 
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
@@ -207,45 +205,32 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [errorMessage, snackError]);
 
     useEffect(() => {
-        if (disabled || !equipments) {
+        if (disabled || equipments.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
             return;
         }
-
-        let equipmentsWithCustomColumnInfo = [...equipments];
+        let localRowData: Identifiable[] = [];
         if (tableDefinition.type) {
-            Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach(([nodeAlias, equipments]) => {
-                const equipmentsToAdd = equipments[tableDefinition.type];
-                if (equipmentsToAdd) {
-                    equipmentsToAdd.forEach((equipmentToAdd) => {
-                        let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(
-                            (equipmentWithCustomColumnInfo) => equipmentWithCustomColumnInfo.id === equipmentToAdd.id
-                        );
-                        let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
-                        if (matchingEquipment) {
-                            let equipmentWithAddedInfo: RecursiveIdentifiable = { ...matchingEquipment };
-                            equipmentWithAddedInfo[nodeAlias] = equipmentToAdd;
-                            equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
-                        }
-                    });
-                }
+            equipments.equipmentsByNodeId[currentNode.id].forEach((equipment) => {
+                let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
+                Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
+                    let matchingEquipment = equipments.find((eq) => eq.id === equipment.id);
+                    let nodeAlias = nodesAliases.find((value) => value.id === nodeId);
+                    if (nodeAlias !== undefined && matchingEquipment !== undefined) {
+                        equipmentToAdd[nodeAlias.alias] = matchingEquipment;
+                    }
+                });
+                localRowData.push(equipmentToAdd);
             });
         }
-        setRowData(equipmentsWithCustomColumnInfo);
 
         // To handle cases where a "customSpreadsheet" tab is opened.
         // This ensures that the grid correctly displays data specific to the custom tab.
         if (gridRef.current?.api) {
-            gridRef.current.api.setGridOption('rowData', equipmentsWithCustomColumnInfo);
+            gridRef.current.api.setGridOption('rowData', localRowData);
             updateSortConfig();
         }
-    }, [
-        tabIndex,
-        disabled,
-        equipments,
-        additionalEquipmentsByNodesForCustomColumns,
-        tableDefinition.type,
-        updateSortConfig,
-    ]);
+        setRowData(localRowData);
+    }, [tabIndex, disabled, equipments, tableDefinition.type, nodesAliases, currentNode.id, updateSortConfig]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
@@ -382,7 +367,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         currentNode={currentNode}
                         rowData={rowData}
                         columnData={reorderedColsDefs}
-                        fetched={!!equipments || !!errorMessage}
+                        fetched={
+                            equipments.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined ||
+                            !!errorMessage
+                        }
                         handleColumnDrag={handleColumnDrag}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}

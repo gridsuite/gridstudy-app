@@ -77,6 +77,8 @@
     "loadingCreationStudy": "Creation in progress...",
     "LoadingOf": "Loading of {value}...",
 
+    "computationInProgress": "Computation in progress ...",
+
     "centerOnMap": "Center on the map",
     "openVoltageLevel": "Open the voltage level",
     "CBAll": "All",
@@ -552,6 +554,8 @@
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
     "ModifyFromMenu": "Modify",
+    "Rename": "Rename",
+    "Duplicate": "Duplicate",
 
     "Provider": "Provider",
     "LimitReduction": "Limit reduction",
@@ -689,6 +693,8 @@
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
     "StaticVarCompensatorCreationError": "Error while creating static var compensator",
     "LccCreationError": "Error while creating HVDC (LCC)",
+    "LimitSetCreationDuplicateError": "Limit sets names have to be unique",
+    "LimitSetCreationEmptyError": "Limit sets names can't be empty",
 
     "CreateBattery": "Create battery",
     "ModifyBattery": "Modify battery",
@@ -930,6 +936,7 @@
     "activePowerSetpointMaxValueError": "The active power value must be less than the maximum active power value",
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",
+    "SelectedOperationalLimitGroup": "Active limit set",
 
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
     "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",
