@@ -248,6 +248,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     ratedU2: twtModification.ratedU2?.value,
                     ratedS: twtModification.ratedS?.value,
                 }),
+                ...getBranchActiveReactivePowerEditData(BRANCH_MEASUREMENTS, twtModification),
                 ...getSelectedLimitsFormData({
                     permanentLimit1: twtModification.currentLimits1?.permanentLimit,
                     permanentLimit2: twtModification.currentLimits2?.permanentLimit,
@@ -850,7 +851,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             />
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.MEASUREMENTS_TAB} p={1}>
-                          <BranchActiveReactivePowerMeasurementsForm equipmentToModify={twtToModify} />
+                            <BranchActiveReactivePowerMeasurementsForm equipmentToModify={twtToModify} />
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB} p={1}>
                             <RatioTapChangerPane

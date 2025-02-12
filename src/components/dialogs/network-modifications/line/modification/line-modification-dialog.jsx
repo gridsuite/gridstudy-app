@@ -170,7 +170,6 @@ const LineModificationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (lineModification) => {
-            console.log('DBG DBG fromEditDataToFormValues', lineModification);
             if (lineModification?.equipmentId) {
                 setSelectedId(lineModification.equipmentId);
             }
