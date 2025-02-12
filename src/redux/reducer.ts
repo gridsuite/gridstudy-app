@@ -29,12 +29,10 @@ import {
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
-    ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
     ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
-    AddEquipmentsByNodesForCustomColumnsAction,
     AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
     AddSortForNewSpreadsheetAction,
@@ -289,6 +287,7 @@ import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.
 import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
+    SpreadsheetEquipmentsByNodes,
     ColumnState,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
@@ -505,7 +504,6 @@ export interface AppState extends CommonStoreState {
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
-    additionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState;
     gsFilterSpreadsheetState: GsFilterSpreadsheetState;
     customColumnsNodesAliases: NodeAlias[];
     networkVisualizationsParameters: NetworkVisualizationParameters;
@@ -578,32 +576,32 @@ const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: [],
 };
 
-export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, Identifiable[] | null>;
-const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
-    [EQUIPMENT_TYPES.SUBSTATION]: null,
-    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: null,
-    [EQUIPMENT_TYPES.LINE]: null,
-    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: null,
-    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: null,
-    [EQUIPMENT_TYPES.GENERATOR]: null,
-    [EQUIPMENT_TYPES.LOAD]: null,
-    [EQUIPMENT_TYPES.BATTERY]: null,
-    [EQUIPMENT_TYPES.DANGLING_LINE]: null,
-    [EQUIPMENT_TYPES.TIE_LINE]: null,
-    [EQUIPMENT_TYPES.HVDC_LINE]: null,
-    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: null,
-    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: null,
-    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
-    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
-    [EQUIPMENT_TYPES.BUS]: null,
-    [EQUIPMENT_TYPES.BUSBAR_SECTION]: null,
+const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
+    nodesId: [],
+    equipmentsByNodeId: {},
 };
 
-export type AdditionalEquipmentsByNodesForCustomColumnsState = Record<
-    string,
-    Record<SpreadsheetEquipmentType, Identifiable[]>
->;
-const initialAdditionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState = {};
+export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
+const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
+    [EQUIPMENT_TYPES.SUBSTATION]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.LINE]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.GENERATOR]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.LOAD]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.BATTERY]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.DANGLING_LINE]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.TIE_LINE]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.HVDC_LINE]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.BUS]: emptySpreadsheetEquipmentsByNodes,
+    [EQUIPMENT_TYPES.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
+};
+
 const initialCustomColumnsNodesAliases: NodeAlias[] = [];
 
 export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
@@ -666,7 +664,6 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
-    additionalEquipmentsByNodesForCustomColumns: initialAdditionalEquipmentsByNodesForCustomColumns,
     gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
     customColumnsNodesAliases: initialCustomColumnsNodesAliases,
     computingStatus: {
@@ -1502,35 +1499,40 @@ export const reducer = createReducer(initialState, (builder) => {
     );
 
     builder.addCase(LOAD_EQUIPMENTS, (state, action: LoadEquipmentsAction) => {
-        state.spreadsheetNetwork[action.equipmentType] = action.equipments;
+        Object.entries(action.spreadsheetEquipmentByNodes.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
+            state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = equipments;
+        });
+        //to remove duplicate
+        state.spreadsheetNetwork[action.equipmentType].nodesId = [
+            ...new Set([
+                ...state.spreadsheetNetwork[action.equipmentType].nodesId,
+                ...action.spreadsheetEquipmentByNodes.nodesId,
+            ]),
+        ];
     });
 
-    builder.addCase(
-        ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
-        (state, action: AddEquipmentsByNodesForCustomColumnsAction) => {
-            const additionalData = action.data.reduce((acc, item) => {
-                acc[item.alias] = {
-                    ...state.additionalEquipmentsByNodesForCustomColumns[item.alias],
-                    [action.equipmentType]: item.identifiables,
-                };
-                return acc;
-            }, {} as AdditionalEquipmentsByNodesForCustomColumnsState);
-            state.additionalEquipmentsByNodesForCustomColumns = {
-                ...state.additionalEquipmentsByNodesForCustomColumns,
-                ...additionalData,
-            };
-        }
-    );
-
     builder.addCase(REMOVE_NODE_DATA, (state, action: RemoveNodeDataAction) => {
-        state.additionalEquipmentsByNodesForCustomColumns = Object.keys(
-            state.additionalEquipmentsByNodesForCustomColumns
-        )
-            .filter((alias) => !action.aliases.includes(alias))
-            .reduce((acc, alias) => {
-                acc[alias] = state.additionalEquipmentsByNodesForCustomColumns[alias];
-                return acc;
-            }, {} as AdditionalEquipmentsByNodesForCustomColumnsState);
+        state.spreadsheetNetwork = Object.entries(state.spreadsheetNetwork).reduce(
+            (newRecord, [equipmentType, equipmentData]) => {
+                const { nodesId, equipmentsByNodeId } = equipmentData;
+
+                // Filter out node IDs that should be removed
+                const updatedNodesId = nodesId.filter((nodeId) => !action.nodesIdToRemove.includes(nodeId));
+
+                // Remove entries in equipmentsByNodeId where the key is in nodeIdsToRemove
+                const updatedEquipmentsByNodeId = Object.fromEntries(
+                    Object.entries(equipmentsByNodeId).filter(([nodeId]) => !action.nodesIdToRemove.includes(nodeId))
+                );
+
+                newRecord[equipmentType as SpreadsheetEquipmentType] = {
+                    nodesId: updatedNodesId,
+                    equipmentsByNodeId: updatedEquipmentsByNodeId,
+                };
+
+                return newRecord;
+            },
+            {} as Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>
+        );
     });
 
     builder.addCase(UPDATE_CUSTOM_COLUMNS_NODES_ALIASES, (state, action: UpdateCustomColumnsNodesAliasesAction) => {
@@ -1549,9 +1551,9 @@ export const reducer = createReducer(initialState, (builder) => {
             Identifiable[]
         ][]) {
             const equipmentType = getEquipmentTypeFromUpdateType(updateType);
-            const currentEquipment: Identifiable[] | null =
+            const currentEquipment: Identifiable[] | undefined =
                 // @ts-expect-error TODO manage undefined value case
-                state.spreadsheetNetwork[equipmentType];
+                state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
             // Format the updated equipments to match the table format
             const formattedEquipments = formatFetchedEquipments(
@@ -1565,17 +1567,27 @@ export const reducer = createReducer(initialState, (builder) => {
                 //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
-                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] as Substation[],
-                        // @ts-expect-error TODO manage null value case
-                        state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
+                            action.nodeId
+                        ] as Substation[],
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL].equipmentsByNodeId[action.nodeId],
                         formattedEquipments
                     );
 
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] = updatedSubstations;
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL] = updatedVoltageLevels;
+                    if (updatedSubstations != null) {
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[action.nodeId] =
+                            updatedSubstations;
+                    }
+                    if (updatedVoltageLevels != null) {
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL].equipmentsByNodeId[action.nodeId] =
+                            updatedVoltageLevels;
+                    }
                 } else {
                     // @ts-expect-error TODO manage undefined value case
-                    state.spreadsheetNetwork[equipmentType] = updateEquipments(currentEquipment, formattedEquipments);
+                    state.spreadsheetNetwork[equipmentType].equipmentsByNodeId[action.nodeId] = updateEquipments(
+                        currentEquipment,
+                        formattedEquipments
+                    );
                 }
             }
         }
@@ -1583,22 +1595,21 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(DELETE_EQUIPMENTS, (state, action: DeleteEquipmentsAction) => {
         action.equipments.forEach(({ equipmentType: equipmentToDeleteType, equipmentId: equipmentToDeleteId }) => {
-            const currentEquipments = state.spreadsheetNetwork[equipmentToDeleteType];
-            if (currentEquipments != null) {
+            const currentEquipments =
+                state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId];
+            if (currentEquipments !== undefined) {
                 // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
                 if (equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
-                    const currentSubstations = state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] as
-                        | Substation[]
-                        | null;
+                    const currentSubstations = state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
+                        action.nodeId
+                    ] as Substation[] | null;
                     if (currentSubstations != null) {
-                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] = updateSubstationAfterVLDeletion(
-                            currentSubstations,
-                            equipmentToDeleteId
-                        );
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[action.nodeId] =
+                            updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
                     }
                 }
 
-                state.spreadsheetNetwork[equipmentToDeleteType] = deleteEquipment(
+                state.spreadsheetNetwork[equipmentToDeleteType].equipmentsByNodeId[action.nodeId] = deleteEquipment(
                     currentEquipments,
                     equipmentToDeleteId
                 );
@@ -1613,7 +1624,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(RESET_EQUIPMENTS_BY_TYPES, (state, action: ResetEquipmentsByTypesAction) => {
         action.equipmentTypes.forEach((equipmentType) => {
-            state.spreadsheetNetwork[equipmentType] = null;
+            state.spreadsheetNetwork[equipmentType] = emptySpreadsheetEquipmentsByNodes;
         });
     });
 

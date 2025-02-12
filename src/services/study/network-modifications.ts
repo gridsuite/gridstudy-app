@@ -42,7 +42,6 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
@@ -915,10 +914,10 @@ export function createLine({
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
-    permanentCurrentLimit1,
-    permanentCurrentLimit2,
-    temporaryCurrentLimits1,
-    temporaryCurrentLimits2,
+    limitsGroups1,
+    limitsGroups2,
+    selectedLimitsGroup1,
+    selectedLimitsGroup2,
     isUpdate = false,
     modificationUuid,
     connectionName1,
@@ -960,14 +959,10 @@ export function createLine({
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
-            currentLimits1: {
-                permanentLimit: permanentCurrentLimit1,
-                temporaryLimits: temporaryCurrentLimits1,
-            },
-            currentLimits2: {
-                permanentLimit: permanentCurrentLimit2,
-                temporaryLimits: temporaryCurrentLimits2,
-            },
+            operationalLimitsGroups1: limitsGroups1,
+            operationalLimitsGroups2: limitsGroups2,
+            selectedOperationalLimitsGroup1: selectedLimitsGroup1,
+            selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             connectionName1: connectionName1,
             connectionDirection1: connectionDirection1,
             connectionName2: connectionName2,
@@ -1081,8 +1076,10 @@ export function createTwoWindingsTransformer({
     ratedS,
     ratedU1,
     ratedU2,
-    currentLimit1,
-    currentLimit2,
+    limitsGroups1,
+    limitsGroups2,
+    selectedLimitsGroup1,
+    selectedLimitsGroup2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -1127,8 +1124,10 @@ export function createTwoWindingsTransformer({
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            currentLimits1: currentLimit1,
-            currentLimits2: currentLimit2,
+            operationalLimitsGroups1: limitsGroups1,
+            operationalLimitsGroups2: limitsGroups2,
+            selectedOperationalLimitsGroup1: selectedLimitsGroup1,
+            selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,

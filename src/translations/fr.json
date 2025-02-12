@@ -78,6 +78,8 @@
     "loadingCreationStudy": "Création en cours...",
     "LoadingOf": "Chargement de {value}...",
 
+    "computationInProgress": "Calcul en cours ...",
+
     "centerOnMap": "Centrer sur la carte",
     "openVoltageLevel": "Ouvrir le poste",
     "CBAll": "Tous",
@@ -554,6 +556,8 @@
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
     "ModifyFromMenu": "Modifier",
+    "Rename": "Renommer",
+    "Duplicate": "Dupliquer",
 
     "Provider": "Simulateur",
     "LimitReduction": "Abattement des seuils",
@@ -689,6 +693,8 @@
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
     "StaticVarCompensatorCreationError": "Erreur lors de la création d'un cspr",
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
+    "LimitSetCreationDuplicateError": "Les noms de limit sets doivent être uniques.",
+    "LimitSetCreationEmptyError": "Les noms de limits sets ne peuvent pas être vides.",
 
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",
@@ -921,6 +927,7 @@
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
+    "SelectedOperationalLimitGroup": "Set de limites actif",
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
     "powerFactorMinValueError": "La valeur du coefficient Q/P doit être supérieure à -1",
