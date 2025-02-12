@@ -37,7 +37,12 @@ import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
 import { getSpreadsheetModel } from 'services/study-config';
-import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
+import type {
+    ColumnDefinition,
+    ColumnDefinitionDto,
+    SpreadsheetEquipmentType,
+    SpreadsheetTabDefinition,
+} from '../config/spreadsheet.type';
 import { SortWay } from '../../../types/custom-aggrid-types';
 import { COLUMN_DEPENDENCIES } from '../custom-columns/custom-columns-form';
 import { v4 as uuid4 } from 'uuid';
@@ -103,7 +108,7 @@ export default function CustomSpreadsheetConfigDialog({
                     type: equipmentType,
                     columns: getTableColumns(equipmentType),
                 };
-                dispatch(updateTableDefinition(newTableDefinition, []));
+                dispatch(updateTableDefinition(newTableDefinition));
                 dispatch(addFilterForNewSpreadsheet(tabName, []));
                 dispatch(
                     addSortForNewSpreadsheet(tabName, [
@@ -117,7 +122,10 @@ export default function CustomSpreadsheetConfigDialog({
                 // Load existing model into new tab
                 getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id)
                     .then(
-                        (selectedModel: { customColumns: ColumnDefinition[]; sheetType: SpreadsheetEquipmentType }) => {
+                        (selectedModel: {
+                            customColumns: ColumnDefinitionDto[];
+                            sheetType: SpreadsheetEquipmentType;
+                        }) => {
                             const tabIndex = tablesDefinitions.length;
                             const tabName = newParams[SPREADSHEET_NAME];
                             const newTableDefinition: SpreadsheetTabDefinition = {
@@ -128,11 +136,11 @@ export default function CustomSpreadsheetConfigDialog({
                                     return {
                                         ...col,
                                         uuid: uuid4(),
-                                        [COLUMN_DEPENDENCIES]: JSON.parse(col.dependencies || '[]'), // empty strings and null will be converted to empty array
-                                    } satisfies ColumnDefinition;
+                                        [COLUMN_DEPENDENCIES]: JSON.parse(col.dependencies || '[]') as string[],
+                                    } as ColumnDefinition;
                                 }),
                             };
-                            dispatch(updateTableDefinition(newTableDefinition, []));
+                            dispatch(updateTableDefinition(newTableDefinition));
                             dispatch(addFilterForNewSpreadsheet(tabName, []));
                             dispatch(
                                 addSortForNewSpreadsheet(tabName, [

@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Badge, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import AddColumnRightLight from 'images/add_column_right_light.svg?react';
 import AddColumnRightDark from 'images/add_column_right_dark.svg?react';
 import { useSelector } from 'react-redux';
