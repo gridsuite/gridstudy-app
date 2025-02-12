@@ -52,6 +52,7 @@ import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
+    SpreadsheetEquipmentsByNodes,
     ColumnState,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
@@ -138,7 +139,6 @@ export type AppActions =
     | UpdateCustomColumnsDefinitionsAction
     | RemoveCustomColumnsDefinitionsAction
     | UpdateCustomColumnsNodesAliasesAction
-    | AddEquipmentsByNodesForCustomColumnsAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction;
@@ -146,17 +146,17 @@ export type AppActions =
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
     equipmentType: SpreadsheetEquipmentType;
-    equipments: Identifiable[];
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes;
 };
 
 export function loadEquipments(
     equipmentType: SpreadsheetEquipmentType,
-    equipments: Identifiable[]
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes
 ): LoadEquipmentsAction {
     return {
         type: LOAD_EQUIPMENTS,
         equipmentType: equipmentType,
-        equipments: equipments,
+        spreadsheetEquipmentByNodes: spreadsheetEquipmentByNodes,
     };
 }
 
@@ -187,13 +187,13 @@ export function addAdditionalEquipmentsByNodesForCustomColumns(
 
 export const REMOVE_NODE_DATA = 'REMOVE_NODE_DATA';
 export type RemoveNodeDataAction = Readonly<Action<typeof REMOVE_NODE_DATA>> & {
-    aliases: string[];
+    nodesIdToRemove: string[];
 };
 
-export function removeNodeData(aliases: string[]): RemoveNodeDataAction {
+export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction {
     return {
         type: REMOVE_NODE_DATA,
-        aliases,
+        nodesIdToRemove,
     };
 }
 
@@ -212,12 +212,17 @@ export function updateCustomColumnsNodesAliases(nodesAliases: NodeAlias[]): Upda
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
     equipments: Record<EquipmentUpdateType, Identifiable[]>;
+    nodeId: UUID;
 };
 
-export function updateEquipments(equipments: Record<EquipmentUpdateType, Identifiable[]>): UpdateEquipmentsAction {
+export function updateEquipments(
+    equipments: Record<EquipmentUpdateType, Identifiable[]>,
+    nodeId: UUID
+): UpdateEquipmentsAction {
     return {
         type: UPDATE_EQUIPMENTS,
         equipments: equipments,
+        nodeId: nodeId,
     };
 }
 
@@ -228,12 +233,14 @@ export type EquipmentToDelete = {
 export const DELETE_EQUIPMENTS = 'DELETE_EQUIPMENTS';
 export type DeleteEquipmentsAction = Readonly<Action<typeof DELETE_EQUIPMENTS>> & {
     equipments: EquipmentToDelete[];
+    nodeId: UUID;
 };
 
-export function deleteEquipments(equipments: EquipmentToDelete[]): DeleteEquipmentsAction {
+export function deleteEquipments(equipments: EquipmentToDelete[], nodeId: UUID): DeleteEquipmentsAction {
     return {
         type: DELETE_EQUIPMENTS,
         equipments,
+        nodeId,
     };
 }
 
