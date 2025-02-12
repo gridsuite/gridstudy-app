@@ -19,29 +19,21 @@ import { BATTERY_TAB_DEF } from './equipment/battery';
 import { HVDC_LINE_TAB_DEF } from './equipment/hvdc-line';
 import { LCC_CONVERTER_STATION_TAB_DEF } from './equipment/lcc-converter-station';
 import { VSC_CONVERTER_STATION_TAB_DEF } from './equipment/vsc-converter-station';
-import { DANGLING_LINE_TAB_DEF } from './equipment/dangling-line';
-import { BUS_TAB_DEF } from './equipment/bus';
-import { TIE_LINE_TAB_DEF } from './equipment/tie-line';
-import { BUSBAR_SECTION_TAB_DEF } from './equipment/busbar-section';
 
 export const TABLES_DEFINITIONS: SpreadsheetTabDefinition[] = [
     SUBSTATION_TAB_DEF,
     VOLTAGE_LEVEL_TAB_DEF,
     LINE_TAB_DEF,
-    // TWO_WINDINGS_TRANSFORMER_TAB_DEF,
-    // THREE_WINDINGS_TRANSFORMER_TAB_DEF,
-    // GENERATOR_TAB_DEF,
-    // LOAD_TAB_DEF,
-    // SHUNT_COMPENSATOR_TAB_DEF,
-    // STATIC_VAR_COMPENSATOR_TAB_DEF,
-    // BATTERY_TAB_DEF,
-    // HVDC_LINE_TAB_DEF,
-    // LCC_CONVERTER_STATION_TAB_DEF,
-    // VSC_CONVERTER_STATION_TAB_DEF,
-    // DANGLING_LINE_TAB_DEF,
-    // BUS_TAB_DEF,
-    // TIE_LINE_TAB_DEF,
-    // BUSBAR_SECTION_TAB_DEF,
+    TWO_WINDINGS_TRANSFORMER_TAB_DEF,
+    THREE_WINDINGS_TRANSFORMER_TAB_DEF,
+    GENERATOR_TAB_DEF,
+    LOAD_TAB_DEF,
+    SHUNT_COMPENSATOR_TAB_DEF,
+    STATIC_VAR_COMPENSATOR_TAB_DEF,
+    BATTERY_TAB_DEF,
+    HVDC_LINE_TAB_DEF,
+    LCC_CONVERTER_STATION_TAB_DEF,
+    VSC_CONVERTER_STATION_TAB_DEF,
 ];
 
 export const TABLES_NAMES = TABLES_DEFINITIONS.map((tabDef) => tabDef.name);

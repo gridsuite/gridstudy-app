@@ -1,3 +1,4 @@
+import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 /**
  * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -35,6 +36,8 @@ instance.import(
             // == instead of === to be able to compare strings to numbers
             return a === b;
         },
+        unitToKiloUnit,
+        unitToMicroUnit,
     },
     { override: true }
 );

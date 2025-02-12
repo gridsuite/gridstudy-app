@@ -19,7 +19,6 @@ import {
 } from '../config/common-column-definitions';
 import { validateFormulaResult } from './formula-validator';
 import { ColumnDefinition } from '../config/spreadsheet.type';
-import { convertInputValue } from '@gridsuite/commons-ui';
 
 export function useCustomColumn(tabIndex: number) {
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
@@ -39,11 +38,6 @@ export function useCustomColumn(tabIndex: number) {
                     if (!validation.isValid) {
                         return undefined;
                     }
-
-                    if (colDef.type === COLUMN_TYPES.NUMBER && colDef?.conversion) {
-                        return convertInputValue(colDef.conversion, result);
-                    }
-
                     return result;
                 } catch (e) {
                     return undefined;
