@@ -78,6 +78,8 @@
     "loadingCreationStudy": "Création en cours...",
     "LoadingOf": "Chargement de {value}...",
 
+    "computationInProgress": "Calcul en cours ...",
+
     "centerOnMap": "Centrer sur la carte",
     "openVoltageLevel": "Ouvrir le poste",
     "CBAll": "Tous",

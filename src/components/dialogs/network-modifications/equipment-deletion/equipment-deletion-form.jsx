@@ -55,6 +55,8 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
             EQUIPMENT_TYPES.BUS,
             EQUIPMENT_TYPES.BUSBAR_SECTION,
             EQUIPMENT_TYPES.TIE_LINE,
+            EQUIPMENT_TYPES.BREAKER,
+            EQUIPMENT_TYPES.DISCONNECTOR,
         ]);
         return Object.values(EQUIPMENT_TYPES).filter((equipmentType) => !equipmentTypesToExclude.has(equipmentType));
     }, []);
