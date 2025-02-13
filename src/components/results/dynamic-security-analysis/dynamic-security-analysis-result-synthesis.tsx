@@ -20,8 +20,8 @@ import RunningStatus from '../../utils/running-status';
 import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { fetchDynamicSecurityAnalysisStatus } from '../../../services/study/dynamic-security-analysis';
-import { dynamicSecurityAnalysisResultInvalidations } from './utils/dynamic-security-analysis-result-utils';
-import { MEDIUM_COLUMN_WIDTH } from '../common/utils';
+import { MEDIUM_COLUMN_WIDTH } from '../dynamicsimulation/utils/dynamic-simulation-result-utils';
+import { dynamicSecurityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 
 const styles = {
     loader: {

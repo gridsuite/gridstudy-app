@@ -35,6 +35,7 @@ import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuate
 import { fetchStateEstimationStatus } from '../../services/study/state-estimation';
 import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic-security-analysis';
 
+// status invalidations
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 const securityAnalysisStatusInvalidations = ['securityAnalysis_status', 'securityAnalysis_failed'];
 const sensitivityAnalysisStatusInvalidations = ['sensitivityAnalysis_status', 'sensitivityAnalysis_failed'];
@@ -49,6 +50,7 @@ const dynamicSecurityAnalysisStatusInvalidations = ['dynamicSecurityAnalysis_sta
 const voltageInitStatusInvalidations = ['voltageInit_status', 'voltageInit_failed'];
 const stateEstimationStatusInvalidations = ['stateEstimation_status', 'stateEstimation_failed'];
 
+// status completions
 const loadFlowStatusCompletions = ['loadflowResult', 'loadflow_failed'];
 const securityAnalysisStatusCompletions = ['securityAnalysisResult', 'securityAnalysis_failed'];
 const sensitivityAnalysisStatusCompletions = ['sensitivityAnalysisResult', 'sensitivityAnalysis_failed'];
@@ -62,6 +64,15 @@ const dynamicSimulationStatusCompletions = ['dynamicSimulationResult', 'dynamicS
 const dynamicSecurityAnalysisStatusCompletions = ['dynamicSecurityAnalysisResult', 'dynamicSecurityAnalysis_failed'];
 const voltageInitStatusCompletions = ['voltageInitResult', 'voltageInit_failed'];
 const stateEstimationStatusCompletions = ['stateEstimationResult', 'stateEstimation_failed'];
+
+// result invalidations
+export const loadflowResultInvalidations = ['loadflowResult'];
+export const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
+export const nonEvacuatedEnergyResultInvalidations = ['nonEvacuatedEnergyResult'];
+export const dynamicSimulationResultInvalidations = ['dynamicSimulationResult'];
+export const dynamicSecurityAnalysisResultInvalidations = ['dynamicSecurityAnalysisResult'];
+export const voltageInitResultInvalidations = ['voltageInitResult'];
+export const stateEstimationResultInvalidations = ['stateEstimationResult'];
 
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
 export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): void => {

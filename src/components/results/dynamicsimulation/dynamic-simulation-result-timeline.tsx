@@ -22,7 +22,7 @@ import ComputingType from '../../computing-status/computing-type';
 import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
-import { dynamicSimulationResultInvalidations } from './utils/dynamic-simulation-result-utils';
+import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
@@ -31,7 +31,7 @@ import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { AgGridReact } from 'ag-grid-react';
 import { FilterType } from '../../../types/custom-aggrid-types';
-import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../common/utils';
+import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
 
 const styles = {
     loader: {

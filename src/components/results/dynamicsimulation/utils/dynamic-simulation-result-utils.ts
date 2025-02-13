@@ -5,4 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const dynamicSimulationResultInvalidations = ['dynamicSimulationResult'];
+export const MIN_COLUMN_WIDTH = 160;
+export const MEDIUM_COLUMN_WIDTH = 220;
+export const LARGE_COLUMN_WIDTH = 340;
