@@ -75,20 +75,27 @@ const ContingencyListSelector = (props) => {
     );
 
     useEffect(() => {
-        setSimulatedContingencyCount(null);
-        var discardResult = false;
-        if (isNodeBuilt(currentNode) && props.open) {
-            fetchContingencyCount(
-                props.studyUuid,
-                currentNode.id,
-                currentRootNetworkUuid,
-                checkedContingencyList.map((c) => c.id)
-            ).then((contingencyCount) => {
-                if (!discardResult) {
-                    setSimulatedContingencyCount(contingencyCount);
-                }
-            });
+        if (!isNodeBuilt(currentNode) || !props.open) {
+            return;
         }
+
+        if (checkedContingencyList.length === 0) {
+            setSimulatedContingencyCount(0);
+            return;
+        }
+
+        setSimulatedContingencyCount(null);
+        let discardResult = false;
+        fetchContingencyCount(
+            props.studyUuid,
+            currentNode.id,
+            currentRootNetworkUuid,
+            checkedContingencyList.map((c) => c.id)
+        ).then((contingencyCount) => {
+            if (!discardResult) {
+                setSimulatedContingencyCount(contingencyCount);
+            }
+        });
         return () => {
             discardResult = true;
         };
@@ -144,7 +151,10 @@ const ContingencyListSelector = (props) => {
     const addFavorites = (favorites) => {
         if (favorites && favorites.length > 0) {
             // avoid duplicates here
-            const newFavoriteIdsSet = new Set([...favoriteContingencyListUuids, ...favorites.map((item) => item.id)]);
+            const newFavoriteIdsSet = new Set([
+                ...contingencyList.map((e) => e.id),
+                ...favorites.map((item) => item.id),
+            ]);
             saveFavorites(Array.from([...newFavoriteIdsSet]));
         }
         setFavoriteSelectorOpen(false);
