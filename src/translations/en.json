@@ -807,6 +807,7 @@
     "TemporaryLimitNameUnicityError": "Temporary limit names must be unique in the table",
     "TemporaryLimitDurationUnicityError": "Temporary limit acceptable durations must be unique in the table",
     "StateEstimationTab": "State estimation",
+    "MeasurementsSection": "Measurements",
     "ValidMeasurement": "Valid",
     "UnvalidMeasurement": "Unvalid",
 

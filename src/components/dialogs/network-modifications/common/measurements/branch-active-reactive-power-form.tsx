@@ -62,6 +62,7 @@ const BranchActiveReactivePowerMeasurementsForm: FunctionComponent<BranchActiveR
 
     return (
         <>
+            <GridSection title="MeasurementsSection" />
             <GridSection title="Side1" heading={4} />
             <Grid container spacing={2}>
                 <GridItem size={12}>{activePower1Field}</GridItem>
