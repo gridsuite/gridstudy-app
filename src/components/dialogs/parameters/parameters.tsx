@@ -8,7 +8,7 @@
 import { FunctionComponent, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { Box, Button, ButtonProps, Grid, Switch, Theme, Typography, TypographyProps } from '@mui/material';
+import { Box, BoxProps, Button, ButtonProps, Grid, Switch, Theme } from '@mui/material';
 
 import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from 'components/utils/optional-services';
@@ -177,6 +177,7 @@ export const styles = {
     panel: (theme: Theme) => ({
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(1),
+        height: '100%',
     }),
     adjustExistingLimitsInfo: (theme: Theme) => ({
         display: 'flex',
@@ -202,7 +203,7 @@ export const styles = {
     }),
 };
 
-interface TabPanelProps<T> extends TypographyProps {
+interface TabPanelProps<T> extends BoxProps {
     value: T;
     index: T;
     keepState?: boolean;
@@ -211,17 +212,16 @@ interface TabPanelProps<T> extends TypographyProps {
 export const TabPanel = <T,>(props: PropsWithChildren<TabPanelProps<T>>) => {
     const { children, value, index, keepState, ...other } = props;
     return (
-        <Typography
-            component="div"
+        <Box
             role="tabpanel"
             hidden={value !== index}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
-            style={{ flexGrow: 1 }}
+            sx={{ height: '100%' }}
             {...other}
         >
             {(value === index || keepState) && <Box sx={styles.panel}>{children}</Box>}
-        </Typography>
+        </Box>
     );
 };
 

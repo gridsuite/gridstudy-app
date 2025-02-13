@@ -257,7 +257,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                         paddingTop: 0,
                     })}
                 >
-                    <Grid item width="100%">
+                    <Grid item width="100%" height="90%">
                         <Tabs value={tabIndex} variant="scrollable" onChange={handleTabChange} aria-label="parameters">
                             <Tab
                                 label={<FormattedMessage id="DynamicSimulationTimeDelay" />}
