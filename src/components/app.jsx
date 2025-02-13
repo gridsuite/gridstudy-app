@@ -202,27 +202,20 @@ const App = () => {
             );
 
             const fetchAppConfigPromise = fetchConfigParameters(APP_NAME).then((params) => {
-                fetchDefaultParametersValues()
-                    .then((defaultValues) => {
-                        // Browsing defaultParametersValues entries
-                        Object.entries(defaultValues).forEach(([key, defaultValue]) => {
-                            // Checking if keys defined in defaultParametersValues file are already defined in config server
-                            // If they are not defined, values are taken from default values file
-                            if (!params.find((param) => param.name === key)) {
-                                params.push({
-                                    name: key,
-                                    value: defaultValue,
-                                });
-                            }
-                        });
-                        updateParams(params);
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        });
+                fetchDefaultParametersValues().then((defaultValues) => {
+                    // Browsing defaultParametersValues entries
+                    Object.entries(defaultValues).forEach(([key, defaultValue]) => {
+                        // Checking if keys defined in defaultParametersValues file are already defined in config server
+                        // If they are not defined, values are taken from default values file
+                        if (!params.find((param) => param.name === key)) {
+                            params.push({
+                                name: key,
+                                value: defaultValue,
+                            });
+                        }
                     });
+                    updateParams(params);
+                });
             });
 
             const fetchOptionalServices = getOptionalServices()

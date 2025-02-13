@@ -52,10 +52,11 @@ import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import {
     addModificationTypeToTemporaryLimits,
     getLimitsEmptyFormData,
-    getLimitsFormData,
+    getSelectedLimitsFormData,
     getLimitsValidationSchema,
     sanitizeLimitNames,
     updateTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -171,7 +172,7 @@ const LineModificationDialog = ({
                     g2: convertInputValue(FieldType.G2, line.g2?.value ?? null),
                     b2: convertInputValue(FieldType.B2, line.b2?.value ?? null),
                 }),
-                ...getLimitsFormData({
+                ...getSelectedLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
@@ -201,8 +202,14 @@ const LineModificationDialog = ({
             const limits = line[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
-                lineToModify?.currentLimits1?.temporaryLimits,
-                editData?.currentLimits1?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    lineToModify?.currentLimits1,
+                    lineToModify?.selectedOperationalLimitsGroup1
+                )?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    editData?.currentLimits1,
+                    editData?.selectedOperationalLimitsGroup1
+                )?.temporaryLimits,
                 currentNode
             );
             let currentLimits1 = null;
@@ -214,8 +221,14 @@ const LineModificationDialog = ({
             }
             const temporaryLimits2 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
-                lineToModify?.currentLimits2?.temporaryLimits,
-                editData?.currentLimits2?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    lineToModify?.currentLimits2,
+                    lineToModify?.selectedOperationalLimitsGroup2
+                )?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    editData?.currentLimits2,
+                    editData?.selectedOperationalLimitsGroup2
+                )?.temporaryLimits,
                 currentNode
             );
             let currentLimits2 = null;
@@ -295,17 +308,25 @@ const LineModificationDialog = ({
                             setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, line?.voltageLevelId2);
                             setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
                             setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
+                            const selectedCurrentLimits1 = completeCurrentLimitsGroupsToOnlySelected(
+                                line?.currentLimits1,
+                                line?.selectedOperationalLimitsGroup1
+                            );
+                            const selectedCurrentLimits2 = completeCurrentLimitsGroupsToOnlySelected(
+                                line?.currentLimits2,
+                                line?.selectedOperationalLimitsGroup2
+                            );
                             const updatedTemporaryLimits1 = updateTemporaryLimits(
                                 formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
-                                formatTemporaryLimits(line?.currentLimits1?.temporaryLimits)
+                                formatTemporaryLimits(selectedCurrentLimits1?.temporaryLimits)
                             );
                             const updatedTemporaryLimits2 = updateTemporaryLimits(
                                 formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
-                                formatTemporaryLimits(line?.currentLimits2?.temporaryLimits)
+                                formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
                             );
                             reset((formValues) => ({
                                 ...formValues,
-                                ...getLimitsFormData({
+                                ...getSelectedLimitsFormData({
                                     permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
                                     permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
                                     temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
