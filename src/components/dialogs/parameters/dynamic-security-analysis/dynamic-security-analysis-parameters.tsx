@@ -9,7 +9,7 @@ import yup from '../../../utils/yup-config';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import ScenarioParameters, {
     emptyFormData as scenarioEmptyFormData,
     formSchema as scenarioFormSchema,
@@ -25,7 +25,7 @@ import {
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { mergeSx } from '../../../utils/functions';
-import { CustomFormProvider, isObjectEmpty, SubmitButton } from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, MuiSelectInput, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
@@ -40,7 +40,7 @@ import ContingencyParameters, {
     emptyFormData as contingencyEmptyFormData,
     formSchema as contingencyFormSchema,
 } from './contingency-parameters';
-import ProviderParameter from '../common/provider-parameter';
+import { PROVIDER } from '../../../utils/field-constants';
 
 enum TAB_VALUES {
     SCENARIO = 'scenario',
@@ -53,11 +53,13 @@ interface DynamicSecurityAnalysisParametersProps {
 }
 
 const formSchema = yup.object().shape({
+    [PROVIDER]: yup.string().required(),
     [TAB_VALUES.SCENARIO]: scenarioFormSchema,
     [TAB_VALUES.CONTINGENCY]: contingencyFormSchema,
 });
 
 const emptyFormData = {
+    [PROVIDER]: '',
     [TAB_VALUES.SCENARIO]: { ...scenarioEmptyFormData },
     [TAB_VALUES.CONTINGENCY]: { ...contingencyEmptyFormData },
 };
@@ -70,18 +72,26 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
 }) => {
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
 
-    const [providers, provider, updateProvider, resetProvider, parameters, updateParameters, resetParameters] =
-        useParametersBackend(
-            user,
-            ComputingType.DYNAMIC_SECURITY_ANALYSIS,
-            dynamicSecurityAnalysisAvailability,
-            fetchDynamicSecurityAnalysisProviders,
-            null,
-            fetchDefaultDynamicSecurityAnalysisProvider,
-            updateDynamicSecurityAnalysisProvider,
-            fetchDynamicSecurityAnalysisParameters,
-            updateDynamicSecurityAnalysisParameters
-        );
+    const [providers, provider, , resetProvider, parameters, updateParameters, resetParameters] = useParametersBackend(
+        user,
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        fetchDynamicSecurityAnalysisProviders,
+        null,
+        fetchDefaultDynamicSecurityAnalysisProvider,
+        updateDynamicSecurityAnalysisProvider,
+        fetchDynamicSecurityAnalysisParameters,
+        updateDynamicSecurityAnalysisParameters
+    );
+
+    const formattedProviders = useMemo(
+        () =>
+            Object.entries(providers).map(([key, value]) => ({
+                id: key,
+                label: value,
+            })),
+        [providers]
+    );
 
     const [tabIndex, setTabIndex] = useState(TAB_VALUES.SCENARIO);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
@@ -129,28 +139,29 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
         (newParams: DynamicSecurityAnalysisParametersForm) => {
             // use updater to set with new parameters
             updateParameters({
-                ...parameters,
-                ...newParams[TAB_VALUES.SCENARIO],
-                [CONTINGENCIES_START_TIME]: newParams[TAB_VALUES.CONTINGENCY][CONTINGENCIES_START_TIME],
-                [CONTINGENCIES_LIST_INFOS]: newParams[TAB_VALUES.CONTINGENCY][CONTINGENCIES_LIST_INFOS],
+                [PROVIDER]: newParams.provider,
+                ...newParams.scenario,
+                [CONTINGENCIES_START_TIME]: newParams.contingency.contingenciesStartTime,
+                [CONTINGENCIES_LIST_INFOS]: newParams.contingency.contingencyListInfos,
             });
         },
-        [parameters, updateParameters]
+        [updateParameters]
     );
 
     useEffect(() => {
-        if (parameters) {
+        if (parameters && provider) {
             reset({
+                [PROVIDER]: parameters.provider ?? provider,
                 [TAB_VALUES.SCENARIO]: {
-                    [SCENARIO_DURATION]: parameters[SCENARIO_DURATION],
+                    [SCENARIO_DURATION]: parameters.scenarioDuration,
                 },
                 [TAB_VALUES.CONTINGENCY]: {
-                    [CONTINGENCIES_START_TIME]: parameters[CONTINGENCIES_START_TIME],
-                    [CONTINGENCIES_LIST_INFOS]: parameters[CONTINGENCIES_LIST_INFOS],
+                    [CONTINGENCIES_START_TIME]: parameters.contingenciesStartTime,
+                    [CONTINGENCIES_LIST_INFOS]: parameters.contingencyListInfos,
                 },
             });
         }
-    }, [reset, parameters]);
+    }, [reset, parameters, provider]);
 
     const handleTabChange = useCallback((event: SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
         setTabIndex(newValue);
@@ -164,17 +175,31 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <Grid sx={{ height: '100%' }}>
                 <Grid
+                    xl={8}
+                    container
+                    sx={{
+                        height: 'fit-content',
+                        justifyContent: 'space-between',
+                    }}
+                    paddingRight={2}
+                >
+                    <Grid item xs sx={styles.parameterName}>
+                        <FormattedMessage id="Provider" />
+                    </Grid>
+                    <Grid item container xs sx={styles.controlItem}>
+                        <MuiSelectInput name={PROVIDER} size="small" options={formattedProviders} />
+                    </Grid>
+                </Grid>
+                <Grid container paddingTop={1} paddingRight={2} xl={8}>
+                    <LineSeparator />
+                </Grid>
+                <Grid
                     key="dsaParameters"
                     sx={mergeSx(styles.scrollableGrid, {
                         height: '100%',
                         paddingTop: 0,
                     })}
                 >
-                    <ProviderParameter providers={providers} provider={provider} onChangeProvider={updateProvider} />
-                    <Grid container paddingTop={1} xl={8}>
-                        <LineSeparator />
-                    </Grid>
-
                     <Grid item width="100%">
                         <Tabs value={tabIndex} variant="scrollable" onChange={handleTabChange} aria-label="parameters">
                             <Tab

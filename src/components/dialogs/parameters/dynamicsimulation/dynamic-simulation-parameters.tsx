@@ -49,7 +49,7 @@ import {
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { mergeSx } from '../../../utils/functions';
-import { CustomFormProvider, isObjectEmpty, SubmitButton } from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, MuiSelectInput, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
@@ -57,7 +57,7 @@ import ComputingType from '../../../computing-status/computing-type';
 import LineSeparator from '../../commons/line-separator';
 import { User } from 'oidc-client';
 import { SolverInfos } from 'services/study/dynamic-simulation.type';
-import ProviderParameter from '../common/provider-parameter';
+import { PROVIDER } from '../../../utils/field-constants';
 
 enum TAB_VALUES {
     TIME_DELAY = 'timeDelay',
@@ -73,12 +73,22 @@ interface DynamicSimulationParametersProps {
 }
 
 const formSchema = yup.object().shape({
+    [PROVIDER]: yup.string().required(),
     [TAB_VALUES.TIME_DELAY]: timeDelayFormSchema,
     [TAB_VALUES.SOLVER]: solverFormSchema,
     [TAB_VALUES.MAPPING]: mappingFormSchema,
     [TAB_VALUES.NETWORK]: networkFormSchema,
     [TAB_VALUES.CURVE]: curveFormSchema,
 });
+
+const emptyFormData = {
+    [PROVIDER]: '',
+    [TAB_VALUES.TIME_DELAY]: { ...timeDelayEmptyFormData },
+    [TAB_VALUES.SOLVER]: { ...solverEmptyFormData },
+    [TAB_VALUES.MAPPING]: { ...mappingEmptyFormData },
+    [TAB_VALUES.NETWORK]: { ...networkEmptyFormData },
+    [TAB_VALUES.CURVE]: { ...curveEmptyFormData },
+};
 
 export type DynamicSimulationForm = yup.InferType<typeof formSchema>;
 
@@ -88,37 +98,34 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
 }) => {
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
 
-    const [providers, provider, updateProvider, resetProvider, parameters, updateParameters, resetParameters] =
-        useParametersBackend(
-            user,
-            ComputingType.DYNAMIC_SIMULATION,
-            dynamicSimulationAvailability,
-            fetchDynamicSimulationProviders,
-            fetchDynamicSimulationProvider,
-            fetchDefaultDynamicSimulationProvider,
-            updateDynamicSimulationProvider,
-            fetchDynamicSimulationParameters,
-            updateDynamicSimulationParameters
-        );
+    const [providers, provider, , resetProvider, parameters, updateParameters, resetParameters] = useParametersBackend(
+        user,
+        ComputingType.DYNAMIC_SIMULATION,
+        dynamicSimulationAvailability,
+        fetchDynamicSimulationProviders,
+        fetchDynamicSimulationProvider,
+        fetchDefaultDynamicSimulationProvider,
+        updateDynamicSimulationProvider,
+        fetchDynamicSimulationParameters,
+        updateDynamicSimulationParameters
+    );
+
+    const formattedProviders = useMemo(
+        () =>
+            Object.entries(providers).map(([key, value]) => ({
+                id: key,
+                label: value,
+            })),
+        [providers]
+    );
 
     const [tabIndex, setTabIndex] = useState(TAB_VALUES.TIME_DELAY);
-
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
 
     const handleResetParametersAndProvider = useCallback(() => {
         resetProvider();
         resetParameters();
     }, [resetParameters, resetProvider]);
-
-    const emptyFormData = useMemo(() => {
-        return {
-            [TAB_VALUES.TIME_DELAY]: { ...timeDelayEmptyFormData },
-            [TAB_VALUES.SOLVER]: { ...solverEmptyFormData },
-            [TAB_VALUES.MAPPING]: { ...mappingEmptyFormData },
-            [TAB_VALUES.NETWORK]: { ...networkEmptyFormData },
-            [TAB_VALUES.CURVE]: { ...curveEmptyFormData },
-        };
-    }, []);
 
     const formMethods = useForm<DynamicSimulationForm>({
         defaultValues: emptyFormData,
@@ -167,51 +174,51 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
         (newParams: DynamicSimulationForm) => {
             // use updater to set with new parameters
             updateParameters({
-                ...parameters,
-                ...newParams[TAB_VALUES.TIME_DELAY],
-                [SOLVER_ID]: newParams[TAB_VALUES.SOLVER][SOLVER_ID],
+                [PROVIDER]: newParams.provider,
+                ...newParams.timeDelay,
+                [SOLVER_ID]: newParams.solver.solverId,
                 // merge only the current selected solver, others are ignored
-                [SOLVERS]: parameters?.[SOLVERS]?.reduce(
+                [SOLVERS]: parameters?.solvers?.reduce(
                     (arr, curr, index) => [
                         ...arr,
-                        newParams[TAB_VALUES.SOLVER][SOLVERS]?.[index].id === newParams[TAB_VALUES.SOLVER][SOLVER_ID]
-                            ? newParams[TAB_VALUES.SOLVER][SOLVERS][index]
+                        newParams.solver.solvers?.[index].id === newParams.solver.solverId
+                            ? newParams.solver.solvers[index]
                             : curr,
                     ],
                     [] as SolverInfos[]
                 ),
-                ...newParams[TAB_VALUES.MAPPING],
-                ...newParams[TAB_VALUES.MAPPING],
-                [NETWORK]: newParams[TAB_VALUES.NETWORK],
-                ...newParams[TAB_VALUES.CURVE],
+                ...newParams.mapping,
+                [NETWORK]: newParams.network,
+                ...newParams.curve,
             });
         },
         [parameters, updateParameters]
     );
 
     useEffect(() => {
-        if (parameters) {
+        if (parameters && provider) {
             reset({
+                [PROVIDER]: parameters.provider ?? provider,
                 [TAB_VALUES.TIME_DELAY]: {
-                    [START_TIME]: parameters[START_TIME],
-                    [STOP_TIME]: parameters[STOP_TIME],
+                    [START_TIME]: parameters.startTime,
+                    [STOP_TIME]: parameters.stopTime,
                 },
                 [TAB_VALUES.SOLVER]: {
-                    [SOLVER_ID]: parameters[SOLVER_ID],
-                    [SOLVERS]: parameters[SOLVERS],
+                    [SOLVER_ID]: parameters.solverId,
+                    [SOLVERS]: parameters.solvers,
                 },
                 [TAB_VALUES.MAPPING]: {
-                    [MAPPING]: parameters[MAPPING],
+                    [MAPPING]: parameters.mapping,
                 },
                 [TAB_VALUES.NETWORK]: {
-                    ...parameters[NETWORK],
+                    ...parameters.network,
                 },
                 [TAB_VALUES.CURVE]: {
-                    [CURVES]: parameters[CURVES],
+                    [CURVES]: parameters.curves,
                 },
             });
         }
-    }, [reset, parameters]);
+    }, [reset, parameters, provider]);
 
     const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
         setTabIndex(newValue);
@@ -225,17 +232,31 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <Grid sx={{ height: '100%' }}>
                 <Grid
+                    xl={8}
+                    container
+                    sx={{
+                        height: 'fit-content',
+                        justifyContent: 'space-between',
+                    }}
+                    paddingRight={2}
+                >
+                    <Grid item xs sx={styles.parameterName}>
+                        <FormattedMessage id="Provider" />
+                    </Grid>
+                    <Grid item container xs sx={styles.controlItem}>
+                        <MuiSelectInput name={PROVIDER} size="small" options={formattedProviders} />
+                    </Grid>
+                </Grid>
+                <Grid container paddingTop={1} paddingRight={2} xl={8}>
+                    <LineSeparator />
+                </Grid>
+                <Grid
                     key="dsParameters"
                     sx={mergeSx(styles.scrollableGrid, {
                         height: '100%',
                         paddingTop: 0,
                     })}
                 >
-                    <ProviderParameter providers={providers} provider={provider} onChangeProvider={updateProvider} />
-                    <Grid container paddingTop={1} xl={tabIndex === TAB_VALUES.CURVE ? 12 : 8}>
-                        <LineSeparator />
-                    </Grid>
-
                     <Grid item width="100%">
                         <Tabs value={tabIndex} variant="scrollable" onChange={handleTabChange} aria-label="parameters">
                             <Tab
