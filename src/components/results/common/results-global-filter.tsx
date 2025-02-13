@@ -249,8 +249,8 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                     option.label === value.label && option.filterType === value.filterType
                 }
                 filterOptions={(options: Filter[], state: FilterOptionsState<Filter>) => {
-                    let numByGroup: Map<string, number> = new Map();
-                    let filteredOptions: Filter[] = options
+                    const numByGroup: Map<string, number> = new Map();
+                    const filteredOptions: Filter[] = options
                         // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
                         .filter((option) => {
                             const labelToMatch =
