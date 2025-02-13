@@ -179,6 +179,7 @@ const GeneratorModificationForm = ({
 
     const connectivityForm = (
         <ConnectivityForm
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}

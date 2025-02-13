@@ -103,7 +103,6 @@ const ShuntCompensatorModificationDialog = ({
         reset,
         formState: { dirtyFields },
         getValues,
-        setValue,
     } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
@@ -179,11 +178,6 @@ const ShuntCompensatorModificationDialog = ({
                                 });
                                 setSelectedId(null);
                             } else {
-                                setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, shuntCompensator?.voltageLevelId);
-                                setValue(
-                                    `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`,
-                                    shuntCompensator?.busOrBusbarSectionId
-                                );
                                 setShuntCompensatorInfos(shuntCompensator);
                                 setDataFetchStatus(FetchStatus.SUCCEED);
                                 reset((formValues) => ({
@@ -209,7 +203,7 @@ const ShuntCompensatorModificationDialog = ({
                 setShuntCompensatorInfos(null);
             }
         },
-        [currentNode.id, currentRootNetworkUuid, snackError, studyUuid, reset, getValues, setValue, editData]
+        [currentNode?.id, currentRootNetworkUuid, snackError, studyUuid, reset, getValues, editData]
     );
 
     useEffect(() => {

@@ -14,6 +14,7 @@ import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const ShuntCompensatorModificationForm = ({
     studyUuid,
@@ -22,6 +23,7 @@ const ShuntCompensatorModificationForm = ({
     shuntCompensatorInfos,
     equipmentId,
 }) => {
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
     const shuntCompensatorIdField = (
         <TextField
             size="small"
@@ -49,6 +51,7 @@ const ShuntCompensatorModificationForm = ({
 
     const connectivityForm = (
         <ConnectivityForm
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
