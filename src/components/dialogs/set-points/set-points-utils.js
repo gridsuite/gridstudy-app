@@ -24,6 +24,7 @@ import {
     VOLTAGE_SET_POINT,
     MINIMUM_ACTIVE_POWER,
     MAXIMUM_ACTIVE_POWER,
+    REGULATING_TERMINAL_ID,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { REGULATION_TYPES } from 'components/network/constants';
@@ -61,13 +62,13 @@ const getVoltageRegulationEmptyFormData = (isEquipmentModification) => ({
 });
 
 const getVoltageRegulationSchema = (isEquipmentModification) => ({
-    [VOLTAGE_REGULATION_TYPE]: yup.string().nullable(),
+    [VOLTAGE_REGULATION_TYPE]: yup.string().nullable().required(),
 
     [VOLTAGE_SET_POINT]: yup
         .number()
         .nullable()
         .when([VOLTAGE_REGULATION], {
-            is: (value) => !isEquipmentModification && value,
+            is: (value) => value,
             then: (schema) => schema.required(),
         }),
     [Q_PERCENT]: yup.number().nullable().max(100, 'NormalizedPercentage').min(0, 'NormalizedPercentage'),
@@ -81,9 +82,9 @@ const getVoltageRegulationSchema = (isEquipmentModification) => ({
             [NOMINAL_VOLTAGE]: yup.string(),
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
-        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
+        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, REGULATING_TERMINAL_ID], {
             is: (voltageRegulation, voltageRegulationType) =>
-                !isEquipmentModification && voltageRegulation && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+                voltageRegulation !== null && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
     [EQUIPMENT]: yup
@@ -95,14 +96,14 @@ const getVoltageRegulationSchema = (isEquipmentModification) => ({
             [TYPE]: yup.string(),
         })
         .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
-            is: (voltageRegulation, voltageRegulationType, vl) =>
-                !isEquipmentModification && voltageRegulation && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+            is: (voltageRegulation, voltageRegulationType) =>
+                voltageRegulation !== null && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
 });
 
 export const getSetPointsEmptyFormData = (isEquipmentModification = false) => ({
-    [VOLTAGE_REGULATION]: isEquipmentModification ? null : false,
+    [VOLTAGE_REGULATION]: false,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
     ...getVoltageRegulationEmptyFormData(isEquipmentModification),
@@ -110,13 +111,7 @@ export const getSetPointsEmptyFormData = (isEquipmentModification = false) => ({
 });
 
 export const getSetPointsSchema = (isEquipmentModification = false) => ({
-    [VOLTAGE_REGULATION]: yup
-        .bool()
-        .nullable()
-        .when([], {
-            is: () => !isEquipmentModification,
-            then: (schema) => schema.required(),
-        }),
+    [VOLTAGE_REGULATION]: yup.bool().nullable().required(),
     ...getActivePowerSetPointSchema(isEquipmentModification),
     ...getReactivePowerSetPointSchema(isEquipmentModification),
     ...getVoltageRegulationSchema(isEquipmentModification),
