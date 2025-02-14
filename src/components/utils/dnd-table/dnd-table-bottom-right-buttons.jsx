@@ -24,6 +24,7 @@ const DndTableBottomRightButtons = ({
     handleMoveUpButton,
     handleMoveDownButton,
     disableAddingRows,
+    showMoveArrow,
     disabled,
 }) => {
     const intl = useIntl();
@@ -74,42 +75,46 @@ const DndTableBottomRightButtons = ({
                     </span>
                 </Tooltip>
             </Grid>
-            <Grid item>
-                <Tooltip
-                    title={intl.formatMessage({
-                        id: 'MoveUpRows',
-                    })}
-                    placement="top"
-                >
-                    <span>
-                        <IconButton
-                            color="primary"
-                            onClick={() => handleMoveUpButton()}
-                            disabled={disabled || noRowsSelected || firstRowSelected}
+            {showMoveArrow && (
+                <>
+                    <Grid item>
+                        <Tooltip
+                            title={intl.formatMessage({
+                                id: 'MoveUpRows',
+                            })}
+                            placement="top"
                         >
-                            <ArrowUpwardIcon />
-                        </IconButton>
-                    </span>
-                </Tooltip>
-            </Grid>
-            <Grid item>
-                <Tooltip
-                    title={intl.formatMessage({
-                        id: 'MoveDownRows',
-                    })}
-                    placement="top"
-                >
-                    <span>
-                        <IconButton
-                            color="primary"
-                            onClick={() => handleMoveDownButton()}
-                            disabled={disabled || noRowsSelected || lastRowSelected}
+                            <span>
+                                <IconButton
+                                    color="primary"
+                                    onClick={() => handleMoveUpButton()}
+                                    disabled={disabled || noRowsSelected || firstRowSelected}
+                                >
+                                    <ArrowUpwardIcon />
+                                </IconButton>
+                            </span>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item>
+                        <Tooltip
+                            title={intl.formatMessage({
+                                id: 'MoveDownRows',
+                            })}
+                            placement="top"
                         >
-                            <ArrowDownwardIcon />
-                        </IconButton>
-                    </span>
-                </Tooltip>
-            </Grid>
+                            <span>
+                                <IconButton
+                                    color="primary"
+                                    onClick={() => handleMoveDownButton()}
+                                    disabled={disabled || noRowsSelected || lastRowSelected}
+                                >
+                                    <ArrowDownwardIcon />
+                                </IconButton>
+                            </span>
+                        </Tooltip>
+                    </Grid>
+                </>
+            )}
         </Grid>
     );
 };
