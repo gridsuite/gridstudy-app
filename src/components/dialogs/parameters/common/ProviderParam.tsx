@@ -25,16 +25,16 @@ export default function ProviderParam({ options }: Readonly<ProviderParamProps>)
                     height: 'fit-content',
                     justifyContent: 'space-between',
                 }}
-                paddingRight={2}
+                paddingRight={1}
             >
                 <Grid item xs sx={styles.parameterName}>
                     <FormattedMessage id="Provider" />
                 </Grid>
-                <Grid item container xs sx={styles.controlItem}>
-                    <MuiSelectInput name={PROVIDER} size="small" options={options} />
+                <Grid item container xs={2} sx={styles.controlItem}>
+                    <MuiSelectInput name={PROVIDER} size="small" fullWidth options={options} />
                 </Grid>
             </Grid>
-            <Grid container paddingTop={1} paddingRight={2} xl={8}>
+            <Grid container paddingTop={1} paddingRight={1} xl={8}>
                 <LineSeparator />
             </Grid>
         </>
