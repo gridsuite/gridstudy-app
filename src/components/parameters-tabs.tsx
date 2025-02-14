@@ -60,6 +60,8 @@ import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 import { NetworkVisualizationsParameters } from './dialogs/parameters/network-visualizations/network-visualizations-parameters';
+import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
+import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -139,6 +141,7 @@ enum TAB_VALUES {
     dynamicSimulationParamsTabValue = 'DynamicSimulation',
     advancedParamsTabValue = 'Advanced',
     voltageInitParamsTabValue = 'VoltageInit',
+    stateEstimationTabValue = 'StateEstimation',
     networkVisualizationsParams = 'NetworkVisualizations',
 }
 
@@ -149,6 +152,7 @@ const hasValidationTabs = [
     TAB_VALUES.shortCircuitParamsTabValue,
     TAB_VALUES.dynamicSimulationParamsTabValue,
     TAB_VALUES.voltageInitParamsTabValue,
+    TAB_VALUES.stateEstimationTabValue,
     TAB_VALUES.lfParamsTabValue,
     TAB_VALUES.networkVisualizationsParams,
 ];
@@ -173,6 +177,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
+    const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
@@ -226,6 +231,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
+    const useStateEstimationParameters = useGetStateEstimationParameters();
+
     const handleChangeTab = (newValue: string) => {
         if (hasValidationTabs.includes(tabValue as TAB_VALUES) && haveDirtyFields) {
             setNextTabValue(newValue);
@@ -246,11 +253,12 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     useEffect(() => {
         setTabValue((oldValue) => {
             if (
-                !enableDeveloperMode &&
-                (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
-                    oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
-                    oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
-                    oldValue === TAB_VALUES.dynamicSimulationParamsTabValue)
+                (!enableDeveloperMode &&
+                    (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
+                        oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
+                        oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
+                        oldValue === TAB_VALUES.dynamicSimulationParamsTabValue)) ||
+                oldValue === TAB_VALUES.stateEstimationTabValue
             ) {
                 return TAB_VALUES.securityAnalysisParamsTabValue;
             }
@@ -300,20 +308,28 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 return <DynamicSimulationParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.voltageInitParamsTabValue:
                 return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
+            case TAB_VALUES.stateEstimationTabValue:
+                return (
+                    <StateEstimationParameters
+                        setHaveDirtyFields={setHaveDirtyFields}
+                        useStateEstimationParameters={useStateEstimationParameters}
+                    />
+                );
             case TAB_VALUES.advancedParamsTabValue:
                 return <NetworkParameters />;
             case TAB_VALUES.networkVisualizationsParams:
                 return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
         }
     }, [
+        tabValue,
         loadFlowParametersBackend,
         securityAnalysisParametersBackend,
         sensitivityAnalysisBackend,
         nonEvacuatedEnergyBackend,
-        tabValue,
         useNonEvacuatedEnergyParameters,
         useShortCircuitParameters,
         user,
+        useStateEstimationParameters,
     ]);
 
     return (
@@ -372,6 +388,11 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 disabled={voltageInitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="VoltageInit" />}
                                 value={TAB_VALUES.voltageInitParamsTabValue}
+                            />
+                            <Tab
+                                disabled={stateEstimationAvailability !== OptionalServicesStatus.Up}
+                                label={<FormattedMessage id="StateEstimation" />}
+                                value={TAB_VALUES.stateEstimationTabValue}
                             />
                             {/*In order to insert a Divider under a Tabs collection it need to be nested in a dedicated Tab to prevent console warnings*/}
                             <Tab sx={styles.dividerTab} label="" icon={<Divider sx={{ flexGrow: 1 }} />} disabled />
