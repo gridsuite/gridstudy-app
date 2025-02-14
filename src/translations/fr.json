@@ -817,7 +817,7 @@
     "StateEstimationTab": "Estimation d'état",
     "MeasurementsSection": "Télémesures",
     "ValidMeasurement": "Valide",
-    "UnvalidMeasurement": "Invalide",
+    "InvalidMeasurement": "Invalide",
 
     "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Sections identiques",

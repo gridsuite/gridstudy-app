@@ -818,7 +818,7 @@
     "StateEstimationTab": "State estimation",
     "MeasurementsSection": "Measurements",
     "ValidMeasurement": "Valid",
-    "UnvalidMeasurement": "Unvalid",
+    "InvalidMeasurement": "Invalid",
 
     "shuntCompensatorId": "Shunt compensator ID",
     "shuntCompensatorName": "Shunt compensator name",

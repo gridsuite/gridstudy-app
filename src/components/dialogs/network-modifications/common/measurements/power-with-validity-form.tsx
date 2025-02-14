@@ -24,7 +24,7 @@ export const PowerWithValidityForm: FunctionComponent<MeasurementProps> = ({ id,
         }
         return measurement.validity
             ? intl.formatMessage({ id: 'ValidMeasurement' })
-            : intl.formatMessage({ id: 'UnvalidMeasurement' });
+            : intl.formatMessage({ id: 'InvalidMeasurement' });
     }, [intl, measurement?.validity]);
 
     const valueField = (
