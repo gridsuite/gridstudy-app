@@ -125,6 +125,7 @@ DndTableBottomRightButtons.prototype = {
     handleDeleteButton: PropTypes.func.isRequired,
     handleMoveUpButton: PropTypes.func.isRequired,
     handleMoveDownButton: PropTypes.func.isRequired,
+    showMoveArrow: PropTypes.bool,
     disabled: PropTypes.bool,
 };
 

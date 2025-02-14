@@ -429,6 +429,8 @@ DndTable.propTypes = {
     disabled: PropTypes.bool,
     withLeftButtons: PropTypes.bool,
     withAddRowsDialog: PropTypes.bool,
+    showMoveArrow: PropTypes.bool,
+    disableDragAndDrop: PropTypes.bool,
 };
 
 export default DndTable;
