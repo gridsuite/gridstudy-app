@@ -25,12 +25,11 @@ import {
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { mergeSx } from '../../../utils/functions';
-import { CustomFormProvider, isObjectEmpty, MuiSelectInput, SubmitButton } from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
-import LineSeparator from '../../commons/line-separator';
 import { User } from 'oidc-client';
 
 import { LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
@@ -41,6 +40,7 @@ import ContingencyParameters, {
     formSchema as contingencyFormSchema,
 } from './contingency-parameters';
 import { PROVIDER } from '../../../utils/field-constants';
+import ProviderParam from '../common/ProviderParam';
 
 enum TAB_VALUES {
     SCENARIO = 'scenario',
@@ -174,25 +174,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <Grid sx={{ height: '100%' }}>
-                <Grid
-                    xl={8}
-                    container
-                    sx={{
-                        height: 'fit-content',
-                        justifyContent: 'space-between',
-                    }}
-                    paddingRight={2}
-                >
-                    <Grid item xs sx={styles.parameterName}>
-                        <FormattedMessage id="Provider" />
-                    </Grid>
-                    <Grid item container xs sx={styles.controlItem}>
-                        <MuiSelectInput name={PROVIDER} size="small" options={formattedProviders} />
-                    </Grid>
-                </Grid>
-                <Grid container paddingTop={1} paddingRight={2} xl={8}>
-                    <LineSeparator />
-                </Grid>
+                <ProviderParam options={formattedProviders} />
                 <Grid
                     key="dsaParameters"
                     sx={mergeSx(styles.scrollableGrid, {
