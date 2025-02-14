@@ -175,7 +175,7 @@ const ratioTapChangerValidationSchema = (id) => ({
     }),
 });
 
-const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
+const ratioTapChangerModificationValidationSchema = (id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
         [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().nullable(),
@@ -230,8 +230,8 @@ export const getRatioTapChangerValidationSchema = (id = RATIO_TAP_CHANGER) => {
     return ratioTapChangerValidationSchema(id);
 };
 
-export const getRatioTapChangerModificationValidationSchema = (previousValues, id = RATIO_TAP_CHANGER) => {
-    return ratioTapChangerModificationValidationSchema(previousValues, id);
+export const getRatioTapChangerModificationValidationSchema = (id = RATIO_TAP_CHANGER) => {
+    return ratioTapChangerModificationValidationSchema(id);
 };
 
 const ratioTapChangerEmptyFormData = (isModification, id) => ({

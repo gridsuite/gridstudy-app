@@ -6,29 +6,28 @@
  */
 
 import {
-    ACTIVE_POWER_SET_POINT,
-    DROOP,
-    EQUIPMENT,
-    FREQUENCY_REGULATION,
-    ID,
-    NAME,
-    NOMINAL_VOLTAGE,
-    Q_PERCENT,
-    REACTIVE_POWER_SET_POINT,
-    SUBSTATION_ID,
-    TOPOLOGY_KIND,
-    TYPE,
-    VOLTAGE_LEVEL,
-    VOLTAGE_REGULATION,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
-    MINIMUM_ACTIVE_POWER,
-    MAXIMUM_ACTIVE_POWER,
-    REGULATING_TERMINAL_ID,
-} from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
-import { REGULATION_TYPES } from 'components/network/constants';
-import { getRegulatingTerminalEmptyFormData } from '../regulating-terminal/regulating-terminal-form-utils';
+  ACTIVE_POWER_SET_POINT,
+  DROOP,
+  EQUIPMENT,
+  FREQUENCY_REGULATION,
+  ID,
+  MAXIMUM_ACTIVE_POWER,
+  MINIMUM_ACTIVE_POWER,
+  NAME,
+  NOMINAL_VOLTAGE,
+  Q_PERCENT,
+  REACTIVE_POWER_SET_POINT,
+  SUBSTATION_ID,
+  TOPOLOGY_KIND,
+  TYPE,
+  VOLTAGE_LEVEL,
+  VOLTAGE_REGULATION,
+  VOLTAGE_REGULATION_TYPE,
+  VOLTAGE_SET_POINT
+} from "components/utils/field-constants";
+import yup from "components/utils/yup-config";
+import { REGULATION_TYPES } from "components/network/constants";
+import { getRegulatingTerminalEmptyFormData } from "../regulating-terminal/regulating-terminal-form-utils";
 
 export const getFrequencyRegulationEmptyFormData = (isEquipmentModification) => ({
     [FREQUENCY_REGULATION]: isEquipmentModification ? null : false,
@@ -82,9 +81,9 @@ const getVoltageRegulationSchema = (isEquipmentModification) => ({
             [NOMINAL_VOLTAGE]: yup.string(),
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
-        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, REGULATING_TERMINAL_ID], {
+        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
             is: (voltageRegulation, voltageRegulationType) =>
-                voltageRegulation !== null && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+                !isEquipmentModification && voltageRegulation !== null && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
     [EQUIPMENT]: yup
@@ -97,7 +96,7 @@ const getVoltageRegulationSchema = (isEquipmentModification) => ({
         })
         .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
             is: (voltageRegulation, voltageRegulationType) =>
-                voltageRegulation !== null && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+              !isEquipmentModification && voltageRegulation !== null && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
 });
