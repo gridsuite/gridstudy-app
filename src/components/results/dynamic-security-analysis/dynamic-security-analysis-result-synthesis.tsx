@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,8 +9,6 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo } from 'react';
 import { useNodeData } from '../../study-container';
-import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
-import { MEDIUM_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { useSelector } from 'react-redux';
 import ComputingType from '../../computing-status/computing-type';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
@@ -21,7 +19,9 @@ import { UUID } from 'crypto';
 import RunningStatus from '../../utils/running-status';
 import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { fetchDynamicSecurityAnalysisStatus } from '../../../services/study/dynamic-security-analysis';
+import { MEDIUM_COLUMN_WIDTH } from '../dynamicsimulation/utils/dynamic-simulation-result-utils';
+import { dynamicSecurityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 
 const styles = {
     loader: {
@@ -40,22 +40,22 @@ const defaultColDef = {
     cellRenderer: DefaultCellRenderer,
 };
 
-type DynamicSimulationResultSynthesisProps = {
+type DynamicSecurityAnalysisResultSynthesisProps = {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
 };
 
-const DynamicSimulationResultSynthesis = memo(
-    ({ nodeUuid, studyUuid, currentRootNetworkUuid }: DynamicSimulationResultSynthesisProps) => {
+const DynamicSecurityAnalysisResultSynthesis = memo(
+    ({ nodeUuid, studyUuid, currentRootNetworkUuid }: DynamicSecurityAnalysisResultSynthesisProps) => {
         const intl = useIntl();
 
         const [result, isLoading] = useNodeData(
             studyUuid,
             nodeUuid,
             currentRootNetworkUuid,
-            fetchDynamicSimulationStatus,
-            dynamicSimulationResultInvalidations,
+            fetchDynamicSecurityAnalysisStatus,
+            dynamicSecurityAnalysisResultInvalidations,
             null,
             (status: RunningStatus) =>
                 status && [
@@ -81,13 +81,13 @@ const DynamicSimulationResultSynthesis = memo(
         );
 
         // messages to show when no data
-        const dynamicSimulationStatus = useSelector(
-            (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+        const dynamicSecurityAnalysisStatus = useSelector(
+            (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SECURITY_ANALYSIS]
         );
         const messages = useIntlResultStatusMessages(intl, true);
         const overlayMessage = useMemo(
-            () => getNoRowsMessage(messages, result, dynamicSimulationStatus, !isLoading),
-            [messages, result, dynamicSimulationStatus, isLoading]
+            () => getNoRowsMessage(messages, result, dynamicSecurityAnalysisStatus, !isLoading),
+            [messages, result, dynamicSecurityAnalysisStatus, isLoading]
         );
 
         const rowDataToShow = useMemo(() => (overlayMessage ? [] : result), [result, overlayMessage]);
@@ -111,4 +111,4 @@ const DynamicSimulationResultSynthesis = memo(
     }
 );
 
-export default DynamicSimulationResultSynthesis;
+export default DynamicSecurityAnalysisResultSynthesis;
