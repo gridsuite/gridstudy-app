@@ -82,12 +82,12 @@ import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import { LimitsPane } from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
     getLimitsEmptyFormData,
-    getSelectedLimitsFormData,
     getLimitsValidationSchema,
+    getSelectedLimitsFormData,
     sanitizeLimitNames,
     updateTemporaryLimits,
-    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -642,10 +642,6 @@ const TwoWindingsTransformerModificationDialog = ({
                     .then((twt) => {
                         if (twt) {
                             setTwtToModify(twt);
-                            setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, twt?.voltageLevelId1);
-                            setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, twt?.voltageLevelId2);
-                            setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, twt?.busOrBusbarSectionId1);
-                            setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, twt?.busOrBusbarSectionId2);
                             const selectedCurrentLimits1 = completeCurrentLimitsGroupsToOnlySelected(
                                 twt?.currentLimits1,
                                 twt?.selectedOperationalLimitsGroup1
@@ -727,7 +723,6 @@ const TwoWindingsTransformerModificationDialog = ({
             studyUuid,
             currentNodeUuid,
             currentRootNetworkUuid,
-            setConnectivityValue,
             getValues,
             reset,
             isRatioTapChangerEnabled,
