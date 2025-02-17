@@ -25,17 +25,25 @@ const CreateParameterDialog = <T extends FieldValues>({
     parameterType,
     parameterFormatter,
 }: CreateParameterProps<T>) => {
-    const { snackError } = useSnackMessage();
-    const saveParameters = ({ name, description, folderId }: IElementCreationDialog) => {
-        createParameter(parameterFormatter(parameterValues()), name, parameterType, description, folderId).catch(
-            (error) => {
+    const { snackError, snackInfo } = useSnackMessage();
+
+    const saveParameters = ({ name, description, folderId, folderName }: IElementCreationDialog) => {
+        createParameter(parameterFormatter(parameterValues()), name, parameterType, description, folderId)
+            .then(() => {
+                snackInfo({
+                    headerId: 'paramsCreationMsg',
+                    headerValues: {
+                        directory: folderName,
+                    },
+                });
+            })
+            .catch((error) => {
                 console.error(error);
                 snackError({
                     messageTxt: error.message,
                     headerId: 'paramsCreatingError',
                 });
-            }
-        );
+            });
     };
 
     return (

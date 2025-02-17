@@ -726,7 +726,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'infoCreateModificationsMsg',
                     headerValues: {
                         nbModifications: String(selectedItems.length),
-                        studyDirectory: '/' + folderName,
+                        directory: folderName,
                     },
                 });
             })
