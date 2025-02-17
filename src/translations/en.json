@@ -231,6 +231,7 @@
     "maxSelection": "selections maximum",
     "options": "options",
 
+    "Dynawo": "Dynawo",
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
@@ -259,7 +260,6 @@
     "DynamicSimulationSeriesListAvailableCurves": "Available curves",
     "DynamicSimulationSeriesListRightAxis": "Right axis",
     "DynamicSimulationResultLayoutCols": "Columns",
-    "DynamicSimulationProviderDynawo": "Dynawo",
     "DynamicSimulationTimeDelay": "Time delay",
     "DynamicSimulationSolver": "Solver",
     "DynamicSimulationMapping": "Mapping",
@@ -374,6 +374,15 @@
     "DynamicSimulationTimelineEventTime": "Instant (s)",
     "DynamicSimulationTimelineEventModelName": "Equipment/Model",
     "DynamicSimulationTimelineEventModelMessage": "Message",
+
+    "startDynamicSecurityAnalysisError": "An error occurred while starting the dynamic security analysis",
+    "DynamicSecurityAnalysis": "Dynamic security analysis",
+    "DynamicSecurityAnalysisRunError": "An error occurred while executing the dynamic security analysis",
+    "DynamicSecurityAnalysisContingency": "Contingency",
+    "DynamicSecurityAnalysisScenario": "Scenario",
+    "DynamicSecurityAnalysisScenarioDuration": "Scenario duration",
+    "DynamicSecurityAnalysisContingenciesStartTime": "Contingencies start time",
+    "DynamicSecurityAnalysisTabStatus": "Status",
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
