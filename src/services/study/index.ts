@@ -14,7 +14,7 @@ import {
 } from '../utils';
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { ExtendedEquipmentTypes } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfo } from '../../components/graph/menus/network-modification-menu.type';
 import { ComputingType } from '../../components/computing-status/computing-type';
 
@@ -179,7 +179,7 @@ export function searchEquipmentsInfos(
     searchTerm: string,
     getUseNameParameterKey: () => 'name' | 'id',
     inUpstreamBuiltParentNode?: boolean,
-    equipmentType?: ExtendedEquipmentTypes
+    equipmentType?: EquipmentType | ExtendedEquipmentType
 ) {
     console.info("Fetching equipments infos matching with '%s' term ... ", searchTerm);
     let urlSearchParams = new URLSearchParams();

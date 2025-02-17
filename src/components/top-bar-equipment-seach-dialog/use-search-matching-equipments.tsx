@@ -8,7 +8,8 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import {
     Equipment,
-    ExtendedEquipmentTypes,
+    EquipmentType,
+    ExtendedEquipmentType,
     getEquipmentsInfosForSearchBar,
     useElementSearch,
 } from '@gridsuite/commons-ui';
@@ -21,7 +22,7 @@ interface UseSearchMatchingEquipmentsProps {
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     inUpstreamBuiltParentNode?: boolean;
-    equipmentType?: ExtendedEquipmentTypes;
+    equipmentType?: EquipmentType | ExtendedEquipmentType;
 }
 
 export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsProps) => {
