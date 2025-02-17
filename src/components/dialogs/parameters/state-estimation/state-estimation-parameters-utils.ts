@@ -207,7 +207,7 @@ export type StateEstimationParameters = {
 
 const ESTIM_PARAMETERS = 'estimParameters';
 
-export const convertFromVoltageLevelCode = (code: number): number => {
+export const mapFromVoltageLevelCode = (code: number): number => {
     switch (code) {
         case 1:
             return 20;
@@ -228,7 +228,7 @@ export const convertFromVoltageLevelCode = (code: number): number => {
     }
 };
 
-export const convertToVoltageLevelCode = (code: number): number => {
+export const mapToVoltageLevelCode = (code: number): number => {
     switch (code) {
         case 20:
             return 1;
@@ -249,11 +249,6 @@ export const convertToVoltageLevelCode = (code: number): number => {
     }
 };
 
-type VoltageLevelEntry = {
-    voltageLevel: number;
-    [key: string]: any;
-};
-
 function filterVoltageLevelArray(arr: any[]): any[] {
     return !arr.every((obj) => Object.keys(obj).every((key) => key === 'voltageLevel' || obj[key] === null)) ? arr : [];
 }
@@ -267,7 +262,7 @@ export const fromStateEstimationParametersFormToParamValues = (
             [TabValue.WEIGHTS]: {
                 [WEIGHTS_PARAMETERS]: filterVoltageLevelArray(
                     params.weights.weightsParameters?.map((weight) => ({
-                        [VOLTAGE_LEVEL]: convertToVoltageLevelCode(weight.voltageLevel),
+                        [VOLTAGE_LEVEL]: mapToVoltageLevelCode(weight.voltageLevel),
                         [WEIGHT_V]: weight.weightV,
                         [WEIGHT_ACT_TRANSIT]: weight.weightActTransit,
                         [WEIGHT_REA_TRANSIT]: weight.weightReaTransit,
@@ -292,7 +287,7 @@ export const fromStateEstimationParametersFormToParamValues = (
                 qualityPerRegion: params.quality.qualityPerRegion,
                 thresholdsPerVoltageLevel: filterVoltageLevelArray(
                     params.quality.thresholdsPerVoltageLevel?.map((threshold) => ({
-                        thresholdVoltageLevel: convertToVoltageLevelCode(threshold.voltageLevel),
+                        thresholdVoltageLevel: mapToVoltageLevelCode(threshold.voltageLevel),
                         thresholdOutBoundsGapV: threshold.thresholdOutBoundsGapV,
                         thresholdOutBoundsGapP: threshold.thresholdOutBoundsGapP,
                         thresholdOutBoundsGapQ: threshold.thresholdOutBoundsGapQ,
@@ -308,7 +303,7 @@ export const fromStateEstimationParametersFormToParamValues = (
             [TabValue.LOADBOUNDS]: {
                 [DEFAULT_BOUNDS]: filterVoltageLevelArray(
                     params.loadBounds.defaultBounds?.map((loadBound) => ({
-                        [VOLTAGE_LEVEL]: convertToVoltageLevelCode(loadBound.voltageLevel),
+                        [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
                         [P_MIN]: loadBound.pmin,
                         [P_MAX]: loadBound.pmax,
                         [Q_MIN]: loadBound.qmin,
@@ -317,7 +312,7 @@ export const fromStateEstimationParametersFormToParamValues = (
                 ),
                 [DEFAULT_FIXED_BOUNDS]: filterVoltageLevelArray(
                     params.loadBounds.defaultFixedBounds?.map((loadBound) => ({
-                        [VOLTAGE_LEVEL]: convertToVoltageLevelCode(loadBound.voltageLevel),
+                        [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
                         [P_MIN]: loadBound.pmin,
                         [P_MAX]: loadBound.pmax,
                         [Q_MIN]: loadBound.qmin,
@@ -335,7 +330,7 @@ export const fromStateEstimationParametersParamToFormValues = (
     //In case weights aren't defined, we set a default array to allow for array initialisation
     let weightParameters: WeightsParameters[] | null =
         values.weights.weightsParameters?.map((weight) => ({
-            [VOLTAGE_LEVEL]: convertFromVoltageLevelCode(weight.voltageLevel),
+            [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(weight.voltageLevel),
             [WEIGHT_V]: weight.weightV,
             [WEIGHT_ACT_TRANSIT]: weight.weightActTransit,
             [WEIGHT_REA_TRANSIT]: weight.weightReaTransit,
@@ -356,7 +351,7 @@ export const fromStateEstimationParametersParamToFormValues = (
     //In case thresholds per voltage level aren't defined, we set a default array to allow for array initialisation
     let thresholdPerVoltageLevel: ThresholdsPerVoltageLevelForm[] | null =
         values.quality.thresholdsPerVoltageLevel?.map((threshold) => ({
-            voltageLevel: convertFromVoltageLevelCode(threshold.thresholdVoltageLevel),
+            voltageLevel: mapFromVoltageLevelCode(threshold.thresholdVoltageLevel),
             thresholdOutBoundsGapV: threshold.thresholdOutBoundsGapV,
             thresholdOutBoundsGapP: threshold.thresholdOutBoundsGapP,
             thresholdOutBoundsGapQ: threshold.thresholdOutBoundsGapQ,
@@ -377,7 +372,7 @@ export const fromStateEstimationParametersParamToFormValues = (
 
     let defaultBounds: LoadBoundsDetailsParameters[] | null =
         values.loadBounds.defaultBounds?.map((loadBound) => ({
-            [VOLTAGE_LEVEL]: convertFromVoltageLevelCode(loadBound.voltageLevel),
+            [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(loadBound.voltageLevel),
             [P_MIN]: loadBound.pmin,
             [P_MAX]: loadBound.pmax,
             [Q_MIN]: loadBound.qmin,
@@ -393,7 +388,7 @@ export const fromStateEstimationParametersParamToFormValues = (
 
     let defaulFixedtBounds: LoadBoundsDetailsParameters[] | null =
         values.loadBounds.defaultFixedBounds?.map((loadBound) => ({
-            [VOLTAGE_LEVEL]: convertFromVoltageLevelCode(loadBound.voltageLevel),
+            [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(loadBound.voltageLevel),
             [P_MIN]: loadBound.pmin,
             [P_MAX]: loadBound.pmax,
             [Q_MIN]: loadBound.qmin,

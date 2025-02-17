@@ -19,7 +19,7 @@ export const StateEstimationGeneralParameters = () => {
                     <FieldLabel label={'StateEstimationParametersPrincipalObservableZoneLabel'} />
                 </Grid>
                 <Grid item xs={2}>
-                    <SwitchInput name={`${GENERAL}.${PRINCIPAL_OBSERVABLE_ZONE}`} />
+                    <SwitchInput name={`${TabValue.GENERAL}.${PRINCIPAL_OBSERVABLE_ZONE}`} />
                 </Grid>
             </Grid>
 
