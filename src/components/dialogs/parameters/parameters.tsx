@@ -5,24 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState, useRef, useMemo, FunctionComponent, PropsWithChildren } from 'react';
+import { FunctionComponent, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import {
-    Grid,
-    Box,
-    Button,
-    Typography,
-    Switch,
-    Select,
-    MenuItem,
-    Theme,
-    ButtonProps,
-    SelectChangeEvent,
-    TypographyProps,
-} from '@mui/material';
+import { Box, Button, ButtonProps, Grid, Switch, Theme, Typography, TypographyProps } from '@mui/material';
 
-import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
+import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from 'components/utils/optional-services';
 import { updateConfigParameter } from 'services/config';
 import { isComputationParametersUpdated } from './common/computation-parameters-util';
@@ -74,32 +62,6 @@ export const SwitchWithLabel: FunctionComponent<SwitchWithLabelProps> = ({ value
                     value={value}
                     inputProps={{ 'aria-label': 'primary checkbox' }}
                 />
-            </Grid>
-        </>
-    );
-};
-
-interface DropDownProps {
-    value: string;
-    label: string;
-    values: Record<string, string>;
-    callback: (event: SelectChangeEvent<string>) => void;
-}
-
-export const DropDown = ({ value, label, values, callback }: DropDownProps) => {
-    return (
-        <>
-            <Grid item xs={5} sx={styles.parameterName}>
-                <FormattedMessage id={label} />
-            </Grid>
-            <Grid item container xs={4} sx={styles.controlItem}>
-                <Select labelId={label} value={value} onChange={callback} size="small">
-                    {Object.entries(values).map(([key, value]) => (
-                        <MenuItem key={key} value={key}>
-                            <FormattedMessage id={value} />
-                        </MenuItem>
-                    ))}
-                </Select>
             </Grid>
         </>
     );

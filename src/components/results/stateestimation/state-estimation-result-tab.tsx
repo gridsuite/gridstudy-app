@@ -25,6 +25,7 @@ import {
     stateEstimationQualityPerRegionColumnsDefinition,
 } from './state-estimation-result-utils';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
+import { stateEstimationResultInvalidations } from '../../computing-status/use-all-computing-status';
 
 const styles = {
     flexWrapper: {
@@ -50,7 +51,6 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     currentRootNetworkUuid,
 }) => {
     const intl = useIntl();
-    const stateEstimationResultInvalidations = ['stateEstimationResult'];
 
     const [tabIndex, setTabIndex] = useState(0);
     const stateEstimationStatus = useSelector(
