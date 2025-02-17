@@ -5,20 +5,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { IColumnsDef, LIMIT_REDUCTIONS_FORM } from './columns-definitions';
 import { useFieldArray } from 'react-hook-form';
 import LimitReductionTableRow from './limit-reduction-table-row';
+import { CustomTableByVoltageLevelTableRow } from '../voltage-level-table/custom-table-by-voltage-level-table-row';
 
 interface LimitReductionsTableProps {
     columnsDefinition: IColumnsDef[];
     tableHeight: number;
+    formName: string;
 }
 
-const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({ columnsDefinition, tableHeight }) => {
+const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
+    formName,
+    columnsDefinition,
+    tableHeight,
+}) => {
     const { fields: rows } = useFieldArray({
-        name: LIMIT_REDUCTIONS_FORM,
+        name: formName, //LIMIT_REDUCTIONS_FORM,
     });
+
+    const TableRowComponent = useMemo(
+        () => (formName === LIMIT_REDUCTIONS_FORM ? LimitReductionTableRow : CustomTableByVoltageLevelTableRow),
+        [formName]
+    );
 
     return (
         <TableContainer
@@ -46,7 +57,12 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({ co
                 </TableHead>
                 <TableBody>
                     {rows.map((row, index) => (
-                        <LimitReductionTableRow key={`${row.id}`} columnsDefinition={columnsDefinition} index={index} />
+                        <TableRowComponent
+                            key={`${row.id}`}
+                            columnsDefinition={columnsDefinition}
+                            index={index}
+                            formName={formName}
+                        />
                     ))}
                 </TableBody>
             </Table>

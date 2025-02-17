@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FunctionComponent, useMemo } from 'react';
-import { CustomTableByVoltageLevel } from '../common/voltage-level-table/custom-table-by-voltage-level';
 import { VOLTAGE_LEVEL, WEIGHTS_PARAMETERS } from '../../../utils/field-constants';
 import { TabValue, weightsParametersFields } from './state-estimation-parameters-utils';
 import { IColumnsDef } from '../common/limitreductions/columns-definitions';
 import { useIntl } from 'react-intl';
+import LimitReductionsTable from '../common/limitreductions/limit-reductions-table';
 
 export const StateEstimationWeightsParameters: FunctionComponent = () => {
     const intl = useIntl();
@@ -35,9 +35,10 @@ export const StateEstimationWeightsParameters: FunctionComponent = () => {
     }, [intl]);
 
     return (
-        <CustomTableByVoltageLevel
+        <LimitReductionsTable
             formName={`${TabValue.WEIGHTS}.${WEIGHTS_PARAMETERS}`}
             columnsDefinition={columnsDefinition}
+            tableHeight={450}
         />
     );
 };

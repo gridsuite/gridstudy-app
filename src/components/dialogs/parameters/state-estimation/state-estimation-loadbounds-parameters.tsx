@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FunctionComponent, useMemo } from 'react';
-import { CustomTableByVoltageLevel } from '../common/voltage-level-table/custom-table-by-voltage-level';
 import { DEFAULT_BOUNDS, DEFAULT_FIXED_BOUNDS, VOLTAGE_LEVEL } from '../../../utils/field-constants';
 import { loadboundsParametersFields, TabValue } from './state-estimation-parameters-utils';
 import { IColumnsDef } from '../common/limitreductions/columns-definitions';
@@ -13,6 +12,7 @@ import { useIntl } from 'react-intl';
 import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import GridSection from '../../commons/grid-section';
+import LimitReductionsTable from '../common/limitreductions/limit-reductions-table';
 
 export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
     const intl = useIntl();
@@ -41,9 +41,10 @@ export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
         <Grid container>
             <GridSection title="StateEstimationParametersDefaultBoundsSection" heading={4} />
 
-            <CustomTableByVoltageLevel
+            <LimitReductionsTable
                 formName={`${TabValue.LOADBOUNDS}.${DEFAULT_BOUNDS}`}
                 columnsDefinition={columnsDefinition}
+                tableHeight={450}
             />
 
             <Box my={2}>
@@ -51,9 +52,10 @@ export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
             </Box>
             <GridSection title="StateEstimationParametersDefaultFixedBoundsSection" heading={4} />
 
-            <CustomTableByVoltageLevel
+            <LimitReductionsTable
                 formName={`${TabValue.LOADBOUNDS}.${DEFAULT_FIXED_BOUNDS}`}
                 columnsDefinition={columnsDefinition}
+                tableHeight={450}
             />
         </Grid>
     );
