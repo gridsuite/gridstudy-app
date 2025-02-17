@@ -832,8 +832,6 @@ export const useFetchFiltersEnums = () => {
     return { loading, result, error };
 };
 
-export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = ['securityAnalysisResult'];
-
 export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     subjectId: 'subjectLimitViolation.subjectId',
     status: 'result.status',
