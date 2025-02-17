@@ -79,8 +79,11 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
 
     useEffect(() => {
         if (open.value && customColumnsNodesAliases && customColumnsNodesAliases.length > 0) {
+            let selected = { selected: false };
             reset({
-                [NODES_ALIASES]: customColumnsNodesAliases,
+                [NODES_ALIASES]: customColumnsNodesAliases.map((value) => {
+                    return { ...value, ...selected };
+                }),
             });
         }
     }, [open, customColumnsNodesAliases, reset]);
