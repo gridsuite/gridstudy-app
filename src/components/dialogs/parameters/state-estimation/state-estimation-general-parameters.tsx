@@ -6,7 +6,6 @@
  */
 import { Grid } from '@mui/material';
 import { ESTIM_ALGO_TYPE, ESTIM_LOG_LEVEL, PRINCIPAL_OBSERVABLE_ZONE } from 'components/utils/field-constants';
-import { GENERAL } from '../voltageinit/voltage-init-parameters-form';
 import { estimAlgoTypeValues, estimLogLevelValues, TabValue } from './state-estimation-parameters-utils';
 import { FieldLabel, MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import { styles } from '../parameters';
