@@ -47,6 +47,16 @@ import {
     WEIGHTS_PARAMETERS,
 } from '../../../utils/field-constants';
 
+enum VoltageLevels {
+    VL_20_KV = '20 kV',
+    VL_45_KV = '45 kV',
+    VL_63_KV = '63 kV',
+    VL_90_KV = '90 kV',
+    VL_150_KV = '150 kV',
+    VL_225_KV = '225 kV',
+    VL_400_KV = '400 kV',
+}
+
 export enum TabValue {
     GENERAL = 'general',
     WEIGHTS = 'weights',
@@ -99,7 +109,15 @@ export const qualityParametersFields = [
 
 export const loadboundsParametersFields = [P_MIN, P_MAX, Q_MIN, Q_MAX];
 
-const defaultVoltageLevels = [20, 45, 63, 90, 150, 225, 400];
+const defaultVoltageLevels = [
+    VoltageLevels.VL_20_KV,
+    VoltageLevels.VL_45_KV,
+    VoltageLevels.VL_63_KV,
+    VoltageLevels.VL_90_KV,
+    VoltageLevels.VL_150_KV,
+    VoltageLevels.VL_225_KV,
+    VoltageLevels.VL_400_KV,
+];
 
 const defaultWeightsParameters = {
     [WEIGHT_V]: null,
@@ -132,7 +150,7 @@ const defaultLoadboundsParameters = {
 };
 
 type WeightsParameters = {
-    voltageLevel: number;
+    voltageLevel: number | string;
     weightV: number | null;
     weightActTransit: number | null;
     weightReaTransit: number | null;
@@ -144,7 +162,7 @@ type WeightsParameters = {
 };
 
 type LoadBoundsDetailsParameters = {
-    voltageLevel: number;
+    voltageLevel: number | string;
     pmin: number | null;
     pmax: number | null;
     qmin: number | null;
@@ -165,7 +183,7 @@ type ThresholdsPerVoltageLevel = {
 };
 
 type ThresholdsPerVoltageLevelForm = {
-    voltageLevel: number;
+    voltageLevel: number | string;
     thresholdOutBoundsGapV: number | null;
     thresholdOutBoundsGapP: number | null;
     thresholdOutBoundsGapQ: number | null;
@@ -207,42 +225,42 @@ export type StateEstimationParameters = {
 
 const ESTIM_PARAMETERS = 'estimParameters';
 
-export const mapFromVoltageLevelCode = (code: number): number => {
+export const mapFromVoltageLevelCode = (code: number | string): string => {
     switch (code) {
         case 1:
-            return 20;
+            return VoltageLevels.VL_20_KV;
         case 2:
-            return 45;
+            return VoltageLevels.VL_45_KV;
         case 3:
-            return 63;
+            return VoltageLevels.VL_63_KV;
         case 4:
-            return 90;
+            return VoltageLevels.VL_90_KV;
         case 5:
-            return 150;
+            return VoltageLevels.VL_150_KV;
         case 6:
-            return 225;
+            return VoltageLevels.VL_225_KV;
         case 7:
-            return 400;
+            return VoltageLevels.VL_400_KV;
         default:
-            return -1;
+            return '';
     }
 };
 
-export const mapToVoltageLevelCode = (code: number): number => {
+export const mapToVoltageLevelCode = (code: string): number => {
     switch (code) {
-        case 20:
+        case VoltageLevels.VL_20_KV:
             return 1;
-        case 45:
+        case VoltageLevels.VL_45_KV:
             return 2;
-        case 63:
+        case VoltageLevels.VL_63_KV:
             return 3;
-        case 90:
+        case VoltageLevels.VL_90_KV:
             return 4;
-        case 150:
+        case VoltageLevels.VL_150_KV:
             return 5;
-        case 225:
+        case VoltageLevels.VL_225_KV:
             return 6;
-        case 400:
+        case VoltageLevels.VL_400_KV:
             return 7;
         default:
             return -1;
@@ -262,61 +280,31 @@ export const fromStateEstimationParametersFormToParamValues = (
             [TabValue.WEIGHTS]: {
                 [WEIGHTS_PARAMETERS]: filterVoltageLevelArray(
                     params.weights.weightsParameters?.map((weight) => ({
+                        ...weight,
                         [VOLTAGE_LEVEL]: mapToVoltageLevelCode(weight.voltageLevel),
-                        [WEIGHT_V]: weight.weightV,
-                        [WEIGHT_ACT_TRANSIT]: weight.weightActTransit,
-                        [WEIGHT_REA_TRANSIT]: weight.weightReaTransit,
-                        [WEIGHT_ACT_PROD]: weight.weightActProd,
-                        [WEIGHT_REA_PROD]: weight.weightReaProd,
-                        [WEIGHT_ACT_LOAD]: weight.weightActLoad,
-                        [WEIGHT_REA_LOAD]: weight.weightReaLoad,
-                        [WEIGHT_IN]: weight.weightIN,
                     }))
                 ),
             },
             [TabValue.QUALITY]: {
-                thresholdObservabilityRate: params.quality.thresholdObservabilityRate,
-                thresholdActRedundancy: params.quality.thresholdReaRedundancy,
-                thresholdReaRedundancy: params.quality.thresholdActRedundancy,
-                thresholdNbLostInjections: params.quality.thresholdNbLostTransits,
-                thresholdNbInvalidMeasure: params.quality.thresholdNbInvalidMeasure,
-                thresholdNbCriticalMeasure: params.quality.thresholdNbCriticalMeasure,
-                thresholdNbOutBoundsGap: params.quality.thresholdNbOutBoundsGap,
-                thresholdNbIter: params.quality.thresholdNbIter,
-                thresholdNbLostTransits: params.quality.thresholdNbLostInjections,
-                qualityPerRegion: params.quality.qualityPerRegion,
+                ...params.quality,
                 thresholdsPerVoltageLevel: filterVoltageLevelArray(
                     params.quality.thresholdsPerVoltageLevel?.map((threshold) => ({
+                        ...threshold,
                         thresholdVoltageLevel: mapToVoltageLevelCode(threshold.voltageLevel),
-                        thresholdOutBoundsGapV: threshold.thresholdOutBoundsGapV,
-                        thresholdOutBoundsGapP: threshold.thresholdOutBoundsGapP,
-                        thresholdOutBoundsGapQ: threshold.thresholdOutBoundsGapQ,
-                        thresholdLostActProd: threshold.thresholdLostActProd,
-                        thresholdLostReaProd: threshold.thresholdLostReaProd,
-                        thresholdLostActLoad: threshold.thresholdLostActProd,
-                        thresholdLostReaLoad: threshold.thresholdLostReaProd,
-                        thresholdActTransit: threshold.thresholdActTransit,
-                        thresholdReaTransit: threshold.thresholdReaTransit,
                     }))
                 ),
             },
             [TabValue.LOADBOUNDS]: {
                 [DEFAULT_BOUNDS]: filterVoltageLevelArray(
                     params.loadBounds.defaultBounds?.map((loadBound) => ({
+                        ...loadBound,
                         [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
-                        [P_MIN]: loadBound.pmin,
-                        [P_MAX]: loadBound.pmax,
-                        [Q_MIN]: loadBound.qmin,
-                        [Q_MAX]: loadBound.pmax,
                     }))
                 ),
                 [DEFAULT_FIXED_BOUNDS]: filterVoltageLevelArray(
                     params.loadBounds.defaultFixedBounds?.map((loadBound) => ({
+                        ...loadBound,
                         [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
-                        [P_MIN]: loadBound.pmin,
-                        [P_MAX]: loadBound.pmax,
-                        [Q_MIN]: loadBound.qmin,
-                        [Q_MAX]: loadBound.pmax,
                     }))
                 ),
             },
@@ -442,7 +430,7 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
             .array()
             .of(
                 yup.object().shape({
-                    [VOLTAGE_LEVEL]: yup.number().required(),
+                    [VOLTAGE_LEVEL]: yup.string().required(),
                     [WEIGHT_V]: yup.number().nullable(),
                     [WEIGHT_ACT_TRANSIT]: yup.number().nullable(),
                     [WEIGHT_REA_TRANSIT]: yup.number().nullable(),
@@ -471,7 +459,7 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
             .array()
             .of(
                 yup.object().shape({
-                    [VOLTAGE_LEVEL]: yup.number().required(),
+                    [VOLTAGE_LEVEL]: yup.string().required(),
                     [THRESHOLD_OUT_BOUNDS_GAP_V]: yup.number().nullable().required(),
                     [THRESHOLD_OUT_BOUNDS_GAP_P]: yup.number().nullable().required(),
                     [THRESHOLD_OUT_BOUNDS_GAP_Q]: yup.number().nullable().required(),
@@ -491,7 +479,7 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
             .array()
             .of(
                 yup.object().shape({
-                    [VOLTAGE_LEVEL]: yup.number().required(),
+                    [VOLTAGE_LEVEL]: yup.string().required(),
                     [P_MIN]: yup.number().nullable().required(),
                     [P_MAX]: yup.number().nullable().required(),
                     [Q_MIN]: yup.number().nullable().required(),
@@ -504,7 +492,7 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
             .array()
             .of(
                 yup.object().shape({
-                    [VOLTAGE_LEVEL]: yup.number().required(),
+                    [VOLTAGE_LEVEL]: yup.string().required(),
                     [P_MIN]: yup.number().nullable().required(),
                     [P_MAX]: yup.number().nullable().required(),
                     [Q_MIN]: yup.number().nullable().required(),
