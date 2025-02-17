@@ -23,7 +23,7 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
     tableHeight,
 }) => {
     const { fields: rows } = useFieldArray({
-        name: formName, //LIMIT_REDUCTIONS_FORM,
+        name: formName,
     });
 
     const TableRowComponent = useMemo(
