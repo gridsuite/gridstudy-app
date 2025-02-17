@@ -36,7 +36,7 @@ export default function LimitsGraph({ limitsGroupFormName }: Readonly<LimitsGrap
         if (currentTemporaryLimits) {
             currentTemporaryLimits
                 .filter((field) => field.value && field.name)
-                .map((field) =>
+                .forEach((field) =>
                     data.push({
                         label: field.name,
                         value: field.value,
