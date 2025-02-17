@@ -6,9 +6,10 @@
  */
 
 import { FieldValues, UseFormGetValues } from 'react-hook-form';
-import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementCreationDialog, ElementType, IElementCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { createParameter } from 'services/explore';
-import ElementCreationDialog, { IElementCreationDialog } from '../../element-creation-dialog';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
 
 interface CreateParameterProps<T extends FieldValues> {
     open: boolean;
@@ -26,6 +27,7 @@ const CreateParameterDialog = <T extends FieldValues>({
     parameterFormatter,
 }: CreateParameterProps<T>) => {
     const { snackError, snackInfo } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const saveParameters = ({ name, description, folderId, folderName }: IElementCreationDialog) => {
         createParameter(parameterFormatter(parameterValues()), name, parameterType, description, folderId)
@@ -47,13 +49,16 @@ const CreateParameterDialog = <T extends FieldValues>({
     };
 
     return (
-        <ElementCreationDialog
-            open={open}
-            onClose={onClose}
-            onSave={saveParameters}
-            type={parameterType}
-            titleId={'saveParameters'}
-        />
+        studyUuid && (
+            <ElementCreationDialog
+                open={open}
+                onClose={onClose}
+                onSave={saveParameters}
+                type={parameterType}
+                titleId={'saveParameters'}
+                studyUuid={studyUuid}
+            />
+        )
     );
 };
 

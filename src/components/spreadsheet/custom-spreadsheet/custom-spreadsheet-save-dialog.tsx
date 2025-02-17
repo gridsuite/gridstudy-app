@@ -5,8 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ElementType, useSnackMessage, UseStateBooleanReturn } from '@gridsuite/commons-ui';
-import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
+import {
+    ElementCreationDialog,
+    ElementType,
+    IElementCreationDialog,
+    useSnackMessage,
+    UseStateBooleanReturn,
+} from '@gridsuite/commons-ui';
 import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
@@ -27,6 +32,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
     );
     const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const customColumns = useMemo(() => {
         return customColumnsDefinitions.map(({ id, name, type, precision, formula, dependencies }) => ({
@@ -94,13 +100,14 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
 
     return (
         <>
-            {open.value && (
+            {open.value && studyUuid && (
                 <ElementCreationDialog
                     open={open.value}
                     onClose={open.setFalse}
                     onSave={saveSpreadsheetColumnsConfiguration}
                     type={ElementType.SPREADSHEET_CONFIG}
                     titleId={'spreadsheet/save/dialog_title'}
+                    studyUuid={studyUuid}
                 />
             )}
         </>
