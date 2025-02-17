@@ -131,7 +131,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             dependencies: [],
         },
         {
-            id: 'RegulationTypeText',
+            id: 'regulationTypeText',
             name: 'Regulation type',
             type: COLUMN_TYPES.ENUM,
             formula: 'RegulationTypeText',

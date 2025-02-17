@@ -25,14 +25,14 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             dependencies: [],
         },
         {
-            id: 'Name',
+            id: 'name',
             name: 'Name',
             type: COLUMN_TYPES.TEXT,
             formula: 'name',
             dependencies: [],
         },
         {
-            id: 'Country',
+            id: 'country',
             name: 'Country',
             type: COLUMN_TYPES.ENUM,
             formula: 'country',

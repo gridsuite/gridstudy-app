@@ -25,28 +25,28 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             dependencies: [],
         },
         {
-            id: 'Name',
+            id: 'name',
             name: 'Name',
             type: COLUMN_TYPES.TEXT,
             formula: 'name',
             dependencies: [],
         },
         {
-            id: 'SubstationId',
+            id: 'substationId',
             name: 'Substation ID',
             type: COLUMN_TYPES.TEXT,
             formula: 'substationId',
             dependencies: [],
         },
         {
-            id: 'Country',
+            id: 'country',
             name: 'Country',
             type: COLUMN_TYPES.ENUM,
             formula: 'country',
             dependencies: [],
         },
         {
-            id: 'NominalV',
+            id: 'nominalV',
             name: 'Nominal V',
             type: COLUMN_TYPES.NUMBER,
             formula: 'nominalV',
@@ -54,7 +54,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             dependencies: [],
         },
         {
-            id: 'LowVoltageLimit',
+            id: 'lowVoltageLimit',
             name: 'Low voltage limit (kV)',
             type: COLUMN_TYPES.NUMBER,
             formula: 'lowVoltageLimit',
@@ -62,7 +62,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             dependencies: [],
         },
         {
-            id: 'HighVoltageLimit',
+            id: 'highVoltageLimit',
             name: 'High voltage limit (kV)',
             type: COLUMN_TYPES.NUMBER,
             formula: 'highVoltageLimit',
@@ -70,7 +70,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             dependencies: [],
         },
         {
-            id: 'IpMin',
+            id: 'ipMin',
             name: 'ISC min (kA)',
             type: COLUMN_TYPES.NUMBER,
             formula: 'unitToKiloUnit(identifiableShortCircuit.ipMin)',
@@ -78,7 +78,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             dependencies: [],
         },
         {
-            id: 'IpMax',
+            id: 'ipMax',
             name: 'ISC max (kA)',
             type: COLUMN_TYPES.NUMBER,
             formula: 'unitToKiloUnit(identifiableShortCircuit.ipMax)',
