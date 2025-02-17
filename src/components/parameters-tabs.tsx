@@ -141,7 +141,7 @@ enum TAB_VALUES {
     dynamicSimulationParamsTabValue = 'DYNAMIC_SIMULATION',
     dynamicSecurityAnalysisParamsTabValue = 'DYNAMIC_SECURITY_ANALYSIS',
     voltageInitParamsTabValue = 'VOLTAGE_INITIALIZATION',
-    stateEstimationTabValue = 'StateEstimation',
+    stateEstimationTabValue = 'STATE_ESTIMATION',
     networkVisualizationsParams = 'networkVisualizationsParams',
 }
 
