@@ -318,15 +318,8 @@ export const fromStateEstimationParametersParamToFormValues = (
     //In case weights aren't defined, we set a default array to allow for array initialisation
     let weightParameters: WeightsParameters[] | null =
         values.weights.weightsParameters?.map((weight) => ({
+            ...weight,
             [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(weight.voltageLevel),
-            [WEIGHT_V]: weight.weightV,
-            [WEIGHT_ACT_TRANSIT]: weight.weightActTransit,
-            [WEIGHT_REA_TRANSIT]: weight.weightReaTransit,
-            [WEIGHT_ACT_PROD]: weight.weightActProd,
-            [WEIGHT_REA_PROD]: weight.weightReaProd,
-            [WEIGHT_ACT_LOAD]: weight.weightActLoad,
-            [WEIGHT_REA_LOAD]: weight.weightReaLoad,
-            [WEIGHT_IN]: weight.weightIN,
         })) ?? null;
 
     if (weightParameters?.length === 0) {
@@ -339,16 +332,8 @@ export const fromStateEstimationParametersParamToFormValues = (
     //In case thresholds per voltage level aren't defined, we set a default array to allow for array initialisation
     let thresholdPerVoltageLevel: ThresholdsPerVoltageLevelForm[] | null =
         values.quality.thresholdsPerVoltageLevel?.map((threshold) => ({
+            ...threshold,
             voltageLevel: mapFromVoltageLevelCode(threshold.thresholdVoltageLevel),
-            thresholdOutBoundsGapV: threshold.thresholdOutBoundsGapV,
-            thresholdOutBoundsGapP: threshold.thresholdOutBoundsGapP,
-            thresholdOutBoundsGapQ: threshold.thresholdOutBoundsGapQ,
-            thresholdLostActProd: threshold.thresholdLostActProd,
-            thresholdLostReaProd: threshold.thresholdLostReaProd,
-            thresholdLostActLoad: threshold.thresholdLostActProd,
-            thresholdLostReaLoad: threshold.thresholdLostReaProd,
-            thresholdActTransit: threshold.thresholdActTransit,
-            thresholdReaTransit: threshold.thresholdReaTransit,
         })) ?? null;
 
     if (thresholdPerVoltageLevel?.length === 0) {
@@ -360,11 +345,8 @@ export const fromStateEstimationParametersParamToFormValues = (
 
     let defaultBounds: LoadBoundsDetailsParameters[] | null =
         values.loadBounds.defaultBounds?.map((loadBound) => ({
+            ...loadBound,
             [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(loadBound.voltageLevel),
-            [P_MIN]: loadBound.pmin,
-            [P_MAX]: loadBound.pmax,
-            [Q_MIN]: loadBound.qmin,
-            [Q_MAX]: loadBound.pmax,
         })) ?? null;
 
     if (defaultBounds?.length === 0) {
@@ -374,17 +356,14 @@ export const fromStateEstimationParametersParamToFormValues = (
         }));
     }
 
-    let defaulFixedtBounds: LoadBoundsDetailsParameters[] | null =
+    let defaulFixedBounds: LoadBoundsDetailsParameters[] | null =
         values.loadBounds.defaultFixedBounds?.map((loadBound) => ({
+            ...loadBound,
             [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(loadBound.voltageLevel),
-            [P_MIN]: loadBound.pmin,
-            [P_MAX]: loadBound.pmax,
-            [Q_MIN]: loadBound.qmin,
-            [Q_MAX]: loadBound.pmax,
         })) ?? null;
 
-    if (defaulFixedtBounds?.length === 0) {
-        defaulFixedtBounds = defaultVoltageLevels.map((voltageLevel) => ({
+    if (defaulFixedBounds?.length === 0) {
+        defaulFixedBounds = defaultVoltageLevels.map((voltageLevel) => ({
             [VOLTAGE_LEVEL]: voltageLevel,
             ...defaultLoadboundsParameters,
         }));
@@ -400,21 +379,12 @@ export const fromStateEstimationParametersParamToFormValues = (
             [WEIGHTS_PARAMETERS]: weightParameters,
         },
         [TabValue.QUALITY]: {
-            [THRESHOLD_OBSERVABILITY_RATE]: values.quality.thresholdObservabilityRate,
-            [THRESHOLD_ACT_REDUNDANCY]: values.quality.thresholdReaRedundancy,
-            [THRESHOLD_REA_REDUNDANCY]: values.quality.thresholdActRedundancy,
-            [THRESHOLD_NB_LOST_INJECTIONS]: values.quality.thresholdNbLostTransits,
-            [THRESHOLD_NB_INVALID_MEASURE]: values.quality.thresholdNbInvalidMeasure,
-            [THRESHOLD_NB_CRITICAL_MEASURE]: values.quality.thresholdNbCriticalMeasure,
-            [THRESHOLD_NB_OUT_BOUNDS_GAP]: values.quality.thresholdNbOutBoundsGap,
-            [THRESHOLD_NB_ITER]: values.quality.thresholdNbIter,
-            [THRESHOLD_NB_LOST_TRANSITS]: values.quality.thresholdNbLostInjections,
-            [QUALITY_PER_REGION]: values.quality.qualityPerRegion,
+            ...values.quality,
             [THRESHOLD_PER_VOLTAGE_LEVEL]: thresholdPerVoltageLevel,
         },
         [TabValue.LOADBOUNDS]: {
             [DEFAULT_BOUNDS]: defaultBounds,
-            [DEFAULT_FIXED_BOUNDS]: defaulFixedtBounds,
+            [DEFAULT_FIXED_BOUNDS]: defaulFixedBounds,
         },
     };
 };
