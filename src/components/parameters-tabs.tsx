@@ -256,13 +256,13 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     useEffect(() => {
         setTabValue((oldValue) => {
             if (
-                !enableDeveloperMode &&
-                (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
-                    oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
-                    oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
-                    oldValue === TAB_VALUES.dynamicSimulationParamsTabValue ||
-                    oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue) ||
-                    oldValue === TAB_VALUES.stateEstimationTabValue
+                (!enableDeveloperMode &&
+                    (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
+                        oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
+                        oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
+                        oldValue === TAB_VALUES.dynamicSimulationParamsTabValue ||
+                        oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue)) ||
+                oldValue === TAB_VALUES.stateEstimationTabValue
             ) {
                 return TAB_VALUES.securityAnalysisParamsTabValue;
             }
