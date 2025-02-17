@@ -32,7 +32,6 @@ import {
     EQUIPMENT_NAME,
     G1,
     G2,
-    ID,
     LIMITS,
     PERMANENT_LIMIT,
     R,
@@ -280,13 +279,6 @@ const LineModificationDialog = ({
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [emptyFormData, reset]);
-
-    const setConnectivityValue = useCallback(
-        (index, field, value) => {
-            setValue(`${CONNECTIVITY}.${index}.${field}.${ID}`, value);
-        },
-        [setValue]
-    );
 
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {

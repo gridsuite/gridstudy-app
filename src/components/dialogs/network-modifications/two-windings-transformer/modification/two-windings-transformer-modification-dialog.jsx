@@ -198,7 +198,7 @@ const TwoWindingsTransformerModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, getValues } = formMethods;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const computeRatioTapChangerRegulationMode = (ratioTapChangerFormValues) => {
@@ -554,13 +554,6 @@ const TwoWindingsTransformerModificationDialog = ({
             !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
-
-    const setConnectivityValue = useCallback(
-        (index, field, value) => {
-            setValue(`${CONNECTIVITY}.${index}.${field}.${ID}`, value);
-        },
-        [setValue]
-    );
 
     const isRatioTapChangerEnabled = useCallback(
         (twt) => {
