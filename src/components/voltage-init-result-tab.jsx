@@ -12,8 +12,7 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from './computing-status/computing-type';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import RunningStatus from './utils/running-status';
-
-const voltageInitResultInvalidations = ['voltageInitResult'];
+import { voltageInitResultInvalidations } from './computing-status/use-all-computing-status';
 
 export const VoltageInitResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUuid }) => {
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);

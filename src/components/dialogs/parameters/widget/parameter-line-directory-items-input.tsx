@@ -13,7 +13,7 @@ import { styles } from '../parameters';
 type DirectoryItemsInputLineProps = {
     label: string;
     name: string;
-    equipmentTypes: string[];
+    equipmentTypes?: string[];
     elementType: string;
     hideErrorMessage: boolean;
 };
@@ -26,7 +26,7 @@ const ParameterLineDirectoryItemsInput = ({
     hideErrorMessage,
 }: DirectoryItemsInputLineProps) => {
     return (
-        <Grid item container spacing={1} padding={1}>
+        <Grid item container spacing={1} paddingTop={1} paddingBottom={1}>
             <Grid item xs={7} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
