@@ -30,7 +30,6 @@ export interface SpreadsheetTabDefinition {
     name: string;
     type: SpreadsheetEquipmentType;
     columns: ColumnDefinition[];
-    groovyEquipmentGetter?: string;
 }
 
 export type ColumnDefinition = {

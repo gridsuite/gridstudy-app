@@ -28,7 +28,7 @@ export function useCustomColumn(tabIndex: number) {
             (params: ValueGetterParams): boolean | string | number | undefined => {
                 try {
                     const scope = { ...params.data };
-                    const colDependencies = colDef.dependencies as string[];
+                    const colDependencies = colDef.dependencies;
                     colDependencies.forEach((dep) => {
                         scope[dep] = params.getValue(dep);
                     });

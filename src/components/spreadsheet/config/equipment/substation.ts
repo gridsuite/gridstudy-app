@@ -18,7 +18,7 @@ export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.SUBSTATION),
     columns: [
         {
-            id: 'ID',
+            id: 'id',
             name: 'ID',
             type: COLUMN_TYPES.TEXT,
             formula: 'id',

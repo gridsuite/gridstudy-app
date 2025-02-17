@@ -18,7 +18,7 @@ export const LINE_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.LINE),
     columns: [
         {
-            id: 'ID',
+            id: 'id',
             name: 'ID',
             type: COLUMN_TYPES.TEXT,
             formula: 'id',

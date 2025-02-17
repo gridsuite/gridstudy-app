@@ -753,7 +753,7 @@ const initialState: AppState = {
             .reduce((acc, tabName) => {
                 acc[tabName] = [
                     {
-                        colId: 'ID',
+                        colId: 'id',
                         sort: SortWay.ASC,
                     },
                 ];
@@ -1740,20 +1740,18 @@ export const reducer = createReducer(initialState, (builder) => {
         const { colData } = action;
 
         // Retrieve the table definition by index
-        const tableDefinitionIndex = state.tables.definitions.findIndex((def) => def.index === colData.index);
+        const tableDefinition = state.tables.definitions[colData.index];
 
-        if (tableDefinitionIndex !== -1) {
-            const existingColumnIndex = state.tables.definitions[tableDefinitionIndex].columns.findIndex(
-                (col) => col.id === colData.value.id
-            );
+        if (tableDefinition) {
+            const existingColumnIndex = tableDefinition.columns.findIndex((col) => col.id === colData.value.id);
 
             if (existingColumnIndex !== -1) {
                 // Update existing column
-                state.tables.definitions[tableDefinitionIndex].columns[existingColumnIndex] = colData.value;
+                tableDefinition.columns[existingColumnIndex] = colData.value;
             } else {
                 // Add new column if not found
-                state.tables.definitions[tableDefinitionIndex].columns.push(colData.value);
-                state.tables.columnsStates[tableDefinitionIndex].push({
+                tableDefinition.columns.push(colData.value);
+                state.tables.columnsStates[colData.index].push({
                     colId: colData.value.id,
                     visible: true,
                 });
@@ -1763,16 +1761,12 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(REMOVE_COLUMN_DEFINITION, (state, action: RemoveColumnDefinitionAction) => {
         const { index, value } = action.definition;
-        const tableDefinitionIndex = state.tables.definitions.findIndex((def) => def.index === index);
+        const tableDefinition = state.tables.definitions[index];
 
-        if (tableDefinitionIndex !== -1) {
-            state.tables.definitions[tableDefinitionIndex].columns = state.tables.definitions[
-                tableDefinitionIndex
-            ].columns.filter((col) => col.id !== value);
+        if (tableDefinition) {
+            tableDefinition.columns = tableDefinition.columns.filter((col) => col.id !== value);
             // remove column from columnsStates
-            state.tables.columnsStates[tableDefinitionIndex] = state.tables.columnsStates[tableDefinitionIndex].filter(
-                (col) => col.colId !== value
-            );
+            state.tables.columnsStates[index] = state.tables.columnsStates[index].filter((col) => col.colId !== value);
         }
     });
 
