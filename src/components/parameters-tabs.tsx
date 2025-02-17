@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Typography } from '@mui/material';
@@ -26,7 +26,7 @@ import {
     setLoadFlowParameters,
     setLoadFlowProvider,
 } from 'services/study/loadflow';
-import { fetchSecurityAnalysisProviders } from 'services/security-analysis';
+import { fetchSecurityAnalysisProviders, getSecurityAnalysisDefaultLimitReductions } from 'services/security-analysis';
 import {
     fetchDefaultSecurityAnalysisProvider,
     getSecurityAnalysisParameters,
@@ -43,7 +43,6 @@ import { ShortCircuitParameters, useGetShortCircuitParameters } from './dialogs/
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import LoadFlowParameters from './dialogs/parameters/loadflow/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
-import { NetworkParameters } from './dialogs/parameters/network-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import {
     fetchDefaultNonEvacuatedEnergyProvider,
@@ -62,6 +61,7 @@ import { SecurityAnalysisParameters } from './dialogs/parameters/security-analys
 import { NetworkVisualizationsParameters } from './dialogs/parameters/network-visualizations/network-visualizations-parameters';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
+import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -80,7 +80,7 @@ const stylesLayout = {
         height: '100%',
     },
 };
-const styles = {
+export const tabStyles = {
     listTitleDisplay: (theme: Theme) => ({
         paddingTop: 1,
         paddingBottom: 1,
@@ -133,29 +133,17 @@ const styles = {
 };
 
 enum TAB_VALUES {
-    lfParamsTabValue = 'LoadFlow',
-    securityAnalysisParamsTabValue = 'SecurityAnalysis',
-    sensitivityAnalysisParamsTabValue = 'SensitivityAnalysis',
-    nonEvacuatedEnergyParamsTabValue = 'NonEvacuatedEnergyAnalysis',
-    shortCircuitParamsTabValue = 'ShortCircuit',
-    dynamicSimulationParamsTabValue = 'DynamicSimulation',
-    advancedParamsTabValue = 'Advanced',
-    voltageInitParamsTabValue = 'VoltageInit',
+    lfParamsTabValue = 'LOAD_FLOW',
+    securityAnalysisParamsTabValue = 'SECURITY_ANALYSIS',
+    sensitivityAnalysisParamsTabValue = 'SENSITIVITY_ANALYSIS',
+    nonEvacuatedEnergyParamsTabValue = 'NON_EVACUATED_ENERGY_ANALYSIS',
+    shortCircuitParamsTabValue = 'SHORT_CIRCUIT',
+    dynamicSimulationParamsTabValue = 'DYNAMIC_SIMULATION',
+    dynamicSecurityAnalysisParamsTabValue = 'DYNAMIC_SECURITY_ANALYSIS',
+    voltageInitParamsTabValue = 'VOLTAGE_INITIALIZATION',
     stateEstimationTabValue = 'StateEstimation',
-    networkVisualizationsParams = 'NetworkVisualizations',
+    networkVisualizationsParams = 'networkVisualizationsParams',
 }
-
-const hasValidationTabs = [
-    TAB_VALUES.securityAnalysisParamsTabValue,
-    TAB_VALUES.sensitivityAnalysisParamsTabValue,
-    TAB_VALUES.nonEvacuatedEnergyParamsTabValue,
-    TAB_VALUES.shortCircuitParamsTabValue,
-    TAB_VALUES.dynamicSimulationParamsTabValue,
-    TAB_VALUES.voltageInitParamsTabValue,
-    TAB_VALUES.stateEstimationTabValue,
-    TAB_VALUES.lfParamsTabValue,
-    TAB_VALUES.networkVisualizationsParams,
-];
 
 type OwnProps = {
     studyId: string;
@@ -175,9 +163,22 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
+
+    const computationStatus = useSelector((state: AppState) => state.computingStatus[tabValue as ComputingType]);
+    const shortCircuitOneBusStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
+    );
+
+    const shouldDisplayGlassPane = useMemo(() => {
+        return (
+            computationStatus === RunningStatus.RUNNING ||
+            (tabValue === TAB_VALUES.shortCircuitParamsTabValue && shortCircuitOneBusStatus === RunningStatus.RUNNING)
+        );
+    }, [computationStatus, shortCircuitOneBusStatus, tabValue]);
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
@@ -202,7 +203,9 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         fetchDefaultSecurityAnalysisProvider,
         updateSecurityAnalysisProvider,
         getSecurityAnalysisParameters,
-        setSecurityAnalysisParameters
+        setSecurityAnalysisParameters,
+        undefined,
+        getSecurityAnalysisDefaultLimitReductions
     );
 
     const sensitivityAnalysisBackend = useParametersBackend(
@@ -234,7 +237,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const useStateEstimationParameters = useGetStateEstimationParameters();
 
     const handleChangeTab = (newValue: string) => {
-        if (hasValidationTabs.includes(tabValue as TAB_VALUES) && haveDirtyFields) {
+        if (haveDirtyFields) {
             setNextTabValue(newValue);
             setIsPopupOpen(true);
         } else {
@@ -253,12 +256,13 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     useEffect(() => {
         setTabValue((oldValue) => {
             if (
-                (!enableDeveloperMode &&
-                    (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
-                        oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
-                        oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
-                        oldValue === TAB_VALUES.dynamicSimulationParamsTabValue)) ||
-                oldValue === TAB_VALUES.stateEstimationTabValue
+                !enableDeveloperMode &&
+                (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
+                    oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
+                    oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
+                    oldValue === TAB_VALUES.dynamicSimulationParamsTabValue ||
+                    oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue) ||
+                    oldValue === TAB_VALUES.stateEstimationTabValue
             ) {
                 return TAB_VALUES.securityAnalysisParamsTabValue;
             }
@@ -266,7 +270,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         });
     }, [enableDeveloperMode]);
 
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const displayTab = useCallback(() => {
         switch (tabValue) {
             case TAB_VALUES.lfParamsTabValue:
@@ -306,6 +309,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
                 return <DynamicSimulationParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
+            case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
+                return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.voltageInitParamsTabValue:
                 return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.stateEstimationTabValue:
@@ -315,8 +320,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                         useStateEstimationParameters={useStateEstimationParameters}
                     />
                 );
-            case TAB_VALUES.advancedParamsTabValue:
-                return <NetworkParameters />;
             case TAB_VALUES.networkVisualizationsParams:
                 return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
         }
@@ -337,7 +340,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             <Grid container spacing={0} sx={stylesLayout.rootContainer}>
                 <Grid container item xs={2} direction="column" sx={stylesLayout.columnContainer}>
                     <Grid item>
-                        <Typography variant="subtitle1" sx={styles.listTitleDisplay}>
+                        <Typography variant="subtitle1" sx={tabStyles.listTitleDisplay}>
                             <FormattedMessage id="parameters" />
                         </Typography>
                     </Grid>
@@ -348,11 +351,14 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                             onChange={(event, newValue) => handleChangeTab(newValue)}
                             aria-label="parameters"
                             orientation="vertical"
-                            sx={styles.listDisplay}
+                            sx={tabStyles.listDisplay}
                         >
                             <Tab
                                 label={<FormattedMessage id="LoadFlow" />}
-                                disabled={loadFlowStatus === RunningStatus.RUNNING}
+                                disabled={
+                                    computationStatus === RunningStatus.RUNNING &&
+                                    tabValue === TAB_VALUES.lfParamsTabValue
+                                }
                                 value={TAB_VALUES.lfParamsTabValue}
                             />
                             <Tab
@@ -384,6 +390,13 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                     value={TAB_VALUES.dynamicSimulationParamsTabValue}
                                 />
                             ) : null}
+                            {enableDeveloperMode ? (
+                                <Tab
+                                    disabled={dynamicSecurityAnalysisAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="DynamicSecurityAnalysis" />}
+                                    value={TAB_VALUES.dynamicSecurityAnalysisParamsTabValue}
+                                />
+                            ) : null}
                             <Tab
                                 disabled={voltageInitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="VoltageInit" />}
@@ -395,20 +408,17 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 value={TAB_VALUES.stateEstimationTabValue}
                             />
                             {/*In order to insert a Divider under a Tabs collection it need to be nested in a dedicated Tab to prevent console warnings*/}
-                            <Tab sx={styles.dividerTab} label="" icon={<Divider sx={{ flexGrow: 1 }} />} disabled />
+                            <Tab sx={tabStyles.dividerTab} label="" icon={<Divider sx={{ flexGrow: 1 }} />} disabled />
                             <Tab
                                 label={<FormattedMessage id="NetworkVisualizations" />}
                                 value={TAB_VALUES.networkVisualizationsParams}
                             />
-                            <Tab label={<FormattedMessage id="Advanced" />} value={TAB_VALUES.advancedParamsTabValue} />
                         </Tabs>
                     </Grid>
                 </Grid>
-                <Grid item xs={10} sx={styles.parametersBox}>
-                    <GlassPane
-                        active={loadFlowStatus === RunningStatus.RUNNING && tabValue === TAB_VALUES.lfParamsTabValue}
-                    >
-                        <Box sx={styles.contentBox}>{displayTab()}</Box>
+                <Grid item xs={10} sx={tabStyles.parametersBox}>
+                    <GlassPane active={shouldDisplayGlassPane} loadingMessageText="computationInProgress">
+                        <Box sx={tabStyles.contentBox}>{displayTab()}</Box>
                     </GlassPane>
                 </Grid>
             </Grid>

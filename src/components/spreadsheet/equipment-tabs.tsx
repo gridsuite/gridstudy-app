@@ -6,13 +6,11 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import { useIntl } from 'react-intl';
-import { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { TABLES_NAMES } from './config/config-tables';
 
 interface EquipmentTabsProps {
     tabIndex: number;
@@ -21,23 +19,8 @@ interface EquipmentTabsProps {
 }
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex, handleSwitchTab, disabled }) => {
-    const intl = useIntl();
-    const allTablesNames = useSelector((state: AppState) => state.tables.names);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
-
-    const existsInTable = function (name: string) {
-        return TABLES_NAMES.findIndex((n) => n === name) !== -1;
-    };
-
-    const tablesNames = useMemo(() => {
-        return allTablesNames.map((tabName) => {
-            return existsInTable(tabName)
-                ? intl.formatMessage({
-                      id: tabName,
-                  })
-                : tabName;
-        });
-    }, [allTablesNames, intl]);
+    const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
 
     return (
         <Grid container direction="row" wrap="nowrap" item>
@@ -55,8 +38,8 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
                     }}
                     aria-label="tables"
                 >
-                    {tablesNames.map((tabName) => (
-                        <Tab key={tabName} label={tabName} disabled={disabled} />
+                    {tablesDefinitions.map((def) => (
+                        <Tab key={def.name} label={def.name} disabled={disabled} />
                     ))}
                 </Tabs>
             </Grid>

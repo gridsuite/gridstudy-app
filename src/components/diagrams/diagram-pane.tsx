@@ -1039,7 +1039,12 @@ export function DiagramPane({
         [currentNode]
     );
     return (
-        <AutoSizer>
+        // see : https://github.com/bvaughn/react-virtualized-auto-sizer/blob/master/src/AutoSizer.ts#L111
+        // AutoSizer "Avoid rendering children before the initial measurements have been collected."
+        // Then when width or height equals 0.
+        // This unmount diagrams each time diagramPane is not visible
+        // We set doNotBailOutOnEmptyChildren to force keeping components mounted
+        <AutoSizer doNotBailOutOnEmptyChildren>
             {({ width, height }) => (
                 <Box
                     sx={mergeSx(styles.availableDiagramSurfaceArea, fullScreenDiagram?.id && styles.fullscreen)}

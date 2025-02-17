@@ -8,12 +8,13 @@
 import type { UUID } from 'crypto';
 import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { CustomAggridFilterParams, CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import { Identifiable } from '@gridsuite/commons-ui';
 
 export type EquipmentFetcher = (
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[]
+    substationsIds?: string[]
 ) => Promise<any>;
 
 export type SpreadsheetEquipmentType = Exclude<
@@ -24,15 +25,16 @@ export type SpreadsheetEquipmentType = Exclude<
     | EQUIPMENT_TYPES.DISCONNECTOR
 >;
 
-export interface SpreadsheetTabDefinition<
-    TData = any,
-    TValue = any,
-    F extends CustomAggridFilterParams = CustomAggridFilterParams
-> {
+export interface SpreadsheetTabDefinition<TData = any, F extends CustomAggridFilterParams = CustomAggridFilterParams> {
     index: number;
     name: string;
     type: SpreadsheetEquipmentType;
-    fetchers: EquipmentFetcher[];
-    columns: CustomColDef<TData, TValue, F>[];
-    groovyEquipmentGetter?: string;
+    columns: CustomColDef<TData, F>[];
 }
+
+export type SpreadsheetEquipmentsByNodes = {
+    nodesId: string[];
+    equipmentsByNodeId: Record<string, Identifiable[]>;
+};
+
+export type ColumnState = { colId: string; visible: boolean };

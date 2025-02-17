@@ -77,6 +77,8 @@
     "loadingCreationStudy": "Creation in progress...",
     "LoadingOf": "Loading of {value}...",
 
+    "computationInProgress": "Computation in progress ...",
+
     "centerOnMap": "Center on the map",
     "openVoltageLevel": "Open the voltage level",
     "CBAll": "All",
@@ -199,6 +201,7 @@
     "VoltageInitParametersGeneralApplyModificationsLabel": "Automatically apply voltage init modification",
     "VoltageInitParametersGeneralSaveInfo": "This option won't be saved and will be set back to its default value when choosing settings from GridExplore",
     "VoltageInitParametersGeneralUpdateBusVoltageLabel": "Update bus voltage",
+    "VoltageInitParametersEquipmentsSelectionAlert": "Static var compensators and VSC converter stations are always considered variable",
     "VoltageLimits": "Voltage limits",
     "VoltageLevelFilter": "Voltage level filter",
     "LowVoltageLimitDefault": "Low voltage limit default value",
@@ -209,8 +212,8 @@
     "FilterInputMinError": "You must pick at least one filter",
     "FilterEvaluationError": "An error occurred while evaluating the filter",
     "EquipmentSelection": "Equipment selection",
-    "FixedGenerators": "Generators with fixed reactive power",
-    "VariableTransformers": " Variable transformers",
+    "VariableGenerators": "Generators with variable reactive power",
+    "VariableTransformers": "Variable transformers",
     "VariableShuntCompensators": "Variable shunt compensators",
     "voltageInitError": "An error occurred while excuting the voltage profile initialization",
     "voltageInitCancelError": "The voltage profile initialization could not be cancelled",
@@ -218,6 +221,8 @@
     "AdjustExistingLimits": "Adjust existing limits",
     "AdjustExistingLimitsInfo": "Please enter a positive number in order to increase an existing voltage limit and a negative number in order to decrease an existing voltage limit (new limit = existing limit + user input).",
     "SetDefaultLimits": "Default values to fill missing limits",
+    "allExcept": "All except",
+    "noneExcept": "None except",
 
     "SelectAll": "All",
     "UnselectAll": "None",
@@ -226,6 +231,7 @@
     "maxSelection": "selections maximum",
     "options": "options",
 
+    "Dynawo": "Dynawo",
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
@@ -254,7 +260,6 @@
     "DynamicSimulationSeriesListAvailableCurves": "Available curves",
     "DynamicSimulationSeriesListRightAxis": "Right axis",
     "DynamicSimulationResultLayoutCols": "Columns",
-    "DynamicSimulationProviderDynawo": "Dynawo",
     "DynamicSimulationTimeDelay": "Time delay",
     "DynamicSimulationSolver": "Solver",
     "DynamicSimulationMapping": "Mapping",
@@ -369,6 +374,15 @@
     "DynamicSimulationTimelineEventTime": "Instant (s)",
     "DynamicSimulationTimelineEventModelName": "Equipment/Model",
     "DynamicSimulationTimelineEventModelMessage": "Message",
+
+    "startDynamicSecurityAnalysisError": "An error occurred while starting the dynamic security analysis",
+    "DynamicSecurityAnalysis": "Dynamic security analysis",
+    "DynamicSecurityAnalysisRunError": "An error occurred while executing the dynamic security analysis",
+    "DynamicSecurityAnalysisContingency": "Contingency",
+    "DynamicSecurityAnalysisScenario": "Scenario",
+    "DynamicSecurityAnalysisScenarioDuration": "Scenario duration",
+    "DynamicSecurityAnalysisContingenciesStartTime": "Contingencies start time",
+    "DynamicSecurityAnalysisTabStatus": "Status",
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
@@ -549,6 +563,8 @@
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
     "ModifyFromMenu": "Modify",
+    "Rename": "Rename",
+    "Duplicate": "Duplicate",
 
     "Provider": "Provider",
     "LimitReduction": "Limit reduction",
@@ -576,10 +592,7 @@
     "loadingReport": "Loading logs in progress...",
 
     "ComponentLibrary": "Component library selection",
-    "Advanced": "Advanced",
-    "EnableDeveloperMode": "Enable developer mode",
     "initNadWithGeoData": "Initialize with geographical data",
-    "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",
     "ModifyNodeNotBuiltWarningMsg": "The values are those of the previous built node in the current branch",
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
@@ -689,6 +702,8 @@
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
     "StaticVarCompensatorCreationError": "Error while creating static var compensator",
     "LccCreationError": "Error while creating HVDC (LCC)",
+    "LimitSetCreationDuplicateError": "Limit sets names have to be unique",
+    "LimitSetCreationEmptyError": "Limit sets names can't be empty",
 
     "CreateBattery": "Create battery",
     "ModifyBattery": "Modify battery",
@@ -930,6 +945,7 @@
     "activePowerSetpointMaxValueError": "The active power value must be less than the maximum active power value",
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",
+    "SelectedOperationalLimitGroup": "Active limit set",
 
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
     "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",
