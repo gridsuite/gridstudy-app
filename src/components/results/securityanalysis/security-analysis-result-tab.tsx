@@ -27,7 +27,6 @@ import {
     mappingColumnToField,
     NMK_TYPE,
     RESULT_TYPE,
-    SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
@@ -41,6 +40,7 @@ import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
+import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -158,7 +158,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         nodeUuid,
         currentRootNetworkUuid,
         fetchSecurityAnalysisResultWithQueryParams,
-        SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
+        securityAnalysisResultInvalidations,
         null
     );
 

@@ -43,6 +43,10 @@ export const useComputationResultsCount = () => {
         (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
 
+    const dynamicSecurityAnalysisStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SECURITY_ANALYSIS]
+    );
+
     const voltageInitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
@@ -72,6 +76,10 @@ export const useComputationResultsCount = () => {
     const dynamicSimulationResultPresent =
         dynamicSimulationStatus === RunningStatus.SUCCEED || dynamicSimulationStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
+    const dynamicSecurityAnalysisResultPresent =
+        dynamicSecurityAnalysisStatus === RunningStatus.SUCCEED ||
+        dynamicSecurityAnalysisStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+
     const stateEstimationResultPresent =
         enableDeveloperMode &&
         (stateEstimationStatus === RunningStatus.SUCCEED || voltageInitStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
@@ -85,6 +93,7 @@ export const useComputationResultsCount = () => {
         oneBusShortCircuitResultPresent,
         voltageInitResultPresent,
         dynamicSimulationResultPresent,
+        dynamicSecurityAnalysisResultPresent,
         stateEstimationResultPresent,
     ].filter(Boolean).length;
 };
