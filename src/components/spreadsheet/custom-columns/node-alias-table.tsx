@@ -75,6 +75,8 @@ const NodeAliasTable = () => {
             createRows={createNodeAliasRows}
             withAddRowsDialog={false}
             withLeftButtons={false}
+            disableDragAndDrop={true}
+            showMoveArrow={false}
         />
     );
 };
