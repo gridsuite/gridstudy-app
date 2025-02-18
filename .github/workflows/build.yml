@@ -35,10 +35,6 @@ jobs:
             - uses: actions/setup-node@v4
               with:
                   node-version: 18
-            - id: nodeversion
-              run: |
-                  node --version
-                  npm --version
 
             - name: Install and Build
               env:
