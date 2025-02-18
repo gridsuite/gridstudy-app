@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType, FILTER_EQUIPMENTS } from '@gridsuite/commons-ui';
+import { EquipmentType, FILTER_INDEXED_EQUIPMENTS } from '@gridsuite/commons-ui';
 import { HorizontalRule } from '@mui/icons-material';
 import { Box, FormControl, FormControlLabel, Popover, Radio, RadioGroup, Theme } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
@@ -79,7 +79,7 @@ export const TopBarEquipmentSearchPopover = (props: TopBarEquipmentSearchPopover
                             <HorizontalRule />
                             <FormattedMessage id="NoFilter" />
                         </Box>
-                        {Object.values(FILTER_EQUIPMENTS).map((type) => {
+                        {Object.values(FILTER_INDEXED_EQUIPMENTS).map((type) => {
                             return (
                                 <FormControlLabel
                                     key={type.id}

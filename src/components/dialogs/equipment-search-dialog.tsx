@@ -8,10 +8,10 @@
 import { useIntl } from 'react-intl';
 import {
     ElementSearchDialog,
-    equipmentStyles,
-    EquipmentItem,
     EquipmentInfos,
-    EquipmentType,
+    EquipmentItem,
+    equipmentStyles,
+    ExtendedEquipmentTypes,
 } from '@gridsuite/commons-ui';
 import { FC } from 'react';
 import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/use-search-matching-equipments';
@@ -25,7 +25,7 @@ interface EquipmentSearchDialogProps {
     open: boolean;
     onClose: () => void;
     onSelectionChange: (equipment: EquipmentInfos) => void;
-    equipmentType: EquipmentType;
+    equipmentType: ExtendedEquipmentTypes;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
 }
