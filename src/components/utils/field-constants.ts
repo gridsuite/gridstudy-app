@@ -399,3 +399,10 @@ export const MAX_S_AUTOMATON = 'maxSAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
 export const SPREADSHEET_GS_FILTER = 'SpreadsheetGsFilter';
+
+export const BRANCH_MEASUREMENTS = 'branchMeasurements';
+export const MEASUREMENT_P1 = 'measurementP1';
+export const MEASUREMENT_P2 = 'measurementP2';
+export const MEASUREMENT_Q1 = 'measurementQ1';
+export const MEASUREMENT_Q2 = 'measurementQ2';
+export const VALIDITY = 'validity';

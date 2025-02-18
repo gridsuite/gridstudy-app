@@ -37,6 +37,10 @@ const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex, isModifica
                     label={<FormattedMessage id="LimitsTab" />}
                     sx={getTabStyle(tabIndexesWithError, LineDialogTab.LIMITS_TAB)}
                 />
+                <Tab
+                    label={<FormattedMessage id="StateEstimationTab" />}
+                    sx={getTabStyle(tabIndexesWithError, LineDialogTab.MEASUREMENTS_TAB)}
+                />
             </Tabs>
         </Grid>
     );

@@ -48,11 +48,11 @@ import {
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
+    ColumnDefinition,
     ColumnState,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
@@ -136,8 +136,8 @@ export type AppActions =
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
     | LogsFilterAction
-    | UpdateCustomColumnsDefinitionsAction
-    | RemoveCustomColumnsDefinitionsAction
+    | UpdateColumnsDefinitionsAction
+    | RemoveColumnDefinitionAction
     | UpdateCustomColumnsNodesAliasesAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
@@ -1239,28 +1239,26 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
     };
 }
 
-export const UPDATE_CUSTOM_COLUMNS_DEFINITION = 'UPDATE_CUSTOM_COLUMNS_DEFINITION';
-export type UpdateCustomColumnsDefinitionsAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_DEFINITION>> & {
-    colWithFormula: TableValue<ColumnWithFormula>;
+export const UPDATE_COLUMNS_DEFINITION = 'UPDATE_COLUMNS_DEFINITION';
+export type UpdateColumnsDefinitionsAction = Readonly<Action<typeof UPDATE_COLUMNS_DEFINITION>> & {
+    colData: TableValue<ColumnDefinition>;
 };
 
-export function setUpdateCustomColumDefinitions(
-    colWithFormula: TableValue<ColumnWithFormula>
-): UpdateCustomColumnsDefinitionsAction {
+export function setUpdateColumnsDefinitions(colData: TableValue<ColumnDefinition>): UpdateColumnsDefinitionsAction {
     return {
-        type: UPDATE_CUSTOM_COLUMNS_DEFINITION,
-        colWithFormula,
+        type: UPDATE_COLUMNS_DEFINITION,
+        colData,
     };
 }
 
-export const REMOVE_CUSTOM_COLUMNS_DEFINITION = 'REMOVE_CUSTOM_COLUMNS_DEFINITION';
-export type RemoveCustomColumnsDefinitionsAction = Readonly<Action<typeof REMOVE_CUSTOM_COLUMNS_DEFINITION>> & {
+export const REMOVE_COLUMN_DEFINITION = 'REMOVE_COLUMN_DEFINITION';
+export type RemoveColumnDefinitionAction = Readonly<Action<typeof REMOVE_COLUMN_DEFINITION>> & {
     definition: TableValue<string>;
 };
 
-export function setRemoveCustomColumDefinitions(definition: TableValue<string>): RemoveCustomColumnsDefinitionsAction {
+export function setRemoveColumnDefinition(definition: TableValue<string>): RemoveColumnDefinitionAction {
     return {
-        type: REMOVE_CUSTOM_COLUMNS_DEFINITION,
+        type: REMOVE_COLUMN_DEFINITION,
         definition,
     };
 }
@@ -1269,15 +1267,12 @@ export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
 
 export type UpdateTableDefinitionAction = {
     type: typeof UPDATE_TABLE_DEFINITION;
-    payload: { newTableDefinition: SpreadsheetTabDefinition; customColumns: ColumnWithFormula[] };
+    newTableDefinition: SpreadsheetTabDefinition;
 };
 
-export const updateTableDefinition = (
-    newTableDefinition: SpreadsheetTabDefinition,
-    customColumns: ColumnWithFormula[]
-): UpdateTableDefinitionAction => ({
+export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefinition): UpdateTableDefinitionAction => ({
     type: UPDATE_TABLE_DEFINITION,
-    payload: { newTableDefinition, customColumns },
+    newTableDefinition,
 });
 
 export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';

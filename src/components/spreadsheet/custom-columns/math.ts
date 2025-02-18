@@ -6,6 +6,7 @@
  */
 
 import { all, create } from 'mathjs';
+import { unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 
 const instance = create(all);
 
@@ -35,6 +36,8 @@ instance.import(
             // == instead of === to be able to compare strings to numbers
             return a === b;
         },
+        unitToKiloUnit,
+        unitToMicroUnit,
     },
     { override: true }
 );
