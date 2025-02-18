@@ -815,6 +815,11 @@
     "TemporaryLimitValue": "Value (A)",
     "TemporaryLimitNameUnicityError": "Temporary limit names must be unique in the table",
     "TemporaryLimitDurationUnicityError": "Temporary limit acceptable durations must be unique in the table",
+    "StateEstimationTab": "State estimation",
+    "MeasurementsSection": "Measurements",
+    "ValidMeasurement": "Valid",
+    "InvalidMeasurement": "Invalid",
+
     "shuntCompensatorId": "Shunt compensator ID",
     "shuntCompensatorName": "Shunt compensator name",
     "connectedToHvdc": "Connected To HVDC",

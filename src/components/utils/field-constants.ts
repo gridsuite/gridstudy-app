@@ -401,12 +401,10 @@ export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
 export const SPREADSHEET_GS_FILTER = 'SpreadsheetGsFilter';
 
 /* State estimation parameters fields */
-
 /* General */
 export const PRINCIPAL_OBSERVABLE_ZONE = 'principalObservableZone';
 export const ESTIM_ALGO_TYPE = 'estimAlgoType';
 export const ESTIM_LOG_LEVEL = 'estimLogLevel';
-
 /* Weights */
 export const WEIGHTS_PARAMETERS = 'weightsParameters';
 export const WEIGHT_V = 'weightV';
@@ -417,7 +415,6 @@ export const WEIGHT_REA_PROD = 'weightReaProd';
 export const WEIGHT_ACT_LOAD = 'weightActLoad';
 export const WEIGHT_REA_LOAD = 'weightReaLoad';
 export const WEIGHT_IN = 'weightIN';
-
 /* Quality */
 export const THRESHOLD_OBSERVABILITY_RATE = 'thresholdObservabilityRate';
 export const THRESHOLD_ACT_REDUNDANCY = 'thresholdActRedundancy';
@@ -429,7 +426,6 @@ export const THRESHOLD_NB_OUT_BOUNDS_GAP = 'thresholdNbOutBoundsGap';
 export const THRESHOLD_NB_ITER = 'thresholdNbIter';
 export const THRESHOLD_NB_LOST_TRANSITS = 'thresholdNbLostTransits';
 export const QUALITY_PER_REGION = 'qualityPerRegion';
-
 export const THRESHOLD_PER_VOLTAGE_LEVEL = 'thresholdsPerVoltageLevel';
 export const THRESHOLD_OUT_BOUNDS_GAP_V = 'thresholdOutBoundsGapV';
 export const THRESHOLD_OUT_BOUNDS_GAP_P = 'thresholdOutBoundsGapP';
@@ -449,3 +445,10 @@ export const P_MIN = 'pmin';
 export const P_MAX = 'pmax';
 export const Q_MIN = 'qmin';
 export const Q_MAX = 'qmax';
+
+export const BRANCH_MEASUREMENTS = 'branchMeasurements';
+export const MEASUREMENT_P1 = 'measurementP1';
+export const MEASUREMENT_P2 = 'measurementP2';
+export const MEASUREMENT_Q1 = 'measurementQ1';
+export const MEASUREMENT_Q2 = 'measurementQ2';
+export const VALIDITY = 'validity';

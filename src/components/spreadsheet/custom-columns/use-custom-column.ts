@@ -7,7 +7,6 @@
 import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
-import { ColumnWithFormula } from 'types/custom-columns.types';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 import { COLUMN_TYPES, CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 import { limitedEvaluate } from './math';
@@ -19,28 +18,26 @@ import {
     textColumnDefinition,
 } from '../config/common-column-definitions';
 import { validateFormulaResult } from './formula-validator';
+import { ColumnDefinition } from '../config/spreadsheet.type';
 
 export function useCustomColumn(tabIndex: number) {
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
-    const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
-    );
 
     const createValueGetter = useCallback(
-        (colWithFormula: ColumnWithFormula) =>
+        (colDef: ColumnDefinition) =>
             (params: ValueGetterParams): boolean | string | number | undefined => {
                 try {
                     const scope = { ...params.data };
-                    colWithFormula.dependencies.forEach((dep) => {
+                    const colDependencies = colDef.dependencies;
+                    colDependencies.forEach((dep) => {
                         scope[dep] = params.getValue(dep);
                     });
-                    const result = limitedEvaluate(colWithFormula.formula, scope);
-                    const validation = validateFormulaResult(result, colWithFormula.type);
+                    const result = limitedEvaluate(colDef.formula, scope);
+                    const validation = validateFormulaResult(result, colDef.type);
 
                     if (!validation.isValid) {
                         return undefined;
                     }
-
                     return result;
                 } catch (e) {
                     return undefined;
@@ -51,25 +48,21 @@ export function useCustomColumn(tabIndex: number) {
 
     return useMemo(
         () =>
-            customColumnsDefinitions.map((colWithFormula): CustomColDef => {
+            tableDefinition.columns.map((colDef): CustomColDef => {
                 let baseDefinition: ColDef;
 
-                switch (colWithFormula.type) {
+                switch (colDef.type) {
                     case COLUMN_TYPES.NUMBER:
-                        baseDefinition = numberColumnDefinition(
-                            colWithFormula.name,
-                            tableDefinition.name,
-                            colWithFormula.precision
-                        );
+                        baseDefinition = numberColumnDefinition(colDef.name, tableDefinition.name, colDef.precision);
                         break;
                     case COLUMN_TYPES.TEXT:
-                        baseDefinition = textColumnDefinition(colWithFormula.name, tableDefinition.name);
+                        baseDefinition = textColumnDefinition(colDef.name, tableDefinition.name);
                         break;
                     case COLUMN_TYPES.BOOLEAN:
-                        baseDefinition = booleanColumnDefinition(colWithFormula.name, tableDefinition.name);
+                        baseDefinition = booleanColumnDefinition(colDef.name, tableDefinition.name);
                         break;
                     case COLUMN_TYPES.ENUM:
-                        baseDefinition = enumColumnDefinition(colWithFormula.name, tableDefinition.name);
+                        baseDefinition = enumColumnDefinition(colDef.name, tableDefinition.name);
                         break;
                     default:
                         baseDefinition = {};
@@ -77,24 +70,24 @@ export function useCustomColumn(tabIndex: number) {
 
                 return {
                     ...baseDefinition,
-                    colId: colWithFormula.id,
-                    headerName: colWithFormula.name,
-                    headerTooltip: colWithFormula.name,
+                    colId: colDef.id,
+                    headerName: colDef.name,
+                    headerTooltip: colDef.name,
                     headerComponentParams: {
                         ...baseDefinition.headerComponentParams,
                         menu: {
                             Menu: CustomColumnMenu,
                             menuParams: {
                                 tabIndex,
-                                customColumnName: colWithFormula.name,
+                                colId: colDef.id,
                             },
                         },
                     },
-                    valueGetter: createValueGetter(colWithFormula),
+                    valueGetter: createValueGetter(colDef),
                     editable: false,
                     suppressMovable: true,
                 };
             }),
-        [customColumnsDefinitions, tableDefinition.name, tabIndex, createValueGetter]
+        [tableDefinition.columns, tableDefinition.name, tabIndex, createValueGetter]
     );
 }
