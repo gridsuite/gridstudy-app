@@ -94,28 +94,33 @@ const withOperatingStatusMenu =
 
         const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-        const getTranslationKey = (key: string) => {
-            if (equipmentType) {
-                return key.concat(EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]);
-            }
-        };
+        const getTranslationKey = useCallback(
+            (key: string) => {
+                if (equipmentType) {
+                    return key.concat(EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]);
+                }
+            },
+            [equipmentType]
+        );
 
         useEffect(() => {
-            if (equipment?.id) {
-                fetchNetworkElementInfos(
-                    studyUuid,
-                    currentNode?.id,
-                    currentRootNetworkUuid,
-                    equipmentType,
-                    EQUIPMENT_INFOS_TYPES.OPERATING_STATUS.type,
-                    equipment.id,
-                    false
-                ).then((value) => {
-                    if (value) {
-                        setEquipmentInfos(value);
-                    }
-                });
+            if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid || !equipment?.id) {
+                return;
             }
+
+            fetchNetworkElementInfos(
+                studyUuid,
+                currentNode?.id,
+                currentRootNetworkUuid,
+                equipmentType,
+                EQUIPMENT_INFOS_TYPES.OPERATING_STATUS.type,
+                equipment.id,
+                false
+            ).then((value) => {
+                if (value) {
+                    setEquipmentInfos(value);
+                }
+            });
         }, [studyUuid, currentNode?.id, currentRootNetworkUuid, equipmentType, equipment?.id]);
 
         const isNodeEditable = useMemo(
@@ -133,50 +138,68 @@ const withOperatingStatusMenu =
             [equipmentInfos, currentNode, isAnyNodeBuilding, modificationInProgress]
         );
 
-        function handleError(error: Error, translationKey: string) {
-            snackError({
-                messageTxt: error.message,
-                headerId: getTranslationKey(translationKey),
-            });
-            if (setModificationInProgress !== undefined) {
-                setModificationInProgress(false);
-            }
-        }
+        const handleError = useCallback(
+            (error: Error, translationKey: string) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: getTranslationKey(translationKey),
+                });
+                if (setModificationInProgress !== undefined) {
+                    setModificationInProgress(false);
+                }
+            },
+            [getTranslationKey, setModificationInProgress, snackError]
+        );
 
-        function startModification() {
+        const startModification = useCallback(() => {
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
             }
-        }
+        }, [handleClose, setModificationInProgress]);
 
-        function handleLockout() {
+        const handleLockout = useCallback(() => {
+            if (!studyUuid || !currentNode?.id) {
+                return;
+            }
             startModification();
-            lockoutEquipment(studyUuid, currentNode?.id, equipmentInfos).catch((error) => {
+            lockoutEquipment(studyUuid, currentNode.id, equipmentInfos).catch((error) => {
                 handleError(error, 'UnableToLockout');
             });
-        }
+        }, [currentNode?.id, equipmentInfos, handleError, startModification, studyUuid]);
 
-        function handleTrip() {
+        const handleTrip = useCallback(() => {
+            if (!studyUuid || !currentNode?.id) {
+                return;
+            }
             startModification();
-            tripEquipment(studyUuid, currentNode?.id, equipmentInfos).catch((error) => {
+            tripEquipment(studyUuid, currentNode.id, equipmentInfos).catch((error) => {
                 handleError(error, 'UnableToTrip');
             });
-        }
+        }, [currentNode?.id, equipmentInfos, handleError, startModification, studyUuid]);
 
-        function handleEnergise(side: BranchSide) {
-            startModification();
-            energiseEquipmentEnd(studyUuid, currentNode?.id, equipmentInfos, side).catch((error) => {
-                handleError(error, 'UnableToEnergiseOnOneEnd');
-            });
-        }
+        const handleEnergise = useCallback(
+            (side: BranchSide) => {
+                if (!studyUuid || !currentNode?.id) {
+                    return;
+                }
+                startModification();
+                energiseEquipmentEnd(studyUuid, currentNode.id, equipmentInfos, side).catch((error) => {
+                    handleError(error, 'UnableToEnergiseOnOneEnd');
+                });
+            },
+            [currentNode?.id, equipmentInfos, handleError, startModification, studyUuid]
+        );
 
-        function handleSwitchOn() {
+        const handleSwitchOn = useCallback(() => {
+            if (!studyUuid || !currentNode?.id) {
+                return;
+            }
             startModification();
-            switchOnEquipment(studyUuid, currentNode?.id, equipmentInfos).catch((error) => {
+            switchOnEquipment(studyUuid, currentNode.id, equipmentInfos).catch((error) => {
                 handleError(error, 'UnableToSwitchOn');
             });
-        }
+        }, [currentNode?.id, equipmentInfos, handleError, startModification, studyUuid]);
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
             (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {

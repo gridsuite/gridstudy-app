@@ -530,7 +530,7 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const dofetchNetworkModificationsToRestore = useCallback(() => {
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+        if (!studyUuid || currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
         }
         setLaunchLoader(true);
@@ -559,7 +559,7 @@ const NetworkModificationNodeEditor = () => {
 
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+        if (!studyUuid || currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
         }
         setLaunchLoader(true);
@@ -691,8 +691,11 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const doDeleteModification = useCallback(() => {
+        if (!studyUuid || !currentNode?.id) {
+            return;
+        }
         const selectedModificationsUuid = selectedItems.map((item) => item.uuid);
-        stashModifications(studyUuid, currentNode?.id, selectedModificationsUuid)
+        stashModifications(studyUuid, currentNode.id, selectedModificationsUuid)
             .then(() => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
                 if (
@@ -843,7 +846,7 @@ const NetworkModificationNodeEditor = () => {
     const commit = useCallback(
         ({ source, destination }: DropResult) => {
             setIsDragging(false);
-            if (!currentNode?.id || !destination || source.index === destination.index) {
+            if (!studyUuid || !currentNode?.id || !destination || source.index === destination.index) {
                 return;
             }
             const res = [...modifications];

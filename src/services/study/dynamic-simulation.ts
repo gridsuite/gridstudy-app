@@ -92,7 +92,7 @@ export function fetchDynamicSimulationResultTimeSeries(
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationModels(studyUuid: UUID | null) {
+export function fetchDynamicSimulationModels(studyUuid: UUID) {
     console.info(`Fetching dynamic simulation models on '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/models';
     console.debug(url);

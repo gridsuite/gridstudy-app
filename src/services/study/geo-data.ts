@@ -13,7 +13,7 @@ import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 export function fetchSubstationPositions(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid?: UUID,
+    currentRootNetworkUuid: UUID,
     substationsIds?: string[]
 ): Promise<GeoDataSubstation[]> {
     console.info(
@@ -34,7 +34,7 @@ export function fetchSubstationPositions(
 export function fetchLinePositions(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID | undefined,
+    currentRootNetworkUuid: UUID,
     linesIds?: string[]
 ): Promise<GeoDataLine[]> {
     console.info(

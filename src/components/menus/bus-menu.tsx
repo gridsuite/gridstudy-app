@@ -84,6 +84,9 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     );
 
     useEffect(() => {
+        if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
+            return;
+        }
         fetchNetworkElementInfos(
             studyUuid,
             currentNode?.id,
@@ -121,12 +124,15 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     );
 
     const handleClickTrip = useCallback(() => {
+        if (!studyUuid || !currentNode?.id) {
+            return;
+        }
         onClose();
         if (setModificationInProgress !== undefined) {
             setModificationInProgress(true);
         }
         const equipmentInfos = { id: busId };
-        tripEquipment(studyUuid, currentNode?.id, equipmentInfos).catch((error) => {
+        tripEquipment(studyUuid, currentNode.id, equipmentInfos).catch((error) => {
             snackError({
                 messageTxt: error.message,
                 headerId: 'UnableToTripBusbarSection',

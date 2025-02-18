@@ -147,6 +147,9 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] = useState(params);
 
     const resetSensitivityAnalysisParameters = useCallback(() => {
+        if (!studyUuid) {
+            return;
+        }
         setSensitivityAnalysisParameters(studyUuid, null).catch((error) => {
             snackError({
                 messageTxt: error.message,
@@ -225,7 +228,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
         (row: any, arrayFormName: SubTabsValues, index: number) => {
             // TODO: not easy to fix any here since values[SubTabsValues] have each time different type which causes problems with "filter"
             // "none of those signatures are compatible with each other
-            if (!currentNode || !currentRootNetworkUuid) {
+            if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
                 return;
             }
             setLaunchLoader(true);
@@ -250,7 +253,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
                     });
                 });
         },
-        [snackError, studyUuid, currentRootNetworkUuid, formatFilteredParams, setValue, getResultCount, currentNode]
+        [snackError, studyUuid, currentRootNetworkUuid, formatFilteredParams, setValue, getResultCount, currentNode?.id]
     );
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
@@ -442,6 +445,9 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
     }, [onChangeParams, getValues]);
     const onSubmit = useCallback(
         (newParams: SensitivityAnalysisParametersFormSchema) => {
+            if (!studyUuid) {
+                return;
+            }
             setIsSubmitAction(true);
             setSensitivityAnalysisParameters(studyUuid, formatNewParams(newParams))
                 .then(() => {

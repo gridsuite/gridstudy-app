@@ -52,7 +52,7 @@ export interface VscModificationInfo {
 }
 
 export interface BatteryModificationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string;
     batteryId: string;
@@ -77,7 +77,7 @@ export interface BatteryModificationInfo {
     properties?: Property[];
 }
 export interface LoadCreationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     id: string;
     name?: string | null;
@@ -96,7 +96,7 @@ export interface LoadCreationInfo {
 }
 
 export interface LoadModificationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string;
     id: string;
@@ -115,7 +115,7 @@ export interface LoadModificationInfo {
 }
 
 export interface ShuntCompensatorModificationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     shuntCompensatorId: string;
     shuntCompensatorName: string | null;
@@ -137,7 +137,7 @@ export interface ShuntCompensatorModificationInfo {
 }
 
 export interface GeneratorModificationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     generatorId: string;
     name: string | null;
@@ -178,7 +178,7 @@ export interface GeneratorModificationInfo {
 }
 
 export interface StaticVarCompensatorCreationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     staticCompensatorId: string;
     staticCompensatorName?: string | null;
@@ -213,7 +213,7 @@ export interface StaticVarCompensatorCreationInfo {
 }
 
 export interface TwoWindingsTransformerModificationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: string;
     twoWindingsTransformerId: string;
@@ -272,7 +272,7 @@ export interface CurrentLimits {
 }
 
 export interface SubstationModificationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid?: UUID;
     id: string;
@@ -282,7 +282,7 @@ export interface SubstationModificationInfo {
 }
 
 export interface VoltageLeveInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     voltageLevelId: string;
     voltageLevelName: string | null;
@@ -392,7 +392,7 @@ export interface Assignment {
     propertyName?: string;
 }
 export interface BatteryCreationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     id: string;
     name: string | null;
@@ -418,7 +418,7 @@ export interface BatteryCreationInfo {
 }
 
 export interface GeneratorCreationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     id: string;
     name: string | null;
@@ -458,7 +458,7 @@ export interface GeneratorCreationInfo {
 }
 
 export interface ShuntCompensatorCreationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     shuntCompensatorId: string;
     shuntCompensatorName: string | null;
@@ -478,7 +478,7 @@ export interface ShuntCompensatorCreationInfo {
 }
 
 export interface LineCreationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     lineId: string;
     lineName: string | null;
@@ -512,7 +512,7 @@ export interface LineCreationInfo {
 }
 
 export interface LineModificationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid: string;
     lineId: string;
@@ -549,7 +549,7 @@ export interface LineModificationInfo {
 }
 
 export interface TwoWindingsTransformerCreationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     isUpdate: boolean;
     modificationUuid: string;
@@ -583,7 +583,7 @@ export interface TwoWindingsTransformerCreationInfo {
     properties?: Property[];
 }
 export interface SubstationCreationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     substationId: string;
     substationName: string | null;
@@ -594,7 +594,7 @@ export interface SubstationCreationInfo {
 }
 
 export interface DivideLineInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid: UUID;
     lineToSplitId: string;
@@ -609,7 +609,7 @@ export interface DivideLineInfo {
 }
 
 export interface AttachLineInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid: UUID;
     lineToAttachToId: string;
@@ -627,7 +627,7 @@ export interface AttachLineInfo {
 }
 
 export interface LinesAttachToSplitLinesInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid: UUID;
     lineToAttachTo1Id: string;
@@ -642,7 +642,7 @@ export interface LinesAttachToSplitLinesInfo {
 }
 
 export interface DeleteAttachingLineInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     modificationUuid: UUID;
     lineToAttachTo1Id: string;
@@ -653,7 +653,7 @@ export interface DeleteAttachingLineInfo {
 }
 
 export interface VSCCreationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     id: string;
     name: string | null;
@@ -675,7 +675,7 @@ export interface VSCCreationInfo {
 }
 
 export interface LCCCreationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     id: string;
     name?: string | null;
@@ -692,7 +692,7 @@ export interface LCCCreationInfo {
 }
 
 export interface VSCModificationInfo {
-    studyUuid: string;
+    studyUuid: UUID;
     nodeUuid: UUID;
     id: string | null;
     name?: string | null;

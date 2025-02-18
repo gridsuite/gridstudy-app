@@ -598,12 +598,14 @@ export const NetworkMapTab = ({
     // loads all root node geo-data then saves them in redux
     // it will be considered as the source of truth to check whether we need to fetch geo-data for a specific equipment or not
     const loadRootNodeGeoData = useCallback(() => {
+        if (!rootNodeId) {
+            return;
+        }
         console.info(`Loading geo data of study '${studyUuid}'...`);
         dispatch(setMapDataLoading(true));
         setGeoData(undefined);
         geoDataRef.current = null;
 
-        // @ts-expect-error TODO: manage rootNodeId undefined case
         const substationPositionsDone = fetchSubstationPositions(studyUuid, rootNodeId, currentRootNetworkUuid).then(
             (data) => {
                 console.info(`Received substations of study '${studyUuid}'...`);
@@ -616,8 +618,7 @@ export const NetworkMapTab = ({
 
         const linePositionsDone = !lineFullPath
             ? Promise.resolve()
-            : // @ts-expect-error TODO: manage rootNodeId undefined case
-              fetchLinePositions(studyUuid, rootNodeId, currentRootNetworkUuid).then((data) => {
+            : fetchLinePositions(studyUuid, rootNodeId, currentRootNetworkUuid).then((data) => {
                   console.info(`Received lines of study '${studyUuid}'...`);
                   const newGeoData = new GeoData(geoDataRef.current?.substationPositionsById || new Map(), new Map());
                   newGeoData.setLinePositions(data);

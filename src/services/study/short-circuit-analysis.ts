@@ -16,9 +16,9 @@ import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../components/utils/c
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 
 interface ShortCircuitAnalysisResult {
-    studyUuid: UUID | null;
-    currentNodeUuid?: UUID;
-    currentRootNetworkUuid?: UUID;
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     type: ShortCircuitAnalysisType;
 }
 interface Selector {
@@ -50,9 +50,9 @@ interface ShortCircuitParameters {
 }
 
 export function startShortCircuitAnalysis(
-    studyUuid: string,
-    currentNodeUuid: UUID | undefined,
-    currentRootNetworkUuid: UUID | null,
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     busId: string
 ) {
     console.info(
@@ -69,11 +69,7 @@ export function startShortCircuitAnalysis(
     return backendFetch(startShortCircuitAnalysisUrl, { method: 'put' });
 }
 
-export function stopShortCircuitAnalysis(
-    studyUuid: string,
-    currentNodeUuid: UUID | undefined,
-    currentRootNetworkUuid: UUID | undefined
-) {
+export function stopShortCircuitAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         `Stopping short circuit analysis on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
@@ -193,7 +189,7 @@ export function getShortCircuitParameters(studyUuid: UUID) {
     return backendFetchJson(getShortCircuitParams);
 }
 
-export function setShortCircuitParameters(studyUuid: UUID | null, newParams: ShortCircuitParameters) {
+export function setShortCircuitParameters(studyUuid: UUID, newParams: ShortCircuitParameters) {
     console.info('set short-circuit parameters');
     const url = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
     console.debug(url);
@@ -208,7 +204,7 @@ export function setShortCircuitParameters(studyUuid: UUID | null, newParams: Sho
     });
 }
 
-export function invalidateShortCircuitStatus(studyUuid: UUID | null) {
+export function invalidateShortCircuitStatus(studyUuid: UUID) {
     console.info('invalidate short circuit status');
     const invalidateShortCircuitStatusUrl = getStudyUrl(studyUuid) + '/short-circuit/invalidate-status';
     console.debug(invalidateShortCircuitStatusUrl);

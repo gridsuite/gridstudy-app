@@ -41,6 +41,7 @@ import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { UUID } from 'crypto';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -119,7 +120,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     }, []);
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
-        (studyUuid: string, nodeUuid: string) => {
+        (studyUuid: UUID, nodeUuid: UUID) => {
             if (tabIndex === LOGS_TAB_INDEX) {
                 return Promise.resolve();
             }
@@ -149,7 +150,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
 
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
-
         [page, tabIndex, rowsPerPage, sortConfig, currentRootNetworkUuid, filters, resultType, intl]
     );
 

@@ -205,9 +205,9 @@ export async function fetchNetworkElementsInfos<T extends Identifiable[] = Ident
 }
 
 export function fetchNetworkElementInfos(
-    studyUuid: string | undefined | null,
-    currentNodeUuid: UUID | undefined,
-    currentRootNetworkUuid: string | undefined | null,
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     elementType: EquipmentType | EQUIPMENT_TYPES,
     infoType: string,
     elementId: string,
