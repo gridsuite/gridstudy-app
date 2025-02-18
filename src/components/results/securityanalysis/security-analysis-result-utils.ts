@@ -177,9 +177,8 @@ export const securityAnalysisTableNColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['limitType'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -291,9 +290,8 @@ export const securityAnalysisTableNColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['side'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -348,8 +346,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['status'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -382,9 +380,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['limitType'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -490,9 +487,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['side'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -571,9 +567,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['status'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -589,9 +584,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['limitType'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -697,9 +691,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                         dataType: FILTER_DATA_TYPES.TEXT,
                         ...filterParams,
                     },
-
-                    filterEnums,
-                    getEnumLabel,
+                    options: filterEnums['side'] ?? [],
+                    getOptionLabel: getEnumLabel,
                 },
             },
         }),
@@ -839,8 +832,6 @@ export const useFetchFiltersEnums = () => {
 
     return { loading, result, error };
 };
-
-export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = ['securityAnalysisResult'];
 
 export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     subjectId: 'subjectLimitViolation.subjectId',

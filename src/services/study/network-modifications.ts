@@ -42,7 +42,6 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
@@ -915,10 +914,10 @@ export function createLine({
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
-    permanentCurrentLimit1,
-    permanentCurrentLimit2,
-    temporaryCurrentLimits1,
-    temporaryCurrentLimits2,
+    limitsGroups1,
+    limitsGroups2,
+    selectedLimitsGroup1,
+    selectedLimitsGroup2,
     isUpdate = false,
     modificationUuid,
     connectionName1,
@@ -960,14 +959,10 @@ export function createLine({
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
-            currentLimits1: {
-                permanentLimit: permanentCurrentLimit1,
-                temporaryLimits: temporaryCurrentLimits1,
-            },
-            currentLimits2: {
-                permanentLimit: permanentCurrentLimit2,
-                temporaryLimits: temporaryCurrentLimits2,
-            },
+            operationalLimitsGroups1: limitsGroups1,
+            operationalLimitsGroups2: limitsGroups2,
+            selectedOperationalLimitsGroup1: selectedLimitsGroup1,
+            selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             connectionName1: connectionName1,
             connectionDirection1: connectionDirection1,
             connectionName2: connectionName2,
@@ -984,6 +979,7 @@ export function createLine({
 export function modifyLine({
     studyUuid,
     nodeUuid,
+    modificationUuid,
     lineId,
     lineName,
     r,
@@ -1006,12 +1002,18 @@ export function modifyLine({
     connectionPosition2,
     connected1,
     connected2,
-    isUpdate,
-    modificationUuid,
     properties,
+    p1MeasurementValue,
+    p1MeasurementValidity,
+    q1MeasurementValue,
+    q1MeasurementValidity,
+    p2MeasurementValue,
+    p2MeasurementValidity,
+    q2MeasurementValue,
+    q2MeasurementValidity,
 }: LineModificationInfo) {
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
+    const isUpdate = !!modificationUuid;
     if (isUpdate) {
         modifyLineUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating line modification');
@@ -1050,6 +1052,14 @@ export function modifyLine({
             terminal1Connected: toModificationOperation(connected1),
             terminal2Connected: toModificationOperation(connected2),
             properties,
+            p1MeasurementValue: toModificationOperation(p1MeasurementValue),
+            p1MeasurementValidity: toModificationOperation(p1MeasurementValidity),
+            q1MeasurementValue: toModificationOperation(q1MeasurementValue),
+            q1MeasurementValidity: toModificationOperation(q1MeasurementValidity),
+            p2MeasurementValue: toModificationOperation(p2MeasurementValue),
+            p2MeasurementValidity: toModificationOperation(p2MeasurementValidity),
+            q2MeasurementValue: toModificationOperation(q2MeasurementValue),
+            q2MeasurementValidity: toModificationOperation(q2MeasurementValidity),
         }),
     });
 }
@@ -1066,8 +1076,10 @@ export function createTwoWindingsTransformer({
     ratedS,
     ratedU1,
     ratedU2,
-    currentLimit1,
-    currentLimit2,
+    limitsGroups1,
+    limitsGroups2,
+    selectedLimitsGroup1,
+    selectedLimitsGroup2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -1112,8 +1124,10 @@ export function createTwoWindingsTransformer({
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            currentLimits1: currentLimit1,
-            currentLimits2: currentLimit2,
+            operationalLimitsGroups1: limitsGroups1,
+            operationalLimitsGroups2: limitsGroups2,
+            selectedOperationalLimitsGroup1: selectedLimitsGroup1,
+            selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
@@ -1163,6 +1177,14 @@ export function modifyTwoWindingsTransformer({
     connected1 = undefined,
     connected2 = undefined,
     properties: propertiesForBackend,
+    p1MeasurementValue,
+    p1MeasurementValidity,
+    q1MeasurementValue,
+    q1MeasurementValidity,
+    p2MeasurementValue,
+    p2MeasurementValidity,
+    q2MeasurementValue,
+    q2MeasurementValidity,
 }: TwoWindingsTransformerModificationInfo) {
     let modifyTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1208,6 +1230,14 @@ export function modifyTwoWindingsTransformer({
             terminal1Connected: toModificationOperation(connected1),
             terminal2Connected: toModificationOperation(connected2),
             properties: propertiesForBackend,
+            p1MeasurementValue: toModificationOperation(p1MeasurementValue),
+            p1MeasurementValidity: toModificationOperation(p1MeasurementValidity),
+            q1MeasurementValue: toModificationOperation(q1MeasurementValue),
+            q1MeasurementValidity: toModificationOperation(q1MeasurementValidity),
+            p2MeasurementValue: toModificationOperation(p2MeasurementValue),
+            p2MeasurementValidity: toModificationOperation(p2MeasurementValidity),
+            q2MeasurementValue: toModificationOperation(q2MeasurementValue),
+            q2MeasurementValidity: toModificationOperation(q2MeasurementValidity),
         }),
     });
 }

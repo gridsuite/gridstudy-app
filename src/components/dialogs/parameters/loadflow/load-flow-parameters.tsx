@@ -327,7 +327,6 @@ const LoadFlowParameters: FunctionComponent<{
                             selectedTab={selectedTab}
                             handleTabChange={handleTabChange}
                             tabIndexesWithError={tabIndexesWithError}
-                            enableDeveloperMode={enableDeveloperMode}
                             formattedProviders={formattedProviders}
                         />
                         <LoadFlowParametersContent
@@ -335,7 +334,6 @@ const LoadFlowParameters: FunctionComponent<{
                             currentProvider={currentProvider ?? ''}
                             specificParameters={specificParameters}
                             params={params}
-                            enableDeveloperMode={enableDeveloperMode}
                             defaultLimitReductions={defaultLimitReductions}
                         />
                         <Box sx={{ flexGrow: 0 }}>

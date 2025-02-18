@@ -27,47 +27,47 @@ import {
 } from '../../../../services/study/network';
 import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
 
-export const getFetchers = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher[] => {
+export const getFetcher = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
-            return [fetchSubstations];
+            return fetchSubstations;
         case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
-            return [fetchVoltageLevels];
+            return fetchVoltageLevels;
         case EQUIPMENT_TYPES.LINE:
-            return [fetchLines];
+            return fetchLines;
         case EQUIPMENT_TYPES.TIE_LINE:
-            return [fetchTieLines];
+            return fetchTieLines;
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-            return [fetchTwoWindingsTransformers];
+            return fetchTwoWindingsTransformers;
         case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
-            return [fetchThreeWindingsTransformers];
+            return fetchThreeWindingsTransformers;
         case EQUIPMENT_TYPES.HVDC_LINE:
-            return [fetchHvdcLines];
+            return fetchHvdcLines;
         case EQUIPMENT_TYPES.GENERATOR:
-            return [fetchGenerators];
+            return fetchGenerators;
         case EQUIPMENT_TYPES.BATTERY:
-            return [fetchBatteries];
+            return fetchBatteries;
         case EQUIPMENT_TYPES.LOAD:
-            return [fetchLoads];
+            return fetchLoads;
         case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-            return [fetchShuntCompensators];
+            return fetchShuntCompensators;
         case EQUIPMENT_TYPES.DANGLING_LINE:
-            return [fetchDanglingLines];
+            return fetchDanglingLines;
         case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
-            return [fetchStaticVarCompensators];
+            return fetchStaticVarCompensators;
         case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
-            return [fetchVscConverterStations];
+            return fetchVscConverterStations;
         case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
-            return [fetchLccConverterStations];
+            return fetchLccConverterStations;
         case EQUIPMENT_TYPES.BUS:
-            return [fetchBuses];
+            return fetchBuses;
         case EQUIPMENT_TYPES.BUSBAR_SECTION:
-            return [fetchBusbarSections];
+            return fetchBusbarSections;
     }
 };
 
+// TODO to remove when no more static conf
 export const typeAndFetchers = <TEquipType extends SpreadsheetEquipmentType>(equipmentType: TEquipType) =>
     ({
         type: equipmentType,
-        fetchers: getFetchers(equipmentType),
     } as const);

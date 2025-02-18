@@ -67,9 +67,10 @@ type LogTableProps = {
     reportType: string;
     severities: SeverityLevel[] | undefined;
     onRowClick: (data: ReportLog) => void;
+    onFiltersChanged: () => void;
 };
 
-const LogTable = ({ selectedReport, reportType, severities, onRowClick }: LogTableProps) => {
+const LogTable = ({ selectedReport, reportType, severities, onRowClick, onFiltersChanged }: LogTableProps) => {
     const intl = useIntl();
 
     const theme = useTheme<Theme>();
@@ -120,7 +121,7 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick }: LogTab
     }, [severityFilter, fetchReportLogs, selectedReport, messageFilter, resetSearch]);
 
     useEffect(() => {
-        if (filters?.length === 0 && severities && severities.length > 0) {
+        if (severities && severities.length > 0) {
             dispatch(
                 setLogsFilter(reportType, [
                     {
@@ -132,13 +133,17 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick }: LogTab
                 ])
             );
         }
-    }, [severities, dispatch, reportType, filters, fetchNodeSeverities, selectedReport]);
+    }, [severities, dispatch, reportType, fetchNodeSeverities]);
 
     useEffect(() => {
         if (selectedReport.id && selectedReport.type) {
             refreshLogsOnSelectedReport();
         }
     }, [refreshLogsOnSelectedReport, selectedReport]);
+
+    useEffect(() => {
+        onFiltersChanged();
+    }, [filters, onFiltersChanged]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [

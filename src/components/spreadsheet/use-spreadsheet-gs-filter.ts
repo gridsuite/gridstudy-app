@@ -44,7 +44,10 @@ export const useSpreadsheetGsFilter = (equipmentType: SpreadsheetEquipmentType) 
 
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
-    const isExternalFilterPresent = useCallback(() => filterIds.length > 0, [filterIds.length]);
+    const isExternalFilterPresent = useCallback(
+        () => gsFilterSpreadsheetState[equipmentType]?.length > 0,
+        [equipmentType, gsFilterSpreadsheetState]
+    );
 
     return { doesFormulaFilteringPass, isExternalFilterPresent };
 };
