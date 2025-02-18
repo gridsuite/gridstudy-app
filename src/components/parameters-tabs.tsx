@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Typography } from '@mui/material';
@@ -59,6 +59,7 @@ import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 import { NetworkVisualizationsParameters } from './dialogs/parameters/network-visualizations/network-visualizations-parameters';
+import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -130,26 +131,16 @@ export const tabStyles = {
 };
 
 enum TAB_VALUES {
-    lfParamsTabValue = 'LoadFlow',
-    securityAnalysisParamsTabValue = 'SecurityAnalysis',
-    sensitivityAnalysisParamsTabValue = 'SensitivityAnalysis',
-    nonEvacuatedEnergyParamsTabValue = 'NonEvacuatedEnergyAnalysis',
-    shortCircuitParamsTabValue = 'ShortCircuit',
-    dynamicSimulationParamsTabValue = 'DynamicSimulation',
-    voltageInitParamsTabValue = 'VoltageInit',
-    networkVisualizationsParams = 'NetworkVisualizations',
+    lfParamsTabValue = 'LOAD_FLOW',
+    securityAnalysisParamsTabValue = 'SECURITY_ANALYSIS',
+    sensitivityAnalysisParamsTabValue = 'SENSITIVITY_ANALYSIS',
+    nonEvacuatedEnergyParamsTabValue = 'NON_EVACUATED_ENERGY_ANALYSIS',
+    shortCircuitParamsTabValue = 'SHORT_CIRCUIT',
+    dynamicSimulationParamsTabValue = 'DYNAMIC_SIMULATION',
+    dynamicSecurityAnalysisParamsTabValue = 'DYNAMIC_SECURITY_ANALYSIS',
+    voltageInitParamsTabValue = 'VOLTAGE_INITIALIZATION',
+    networkVisualizationsParams = 'networkVisualizationsParams',
 }
-
-const hasValidationTabs = [
-    TAB_VALUES.securityAnalysisParamsTabValue,
-    TAB_VALUES.sensitivityAnalysisParamsTabValue,
-    TAB_VALUES.nonEvacuatedEnergyParamsTabValue,
-    TAB_VALUES.shortCircuitParamsTabValue,
-    TAB_VALUES.dynamicSimulationParamsTabValue,
-    TAB_VALUES.voltageInitParamsTabValue,
-    TAB_VALUES.lfParamsTabValue,
-    TAB_VALUES.networkVisualizationsParams,
-];
 
 type OwnProps = {
     studyId: string;
@@ -169,8 +160,21 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
+
+    const computationStatus = useSelector((state: AppState) => state.computingStatus[tabValue as ComputingType]);
+    const shortCircuitOneBusStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
+    );
+
+    const shouldDisplayGlassPane = useMemo(() => {
+        return (
+            computationStatus === RunningStatus.RUNNING ||
+            (tabValue === TAB_VALUES.shortCircuitParamsTabValue && shortCircuitOneBusStatus === RunningStatus.RUNNING)
+        );
+    }, [computationStatus, shortCircuitOneBusStatus, tabValue]);
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
@@ -227,7 +231,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
     const handleChangeTab = (newValue: string) => {
-        if (hasValidationTabs.includes(tabValue as TAB_VALUES) && haveDirtyFields) {
+        if (haveDirtyFields) {
             setNextTabValue(newValue);
             setIsPopupOpen(true);
         } else {
@@ -250,7 +254,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
                     oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
                     oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
-                    oldValue === TAB_VALUES.dynamicSimulationParamsTabValue)
+                    oldValue === TAB_VALUES.dynamicSimulationParamsTabValue ||
+                    oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue)
             ) {
                 return TAB_VALUES.securityAnalysisParamsTabValue;
             }
@@ -258,7 +263,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         });
     }, [enableDeveloperMode]);
 
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const displayTab = useCallback(() => {
         switch (tabValue) {
             case TAB_VALUES.lfParamsTabValue:
@@ -298,6 +302,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
                 return <DynamicSimulationParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
+            case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
+                return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.voltageInitParamsTabValue:
                 return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.networkVisualizationsParams:
@@ -334,7 +340,10 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                         >
                             <Tab
                                 label={<FormattedMessage id="LoadFlow" />}
-                                disabled={loadFlowStatus === RunningStatus.RUNNING}
+                                disabled={
+                                    computationStatus === RunningStatus.RUNNING &&
+                                    tabValue === TAB_VALUES.lfParamsTabValue
+                                }
                                 value={TAB_VALUES.lfParamsTabValue}
                             />
                             <Tab
@@ -366,6 +375,13 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                     value={TAB_VALUES.dynamicSimulationParamsTabValue}
                                 />
                             ) : null}
+                            {enableDeveloperMode ? (
+                                <Tab
+                                    disabled={dynamicSecurityAnalysisAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="DynamicSecurityAnalysis" />}
+                                    value={TAB_VALUES.dynamicSecurityAnalysisParamsTabValue}
+                                />
+                            ) : null}
                             <Tab
                                 disabled={voltageInitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="VoltageInit" />}
@@ -381,9 +397,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item xs={10} sx={tabStyles.parametersBox}>
-                    <GlassPane
-                        active={loadFlowStatus === RunningStatus.RUNNING && tabValue === TAB_VALUES.lfParamsTabValue}
-                    >
+                    <GlassPane active={shouldDisplayGlassPane} loadingMessageText="computationInProgress">
                         <Box sx={tabStyles.contentBox}>{displayTab()}</Box>
                     </GlassPane>
                 </Grid>

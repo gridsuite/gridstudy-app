@@ -78,6 +78,8 @@
     "loadingCreationStudy": "Création en cours...",
     "LoadingOf": "Chargement de {value}...",
 
+    "computationInProgress": "Calcul en cours ...",
+
     "centerOnMap": "Centrer sur la carte",
     "openVoltageLevel": "Ouvrir le poste",
     "CBAll": "Tous",
@@ -258,7 +260,6 @@
     "DynamicSimulationSeriesListAvailableCurves": "Courbes disponibles",
     "DynamicSimulationSeriesListRightAxis": "Axe droit",
     "DynamicSimulationResultLayoutCols": "Colonnes",
-    "DynamicSimulationProviderDynawo": "Dynawo",
     "DynamicSimulationTimeDelay": "Temporisation",
     "DynamicSimulationSolver": "Solveur",
     "DynamicSimulationMapping": "Mappage",
@@ -373,6 +374,15 @@
     "DynamicSimulationTimelineEventTime": "Instant (s)",
     "DynamicSimulationTimelineEventModelName": "Ouvrage/Modèle",
     "DynamicSimulationTimelineEventModelMessage": "Message",
+
+    "startDynamicSecurityAnalysisError": "Une erreur est survenue lors du lancement de l'analyse de sécurité dynamique",
+    "DynamicSecurityAnalysis": "Analyse de sécurité dynamique",
+    "DynamicSecurityAnalysisRunError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité dynamique",
+    "DynamicSecurityAnalysisContingency": "Aléas",
+    "DynamicSecurityAnalysisScenario": "Scénario",
+    "DynamicSecurityAnalysisScenarioDuration": "Durée du scenario",
+    "DynamicSecurityAnalysisContingenciesStartTime": "Temps de début des aléas",
+    "DynamicSecurityAnalysisTabStatus": "Statut",
 
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
@@ -804,6 +814,10 @@
     "TemporaryLimitValue": "Valeur (A)",
     "TemporaryLimitNameUnicityError": "Les noms des limites temporaires doivent être uniques dans la table",
     "TemporaryLimitDurationUnicityError": "Les tempos des limites temporaires doivent être uniques dans la table",
+    "StateEstimationTab": "Estimation d'état",
+    "MeasurementsSection": "Télémesures",
+    "ValidMeasurement": "Valide",
+    "InvalidMeasurement": "Invalide",
 
     "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Sections identiques",

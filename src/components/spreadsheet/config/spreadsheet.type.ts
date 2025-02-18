@@ -7,7 +7,8 @@
 
 import type { UUID } from 'crypto';
 import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import type { CustomAggridFilterParams, CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import { Identifiable } from '@gridsuite/commons-ui';
+import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 
 export type EquipmentFetcher = (
     studyUuid: UUID,
@@ -24,11 +25,35 @@ export type SpreadsheetEquipmentType = Exclude<
     | EQUIPMENT_TYPES.DISCONNECTOR
 >;
 
-export interface SpreadsheetTabDefinition<TData = any, F extends CustomAggridFilterParams = CustomAggridFilterParams> {
+export interface SpreadsheetTabDefinition {
     index: number;
     name: string;
     type: SpreadsheetEquipmentType;
-    columns: CustomColDef<TData, F>[];
+    columns: ColumnDefinition[];
 }
 
+export type ColumnDefinition = {
+    uuid?: string;
+    id: string;
+    name: string;
+    type: COLUMN_TYPES;
+    precision?: number;
+    formula: string;
+    dependencies: string[];
+};
+
+export type ColumnDefinitionDto = Omit<ColumnDefinition, 'dependencies'> & {
+    dependencies: string;
+};
+
+export type SpreadsheetEquipmentsByNodes = {
+    nodesId: string[];
+    equipmentsByNodeId: Record<string, Identifiable[]>;
+};
+
 export type ColumnState = { colId: string; visible: boolean };
+
+export type SpreadsheetConfig = {
+    sheetType: SpreadsheetEquipmentType;
+    customColumns: ColumnDefinitionDto[];
+};
