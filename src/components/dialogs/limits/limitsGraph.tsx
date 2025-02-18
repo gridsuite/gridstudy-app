@@ -17,9 +17,9 @@ import { useIntl } from 'react-intl';
 export interface LimitsGraphProps {
     limitsGroupFormName: string;
 }
-const colorIST = '#8fce00';
-const colors: string[] = ['#ffe599', '#ffd966', '#f1c232', '#e69138', '#cc0000'];
-const colorForbidden: string = '#a00722';
+const colorIST = '#58d058';
+const colors: string[] = ['#ffc019', '#e47400', '#cc5500', '#ff5757', '#ff0000'];
+const colorForbidden: string = '#b10303';
 
 export default function LimitsGraph({ limitsGroupFormName }: Readonly<LimitsGraphProps>) {
     const currentPermanentLimit = useWatch({ name: `${limitsGroupFormName}.${PERMANENT_LIMIT}` });
