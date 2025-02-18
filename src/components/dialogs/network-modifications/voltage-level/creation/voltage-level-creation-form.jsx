@@ -101,17 +101,16 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
             name={SUBSTATION_ID}
             label="SUBSTATION"
             options={substations}
-            inputTransform={(value) => (value === null ? '' : value)}
-            outputTransform={(value) => value}
             size={'small'}
             formProps={{ margin: 'normal' }}
-            PaperComponent={({ children }) => getCustomPaper(children)}
             onInputChange={(_, value) => {
                 if (typeof value === 'string') {
                     setSelectedNewSubstation(value);
                 }
             }}
+            PaperComponent={({ children }) => getCustomPaper(children)}
             noOptionsText={''}
+            onBlur={(event) => setValue(SUBSTATION_ID, event.target.value)}
         />
     );
 
