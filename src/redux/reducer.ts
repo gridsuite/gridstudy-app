@@ -108,10 +108,10 @@ import {
     OpenDiagramAction,
     OpenNadListAction,
     OpenStudyAction,
-    REMOVE_CUSTOM_COLUMNS_DEFINITION,
+    REMOVE_COLUMN_DEFINITION,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
-    RemoveCustomColumnsDefinitionsAction,
+    RemoveColumnDefinitionAction,
     RemoveNodeDataAction,
     RemoveNotificationByNodeAction,
     RESET_EQUIPMENTS,
@@ -182,12 +182,12 @@ import {
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
-    UPDATE_CUSTOM_COLUMNS_DEFINITION,
+    UPDATE_COLUMNS_DEFINITION,
     UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UPDATE_TABLE_DEFINITION,
-    UpdateCustomColumnsDefinitionsAction,
+    UpdateColumnsDefinitionsAction,
     UpdateCustomColumnsNodesAliasesAction,
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
@@ -281,7 +281,6 @@ import {
 import type { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
-import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
@@ -397,6 +396,7 @@ export interface ComputingStatus {
     [ComputingType.SHORT_CIRCUIT]: RunningStatus;
     [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
+    [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
@@ -571,6 +571,7 @@ const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT_ONE_BUS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SIMULATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: [],
@@ -610,17 +611,15 @@ const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 interface TablesState {
     definitions: SpreadsheetTabDefinition[];
     columnsStates: ColumnState[][];
-    allCustomColumnsDefinitions: ColumnWithFormula[][];
 }
 
 const initialTablesState: TablesState = {
     definitions: TABLES_DEFINITIONS,
     columnsStates: TABLES_DEFINITIONS.map((table) =>
         table.columns.map((col) => {
-            return { colId: col.colId, visible: true };
+            return { colId: col.id, visible: true };
         })
     ),
-    allCustomColumnsDefinitions: TABLES_DEFINITIONS.map((_) => []),
 };
 
 const initialState: AppState = {
@@ -674,6 +673,7 @@ const initialState: AppState = {
         [ComputingType.SHORT_CIRCUIT]: RunningStatus.IDLE,
         [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
         [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
+        [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
     },
@@ -753,7 +753,7 @@ const initialState: AppState = {
             .reduce((acc, tabName) => {
                 acc[tabName] = [
                     {
-                        colId: 'ID',
+                        colId: 'id',
                         sort: SortWay.ASC,
                     },
                 ];
@@ -871,10 +871,9 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
-        const { newTableDefinition, customColumns } = action.payload;
+        const { newTableDefinition } = action;
         state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
-        state.tables.columnsStates.push(newTableDefinition.columns.map((col) => ({ colId: col.colId, visible: true })));
-        state.tables.allCustomColumnsDefinitions.push(customColumns);
+        state.tables.columnsStates.push(newTableDefinition.columns.map((col) => ({ colId: col.id, visible: true })));
     });
 
     builder.addCase(
@@ -1737,24 +1736,38 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableSort[SPREADSHEET_SORT_STORE][newTabName] = value;
     });
 
-    builder.addCase(UPDATE_CUSTOM_COLUMNS_DEFINITION, (state, action: UpdateCustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.colWithFormula.index] =
-            state.tables.allCustomColumnsDefinitions[action.colWithFormula.index].some(
-                (column) => column.uuid === action.colWithFormula.value.uuid
-            )
-                ? state.tables.allCustomColumnsDefinitions[action.colWithFormula.index].map((column) =>
-                      column.uuid === action.colWithFormula.value.uuid ? action.colWithFormula.value : column
-                  )
-                : [
-                      ...state.tables.allCustomColumnsDefinitions[action.colWithFormula.index],
-                      action.colWithFormula.value,
-                  ];
+    builder.addCase(UPDATE_COLUMNS_DEFINITION, (state, action: UpdateColumnsDefinitionsAction) => {
+        const { colData } = action;
+
+        // Retrieve the table definition by index
+        const tableDefinition = state.tables.definitions[colData.index];
+
+        if (tableDefinition) {
+            const existingColumnIndex = tableDefinition.columns.findIndex((col) => col.id === colData.value.id);
+
+            if (existingColumnIndex !== -1) {
+                // Update existing column
+                tableDefinition.columns[existingColumnIndex] = colData.value;
+            } else {
+                // Add new column if not found
+                tableDefinition.columns.push(colData.value);
+                state.tables.columnsStates[colData.index].push({
+                    colId: colData.value.id,
+                    visible: true,
+                });
+            }
+        }
     });
 
-    builder.addCase(REMOVE_CUSTOM_COLUMNS_DEFINITION, (state, action: RemoveCustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.definition.index] = state.tables.allCustomColumnsDefinitions[
-            action.definition.index
-        ].filter((column) => column.id !== action.definition.value);
+    builder.addCase(REMOVE_COLUMN_DEFINITION, (state, action: RemoveColumnDefinitionAction) => {
+        const { index, value } = action.definition;
+        const tableDefinition = state.tables.definitions[index];
+
+        if (tableDefinition) {
+            tableDefinition.columns = tableDefinition.columns.filter((col) => col.id !== value);
+            // remove column from columnsStates
+            state.tables.columnsStates[index] = state.tables.columnsStates[index].filter((col) => col.colId !== value);
+        }
     });
 
     builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
