@@ -4,6 +4,10 @@
     "license": "MPL-2.0",
     "private": true,
     "type": "module",
+    "engines": {
+        "node": ">=18",
+        "npm": ">=10"
+    },
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
