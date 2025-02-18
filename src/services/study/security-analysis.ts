@@ -43,9 +43,9 @@ export function stopSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, cur
 }
 
 export function fetchSecurityAnalysisResult(
-    studyUuid: string,
-    currentNodeUuid: string,
-    currentRootNetworkUuid: string,
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     queryParams: any
 ) {
     console.info(`Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);

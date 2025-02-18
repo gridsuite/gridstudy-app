@@ -108,7 +108,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         if (analysisStatus !== RunningStatus.SUCCEED) {
             return;
         }
-        if (!currentRootNetworkUuid) {
+        if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
             return;
         }
         let active = true; // to manage race condition

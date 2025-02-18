@@ -20,9 +20,10 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { UUID } from 'crypto';
 
 interface UseEquipmentModificationProps {
-    studyUuid: string;
+    studyUuid: UUID;
     equipmentType: SpreadsheetEquipmentType;
 }
 

@@ -42,16 +42,11 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
+function getNetworkModificationUrl(studyUuid: UUID, nodeUuid: UUID) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
 
-export function changeNetworkModificationOrder(
-    studyUuid: UUID | null,
-    nodeUuid: UUID | undefined,
-    itemUuid: UUID,
-    beforeUuid: UUID
-) {
+export function changeNetworkModificationOrder(studyUuid: UUID, nodeUuid: UUID, itemUuid: UUID, beforeUuid: UUID) {
     console.info('reorder node ' + nodeUuid + ' of study ' + studyUuid + ' ...');
     const url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
@@ -63,7 +58,7 @@ export function changeNetworkModificationOrder(
     return backendFetch(url, { method: 'put' });
 }
 
-export function stashModifications(studyUuid: UUID | null, nodeUuid: UUID | undefined, modificationUuids: UUID[]) {
+export function stashModifications(studyUuid: UUID, nodeUuid: UUID, modificationUuids: UUID[]) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('stashed', String(true));
     urlSearchParams.append('uuids', String(modificationUuids));
@@ -74,12 +69,7 @@ export function stashModifications(studyUuid: UUID | null, nodeUuid: UUID | unde
     });
 }
 
-export function setModificationActivated(
-    studyUuid: UUID | null,
-    nodeUuid: UUID | undefined,
-    modificationUuid: UUID,
-    activated: boolean
-) {
+export function setModificationActivated(studyUuid: UUID, nodeUuid: UUID, modificationUuid: UUID, activated: boolean) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('activated', String(activated));
     urlSearchParams.append('uuids', String([modificationUuid]));
@@ -91,7 +81,7 @@ export function setModificationActivated(
     });
 }
 
-export function restoreModifications(studyUuid: UUID | null, nodeUuid: UUID | undefined, modificationUuids: UUID[]) {
+export function restoreModifications(studyUuid: UUID, nodeUuid: UUID, modificationUuids: UUID[]) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('stashed', String(false));
     urlSearchParams.append('uuids', String(modificationUuids));
@@ -103,7 +93,7 @@ export function restoreModifications(studyUuid: UUID | null, nodeUuid: UUID | un
     });
 }
 
-export function deleteModifications(studyUuid: UUID | null, nodeUuid: UUID | undefined, modificationUuids: UUID[]) {
+export function deleteModifications(studyUuid: UUID, nodeUuid: UUID, modificationUuids: UUID[]) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('uuids', String(modificationUuids));
 
@@ -115,7 +105,7 @@ export function deleteModifications(studyUuid: UUID | null, nodeUuid: UUID | und
     });
 }
 
-export function requestNetworkChange(studyUuid: string, nodeUuid: UUID, groovyScript: string) {
+export function requestNetworkChange(studyUuid: UUID, nodeUuid: UUID, groovyScript: string) {
     console.info('Creating groovy script (request network change)');
     const changeUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     console.debug(changeUrl);
@@ -133,8 +123,8 @@ export function requestNetworkChange(studyUuid: string, nodeUuid: UUID, groovySc
 }
 
 function changeOperatingStatus(
-    studyUuid: UUID | undefined | null,
-    nodeUuid: UUID | undefined,
+    studyUuid: UUID,
+    nodeUuid: UUID,
     equipment: Partial<EquipmentInfos> | null,
     action: string
 ) {
@@ -168,27 +158,19 @@ function changeOperatingStatus(
     });
 }
 
-export function lockoutEquipment(
-    studyUuid: UUID | undefined,
-    nodeUuid: UUID | undefined,
-    equipment: EquipmentInfos | null
-) {
+export function lockoutEquipment(studyUuid: UUID, nodeUuid: UUID, equipment: EquipmentInfos | null) {
     console.info('locking out equipment ' + equipment?.id + ' ...');
     return changeOperatingStatus(studyUuid, nodeUuid, equipment, OPERATING_STATUS_ACTION.LOCKOUT);
 }
 
-export function tripEquipment(
-    studyUuid: UUID | undefined | null,
-    nodeUuid: UUID | undefined,
-    equipment: Partial<EquipmentInfos> | null
-) {
+export function tripEquipment(studyUuid: UUID, nodeUuid: UUID, equipment: Partial<EquipmentInfos> | null) {
     console.info('tripping equipment ' + equipment?.id + ' ...');
     return changeOperatingStatus(studyUuid, nodeUuid, equipment, OPERATING_STATUS_ACTION.TRIP);
 }
 
 export function energiseEquipmentEnd(
-    studyUuid: UUID | undefined,
-    nodeUuid: UUID | undefined,
+    studyUuid: UUID,
+    nodeUuid: UUID,
     branch: EquipmentInfos | null,
     branchSide: string
 ) {
@@ -203,11 +185,7 @@ export function energiseEquipmentEnd(
     );
 }
 
-export function switchOnEquipment(
-    studyUuid: UUID | undefined,
-    nodeUuid: UUID | undefined,
-    branch: EquipmentInfos | null
-) {
+export function switchOnEquipment(studyUuid: UUID, nodeUuid: UUID, branch: EquipmentInfos | null) {
     console.info('switching on branch ' + branch?.id + ' ...');
     return changeOperatingStatus(studyUuid, nodeUuid, branch, OPERATING_STATUS_ACTION.SWITCH_ON);
 }
@@ -1243,7 +1221,7 @@ export function modifyTwoWindingsTransformer({
 }
 
 export function createTabulareModification(
-    studyUuid: string,
+    studyUuid: UUID,
     nodeUuid: UUID,
     modificationType: string,
     modifications: any,
@@ -1596,7 +1574,7 @@ export function attachLine({
 }
 
 export function loadScaling(
-    studyUuid: string,
+    studyUuid: UUID,
     nodeUuid: UUID,
     modificationUuid: UUID | undefined,
     variationType: string,
@@ -1675,7 +1653,7 @@ export function linesAttachToSplitLines({
 }
 
 export function deleteVoltageLevelOnLine(
-    studyUuid: string,
+    studyUuid: UUID,
     nodeUuid: UUID,
     modificationUuid: UUID,
     lineToAttachTo1Id: string,
@@ -1747,8 +1725,8 @@ export function deleteAttachingLine({
 }
 
 export function deleteEquipment(
-    studyUuid: string,
-    nodeUuid: UUID | undefined,
+    studyUuid: UUID,
+    nodeUuid: UUID,
     equipmentType: EquipmentType | string | null,
     equipmentId: string,
     modificationUuid: UUID | undefined,
@@ -1779,8 +1757,8 @@ export function deleteEquipment(
 }
 
 export function deleteEquipmentByFilter(
-    studyUuid: string,
-    nodeUuid: string,
+    studyUuid: UUID,
+    nodeUuid: UUID,
     equipmentType: keyof typeof EQUIPMENT_TYPES | null,
     filters: Filter[],
     modificationUuid: string
@@ -1808,7 +1786,7 @@ export function deleteEquipmentByFilter(
     });
 }
 
-export function fetchNetworkModifications(studyUuid: UUID | null, nodeUuid: string, onlyStashed: boolean) {
+export function fetchNetworkModifications(studyUuid: UUID, nodeUuid: UUID, onlyStashed: boolean) {
     console.info('Fetching network modifications (metadata) for nodeUuid : ', nodeUuid);
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('onlyStashed', onlyStashed.toString());
@@ -1818,7 +1796,7 @@ export function fetchNetworkModifications(studyUuid: UUID | null, nodeUuid: stri
     return backendFetchJson(modificationsGetUrl);
 }
 
-export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined, switchId: string, open: boolean) {
+export function updateSwitchState(studyUuid: UUID, nodeUuid: UUID, switchId: string, open: boolean) {
     console.info('updating switch ' + switchId + ' ...');
     const updateSwitchUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     console.debug(updateSwitchUrl);
@@ -2002,7 +1980,7 @@ export function modifyVsc({
 }
 
 export function modifyByFormula(
-    studyUuid: string,
+    studyUuid: UUID,
     nodeUuid: UUID,
     equipmentType: string,
     formulas: any,
@@ -2035,7 +2013,7 @@ export function modifyByFormula(
 }
 
 export function modifyByAssignment(
-    studyUuid: string,
+    studyUuid: UUID,
     nodeUuid: UUID,
     equipmentType: string,
     assignmentsList: Assignment[],
@@ -2068,7 +2046,7 @@ export function modifyByAssignment(
 }
 
 export function createTabularCreation(
-    studyUuid: string,
+    studyUuid: UUID,
     nodeUuid: UUID,
     creationType: string,
     creations: any,

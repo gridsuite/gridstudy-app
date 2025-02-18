@@ -20,6 +20,7 @@ import {
 } from 'ag-grid-community';
 import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
+import { UUID } from 'crypto';
 
 const DEFAULT_ROW_HEIGHT = 28;
 
@@ -39,7 +40,7 @@ interface EquipmentTableProps {
     rowData: unknown[];
     columnData: ColDef[];
     gridRef: Ref<any> | undefined;
-    studyUuid: string;
+    studyUuid: UUID;
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
     handleRowDataUpdated: () => void;

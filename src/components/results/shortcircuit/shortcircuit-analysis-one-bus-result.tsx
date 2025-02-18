@@ -45,7 +45,12 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAna
     const [result, setResult] = useState<SCAFaultResult[]>([]);
 
     useEffect(() => {
-        if (oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED) {
+        if (
+            !studyUuid ||
+            !currentNode?.id ||
+            !currentRootNetworkUuid ||
+            oneBusShortCircuitAnalysisStatus !== RunningStatus.SUCCEED
+        ) {
             return;
         }
 
@@ -66,7 +71,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAna
             }
             setFaultResult(result?.faults[0]);
         });
-    }, [snackError, studyUuid, currentNode, currentRootNetworkUuid, oneBusShortCircuitAnalysisStatus]);
+    }, [snackError, studyUuid, currentNode?.id, oneBusShortCircuitAnalysisStatus, currentRootNetworkUuid]);
 
     useEffect(() => {
         if (!faultResult || !feederResults) {

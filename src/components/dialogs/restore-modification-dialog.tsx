@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Button,
@@ -73,24 +73,30 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
 
     const { computeLabel } = useModificationLabelComputer();
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         setSelectedItems([]);
         onClose();
-    };
+    }, [onClose]);
 
-    const handleDelete = () => {
+    const handleDelete = useCallback(() => {
+        if (!studyUuid || !currentNode?.id) {
+            return;
+        }
         const selectedModificationsUuidsToDelete = selectedItems.map((item) => item.uuid);
         setOpenDeleteConfirmationPopup(false);
         deleteModifications(studyUuid, currentNode?.id, selectedModificationsUuidsToDelete);
         handleClose();
-    };
+    }, [currentNode?.id, handleClose, selectedItems, studyUuid]);
 
-    const handleRestore = () => {
+    const handleRestore = useCallback(() => {
+        if (!studyUuid || !currentNode?.id) {
+            return;
+        }
         const selectedModificationsUuidToRestore = selectedItems.map((item) => item.uuid);
 
-        restoreModifications(studyUuid, currentNode?.id, selectedModificationsUuidToRestore);
+        restoreModifications(studyUuid, currentNode.id, selectedModificationsUuidToRestore);
         handleClose();
-    };
+    }, [currentNode?.id, handleClose, selectedItems, studyUuid]);
 
     useEffect(() => {
         setStashedModifications(modifToRestore);

@@ -31,7 +31,10 @@ export const SwitchNetworkModificationActive = (props: SwitchNetworkModification
 
     const updateModification = useCallback(
         (activated: boolean) => {
-            setModificationActivated(studyUuid, currentNode?.id, modificationUuid, activated)
+            if (!studyUuid || !currentNode?.id) {
+                return;
+            }
+            setModificationActivated(studyUuid, currentNode.id, modificationUuid, activated)
                 .catch((err) => {
                     snackError({ messageTxt: err.message, messageId: 'networkModificationActivationError' });
                 })

@@ -16,6 +16,7 @@ import { updateTreeNode } from '../../../services/study/tree-subtree';
 import { Box } from '@mui/material';
 import { AppState } from '../../../redux/reducer';
 import { Theme } from '@mui/material/styles';
+import { useCallback } from 'react';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -40,18 +41,24 @@ const NodeEditor = () => {
         dispatch(setModificationsDrawerOpen(false));
     };
 
-    const changeNodeName = (newName: string) => {
-        updateTreeNode(studyUuid, {
-            id: currentTreeNode?.id,
-            type: currentTreeNode?.type,
-            name: newName,
-        }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'NodeUpdateError',
+    const changeNodeName = useCallback(
+        (newName: string) => {
+            if (!studyUuid || !currentTreeNode?.id) {
+                return;
+            }
+            updateTreeNode(studyUuid, {
+                id: currentTreeNode?.id,
+                type: currentTreeNode?.type,
+                name: newName,
+            }).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'NodeUpdateError',
+                });
             });
-        });
-    };
+        },
+        [currentTreeNode?.id, currentTreeNode?.type, snackError, studyUuid]
+    );
 
     return (
         <Box sx={styles.paper}>

@@ -24,27 +24,20 @@ export function safeEncodeURIComponent(value: string | null | undefined): string
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
-export const getStudyUrl = (studyUuid: UUID | null) =>
+export const getStudyUrl = (studyUuid: UUID) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}`;
 
-export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (
-    studyUuid: string | null | undefined,
-    nodeUuid: string | undefined,
-    rootNetworkUuid: string | undefined | null
-) =>
+export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/root-networks/${safeEncodeURIComponent(
         rootNetworkUuid
     )}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
-export const getStudyUrlWithRootNetworkUuid = (
-    studyUuid: string | null | undefined,
-    rootNetworkUuid: string | undefined | null
-) =>
+export const getStudyUrlWithRootNetworkUuid = (studyUuid: UUID, rootNetworkUuid: UUID) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/root-networks/${safeEncodeURIComponent(
         rootNetworkUuid
     )}`;
 
-export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: string | undefined) =>
+export const getStudyUrlWithNodeUuid = (studyUuid: UUID, nodeUuid: UUID) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
 export const fetchStudy = (studyUuid: UUID) => {
@@ -85,7 +78,7 @@ export function getNetworkAreaDiagramUrl(
 }
 
 export function fetchParentNodesReport(
-    studyUuid: UUID | null,
+    studyUuid: UUID,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     nodeOnlyReport: boolean,
@@ -117,7 +110,7 @@ export function fetchParentNodesReport(
 }
 
 export function fetchNodeReportLogs(
-    studyUuid: UUID | null,
+    studyUuid: UUID,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     reportId: string | null,

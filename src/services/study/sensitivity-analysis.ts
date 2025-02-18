@@ -136,7 +136,7 @@ export function fetchSensitivityAnalysisParameters(parameterUuid: string) {
 }
 
 export function setSensitivityAnalysisParameters(
-    studyUuid: UUID | null,
+    studyUuid: UUID,
     newParams: SensitivityAnalysisParametersInfos | null
 ) {
     console.info('set sensitivity analysis parameters');
@@ -153,7 +153,7 @@ export function setSensitivityAnalysisParameters(
 }
 
 export function getSensitivityAnalysisFactorsCount(
-    studyUuid: UUID | null,
+    studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     isInjectionsSet: boolean,

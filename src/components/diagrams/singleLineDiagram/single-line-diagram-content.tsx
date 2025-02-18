@@ -210,11 +210,14 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const handleBreakerClick: OnBreakerCallbackType = useCallback(
         // switchElement should be SVGElement, this will be fixed once https://github.com/powsybl/powsybl-network-viewer/pull/106/ is merged
         (breakerId, newSwitchState, switchElement: any) => {
+            if (!currentNode) {
+                return;
+            }
             if (!modificationInProgress) {
                 setModificationInProgress(true);
                 setLocallySwitchedBreaker(switchElement?.id);
 
-                updateSwitchState(studyUuid, currentNode?.id, breakerId, newSwitchState).catch((error) => {
+                updateSwitchState(studyUuid, currentNode.id, breakerId, newSwitchState).catch((error) => {
                     console.error(error.message);
                     setErrorMessage(error.message);
                 });
@@ -285,6 +288,9 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
 
     const removeEquipment = useCallback(
         (equipmentType: string, equipmentId: string) => {
+            if (!currentNode?.id) {
+                return;
+            }
             deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -298,10 +304,13 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
 
     const handleRunShortcircuitAnalysis = useCallback(
         (busId: string) => {
+            if (!currentNode?.id || !currentRootNetworkUuid) {
+                return;
+            }
             dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
             displayOneBusShortcircuitAnalysisLoader();
             dispatch(setComputationStarting(true));
-            startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, busId)
+            startShortCircuitAnalysis(studyUuid, currentNode.id, currentRootNetworkUuid, busId)
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -317,11 +326,11 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 });
         },
         [
+            currentNode?.id,
+            currentRootNetworkUuid,
             dispatch,
             displayOneBusShortcircuitAnalysisLoader,
             studyUuid,
-            currentNode?.id,
-            currentRootNetworkUuid,
             snackError,
             resetOneBusShortcircuitAnalysisLoader,
         ]
@@ -344,6 +353,9 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType | null, equipmentId: string) => {
+            if (!currentNode?.id || !currentRootNetworkUuid) {
+                return;
+            }
             const equipmentEnumType = EQUIPMENT_TYPES[equipmentType as keyof typeof EQUIPMENT_TYPES];
             if (equipmentEnumType !== EQUIPMENT_TYPES.HVDC_LINE) {
                 removeEquipment(equipmentEnumType, equipmentId);

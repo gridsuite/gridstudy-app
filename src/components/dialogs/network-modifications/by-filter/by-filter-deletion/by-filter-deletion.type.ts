@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { UUID } from 'crypto';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { Filter } from '../commons/by-filter.type';
 
@@ -20,8 +21,8 @@ export interface ByFilterDeletionFormData {
 }
 
 export interface ByFilterDeletionDialogProps {
-    studyUuid: string;
-    currentNode: { id: string };
+    studyUuid: UUID;
+    currentNode: { id: UUID };
     editData: ByFilterDeletionEditData;
     isUpdate: boolean;
     editDataFetchStatus: string;

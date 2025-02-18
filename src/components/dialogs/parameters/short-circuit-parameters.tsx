@@ -193,6 +193,9 @@ export const ShortCircuitParameters: FunctionComponent<ShortCircuitParametersPro
     // submit the new parameters
     const onSubmit = useCallback(
         (newParams: ShortCircuitParametersFormProps) => {
+            if (!studyUuid) {
+                return;
+            }
             const oldParams = shortCircuitParams;
             setShortCircuitParameters(studyUuid, {
                 ...prepareDataToSend(shortCircuitParams, newParams),

@@ -69,9 +69,11 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
 
     const onSelectionChange = useCallback(
         (equipment: EquipmentInfos) => {
+            if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
+                return;
+            }
             closeDialog();
             updateSearchTerm('');
-            // @ts-expect-error TODO: manage null case
             addToLocalStorageSearchEquipmentHistory(studyUuid, equipment);
             fetchNetworkElementInfos(
                 studyUuid,
@@ -86,11 +88,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
                     showVoltageLevelDiagram(equipment);
                 })
                 .catch(() => {
-                    excludeElementFromCurrentSearchHistory(
-                        // @ts-expect-error TODO: manage null case
-                        studyUuid,
-                        equipment
-                    );
+                    excludeElementFromCurrentSearchHistory(studyUuid, equipment);
                     updateSearchTerm('');
                     snackWarning({
                         messageId: 'NetworkEquipmentNotFound',
