@@ -22,7 +22,7 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
-import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { tabStyles } from '../../parameters-tabs';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
@@ -76,13 +76,7 @@ export function OperationalLimitsGroupsTabs({
     const [activatedByMenuTabIndex, setActivatedByMenuTabIndex] = useState<number | null>(null);
     const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
     const [editionError, setEditionError] = useState<string>('');
-    const { setValue } = useFormContext();
-    const { append: appendToLimitsGroups1, update: updateLimitsGroups1 } = useFieldArray({
-        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`,
-    });
-    const { append: appendToLimitsGroups2, update: updateLimitsGroups2 } = useFieldArray({
-        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}`,
-    });
+    const { setValue, getValues } = useFormContext();
     const selectedLimitsGroups1: string = useWatch({
         name: `${parentFormName}.${SELECTED_LIMITS_GROUP_1}`,
     });
@@ -177,6 +171,39 @@ export function OperationalLimitsGroupsTabs({
         }
     }, [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex, limitsGroups1]);
 
+    const appendEmptyOperationalLimitsGroup = useCallback(
+        (formName: string, id: string) => {
+            let appendIndex = getValues(formName).length;
+            if (appendIndex === 0) {
+                setValue(formName, []);
+            }
+
+            // new limit sets are created with 5 empty limits by default
+            const emptyTemporaryLimit = {
+                [TEMPORARY_LIMIT_NAME]: '',
+                [TEMPORARY_LIMIT_DURATION]: null,
+                [TEMPORARY_LIMIT_VALUE]: null,
+                modificationType: null,
+                [SELECTED]: false,
+            };
+            const newLimitsGroup: OperationalLimitsGroup = {
+                [ID]: id,
+                [CURRENT_LIMITS]: {
+                    [TEMPORARY_LIMITS]: [
+                        emptyTemporaryLimit,
+                        emptyTemporaryLimit,
+                        emptyTemporaryLimit,
+                        emptyTemporaryLimit,
+                        emptyTemporaryLimit,
+                    ],
+                    [PERMANENT_LIMIT]: null,
+                },
+            };
+            setValue(`${formName}[${appendIndex}]`, newLimitsGroup);
+        },
+        [getValues, setValue]
+    );
+
     // synchronizeOperationalLimitsGroups : all the limit sets from both sides have to be
     // in both limitsGroups1 and limitsGroups2, even if they don't contain any data
     useEffect(() => {
@@ -187,31 +214,26 @@ export function OperationalLimitsGroupsTabs({
                     !isBlankOrEmpty(limitsGroup1.id) &&
                     !limitsGroups2.find((limitsGroup2: OperationalLimitsGroup) => limitsGroup1.id === limitsGroup2.id)
                 ) {
-                    appendToLimitsGroups2({
-                        [ID]: limitsGroup1.id,
-                        [CURRENT_LIMITS]: {
-                            [PERMANENT_LIMIT]: null,
-                            [TEMPORARY_LIMITS]: [],
-                        },
-                    });
+                    appendEmptyOperationalLimitsGroup(
+                        `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}`,
+                        limitsGroup1.id
+                    );
                 }
             });
+
             limitsGroups2.forEach((limitsGroup2: OperationalLimitsGroup) => {
                 if (
                     !isBlankOrEmpty(limitsGroup2.id) &&
                     !limitsGroups1.find((limitsGroup1: OperationalLimitsGroup) => limitsGroup2.id === limitsGroup1.id)
                 ) {
-                    appendToLimitsGroups1({
-                        [ID]: limitsGroup2.id,
-                        [CURRENT_LIMITS]: {
-                            [PERMANENT_LIMIT]: null,
-                            [TEMPORARY_LIMITS]: [],
-                        },
-                    });
+                    appendEmptyOperationalLimitsGroup(
+                        `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`,
+                        limitsGroup2.id
+                    );
                 }
             });
         }
-    }, [limitsGroups1, limitsGroups2, appendToLimitsGroups1, appendToLimitsGroups2, editingTabIndex]);
+    }, [appendEmptyOperationalLimitsGroup, editingTabIndex, limitsGroups1, limitsGroups2, parentFormName]);
 
     const finishEditingLimitsGroup = useCallback(() => {
         if (editingTabIndex !== -1) {
@@ -243,20 +265,14 @@ export function OperationalLimitsGroupsTabs({
             }
 
             if (indexInLs1 !== undefined) {
-                updateLimitsGroups1(indexInLs1, {
-                    ...limitsGroups1[indexInLs1],
-                    [ID]: editedLimitGroupName,
-                });
-                if (selectedLimitsGroups1 === oldName) {
+                setValue(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexInLs1}].${ID}`, editedLimitGroupName);
+                if (getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`) === oldName) {
                     setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, editedLimitGroupName);
                 }
             }
             if (indexInLs2 !== undefined) {
-                updateLimitsGroups2(indexInLs2, {
-                    ...limitsGroups2[indexInLs2],
-                    [ID]: editedLimitGroupName,
-                });
-                if (selectedLimitsGroups2 === oldName) {
+                setValue(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexInLs2}].${ID}`, editedLimitGroupName);
+                if (getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`) === oldName) {
                     setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, editedLimitGroupName);
                 }
             }
@@ -267,14 +283,11 @@ export function OperationalLimitsGroupsTabs({
     }, [
         parentFormName,
         setValue,
-        selectedLimitsGroups1,
-        selectedLimitsGroups2,
+        getValues,
         editingTabIndex,
         editedLimitGroupName,
         limitsGroups1,
         limitsGroups2,
-        updateLimitsGroups1,
-        updateLimitsGroups2,
         setEditingTabIndex,
         setSelectedLimitGroupTabIndex,
     ]);
@@ -291,32 +304,17 @@ export function OperationalLimitsGroupsTabs({
     const addNewLimitSet = useCallback(() => {
         if (editingTabIndex === -1) {
             const newIndex: number = limitsGroups1.length;
-            // new limit sets are created with 5 empty limits by default
-            const emptyTemporaryLimit = {
-                [TEMPORARY_LIMIT_NAME]: '',
-                [TEMPORARY_LIMIT_DURATION]: null,
-                [TEMPORARY_LIMIT_VALUE]: null,
-                modificationType: null,
-                [SELECTED]: false,
-            };
-            const newLimitsGroup: OperationalLimitsGroup = {
-                [ID]: '',
-                [CURRENT_LIMITS]: {
-                    [TEMPORARY_LIMITS]: [
-                        emptyTemporaryLimit,
-                        emptyTemporaryLimit,
-                        emptyTemporaryLimit,
-                        emptyTemporaryLimit,
-                        emptyTemporaryLimit,
-                    ],
-                    [PERMANENT_LIMIT]: null,
-                },
-            };
-            appendToLimitsGroups1(newLimitsGroup);
-            appendToLimitsGroups2(newLimitsGroup);
+            appendEmptyOperationalLimitsGroup(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`, '');
+            appendEmptyOperationalLimitsGroup(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}`, '');
             startEditingLimitsGroup(newIndex, `LIMIT_SET`);
         }
-    }, [appendToLimitsGroups1, appendToLimitsGroups2, limitsGroups1, startEditingLimitsGroup, editingTabIndex]);
+    }, [
+        editingTabIndex,
+        limitsGroups1.length,
+        appendEmptyOperationalLimitsGroup,
+        parentFormName,
+        startEditingLimitsGroup,
+    ]);
 
     return (
         <>
