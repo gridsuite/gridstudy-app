@@ -159,15 +159,18 @@ const MapViewer = ({
         [openDiagramView, isInDrawingMode]
     );
 
-    function showInSpreadsheet(equipment) {
-        let newTableEquipment = {
-            id: equipment.equipmentId,
-            type: equipment.equipmentType,
-            changed: !tableEquipment.changed,
-        };
-        onTableEquipementChanged(newTableEquipment);
-        onChangeTab(1); // switch to spreadsheet view
-    }
+    const showInSpreadsheet = useCallback(
+        (equipment) => {
+            let newTableEquipment = {
+                id: equipment.equipmentId,
+                type: equipment.equipmentType,
+                changed: !tableEquipment.changed,
+            };
+            onTableEquipementChanged(newTableEquipment);
+            onChangeTab(1); // switch to spreadsheet view
+        },
+        [onChangeTab, onTableEquipementChanged, tableEquipment.changed]
+    );
 
     const onDrawingModeEnter = useCallback((active) => {
         setDrawingMode(active);
