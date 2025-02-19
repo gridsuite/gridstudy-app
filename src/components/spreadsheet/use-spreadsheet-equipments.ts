@@ -20,7 +20,7 @@ import {
     resetEquipmentsByTypes,
     updateEquipments,
 } from 'redux/actions';
-import { AppState } from 'redux/reducer';
+import { AppState, EquipmentUpdateType } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/equipment/common-config';
@@ -31,7 +31,8 @@ type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
-    formatFetchedEquipments: FormatFetchedEquipments
+    formatFetchedEquipments: FormatFetchedEquipments,
+    highlightUpdatedEquipment: (updatedEquipments: Record<EquipmentUpdateType, Identifiable[]>) => void
 ) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
@@ -122,6 +123,7 @@ export const useSpreadsheetEquipments = (
         if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid && currentNode?.id) {
             // The formatting of the fetched equipments is done in the reducer
             fetchAllEquipments(studyUuid, nodeId, currentRootNetworkUuid, impactedSubstationsIds).then((values) => {
+                highlightUpdatedEquipment(values as Record<EquipmentUpdateType, Identifiable[]>);
                 dispatch(updateEquipments(values, nodeId));
             });
             resetImpactedSubstationsIds();
