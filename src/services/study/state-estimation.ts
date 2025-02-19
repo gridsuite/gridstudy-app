@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
+import { StateEstimationParameters } from '../../components/dialogs/parameters/state-estimation/state-estimation-parameters-utils';
 
 export function startStateEstimation(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
@@ -59,4 +60,28 @@ export function fetchStateEstimationResult(studyUuid: UUID, currentNodeUuid: UUI
     )}/state-estimation/result`;
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function updateStateEstimationParameters(studyUuid: UUID | null, newParams: StateEstimationParameters | null) {
+    console.info('set state estimation parameters');
+    const url = getStudyUrl(studyUuid) + '/state-estimation/parameters';
+    console.debug(url);
+
+    console.info('newParams in rest API', newParams);
+
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
+}
+
+export function getStateEstimationStudyParameters(studyUuid: UUID) {
+    console.info('get state estimation study parameters');
+    const getStateEstimParams = getStudyUrl(studyUuid) + '/state-estimation/parameters';
+    console.debug(getStateEstimParams);
+    return backendFetchJson(getStateEstimParams);
 }

@@ -400,6 +400,52 @@ export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
 export const SPREADSHEET_GS_FILTER = 'SpreadsheetGsFilter';
 
+/* State estimation parameters fields */
+/* General */
+export const PRINCIPAL_OBSERVABLE_ZONE = 'principalObservableZone';
+export const ESTIM_ALGO_TYPE = 'estimAlgoType';
+export const ESTIM_LOG_LEVEL = 'estimLogLevel';
+/* Weights */
+export const WEIGHTS_PARAMETERS = 'weightsParameters';
+export const WEIGHT_V = 'weightV';
+export const WEIGHT_ACT_TRANSIT = 'weightActTransit';
+export const WEIGHT_REA_TRANSIT = 'weightReaTransit';
+export const WEIGHT_ACT_PROD = 'weightActProd';
+export const WEIGHT_REA_PROD = 'weightReaProd';
+export const WEIGHT_ACT_LOAD = 'weightActLoad';
+export const WEIGHT_REA_LOAD = 'weightReaLoad';
+export const WEIGHT_IN = 'weightIN';
+/* Quality */
+export const THRESHOLD_OBSERVABILITY_RATE = 'thresholdObservabilityRate';
+export const THRESHOLD_ACT_REDUNDANCY = 'thresholdActRedundancy';
+export const THRESHOLD_REA_REDUNDANCY = 'thresholdReaRedundancy';
+export const THRESHOLD_NB_LOST_INJECTIONS = 'thresholdNbLostInjections';
+export const THRESHOLD_NB_INVALID_MEASURE = 'thresholdNbInvalidMeasure';
+export const THRESHOLD_NB_CRITICAL_MEASURE = 'thresholdNbCriticalMeasure';
+export const THRESHOLD_NB_OUT_BOUNDS_GAP = 'thresholdNbOutBoundsGap';
+export const THRESHOLD_NB_ITER = 'thresholdNbIter';
+export const THRESHOLD_NB_LOST_TRANSITS = 'thresholdNbLostTransits';
+export const QUALITY_PER_REGION = 'qualityPerRegion';
+export const THRESHOLD_PER_VOLTAGE_LEVEL = 'thresholdsPerVoltageLevel';
+export const THRESHOLD_OUT_BOUNDS_GAP_V = 'thresholdOutBoundsGapV';
+export const THRESHOLD_OUT_BOUNDS_GAP_P = 'thresholdOutBoundsGapP';
+export const THRESHOLD_OUT_BOUNDS_GAP_Q = 'thresholdOutBoundsGapQ';
+export const THRESHOLD_LOST_ACT_PROD = 'thresholdLostActProd';
+export const THRESHOLD_LOST_REA_PROD = 'thresholdLostReaProd';
+export const THRESHOLD_LOST_ACT_LOAD = 'thresholdLostActLoad';
+export const THRESHOLD_LOST_REA_LOAD = 'thresholdLostReaLoad';
+export const THRESHOLD_ACT_TRANSIT = 'thresholdActTransit';
+export const THRESHOLD_REA_TRANSIT = 'thresholdReaTransit';
+
+/* Loadbounds */
+
+export const DEFAULT_BOUNDS = 'defaultBounds';
+export const DEFAULT_FIXED_BOUNDS = 'defaultFixedBounds';
+export const P_MIN = 'pmin';
+export const P_MAX = 'pmax';
+export const Q_MIN = 'qmin';
+export const Q_MAX = 'qmax';
+
 export const BRANCH_MEASUREMENTS = 'branchMeasurements';
 export const MEASUREMENT_P1 = 'measurementP1';
 export const MEASUREMENT_P2 = 'measurementP2';

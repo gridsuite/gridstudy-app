@@ -10,6 +10,7 @@ import {
     ILimitReductionsByVoltageLevel,
     ITemporaryLimitReduction,
     LIMIT_DURATION_FORM,
+    LIMIT_REDUCTIONS_FORM,
 } from './columns-definitions';
 import { useIntl } from 'react-intl';
 import LimitReductionsTable from './limit-reductions-table';
@@ -67,7 +68,13 @@ const LimitReductionsTableForm: FunctionComponent<{
         return columnsDefinition;
     }, [intl, limits, getToolTipColumn]);
 
-    return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={450} />;
+    return (
+        <LimitReductionsTable
+            formName={LIMIT_REDUCTIONS_FORM}
+            columnsDefinition={columnsDefinition}
+            tableHeight={450}
+        />
+    );
 };
 
 export default LimitReductionsTableForm;
