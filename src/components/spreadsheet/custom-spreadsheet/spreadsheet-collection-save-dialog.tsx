@@ -75,11 +75,12 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
         open.setFalse();
     }, [open]);
 
+    const toggleTableSelection = (prev: TableState[], targetIndex: number) =>
+        prev.map((table) => (table.index === targetIndex ? { ...table, selected: !table.selected } : table));
+
     const handleToggle = useCallback(
         (index: number) => () => {
-            setLocalTablesState((prev) =>
-                prev.map((table) => (table.index === index ? { ...table, selected: !table.selected } : table))
-            );
+            setLocalTablesState((prev) => toggleTableSelection(prev, index));
         },
         []
     );
@@ -191,7 +192,7 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                     {(provided) => (
                         <div ref={provided.innerRef} {...provided.droppableProps}>
                             {localTablesState.map((table, index) => (
-                                <Draggable draggableId={`table-${index}`} index={index} key={`table-${table.name}`}>
+                                <Draggable draggableId={`table-${index}`} index={index} key={`table-${index}`}>
                                     {(provided) => (
                                         <div ref={provided.innerRef} {...provided.draggableProps}>
                                             <ListItem sx={styles.checkboxItem}>
