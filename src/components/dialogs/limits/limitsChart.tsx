@@ -39,6 +39,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                     data.push({
                         label: field.name,
                         value: field.value,
+                        tempo: field.acceptableDuration,
                     })
                 );
         }
@@ -50,12 +51,13 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 const previousSum = acc.ticks.length > 0 ? acc.ticks[acc.ticks.length - 1] : 0; // Sum of previous values
                 const difference = item.value - previousSum; // Calculate the difference
                 const colorIndex = istPresent && index > 0 ? index - 1 : index;
-                const color = item.label === intl.formatMessage({ id: 'IST' }) ? colorIST : colors?.[colorIndex];
+                const isIst = item.label === intl.formatMessage({ id: 'IST' });
+                const color = isIst ? colorIST : colors?.[colorIndex];
 
                 const updatedSeries = [
                     ...acc.series,
                     {
-                        label: item.label,
+                        label: isIst ? intl.formatMessage({ id: 'unlimited' }) : `${item.tempo}s`,
                         data: [difference],
                         color: color ?? colors[colors.length - 1],
                         stack: 'total',
@@ -78,7 +80,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             },
             { series: [], ticks: [] }
         );
-    }, [currentLimits, intl]);
+    }, [currentLimits?.permanentLimit, currentLimits?.temporaryLimits, intl]);
 
     return (
         <BarChart
