@@ -5,14 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useMemo } from 'react';
 import { StackableSeriesType } from '@mui/x-charts/models/seriesType/common';
 import { useWatch } from 'react-hook-form';
-import { PERMANENT_LIMIT, TEMPORARY_LIMITS } from '../../utils/field-constants';
-import { TemporaryLimit } from '../../../services/network-modification-types';
 import { useIntl } from 'react-intl';
+import { CurrentLimits } from '../../../services/network-modification-types';
 
 export interface LimitsGraphProps {
     limitsGroupFormName: string;
@@ -22,21 +20,20 @@ const colors: string[] = ['#ffc019', '#e47400', '#cc5500', '#ff5757', '#ff0000']
 const colorForbidden: string = '#b10303';
 
 export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGraphProps>) {
-    const currentPermanentLimit = useWatch({ name: `${limitsGroupFormName}.${PERMANENT_LIMIT}` });
-    const currentTemporaryLimits: TemporaryLimit[] = useWatch({ name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}` });
+    const currentLimits: CurrentLimits = useWatch({ name: `${limitsGroupFormName}` });
     const intl = useIntl();
 
     const { series, ticks } = useMemo(() => {
         const data = [];
         let istPresent = false;
 
-        if (currentPermanentLimit) {
-            data.push({ label: intl.formatMessage({ id: 'IST' }), value: currentPermanentLimit });
+        if (currentLimits?.permanentLimit) {
+            data.push({ label: intl.formatMessage({ id: 'IST' }), value: currentLimits.permanentLimit });
             istPresent = true;
         }
 
-        if (currentTemporaryLimits) {
-            currentTemporaryLimits
+        if (currentLimits?.temporaryLimits) {
+            currentLimits.temporaryLimits
                 .filter((field) => field.value && field.name)
                 .forEach((field) =>
                     data.push({
@@ -81,7 +78,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             },
             { series: [], ticks: [] }
         );
-    }, [currentPermanentLimit, currentTemporaryLimits, intl]);
+    }, [currentLimits, intl]);
 
     return (
         <BarChart
