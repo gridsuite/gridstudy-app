@@ -10,13 +10,14 @@ jobs:
     license-headers:
       name: Check licenses headers
       runs-on: ubuntu-latest
-
       steps:
-        - uses: actions/setup-node@v3
         - name: Checkout sources
           uses: actions/checkout@v2
           with:
               persist-credentials: false
+        - uses: actions/setup-node@v4
+          with:
+              node-version: 18
 
         - name: Check License Header (Check Mode)
           uses: apache/skywalking-eyes/header@v0.5.0
@@ -25,19 +26,21 @@ jobs:
 
     build-and-deploy:
         runs-on: ubuntu-latest
-
         steps:
             - name: Checkout
               uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
               with:
                   fetch-depth: 0
                   persist-credentials: false
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 18
 
             - name: Install and Build
               env:
                 NODE_OPTIONS: "--max_old_space_size=4096"
               run: |
-                  npm install
+                  npm ci
                   npm run licenses-check
                   npm run lint
                   npm run test:coverage
