@@ -4,13 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    CONTINGENCY_LIST_EQUIPMENTS,
-    ElementType,
-    FILTER_EQUIPMENTS,
-    FormEquipment,
-    SelectInput,
-} from '@gridsuite/commons-ui';
+import { CONTINGENCY_LIST_EQUIPMENTS, ElementType, FILTER_EQUIPMENTS, SelectInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, NAME } from 'components/utils/field-constants';
 import { FC, useMemo } from 'react';
@@ -42,7 +36,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
     const equipmentTypesOptions = useMemo(() => {
         return Object.values(
             selectionType === SELECTION_TYPES.FILTER ? FILTER_EQUIPMENTS : CONTINGENCY_LIST_EQUIPMENTS
-        ).map((equipment: FormEquipment) => {
+        ).map((equipment: { id: string; label: string }) => {
             return {
                 id: equipment.id,
                 label: equipment.label,
