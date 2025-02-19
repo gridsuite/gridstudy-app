@@ -46,7 +46,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
-import { setUpdateCustomColumDefinitions } from 'redux/actions';
+import { setUpdateColumnsDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
@@ -57,7 +57,7 @@ import { AppState } from 'redux/reducer';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
-    customColumnName?: string;
+    colId?: string;
     tabIndex: number;
     isCreate?: boolean;
 };
@@ -76,7 +76,7 @@ const styles = {
 
 export default function CustomColumnDialog({
     open,
-    customColumnName,
+    colId,
     tabIndex,
     isCreate = true,
 }: Readonly<CustomColumnDialogProps>) {
@@ -88,16 +88,14 @@ export default function CustomColumnDialog({
     const { setError, control } = formMethods;
     const columnId = useWatch({ control, name: COLUMN_ID });
     const watchColumnType = useWatch({ control, name: COLUMN_TYPE });
-    const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
-    );
+    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex].columns);
     const tableName = useSelector((state: AppState) => state.tables.definitions[tabIndex].name);
 
-    const customColumnDefinition = useMemo(
-        () => customColumnsDefinitions.find((column) => column.name === customColumnName),
-        [customColumnName, customColumnsDefinitions]
+    const columnDefinition = useMemo(
+        () => columnsDefinitions.find((column) => column.id === colId),
+        [colId, columnsDefinitions]
     );
-    const hasColumnIdChanged = columnId !== customColumnDefinition?.[COLUMN_ID];
+    const hasColumnIdChanged = columnId !== columnDefinition?.[COLUMN_ID];
 
     const { handleSubmit, reset } = formMethods;
     const dispatch = useDispatch<AppDispatch>();
@@ -143,7 +141,7 @@ export default function CustomColumnDialog({
 
     const onSubmit = useCallback(
         (newParams: CustomColumnForm) => {
-            const existingColumn = customColumnsDefinitions?.find((column) => column.id === newParams.id);
+            const existingColumn = columnsDefinitions?.find((column) => column.id === newParams.id);
 
             if (existingColumn) {
                 if (isCreate || hasColumnIdChanged) {
@@ -158,8 +156,8 @@ export default function CustomColumnDialog({
                 dispatchFilters(updatedFilters);
             }
 
-            if (customColumnsDefinitions) {
-                const newItems: Item[] = [...customColumnsDefinitions, newParams];
+            if (columnsDefinitions) {
+                const newItems: Item[] = [...columnsDefinitions, newParams];
                 if (hasCyclicDependencies(newItems)) {
                     setError(COLUMN_DEPENDENCIES, {
                         type: 'validate',
@@ -170,10 +168,10 @@ export default function CustomColumnDialog({
             }
 
             dispatch(
-                setUpdateCustomColumDefinitions({
+                setUpdateColumnsDefinitions({
                     index: tabIndex,
                     value: {
-                        uuid: customColumnDefinition?.uuid || uuid4(),
+                        uuid: columnDefinition?.uuid || uuid4(),
                         id: newParams.id,
                         name: newParams.name,
                         type: COLUMN_TYPES[newParams.type],
@@ -187,10 +185,10 @@ export default function CustomColumnDialog({
             open.setFalse();
         },
         [
-            customColumnsDefinitions,
+            columnsDefinitions,
             dispatch,
             tabIndex,
-            customColumnDefinition?.uuid,
+            columnDefinition?.uuid,
             reset,
             open,
             isCreate,
@@ -202,19 +200,20 @@ export default function CustomColumnDialog({
     );
 
     useEffect(() => {
-        if (open.value && customColumnDefinition) {
+        if (open.value && columnDefinition) {
+            const { name, id, type, precision, formula, dependencies } = columnDefinition;
             reset({
-                [COLUMN_NAME]: customColumnDefinition.name,
-                [COLUMN_ID]: customColumnDefinition.id,
-                [COLUMN_TYPE]: customColumnDefinition.type,
-                [PRECISION]: customColumnDefinition.precision,
-                [FORMULA]: customColumnDefinition.formula,
-                [COLUMN_DEPENDENCIES]: customColumnDefinition.dependencies,
+                [COLUMN_NAME]: name,
+                [COLUMN_ID]: id,
+                [COLUMN_TYPE]: type,
+                [PRECISION]: precision,
+                [FORMULA]: formula,
+                [COLUMN_DEPENDENCIES]: dependencies,
             });
         } else {
             reset(initialCustomColumnForm);
         }
-    }, [customColumnDefinition, tabIndex, open.value, reset]);
+    }, [columnDefinition, tabIndex, open.value, reset]);
 
     return (
         <CustomFormProvider validationSchema={customColumnFormSchema} {...formMethods}>
@@ -273,7 +272,7 @@ export default function CustomColumnDialog({
                                 label="spreadsheet/custom_column/column_dependencies"
                                 name={COLUMN_DEPENDENCIES}
                                 options={
-                                    customColumnsDefinitions
+                                    columnsDefinitions
                                         ?.map((definition) => definition.id)
                                         .filter((id) => id !== columnId) ?? []
                                 }

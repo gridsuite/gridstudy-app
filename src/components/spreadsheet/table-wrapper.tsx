@@ -108,10 +108,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         () => new Set(lockedColumns[tabIndex] ? JSON.parse(lockedColumns[tabIndex]) : []),
         [lockedColumns, tabIndex]
     );
+    const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
-    const additionalEquipmentsByNodesForCustomColumns = useSelector(
-        (state: AppState) => state.additionalEquipmentsByNodesForCustomColumns
-    );
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
 
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
@@ -121,16 +119,16 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const isLockedColumnNamesEmpty = useMemo(() => formattedLockedColumns.size === 0, [formattedLockedColumns.size]);
 
     const tableDefinition = useMemo(() => tablesDefinitions[tabIndex], [tabIndex, tablesDefinitions]);
-    const columnData = useMemo(() => {
-        const selectedColumns = formattedDisplayedColumnsNames.filter((col) => col.visible).map((col) => col.colId);
-        const columns = tableDefinition.columns.reduce((acc, item) => {
+    const columnsDefinitions = useCustomColumn(tabIndex);
+    const reorderedColsDefs = useMemo(() => {
+        const visibleColumnsIds = formattedDisplayedColumnsNames.filter((col) => col.visible).map((col) => col.colId);
+        const columns = columnsDefinitions.reduce((acc, item) => {
             acc[item.colId] = item;
             return acc;
         }, {} as Record<string, CustomColDef>);
-        return selectedColumns.map((name) => columns[name]);
-    }, [formattedDisplayedColumnsNames, tableDefinition.columns]);
-    const customColumns = useCustomColumn(tabIndex);
-    const mergedColumnData = useMemo(() => [...columnData, ...customColumns], [columnData, customColumns]);
+        return visibleColumnsIds.map((id) => columns[id]);
+    }, [formattedDisplayedColumnsNames, columnsDefinitions]);
+
     const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition.name]);
     const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition.name);
 
@@ -142,7 +140,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [sortConfig]);
 
     const updateLockedColumnsConfig = useCallback(() => {
-        const lockedColumnsConfig = tableDefinition.columns
+        const lockedColumnsConfig = reorderedColsDefs
             .filter((column) => formattedLockedColumns.has(column.colId))
             .map((column) => {
                 const s: ColumnState = {
@@ -155,15 +153,15 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             state: lockedColumnsConfig,
             defaultState: { pinned: null },
         });
-    }, [formattedLockedColumns, tableDefinition.columns]);
+    }, [formattedLockedColumns, reorderedColsDefs]);
 
     useEffect(() => {
-        gridRef.current?.api?.setGridOption('columnDefs', mergedColumnData);
+        gridRef.current?.api?.setGridOption('columnDefs', reorderedColsDefs);
         updateSortConfig();
         updateLockedColumnsConfig();
         updateFilters(gridRef.current?.api, filters);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [columnData, customColumns]);
+    }, [reorderedColsDefs]);
 
     useEffect(() => {
         updateSortConfig();
@@ -207,45 +205,32 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [errorMessage, snackError]);
 
     useEffect(() => {
-        if (disabled || !equipments) {
+        if (disabled || equipments.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
             return;
         }
-
-        let equipmentsWithCustomColumnInfo = [...equipments];
+        let localRowData: Identifiable[] = [];
         if (tableDefinition.type) {
-            Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach(([nodeAlias, equipments]) => {
-                const equipmentsToAdd = equipments[tableDefinition.type];
-                if (equipmentsToAdd) {
-                    equipmentsToAdd.forEach((equipmentToAdd) => {
-                        let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(
-                            (equipmentWithCustomColumnInfo) => equipmentWithCustomColumnInfo.id === equipmentToAdd.id
-                        );
-                        let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
-                        if (matchingEquipment) {
-                            let equipmentWithAddedInfo: RecursiveIdentifiable = { ...matchingEquipment };
-                            equipmentWithAddedInfo[nodeAlias] = equipmentToAdd;
-                            equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
-                        }
-                    });
-                }
+            equipments.equipmentsByNodeId[currentNode.id].forEach((equipment) => {
+                let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
+                Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
+                    let matchingEquipment = equipments.find((eq) => eq.id === equipment.id);
+                    let nodeAlias = nodesAliases.find((value) => value.id === nodeId);
+                    if (nodeAlias !== undefined && matchingEquipment !== undefined) {
+                        equipmentToAdd[nodeAlias.alias] = matchingEquipment;
+                    }
+                });
+                localRowData.push(equipmentToAdd);
             });
         }
-        setRowData(equipmentsWithCustomColumnInfo);
 
         // To handle cases where a "customSpreadsheet" tab is opened.
         // This ensures that the grid correctly displays data specific to the custom tab.
         if (gridRef.current?.api) {
-            gridRef.current.api.setGridOption('rowData', equipmentsWithCustomColumnInfo);
+            gridRef.current.api.setGridOption('rowData', localRowData);
             updateSortConfig();
         }
-    }, [
-        tabIndex,
-        disabled,
-        equipments,
-        additionalEquipmentsByNodesForCustomColumns,
-        tableDefinition.type,
-        updateSortConfig,
-    ]);
+        setRowData(localRowData);
+    }, [tabIndex, disabled, equipments, tableDefinition.type, nodesAliases, currentNode.id, updateSortConfig]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
@@ -363,7 +348,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         <SpreadsheetSave
                             tabIndex={tabIndex}
                             gridRef={gridRef}
-                            columns={columnData}
+                            columns={reorderedColsDefs}
                             tableName={tableDefinition.name}
                             disabled={disabled || rowData.length === 0}
                         />
@@ -381,8 +366,11 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         rowData={rowData}
-                        columnData={mergedColumnData}
-                        fetched={!!equipments || !!errorMessage}
+                        columnData={reorderedColsDefs}
+                        fetched={
+                            equipments.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined ||
+                            !!errorMessage
+                        }
                         handleColumnDrag={handleColumnDrag}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}

@@ -9,7 +9,7 @@ import { ContingencyList } from './study/contingency-list';
 import { backendFetch } from './utils';
 import { UUID } from 'crypto';
 import { ElementType } from '@gridsuite/commons-ui';
-import { SpreadsheetConfig } from '../types/custom-columns.types';
+import { SpreadsheetConfig } from 'components/spreadsheet/config/spreadsheet.type';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
 const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
