@@ -254,10 +254,10 @@ export function OperationalLimitsGroupsTabs({
             // checks if a limit set with that name already exists
             const sameNameInLs1 = limitsGroups1
                 .filter((ls, index: number) => index !== indexInLs1)
-                .find((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === editedLimitGroupName);
+                .find((limitsGroup: OperationalLimitsGroup) => limitsGroup.id.trim() === editedLimitGroupName.trim());
             const sameNameInLs2 = limitsGroups2
                 .filter((ls, index: number) => index !== indexInLs1)
-                .find((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === editedLimitGroupName);
+                .find((limitsGroup: OperationalLimitsGroup) => limitsGroup.id.trim() === editedLimitGroupName.trim());
 
             if (sameNameInLs1 || sameNameInLs2) {
                 setEditionError('LimitSetCreationDuplicateError');
