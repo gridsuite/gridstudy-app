@@ -17,9 +17,11 @@ import { useStateBoolean } from '@gridsuite/commons-ui';
 import { useCsvExport } from './csv-export/use-csv-export';
 import { CsvExportProps } from './csv-export/csv-export.type';
 import { spreadsheetStyles } from './utils/style';
+import { SpreadsheetCollectionSaveDialog } from './custom-spreadsheet/spreadsheet-collection-save-dialog';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
+    SAVE_COLLECTION = 'SAVE_COLLECTION',
     EXPORT_CSV = 'EXPORT_CSV',
 }
 
@@ -45,6 +47,7 @@ export default function SpreadsheetSave({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const customSaveDialogOpen = useStateBoolean(false);
+    const saveCollectionDialogOpen = useStateBoolean(false);
     const { downloadCSVData } = useCsvExport();
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
@@ -63,6 +66,12 @@ export default function SpreadsheetSave({
                 action: customSaveDialogOpen.setTrue,
                 showInDevMode: true,
             },
+            [SpreadsheetSaveOptionId.SAVE_COLLECTION]: {
+                id: SpreadsheetSaveOptionId.SAVE_COLLECTION,
+                label: 'spreadsheet/save/options/collection',
+                action: saveCollectionDialogOpen.setTrue,
+                showInDevMode: true,
+            },
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
                 label: 'spreadsheet/save/options/csv',
@@ -70,7 +79,15 @@ export default function SpreadsheetSave({
                 disabled: disabled,
             },
         }),
-        [customSaveDialogOpen.setTrue, downloadCSVData, gridRef, columns, tableName, disabled]
+        [
+            customSaveDialogOpen.setTrue,
+            downloadCSVData,
+            gridRef,
+            columns,
+            tableName,
+            disabled,
+            saveCollectionDialogOpen.setTrue,
+        ]
     );
 
     const handleMenuItemClick = useCallback(
@@ -105,6 +122,7 @@ export default function SpreadsheetSave({
                 {Object.values(spreadsheetOptions).map(renderMenuItem)}
             </Menu>
             <CustomSpreadsheetSaveDialog tabIndex={tabIndex} open={customSaveDialogOpen} />
+            <SpreadsheetCollectionSaveDialog open={saveCollectionDialogOpen} />
         </>
     );
 }

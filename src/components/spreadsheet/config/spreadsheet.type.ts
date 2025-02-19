@@ -57,3 +57,8 @@ export type SpreadsheetConfig = {
     sheetType: SpreadsheetEquipmentType;
     customColumns: ColumnDefinitionDto[];
 };
+
+export type SpreadsheetCollection = {
+    id?: string;
+    spreadsheetConfigs: SpreadsheetConfig[];
+};
