@@ -5,8 +5,8 @@
     "private": true,
     "type": "module",
     "engines": {
-        "node": ">=20",
-        "npm": "^10.8.2"
+        "node": ">=22",
+        "npm": "^10.9.2"
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
@@ -87,7 +87,7 @@
         "@types/license-checker": "^25.0.6",
         "@types/localized-countries": "^2.0.3",
         "@types/lucene-escape-query": "^1.0.2",
-        "@types/node": "^20.17.19",
+        "@types/node": "^22.13.4",
         "@types/plotly.js-basic-dist-min": "^2.12.4",
         "@types/qs": "^6.9.18",
         "@types/react": "^18.3.18",
