@@ -165,6 +165,7 @@ export const useSpreadsheetEquipments = (
         resetImpactedSubstationsIds,
         resetDeletedEquipments,
         resetImpactedElementTypes,
+        highlightUpdatedEquipment,
     ]);
 
     useEffect(() => {
