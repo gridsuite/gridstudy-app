@@ -66,10 +66,6 @@ import {
     FavoriteContingencyListsAction,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     IncrementNetworkAreaDiagramDepthAction,
-    LIMIT_REDUCTION,
-    LIMIT_REDUCTION_MODIFIED,
-    LimitReductionAction,
-    LimitReductionModifiedAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
@@ -482,7 +478,6 @@ export interface AppState extends CommonStoreState {
     tableSort: TableSort;
     tables: TablesState;
 
-    limitReductionModified: boolean;
     nodeSelectionForCopy: NodeSelectionForCopy;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
@@ -684,7 +679,6 @@ const initialState: AppState = {
     })),
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
-    limitReductionModified: false,
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -1052,14 +1046,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(ENABLE_DEVELOPER_MODE, (state, action: EnableDeveloperModeAction) => {
         state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
-    });
-
-    builder.addCase(LIMIT_REDUCTION, (state, action: LimitReductionAction) => {
-        state[PARAM_LIMIT_REDUCTION] = action[PARAM_LIMIT_REDUCTION];
-    });
-
-    builder.addCase(LIMIT_REDUCTION_MODIFIED, (state, action: LimitReductionModifiedAction) => {
-        state.limitReductionModified = action.limitReductionModified;
     });
 
     builder.addCase(UNAUTHORIZED_USER_INFO, (state, action: UnauthorizedUserAction) => {
