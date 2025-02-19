@@ -47,7 +47,7 @@ export function LimitsPane({
     const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | null>(null);
 
     const limitsGroups1: OperationalLimitsGroup[] = useWatch({
-        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}.`,
+        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
     });
     const limitsGroups2: OperationalLimitsGroup[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
