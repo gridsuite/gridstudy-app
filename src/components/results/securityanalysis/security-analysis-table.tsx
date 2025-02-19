@@ -28,7 +28,7 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
     const rowsToShow = getRows(rows, securityAnalysisStatus);
-
+    console.log(' rowsToShow: ', JSON.stringify(rowsToShow));
     const overlayNoRowsTemplate = getNoRowsMessage(
         resultStatusMessages,
         rows,
