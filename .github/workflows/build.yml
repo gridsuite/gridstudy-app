@@ -17,7 +17,7 @@ jobs:
               persist-credentials: false
         - uses: actions/setup-node@v4
           with:
-              node-version: 18
+              node-version: 20
 
         - name: Check License Header (Check Mode)
           uses: apache/skywalking-eyes/header@v0.5.0
@@ -33,7 +33,7 @@ jobs:
                   persist-credentials: false
             - uses: actions/setup-node@v4
               with:
-                  node-version: 18
+                  node-version: 20
 
             - name: Install and Build
               env:
