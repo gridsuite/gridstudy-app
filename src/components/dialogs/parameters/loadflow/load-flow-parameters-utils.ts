@@ -6,7 +6,12 @@
  */
 
 import yup from 'components/utils/yup-config';
-import { ILimitReductionsByVoltageLevel } from '../common/limitreductions/columns-definitions';
+import {
+    ILimitReductionsByVoltageLevel,
+    IST_FORM,
+    LIMIT_DURATION_FORM,
+    LIMIT_REDUCTIONS_FORM,
+} from '../common/limitreductions/columns-definitions';
 import {
     BALANCE_TYPE,
     COMMON_PARAMETERS,
@@ -17,33 +22,22 @@ import {
     DC_USE_TRANSFORMER_RATIO,
     DISTRIBUTED_SLACK,
     HVDC_AC_EMULATION,
+    MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
     PHASE_SHIFTER_REGULATION_ON,
     READ_SLACK_BUS,
     SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON,
     SPECIFIC_PARAMETERS,
     TRANSFORMER_VOLTAGE_CONTROL_ON,
     TWT_SPLIT_SHUNT_ADMITTANCE,
-    TYPES,
     USE_REACTIVE_LIMITS,
     VOLTAGE_INIT_MODE,
     WRITE_SLACK_BUS,
 } from './constants';
-
-export interface ParameterDescription {
-    name: string;
-    type: string;
-    description?: string;
-    label?: string;
-    possibleValues?: { id: string; label: string }[] | string[];
-    defaultValue?: any;
-}
-
-export interface Parameters {
-    provider: string;
-    commonParameters: Record<string, unknown>;
-    specificParametersPerProvider: Record<string, Record<string, unknown>>;
-    limitReductions: ILimitReductionsByVoltageLevel[];
-}
+import { toFormValuesLimitReductions } from '../common/limitreductions/limit-reductions-form-util';
+import { PARAM_LIMIT_REDUCTION, PARAM_PROVIDER_OPENLOADFLOW } from 'utils/config-params';
+import { UseFormReturn } from 'react-hook-form';
+import { ParameterType, SpecificParameterInfos } from '../parameters.type';
+import { SpecificParametersPerProvider } from 'services/study/loadflow.type';
 
 export enum TAB_VALUES {
     GENERAL = 'General',
@@ -89,24 +83,24 @@ export const getCommonLoadFlowParametersFormSchema = () => {
     });
 };
 
-export const getSpecificLoadFlowParametersFormSchema = (specificParameters: ParameterDescription[]) => {
+export const getSpecificLoadFlowParametersFormSchema = (specificParameters: SpecificParameterInfos[]) => {
     const shape: { [key: string]: yup.AnySchema } = {};
 
-    specificParameters?.forEach((param: ParameterDescription) => {
+    specificParameters?.forEach((param: SpecificParameterInfos) => {
         switch (param.type) {
-            case TYPES.STRING:
+            case ParameterType.STRING:
                 shape[param.name] = yup.string().required();
                 break;
-            case TYPES.DOUBLE:
+            case ParameterType.DOUBLE:
                 shape[param.name] = yup.number().required();
                 break;
-            case TYPES.INTEGER:
+            case ParameterType.INTEGER:
                 shape[param.name] = yup.number().required();
                 break;
-            case TYPES.BOOLEAN:
+            case ParameterType.BOOLEAN:
                 shape[param.name] = yup.boolean().required();
                 break;
-            case TYPES.STRING_LIST:
+            case ParameterType.STRING_LIST:
                 shape[param.name] = yup.array().of(yup.string()).required();
                 break;
             default:
@@ -119,15 +113,65 @@ export const getSpecificLoadFlowParametersFormSchema = (specificParameters: Para
     });
 };
 
-export const getDefaultSpecificParamsValues = (specificParams: ParameterDescription[]) => {
-    return specificParams?.reduce((acc: Record<string, any>, param: ParameterDescription) => {
-        if (param.type === TYPES.STRING_LIST && param.defaultValue === null) {
+export const getDefaultSpecificParamsValues = (
+    specificParams: SpecificParameterInfos[]
+): SpecificParametersPerProvider => {
+    return specificParams?.reduce((acc: Record<string, any>, param: SpecificParameterInfos) => {
+        if (param.type === ParameterType.STRING_LIST && param.defaultValue === null) {
             acc[param.name] = [];
-        } else if ((param.type === TYPES.DOUBLE || param.type === TYPES.INTEGER) && isNaN(param.defaultValue)) {
+        } else if (
+            (param.type === ParameterType.DOUBLE || param.type === ParameterType.INTEGER) &&
+            isNaN(param.defaultValue)
+        ) {
             acc[param.name] = 0;
         } else {
             acc[param.name] = param.defaultValue;
         }
         return acc;
     }, {});
+};
+
+export const setSpecificParameters = (
+    provider: string,
+    specificParamsDescriptions: Record<string, SpecificParameterInfos[]> | null,
+    formMethods: UseFormReturn
+) => {
+    const specificParams = provider ? specificParamsDescriptions?.[provider] ?? [] : [];
+    const specificParamsValues = getDefaultSpecificParamsValues(specificParams);
+    formMethods.setValue(SPECIFIC_PARAMETERS, specificParamsValues);
+};
+
+export const setLimitReductions = (
+    provider: string,
+    defaultLimitReductions: ILimitReductionsByVoltageLevel[],
+    formMethods: UseFormReturn
+) => {
+    if (provider === PARAM_PROVIDER_OPENLOADFLOW) {
+        formMethods.setValue(
+            LIMIT_REDUCTIONS_FORM,
+            toFormValuesLimitReductions(defaultLimitReductions)[LIMIT_REDUCTIONS_FORM]
+        );
+        formMethods.setValue(PARAM_LIMIT_REDUCTION, null);
+    } else {
+        formMethods.setValue(PARAM_LIMIT_REDUCTION, MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION);
+        formMethods.setValue(LIMIT_REDUCTIONS_FORM, []);
+    }
+};
+
+export const mapLimitReductions = (
+    vlLimits: ILimitReductionsByVoltageLevel,
+    formLimits: Record<string, unknown>[],
+    indexVl: number
+): ILimitReductionsByVoltageLevel => {
+    let vlLNewLimits: ILimitReductionsByVoltageLevel = {
+        ...vlLimits,
+        permanentLimitReduction: formLimits[indexVl][IST_FORM] as number,
+    };
+    vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
+        vlLNewLimits.temporaryLimitReductions[index] = {
+            ...temporaryLimit,
+            reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index] as number,
+        };
+    });
+    return vlLNewLimits;
 };
