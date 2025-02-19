@@ -36,7 +36,6 @@ export const useSpreadsheetEquipments = (
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = useMemo(() => allEquipments[type], [allEquipments, type]);
-    const customColumnsDefinitions = useSelector((state: AppState) => state.tables.allCustomColumnsDefinitions);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isNetworkModificationTreeModelUpToDate = useSelector(
         (state: AppState) => state.isNetworkModificationTreeModelUpToDate
@@ -209,7 +208,6 @@ export const useSpreadsheetEquipments = (
         isNetworkModificationTreeModelUpToDate,
         dispatch,
         formatFetchedEquipments,
-        customColumnsDefinitions,
         nodesIdToFetch,
         type,
     ]);

@@ -46,6 +46,10 @@ const TwoWindingsTransformerModificationDialogTabs = ({ tabIndex, tabIndexesWith
                     sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerModificationDialogTab.LIMITS_TAB)}
                 />
                 <Tab
+                    label={<FormattedMessage id="StateEstimationTab" />}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerModificationDialogTab.MEASUREMENTS_TAB)}
+                />
+                <Tab
                     label={<FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />}
                     sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB)}
                     disabled={!ratioTapChangerEnabledWatch}
