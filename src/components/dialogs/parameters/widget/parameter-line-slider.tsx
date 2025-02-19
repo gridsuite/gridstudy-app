@@ -5,12 +5,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, SliderInput } from '@gridsuite/commons-ui';
 import { Mark } from '@mui/base/useSlider';
-import { Grid, Slider } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { UseParameterStateParamName, styles, useParameterState } from '../parameters';
+import { UseParameterStateParamName, styles } from '../parameters';
+import { sanitizePercentageValue } from 'components/dialogs/percentage-area/percentage-area-utils';
 
 type SliderParameterLineProps = {
     readonly paramNameId: UseParameterStateParamName;
@@ -29,34 +29,22 @@ const ParameterLineSlider = ({
     minValue = 0,
     maxValue = 100,
 }: SliderParameterLineProps) => {
-    const [parameterValue, handleChangeParameterValue] = useParameterState(paramNameId);
-    const [sliderValue, setSliderValue] = useState(Number(parameterValue));
-
-    useEffect(() => {
-        if (parameterValue) {
-            setSliderValue(Number(parameterValue));
-        }
-    }, [parameterValue]);
-
     return (
         <>
             <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
             <Grid item container xs={4} sx={mergeSx(styles.controlItem, { paddingRight: 2 })}>
-                <Slider
+                <SliderInput
+                    name={paramNameId}
                     min={minValue}
                     max={maxValue}
                     valueLabelDisplay="auto"
-                    onChange={(_event, newValue) => {
-                        setSliderValue(Number(newValue));
-                    }}
-                    onChangeCommitted={(_event, value) => {
-                        handleChangeParameterValue(value);
-                    }}
-                    value={sliderValue}
+                    step={0.01}
+                    size="medium"
                     disabled={disabled ?? false}
                     marks={marks}
+                    valueLabelFormat={(value) => sanitizePercentageValue(value * 100)}
                 />
             </Grid>
         </>
