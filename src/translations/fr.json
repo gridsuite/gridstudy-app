@@ -816,6 +816,10 @@
     "TemporaryLimitValue": "Valeur (A)",
     "TemporaryLimitNameUnicityError": "Les noms des limites temporaires doivent être uniques dans la table",
     "TemporaryLimitDurationUnicityError": "Les tempos des limites temporaires doivent être uniques dans la table",
+    "StateEstimationTab": "Estimation d'état",
+    "MeasurementsSection": "Télémesures",
+    "ValidMeasurement": "Valide",
+    "InvalidMeasurement": "Invalide",
 
     "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Sections identiques",

@@ -116,13 +116,13 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
             onClose={handleClose}
             aria-labelledby="dialog-restore-modifications"
         >
-            <DialogTitle>{intl.formatMessage({ id: 'RestoreModifications' })}</DialogTitle>
+            <DialogTitle>
+                <FormattedMessage id="RestoreModifications" />
+            </DialogTitle>
             <DialogContent>
                 <Box sx={styles.text}>
                     <DialogContentText>
-                        {intl.formatMessage({
-                            id: 'RestoreModificationText',
-                        })}
+                        <FormattedMessage id="RestoreModificationText" />
                     </DialogContentText>
                 </Box>
                 <CheckBoxList

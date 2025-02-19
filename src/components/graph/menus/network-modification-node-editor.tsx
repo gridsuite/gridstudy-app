@@ -53,7 +53,7 @@ import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-lin
 import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
 import { UPDATE_TYPE } from 'components/network/constants';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -870,7 +870,7 @@ const NetworkModificationNodeEditor = () => {
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
-    const getModificationLabel = (modif: NetworkModificationMetadata): string => {
+    const getModificationLabel = (modif: NetworkModificationMetadata): ReactNode => {
         if (!modif) {
             return '';
         }
