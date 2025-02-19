@@ -42,6 +42,7 @@ import { mergeSx } from '../../utils/functions';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
+import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 
 const styles = {
     flexWrapper: {
@@ -74,7 +75,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const loadflowResultInvalidations = ['loadflowResult'];
 
     const [tabIndex, setTabIndex] = useState(0);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);

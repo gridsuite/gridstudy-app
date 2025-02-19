@@ -15,22 +15,21 @@ import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
     openStudy,
-    studyUpdated,
-    setCurrentTreeNode,
     resetEquipments,
     resetEquipmentsPostLoadflow,
+    setCurrentTreeNode,
     setStudyIndexationStatus,
-    limitReductionModified,
     setCurrentRootNetwork,
+    studyUpdated,
 } from '../redux/actions';
 import { fetchRootNetworks } from 'services/root-network';
 
 import WaitingLoader from './utils/waiting-loader';
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchDirectoryElementPath, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
 import { RunningStatus } from './utils/running-status';
-import { computePageTitle, computeFullPath } from '../utils/compute-title';
+import { computeFullPath, computePageTitle } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { BUILD_STATUS } from './network/constants';
 import { connectNotificationsWebsocket } from '../services/study-notification';
@@ -43,12 +42,10 @@ import { fetchCaseName, fetchStudyExists } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchStudyIndexationStatus } from '../services/study/network';
 import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
-import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
 import { StudyIndexationStatus } from 'redux/reducer';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import { NodeType } from './graph/tree-node.type';
 
 function isWorthUpdate(
@@ -270,8 +267,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const wsRef = useRef();
 
-    const isLimitReductionModified = useSelector((state) => state.limitReductionModified);
-
     const displayErrorNotifications = useCallback(
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
@@ -328,6 +323,12 @@ export function StudyContainer({ view, onChangeTab }) {
             if (updateTypeHeader === 'dynamicSimulation_failed') {
                 snackError({
                     headerId: 'DynamicSimulationRunError',
+                    messageTxt: errorMessage,
+                });
+            }
+            if (updateTypeHeader === 'dynamicSecurityAnalysis_failed') {
+                snackError({
+                    headerId: 'DynamicSecurityAnalysisRunError',
                     messageTxt: errorMessage,
                 });
             }
@@ -811,42 +812,25 @@ export function StudyContainer({ view, onChangeTab }) {
         // connectNotifications don't change
     }, [dispatch, studyUuid, connectNotifications, connectDeletedStudyNotifications]);
 
-    useEffect(() => {
-        if (studyUuid) {
-            if (isLimitReductionModified) {
-                // limit reduction param has changed : we invalidate the load flow status
-                invalidateLoadFlowStatus(studyUuid).catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'invalidateLoadFlowStatusError',
-                    });
-                });
-                dispatch(limitReductionModified(false));
-            }
-        }
-    }, [studyUuid, isLimitReductionModified, snackError, dispatch]);
-
     return (
-        <>
-            <WaitingLoader
-                errMessage={studyErrorMessage || errorMessage}
-                loading={
-                    studyPending ||
-                    !paramsLoaded ||
-                    !isStudyNetworkFound ||
-                    (studyIndexationStatus !== StudyIndexationStatus.INDEXED && isStudyIndexationPending)
-                } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
-                message={'LoadingRemoteData'}
-            >
-                <StudyPane
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    view={view}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                    onChangeTab={onChangeTab}
-                />
-            </WaitingLoader>
-        </>
+        <WaitingLoader
+            errMessage={studyErrorMessage || errorMessage}
+            loading={
+                studyPending ||
+                !paramsLoaded ||
+                !isStudyNetworkFound ||
+                (studyIndexationStatus !== StudyIndexationStatus.INDEXED && isStudyIndexationPending)
+            } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            message={'LoadingRemoteData'}
+        >
+            <StudyPane
+                studyUuid={studyUuid}
+                currentNode={currentNode}
+                view={view}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+                onChangeTab={onChangeTab}
+            />
+        </WaitingLoader>
     );
 }
 
