@@ -50,12 +50,9 @@ import {
     ParameterDescription,
     TAB_VALUES,
 } from './load-flow-parameters-utils';
-import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
-import RunningStatus from 'components/utils/running-status';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION, PARAM_PROVIDER_OPENLOADFLOW } from 'utils/config-params';
 import { LoadFlowProvider } from './load-flow-parameters-context';
-import { COMMON_PARAMETERS, SPECIFIC_PARAMETERS, TYPES } from './constants';
+import { COMMON_PARAMETERS, MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION, SPECIFIC_PARAMETERS, TYPES } from './constants';
 import LoadFlowParametersHeader from './load-flow-parameters-header';
 import LoadFlowParametersContent from './load-flow-parameters-content';
 const LoadFlowParameters: FunctionComponent<{
@@ -80,7 +77,6 @@ const LoadFlowParameters: FunctionComponent<{
     const [currentProvider, setCurrentProvider] = useState(params?.provider);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
     const { snackError } = useSnackMessage();
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -152,6 +148,7 @@ const LoadFlowParameters: FunctionComponent<{
     const formSchema = useMemo(() => {
         return yup.object({
             [PROVIDER]: yup.string().required(),
+            [PARAM_LIMIT_REDUCTION]: yup.number().nullable(),
             ...getCommonLoadFlowParametersFormSchema().fields,
             ...getLimitReductionsFormSchema(
                 params?.limitReductions ? params.limitReductions[0]?.temporaryLimitReductions.length : 0
@@ -163,6 +160,7 @@ const LoadFlowParameters: FunctionComponent<{
     const formMethods = useForm({
         defaultValues: {
             [PROVIDER]: provider,
+            [PARAM_LIMIT_REDUCTION]: null,
             [COMMON_PARAMETERS]: {
                 ...params?.commonParameters,
             },
@@ -174,29 +172,44 @@ const LoadFlowParameters: FunctionComponent<{
         resolver: yupResolver(formSchema as unknown as yup.ObjectSchema<any>),
     });
 
+    const watchProvider = formMethods.watch('provider');
+
+    const mapLimitReductions = (
+        vlLimits: ILimitReductionsByVoltageLevel,
+        formLimits: Record<string, any>[],
+        indexVl: number
+    ): ILimitReductionsByVoltageLevel => {
+        let vlLNewLimits: ILimitReductionsByVoltageLevel = {
+            ...vlLimits,
+            permanentLimitReduction: formLimits[indexVl][IST_FORM],
+        };
+        vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
+            vlLNewLimits.temporaryLimitReductions[index] = {
+                ...temporaryLimit,
+                reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
+            };
+        });
+        return vlLNewLimits;
+    };
+
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
             if (formLimits?.length === 0) {
                 return [];
             }
-            if (!params?.limitReductions) {
-                return [];
+            if (watchProvider === PARAM_PROVIDER_OPENLOADFLOW) {
+                if (!params?.limitReductions) {
+                    return defaultLimitReductions.map((vlLimits, indexVl) =>
+                        mapLimitReductions(vlLimits, formLimits, indexVl)
+                    );
+                }
+                return params?.limitReductions.map((vlLimits, indexVl) =>
+                    mapLimitReductions(vlLimits, formLimits, indexVl)
+                );
             }
-            return params.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
-                let vlLNewLimits: ILimitReductionsByVoltageLevel = {
-                    ...vlLimits,
-                    permanentLimitReduction: formLimits[indexVl][IST_FORM],
-                };
-                vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
-                    vlLNewLimits.temporaryLimitReductions[index] = {
-                        ...temporaryLimit,
-                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
-                    };
-                });
-                return vlLNewLimits;
-            });
+            return [];
         },
-        [params?.limitReductions]
+        [defaultLimitReductions, params?.limitReductions, watchProvider]
     );
 
     const { handleSubmit, formState, reset } = formMethods;
@@ -208,6 +221,7 @@ const LoadFlowParameters: FunctionComponent<{
                 updateParameters({
                     ...params,
                     provider: formData[PROVIDER],
+                    limitReduction: formData[PARAM_LIMIT_REDUCTION],
                     commonParameters: {
                         ...params.commonParameters,
                         ...formData[COMMON_PARAMETERS],
@@ -264,6 +278,7 @@ const LoadFlowParameters: FunctionComponent<{
 
         reset({
             [PROVIDER]: params.provider,
+            [PARAM_LIMIT_REDUCTION]: params.limitReduction,
             [COMMON_PARAMETERS]: {
                 ...params.commonParameters,
             },
@@ -296,18 +311,22 @@ const LoadFlowParameters: FunctionComponent<{
         [selectedTab]
     );
 
-    const watchProvider = formMethods.watch('provider');
-
     useEffect(() => {
         if (watchProvider !== currentProvider) {
             setCurrentProvider(watchProvider);
             const specificParams = watchProvider ? specificParamsDescriptions?.[watchProvider] : undefined;
             const specificParamsValues = getDefaultSpecificParamsValues(specificParams);
             formMethods.setValue(SPECIFIC_PARAMETERS, specificParamsValues);
-            formMethods.setValue(
-                LIMIT_REDUCTIONS_FORM,
-                toFormValuesLimitReductions(defaultLimitReductions)[LIMIT_REDUCTIONS_FORM]
-            );
+            if (watchProvider === PARAM_PROVIDER_OPENLOADFLOW) {
+                formMethods.setValue(
+                    LIMIT_REDUCTIONS_FORM,
+                    toFormValuesLimitReductions(defaultLimitReductions)[LIMIT_REDUCTIONS_FORM]
+                );
+                formMethods.setValue(PARAM_LIMIT_REDUCTION, null);
+            } else {
+                formMethods.setValue(PARAM_LIMIT_REDUCTION, MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION);
+                formMethods.setValue(LIMIT_REDUCTIONS_FORM, []);
+            }
         }
     }, [currentProvider, defaultLimitReductions, formMethods, specificParamsDescriptions, watchProvider]);
 
@@ -353,7 +372,6 @@ const LoadFlowParameters: FunctionComponent<{
                                 <SubmitButton
                                     onClick={handleSubmit(updateLFParameters, onValidationError)}
                                     variant="outlined"
-                                    disabled={loadFlowStatus === RunningStatus.RUNNING}
                                 >
                                     <FormattedMessage id="validate" />
                                 </SubmitButton>

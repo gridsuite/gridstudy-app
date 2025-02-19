@@ -13,7 +13,11 @@ import LoadFlowGeneralParameters from './load-flow-general-parameters';
 import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
 import ParameterLineSlider from '../widget/parameter-line-slider';
 import { PARAM_LIMIT_REDUCTION, PARAM_PROVIDER_OPENLOADFLOW } from 'utils/config-params';
-import { alertThresholdMarks, MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION } from './constants';
+import {
+    alertThresholdMarks,
+    MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
+    MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
+} from './constants';
 import { ILimitReductionsByVoltageLevel } from '../common/limitreductions/columns-definitions';
 import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
 
@@ -58,6 +62,7 @@ const LoadFlowParametersContent = ({
                                     label="LimitReduction"
                                     marks={alertThresholdMarks}
                                     minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                                    maxValue={MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
                                 />
                             )}
                         </Grid>
