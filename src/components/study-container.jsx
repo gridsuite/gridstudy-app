@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
     closeStudy,
-    limitReductionModified,
     loadNetworkModificationTreeSuccess,
     openStudy,
     resetEquipments,
