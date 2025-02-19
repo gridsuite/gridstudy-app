@@ -24,7 +24,7 @@ import { TemporaryLimit } from '../../../services/network-modification-types';
 import DndTable from '../../utils/dnd-table/dnd-table';
 import TemporaryLimitsTable from './temporary-limits-table';
 import { CurrentTreeNode } from '../../../redux/reducer';
-import LimitsGraph from './limitsGraph';
+import LimitsChart from './limitsChart';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
@@ -200,7 +200,7 @@ export function LimitsSidePane({
     return (
         <Box sx={{ p: 2 }}>
             <Box>
-                <LimitsGraph limitsGroupFormName={limitsGroupFormName} />
+                <LimitsChart limitsGroupFormName={limitsGroupFormName} />
             </Box>
             {permanentCurrentLimitField}
             <Box component={`h4`}>

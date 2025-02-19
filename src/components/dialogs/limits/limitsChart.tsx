@@ -21,16 +21,18 @@ const colorIST = '#58d058';
 const colors: string[] = ['#ffc019', '#e47400', '#cc5500', '#ff5757', '#ff0000'];
 const colorForbidden: string = '#b10303';
 
-export default function LimitsGraph({ limitsGroupFormName }: Readonly<LimitsGraphProps>) {
+export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGraphProps>) {
     const currentPermanentLimit = useWatch({ name: `${limitsGroupFormName}.${PERMANENT_LIMIT}` });
     const currentTemporaryLimits: TemporaryLimit[] = useWatch({ name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}` });
     const intl = useIntl();
 
     const { series, ticks } = useMemo(() => {
         const data = [];
+        let istPresent = false;
 
         if (currentPermanentLimit) {
             data.push({ label: intl.formatMessage({ id: 'IST' }), value: currentPermanentLimit });
+            istPresent = true;
         }
 
         if (currentTemporaryLimits) {
@@ -44,13 +46,14 @@ export default function LimitsGraph({ limitsGroupFormName }: Readonly<LimitsGrap
                 );
         }
 
-        const sortedData = [...data].sort((a, b) => a.value - b.value);
+        data.sort((a, b) => a.value - b.value);
 
-        return sortedData.reduce<{ series: StackableSeriesType[]; ticks: number[] }>(
+        return data.reduce<{ series: StackableSeriesType[]; ticks: number[] }>(
             (acc, item, index) => {
                 const previousSum = acc.ticks.length > 0 ? acc.ticks[acc.ticks.length - 1] : 0; // Sum of previous values
                 const difference = item.value - previousSum; // Calculate the difference
-                const color = item.label === intl.formatMessage({ id: 'IST' }) ? colorIST : colors?.[index];
+                const colorIndex = istPresent && index > 0 ? index - 1 : index;
+                const color = item.label === intl.formatMessage({ id: 'IST' }) ? colorIST : colors?.[colorIndex];
 
                 const updatedSeries = [
                     ...acc.series,
@@ -63,10 +66,10 @@ export default function LimitsGraph({ limitsGroupFormName }: Readonly<LimitsGrap
                 ];
                 const updatedTicks = [...acc.ticks, item.value];
 
-                if (index === sortedData.length - 1) {
+                if (index === data.length - 1) {
                     updatedSeries.push({
                         label: intl.formatMessage({ id: 'forbidden' }),
-                        data: [item.value * 0.25],
+                        data: [item.value * 0.15],
                         color: colorForbidden,
                         stack: 'total',
                     });
