@@ -8,7 +8,7 @@
 import { mergeSx } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
 import { styles, TabPanel } from '../parameters';
-import { ParameterDescription, TAB_VALUES } from './load-flow-parameters-utils';
+import { TAB_VALUES } from './load-flow-parameters-utils';
 import LoadFlowGeneralParameters from './load-flow-general-parameters';
 import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
 import ParameterLineSlider from '../widget/parameter-line-slider';
@@ -20,6 +20,7 @@ import {
 } from './constants';
 import { ILimitReductionsByVoltageLevel } from '../common/limitreductions/columns-definitions';
 import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
+import { SpecificParameterInfos } from '../parameters.type';
 
 const LoadFlowParametersContent = ({
     selectedTab,
@@ -30,7 +31,7 @@ const LoadFlowParametersContent = ({
 }: {
     selectedTab: TAB_VALUES;
     currentProvider: string;
-    specificParameters: ParameterDescription[];
+    specificParameters: SpecificParameterInfos[];
     params: LoadFlowParametersInfos | null;
     defaultLimitReductions: ILimitReductionsByVoltageLevel[];
 }) => {
