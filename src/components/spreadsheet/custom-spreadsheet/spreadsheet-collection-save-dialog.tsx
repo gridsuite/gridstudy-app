@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Checkbox, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, Theme } from '@mui/material';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
@@ -191,7 +191,7 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                     {(provided) => (
                         <div ref={provided.innerRef} {...provided.droppableProps}>
                             {localTablesState.map((table, index) => (
-                                <Draggable draggableId={`table-${index}`} index={index} key={`table-${index}`}>
+                                <Draggable draggableId={`table-${index}`} index={index} key={`table-${table.name}`}>
                                     {(provided) => (
                                         <div ref={provided.innerRef} {...provided.draggableProps}>
                                             <ListItem sx={styles.checkboxItem}>
@@ -218,6 +218,8 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
         </>
     );
 
+    const hasSelectedTables = useMemo(() => localTablesState.some((table) => table.selected), [localTablesState]);
+
     return (
         <>
             <SelectOptionsDialog
@@ -233,6 +235,7 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                         overflowY: 'visible',
                     },
                 }}
+                disabled={!hasSelectedTables}
             />
             {showElementCreationDialog && (
                 <ElementCreationDialog
