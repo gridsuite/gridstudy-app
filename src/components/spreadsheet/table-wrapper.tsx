@@ -21,7 +21,7 @@ import { formatFetchedEquipments } from './utils/equipment-table-utils';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
-import { AppState, CurrentTreeNode } from '../../redux/reducer';
+import { AppState, CurrentTreeNode, EquipmentUpdateType, getUpdateTypeFromEquipmentType } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
@@ -115,6 +115,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
 
     const [rowData, setRowData] = useState<Identifiable[]>([]);
+    const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
 
     const isLockedColumnNamesEmpty = useMemo(() => formattedLockedColumns.size === 0, [formattedLockedColumns.size]);
 
@@ -190,9 +191,43 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition.type]
     );
 
+    const highlightUpdatedEquipment = useCallback(
+        (updatedEquipments: Record<EquipmentUpdateType, Identifiable[]>) => {
+            if (!equipmentToUpdateId) {
+                return;
+            }
+
+            const equipmentUpdateType = getUpdateTypeFromEquipmentType(tableDefinition.type);
+            const updatedEquipmentsOfType = equipmentUpdateType && updatedEquipments[equipmentUpdateType];
+
+            if (updatedEquipmentsOfType) {
+                // Find the specific updated equipment
+                const updatedEquipment = updatedEquipmentsOfType.find(
+                    (equipment) => equipment.id === equipmentToUpdateId
+                );
+
+                if (updatedEquipment) {
+                    const api = gridRef.current?.api;
+                    const rowNode = api?.getRowNode(updatedEquipment.id);
+
+                    if (rowNode && api) {
+                        api.flashCells({
+                            rowNodes: [rowNode],
+                            flashDuration: 1000,
+                        });
+                    }
+                }
+            }
+
+            setEquipmentToUpdateId(null);
+        },
+        [tableDefinition.type, equipmentToUpdateId]
+    );
+
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         tableDefinition.type,
-        formatFetchedEquipmentsHandler
+        formatFetchedEquipmentsHandler,
+        highlightUpdatedEquipment
     );
 
     useEffect(() => {
@@ -314,6 +349,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const onRowClicked = useCallback(
         (event: RowClickedEvent) => {
             const equipmentId = event.data.id;
+            setEquipmentToUpdateId(equipmentId);
             handleOpenModificationDialog(equipmentId);
         },
         [handleOpenModificationDialog]
