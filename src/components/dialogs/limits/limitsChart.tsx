@@ -19,6 +19,11 @@ const colorIST = '#58d058';
 const colors: string[] = ['#ffc019', '#e47400', '#cc5500', '#ff5757', '#ff0000'];
 const colorForbidden: string = '#b10303';
 
+interface ColorChartTick{
+    label: string;
+    color: string;
+}
+
 export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGraphProps>) {
     const currentLimits: CurrentLimits = useWatch({ name: `${limitsGroupFormName}` });
     const intl = useIntl();
@@ -41,6 +46,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
     const { series, ticks } = useMemo(() => {
         const data = [];
         let istPresent = false;
+        let noTempoThresholdFound = false;
 
         if (currentLimits?.permanentLimit) {
             data.push({ label: intl.formatMessage({ id: 'IST' }), value: currentLimits.permanentLimit });
@@ -51,11 +57,14 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             currentLimits.temporaryLimits
                 .filter((field) => field.name)
                 .forEach((field) =>
+                {
+                    noTempoThresholdFound = !field.acceptableDuration;
                     data.push({
                         label: field.name,
                         value: field.value,
                         tempo: field.acceptableDuration,
                     })
+                }
                 );
         }
 
@@ -78,32 +87,22 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 const difference = item.value ? item.value - previousSum : undefined; // Calculate the difference
                 const colorIndex = istPresent && index > 0 ? index - 1 : index;
                 const isIst = item.label === intl.formatMessage({ id: 'IST' });
-                let color = isIst ? colorIST : colors?.[colorIndex];
-                let isIncoherent = false;
-
-                //Verify coherence
-                if (
-                    (index === 0 && !isIst) ||
-                    (!item.tempo && !isIst) ||
-                    (index > 0 && item.tempo && data[index - 1].tempo && item.tempo > data[index - 1].tempo) ||
-                    !difference
-                ) {
-                    color = colorForbidden;
-                    isIncoherent = true;
-                }
+                let color = isIst ? colorIST : colors?.[colorIndex] ?? colors[colors.length - 1];
+                const isIncoherent = (index === 0 && !isIst) ||
+                    (index > 0 && item.tempo && data[index - 1].tempo && item.tempo > data[index - 1].tempo) ;
 
                 const updatedSeries = [
                     ...acc.series,
                     {
                         label: isIst ? intl.formatMessage({ id: 'unlimited' }) : formatTempo(item.tempo),
-                        data: isIncoherent ? [undefined] : [difference],
-                        color: color ?? colors[colors.length - 1],
+                        data: [difference],
+                        color: color,
                         stack: 'total',
                     },
                 ];
-                const updatedTicks = item.value && !isIncoherent ? [...acc.ticks, item.value] : [...acc.ticks];
+                const updatedTicks = item.value ? [...acc.ticks, item.value] : [...acc.ticks, acc.ticks?.[acc.ticks?.length - 1] * 0.15];
 
-                if (index === data.length - 1) {
+                if (index === data.length - 1 && !noTempoThresholdFound) {
                     updatedSeries.push({
                         label: intl.formatMessage({ id: 'forbidden' }),
                         data: [updatedTicks[updatedTicks.length - 1] * 0.15],
@@ -147,6 +146,13 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 tickInterval: ticks,
                 disableLine: true,
                 tickLabelStyle: { fontSize: 10 },
+            }}
+            topAxis={{
+                tickInterval: ticks,
+                tickLabelStyle: { fontSize: 10 },
+                disableLine: true,
+                disableTicks: true,
+                valueFormatter: (value) => series.find((limit) => limit?.data?.[0].value === value).,
             }}
             sx={{ pointerEvents: 'none' }}
         />
