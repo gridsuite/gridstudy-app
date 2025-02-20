@@ -64,7 +64,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 return -1;
             }
             if (!a.value && !b.value) {
-                return 0;
+                return a.tempo - b.tempo;
             }
             if (!a.value && b.value) {
                 return 1;
