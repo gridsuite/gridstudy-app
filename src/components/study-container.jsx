@@ -271,13 +271,13 @@ export function StudyContainer({ view, onChangeTab }) {
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
-            const currentRootNetworkUuid = eventData.headers['rootNetwork'];
+            const rootNetworkUuid = eventData.headers['rootNetwork'];
 
             const userId = eventData.headers[USER_HEADER];
             if (userId != null && userId !== userName) {
                 return;
             }
-            if (currentRootNetworkUuid !== currentRootNetworkUuidRef.current) {
+            if (rootNetworkUuid !== currentRootNetworkUuidRef.current) {
                 return;
             }
 
@@ -356,8 +356,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const sendAlert = useCallback(
         (eventData) => {
             const userId = eventData.headers[USER_HEADER];
-            const currentRootNetworkUuid = eventData.headers['rootNetwork'];
-            if (currentRootNetworkUuidRef.current !== currentRootNetworkUuid && currentRootNetworkUuid) {
+            const rootNetworkUuid = eventData.headers['rootNetwork'];
+            if (currentRootNetworkUuidRef.current !== rootNetworkUuid && rootNetworkUuid) {
                 return;
             }
             if (userId !== userName) {
@@ -535,7 +535,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         });
 
                     // Check if the current root network has changed and if there's a current selected node
-                    if (currentNode) {
+                    if (currentRootNetworkUuidRef.current !== currentRootNetworkUuid && currentNode) {
                         // Find the last selected node from the previous root network in the tree model
                         const ModelLastSelectedNode = {
                             ...networkModificationTreeModel.treeNodes.find((node) => node.id === currentNode?.id),
@@ -675,7 +675,10 @@ export function StudyContainer({ view, onChangeTab }) {
     );
 
     useEffect(() => {
-        if (studyUuid && currentRootNetworkUuid && !isStudyNetworkFound) {
+        if (
+            (studyUuid && currentRootNetworkUuid && !isStudyNetworkFound) ||
+            (currentRootNetworkUuidRef.current !== currentRootNetworkUuid && currentRootNetworkUuid)
+        ) {
             checkNetworkExistenceAndRecreateIfNotFound();
         }
     }, [isStudyNetworkFound, currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
@@ -710,6 +713,7 @@ export function StudyContainer({ view, onChangeTab }) {
     useEffect(() => {
         const previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
+        const previousRootNetworkUuid = currentRootNetworkUuidRef.current;
         currentRootNetworkUuidRef.current = currentRootNetworkUuid;
 
         if (!wsConnected) {
@@ -724,7 +728,11 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         // A modification has been added to the currentNode and this one has been built incrementally.
         // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
-        if (isSameNode(previousCurrentNode, currentNode) && isNodeBuilt(previousCurrentNode)) {
+        if (
+            previousRootNetworkUuid === currentRootNetworkUuid &&
+            isSameNode(previousCurrentNode, currentNode) &&
+            isNodeBuilt(previousCurrentNode)
+        ) {
             return;
         }
         dispatch(resetEquipments());
@@ -732,10 +740,10 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            const currentRootNetworkUuid = studyUpdatedForce.eventData.headers['rootNetwork'];
+            const rootNetworkUuid = studyUpdatedForce.eventData.headers['rootNetwork'];
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
-                currentRootNetworkUuid === currentRootNetworkUuidRef.current
+                rootNetworkUuid === currentRootNetworkUuidRef.current
             ) {
                 dispatch(resetEquipmentsPostLoadflow());
             }
