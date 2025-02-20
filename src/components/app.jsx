@@ -30,7 +30,6 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_LANGUAGE,
-    PARAM_LIMIT_REDUCTION,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
@@ -42,12 +41,10 @@ import { fetchConfigParameter, fetchConfigParameters } from '../services/config'
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
-    limitReductionModified,
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
     selectLanguage,
-    selectLimitReduction,
     selectTheme,
     selectUseName,
     setOptionalServices,
@@ -100,9 +97,6 @@ const App = () => {
                         dispatch(selectLanguage(param.value));
                         dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
                         break;
-                    case PARAM_LIMIT_REDUCTION:
-                        dispatch(selectLimitReduction(param.value));
-                        break;
                     case PARAM_DEVELOPER_MODE:
                         dispatch(selectEnableDeveloperMode(param.value === 'true'));
                         break;
@@ -127,9 +121,6 @@ const App = () => {
                 fetchConfigParameter(eventData.headers['parameterName'])
                     .then((param) => {
                         updateParams([param]);
-                        if (param.name === 'limitReduction') {
-                            dispatch(limitReductionModified(true));
-                        }
                     })
                     .catch((error) =>
                         snackError({
@@ -139,7 +130,7 @@ const App = () => {
                     );
             }
         },
-        [dispatch, snackError, updateParams]
+        [snackError, updateParams]
     );
 
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.CONFIG, {

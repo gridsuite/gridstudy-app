@@ -9,7 +9,6 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_LANGUAGE,
-    PARAM_LIMIT_REDUCTION,
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
@@ -92,8 +91,6 @@ export type AppActions =
     | RemoveSelectedCaseAction
     | UseNameAction
     | EnableDeveloperModeAction
-    | LimitReductionAction
-    | LimitReductionModifiedAction
     | StudyUpdatedAction
     | MapDataLoadingAction
     | ResetMapReloadedAction
@@ -538,30 +535,6 @@ export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableD
     return {
         type: ENABLE_DEVELOPER_MODE,
         [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
-    };
-}
-
-export const LIMIT_REDUCTION = 'LIMIT_REDUCTION';
-export type LimitReductionAction = Readonly<Action<typeof LIMIT_REDUCTION>> & {
-    [PARAM_LIMIT_REDUCTION]: number;
-};
-
-export function selectLimitReduction(limitReduction: number): LimitReductionAction {
-    return {
-        type: LIMIT_REDUCTION,
-        [PARAM_LIMIT_REDUCTION]: limitReduction,
-    };
-}
-
-export const LIMIT_REDUCTION_MODIFIED = 'LIMIT_REDUCTION_MODIFIED';
-export type LimitReductionModifiedAction = Readonly<Action<typeof LIMIT_REDUCTION_MODIFIED>> & {
-    limitReductionModified: boolean;
-};
-
-export function limitReductionModified(limitReductionModified: boolean): LimitReductionModifiedAction {
-    return {
-        type: LIMIT_REDUCTION_MODIFIED,
-        limitReductionModified: limitReductionModified,
     };
 }
 
