@@ -132,11 +132,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         (globalFilter: GlobalFilter | undefined) => {
             let shouldSentParameter = false;
             if (globalFilter) {
-                if (globalFilter.countryCode && globalFilter.countryCode.length > 0) {
-                    shouldSentParameter = true;
-                } else if (globalFilter.nominalV && globalFilter.nominalV.length > 0) {
-                    shouldSentParameter = true;
-                } else if (globalFilter.genericFilter && globalFilter.genericFilter.length > 0) {
+                if (
+                    (globalFilter.countryCode && globalFilter.countryCode.length > 0) ||
+                    (globalFilter.nominalV && globalFilter.nominalV.length > 0) ||
+                    (globalFilter.genericFilter && globalFilter.genericFilter.length > 0)
+                ) {
                     shouldSentParameter = true;
                 }
             }
