@@ -8,9 +8,7 @@
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
-import { convertInputValue, FieldType } from '@gridsuite/commons-ui';
-import { genericColumnOfPropertiesReadonly } from './column-properties';
-import { enumColumnDefinition, numberColumnDefinition, textColumnDefinition } from '../common-column-definitions';
+import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 
 const tab = 'VoltageLevels';
 
@@ -20,60 +18,72 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
     ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
     columns: [
         {
-            colId: 'ID',
-            field: 'id',
-            ...textColumnDefinition('ID', tab),
+            id: 'id',
+            name: 'ID',
+            type: COLUMN_TYPES.TEXT,
+            formula: 'id',
+            dependencies: [],
         },
         {
-            colId: 'Name',
-            field: 'name',
-            ...textColumnDefinition('Name', tab),
+            id: 'name',
+            name: 'Name',
+            type: COLUMN_TYPES.TEXT,
+            formula: 'name',
+            dependencies: [],
         },
         {
-            colId: 'SubstationId',
-            field: 'substationId',
-            ...textColumnDefinition('Substation ID', tab),
+            id: 'substationId',
+            name: 'Substation ID',
+            type: COLUMN_TYPES.TEXT,
+            formula: 'substationId',
+            dependencies: [],
         },
         {
-            colId: 'Country',
-            field: 'country',
-            ...enumColumnDefinition('Country', tab),
+            id: 'country',
+            name: 'Country',
+            type: COLUMN_TYPES.ENUM,
+            formula: 'country',
+            dependencies: [],
         },
         {
-            colId: 'NominalV',
-            field: 'nominalV',
-            ...numberColumnDefinition('Nominal V', tab, 0),
+            id: 'nominalV',
+            name: 'Nominal V',
+            type: COLUMN_TYPES.NUMBER,
+            formula: 'nominalV',
+            precision: 0,
+            dependencies: [],
         },
         {
-            colId: 'lowVoltageLimit',
-            field: 'lowVoltageLimit',
-            ...numberColumnDefinition('Low voltage limit (kV)', tab, 1),
+            id: 'lowVoltageLimit',
+            name: 'Low voltage limit (kV)',
+            type: COLUMN_TYPES.NUMBER,
+            formula: 'lowVoltageLimit',
+            precision: 1,
+            dependencies: [],
         },
         {
-            colId: 'highVoltageLimit',
-            field: 'highVoltageLimit',
-            ...numberColumnDefinition('High voltage limit (kV)', tab, 1),
+            id: 'highVoltageLimit',
+            name: 'High voltage limit (kV)',
+            type: COLUMN_TYPES.NUMBER,
+            formula: 'highVoltageLimit',
+            precision: 1,
+            dependencies: [],
         },
         {
-            colId: 'IpMin',
-            field: 'identifiableShortCircuit.ipMin', // TODO: useless for AgGrid used only for static/custom columns export
-            valueGetter: (params) =>
-                convertInputValue(
-                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    params.data?.identifiableShortCircuit?.ipMin
-                ),
-            ...numberColumnDefinition('ISC min (kA)', tab, 1),
+            id: 'ipMin',
+            name: 'ISC min (kA)',
+            type: COLUMN_TYPES.NUMBER,
+            formula: 'unitToKiloUnit(identifiableShortCircuit.ipMin)',
+            precision: 1,
+            dependencies: [],
         },
         {
-            colId: 'IpMax',
-            field: 'identifiableShortCircuit.ipMax', // TODO: useless for AgGrid used only for static/custom columns export
-            valueGetter: (params) =>
-                convertInputValue(
-                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
-                    params.data?.identifiableShortCircuit?.ipMax
-                ),
-            ...numberColumnDefinition('ISC max (kA)', tab, 1),
+            id: 'ipMax',
+            name: 'ISC max (kA)',
+            type: COLUMN_TYPES.NUMBER,
+            formula: 'unitToKiloUnit(identifiableShortCircuit.ipMax)',
+            precision: 1,
+            dependencies: [],
         },
-        genericColumnOfPropertiesReadonly(tab),
     ],
 };

@@ -11,21 +11,26 @@ import { ILimitReductionsByVoltageLevel, ISAParameters } from './common/limitred
 import { NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
 import { DynamicSimulationParametersFetchReturn } from 'services/study/dynamic-simulation.type';
+import { DynamicSecurityAnalysisParametersFetchReturn } from '../../../services/study/dynamic-security-analysis.type';
 
-enum ParameterType {
+export enum ParameterType {
     BOOLEAN = 'BOOLEAN',
     STRING = 'STRING',
     STRING_LIST = 'STRING_LIST',
     DOUBLE = 'DOUBLE',
     INTEGER = 'INTEGER',
+    COUNTRIES = 'COUNTRIES',
 }
 
-type SpecificParameterInfos = {
-    names: string[];
+export type SpecificParameterInfos = {
+    name: string;
     type: ParameterType;
-    defaultValue: any;
-    possibleValues: any[];
-    categoryKey: string;
+    names?: string[];
+    defaultValue?: any;
+    possibleValues?: any[];
+    categoryKey?: string;
+    description?: string;
+    label?: string;
 };
 
 export type SpecificParametersInfos = Record<string, SpecificParameterInfos>;
@@ -40,6 +45,8 @@ export type ParametersInfos<T extends ComputingType> = T extends ComputingType.S
     ? LoadFlowParametersInfos
     : T extends ComputingType.DYNAMIC_SIMULATION
     ? DynamicSimulationParametersFetchReturn
+    : T extends ComputingType.DYNAMIC_SECURITY_ANALYSIS
+    ? DynamicSecurityAnalysisParametersFetchReturn
     : Record<string, any>;
 
 export type UseParametersBackendReturnProps<T extends ComputingType> = [

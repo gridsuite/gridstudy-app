@@ -979,6 +979,7 @@ export function createLine({
 export function modifyLine({
     studyUuid,
     nodeUuid,
+    modificationUuid,
     lineId,
     lineName,
     r,
@@ -1001,12 +1002,18 @@ export function modifyLine({
     connectionPosition2,
     connected1,
     connected2,
-    isUpdate,
-    modificationUuid,
     properties,
+    p1MeasurementValue,
+    p1MeasurementValidity,
+    q1MeasurementValue,
+    q1MeasurementValidity,
+    p2MeasurementValue,
+    p2MeasurementValidity,
+    q2MeasurementValue,
+    q2MeasurementValidity,
 }: LineModificationInfo) {
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
+    const isUpdate = !!modificationUuid;
     if (isUpdate) {
         modifyLineUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating line modification');
@@ -1045,6 +1052,14 @@ export function modifyLine({
             terminal1Connected: toModificationOperation(connected1),
             terminal2Connected: toModificationOperation(connected2),
             properties,
+            p1MeasurementValue: toModificationOperation(p1MeasurementValue),
+            p1MeasurementValidity: toModificationOperation(p1MeasurementValidity),
+            q1MeasurementValue: toModificationOperation(q1MeasurementValue),
+            q1MeasurementValidity: toModificationOperation(q1MeasurementValidity),
+            p2MeasurementValue: toModificationOperation(p2MeasurementValue),
+            p2MeasurementValidity: toModificationOperation(p2MeasurementValidity),
+            q2MeasurementValue: toModificationOperation(q2MeasurementValue),
+            q2MeasurementValidity: toModificationOperation(q2MeasurementValidity),
         }),
     });
 }
@@ -1162,6 +1177,14 @@ export function modifyTwoWindingsTransformer({
     connected1 = undefined,
     connected2 = undefined,
     properties: propertiesForBackend,
+    p1MeasurementValue,
+    p1MeasurementValidity,
+    q1MeasurementValue,
+    q1MeasurementValidity,
+    p2MeasurementValue,
+    p2MeasurementValidity,
+    q2MeasurementValue,
+    q2MeasurementValidity,
 }: TwoWindingsTransformerModificationInfo) {
     let modifyTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1207,6 +1230,14 @@ export function modifyTwoWindingsTransformer({
             terminal1Connected: toModificationOperation(connected1),
             terminal2Connected: toModificationOperation(connected2),
             properties: propertiesForBackend,
+            p1MeasurementValue: toModificationOperation(p1MeasurementValue),
+            p1MeasurementValidity: toModificationOperation(p1MeasurementValidity),
+            q1MeasurementValue: toModificationOperation(q1MeasurementValue),
+            q1MeasurementValidity: toModificationOperation(q1MeasurementValidity),
+            p2MeasurementValue: toModificationOperation(p2MeasurementValue),
+            p2MeasurementValidity: toModificationOperation(p2MeasurementValidity),
+            q2MeasurementValue: toModificationOperation(q2MeasurementValue),
+            q2MeasurementValidity: toModificationOperation(q2MeasurementValidity),
         }),
     });
 }

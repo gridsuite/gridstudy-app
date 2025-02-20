@@ -42,6 +42,7 @@ import { mergeSx } from '../../utils/functions';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
+import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 
 const styles = {
     flexWrapper: {
@@ -74,7 +75,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const loadflowResultInvalidations = ['loadflowResult'];
 
     const [tabIndex, setTabIndex] = useState(0);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
@@ -289,7 +289,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <ResultsGlobalFilter
                         onChange={handleGlobalFilterChange}
-                        filters={[...countriesFilter, ...voltageLevelsFilter]}
+                        filters={[...voltageLevelsFilter, ...countriesFilter]}
                     />
                 </Box>
                 <Box sx={styles.emptySpace}></Box>
