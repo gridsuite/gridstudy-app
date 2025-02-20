@@ -43,13 +43,12 @@ import LineSeparator from '../../../commons/line-separator';
 const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-    const { setValue } = useFormContext();
+    const { setValue, getValues } = useFormContext();
     const [substations, setSubstations] = useState([]);
     const [isWithSubstationCreation, setIsWithSubstationCreation] = useState(false);
     const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
     const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
-    const [selectedNewSubstation, setSelectedNewSubstation] = useState('');
     useEffect(() => {
         setIsWithSubstationCreation(watchAddSubstationCreation);
     }, [watchAddSubstationCreation]);
@@ -80,7 +79,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
                         sx={{ justifyContent: 'flex-start', fontSize: 'medium', marginLeft: '2%' }}
                         onMouseDown={handleAddButton}
                     >
-                        {`${intl.formatMessage({ id: 'CreateSubstation' })} : ${selectedNewSubstation}`}
+                        {`${intl.formatMessage({ id: 'CreateSubstation' })} : ${getValues(SUBSTATION_ID)}`}
                     </IconButton>
                 </Box>
             </Paper>
@@ -88,10 +87,10 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
     }
 
     const handleAddButton = useCallback(() => {
-        setValue(SUBSTATION_CREATION_ID, selectedNewSubstation);
+        setValue(SUBSTATION_CREATION_ID, getValues(SUBSTATION_ID));
         setValue(ADD_SUBSTATION_CREATION, true);
         setIsWithSubstationCreation(true);
-    }, [selectedNewSubstation, setValue]);
+    }, [setValue, getValues]);
     const voltageLevelNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />;
 
     const substationField = (
@@ -103,14 +102,9 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
             options={substations}
             size={'small'}
             formProps={{ margin: 'normal' }}
-            onInputChange={(_, value) => {
-                if (typeof value === 'string') {
-                    setSelectedNewSubstation(value);
-                }
-            }}
             PaperComponent={({ children }) => getCustomPaper(children)}
             noOptionsText={''}
-            onBlur={(event) => setValue(SUBSTATION_ID, event.target.value)}
+            allowNewValue
         />
     );
 
@@ -154,7 +148,6 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
     const substationCreationCountryField = <CountrySelectionInput name={COUNTRY} label={'Country'} size={'small'} />;
 
     const handleDeleteButton = useCallback(() => {
-        setSelectedNewSubstation('');
         setValue(ADD_SUBSTATION_CREATION, false);
         setIsWithSubstationCreation(false);
     }, [setValue]);
