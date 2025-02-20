@@ -6,7 +6,7 @@
  */
 
 import { BarChart } from '@mui/x-charts/BarChart';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { StackableSeriesType } from '@mui/x-charts/models/seriesType/common';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
@@ -23,6 +23,21 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
     const currentLimits: CurrentLimits = useWatch({ name: `${limitsGroupFormName}` });
     const intl = useIntl();
 
+    const formatTempo = useCallback((tempo: number) => {
+        const min = Math.floor(tempo / 60);
+        const sec = tempo % 60;
+
+        if (min > 0 && sec > 0) {
+            return `${min}min${sec}s`;
+        }
+        if (min > 0 && sec === 0) {
+            return `${min}min`;
+        }
+        if (min === 0 && sec > 0) {
+            return `${sec}s`;
+        }
+    }, []);
+
     const { series, ticks } = useMemo(() => {
         const data = [];
         let istPresent = false;
@@ -34,7 +49,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
 
         if (currentLimits?.temporaryLimits) {
             currentLimits.temporaryLimits
-                .filter((field) => field.value && field.name)
+                .filter((field) => field.name && field.acceptableDuration)
                 .forEach((field) =>
                     data.push({
                         label: field.name,
@@ -44,12 +59,23 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 );
         }
 
-        data.sort((a, b) => a.value - b.value);
+        data.sort((a, b) => {
+            if (a.value && !b.value) {
+                return -1;
+            }
+            if (!a.value && !b.value) {
+                return 0;
+            }
+            if (!a.value && b.value) {
+                return 1;
+            }
+            return a.value - b.value;
+        });
 
         return data.reduce<{ series: StackableSeriesType[]; ticks: number[] }>(
             (acc, item, index) => {
                 const previousSum = acc.ticks.length > 0 ? acc.ticks[acc.ticks.length - 1] : 0; // Sum of previous values
-                const difference = item.value - previousSum; // Calculate the difference
+                const difference = item.value ? item.value - previousSum : undefined; // Calculate the difference
                 const colorIndex = istPresent && index > 0 ? index - 1 : index;
                 const isIst = item.label === intl.formatMessage({ id: 'IST' });
                 const color = isIst ? colorIST : colors?.[colorIndex];
@@ -57,18 +83,18 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 const updatedSeries = [
                     ...acc.series,
                     {
-                        label: isIst ? intl.formatMessage({ id: 'unlimited' }) : `${item.tempo}s`,
+                        label: isIst ? intl.formatMessage({ id: 'unlimited' }) : formatTempo(item.tempo),
                         data: [difference],
-                        color: color ?? colors[colors.length - 1],
+                        color: !difference ? colorForbidden : color ?? colors[colors.length - 1],
                         stack: 'total',
                     },
                 ];
-                const updatedTicks = [...acc.ticks, item.value];
+                const updatedTicks = item.value ? [...acc.ticks, item.value] : [...acc.ticks];
 
                 if (index === data.length - 1) {
                     updatedSeries.push({
                         label: intl.formatMessage({ id: 'forbidden' }),
-                        data: [item.value * 0.15],
+                        data: [updatedTicks[updatedTicks.length - 1] * 0.15],
                         color: colorForbidden,
                         stack: 'total',
                     });
@@ -80,7 +106,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             },
             { series: [], ticks: [] }
         );
-    }, [currentLimits?.permanentLimit, currentLimits?.temporaryLimits, intl]);
+    }, [currentLimits?.permanentLimit, currentLimits?.temporaryLimits, intl, formatTempo]);
 
     return (
         <BarChart
