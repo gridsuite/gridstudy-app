@@ -242,6 +242,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const [errorMessage, setErrorMessage] = useState(undefined);
 
     const [isStudyNetworkFound, setIsStudyNetworkFound] = useState(false);
+    const isStudyNetworkFoundRef = useRef(false);
+    isStudyNetworkFoundRef.current = isStudyNetworkFound;
     const studyIndexationStatus = useSelector((state) => state.studyIndexationStatus);
     const studyIndexationStatusRef = useRef();
     studyIndexationStatusRef.current = studyIndexationStatus;
@@ -510,8 +512,6 @@ export function StudyContainer({ view, onChangeTab }) {
         };
     }, [dispatch, fetchStudyPath]);
 
-    const previousCurrentRootNetwork = usePrevious(currentRootNetworkUuid);
-
     const loadTree = useCallback(
         (initIndexationStatus) => {
             console.info(`Loading network modification tree of study '${studyUuid}'...`);
@@ -537,7 +537,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         });
 
                     // Check if the current root network has changed and if there's a current selected node
-                    if (previousCurrentRootNetwork !== currentRootNetworkUuid && currentNode) {
+                    if (currentRootNetworkRef.current !== currentRootNetworkUuid && currentNode) {
                         // Find the last selected node from the previous root network in the tree model
                         const ModelLastSelectedNode = {
                             ...networkModificationTreeModel.treeNodes.find((node) => node.id === currentNode?.id),
@@ -575,7 +575,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 .finally(() => console.debug('Network modification tree loading finished'));
             // Note: studyUuid and dispatch don't change
         },
-        [studyUuid, currentRootNetworkUuid, currentNode, previousCurrentRootNetwork, dispatch, snackError, snackWarning]
+        [studyUuid, currentRootNetworkUuid, currentNode, dispatch, snackError, snackWarning]
     );
 
     const checkStudyIndexation = useCallback(() => {
@@ -629,6 +629,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const checkNetworkExistenceAndRecreateIfNotFound = useCallback(
         (successCallback) => {
+            setIsStudyNetworkFound(false);
             fetchNetworkExistence(studyUuid, currentRootNetworkUuid)
                 .then((response) => {
                     if (response.status === HttpStatusCode.OK) {
@@ -638,7 +639,6 @@ export function StudyContainer({ view, onChangeTab }) {
                     } else {
                         // response.state === NO_CONTENT
                         // if network is not found, we try to recreate study network from existing case
-                        setIsStudyNetworkFound(false);
                         recreateStudyNetwork(studyUuid, currentRootNetworkUuid)
                             .then(() => {
                                 snackWarning({
@@ -677,13 +677,13 @@ export function StudyContainer({ view, onChangeTab }) {
     );
 
     useEffect(() => {
-        if (
-            (studyUuid && currentRootNetworkUuid && !isStudyNetworkFound) ||
-            (currentRootNetworkRef.current && currentRootNetworkRef.current !== currentRootNetworkUuid)
-        ) {
+        if (!studyUuid || !currentRootNetworkUuid) {
+            return;
+        }
+        if (!isStudyNetworkFoundRef.current || currentRootNetworkRef.current !== currentRootNetworkUuid) {
             checkNetworkExistenceAndRecreateIfNotFound();
         }
-    }, [isStudyNetworkFound, currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
+    }, [currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
 
     // study_network_recreation_done notification
     // checking another time if we can find network, if we do, we display a snackbar info
@@ -718,7 +718,7 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
-
+        let previousCurrentRootNetwork = currentRootNetworkRef.current;
         currentRootNetworkRef.current = currentRootNetworkUuid;
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
@@ -737,7 +737,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return;
         }
         dispatch(resetEquipments());
-    }, [currentNode, currentRootNetworkUuid, previousCurrentRootNetwork, wsConnected, dispatch]);
+    }, [currentNode, currentRootNetworkUuid, wsConnected, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
