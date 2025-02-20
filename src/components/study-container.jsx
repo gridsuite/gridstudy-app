@@ -248,6 +248,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const studyIndexationStatusRef = useRef();
     studyIndexationStatusRef.current = studyIndexationStatus;
     const [isStudyIndexationPending, setIsStudyIndexationPending] = useState(false);
+    const [isStudyTreePending, setIsStudyTreePending] = useState(false);
 
     const [initialTitle] = useState(document.title);
 
@@ -518,6 +519,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
             const networkModificationTree = fetchNetworkModificationTree(studyUuid, currentRootNetworkUuid);
 
+            setIsStudyTreePending(true);
             networkModificationTree
                 .then((tree) => {
                     const networkModificationTreeModel = new NetworkModificationTreeModel();
@@ -535,13 +537,13 @@ export function StudyContainer({ view, onChangeTab }) {
                                 headerId: 'CaseNameLoadError',
                             });
                         });
-
-                    // Check if the current root network has changed and if there's a current selected node
-                    if (currentRootNetworkRef.current !== currentRootNetworkUuid && currentNode) {
-                        // Find the last selected node from the previous root network in the tree model
+                    // If a current node then override it cause it could have diferent status in different root networks
+                    if (currentNode) {
+                        // Find the updated current node in the tree model
                         const ModelLastSelectedNode = {
                             ...networkModificationTreeModel.treeNodes.find((node) => node.id === currentNode?.id),
                         };
+                        // then override it
                         dispatch(setCurrentTreeNode(ModelLastSelectedNode));
                         return;
                     }
@@ -572,7 +574,9 @@ export function StudyContainer({ view, onChangeTab }) {
                         headerId: 'NetworkModificationTreeLoadError',
                     });
                 })
-                .finally(() => console.debug('Network modification tree loading finished'));
+                .finally(() => {
+                    setIsStudyTreePending(false);
+                });
             // Note: studyUuid and dispatch don't change
         },
         [studyUuid, currentRootNetworkUuid, currentNode, dispatch, snackError, snackWarning]
@@ -819,6 +823,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyPending ||
                 !paramsLoaded ||
                 !isStudyNetworkFound ||
+                isStudyTreePending ||
                 (studyIndexationStatus !== StudyIndexationStatus.INDEXED && isStudyIndexationPending)
             } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
