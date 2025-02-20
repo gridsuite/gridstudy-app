@@ -49,7 +49,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
 
         if (currentLimits?.temporaryLimits) {
             currentLimits.temporaryLimits
-                .filter((field) => field.name && field.acceptableDuration)
+                .filter((field) => field.name)
                 .forEach((field) =>
                     data.push({
                         label: field.name,
@@ -78,18 +78,30 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 const difference = item.value ? item.value - previousSum : undefined; // Calculate the difference
                 const colorIndex = istPresent && index > 0 ? index - 1 : index;
                 const isIst = item.label === intl.formatMessage({ id: 'IST' });
-                const color = isIst ? colorIST : colors?.[colorIndex];
+                let color = isIst ? colorIST : colors?.[colorIndex];
+                let isIncoherent = false;
+
+                //Verify coherence
+                if (
+                    (index === 0 && !isIst) ||
+                    (!item.tempo && !isIst) ||
+                    (index > 0 && item.tempo && data[index - 1].tempo && item.tempo > data[index - 1].tempo) ||
+                    !difference
+                ) {
+                    color = colorForbidden;
+                    isIncoherent = true;
+                }
 
                 const updatedSeries = [
                     ...acc.series,
                     {
                         label: isIst ? intl.formatMessage({ id: 'unlimited' }) : formatTempo(item.tempo),
-                        data: [difference],
-                        color: !difference ? colorForbidden : color ?? colors[colors.length - 1],
+                        data: isIncoherent ? [undefined] : [difference],
+                        color: color ?? colors[colors.length - 1],
                         stack: 'total',
                     },
                 ];
-                const updatedTicks = item.value ? [...acc.ticks, item.value] : [...acc.ticks];
+                const updatedTicks = item.value && !isIncoherent ? [...acc.ticks, item.value] : [...acc.ticks];
 
                 if (index === data.length - 1) {
                     updatedSeries.push({
