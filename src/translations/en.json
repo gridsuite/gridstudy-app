@@ -509,6 +509,7 @@
 
     "results.globalFilter.fillerText": "Filtering",
     "results.globalFilter.recent": "Recent",
+    "results.globalFilter.filter": "Filters",
     "results.globalFilter.country": "Countries",
     "results.globalFilter.voltageLevel": "Voltage levels",
 

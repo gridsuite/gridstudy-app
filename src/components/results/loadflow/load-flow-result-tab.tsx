@@ -65,6 +65,7 @@ const styles = {
 export interface GlobalFilter {
     nominalV?: string[];
     countryCode?: string[];
+    genericFilter?: string[];
     limitViolationsTypes?: LimitTypes[];
 }
 
@@ -133,8 +134,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             if (globalFilter) {
                 if (globalFilter.countryCode && globalFilter.countryCode.length > 0) {
                     shouldSentParameter = true;
-                }
-                if (globalFilter.nominalV && globalFilter.nominalV.length > 0) {
+                } else if (globalFilter.nominalV && globalFilter.nominalV.length > 0) {
+                    shouldSentParameter = true;
+                } else if (globalFilter.genericFilter && globalFilter.genericFilter.length > 0) {
                     shouldSentParameter = true;
                 }
             }
@@ -256,6 +258,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     .filter((filter: Filter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
                     .map((filter: Filter) => filter.label)
             );
+            const genericFilters: Set<string> = new Set(
+                value
+                    .filter((filter: Filter): boolean => filter.filterType === FilterType.FILTER)
+                    .map((filter: Filter) => filter.label)
+            );
             const countryCodes = new Set(
                 value
                     .filter((filter: Filter) => filter.filterType === FilterType.COUNTRY)
@@ -263,6 +270,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             );
             newGlobalFilter.nominalV = [...nominalVs];
             newGlobalFilter.countryCode = [...countryCodes];
+            newGlobalFilter.genericFilter = [...genericFilters];
         }
         setGlobalFilter(newGlobalFilter);
     }, []);
