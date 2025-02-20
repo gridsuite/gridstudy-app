@@ -24,20 +24,15 @@ import {
     DirectoryItemSelector,
     ElementType,
     SubmitButton,
+    TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    getLimitReductionsFormSchema,
-    ILimitReductionsByVoltageLevel,
-    IST_FORM,
-    LIMIT_DURATION_FORM,
-    LIMIT_REDUCTIONS_FORM,
-} from '../common/limitreductions/columns-definitions';
+import { getLimitReductionsFormSchema, LIMIT_REDUCTIONS_FORM } from '../common/limitreductions/columns-definitions';
 import LineSeparator from '../../commons/line-separator';
-import { UseParametersBackendReturnProps } from '../parameters.type';
+import { ParameterType, SpecificParameterInfos, UseParametersBackendReturnProps } from '../parameters.type';
 import ComputingType from 'components/computing-status/computing-type';
 import { fetchLoadFlowParameters } from 'services/loadflow';
 import { toFormValuesLimitReductions } from '../common/limitreductions/limit-reductions-form-util';
@@ -47,14 +42,18 @@ import {
     getCommonLoadFlowParametersFormSchema,
     getDefaultSpecificParamsValues,
     getSpecificLoadFlowParametersFormSchema,
-    ParameterDescription,
+    mapLimitReductions,
+    setLimitReductions,
+    setSpecificParameters,
     TAB_VALUES,
 } from './load-flow-parameters-utils';
 import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION, PARAM_PROVIDER_OPENLOADFLOW } from 'utils/config-params';
 import { LoadFlowProvider } from './load-flow-parameters-context';
-import { COMMON_PARAMETERS, MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION, SPECIFIC_PARAMETERS, TYPES } from './constants';
+import { COMMON_PARAMETERS, SPECIFIC_PARAMETERS } from './constants';
 import LoadFlowParametersHeader from './load-flow-parameters-header';
 import LoadFlowParametersContent from './load-flow-parameters-content';
+import { LoadFlowParametersInfos, SpecificParametersPerProvider } from 'services/study/loadflow.type';
+
 const LoadFlowParameters: FunctionComponent<{
     parametersBackend: UseParametersBackendReturnProps<ComputingType.LOAD_FLOW>;
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
@@ -106,31 +105,9 @@ const LoadFlowParameters: FunctionComponent<{
         resetParameters();
     }, [resetParameters]);
 
-    const handleLoadParameter = useCallback(
-        (newParams: Record<string, any>) => {
-            if (newParams && newParams.length > 0) {
-                setOpenSelectParameterDialog(false);
-                fetchLoadFlowParameters(newParams[0].id)
-                    .then((parameters) => {
-                        console.info('loading the following loadflow parameters : ' + parameters.uuid);
-                        updateParameters({ ...parameters });
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        });
-                    });
-            }
-            setOpenSelectParameterDialog(false);
-        },
-        [snackError, updateParameters]
-    );
-
     const specificParameters = useMemo(() => {
         const specificParams = currentProvider ? specificParamsDescriptions?.[currentProvider] : undefined;
-        return specificParams?.map((param: ParameterDescription) => ({
+        return specificParams?.map((param: SpecificParameterInfos) => ({
             name: param.name,
             type: param.type,
             label: param.label,
@@ -172,25 +149,72 @@ const LoadFlowParameters: FunctionComponent<{
         resolver: yupResolver(formSchema as unknown as yup.ObjectSchema<any>),
     });
 
-    const watchProvider = formMethods.watch('provider');
+    const { handleSubmit, formState, reset, getValues, watch } = formMethods;
 
-    const mapLimitReductions = (
-        vlLimits: ILimitReductionsByVoltageLevel,
-        formLimits: Record<string, any>[],
-        indexVl: number
-    ): ILimitReductionsByVoltageLevel => {
-        let vlLNewLimits: ILimitReductionsByVoltageLevel = {
-            ...vlLimits,
-            permanentLimitReduction: formLimits[indexVl][IST_FORM],
-        };
-        vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
-            vlLNewLimits.temporaryLimitReductions[index] = {
-                ...temporaryLimit,
-                reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
+    const watchProvider = watch('provider');
+
+    const toLoadFlowFormValues = useCallback(
+        (params: LoadFlowParametersInfos) => {
+            const specificParams = params.provider ? specificParamsDescriptions?.[params.provider] : undefined;
+            const specificParamsPerProvider = params.specificParametersPerProvider[params.provider];
+
+            const formatted = specificParams?.reduce((acc: Record<string, unknown>, param: SpecificParameterInfos) => {
+                if (specificParamsPerProvider?.hasOwnProperty(param.name)) {
+                    if (param.type === ParameterType.BOOLEAN) {
+                        acc[param.name] = specificParamsPerProvider[param.name] === 'true';
+                    } else if (param.type === ParameterType.STRING_LIST) {
+                        acc[param.name] =
+                            specificParamsPerProvider[param.name] !== ''
+                                ? specificParamsPerProvider[param.name].split(',')
+                                : [];
+                    } else {
+                        acc[param.name] = specificParamsPerProvider[param.name];
+                    }
+                } else {
+                    acc[param.name] = getDefaultSpecificParamsValues([param])[param.name];
+                }
+                return acc;
+            }, {});
+
+            return {
+                [PROVIDER]: params.provider,
+                [PARAM_LIMIT_REDUCTION]: params.limitReduction,
+                [COMMON_PARAMETERS]: {
+                    ...params.commonParameters,
+                },
+                [SPECIFIC_PARAMETERS]: {
+                    ...formatted,
+                },
+                ...toFormValuesLimitReductions(params.limitReductions),
             };
-        });
-        return vlLNewLimits;
-    };
+        },
+        [specificParamsDescriptions]
+    );
+
+    const handleLoadParameter = useCallback(
+        (newParams: TreeViewFinderNodeProps[]) => {
+            if (newParams && newParams.length > 0) {
+                setOpenSelectParameterDialog(false);
+                fetchLoadFlowParameters(newParams[0].id)
+                    .then((parameters) => {
+                        setCurrentProvider(parameters.provider);
+                        console.info('loading the following loadflow parameters : ' + parameters.uuid);
+                        reset(toLoadFlowFormValues(parameters), {
+                            keepDefaultValues: true,
+                        });
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            }
+            setOpenSelectParameterDialog(false);
+        },
+        [reset, snackError, toLoadFlowFormValues]
+    );
 
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
@@ -212,39 +236,41 @@ const LoadFlowParameters: FunctionComponent<{
         [defaultLimitReductions, params?.limitReductions, watchProvider]
     );
 
-    const { handleSubmit, formState, reset } = formMethods;
+    const getSpecificParametersPerProvider = (
+        formData: Record<string, any>,
+        specificParametersValues: SpecificParametersPerProvider
+    ) => {
+        return Object.keys(formData[SPECIFIC_PARAMETERS]).reduce((acc: Record<string, any>, key: string) => {
+            if (specificParametersValues[key].toString() !== formData[SPECIFIC_PARAMETERS][key].toString()) {
+                acc[key] = formData[SPECIFIC_PARAMETERS][key].toString();
+            }
+            return acc;
+        }, {} as Record<string, any>);
+    };
+
+    const formatNewParams = useCallback(
+        (formData: Record<string, any>): LoadFlowParametersInfos => {
+            return {
+                provider: formData[PROVIDER],
+                limitReduction: formData[PARAM_LIMIT_REDUCTION],
+                commonParameters: {
+                    ...formData[COMMON_PARAMETERS],
+                },
+                specificParametersPerProvider: {
+                    [formData.provider]: getSpecificParametersPerProvider(formData, specificParametersValues),
+                },
+                limitReductions: toLimitReductions(formData[LIMIT_REDUCTIONS_FORM]),
+            };
+        },
+        [specificParametersValues, toLimitReductions]
+    );
 
     const updateLFParameters = useCallback(
         (formData: Record<string, any>) => {
-            if (params) {
-                setTabIndexesWithError([]);
-                updateParameters({
-                    ...params,
-                    provider: formData[PROVIDER],
-                    limitReduction: formData[PARAM_LIMIT_REDUCTION],
-                    commonParameters: {
-                        ...params.commonParameters,
-                        ...formData[COMMON_PARAMETERS],
-                    },
-                    specificParametersPerProvider: {
-                        [formData.provider]: Object.keys(formData[SPECIFIC_PARAMETERS]).reduce(
-                            (acc: Record<string, any>, key: string) => {
-                                if (
-                                    specificParametersValues[key].toString() !==
-                                    formData[SPECIFIC_PARAMETERS][key].toString()
-                                ) {
-                                    acc[key] = formData[SPECIFIC_PARAMETERS][key].toString();
-                                }
-                                return acc;
-                            },
-                            {} as Record<string, any>
-                        ),
-                    },
-                    limitReductions: toLimitReductions(formData[LIMIT_REDUCTIONS_FORM]),
-                });
-            }
+            setTabIndexesWithError([]);
+            updateParameters(formatNewParams(formData));
         },
-        [params, updateParameters, toLimitReductions, specificParametersValues]
+        [updateParameters, formatNewParams]
     );
 
     useEffect(() => {
@@ -255,39 +281,8 @@ const LoadFlowParameters: FunctionComponent<{
         if (!params) {
             return;
         }
-        const specificParams = params.provider ? specificParamsDescriptions?.[params.provider] : undefined;
-        const specificParamsPerProvider = params.specificParametersPerProvider[params.provider];
-
-        const formatted = specificParams?.reduce((acc: Record<string, unknown>, param: ParameterDescription) => {
-            if (specificParamsPerProvider?.hasOwnProperty(param.name)) {
-                if (param.type === TYPES.BOOLEAN) {
-                    acc[param.name] = specificParamsPerProvider[param.name] === 'true';
-                } else if (param.type === TYPES.STRING_LIST) {
-                    acc[param.name] =
-                        specificParamsPerProvider[param.name] !== ''
-                            ? specificParamsPerProvider[param.name].split(',')
-                            : [];
-                } else {
-                    acc[param.name] = specificParamsPerProvider[param.name];
-                }
-            } else {
-                acc[param.name] = getDefaultSpecificParamsValues([param])[param.name];
-            }
-            return acc;
-        }, {});
-
-        reset({
-            [PROVIDER]: params.provider,
-            [PARAM_LIMIT_REDUCTION]: params.limitReduction,
-            [COMMON_PARAMETERS]: {
-                ...params.commonParameters,
-            },
-            [SPECIFIC_PARAMETERS]: {
-                ...formatted,
-            },
-            ...toFormValuesLimitReductions(params.limitReductions),
-        });
-    }, [params, reset, specificParamsDescriptions]);
+        reset(toLoadFlowFormValues(params));
+    }, [params, reset, specificParamsDescriptions, toLoadFlowFormValues]);
 
     const [selectedTab, setSelectedTab] = useState(TAB_VALUES.GENERAL);
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: TAB_VALUES) => {
@@ -314,19 +309,8 @@ const LoadFlowParameters: FunctionComponent<{
     useEffect(() => {
         if (watchProvider !== currentProvider) {
             setCurrentProvider(watchProvider);
-            const specificParams = watchProvider ? specificParamsDescriptions?.[watchProvider] : undefined;
-            const specificParamsValues = getDefaultSpecificParamsValues(specificParams);
-            formMethods.setValue(SPECIFIC_PARAMETERS, specificParamsValues);
-            if (watchProvider === PARAM_PROVIDER_OPENLOADFLOW) {
-                formMethods.setValue(
-                    LIMIT_REDUCTIONS_FORM,
-                    toFormValuesLimitReductions(defaultLimitReductions)[LIMIT_REDUCTIONS_FORM]
-                );
-                formMethods.setValue(PARAM_LIMIT_REDUCTION, null);
-            } else {
-                formMethods.setValue(PARAM_LIMIT_REDUCTION, MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION);
-                formMethods.setValue(LIMIT_REDUCTIONS_FORM, []);
-            }
+            setSpecificParameters(watchProvider, specificParamsDescriptions, formMethods);
+            setLimitReductions(watchProvider, defaultLimitReductions, formMethods);
         }
     }, [currentProvider, defaultLimitReductions, formMethods, specificParamsDescriptions, watchProvider]);
 
@@ -383,9 +367,7 @@ const LoadFlowParameters: FunctionComponent<{
                     <CreateParameterDialog
                         open={openCreateParameterDialog}
                         onClose={() => setOpenCreateParameterDialog(false)}
-                        parameterValues={() => {
-                            return { ...params };
-                        }}
+                        parameterValues={() => formatNewParams(getValues())}
                         parameterFormatter={(newParams) => newParams}
                         parameterType={ElementType.LOADFLOW_PARAMETERS}
                     />

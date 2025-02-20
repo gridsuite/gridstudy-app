@@ -5,15 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const TYPES = {
-    STRING_LIST: 'STRING_LIST',
-    BOOLEAN: 'BOOLEAN',
-    COUNTRIES: 'COUNTRIES',
-    DOUBLE: 'DOUBLE',
-    STRING: 'STRING',
-    INTEGER: 'INTEGER',
-};
-
 export const COMMON_PARAMETERS = 'commonParameters';
 export const SPECIFIC_PARAMETERS = 'specificParametersPerProvider';
 

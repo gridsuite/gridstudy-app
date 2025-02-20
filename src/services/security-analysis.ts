@@ -6,7 +6,6 @@
  */
 
 import { backendFetchJson } from './utils';
-import { UUID } from 'crypto';
 
 const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/security-analysis';
 
@@ -21,7 +20,7 @@ export function fetchSecurityAnalysisProviders() {
     return backendFetchJson(url);
 }
 
-export function fetchSecurityAnalysisParameters(parameterUuid: UUID) {
+export function fetchSecurityAnalysisParameters(parameterUuid: string) {
     console.info('fetch security analysis parameters');
     const url = getSecurityAnalysisUrl() + 'parameters/' + encodeURIComponent(parameterUuid);
     console.debug(url);
