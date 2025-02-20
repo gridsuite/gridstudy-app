@@ -708,12 +708,13 @@ export function StudyContainer({ view, onChangeTab }) {
 
     //handles map automatic mode network reload
     useEffect(() => {
+        const previousCurrentNode = currentNodeRef.current;
+        currentNodeRef.current = currentNode;
+        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
+
         if (!wsConnected) {
             return;
         }
-        const previousCurrentNode = currentNodeRef.current;
-        currentNodeRef.current = currentNode;
-
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
             return;
@@ -721,8 +722,6 @@ export function StudyContainer({ view, onChangeTab }) {
         if (!isNodeBuilt(currentNode)) {
             return;
         }
-
-        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
         // A modification has been added to the currentNode and this one has been built incrementally.
         // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
         if (isSameNode(previousCurrentNode, currentNode) && isNodeBuilt(previousCurrentNode)) {
