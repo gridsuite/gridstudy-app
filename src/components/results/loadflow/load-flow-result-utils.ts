@@ -179,11 +179,11 @@ export const useFetchFiltersEnums = (): {
     });
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     useEffect(() => {
-        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id || !currentRootNetwork) {
+        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
             return;
         }
 
@@ -193,7 +193,7 @@ export const useFetchFiltersEnums = (): {
             fetchAvailableFilterEnumValues(
                 studyUuid,
                 currentNode.id,
-                currentRootNetwork,
+                currentRootNetworkUuid,
                 computingType.LOAD_FLOW,
                 filterType
             )
@@ -214,7 +214,7 @@ export const useFetchFiltersEnums = (): {
             .finally(() => {
                 setLoading(false);
             });
-    }, [loadFlowStatus, studyUuid, currentNode?.id, currentRootNetwork]);
+    }, [loadFlowStatus, studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     return { loading, result, error };
 };

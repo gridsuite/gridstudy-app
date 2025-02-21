@@ -15,27 +15,27 @@ import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 
 export const useSpreadsheetGsFilter = (equipmentType: SpreadsheetEquipmentType) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [filterIds, setFilterIds] = useState<string[]>([]);
     const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
 
     const applyGsFilter = useCallback(
         async (filters: ExpertFilter[]) => {
-            if (!filters?.length || !currentRootNetwork) {
+            if (!filters?.length || !currentRootNetworkUuid) {
                 setFilterIds([]);
                 return;
             }
 
             const filtersUuid = filters.filter((filter) => filter.id).map((filter) => filter.id as UUID);
             if (filtersUuid.length > 0) {
-                const response = await evaluateFilters(studyUuid as UUID, currentRootNetwork, filtersUuid);
+                const response = await evaluateFilters(studyUuid as UUID, currentRootNetworkUuid, filtersUuid);
                 const equipmentsIds = response.flatMap((filterEquipments) =>
                     filterEquipments.identifiableAttributes.map((attr) => attr.id)
                 );
                 setFilterIds(equipmentsIds);
             }
         },
-        [currentRootNetwork, studyUuid]
+        [currentRootNetworkUuid, studyUuid]
     );
 
     useEffect(() => {

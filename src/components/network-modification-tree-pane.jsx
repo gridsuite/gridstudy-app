@@ -137,8 +137,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
-    const currentRootNetworkRef = useRef();
-    currentRootNetworkRef.current = currentRootNetworkUuid;
+    const currentRootNetworkUuidRef = useRef();
+    currentRootNetworkUuidRef.current = currentRootNetworkUuid;
     const selectionForCopy = useSelector((state) => state.nodeSelectionForCopy);
     const nodeSelectionForCopyRef = useRef();
     nodeSelectionForCopyRef.current = selectionForCopy;
@@ -305,7 +305,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 updateNodes([studyUpdatedForce.eventData.headers['node']]);
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'nodeBuildStatusUpdated' &&
-                studyUpdatedForce.eventData.headers['rootNetwork'] === currentRootNetworkRef.current
+                studyUpdatedForce.eventData.headers['rootNetwork'] === currentRootNetworkUuidRef.current
             ) {
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (

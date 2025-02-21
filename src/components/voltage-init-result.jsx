@@ -83,7 +83,7 @@ const VoltageInitResult = ({ result, status }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
     const { snackError } = useSnackMessage();
 
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
