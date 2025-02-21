@@ -87,7 +87,7 @@ export default function CustomColumnsNodesConfig({ tabIndex }: Readonly<CustomCo
                 id: NodesOptionId.REFRESH,
                 label: 'spreadsheet/custom_column/option/refresh',
                 action: () => reloadOtherNodes(),
-                disabled: nodesToReload ? nodesToReload.length === 0 : false,
+                disabled: nodesToReload ? nodesToReload.length === 0 : true,
                 tooltipMsgId: 'spreadsheet/custom_column/option/refresh/tooltip',
                 tooltipMsgValues: {
                     aliases: nodesToReload?.map((node) => node.alias).join(', '),

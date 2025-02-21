@@ -25,7 +25,7 @@ import { AppState, initialReloadNodesAliases } from 'redux/reducer';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/equipment/common-config';
-import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
 import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
@@ -47,23 +47,39 @@ export const useSpreadsheetEquipments = (
     const [isFetching, setIsFetching] = useState(false);
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const nodesAliasesToReload = useSelector((state: AppState) => state.reloadNodesAliases);
+    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
+
+    const idsToBuildStatus = useMemo(() => {
+        let map = new Map();
+        treeModel?.treeNodes.forEach((treeNode) => {
+            map.set(treeNode.id, treeNode.data.globalBuildStatus);
+        });
+        return map;
+    }, [treeModel]);
 
     const nodesIdToFetch = useMemo(() => {
-        let nodesIdToFetch = new Set<string>();
+        let nodeIds = new Set<string>();
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
-        if (equipments.nodesId.find((nodeId) => nodeId === currentNode?.id) === undefined) {
-            nodesIdToFetch.add(currentNode?.id as string);
+        const currentNodeId = currentNode?.id as string;
+        if (
+            currentNodeId &&
+            isStatusBuilt(idsToBuildStatus.get(currentNodeId)) &&
+            equipments.nodesId.find((nodeId) => nodeId === currentNode?.id) === undefined
+        ) {
+            nodeIds.add(currentNodeId);
         }
         //Then we do the same for the other nodes we need the data of (the ones defined in aliases)
         nodesAliases.forEach((nodeAlias) => {
-            if (equipments.nodesId.find((nodeId) => nodeId === nodeAlias.id) === undefined) {
-                nodesIdToFetch.add(nodeAlias.id);
+            if (
+                isStatusBuilt(idsToBuildStatus.get(nodeAlias.id)) &&
+                equipments.nodesId.find((nodeId) => nodeId === nodeAlias.id) === undefined
+            ) {
+                nodeIds.add(nodeAlias.id);
             }
         });
-        return nodesIdToFetch;
-    }, [currentNode?.id, equipments.nodesId, nodesAliases]);
+        return nodeIds;
+    }, [currentNode?.id, equipments.nodesId, idsToBuildStatus, nodesAliases]);
 
-    // FIXME ? function below loads data even for an 'unbuild' node (because we dont check the built status, and the network still exists)
     const loadEquipmentData = useCallback(
         (nodeIds: Set<string>) => {
             if (studyUuid && currentRootNetworkUuid) {
@@ -95,8 +111,6 @@ export const useSpreadsheetEquipments = (
         },
         [currentRootNetworkUuid, dispatch, formatFetchedEquipments, studyUuid, type]
     );
-
-    const shouldFetchEquipments = useMemo(() => nodesIdToFetch.size > 0, [nodesIdToFetch]);
 
     const {
         impactedSubstationsIds,
@@ -202,22 +216,28 @@ export const useSpreadsheetEquipments = (
 
     useEffect(() => {
         if (
-            shouldFetchEquipments &&
+            nodesIdToFetch.size > 0 &&
             currentNode?.id &&
             isNetworkModificationTreeModelUpToDate &&
             isNodeBuilt(currentNode)
         ) {
             loadEquipmentData(nodesIdToFetch);
         }
-    }, [shouldFetchEquipments, currentNode, isNetworkModificationTreeModelUpToDate, loadEquipmentData, nodesIdToFetch]);
+    }, [currentNode, isNetworkModificationTreeModelUpToDate, loadEquipmentData, nodesIdToFetch]);
 
     useEffect(() => {
         if (nodesAliasesToReload.sheetType === type && nodesAliasesToReload.nodesId.length) {
-            loadEquipmentData(new Set<string>(nodesAliasesToReload.nodesId));
+            let idsToRelaod = new Set<string>();
+            nodesAliasesToReload.nodesId.forEach((nodeId) => {
+                if (isStatusBuilt(idsToBuildStatus.get(nodeId))) {
+                    idsToRelaod.add(nodeId);
+                }
+            });
+            loadEquipmentData(idsToRelaod);
             // reset reload action
             dispatch(reloadNodesAliases(initialReloadNodesAliases));
         }
-    }, [dispatch, loadEquipmentData, nodesAliasesToReload, type]);
+    }, [dispatch, idsToBuildStatus, loadEquipmentData, nodesAliasesToReload, type]);
 
     return { equipments, errorMessage, isFetching };
 };
