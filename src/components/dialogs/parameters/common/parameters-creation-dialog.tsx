@@ -10,6 +10,7 @@ import { ElementCreationDialog, ElementType, IElementCreationDialog, useSnackMes
 import { createParameter } from 'services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
+import { useCallback } from 'react';
 
 interface CreateParameterProps<T extends FieldValues> {
     open: boolean;
@@ -29,24 +30,33 @@ const CreateParameterDialog = <T extends FieldValues>({
     const { snackError, snackInfo } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const saveParameters = ({ name, description, folderId, folderName }: IElementCreationDialog) => {
-        createParameter(parameterFormatter(parameterValues()), name, parameterType, description, folderId)
-            .then(() => {
-                snackInfo({
-                    headerId: 'paramsCreationMsg',
-                    headerValues: {
-                        directory: folderName,
-                    },
+    const saveParameters = useCallback(
+        (element: IElementCreationDialog) => {
+            createParameter(
+                parameterFormatter(parameterValues()),
+                element.name,
+                parameterType,
+                element.description,
+                element.folderId
+            )
+                .then(() => {
+                    snackInfo({
+                        headerId: 'paramsCreationMsg',
+                        headerValues: {
+                            directory: element.folderName,
+                        },
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsCreatingError',
+                    });
                 });
-            })
-            .catch((error) => {
-                console.error(error);
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsCreatingError',
-                });
-            });
-    };
+        },
+        [parameterFormatter, parameterType, parameterValues, snackError, snackInfo]
+    );
 
     return (
         studyUuid && (

@@ -1001,8 +1001,8 @@ const NetworkModificationNodeEditor = () => {
                     onSave={doCreateCompositeModificationsElements}
                     onClose={() => setCreateCompositeModificationDialogOpen(false)}
                     type={ElementType.MODIFICATION}
-                    titleId={'CreateCompositeModification'}
-                    prefixIdForGeneratedName={'GeneratedModification'}
+                    titleId="CreateCompositeModification"
+                    prefixIdForGeneratedName="GeneratedModification"
                     studyUuid={studyUuid}
                 />
             )
