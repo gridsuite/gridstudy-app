@@ -146,6 +146,7 @@ import {
     getBranchActiveReactivePowerEmptyFormData,
     getBranchActiveReactivePowerValidationSchema,
 } from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
+import { TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -171,15 +172,6 @@ const formSchema = yup
     })
     .concat(modificationPropertiesSchema)
     .required();
-
-export const TwoWindingsTransformerModificationDialogTab = {
-    CONNECTIVITY_TAB: 0,
-    CHARACTERISTICS_TAB: 1,
-    LIMITS_TAB: 2,
-    MEASUREMENTS_TAB: 3,
-    RATIO_TAP_TAB: 4,
-    PHASE_TAP_TAB: 5,
-};
 
 /**
  * Dialog to modify a two windings transformer in the network

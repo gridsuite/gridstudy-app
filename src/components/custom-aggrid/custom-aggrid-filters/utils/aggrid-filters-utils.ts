@@ -10,6 +10,12 @@ import { GridApi } from 'ag-grid-community';
 import { addToleranceToFilter } from './filter-tolerance-utils';
 import { FilterConfig } from '../../../../types/custom-aggrid-types';
 
+export enum BooleanFilterValue {
+    TRUE = 'true',
+    FALSE = 'false',
+    UNDEFINED = 'undefinedValue',
+}
+
 interface FilterModel {
     [colId: string]: any;
 }

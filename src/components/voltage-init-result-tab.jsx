@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNodeData } from './study-container';
 import WaitingLoader from './utils/waiting-loader';
 import VoltageInitResult from './voltage-init-result';
 import { useSelector } from 'react-redux';
@@ -13,6 +12,7 @@ import { ComputingType } from './computing-status/computing-type';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import RunningStatus from './utils/running-status';
 import { voltageInitResultInvalidations } from './computing-status/use-all-computing-status';
+import { useNodeData } from './use-node-data';
 
 export const VoltageInitResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUuid }) => {
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);

@@ -8,7 +8,7 @@ import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } f
 import { Button, Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles, TabPanel } from '../parameters';
-import { SingleLineDiagramParameters, useGetAvailableComponentLibraries } from './single-line-diagram-parameters';
+import { SingleLineDiagramParameters } from './single-line-diagram-parameters';
 import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
 import { MapParameters } from './map-parameters';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,6 +39,24 @@ import { UPDATE_TYPE_HEADER } from '../common/computation-parameters-util';
 import { setUpdateNetworkVisualizationParameters } from '../../../../redux/actions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { fetchNetworkVisualizationsParameters } from '../../../../services/study-config';
+import { User } from 'oidc-client';
+import { getAvailableComponentLibraries } from 'services/study';
+
+const useGetAvailableComponentLibraries = (user: User | null) => {
+    const [componentLibraries, setComponentLibraries] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (user !== null) {
+            getAvailableComponentLibraries().then((libraries) => {
+                if (libraries != null) {
+                    setComponentLibraries(libraries);
+                }
+            });
+        }
+    }, [user]);
+
+    return componentLibraries;
+};
 
 interface NetworkVisualizationsParametersProps {
     setHaveDirtyFields: (haveDirtyFields: boolean) => void;
