@@ -28,10 +28,12 @@ import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 import { User } from 'oidc-client';
 
-import { LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
+import { LabelledButton, TabPanel } from '../parameters';
 import ContingencyParameters, { CONTINGENCIES_LIST_INFOS, CONTINGENCIES_START_TIME } from './contingency-parameters';
 import { ID, NAME, PROVIDER } from '../../../utils/field-constants';
 import ProviderParam from '../common/ProviderParam';
+import { styles } from '../parameters-style';
+import { useParametersBackend } from '../use-parameters-backend';
 
 const scenarioFormSchema = yup
     .object()

@@ -14,7 +14,6 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
 } from '../../../../utils/config-params';
-import { styles } from '../parameters';
 import LineSeparator from '../../commons/line-separator';
 import { FormattedMessage } from 'react-intl';
 import { MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
@@ -26,6 +25,7 @@ import {
     SUBSTATION_LAYOUT,
     TabValue,
 } from './network-visualizations-utils';
+import { styles } from '../parameters-style';
 
 export const SingleLineDiagramParameters = ({ componentLibraries }: { componentLibraries: string[] }) => {
     const componentLibsRenderCache = useMemo(

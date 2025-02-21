@@ -19,7 +19,7 @@ export const timeDelayFormSchema = yup.object().shape({
     [TimeDelay.STOP_TIME]: yup
         .number()
         .required()
-        .when([TimeDelay.STOP_TIME], ([startTime], schema) => {
+        .when([TimeDelay.START_TIME], ([startTime], schema) => {
             if (startTime) {
                 return schema.min(startTime, 'DynamicSimulationStopTimeMustBeGreaterThanOrEqualToStartTime');
             }

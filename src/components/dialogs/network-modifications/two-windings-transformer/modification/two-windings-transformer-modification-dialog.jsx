@@ -85,7 +85,6 @@ import {
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
-import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import { LimitsPane } from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
@@ -99,6 +98,7 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
 import {
+    addSelectedFieldToRows,
     compareStepsWithPreviousValues,
     computeHighTapPosition,
     formatTemporaryLimits,

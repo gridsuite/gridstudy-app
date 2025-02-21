@@ -10,7 +10,6 @@ import { Button, DialogActions, Grid } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
@@ -67,6 +66,7 @@ import { AppState } from 'redux/reducer';
 import LineSeparator from '../../commons/line-separator';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
+import { styles } from '../parameters-style';
 
 const formSchema = yup
     .object()

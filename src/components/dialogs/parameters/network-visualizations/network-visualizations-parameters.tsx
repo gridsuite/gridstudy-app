@@ -7,7 +7,7 @@
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Button, Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { styles, TabPanel } from '../parameters';
+import { TabPanel } from '../parameters';
 import { SingleLineDiagramParameters } from './single-line-diagram-parameters';
 import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
 import { MapParameters } from './map-parameters';
@@ -41,6 +41,7 @@ import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { fetchNetworkVisualizationsParameters } from '../../../../services/study-config';
 import { User } from 'oidc-client';
 import { getAvailableComponentLibraries } from 'services/study';
+import { styles } from '../parameters-style';
 
 const useGetAvailableComponentLibraries = (user: User | null) => {
     const [componentLibraries, setComponentLibraries] = useState<string[]>([]);
