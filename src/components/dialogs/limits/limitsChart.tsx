@@ -25,6 +25,12 @@ interface Ticks {
     incoherent: boolean;
 }
 
+interface ThresholdData {
+    label: string;
+    tempo: number | undefined;
+    value: number | undefined;
+}
+
 export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGraphProps>) {
     const currentLimits: CurrentLimits = useWatch({ name: `${limitsGroupFormName}` });
     const intl = useIntl();
@@ -40,6 +46,27 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
         }
         return `${min}min${sec}s`;
     }, []);
+
+    const isIncoherent = useCallback(
+        (item: ThresholdData, previousItem?: ThresholdData) => {
+            // Incoherent cases :
+            //  threshold without tempo that is not ist
+            //  threshold with biggest tempo and biggest value
+            //  more than one threshold without value
+            const isIst =
+                (item.label === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
+                (!currentLimits.permanentLimit && !item.tempo);
+
+            return (
+                ((!item.tempo && currentLimits.permanentLimit && !isIst) ||
+                    (!isIst && item.value < currentLimits.permanentLimit) ||
+                    (previousItem && item.tempo > previousItem.tempo) ||
+                    (previousItem && !item.tempo && !previousItem.tempo)) ??
+                false
+            );
+        },
+        [currentLimits, intl]
+    );
 
     const { series, ticks } = useMemo(() => {
         const data = [];
@@ -83,25 +110,20 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
         return data.reduce<{ series: StackableSeriesType[]; ticks: Ticks[] }>(
             (acc, item, index) => {
                 const previousSum = acc.ticks.length > 0 ? acc.ticks[acc.ticks.length - 1].position : 0; // Sum of previous values
-                const difference = item.value ? item.value - previousSum : undefined; // Calculate the difference
                 const colorIndex = currentLimits?.permanentLimit && index > 0 ? index - 1 : index;
                 const isIst =
                     (item.label === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
                     (!currentLimits.permanentLimit && !item.tempo);
+                let difference = item.value ? item.value - previousSum : undefined;
+                if (isIst || !item.tempo) {
+                    difference = item.value;
+                }
                 const color =
                     isIst || !item.tempo || (item.tempo && currentLimits.permanentLimit > parseFloat(item.value))
                         ? colorIST
                         : colors?.[colorIndex] ?? colors[colors.length - 1];
 
-                // Incoherent cases :
-                // - threshold without tempo that is not ist
-                // - threshold with biggest tempo and biggest value
-                // - more than one threshold without value
-                const isIncoherent =
-                    (!item.tempo && currentLimits.permanentLimit && !isIst) ||
-                    (!isIst && parseFloat(item.value) < currentLimits.permanentLimit) ||
-                    (index > 0 && item.tempo > data[index - 1].tempo) ||
-                    (index > 0 && !item.tempo && !data[index - 1].tempo);
+                const incoherent: boolean = isIncoherent(item, index > 0 ? data[index - 1] : undefined);
 
                 const updatedSeries =
                     item.tempo || isIst
@@ -117,7 +139,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                         : [...acc.series];
                 const updatedTicks = [
                     ...acc.ticks,
-                    { position: item.value, label: item.label, incoherent: isIncoherent },
+                    { position: item.value, label: item.label, incoherent: incoherent },
                 ];
 
                 if (index === data.length - 1 && !noValueThresholdFound) {
@@ -135,7 +157,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             },
             { series: [], ticks: [] }
         );
-    }, [currentLimits?.permanentLimit, currentLimits?.temporaryLimits, intl, formatTempo]);
+    }, [currentLimits, intl, formatTempo, isIncoherent]);
 
     return (
         <BarChart
