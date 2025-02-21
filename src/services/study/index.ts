@@ -139,7 +139,7 @@ export function fetchNodeReportLogs(
         url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
     }
     if (messageFilter && messageFilter !== '') {
-        url += '&message=' + messageFilter;
+        url += '&message=' + encodeURIComponent(messageFilter);
     }
 
     return backendFetchJson(url);

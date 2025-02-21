@@ -511,8 +511,10 @@
     "LoadFlowResultsStatus": "Statut",
     "ComputationResultsLogs": "Logs",
 
-    "results.globalFilter.fillerText": "Pays ou niveau de tension",
-    "results.globalFilter.recent": "Récents :",
+    "results.globalFilter.fillerText": "Filtrage",
+    "results.globalFilter.recent": "Récents",
+    "results.globalFilter.country": "Pays",
+    "results.globalFilter.voltageLevel": "Niveaux de tension",
 
     "connectedComponentNum": "Numéro de composante connexe",
     "synchronousComponentNum": "Numéro de composante synchrone",
