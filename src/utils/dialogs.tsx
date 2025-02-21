@@ -23,6 +23,7 @@ interface SelectOptionsDialogProps {
     child: ReactElement;
     style?: SxProps<Theme>;
     validateKey?: string;
+    disabled?: boolean;
 }
 
 const SelectOptionsDialog = ({
@@ -33,6 +34,7 @@ const SelectOptionsDialog = ({
     child,
     style,
     validateKey,
+    disabled = false,
 }: SelectOptionsDialogProps) => {
     const handleClose = () => {
         onClose();
@@ -44,7 +46,7 @@ const SelectOptionsDialog = ({
             <DialogContent style={{ padding: '8px 32px 8px 15px' }}>{child}</DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button onClick={onClick} variant="outlined">
+                <Button onClick={onClick} variant="outlined" disabled={disabled}>
                     <FormattedMessage id={validateKey ?? 'validate'} />
                 </Button>
             </DialogActions>

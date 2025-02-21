@@ -9,7 +9,7 @@ import { ContingencyList } from './study/contingency-list';
 import { backendFetch } from './utils';
 import { UUID } from 'crypto';
 import { ElementType } from '@gridsuite/commons-ui';
-import { SpreadsheetConfig } from 'components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetCollection, SpreadsheetConfig } from 'components/spreadsheet/config/spreadsheet.type';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
 const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
@@ -78,6 +78,27 @@ export function createSpreadsheetModel(
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(spreadsheetConfig),
+        }
+    );
+}
+
+export function saveSpreadsheetCollection(
+    spreadsheetCollection: SpreadsheetCollection,
+    name: string,
+    description: string,
+    parentDirectoryUuid: UUID
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/spreadsheet-config-collections?' + urlSearchParams.toString(),
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(spreadsheetCollection),
         }
     );
 }
