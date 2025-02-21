@@ -22,11 +22,10 @@ import {
     updateEquipments,
 } from 'redux/actions';
 import { AppState, initialReloadNodesAliases } from 'redux/reducer';
-import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import { SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/equipment/common-config';
 import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
-import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 
