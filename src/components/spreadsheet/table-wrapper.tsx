@@ -340,7 +340,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     )}
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsNodesConfig />
+                            <CustomColumnsNodesConfig tabIndex={tabIndex} />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>

@@ -21,6 +21,7 @@ export const useCsvExport = () => {
 
     const getCSVFilename = useCallback(
         (tableName: string) => {
+            // FIXME we dont need to translate anymore (remove TABLES_NAMES too)
             const localisedTabName = existsInTablesNames(tableName) ? intl.formatMessage({ id: tableName }) : tableName;
             return localisedTabName
                 .trim()

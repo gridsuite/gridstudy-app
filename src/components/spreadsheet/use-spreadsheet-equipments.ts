@@ -9,19 +9,20 @@ import { Identifiable } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { UUID } from 'crypto';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     deleteEquipments,
     EquipmentToDelete,
     loadEquipments,
+    reloadNodesAliases,
     removeNodeData,
     resetEquipments,
     resetEquipmentsByTypes,
     updateEquipments,
 } from 'redux/actions';
-import { AppState } from 'redux/reducer';
-import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import { AppState, initialReloadNodesAliases } from 'redux/reducer';
+import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/equipment/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
@@ -45,6 +46,7 @@ export const useSpreadsheetEquipments = (
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
+    const nodesAliasesToReload = useSelector((state: AppState) => state.reloadNodesAliases);
 
     const nodesIdToFetch = useMemo(() => {
         let nodesIdToFetch = new Set<string>();
@@ -60,6 +62,42 @@ export const useSpreadsheetEquipments = (
         });
         return nodesIdToFetch;
     }, [currentNode?.id, equipments.nodesId, nodesAliases]);
+
+    const loadEquipmentData = useCallback(
+        (nodeIds: Set<string>) => {
+            if (studyUuid && currentRootNetworkUuid) {
+                setErrorMessage(null);
+                setIsFetching(true);
+                let fetcherPromises: Promise<unknown>[] = [];
+                let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
+                    nodesId: [],
+                    equipmentsByNodeId: {},
+                };
+                console.log('DBG DBR FETCH', nodeIds);
+                nodeIds.forEach((nodeId) => {
+                    const promise = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
+                    fetcherPromises.push(promise);
+                    console.log('DBG DBR FETCH fetch start', type, nodeId);
+                    promise.then((results) => {
+                        let fetchedEquipments = results.flat();
+                        spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
+                        if (formatFetchedEquipments) {
+                            fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
+                            spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
+                        }
+                        console.log('DBG DBR FETCH fetch done', spreadsheetEquipmentsByNodes);
+                    });
+                });
+
+                Promise.all(fetcherPromises).then(() => {
+                    console.log('DBG DBR FETCH all promises done');
+                    dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
+                    setIsFetching(false);
+                });
+            }
+        },
+        [currentRootNetworkUuid, dispatch, formatFetchedEquipments, studyUuid, type]
+    );
 
     const shouldFetchEquipments = useMemo(() => nodesIdToFetch.size > 0, [nodesIdToFetch]);
 
@@ -168,49 +206,23 @@ export const useSpreadsheetEquipments = (
     useEffect(() => {
         if (
             shouldFetchEquipments &&
-            studyUuid &&
-            currentRootNetworkUuid &&
             currentNode?.id &&
             isNetworkModificationTreeModelUpToDate &&
             isNodeBuilt(currentNode)
         ) {
-            setErrorMessage(null);
-            setIsFetching(true);
-            let fetchers: Promise<unknown>[] = [];
-            let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
-                nodesId: [],
-                equipmentsByNodeId: {},
-            };
-
-            nodesIdToFetch.forEach((nodeId) => {
-                const fetcherPromises = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
-                fetchers.push(fetcherPromises);
-                fetcherPromises.then((results) => {
-                    let fetchedEquipments = results.flat();
-                    spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                    if (formatFetchedEquipments) {
-                        fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
-                        spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
-                    }
-                });
-            });
-
-            Promise.all(fetchers).then(() => {
-                dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
-                setIsFetching(false);
-            });
+            console.log('DBG DBRCLASSIC', nodesIdToFetch);
+            loadEquipmentData(nodesIdToFetch);
         }
-    }, [
-        shouldFetchEquipments,
-        studyUuid,
-        currentNode,
-        currentRootNetworkUuid,
-        isNetworkModificationTreeModelUpToDate,
-        dispatch,
-        formatFetchedEquipments,
-        nodesIdToFetch,
-        type,
-    ]);
+    }, [shouldFetchEquipments, currentNode, isNetworkModificationTreeModelUpToDate, loadEquipmentData, nodesIdToFetch]);
+
+    useEffect(() => {
+        console.log('DBG DBRUPD', nodesAliasesToReload);
+        if (nodesAliasesToReload.sheetType === type && nodesAliasesToReload?.nodesId.length) {
+            loadEquipmentData(new Set<string>(nodesAliasesToReload.nodesId));
+            // reset reload action
+            dispatch(reloadNodesAliases(initialReloadNodesAliases));
+        }
+    }, [dispatch, loadEquipmentData, nodesAliasesToReload, type]);
 
     return { equipments, errorMessage, isFetching };
 };
