@@ -63,6 +63,7 @@ export const useSpreadsheetEquipments = (
         return nodesIdToFetch;
     }, [currentNode?.id, equipments.nodesId, nodesAliases]);
 
+    // FIXME ? function below loads data even for an 'unbuild' node (because we dont check the built status, and the network still exists)
     const loadEquipmentData = useCallback(
         (nodeIds: Set<string>) => {
             if (studyUuid && currentRootNetworkUuid) {

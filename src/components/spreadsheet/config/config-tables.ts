@@ -36,5 +36,4 @@ export const TABLES_DEFINITIONS: SpreadsheetTabDefinition[] = [
     VSC_CONVERTER_STATION_TAB_DEF,
 ];
 
-export const TABLES_NAMES = TABLES_DEFINITIONS.map((tabDef) => tabDef.name);
 export const TABLES_TYPES = TABLES_DEFINITIONS.map((tabDef) => tabDef.type);

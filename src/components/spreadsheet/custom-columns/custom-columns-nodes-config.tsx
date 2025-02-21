@@ -17,6 +17,7 @@ import { AppState } from '../../../redux/reducer';
 import Tooltip from '@mui/material/Tooltip';
 import { reloadNodesAliases } from '../../../redux/actions';
 import { SpreadsheetEquipmentsReloadNodes } from '../config/spreadsheet.type';
+import { ROOT_NODE_LABEL } from '../../../constants/node.constant';
 
 const styles = {
     icon: {
@@ -61,9 +62,8 @@ export default function CustomColumnsNodesConfig({ tabIndex }: Readonly<CustomCo
     }, []);
 
     const nodesToReload = useMemo(() => {
-        // Get all aliased nodes ids, except for Root and current node
-        // TODO how to detect Root (and translate it)? and unbuilt node ?
-        return nodesAliases.filter((node) => node.id !== currentNode?.id && node.name !== 'Root');
+        // Get all aliased nodes ids, except for Root and current node (both are always up-to-date)
+        return nodesAliases.filter((node) => node.id !== currentNode?.id && node.name !== ROOT_NODE_LABEL);
     }, [currentNode?.id, nodesAliases]);
 
     const reloadOtherNodes = useCallback(() => {
