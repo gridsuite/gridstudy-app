@@ -241,6 +241,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const [errorMessage, setErrorMessage] = useState(undefined);
 
+    // For the first network existence check StudyPane is not rendered until network is found
+    // then it will be true even after root network change
     const [isStudyNetworkFound, setIsStudyNetworkFound] = useState(false);
     const isStudyNetworkFoundRef = useRef(false);
     isStudyNetworkFoundRef.current = isStudyNetworkFound;
@@ -248,7 +250,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const studyIndexationStatusRef = useRef();
     studyIndexationStatusRef.current = studyIndexationStatus;
     const [isStudyIndexationPending, setIsStudyIndexationPending] = useState(false);
-    const [isStudyTreePending, setIsStudyTreePending] = useState(false);
 
     const [initialTitle] = useState(document.title);
 
@@ -519,7 +520,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
             const networkModificationTree = fetchNetworkModificationTree(studyUuid, currentRootNetworkUuid);
 
-            setIsStudyTreePending(true);
             networkModificationTree
                 .then((tree) => {
                     const networkModificationTreeModel = new NetworkModificationTreeModel();
@@ -537,11 +537,13 @@ export function StudyContainer({ view, onChangeTab }) {
                                 headerId: 'CaseNameLoadError',
                             });
                         });
-                    // If a current node then override it cause it could have diferent status in different root networks
-                    if (currentNode) {
+                    // If a current node is already defined then override it cause it could have diferent status in different root networks
+                    if (currentNodeRef.current) {
                         // Find the updated current node in the tree model
                         const ModelLastSelectedNode = {
-                            ...networkModificationTreeModel.treeNodes.find((node) => node.id === currentNode?.id),
+                            ...networkModificationTreeModel.treeNodes.find(
+                                (node) => node.id === currentNodeRef.current?.id
+                            ),
                         };
                         // then override it
                         dispatch(setCurrentTreeNode(ModelLastSelectedNode));
@@ -574,12 +576,10 @@ export function StudyContainer({ view, onChangeTab }) {
                         headerId: 'NetworkModificationTreeLoadError',
                     });
                 })
-                .finally(() => {
-                    setIsStudyTreePending(false);
-                });
+                .finally(() => console.debug('Network modification tree loading finished'));
             // Note: studyUuid and dispatch don't change
         },
-        [studyUuid, currentRootNetworkUuid, currentNode, dispatch, snackError, snackWarning]
+        [studyUuid, currentRootNetworkUuid, dispatch, snackError, snackWarning]
     );
 
     const checkStudyIndexation = useCallback(() => {
@@ -633,7 +633,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const checkNetworkExistenceAndRecreateIfNotFound = useCallback(
         (successCallback) => {
-            setIsStudyNetworkFound(false);
             fetchNetworkExistence(studyUuid, currentRootNetworkUuid)
                 .then((response) => {
                     if (response.status === HttpStatusCode.OK) {
@@ -643,6 +642,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     } else {
                         // response.state === NO_CONTENT
                         // if network is not found, we try to recreate study network from existing case
+                        setIsStudyNetworkFound(false);
                         recreateStudyNetwork(studyUuid, currentRootNetworkUuid)
                             .then(() => {
                                 snackWarning({
@@ -715,6 +715,18 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUpdatedForce, checkNetworkExistenceAndRecreateIfNotFound, snackInfo, snackWarning, dispatch]);
 
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            const currentRootNetwork = studyUpdatedForce.eventData.headers['rootNetwork'];
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
+                currentRootNetwork === currentRootNetworkRef.current
+            ) {
+                dispatch(resetEquipmentsPostLoadflow());
+            }
+        }
+    }, [studyUpdatedForce, dispatch]);
+
     //handles map automatic mode network reload
     useEffect(() => {
         if (!wsConnected) {
@@ -723,6 +735,8 @@ export function StudyContainer({ view, onChangeTab }) {
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         let previousCurrentRootNetwork = currentRootNetworkRef.current;
+        // this is the last effect to compare currentRootNetworkUuid and currentRootNetworkRef.current
+        // then we can update the currentRootNetworkRef.current
         currentRootNetworkRef.current = currentRootNetworkUuid;
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
@@ -742,18 +756,6 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         dispatch(resetEquipments());
     }, [currentNode, currentRootNetworkUuid, wsConnected, dispatch]);
-
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            const currentRootNetwork = studyUpdatedForce.eventData.headers['rootNetwork'];
-            if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
-                currentRootNetwork === currentRootNetworkRef.current
-            ) {
-                dispatch(resetEquipmentsPostLoadflow());
-            }
-        }
-    }, [studyUpdatedForce, dispatch]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
@@ -823,7 +825,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyPending ||
                 !paramsLoaded ||
                 !isStudyNetworkFound ||
-                isStudyTreePending ||
                 (studyIndexationStatus !== StudyIndexationStatus.INDEXED && isStudyIndexationPending)
             } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
