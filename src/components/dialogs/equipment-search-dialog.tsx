@@ -12,7 +12,6 @@ import {
     EquipmentItem,
     equipmentStyles,
     EquipmentType,
-    ExtendedEquipmentType,
 } from '@gridsuite/commons-ui';
 import { FC } from 'react';
 import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/use-search-matching-equipments';
@@ -26,7 +25,7 @@ interface EquipmentSearchDialogProps {
     open: boolean;
     onClose: () => void;
     onSelectionChange: (equipment: EquipmentInfos) => void;
-    equipmentType: EquipmentType | ExtendedEquipmentType;
+    equipmentType: EquipmentType;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
 }
