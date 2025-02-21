@@ -36,6 +36,7 @@ import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggr
 import { useEquipmentModification } from './equipment-modification/use-equipment-modification';
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
 import { changeDisplayedColumns } from '../../redux/actions';
+import { UUID } from 'crypto';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -75,7 +76,7 @@ const styles = {
 };
 
 interface TableWrapperProps {
-    studyUuid: string;
+    studyUuid: UUID;
     currentNode: CurrentTreeNode;
     equipmentId: string;
     equipmentType: SpreadsheetEquipmentType;

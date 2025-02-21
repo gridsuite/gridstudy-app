@@ -67,7 +67,7 @@ export function getNonEvacuatedEnergyParameters(studyUuid: UUID) {
     return backendFetchJson(url);
 }
 
-export function setNonEvacuatedEnergyParameters(studyUuid: UUID | null, newParams: any) {
+export function setNonEvacuatedEnergyParameters(studyUuid: UUID, newParams: any) {
     console.info('set non evacuated energy analysis parameters');
     const url = getStudyUrl(studyUuid) + '/non-evacuated-energy/parameters';
     console.debug(url);

@@ -221,6 +221,9 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useNonEvacuatedEnergyParameters;
 
     const resetNonEvacuatedEnergyParameters = useCallback(() => {
+        if (!studyUuid) {
+            return;
+        }
         setNonEvacuatedEnergyParameters(studyUuid, emptyFormData).catch((error) => {
             snackError({
                 messageTxt: error.message,
@@ -250,6 +253,9 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
 
     const onSubmit = useCallback(
         (newParams: NonEvacuatedEnergyParametersForm) => {
+            if (!studyUuid) {
+                return;
+            }
             setNonEvacuatedEnergyParameters(studyUuid, formatNewParams(newParams, true))
                 .then(() => {
                     setNonEvacuatedEnergyParams(formatNewParams(newParams, false));

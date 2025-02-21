@@ -57,7 +57,7 @@ export function fetchVoltageInitResult(studyUuid: UUID, currentNodeUuid: UUID, c
 }
 
 export function updateVoltageInitParameters(
-    studyUuid: UUID | null,
+    studyUuid: UUID,
     newParams: VoltageInitParam | Record<string, boolean | null>
 ) {
     console.info('set voltage init parameters');

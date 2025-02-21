@@ -144,9 +144,9 @@ export function stashSubtree(studyUuid: UUID, parentNodeId: UUID) {
 }
 
 export function updateTreeNode(
-    studyUuid: UUID | null,
+    studyUuid: UUID,
     node: {
-        id: UUID | undefined;
+        id: UUID;
         type: NodeType | undefined;
         name: string;
     }

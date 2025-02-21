@@ -72,6 +72,9 @@ export const VoltageInitParameters = ({
     }, []);
 
     const resetVoltageInitParameters = useCallback(() => {
+        if (!studyUuid) {
+            return;
+        }
         updateVoltageInitParameters(studyUuid, {
             applyModifications: DEFAULT_GENERAL_APPLY_MODIFICATIONS,
             computationParameters: null,
@@ -105,6 +108,9 @@ export const VoltageInitParameters = ({
 
     const onSubmit = useCallback(
         (newParams: VoltageInitParametersForm) => {
+            if (!studyUuid) {
+                return;
+            }
             updateVoltageInitParameters(studyUuid, fromVoltageInitParametersFormToParamValues(newParams))
                 .then(() => {
                     setVoltageInitParams(fromVoltageInitParametersFormToParamValues(newParams));
