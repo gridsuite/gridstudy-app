@@ -47,7 +47,6 @@ import {
 } from './lcc-converter-station';
 import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../form-search-copy-hook';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import ModificationDialog from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
@@ -166,7 +165,7 @@ export function LccCreationDialog({
         setFormValues: (data: LccCreationSchemaForm) => {
             reset(data, { keepDefaultValues: true });
         },
-        elementType: EQUIPMENT_TYPES.HVDC_LINE,
+        elementType: EquipmentType.HVDC_LINE_LCC,
     });
 
     useEffect(() => {
@@ -280,7 +279,7 @@ export function LccCreationDialog({
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     onSelectionChange={searchCopy.handleSelectionChange}
-                    equipmentType={EquipmentType.HVDC_LINE}
+                    equipmentType={EquipmentType.HVDC_LINE_LCC}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />

@@ -8,9 +8,9 @@
 import { useIntl } from 'react-intl';
 import {
     ElementSearchDialog,
-    equipmentStyles,
-    EquipmentItem,
     EquipmentInfos,
+    EquipmentItem,
+    equipmentStyles,
     EquipmentType,
 } from '@gridsuite/commons-ui';
 import { FC } from 'react';
