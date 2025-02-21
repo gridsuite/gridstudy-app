@@ -17,9 +17,9 @@ import {
     openStudy,
     resetEquipments,
     resetEquipmentsPostLoadflow,
+    setCurrentRootNetworkUuid,
     setCurrentTreeNode,
     setStudyIndexationStatus,
-    setCurrentRootNetwork,
     studyUpdated,
 } from '../redux/actions';
 import { fetchRootNetworks } from 'services/root-network';
@@ -62,9 +62,9 @@ function isWorthUpdate(
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const node = headers?.['node'];
     const nodes = headers?.['nodes'];
-    const rootNetworkFromNotif = headers?.['rootNetwork'];
+    const rootNetworkUuidFromNotif = headers?.['rootNetwork'];
 
-    if (rootNetworkFromNotif && rootNetworkFromNotif !== rootNetworkUuid) {
+    if (rootNetworkUuidFromNotif && rootNetworkUuidFromNotif !== rootNetworkUuid) {
         return false;
     }
     if (nodeUuidRef.current !== nodeUuid) {
@@ -174,8 +174,8 @@ function useStudy(studyUuidRequest) {
                 fetchRootNetworks(studyUuidRequest)
                     .then((rootNetworks) => {
                         if (rootNetworks && rootNetworks.length > 0) {
-                            // Validate that currentRootNetwork is set
-                            dispatch(setCurrentRootNetwork(rootNetworks[0].rootNetworkUuid));
+                            // Validate that currentRootNetworkUuid is set
+                            dispatch(setCurrentRootNetworkUuid(rootNetworks[0].rootNetworkUuid));
                         } else {
                             // Handle case where no root networks are available
                             setErrMessage(
@@ -256,10 +256,10 @@ export function StudyContainer({ view, onChangeTab }) {
     const dispatch = useDispatch();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const currentNodeRef = useRef();
-    const currentRootNetworkRef = useRef();
+    const currentRootNetworkUuidRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
@@ -275,13 +275,13 @@ export function StudyContainer({ view, onChangeTab }) {
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
-            const currentRootNetwork = eventData.headers['rootNetwork'];
+            const rootNetworkUuidFromNotif = eventData.headers['rootNetwork'];
 
             const userId = eventData.headers[USER_HEADER];
             if (userId != null && userId !== userName) {
                 return;
             }
-            if (currentRootNetwork !== currentRootNetworkRef.current) {
+            if (rootNetworkUuidFromNotif !== currentRootNetworkUuidRef.current) {
                 return;
             }
 
@@ -361,7 +361,7 @@ export function StudyContainer({ view, onChangeTab }) {
         (eventData) => {
             const userId = eventData.headers[USER_HEADER];
             const currentRootNetwork = eventData.headers['rootNetwork'];
-            if (currentRootNetworkRef.current !== currentRootNetwork && currentRootNetwork) {
+            if (currentRootNetworkUuidRef.current !== currentRootNetwork && currentRootNetwork) {
                 return;
             }
             if (userId !== userName) {
@@ -684,7 +684,7 @@ export function StudyContainer({ view, onChangeTab }) {
         if (!studyUuid || !currentRootNetworkUuid) {
             return;
         }
-        if (!isStudyNetworkFoundRef.current || currentRootNetworkRef.current !== currentRootNetworkUuid) {
+        if (!isStudyNetworkFoundRef.current || currentRootNetworkUuidRef.current !== currentRootNetworkUuid) {
             checkNetworkExistenceAndRecreateIfNotFound();
         }
     }, [currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
@@ -720,7 +720,7 @@ export function StudyContainer({ view, onChangeTab }) {
             const currentRootNetwork = studyUpdatedForce.eventData.headers['rootNetwork'];
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
-                currentRootNetwork === currentRootNetworkRef.current
+                currentRootNetwork === currentRootNetworkUuidRef.current
             ) {
                 dispatch(resetEquipmentsPostLoadflow());
             }
@@ -734,10 +734,10 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
-        let previousCurrentRootNetwork = currentRootNetworkRef.current;
-        // this is the last effect to compare currentRootNetworkUuid and currentRootNetworkRef.current
-        // then we can update the currentRootNetworkRef.current
-        currentRootNetworkRef.current = currentRootNetworkUuid;
+        let previousCurrentRootNetwork = currentRootNetworkUuidRef.current;
+        // this is the last effect to compare currentRootNetworkUuid and currentRootNetworkUuidRef.current
+        // then we can update the currentRootNetworkUuidRef.current
+        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
             return;

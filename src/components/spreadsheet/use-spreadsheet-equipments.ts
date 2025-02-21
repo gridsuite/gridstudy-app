@@ -40,7 +40,7 @@ export const useSpreadsheetEquipments = (
     const isNetworkModificationTreeModelUpToDate = useSelector(
         (state: AppState) => state.isNetworkModificationTreeModelUpToDate
     );
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);

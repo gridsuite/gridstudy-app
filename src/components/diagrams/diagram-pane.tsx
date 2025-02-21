@@ -336,7 +336,7 @@ type DiagramView = {
     depth?: number;
     error?: string;
     nodeId?: UUID;
-    rootNetworkId?: UUID;
+    rootNetworkUuid?: UUID; // is it used ?
     additionalMetadata?: any;
     fetchSvg?: () => Promise<Partial<DiagramView>>;
 };
@@ -375,8 +375,8 @@ export function DiagramPane({
     const { openDiagramView, closeDiagramView, closeDiagramViews } = useDiagram();
     const currentNodeRef = useRef<CurrentTreeNode>();
     currentNodeRef.current = currentNode;
-    const currentRootNetworkRef = useRef<UUID>();
-    currentRootNetworkRef.current = currentRootNetworkUuid;
+    const currentRootNetworkUuidRef = useRef<UUID>();
+    currentRootNetworkUuidRef.current = currentRootNetworkUuid;
     const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;
     /**
@@ -833,7 +833,7 @@ export function DiagramPane({
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers['rootNetwork'] !== currentRootNetworkRef.current) {
+            if (studyUpdatedForce.eventData.headers['rootNetwork'] !== currentRootNetworkUuidRef.current) {
                 return;
             }
             if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult') {

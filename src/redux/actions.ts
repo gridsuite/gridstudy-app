@@ -667,15 +667,15 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     };
 }
 
-export const CURRENT_ROOT_NETWORK = 'CURRENT_ROOT_NETWORK';
-export type CurrentRootNetworkAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK>> & {
-    currentRootNetwork: UUID;
+export const CURRENT_ROOT_NETWORK_UUID = 'CURRENT_ROOT_NETWORK_UUID';
+export type CurrentRootNetworkUuidAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK_UUID>> & {
+    currentRootNetworkUuid: UUID;
 };
 
-export function setCurrentRootNetwork(currentRootNetwork: UUID): CurrentRootNetworkAction {
+export function setCurrentRootNetworkUuid(currentRootNetworkUuid: UUID): CurrentRootNetworkUuidAction {
     return {
-        type: CURRENT_ROOT_NETWORK,
-        currentRootNetwork: currentRootNetwork,
+        type: CURRENT_ROOT_NETWORK_UUID,
+        currentRootNetworkUuid: currentRootNetworkUuid,
     };
 }
 
