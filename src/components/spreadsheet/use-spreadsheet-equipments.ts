@@ -74,11 +74,9 @@ export const useSpreadsheetEquipments = (
                     nodesId: [],
                     equipmentsByNodeId: {},
                 };
-                console.log('DBG DBR FETCH', nodeIds);
                 nodeIds.forEach((nodeId) => {
                     const promise = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
                     fetcherPromises.push(promise);
-                    console.log('DBG DBR FETCH fetch start', type, nodeId);
                     promise.then((results) => {
                         let fetchedEquipments = results.flat();
                         spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
@@ -86,12 +84,10 @@ export const useSpreadsheetEquipments = (
                             fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
                             spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
                         }
-                        console.log('DBG DBR FETCH fetch done', spreadsheetEquipmentsByNodes);
                     });
                 });
 
                 Promise.all(fetcherPromises).then(() => {
-                    console.log('DBG DBR FETCH all promises done');
                     dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
                     setIsFetching(false);
                 });
@@ -211,14 +207,12 @@ export const useSpreadsheetEquipments = (
             isNetworkModificationTreeModelUpToDate &&
             isNodeBuilt(currentNode)
         ) {
-            console.log('DBG DBRCLASSIC', nodesIdToFetch);
             loadEquipmentData(nodesIdToFetch);
         }
     }, [shouldFetchEquipments, currentNode, isNetworkModificationTreeModelUpToDate, loadEquipmentData, nodesIdToFetch]);
 
     useEffect(() => {
-        console.log('DBG DBRUPD', nodesAliasesToReload);
-        if (nodesAliasesToReload.sheetType === type && nodesAliasesToReload?.nodesId.length) {
+        if (nodesAliasesToReload.sheetType === type && nodesAliasesToReload.nodesId.length) {
             loadEquipmentData(new Set<string>(nodesAliasesToReload.nodesId));
             // reset reload action
             dispatch(reloadNodesAliases(initialReloadNodesAliases));

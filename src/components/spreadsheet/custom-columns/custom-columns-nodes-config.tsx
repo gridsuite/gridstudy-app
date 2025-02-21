@@ -67,7 +67,6 @@ export default function CustomColumnsNodesConfig({ tabIndex }: Readonly<CustomCo
     }, [currentNode?.id, nodesAliases]);
 
     const reloadOtherNodes = useCallback(() => {
-        console.log('DBG DBROTHER Refresh nodes', nodesToReload);
         if (nodesToReload?.length) {
             const reloadData: SpreadsheetEquipmentsReloadNodes = {
                 sheetType: tableType,
