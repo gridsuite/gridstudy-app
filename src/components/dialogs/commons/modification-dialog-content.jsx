@@ -8,7 +8,7 @@
 import { FormattedMessage } from 'react-intl';
 import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
+import { useButtonWithTooltip } from '../../utils/inputs/input-hooks.tsx';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import { useSelector } from 'react-redux';

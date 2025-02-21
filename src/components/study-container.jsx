@@ -25,7 +25,7 @@ import {
 import { fetchRootNetworks } from 'services/root-network';
 
 import WaitingLoader from './utils/waiting-loader';
-import { fetchDirectoryElementPath, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchDirectoryElementPath, useIntlRef, usePrevious, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
 import { RunningStatus } from './utils/running-status';
@@ -44,7 +44,6 @@ import { fetchNetworkExistence, fetchStudyIndexationStatus } from '../services/s
 import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
 
 import { HttpStatusCode } from 'utils/http-status-code';
-import { usePrevious } from './utils/utils';
 import { StudyIndexationStatus } from 'redux/reducer';
 import { NodeType } from './graph/tree-node.type';
 

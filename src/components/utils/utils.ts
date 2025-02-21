@@ -6,10 +6,12 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { getIn } from 'yup';
+import { getIn, SchemaDescription } from 'yup';
 import { isBlankOrEmpty, toNumber } from './validation-functions';
 import { CURRENT_LIMITS, ID } from './field-constants';
 import { addSelectedFieldToRows } from './dnd-table/dnd-table';
+import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
+import { VoltageLevel } from './equipment-types';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -19,7 +21,7 @@ export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
  * @param {string} id - The id of the enum value
  * @returns {string | undefined} - The label of the enum value
  */
-export const getEnumLabelById = (enumValues, id) => {
+export const getEnumLabelById = (enumValues: { id: string; label: string }[], id: string) => {
     if (!enumValues || !id) {
         return undefined;
     }
@@ -27,15 +29,15 @@ export const getEnumLabelById = (enumValues, id) => {
     return enumValue?.label;
 };
 
-export const isFieldRequired = (fieldName, schema, values) => {
+export const isFieldRequired = (fieldName: string, schema: any, values: unknown) => {
     const { schema: fieldSchema, parent: parentValues } = getIn(schema, fieldName, values) || {};
-    return fieldSchema.describe({ parent: parentValues })?.optional === false;
+    return (fieldSchema.describe({ parent: parentValues }) as SchemaDescription)?.optional === false;
 
-    //static way, not working when using "when" in schema, but does not need form values
-    //return yup.reach(schema, fieldName)?.exclusiveTests?.required === true;
+    // static way, not working when using "when" in schema, but does not need form values
+    // return yup.reach(schema, fieldName)?.exclusiveTests?.required === true;
 };
 
-export const areArrayElementsUnique = (array) => {
+export const areArrayElementsUnique = (array: unknown[]) => {
     let uniqueAlphaValues = [...new Set(array)];
     return uniqueAlphaValues.length === array.length;
 };
@@ -45,7 +47,7 @@ export const areArrayElementsUnique = (array) => {
  * @param array or numbers
  * @returns {boolean}
  */
-export const areNumbersOrdered = (array) => {
+export const areNumbersOrdered = (array?: unknown) => {
     if (!Array.isArray(array)) {
         return false;
     }
@@ -81,28 +83,19 @@ export const areNumbersOrdered = (array) => {
     return true;
 };
 
-export const findIndexesOfDuplicateFieldValues = (values, fieldName) => {
-    const counts = new Map();
-    values.forEach((element, index) => {
-        const value = element[fieldName];
-        counts.set(value, (counts.get(value) || []).concat(index));
-    });
-    return [...counts.values()].filter((indexes) => indexes.length > 1).flat();
-};
-
-export const areIdsEqual = (val1, val2) => {
+export const areIdsEqual = (val1: { id: string }, val2: { id: string }) => {
     return val1.id === val2.id;
 };
 
-export const areUuidsEqual = (val1, val2) => {
+export const areUuidsEqual = (val1: { uuid: string }, val2: { uuid: string }) => {
     return val1.uuid === val2.uuid;
 };
 
-export const getObjectId = (object) => {
+export const getObjectId = (object: string | { id: string }) => {
     return typeof object === 'string' ? object : object?.id ?? null;
 };
 
-export const buildNewBusbarSections = (equipmentId, sectionCount, busbarCount) => {
+export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
     const newBusbarSections = [];
     for (let i = 0; i < busbarCount; i++) {
         for (let j = 0; j < sectionCount; j++) {
@@ -115,18 +108,18 @@ export const buildNewBusbarSections = (equipmentId, sectionCount, busbarCount) =
     return newBusbarSections;
 };
 
-export function toModificationOperation(value) {
+export function toModificationOperation(value: unknown) {
     return value === 0 || value === false || value ? { value: value, op: 'SET' } : null;
 }
 
-export function toModificationUnsetOperation(value) {
+export function toModificationUnsetOperation(value: unknown) {
     if (value === null) {
         return null;
     }
     return value === 0 || value === false || value ? { value: value, op: 'SET' } : { op: 'UNSET' };
 }
 
-export const formatTemporaryLimits = (temporaryLimits) =>
+export const formatTemporaryLimits = (temporaryLimits?: TemporaryLimit[]) =>
     temporaryLimits?.map((limit) => {
         return {
             name: limit?.name ?? '',
@@ -136,16 +129,18 @@ export const formatTemporaryLimits = (temporaryLimits) =>
         };
     });
 
-export const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
-    const formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
+export const formatCompleteCurrentLimit = (completeLimitsGroups: OperationalLimitsGroup[]) => {
+    const formattedCompleteLimitsGroups: OperationalLimitsGroup[] = [];
     if (completeLimitsGroups) {
         completeLimitsGroups.forEach((elt) => {
             if (!isBlankOrEmpty(elt.id)) {
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id,
                     [CURRENT_LIMITS]: {
-                        permanentLimit: elt.permanentLimit,
-                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+                        permanentLimit: elt.currentLimits.permanentLimit, //TODO: check change is ok ?
+                        temporaryLimits: addSelectedFieldToRows(
+                            formatTemporaryLimits(elt?.currentLimits.temporaryLimits)
+                        ),
                     },
                 });
             }
@@ -154,14 +149,17 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalL
     return formattedCompleteLimitsGroups;
 };
 
-export const richTypeEquals = (a, b) => a === b;
+export const richTypeEquals = (a: unknown, b: unknown) => a === b;
 
-export const computeHighTapPosition = (steps) => {
+export const computeHighTapPosition = (steps: { index: number }[]) => {
     const values = steps?.map((step) => step['index']);
     return values?.length > 0 ? Math.max(...values) : null;
 };
 
-export const compareStepsWithPreviousValues = (tapSteps, previousValues) => {
+export const compareStepsWithPreviousValues = (
+    tapSteps: Record<string, number>[],
+    previousValues: Record<string, number>[]
+) => {
     if (previousValues === undefined) {
         return false;
     }
@@ -171,12 +169,18 @@ export const compareStepsWithPreviousValues = (tapSteps, previousValues) => {
     return tapSteps.every((step, index) => {
         const previousStep = previousValues[index];
         return Object.getOwnPropertyNames(previousStep).every((key) => {
-            return parseFloat(step[key]) === previousStep[key];
+            return step[key] === previousStep[key];
         });
     });
 };
 
-export const getTapChangerEquipmentSectionTypeValue = (tapChanger) => {
+interface TapChangerInfos {
+    regulatingTerminalConnectableType: string;
+    regulatingTerminalConnectableId: string;
+    regulatingTerminalVlId: string;
+}
+
+export const getTapChangerEquipmentSectionTypeValue = (tapChanger: TapChangerInfos) => {
     if (!tapChanger?.regulatingTerminalConnectableType) {
         return null;
     } else {
@@ -184,7 +188,7 @@ export const getTapChangerEquipmentSectionTypeValue = (tapChanger) => {
     }
 };
 
-export const getTapChangerRegulationTerminalValue = (tapChanger) => {
+export const getTapChangerRegulationTerminalValue = (tapChanger: TapChangerInfos) => {
     let regulatingTerminalGeneratorValue = tapChanger?.regulatingTerminalConnectableId ?? '';
     if (tapChanger?.regulatingTerminalVlId) {
         regulatingTerminalGeneratorValue += ' ( ' + tapChanger?.regulatingTerminalVlId + ' )';
@@ -192,59 +196,52 @@ export const getTapChangerRegulationTerminalValue = (tapChanger) => {
     return regulatingTerminalGeneratorValue;
 };
 
-export function calculateResistance(distance, linearResistance) {
+export function calculateResistance(distance: number, linearResistance: number) {
     if (distance === undefined || isNaN(distance) || linearResistance === undefined || isNaN(linearResistance)) {
         return 0;
     }
     return Number(distance) * Number(linearResistance);
 }
 
-export function calculateReactance(distance, linearReactance) {
+export function calculateReactance(distance: number, linearReactance: number) {
     if (distance === undefined || isNaN(distance) || linearReactance === undefined || isNaN(linearReactance)) {
         return 0;
     }
     return Number(distance) * Number(linearReactance);
 }
 
-export const computeSwitchedOnValue = (sectionCount, maximumSectionCount, linkedSwitchedOnValue) => {
+export const computeSwitchedOnValue = (
+    sectionCount: number,
+    maximumSectionCount: number,
+    linkedSwitchedOnValue: number
+) => {
     return (linkedSwitchedOnValue / maximumSectionCount) * sectionCount;
 };
 
-export const computeQAtNominalV = (susceptance, nominalVoltage) => {
+export const computeQAtNominalV = (susceptance: number, nominalVoltage: number) => {
     return Math.abs(susceptance * Math.pow(nominalVoltage, 2));
 };
 
-export const computeMaxQAtNominalV = (maxSucepctance, nominalVoltage) => {
+export const computeMaxQAtNominalV = (maxSucepctance: number, nominalVoltage: number) => {
     return Math.abs(maxSucepctance * Math.pow(nominalVoltage, 2));
 };
 
-export const computeMaxSusceptance = (maxQAtNominalV, nominalVoltage) => {
+export const computeMaxSusceptance = (maxQAtNominalV: number, nominalVoltage: number) => {
     return Math.abs(maxQAtNominalV / Math.pow(nominalVoltage, 2));
 };
 
-export function calculateSusceptance(distance, linearCapacity) {
+export function calculateSusceptance(distance: number, linearCapacity: number) {
     if (distance === undefined || isNaN(distance) || linearCapacity === undefined || isNaN(linearCapacity)) {
         return 0;
     }
     return Number(distance) * Number(linearCapacity) * 2 * Math.PI * 50 * Math.pow(10, 6);
 }
 
-export const replaceAllDefaultValues = (arrayParams, oldValue, newValue) => {
-    return (
-        arrayParams &&
-        arrayParams.reduce((accumulator, current) => {
-            return [
-                ...accumulator,
-                {
-                    ...current,
-                    defaultValue: current.defaultValue === oldValue ? newValue : current.defaultValue,
-                },
-            ];
-        }, [])
-    );
-};
-
-export function getNewVoltageLevelOptions(formattedVoltageLevel, oldVoltageLevelId, voltageLevelOptions) {
+export function getNewVoltageLevelOptions(
+    formattedVoltageLevel: VoltageLevel,
+    oldVoltageLevelId: string,
+    voltageLevelOptions: VoltageLevel[]
+) {
     const newVoltageLevelOptions =
         formattedVoltageLevel.id === oldVoltageLevelId
             ? voltageLevelOptions.filter((vl) => vl.id !== formattedVoltageLevel.id)
@@ -254,17 +251,9 @@ export function getNewVoltageLevelOptions(formattedVoltageLevel, oldVoltageLevel
     return newVoltageLevelOptions;
 }
 
-export function usePrevious(value) {
-    const ref = useRef();
-    useEffect(() => {
-        ref.current = value;
-    }, [value]);
-    return ref.current;
-}
-
 // remove elementToToggle from list, or add it if it does not exist yet
 // useful when checking/unchecking checkboxex
-export function toggleElementFromList(elementToToggle, list, getFieldId) {
+export function toggleElementFromList<T>(elementToToggle: T, list: T[], getFieldId: (element: T) => string) {
     const resultList = [...list];
     const elementToToggleIndex = resultList.findIndex((element) => getFieldId(element) === getFieldId(elementToToggle));
     if (elementToToggleIndex >= 0) {
@@ -275,7 +264,7 @@ export function toggleElementFromList(elementToToggle, list, getFieldId) {
     return resultList;
 }
 
-export const comparatorStrIgnoreCase = (str1, str2) => {
+export const comparatorStrIgnoreCase = (str1: string, str2: string) => {
     return str1.toLowerCase().localeCompare(str2.toLowerCase());
 };
 

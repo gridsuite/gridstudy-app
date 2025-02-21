@@ -9,6 +9,7 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    mergeSx,
     MuiSelectInput,
     SubmitButton,
     TreeViewFinderNodeProps,
@@ -70,7 +71,6 @@ import {
     getSensiPSTsFormSchema,
     IRowNewParams,
 } from './utils';
-import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import LineSeparator from '../../commons/line-separator';
 import { AppState } from 'redux/reducer';

@@ -41,9 +41,6 @@ function EditableTableCell({ name, column, previousValue, valueModified, ...prop
         <TableCell sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
             {column.numeric ? (
                 <TableNumericalInput
-                    style={undefined}
-                    inputProps={undefined}
-                    adornment={undefined}
                     name={name}
                     previousValue={previousValue}
                     valueModified={valueModified}
@@ -51,8 +48,6 @@ function EditableTableCell({ name, column, previousValue, valueModified, ...prop
                 />
             ) : (
                 <TableTextInput
-                    style={undefined}
-                    inputProps={undefined}
                     name={name}
                     showErrorMsg={column.showErrorMsg}
                     {...props}

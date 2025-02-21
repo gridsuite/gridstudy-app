@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ReactiveCapabilityCurvePoint } from "components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils";
+
 const NO_ERROR = {
     error: false,
     errorMsgId: null,
@@ -14,7 +16,7 @@ const NO_ERROR = {
  * Returns a Number corresponding to provided value, or NaN if not a valid number per
  * Gridsuite's standard (allows either coma or dots for decimal).
  */
-export function toNumber(value) {
+export function toNumber(value: any) {
     if (typeof value === 'number') {
         return value;
     } else if (typeof value === 'string') {
@@ -31,7 +33,7 @@ export function toNumber(value) {
  * Returns true if value is either undefined, null, empty or only contains whitespaces.
  * Otherwise, if value is a boolean or a number, returns false.
  */
-export function isBlankOrEmpty(value) {
+export function isBlankOrEmpty(value: unknown) {
     if (value === undefined || value === null) {
         return true;
     }
@@ -44,7 +46,7 @@ export function isBlankOrEmpty(value) {
 /*
  * Returns true if the value is a valid number, per Gridsuite's standard (allows either coma or dots for decimal).
  */
-export function validateValueIsANumber(value) {
+export function validateValueIsANumber(value?: string | number | null | boolean) : value is number{
     if (value == null || value === '') {
         return false;
     }
@@ -57,7 +59,7 @@ export function validateValueIsANumber(value) {
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is lower or equal to the second's
  */
-export function validateValueIsLessThanOrEqualTo(value, valueToCompareTo) {
+export function validateValueIsLessThanOrEqualTo(value?: string | number | null | boolean, valueToCompareTo?: string | number | null | boolean){
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -71,7 +73,7 @@ export function validateValueIsLessThanOrEqualTo(value, valueToCompareTo) {
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is greater or equal to the second's
  */
-export function validateValueIsGreaterThanOrEqualTo(value, valueToCompareTo) {
+export function validateValueIsGreaterThanOrEqualTo(value?: string | number | null | boolean, valueToCompareTo?: string | number | null | boolean) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -85,7 +87,7 @@ export function validateValueIsGreaterThanOrEqualTo(value, valueToCompareTo) {
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is lower than the second's
  */
-export function validateValueIsLessThan(value, valueToCompareTo) {
+export function validateValueIsLessThan(value?: string | number | null | boolean, valueToCompareTo?: string | number | null | boolean) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -99,7 +101,7 @@ export function validateValueIsLessThan(value, valueToCompareTo) {
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is greater than the second's
  */
-export function validateValueIsGreaterThan(value, valueToCompareTo) {
+export function validateValueIsGreaterThan(value?: string | number | null | boolean, valueToCompareTo?: string | number | null | boolean) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -107,11 +109,22 @@ export function validateValueIsGreaterThan(value, valueToCompareTo) {
     );
 }
 
+interface ToValidateType {
+    isFieldRequired?: boolean;
+    forceValidation?: boolean;
+    isFieldNumeric?: boolean;
+    valueLessThanOrEqualTo?: number;
+    valueGreaterThanOrEqualTo?: number;
+    valueLessThan?: number;
+    valueGreaterThan?: number;
+    errorMsgId?: string;
+}
+
 /*
  * Rule : if the field is NOT required (toValidate.isFieldRequired is either undefined or equals to false),
  * then any check that applies to the value will pass if the value is empty.
  */
-export function validateField(value, toValidate, disabled = false) {
+export function validateField(value: string | number | null | undefined | boolean, toValidate: ToValidateType, disabled = false) {
     if (disabled && !toValidate.forceValidation) {
         return NO_ERROR;
     }
@@ -152,58 +165,7 @@ export function validateField(value, toValidate, disabled = false) {
     return NO_ERROR;
 }
 
-/**
- * Checks if the provided reactive capabilty curve is valid. Returns a list of
- * errors if any, or an empty array otherwise.
- * @param reactiveCapabilityCurve an array of reactive capability curve points of
- * this format : [{ p: '', minQ: '', maxQ: '' }, { p: '', minQ: '', maxQ: '' }]
- * @returns An array of error messages. If there is no error, returns an empty array.
- */
-export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
-    let errorMessages = [];
-
-    // At least four points must be set
-    if (reactiveCapabilityCurve.length < 2) {
-        errorMessages.push('ReactiveCapabilityCurveCreationErrorMissingPoints');
-    }
-
-    // Each P must be a unique valid number
-    const everyValidP = reactiveCapabilityCurve
-        .map((element) =>
-            // Note : convertion toNumber is necessary here to prevent corner cases like if
-            // two values are "-0" and "0", which would be considered different by the Set below.
-            validateValueIsANumber(element.p) ? toNumber(element.p) : null
-        )
-        .filter((p) => p !== null);
-    const setOfPs = [...new Set(everyValidP)];
-
-    if (setOfPs.length !== everyValidP.length) {
-        errorMessages.push('ReactiveCapabilityCurveCreationErrorPInvalid');
-    } else {
-        // The first P must be the lowest value
-        // The last P must be the highest value
-        // The P in between must be in the range defined by the first and last P
-        const minP = everyValidP[0];
-        const maxP = everyValidP[everyValidP.length - 1];
-        const pAreInRange = everyValidP.filter(
-            (p) => validateValueIsLessThanOrEqualTo(minP, p) && validateValueIsLessThanOrEqualTo(p, maxP)
-        );
-        if (pAreInRange.length !== everyValidP.length) {
-            errorMessages.push('ReactiveCapabilityCurveCreationErrorPOutOfRange');
-        }
-    }
-
-    // Each qMin must be inferior or equal to qMax
-    for (let element of reactiveCapabilityCurve) {
-        if (!validateValueIsLessThanOrEqualTo(element.minQ, element.maxQ)) {
-            errorMessages.push('ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence');
-            break;
-        }
-    }
-    return errorMessages;
-}
-
-function makeErrorRecord(msgId) {
+function makeErrorRecord(msgId?: string) {
     if (msgId === undefined) {
         console.warn('Error message id missing in validation function !');
     }

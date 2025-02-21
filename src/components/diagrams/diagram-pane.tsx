@@ -36,12 +36,11 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { EquipmentType, OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, mergeSx, OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
-import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
@@ -231,16 +230,16 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                         let substationsIds: UUID[] = [];
                         svg.additionalMetadata?.voltageLevels
                             .map((vl: { name: string; substationId: UUID }) => ({
-                                name: getNameOrId(vl),
+                                name: getNameOrId({ name: vl.name, id: vl.substationId }),
                                 substationId: vl.substationId,
                             }))
                             .sort(
                                 (
-                                    vlA: { name: string; substationId: UUID },
-                                    vlB: { name: string; substationId: UUID }
-                                ) => vlA.name.toLowerCase().localeCompare(vlB.name.toLowerCase())
+                                    vlA: { name?: string; substationId: UUID },
+                                    vlB: { name?: string; substationId: UUID }
+                                ) => vlA.name?.toLowerCase().localeCompare(vlB.name?.toLowerCase() ?? '') || 0
                             )
-                            .forEach((voltageLevel: { name: string; substationId: UUID }) => {
+                            .forEach((voltageLevel: { name?: string; substationId: UUID }) => {
                                 const name = voltageLevel.name;
                                 if (name !== null) {
                                     nadTitle += (nadTitle !== '' ? ', ' : '') + name;
@@ -1047,7 +1046,10 @@ export function DiagramPane({
         <AutoSizer doNotBailOutOnEmptyChildren>
             {({ width, height }) => (
                 <Box
-                    sx={mergeSx(styles.availableDiagramSurfaceArea, fullScreenDiagram?.id && styles.fullscreen)}
+                    sx={mergeSx(
+                        styles.availableDiagramSurfaceArea,
+                        fullScreenDiagram?.id ? styles.fullscreen : undefined
+                    )}
                     style={{
                         width: width + 'px',
                         height: height + 'px',

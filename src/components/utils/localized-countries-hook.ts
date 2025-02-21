@@ -10,17 +10,17 @@ import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getComputedLanguage } from '../../utils/language';
 import localizedCountries from 'localized-countries';
-import countriesFr from 'localized-countries/data/fr';
-import countriesEn from 'localized-countries/data/en';
+import countriesFr from 'localized-countries/data/fr.json';
+import countriesEn from 'localized-countries/data/en.json';
 
 export const useLocalizedCountries = () => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    const [localizedCountriesModule, setLocalizedCountriesModule] = useState();
+    const [localizedCountriesModule, setLocalizedCountriesModule] = useState<localizedCountries.LocalizedCountries>();
 
     //TODO FM this is disgusting, can we make it better ?
     useEffect(() => {
         const lang = getComputedLanguage(languageLocal).substr(0, 2);
-        let localizedCountriesResult;
+        let localizedCountriesResult: localizedCountries.LocalizedCountries;
         // vite does not support ESM dynamic imports on node_modules, so we have to imports the languages before and do this
         // https://github.com/vitejs/vite/issues/14102
         if (lang === 'fr') {
@@ -40,7 +40,7 @@ export const useLocalizedCountries = () => {
     );
 
     const translate = useCallback(
-        (countryCode) => (localizedCountriesModule ? localizedCountriesModule.get(countryCode) : ''),
+        (countryCode: string) => (localizedCountriesModule ? localizedCountriesModule.get(countryCode) : ''),
         [localizedCountriesModule]
     );
 

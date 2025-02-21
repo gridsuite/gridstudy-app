@@ -10,8 +10,14 @@ import { InputAdornment, TextField } from '@mui/material';
 import { genHelperError } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material';
+import { PropsWithChildren } from 'react';
 
-export function ButtonReadOnlyInput({ name, isNumerical = false, children }) {
+interface ButtonReadOnlyInputProps extends PropsWithChildren{
+    name: string;
+    isNumerical?: boolean;
+}
+
+export function ButtonReadOnlyInput({ name, isNumerical = false, children }: ButtonReadOnlyInputProps) {
     const theme = useTheme();
 
     const {
