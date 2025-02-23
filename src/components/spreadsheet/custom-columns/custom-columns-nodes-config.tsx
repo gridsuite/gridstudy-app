@@ -19,12 +19,17 @@ const styles = {
     },
 };
 
-export default function CustomColumnsNodesConfig() {
+export default function CustomColumnsNodesConfig({ disabled }: { disabled?: boolean }) {
     const dialogOpen = useStateBoolean(false);
 
     return (
         <>
-            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={dialogOpen.setTrue}>
+            <Button
+                sx={spreadsheetStyles.spreadsheetButton}
+                size={'small'}
+                onClick={dialogOpen.setTrue}
+                disabled={disabled}
+            >
                 <BuildIcon sx={styles.icon} />
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
             </Button>

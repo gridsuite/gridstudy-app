@@ -92,6 +92,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
             const newColumns = [...prevSelectedColumnsNames];
             newColumns[idx] = {
                 colId: newColumns[idx].colId,
+                name: newColumns[idx].name,
                 visible: !newColumns[idx].visible,
             };
             return newColumns;
@@ -104,12 +105,13 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
     };
 
     const handleToggleAll = () => {
-        let isAllChecked = localColumnsStates.filter((col) => !col.visible).length === 0;
+        let isAllChecked = localColumnsStates?.filter((col) => !col.visible).length === 0;
         // If all columns are selected/checked, then we hide all of them.
         setLocalColumnsStates((prevSelectedColumnsNames) => {
             return prevSelectedColumnsNames.map((col) => {
                 return {
                     colId: col.colId,
+                    name: col.name,
                     visible: !isAllChecked,
                 };
             });
@@ -120,7 +122,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
     };
 
     const handleClickOnLock = (value: string) => () => {
-        if (localColumnsStates.filter((col) => col.colId === value && col.visible).length === 0) {
+        if (localColumnsStates?.filter((col) => col.colId === value && col.visible).length === 0) {
             return;
         }
         const newLocked = new Set(localLockedColumns.values());
@@ -152,8 +154,8 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
     };
 
     const checkListColumnsNames = () => {
-        let isAllChecked = localColumnsStates.filter((col) => !col.visible).length === 0;
-        let isSomeChecked = localColumnsStates.filter((col) => col.visible).length !== 0;
+        let isAllChecked = localColumnsStates?.filter((col) => !col.visible).length === 0;
+        let isSomeChecked = localColumnsStates?.filter((col) => col.visible).length !== 0;
 
         return (
             <>
@@ -168,7 +170,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                     <Droppable droppableId="network-table-columns-list">
                         {(provided) => (
                             <div ref={provided.innerRef} {...provided.droppableProps}>
-                                {[...localColumnsStates].map(({ colId, visible }, index) => (
+                                {[...localColumnsStates].map(({ colId, name, visible }, index) => (
                                     <Draggable
                                         draggableId={tabIndex + '-' + index}
                                         index={index}
@@ -198,12 +200,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                                                     <ListItemIcon onClick={handleToggle(colId)}>
                                                         <Checkbox checked={visible} />
                                                     </ListItemIcon>
-                                                    <ListItemText
-                                                        onClick={handleToggle(colId)}
-                                                        primary={intl.formatMessage({
-                                                            id: `${colId}`,
-                                                        })}
-                                                    />
+                                                    <ListItemText onClick={handleToggle(colId)} primary={name} />
                                                 </ListItem>
                                             </div>
                                         )}

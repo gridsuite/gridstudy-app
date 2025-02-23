@@ -57,6 +57,8 @@ const spreadsheetEn = {
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'No node with this name',
     'spreadsheet/parameter_aliases/unique_aliases': 'Aliases should be unique',
     'spreadsheet/filter/config': 'Gridsuite filters',
+    'spreadsheet/remove_spreasheet_confirmation':
+        'Are you sure you want to remove the spreadsheet "{spreadsheetName}"?',
 
     // Column types
     TEXT: 'Text',

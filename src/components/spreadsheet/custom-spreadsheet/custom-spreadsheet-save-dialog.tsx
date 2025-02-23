@@ -25,7 +25,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
 
     const customColumns = useMemo(() => {
-        return tableDefinition.columns.reduce((acc, item) => {
+        return tableDefinition?.columns.reduce((acc, item) => {
             acc[item.id] = {
                 uuid: item?.uuid ?? uuid4(),
                 id: item.id,
@@ -37,10 +37,10 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
             };
             return acc;
         }, {} as Record<string, ColumnDefinitionDto>);
-    }, [tableDefinition.columns]);
+    }, [tableDefinition?.columns]);
 
     const reorderedColumnsIds = useMemo(() => {
-        return columnsStates.map((col) => col.colId);
+        return columnsStates?.map((col) => col.colId);
     }, [columnsStates]);
 
     const reorderedColumns = useMemo(() => {
@@ -56,7 +56,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
         folderId,
     }: IElementCreationDialog) => {
         const spreadsheetConfig: SpreadsheetConfig = {
-            sheetType: tableDefinition.type,
+            sheetType: tableDefinition?.type,
             customColumns: reorderedColumns,
         };
 

@@ -41,6 +41,7 @@ import { fetchConfigParameter, fetchConfigParameters } from '../services/config'
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
+    initTableDefinitions,
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
@@ -52,7 +53,7 @@ import {
     setUpdateNetworkVisualizationParameters,
 } from '../redux/actions';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
-import { getNetworkVisualizationParameters } from '../services/study/study-config.ts';
+import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -207,6 +208,19 @@ const App = () => {
                     });
                     updateParams(params);
                 });
+            });
+
+            getSpreadsheetConfigCollection(studyUuid).then((config) => {
+                const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
+                    return {
+                        uuid: spreadsheetConfig.id,
+                        index: index,
+                        name: spreadsheetConfig.name,
+                        columns: spreadsheetConfig.columns,
+                        type: spreadsheetConfig.sheetType,
+                    };
+                });
+                dispatch(initTableDefinitions(config.id, tableDefinitions));
             });
 
             const fetchOptionalServices = getOptionalServices()

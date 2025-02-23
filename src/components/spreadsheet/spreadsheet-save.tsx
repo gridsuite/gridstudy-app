@@ -97,7 +97,7 @@ export default function SpreadsheetSave({
 
     return (
         <>
-            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick}>
+            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
                 <SaveIcon />
                 <FormattedMessage id="spreadsheet/save/button" />
             </Button>

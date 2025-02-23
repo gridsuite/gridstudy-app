@@ -121,16 +121,16 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const tableDefinition = useMemo(() => tablesDefinitions[tabIndex], [tabIndex, tablesDefinitions]);
     const columnsDefinitions = useCustomColumn(tabIndex);
     const reorderedColsDefs = useMemo(() => {
-        const visibleColumnsIds = formattedDisplayedColumnsNames.filter((col) => col.visible).map((col) => col.colId);
-        const columns = columnsDefinitions.reduce((acc, item) => {
+        const visibleColumnsIds = formattedDisplayedColumnsNames?.filter((col) => col.visible).map((col) => col.colId);
+        const columns = columnsDefinitions?.reduce((acc, item) => {
             acc[item.colId] = item;
             return acc;
         }, {} as Record<string, CustomColDef>);
-        return visibleColumnsIds.map((id) => columns[id]);
+        return visibleColumnsIds?.map((id) => columns[id]);
     }, [formattedDisplayedColumnsNames, columnsDefinitions]);
 
-    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition.name]);
-    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition.name);
+    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition?.name]);
+    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.name);
 
     const updateSortConfig = useCallback(() => {
         gridRef.current?.api?.applyColumnState({
@@ -141,7 +141,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const updateLockedColumnsConfig = useCallback(() => {
         const lockedColumnsConfig = reorderedColsDefs
-            .filter((column) => formattedLockedColumns.has(column.colId))
+            ?.filter((column) => formattedLockedColumns.has(column.colId))
             .map((column) => {
                 const s: ColumnState = {
                     colId: column.colId ?? '',
@@ -180,18 +180,18 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         });
     }, []);
 
-    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition.type);
+    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.type);
 
     const formatFetchedEquipmentsHandler = useCallback(
         (fetchedEquipments: any) => {
             //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return formatFetchedEquipments(tableDefinition.type, fetchedEquipments);
+            return formatFetchedEquipments(tableDefinition?.type, fetchedEquipments);
         },
-        [tableDefinition.type]
+        [tableDefinition?.type]
     );
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
-        tableDefinition.type,
+        tableDefinition?.type,
         formatFetchedEquipmentsHandler
     );
 
@@ -205,14 +205,14 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [errorMessage, snackError]);
 
     useEffect(() => {
-        if (disabled || equipments.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
+        if (disabled || equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
             return;
         }
         let localRowData: Identifiable[] = [];
-        if (tableDefinition.type) {
-            equipments.equipmentsByNodeId[currentNode.id].forEach((equipment) => {
+        if (tableDefinition?.type) {
+            equipments?.equipmentsByNodeId[currentNode.id].forEach((equipment) => {
                 let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
-                Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
+                Object.entries(equipments?.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
                     let matchingEquipment = equipments.find((eq) => eq.id === equipment.id);
                     let nodeAlias = nodesAliases.find((value) => value.id === nodeId);
                     if (nodeAlias !== undefined && matchingEquipment !== undefined) {
@@ -230,7 +230,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             updateSortConfig();
         }
         setRowData(localRowData);
-    }, [tabIndex, disabled, equipments, tableDefinition.type, nodesAliases, currentNode.id, updateSortConfig]);
+    }, [tabIndex, disabled, equipments, tableDefinition?.type, nodesAliases, currentNode.id, updateSortConfig]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
@@ -308,7 +308,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({
         studyUuid,
-        equipmentType: tableDefinition.type,
+        equipmentType: tableDefinition?.type,
     });
 
     const onRowClicked = useCallback(
@@ -325,22 +325,22 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 <EquipmentTabs disabled={disabled} tabIndex={tabIndex} handleSwitchTab={handleSwitchTab} />
                 <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.selectColumns}>
-                        <SpreadsheetGsFilter equipmentType={tableDefinition.type} />
+                        <SpreadsheetGsFilter equipmentType={tableDefinition?.type} />
                     </Grid>
                     <Grid item>
                         <ColumnsConfig
                             tabIndex={tabIndex}
-                            disabled={disabled || tableDefinition.columns.length === 0}
+                            disabled={disabled || !tableDefinition || tableDefinition?.columns.length === 0}
                         />
                     </Grid>
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsConfig tabIndex={tabIndex} />
+                            <CustomColumnsConfig tabIndex={tabIndex} disabled={!tableDefinition} />
                         </Grid>
                     )}
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsNodesConfig />
+                            <CustomColumnsNodesConfig disabled={!tableDefinition} />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
@@ -349,15 +349,15 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             tabIndex={tabIndex}
                             gridRef={gridRef}
                             columns={reorderedColsDefs}
-                            tableName={tableDefinition.name}
-                            disabled={disabled || rowData.length === 0}
+                            tableName={tableDefinition?.name}
+                            disabled={disabled || !tableDefinition || rowData.length === 0}
                         />
                     </Grid>
                 </Grid>
             </Grid>
-            {disabled ? (
+            {disabled || !tableDefinition ? (
                 <Alert sx={styles.invalidNode} severity="warning">
-                    <FormattedMessage id="InvalidNode" />
+                    <FormattedMessage id={!tableDefinition ? 'NoSpreadsheets' : 'InvalidNode'} />
                 </Alert>
             ) : (
                 <Box sx={mergeSx(styles.table)}>
@@ -368,7 +368,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         rowData={rowData}
                         columnData={reorderedColsDefs}
                         fetched={
-                            equipments.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined ||
+                            equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined ||
                             !!errorMessage
                         }
                         handleColumnDrag={handleColumnDrag}

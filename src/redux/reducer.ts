@@ -66,6 +66,8 @@ import {
     FavoriteContingencyListsAction,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     IncrementNetworkAreaDiagramDepthAction,
+    INIT_TABLE_DEFINITIONS,
+    InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
@@ -107,9 +109,11 @@ import {
     REMOVE_COLUMN_DEFINITION,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
+    REMOVE_TABLE_DEFINITION,
     RemoveColumnDefinitionAction,
     RemoveNodeDataAction,
     RemoveNotificationByNodeAction,
+    RemoveTableDefinitionAction,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
@@ -198,7 +202,6 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import { TABLES_DEFINITIONS } from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -604,17 +607,15 @@ export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
 interface TablesState {
+    uuid: UUID | null;
     definitions: SpreadsheetTabDefinition[];
     columnsStates: ColumnState[][];
 }
 
 const initialTablesState: TablesState = {
-    definitions: TABLES_DEFINITIONS,
-    columnsStates: TABLES_DEFINITIONS.map((table) =>
-        table.columns.map((col) => {
-            return { colId: col.id, visible: true };
-        })
-    ),
+    uuid: null,
+    definitions: [],
+    columnsStates: [],
 };
 
 const initialState: AppState = {
@@ -735,24 +736,12 @@ const initialState: AppState = {
     },
 
     // Spreadsheet filters
-    [SPREADSHEET_STORE_FIELD]: Object.values(initialTablesState.definitions)
-        .map((tabDef) => tabDef.name)
-        .reduce((acc, tabName) => ({ ...acc, [tabName]: [] }), {}),
+    [SPREADSHEET_STORE_FIELD]: {},
 
     [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
 
     [TABLE_SORT_STORE]: {
-        [SPREADSHEET_SORT_STORE]: Object.values(initialTablesState.definitions)
-            .map((tabDef) => tabDef.name)
-            .reduce((acc, tabName) => {
-                acc[tabName] = [
-                    {
-                        colId: 'id',
-                        sort: SortWay.ASC,
-                    },
-                ];
-                return acc;
-            }, {} as TableSortConfig),
+        [SPREADSHEET_SORT_STORE]: {},
         [LOADFLOW_RESULT_SORT_STORE]: {
             [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
                 {
@@ -867,7 +856,53 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
         const { newTableDefinition } = action;
         state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
-        state.tables.columnsStates.push(newTableDefinition.columns.map((col) => ({ colId: col.id, visible: true })));
+        state.tables.columnsStates.push(
+            newTableDefinition.columns.map((col) => ({ colId: col.id, name: col.name, visible: true }))
+        );
+    });
+
+    builder.addCase(INIT_TABLE_DEFINITIONS, (state, action: InitTableDefinitionsAction) => {
+        state.tables.uuid = action.collectionUuid;
+        state.tables.definitions = action.tableDefinitions;
+        state.tables.columnsStates = action.tableDefinitions.map((table) =>
+            table.columns.map((col) => {
+                return { colId: col.id, name: col.name, visible: true };
+            })
+        );
+        state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
+            .map((tabDef) => tabDef.name)
+            .reduce((acc, tabName) => ({ ...acc, [tabName]: [] }), {});
+        state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE] = Object.values(action.tableDefinitions)
+            .map((tabDef) => tabDef.name)
+            .reduce((acc, tabName) => {
+                acc[tabName] = [
+                    {
+                        colId: 'id',
+                        sort: SortWay.ASC,
+                    },
+                ];
+                return acc;
+            }, {} as TableSortConfig);
+    });
+
+    builder.addCase(REMOVE_TABLE_DEFINITION, (state, action: RemoveTableDefinitionAction) => {
+        const removedTableName = state.tables.definitions[action.tabIndex].name;
+
+        state.tables.definitions.splice(action.tabIndex, 1);
+        state.tables.columnsStates.splice(action.tabIndex, 1);
+
+        // Update indexes of remaining table definitions
+        state.tables.definitions.forEach((table, idx) => {
+            table.index = idx;
+        });
+
+        if (state[SPREADSHEET_STORE_FIELD]) {
+            delete state[SPREADSHEET_STORE_FIELD][removedTableName];
+        }
+
+        if (state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE]) {
+            delete state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE][removedTableName];
+        }
     });
 
     builder.addCase(
@@ -1739,6 +1774,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 tableDefinition.columns.push(colData.value);
                 state.tables.columnsStates[colData.index].push({
                     colId: colData.value.id,
+                    name: colData.value.name,
                     visible: true,
                 });
             }
