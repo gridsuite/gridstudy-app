@@ -117,7 +117,7 @@ interface VoltageLevelCode {
     voltageLevel: number;
 }
 
-//Quality parameters has a dedicated label for voltage level param
+//Quality parameters has a dedicated label for data per voltage level
 interface ThresholdVoltageLevelCode {
     thresholdVoltageLevel: number;
 }
@@ -236,43 +236,40 @@ export const mapToVoltageLevelCode = (code: string): number => {
 
 export const fromStateEstimationParametersFormToParamValues = (
     params: StateEstimationParametersForm
-): StateEstimationParameters => {
-    return {
-        [ESTIM_PARAMETERS]: {
-            ...params.general,
-            [TabValue.WEIGHTS]: {
-                [WEIGHTS_PARAMETERS]: params.weights.weightsParameters?.map((weight) => ({
-                    ...weight,
-                    [VOLTAGE_LEVEL]: mapToVoltageLevelCode(weight.voltageLevel),
-                })),
-            },
-            [TabValue.QUALITY]: {
-                ...params.quality,
-                thresholdsPerVoltageLevel: params.quality.thresholdsPerVoltageLevel?.map((threshold) => ({
-                    ...threshold,
-                    thresholdVoltageLevel: mapToVoltageLevelCode(threshold.voltageLevel),
-                })),
-            },
-            [TabValue.LOADBOUNDS]: {
-                [DEFAULT_BOUNDS]: params.loadBounds.defaultBounds?.map((loadBound) => ({
-                    ...loadBound,
-                    [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
-                })),
-                [DEFAULT_FIXED_BOUNDS]: params.loadBounds.defaultFixedBounds?.map((loadBound) => ({
-                    ...loadBound,
-                    [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
-                })),
-            },
+): StateEstimationParameters => ({
+    [ESTIM_PARAMETERS]: {
+        ...params.general,
+        [TabValue.WEIGHTS]: {
+            [WEIGHTS_PARAMETERS]: params.weights.weightsParameters?.map((weight) => ({
+                ...weight,
+                [VOLTAGE_LEVEL]: mapToVoltageLevelCode(weight.voltageLevel),
+            })),
         },
-    };
-};
+        [TabValue.QUALITY]: {
+            ...params.quality,
+            thresholdsPerVoltageLevel: params.quality.thresholdsPerVoltageLevel?.map((threshold) => ({
+                ...threshold,
+                thresholdVoltageLevel: mapToVoltageLevelCode(threshold.voltageLevel),
+            })),
+        },
+        [TabValue.LOADBOUNDS]: {
+            [DEFAULT_BOUNDS]: params.loadBounds.defaultBounds?.map((loadBound) => ({
+                ...loadBound,
+                [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
+            })),
+            [DEFAULT_FIXED_BOUNDS]: params.loadBounds.defaultFixedBounds?.map((loadBound) => ({
+                ...loadBound,
+                [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
+            })),
+        },
+    },
+});
 
 const mapVoltageLevelData = <T extends VoltageLevelCode | ThresholdVoltageLevelCode, U extends VoltageLevelLabel>(
     items: T[]
 ): U[] =>
     items.map((item) => {
         const voltageLevelValue = 'thresholdVoltageLevel' in item ? item.thresholdVoltageLevel : item.voltageLevel;
-
         return {
             ...item,
             [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(voltageLevelValue),
