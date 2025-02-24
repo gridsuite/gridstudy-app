@@ -6,20 +6,26 @@
  */
 
 import PropTypes from 'prop-types';
-import { FormControl, InputLabel, Select, MenuItem, FormHelperText, FormControlTypeMap } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { FieldLabel } from '@gridsuite/commons-ui';
 import { useController } from 'react-hook-form';
 
-interface EnumInputProps <T> {
+interface EnumInputProps<T> {
     options: T[];
     name: string;
     label: string;
     size: 'small' | 'medium';
-    labelValues: Record<string, string>
+    labelValues: Record<string, string>;
 }
 
-const EnumInput = <T extends {id: string; label: string},> ({ options, name, label, size, labelValues }: EnumInputProps<T>) => {
+const EnumInput = <T extends { id: string; label: string }>({
+    options,
+    name,
+    label,
+    size,
+    labelValues,
+}: EnumInputProps<T>) => {
     const {
         field: { onChange, value },
         fieldState: { error },

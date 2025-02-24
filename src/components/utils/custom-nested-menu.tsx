@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ForwardRefExoticComponent, PropsWithChildren, RefAttributes, useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { NestedMenuItem, NestedMenuItemProps } from 'mui-nested-menu';
-import { Box, ExtendButtonBase, MenuItem, MenuItemProps, MenuItemTypeMap, SxProps } from '@mui/material';
+import { Box, MenuItem, MenuItemProps, SxProps } from '@mui/material';
 import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {

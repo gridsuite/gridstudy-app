@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import DndTable, {
-    ColumnDirectoryItem,
-    ColumnNumeric,
-    ColumnText,
-    DndColumn,
-    DndColumnType,
-} from 'components/utils/dnd-table/dnd-table';
+import DndTable, { DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table';
 import {
     FILTERS,
     HIGH_VOLTAGE_LIMIT,
@@ -48,37 +42,39 @@ const VoltageLimitsParameters = () => {
     }, [intl]);
 
     const VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS: (DndColumn & { initialValue: any })[] = useMemo(() => {
-        return [
-            {
-                label: 'VoltageLevelFilter',
-                dataKey: FILTERS,
-                initialValue: [],
-                editable: true,
-                type: DndColumnType.DIRECTORY_ITEMS as DndColumnType.DIRECTORY_ITEMS, //TODO: ???
-                equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL],
-                elementType: ElementType.FILTER,
-                titleId: 'FiltersListsSelection',
-                extra: VoltageLevelFilterTooltip,
-            },
-            {
-                label: 'LowVoltageLimitAdjustment',
-                dataKey: LOW_VOLTAGE_LIMIT,
-                initialValue: null,
-                editable: true,
-                type: DndColumnType.NUMERIC as DndColumnType.NUMERIC,
-                adornment: VoltageAdornment,
-                textAlign: 'right' as 'right' | 'left',
-            },
-            {
-                label: 'HighVoltageLimitAdjustment',
-                dataKey: HIGH_VOLTAGE_LIMIT,
-                initialValue: null,
-                editable: true,
-                type: DndColumnType.NUMERIC as DndColumnType.NUMERIC,
-                adornment: VoltageAdornment,
-                textAlign: 'right' as 'right' | 'left',
-            },
-        ].map((column) => ({
+        return (
+            [
+                {
+                    label: 'VoltageLevelFilter',
+                    dataKey: FILTERS,
+                    initialValue: [],
+                    editable: true,
+                    type: DndColumnType.DIRECTORY_ITEMS,
+                    equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL],
+                    elementType: ElementType.FILTER,
+                    titleId: 'FiltersListsSelection',
+                    extra: VoltageLevelFilterTooltip,
+                },
+                {
+                    label: 'LowVoltageLimitAdjustment',
+                    dataKey: LOW_VOLTAGE_LIMIT,
+                    initialValue: null,
+                    editable: true,
+                    type: DndColumnType.NUMERIC,
+                    adornment: VoltageAdornment,
+                    textAlign: 'right',
+                },
+                {
+                    label: 'HighVoltageLimitAdjustment',
+                    dataKey: HIGH_VOLTAGE_LIMIT,
+                    initialValue: null,
+                    editable: true,
+                    type: DndColumnType.NUMERIC,
+                    adornment: VoltageAdornment,
+                    textAlign: 'right',
+                },
+            ] satisfies (DndColumn & { initialValue: any })[]
+        ).map((column) => ({
             ...column,
             label: intl
                 .formatMessage({ id: column.label })
@@ -94,7 +90,7 @@ const VoltageLimitsParameters = () => {
                 dataKey: FILTERS,
                 initialValue: [],
                 editable: true,
-                type: DndColumnType.DIRECTORY_ITEMS as DndColumnType.DIRECTORY_ITEMS, //TODO: ???
+                type: DndColumnType.DIRECTORY_ITEMS as const,
                 equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL],
                 elementType: ElementType.FILTER,
                 titleId: 'FiltersListsSelection',
@@ -105,18 +101,18 @@ const VoltageLimitsParameters = () => {
                 dataKey: LOW_VOLTAGE_LIMIT,
                 initialValue: null,
                 editable: true,
-                type: DndColumnType.NUMERIC as DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 adornment: VoltageAdornment,
-                textAlign: 'right' as 'right' | 'left', //TODO ???
+                textAlign: 'right' as const,
             },
             {
                 label: 'HighVoltageLimitDefault',
                 dataKey: HIGH_VOLTAGE_LIMIT,
                 initialValue: null,
                 editable: true,
-                type: DndColumnType.NUMERIC as DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 adornment: VoltageAdornment,
-                textAlign: 'right' as 'right' | 'left',
+                textAlign: 'right' as const,
             },
         ].map((column) => ({
             ...column,

@@ -14,7 +14,6 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
 
 export interface DndTableBottomRightButtonsProps {

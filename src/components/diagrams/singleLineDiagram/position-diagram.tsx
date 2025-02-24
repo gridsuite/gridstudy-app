@@ -60,9 +60,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
                 .then((data) => {
                     if (data !== null) {
                         setSvg({
-                            svg: data.svg,
-                            metadata: data.metadata,
-                            additionalMetadata: data.additionalMetadata,
+                            ...data,
                             error: null,
                             svgUrl: props.svgUrl,
                         });

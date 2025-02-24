@@ -65,7 +65,7 @@ export function LimitsSidePane({
                 dataKey: TEMPORARY_LIMIT_NAME,
                 initialValue: '',
                 editable: true,
-                type: DndColumnType.TEXT as DndColumnType.TEXT,
+                type: DndColumnType.TEXT as const,
                 maxWidth: 200,
             },
             {
@@ -73,7 +73,7 @@ export function LimitsSidePane({
                 dataKey: TEMPORARY_LIMIT_DURATION,
                 initialValue: null,
                 editable: true,
-                type: DndColumnType.NUMERIC as DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 maxWidth: 100,
             },
             {
@@ -81,7 +81,7 @@ export function LimitsSidePane({
                 dataKey: TEMPORARY_LIMIT_VALUE,
                 initialValue: null,
                 editable: true,
-                type: DndColumnType.NUMERIC as DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 maxWidth: 100,
             },
         ].map((column) => ({

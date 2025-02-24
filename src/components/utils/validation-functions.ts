@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ReactiveCapabilityCurvePoint } from "components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils";
-
 const NO_ERROR = {
     error: false,
     errorMsgId: null,
@@ -46,7 +44,7 @@ export function isBlankOrEmpty(value: unknown) {
 /*
  * Returns true if the value is a valid number, per Gridsuite's standard (allows either coma or dots for decimal).
  */
-export function validateValueIsANumber(value?: string | number | null | boolean) : value is number{
+export function validateValueIsANumber(value?: string | number | null | boolean): value is number {
     if (value == null || value === '') {
         return false;
     }
@@ -59,7 +57,10 @@ export function validateValueIsANumber(value?: string | number | null | boolean)
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is lower or equal to the second's
  */
-export function validateValueIsLessThanOrEqualTo(value?: string | number | null | boolean, valueToCompareTo?: string | number | null | boolean){
+export function validateValueIsLessThanOrEqualTo(
+    value?: string | number | null | boolean,
+    valueToCompareTo?: string | number | null | boolean
+) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -73,7 +74,10 @@ export function validateValueIsLessThanOrEqualTo(value?: string | number | null 
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is greater or equal to the second's
  */
-export function validateValueIsGreaterThanOrEqualTo(value?: string | number | null | boolean, valueToCompareTo?: string | number | null | boolean) {
+export function validateValueIsGreaterThanOrEqualTo(
+    value?: string | number | null | boolean,
+    valueToCompareTo?: string | number | null | boolean
+) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -87,7 +91,10 @@ export function validateValueIsGreaterThanOrEqualTo(value?: string | number | nu
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is lower than the second's
  */
-export function validateValueIsLessThan(value?: string | number | null | boolean, valueToCompareTo?: string | number | null | boolean) {
+export function validateValueIsLessThan(
+    value?: string | number | null | boolean,
+    valueToCompareTo?: string | number | null | boolean
+) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -101,7 +108,10 @@ export function validateValueIsLessThan(value?: string | number | null | boolean
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is greater than the second's
  */
-export function validateValueIsGreaterThan(value?: string | number | null | boolean, valueToCompareTo?: string | number | null | boolean) {
+export function validateValueIsGreaterThan(
+    value?: string | number | null | boolean,
+    valueToCompareTo?: string | number | null | boolean
+) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -124,7 +134,11 @@ interface ToValidateType {
  * Rule : if the field is NOT required (toValidate.isFieldRequired is either undefined or equals to false),
  * then any check that applies to the value will pass if the value is empty.
  */
-export function validateField(value: string | number | null | undefined | boolean, toValidate: ToValidateType, disabled = false) {
+export function validateField(
+    value: string | number | null | undefined | boolean,
+    toValidate: ToValidateType,
+    disabled = false
+) {
     if (disabled && !toValidate.forceValidation) {
         return NO_ERROR;
     }

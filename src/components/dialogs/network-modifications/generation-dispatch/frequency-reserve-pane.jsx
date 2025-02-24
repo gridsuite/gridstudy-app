@@ -9,7 +9,7 @@ import { FREQUENCY_RESERVE, GENERATORS_FILTERS, GENERATORS_FREQUENCY_RESERVES } 
 import { useIntl } from 'react-intl';
 import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
-import DndTable from 'components/utils/dnd-table/dnd-table';
+import DndTable, { DndColumnType } from 'components/utils/dnd-table/dnd-table';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { ElementType } from '@gridsuite/commons-ui';
 import { Tooltip, IconButton } from '@mui/material';
@@ -25,8 +25,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
                 dataKey: GENERATORS_FILTERS,
                 initialValue: [],
                 editable: true,
-                numeric: false,
-                directoryItems: true,
+                type: DndColumnType.DIRECTORY_ITEMS,
                 equipmentTypes: [EQUIPMENT_TYPES.GENERATOR],
                 elementType: ElementType.FILTER,
                 titleId: 'FiltersListsSelection',
@@ -36,7 +35,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
                 dataKey: FREQUENCY_RESERVE,
                 initialValue: null,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
             },
         ].map((column) => ({
             ...column,

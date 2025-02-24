@@ -233,7 +233,7 @@ export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber, disabl
                 </CSVReader>
             </>
         );
-    }, [_acceptedFile, disabled, header, intl, label, maxTapNumber]);
+    }, [_acceptedFile, disabled, header, intl, label, maxTapNumber, CSVReader]);
 
     return [_acceptedFile, field, fileError] as const;
 };

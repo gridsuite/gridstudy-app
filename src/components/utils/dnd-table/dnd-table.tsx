@@ -25,15 +25,9 @@ import { DragDropContext, Draggable, Droppable, DroppableProvided, DropResult } 
 import { useIntl } from 'react-intl';
 import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
-import { TableNumericalInput, TableNumericalInputProps } from '../rhf-inputs/table-inputs/table-numerical-input';
+import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
-import {
-    AutocompleteInput,
-    CheckboxInput,
-    ElementType,
-    RawReadOnlyInput,
-    RawReadOnlyInputProps,
-} from '@gridsuite/commons-ui';
+import { AutocompleteInput, CheckboxInput, ElementType, RawReadOnlyInput } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
 import { ErrorInput } from '@gridsuite/commons-ui';
@@ -100,6 +94,7 @@ interface ColumnBase {
     label?: string;
     extra?: JSX.Element;
     editable?: boolean;
+    type: DndColumnType;
 }
 
 export interface ColumnText extends ColumnBase {

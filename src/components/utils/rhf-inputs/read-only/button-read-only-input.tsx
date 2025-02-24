@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material';
 import { PropsWithChildren } from 'react';
 
-interface ButtonReadOnlyInputProps extends PropsWithChildren{
+interface ButtonReadOnlyInputProps extends PropsWithChildren {
     name: string;
     isNumerical?: boolean;
 }

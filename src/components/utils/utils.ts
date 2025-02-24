@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useRef } from 'react';
 import { getIn, SchemaDescription } from 'yup';
 import { isBlankOrEmpty, toNumber } from './validation-functions';
 import { CURRENT_LIMITS, ID } from './field-constants';
 import { addSelectedFieldToRows } from './dnd-table/dnd-table';
-import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
+import { OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { AttributeModification } from 'components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
+import { Option } from '@gridsuite/commons-ui';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -84,8 +84,12 @@ export const areNumbersOrdered = (array?: unknown) => {
     return true;
 };
 
-export const areIdsEqual = (val1: { id: string }, val2: { id: string }) => {
-    return val1.id === val2.id;
+export const areIdsEqual = (val1: Option, val2: Option) => {
+    if (typeof val1 !== 'string' && typeof val2 !== 'string') {
+        return val1.id === val2.id;
+    } else {
+        return val1 === val2;
+    }
 };
 
 export const areUuidsEqual = (val1: { uuid: string }, val2: { uuid: string }) => {

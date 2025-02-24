@@ -5,14 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    IconButton,
-    InputAdornment,
-    InputBaseComponentProps,
-    StandardTextFieldProps,
-    TextField,
-    TextFieldProps,
-} from '@mui/material';
+import { IconButton, InputAdornment, InputBaseComponentProps, StandardTextFieldProps, TextField } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useMemo } from 'react';
