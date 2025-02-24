@@ -36,6 +36,9 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
     const intl = useIntl();
 
     const formatTempo = useCallback((tempo: number) => {
+        if (!tempo) {
+            return '';
+        }
         const min = Math.floor(tempo / 60);
         const sec = tempo % 60;
         if (min > 0 && sec === 0) {
@@ -71,9 +74,11 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
     const { series, ticks } = useMemo(() => {
         const data = [];
         let noValueThresholdFound = false;
+        let maxValueIst = 0;
 
         if (currentLimits?.permanentLimit) {
             data.push({ label: intl.formatMessage({ id: 'IST' }), value: currentLimits.permanentLimit });
+            maxValueIst = currentLimits.permanentLimit;
         }
 
         if (currentLimits?.temporaryLimits) {
@@ -82,6 +87,9 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 .forEach((field) => {
                     if (!field.value) {
                         noValueThresholdFound = true;
+                    }
+                    if (!field.acceptableDuration && field.value) {
+                        maxValueIst = Math.max(maxValueIst, field.value);
                     }
                     data.push({
                         label: field.name,
@@ -106,31 +114,44 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
         });
 
         const maxValue = Math.max(...data.map((item) => item.value));
+        let colorIndex = 0;
+        let previousSum = 0;
 
         return data.reduce<{ series: StackableSeriesType[]; ticks: Ticks[] }>(
             (acc, item, index) => {
-                const previousSum = acc.ticks.length > 0 ? acc.ticks[acc.ticks.length - 1].position : 0; // Sum of previous values
-                const colorIndex = currentLimits?.permanentLimit && index > 0 ? index - 1 : index;
+                const itemValue = parseFloat(item.value);
                 const isIst =
                     (item.label === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
-                    (!currentLimits.permanentLimit && !item.tempo);
+                    (!currentLimits.permanentLimit && !item.tempo && itemValue === maxValueIst);
                 let difference = item.value ? item.value - previousSum : undefined;
-                if (isIst || !item.tempo) {
-                    difference = item.value;
-                }
+
                 const color =
-                    isIst || !item.tempo || (item.tempo && currentLimits.permanentLimit > parseFloat(item.value))
+                    isIst || !item.tempo || (item.tempo && currentLimits.permanentLimit > itemValue)
                         ? colorIST
                         : colors?.[colorIndex] ?? colors[colors.length - 1];
 
                 const incoherent: boolean = isIncoherent(item, index > 0 ? data[index - 1] : undefined);
 
+                if (itemValue >= maxValueIst) {
+                    previousSum = itemValue;
+                }
+                if (itemValue > maxValueIst) {
+                    colorIndex++;
+                }
+
+                console.log('isIST : ', isIst);
+                console.log('maxValueISt : ', maxValueIst);
+                console.log('itemValue : ', itemValue);
+
                 const updatedSeries =
-                    item.tempo || isIst
+                    (item.tempo && !itemValue) || parseFloat(item.value) >= maxValueIst
                         ? [
                               ...acc.series,
                               {
-                                  label: isIst ? intl.formatMessage({ id: 'unlimited' }) : formatTempo(item.tempo),
+                                  label:
+                                      isIst || itemValue === maxValueIst
+                                          ? intl.formatMessage({ id: 'unlimited' })
+                                          : formatTempo(item.tempo),
                                   data: [difference ?? maxValue * 0.15],
                                   color: item.value ? color : colorForbidden,
                                   stack: 'total',
