@@ -44,7 +44,7 @@ export type ColumnDefinition = {
 };
 
 export type ColumnDefinitionDto = Omit<ColumnDefinition, 'dependencies'> & {
-    dependencies: string;
+    dependencies?: string;
 };
 
 export type SpreadsheetEquipmentsByNodes = {

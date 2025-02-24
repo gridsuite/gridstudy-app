@@ -33,7 +33,8 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
                 type: item.type,
                 precision: item.precision,
                 formula: item.formula,
-                dependencies: JSON.stringify(item.dependencies),
+                dependencies:
+                    item.dependencies && item.dependencies.length > 0 ? JSON.stringify(item.dependencies) : undefined,
             };
             return acc;
         }, {} as Record<string, ColumnDefinitionDto>);

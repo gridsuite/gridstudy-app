@@ -124,7 +124,10 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                         type: column.type,
                         precision: column.precision,
                         formula: column.formula || '',
-                        dependencies: JSON.stringify(column.dependencies || []),
+                        dependencies:
+                            column.dependencies && column.dependencies.length > 0
+                                ? JSON.stringify(column.dependencies)
+                                : undefined,
                     };
                     return dto;
                 })
