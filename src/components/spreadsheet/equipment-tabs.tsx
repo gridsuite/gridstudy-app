@@ -7,12 +7,11 @@
 
 import { Grid, Tab, Tabs, IconButton, Box, Typography } from '@mui/material';
 import { FunctionComponent, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import CloseIcon from '@mui/icons-material/Close';
-import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'redux/store';
 import { removeTableDefinition } from 'redux/actions';
 import { removeSpreadsheetConfigFromCollection } from 'services/study-config';
@@ -87,8 +86,10 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
     const handleRemoveTab = () => {
         const tableId = tablesDefinitions.find((def) => def.index === tabToBeRemovedIndex)?.uuid;
         removeSpreadsheetConfigFromCollection(speadsheetsCollectionUuid as UUID, tableId as UUID).then(() => {
-            handleSwitchTab(0);
             dispatch(removeTableDefinition(tabToBeRemovedIndex));
+            if (tabToBeRemovedIndex === tabIndex) {
+                handleSwitchTab(0);
+            }
             setConfirmationDialogOpen(false);
         });
     };

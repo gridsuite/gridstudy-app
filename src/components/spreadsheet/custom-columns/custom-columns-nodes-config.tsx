@@ -19,7 +19,11 @@ const styles = {
     },
 };
 
-export default function CustomColumnsNodesConfig({ disabled }: { disabled?: boolean }) {
+type CustomColumnsNodesConfigProps = {
+    disabled?: boolean;
+};
+
+export default function CustomColumnsNodesConfig({ disabled }: Readonly<CustomColumnsNodesConfigProps>) {
     const dialogOpen = useStateBoolean(false);
 
     return (

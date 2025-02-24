@@ -25,6 +25,13 @@ export default function CustomColumnsConfig({ tabIndex, disabled }: Readonly<Cus
     const dialogOpen = useStateBoolean(false);
     const theme = useSelector((state: AppState) => state.theme);
 
+    const getAddColumnIcon = () => {
+        if (disabled) {
+            return <AddColumnRightDisabled />;
+        }
+        return theme === LIGHT_THEME ? <AddColumnRightLight /> : <AddColumnRightDark />;
+    };
+
     return (
         <>
             <Button
@@ -33,13 +40,7 @@ export default function CustomColumnsConfig({ tabIndex, disabled }: Readonly<Cus
                 onClick={dialogOpen.setTrue}
                 disabled={disabled}
             >
-                {disabled ? (
-                    <AddColumnRightDisabled />
-                ) : theme === LIGHT_THEME ? (
-                    <AddColumnRightLight />
-                ) : (
-                    <AddColumnRightDark />
-                )}
+                {getAddColumnIcon()}
                 <FormattedMessage id="spreadsheet/custom_column/add_columns" />
             </Button>
 
