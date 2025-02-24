@@ -176,7 +176,11 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                     updatedSeries.push({
                         type: 'bar',
                         label: intl.formatMessage({ id: 'forbidden' }),
-                        data: [updatedTicks?.[updatedTicks?.length - 1]?.position ?? 0.0],
+                        data: [
+                            updatedTicks?.[updatedTicks?.length - 1]?.position
+                                ? updatedTicks?.[updatedTicks?.length - 1]?.position * 0.15
+                                : 0.0,
+                        ],
                         color: colorForbidden,
                         stack: 'total',
                     });
