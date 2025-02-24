@@ -29,7 +29,7 @@ const NodeAliasTable = () => {
         name: `${NODES_ALIASES}`,
     });
 
-    const NODES_ALIASES_COLUMNS_DEFINITIONS: DndColumn[] = useMemo(() => {
+    const NODES_ALIASES_COLUMNS_DEFINITIONS: (DndColumn & { initialValue?: string })[] = useMemo(() => {
         return [
             {
                 label: intl.formatMessage({ id: 'spreadsheet/parameter_aliases/node_alias' }),

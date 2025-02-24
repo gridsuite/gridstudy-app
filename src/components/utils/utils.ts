@@ -12,6 +12,7 @@ import { CURRENT_LIMITS, ID } from './field-constants';
 import { addSelectedFieldToRows } from './dnd-table/dnd-table';
 import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
+import { AttributeModification } from 'components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -108,18 +109,18 @@ export const buildNewBusbarSections = (equipmentId: string, sectionCount: number
     return newBusbarSections;
 };
 
-export function toModificationOperation(value: unknown) {
+export function toModificationOperation<T>(value: T): AttributeModification<T> | null {
     return value === 0 || value === false || value ? { value: value, op: 'SET' } : null;
 }
 
-export function toModificationUnsetOperation(value: unknown) {
+export function toModificationUnsetOperation<T>(value: T): AttributeModification<T> | null {
     if (value === null) {
         return null;
     }
     return value === 0 || value === false || value ? { value: value, op: 'SET' } : { op: 'UNSET' };
 }
 
-export const formatTemporaryLimits = (temporaryLimits?: TemporaryLimit[]) =>
+export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]) =>
     temporaryLimits?.map((limit) => {
         return {
             name: limit?.name ?? '',
@@ -139,7 +140,7 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: OperationalLimi
                     [CURRENT_LIMITS]: {
                         permanentLimit: elt.currentLimits.permanentLimit, //TODO: check change is ok ?
                         temporaryLimits: addSelectedFieldToRows(
-                            formatTemporaryLimits(elt?.currentLimits.temporaryLimits)
+                            formatTemporaryLimits(elt.currentLimits.temporaryLimits)
                         ),
                     },
                 });

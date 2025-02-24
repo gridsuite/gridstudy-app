@@ -65,7 +65,7 @@ export function LimitsSidePane({
                 dataKey: TEMPORARY_LIMIT_NAME,
                 initialValue: '',
                 editable: true,
-                type: DndColumnType.TEXT,
+                type: DndColumnType.TEXT as DndColumnType.TEXT,
                 maxWidth: 200,
             },
             {
@@ -73,7 +73,7 @@ export function LimitsSidePane({
                 dataKey: TEMPORARY_LIMIT_DURATION,
                 initialValue: null,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as DndColumnType.NUMERIC,
                 maxWidth: 100,
             },
             {
@@ -81,7 +81,7 @@ export function LimitsSidePane({
                 dataKey: TEMPORARY_LIMIT_VALUE,
                 initialValue: null,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as DndColumnType.NUMERIC,
                 maxWidth: 100,
             },
         ].map((column) => ({
@@ -99,6 +99,9 @@ export function LimitsSidePane({
 
     const temporaryLimitHasPreviousValue = useCallback(
         (rowIndex: number, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
+            if (!temporaryLimits) {
+                return false;
+            }
             return (
                 formatTemporaryLimits(temporaryLimits)?.filter(
                     (l) =>
@@ -111,7 +114,7 @@ export function LimitsSidePane({
     );
 
     const shouldReturnPreviousValue = useCallback(
-        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
+        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
             return (
                 (temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
                     column.dataKey === TEMPORARY_LIMIT_VALUE) ||
@@ -133,7 +136,10 @@ export function LimitsSidePane({
     );
 
     const getPreviousValue = useCallback(
-        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
+        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
+            if (!temporaryLimits) {
+                return undefined;
+            }
             const formattedTemporaryLimits = formatTemporaryLimits(temporaryLimits);
             if (!temporaryLimits?.length) {
                 return undefined;
@@ -155,7 +161,7 @@ export function LimitsSidePane({
     );
 
     const disableTableCell = useCallback(
-        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
+        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
             return getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED

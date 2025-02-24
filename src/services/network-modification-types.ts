@@ -261,7 +261,7 @@ export interface TemporaryLimit {
     value: number | null;
     acceptableDuration: number | null;
     modificationType: string | null;
-    selected: boolean;
+    selected?: boolean;
     name: string;
 }
 

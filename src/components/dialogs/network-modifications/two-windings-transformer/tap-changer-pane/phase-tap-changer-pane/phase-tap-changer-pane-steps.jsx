@@ -37,7 +37,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_RESISTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -45,7 +45,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_REACTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -53,7 +53,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_CONDUCTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -61,7 +61,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_SUSCEPTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -69,7 +69,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_RATIO,
                 initialValue: 1,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -77,7 +77,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_ALPHA,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
         ].map((column) => ({

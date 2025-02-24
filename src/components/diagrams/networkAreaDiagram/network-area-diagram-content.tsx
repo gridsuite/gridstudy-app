@@ -341,7 +341,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED && styles.divDiagramInvalid
+                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
         </>

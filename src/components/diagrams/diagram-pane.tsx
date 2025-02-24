@@ -188,7 +188,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             function createSubstationDiagramView(id: UUID, state: ViewState | undefined) {
                 const svgUrl = checkAndGetSubstationSingleLineDiagramUrl(id);
                 return fetchSvgData(svgUrl, DiagramType.SUBSTATION).then((svg) => {
-                    let label = getNameOrId(svg.additionalMetadata) ?? id;
+                    let label = getNameOrId(svg.additionalMetadata as any) ?? id; //TODO to fix
                     return {
                         id: id,
                         nodeId: currentNode.id,
@@ -205,7 +205,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             function createVoltageLevelDiagramView(id: UUID, state: ViewState | undefined) {
                 const svgUrl = checkAndGetVoltageLevelSingleLineDiagramUrl(id);
                 return fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL).then((svg) => {
-                    let label = getNameOrId(svg.additionalMetadata) ?? id;
+                    let label = getNameOrId(svg.additionalMetadata as any) ?? id; //TODO to fix
                     let substationId = svg.additionalMetadata?.substationId;
                     return {
                         id: id,
@@ -1017,7 +1017,7 @@ export function DiagramPane({
 
     const getDiagramTitle = (diagramView: DiagramView) => {
         return diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
-            ? diagramView.name + ' - ' + translate(diagramView.country)
+            ? diagramView.name + ' - ' + (diagramView.country ? translate(diagramView.country) : '')
             : diagramView.name;
     };
 

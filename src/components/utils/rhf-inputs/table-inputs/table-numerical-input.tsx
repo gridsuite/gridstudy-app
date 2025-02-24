@@ -61,7 +61,7 @@ export const TableNumericalInput = ({
         [isClearable, previousValue, value]
     );
 
-    const outputTransform = (value: string | number) => {
+    const outputTransform = (value?: string | number) => {
         if (typeof value === 'string') {
             if (value === '-') {
                 return value;

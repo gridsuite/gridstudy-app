@@ -228,7 +228,12 @@ interface DndTableBaseProps {
     withAddRowsDialog?: boolean;
     previousValues?: any[];
     disableTableCell?: (rowIndex: number, column: any, arrayFormName: string, temporaryLimits?: any[]) => boolean;
-    getPreviousValue?: (rowIndex: number, column: any, arrayFormName: string, temporaryLimits?: any[]) => number;
+    getPreviousValue?: (
+        rowIndex: number,
+        column: any,
+        arrayFormName: string,
+        temporaryLimits?: any[]
+    ) => number | undefined;
     isValueModified?: (index: number, arrayFormName: string) => boolean;
     disableAddingRows?: boolean;
     showMoveArrow?: boolean;

@@ -14,7 +14,7 @@ import { Identifiable } from '@gridsuite/commons-ui';
 export const useNameOrId = () => {
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const getNameOrId = useCallback(
-        (infos?: Identifiable) => {
+        (infos?: Identifiable | null) => {
             if (infos) {
                 const name = infos.name;
                 return useName && name != null && name.trim() !== '' ? name : infos?.id;
