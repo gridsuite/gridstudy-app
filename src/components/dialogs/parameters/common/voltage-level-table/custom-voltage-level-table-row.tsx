@@ -7,7 +7,7 @@
 import { TableRow } from '@mui/material';
 import { FunctionComponent } from 'react';
 
-import { CustomTableByVoltageLevelTableCell } from './custom-table-by-voltage-level-table-cell';
+import { CustomVoltageLevelTableCell } from './custom-voltage-level-table-cell';
 import { IColumnsDef } from '../limitreductions/columns-definitions';
 
 interface TableRowComponentProps {
@@ -16,7 +16,7 @@ interface TableRowComponentProps {
     index: number;
 }
 
-export const CustomTableByVoltageLevelTableRow: FunctionComponent<TableRowComponentProps> = ({
+export const CustomVoltageLevelTableRow: FunctionComponent<TableRowComponentProps> = ({
     formName,
     columnsDefinition,
     index,
@@ -24,7 +24,7 @@ export const CustomTableByVoltageLevelTableRow: FunctionComponent<TableRowCompon
     return (
         <TableRow>
             {columnsDefinition.map((column: IColumnsDef) => (
-                <CustomTableByVoltageLevelTableCell
+                <CustomVoltageLevelTableCell
                     key={`${column.dataKey}`}
                     formName={formName}
                     rowIndex={index}

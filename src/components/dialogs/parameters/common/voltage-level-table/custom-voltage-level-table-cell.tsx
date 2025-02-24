@@ -10,7 +10,7 @@ import { TableCell } from '@mui/material';
 import { FloatInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
 import { VOLTAGE_LEVEL } from '../../../../utils/field-constants';
 
-export const CustomTableByVoltageLevelTableCell: FunctionComponent<{
+export const CustomVoltageLevelTableCell: FunctionComponent<{
     formName: string;
     rowIndex: number;
     column: IColumnsDef;
