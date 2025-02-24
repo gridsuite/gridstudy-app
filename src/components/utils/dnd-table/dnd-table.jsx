@@ -149,6 +149,8 @@ const DndTable = ({
     getPreviousValue,
     isValueModified,
     disableAddingRows = false,
+    showMoveArrow = true,
+    disableDragAndDrop = false,
 }) => {
     const intl = useIntl();
 
@@ -290,7 +292,9 @@ const DndTable = ({
         return (
             <TableHead>
                 <TableRow>
-                    <TableCell sx={{ width: '3%' }}>{/* empty cell for the drag and drop column */}</TableCell>
+                    {!disableDragAndDrop && (
+                        <TableCell sx={{ width: '3%' }}>{/* empty cell for the drag and drop column */}</TableCell>
+                    )}
                     <TableCell sx={{ width: '5%', textAlign: 'center' }}>
                         <MultiCheckbox
                             arrayFormName={arrayFormName}
@@ -316,22 +320,29 @@ const DndTable = ({
         return (
             <TableBody>
                 {currentRows.map((row, index) => (
-                    <Draggable key={row.id} draggableId={row.id.toString()} index={index}>
+                    <Draggable
+                        key={row.id}
+                        draggableId={row.id.toString()}
+                        index={index}
+                        isDragDisabled={disableDragAndDrop}
+                    >
                         {(provided, snapshot) => (
                             <TableRow ref={provided.innerRef} {...provided.draggableProps}>
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'DragAndDrop',
-                                    })}
-                                    placement="right"
-                                >
-                                    <TableCell
-                                        sx={{ textAlign: 'center' }}
-                                        {...(disabled ? {} : { ...provided.dragHandleProps })}
+                                {!disableDragAndDrop && (
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DragAndDrop',
+                                        })}
+                                        placement="right"
                                     >
-                                        <DragIndicatorIcon />
-                                    </TableCell>
-                                </Tooltip>
+                                        <TableCell
+                                            sx={{ textAlign: 'center' }}
+                                            {...(disabled ? {} : { ...provided.dragHandleProps })}
+                                        >
+                                            <DragIndicatorIcon />
+                                        </TableCell>
+                                    </Tooltip>
+                                )}
                                 <TableCell sx={{ textAlign: 'center' }}>
                                     <CheckboxInput
                                         name={`${arrayFormName}[${index}].${SELECTED}`}
@@ -391,6 +402,7 @@ const DndTable = ({
                     handleMoveUpButton={moveUpSelectedRows}
                     handleMoveDownButton={moveDownSelectedRows}
                     disableAddingRows={disableAddingRows}
+                    showMoveArrow={showMoveArrow}
                     disabled={disabled}
                 />
             </Grid>
@@ -417,6 +429,8 @@ DndTable.propTypes = {
     disabled: PropTypes.bool,
     withLeftButtons: PropTypes.bool,
     withAddRowsDialog: PropTypes.bool,
+    showMoveArrow: PropTypes.bool,
+    disableDragAndDrop: PropTypes.bool,
 };
 
 export default DndTable;

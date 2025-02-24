@@ -113,6 +113,7 @@ export type MappingInfos = {
 };
 
 export type DynamicSimulationParametersInfos = {
+    provider?: string;
     startTime?: number;
     stopTime?: number;
     mapping?: string;

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useState } from 'react';
 import { Autocomplete, Box, Chip, FilterOptionsState, InputAdornment, TextField, Theme } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -41,24 +41,30 @@ const styles = {
         flexWrap: 'wrap',
         padding: '0.5em',
     },
-    recentBox: (theme: Theme) => ({
-        borderBottom: '1px solid',
+    filterTypeBox: (theme: Theme) => ({
+        borderTop: '1px solid',
         borderColor: theme.palette.divider,
     }),
-    recentLabel: (theme: Theme) => ({
+    groupLabel: (theme: Theme) => ({
         color: theme.palette.text.secondary,
-        fontSize: 'small',
+        fontSize: '0.9em',
         width: '100%',
         paddingLeft: 1,
     }),
     chip: {
         '&.MuiChip-root': {
+            borderRadius: '100px solid',
             margin: '4px 2px 4px 2px',
             padding: '0',
             color: 'white',
         },
+        '.MuiChip-deleteIcon': {
+            color: 'white',
+            opacity: 0.6,
+        },
         '.MuiChip-deleteIcon:hover': {
             color: 'white',
+            opacity: 1,
         },
         '&.Mui-focusVisible': {
             width: 'unset', // prevents the chip from changing size when selected with the keyboard
@@ -66,40 +72,36 @@ const styles = {
             position: 'relative',
         },
     },
-    chipCountry: {
+    chipCountry: (theme: Theme) => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
-            backgroundColor: '#01579b !important',
-        },
-        '.MuiChip-deleteIcon': {
-            color: '#b2daf1',
+            backgroundColor: theme.palette.info.main + `!important`,
         },
         '&.MuiChip-root:hover': {
-            backgroundColor: '#0277bd !important',
+            backgroundColor: theme.palette.info.dark + `!important`,
         },
-        '&.Mui-focusVisible': {
-            background: '#0288d1 !important',
+        '&.MuiChip-root:focus': {
+            backgroundColor: theme.palette.info.dark + `!important`,
         },
-    },
-    chipVoltageLevel: {
+    }),
+    chipVoltageLevel: (theme: Theme) => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
-            backgroundColor: '#1e88e5 !important',
-        },
-        '& .MuiChip-deleteIcon': {
-            color: '#bbdefb',
+            backgroundColor: theme.palette.secondary.main + `!important`,
         },
         '&.MuiChip-root:hover': {
-            backgroundColor: '#1976d2 !important',
+            backgroundColor: theme.palette.secondary.dark + `!important`,
         },
-        '&.Mui-focusVisible': {
-            background: '#2196F3 !important',
+        '&.MuiChip-root:focus': {
+            backgroundColor: theme.palette.secondary.dark + `!important`,
         },
-    },
+    }),
 };
 
 export enum FilterType {
     COUNTRY = 'country',
     VOLTAGE_LEVEL = 'voltageLevel',
 }
+
+const recentFilter: string = 'recent';
 
 export interface Filter {
     label: string;
@@ -113,12 +115,20 @@ export interface ResultsGlobalFilterProps {
 }
 
 const emptyArray: Filter[] = [];
+const DEFAULT_NB_OPTIONS_DISPLAYED: number = 10;
 
 const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onChange, filters = emptyArray }) => {
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch<AppDispatch>();
-    const recentGlobalFilters = useSelector((state: AppState) => state.recentGlobalFilters);
+    const recentGlobalFilters: Filter[] = useSelector((state: AppState) => state.recentGlobalFilters);
+    // -1 number of options means that the user required everything to be displayed no matter the number of options
+    const [numberOfOptions, setNumberOfOptions] = useState<Map<string, number>>(
+        new Map([
+            [FilterType.COUNTRY, 0],
+            [FilterType.VOLTAGE_LEVEL, 0],
+        ])
+    );
 
     const getOptionLabel = useCallback(
         (option: Filter) => (option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label + ' kV'),
@@ -126,11 +136,8 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
     );
 
     const getChipStyle = useCallback(
-        (filter: Filter) =>
-            mergeSx(
-                styles.chip,
-                filter.filterType === FilterType.COUNTRY ? styles.chipCountry : styles.chipVoltageLevel
-            ),
+        (filterType: string) =>
+            mergeSx(styles.chip, filterType === FilterType.COUNTRY ? styles.chipCountry : styles.chipVoltageLevel),
         []
     );
 
@@ -152,20 +159,24 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 size="small"
                 limitTags={3}
                 disableCloseOnSelect
-                options={filters
-                    .map((filter) => {
-                        let isRecent = false;
-                        if (recentGlobalFilters && recentGlobalFilters.length > 0) {
-                            isRecent = recentGlobalFilters.some(
-                                (recent: Filter) =>
-                                    recent.label === filter.label && recent.filterType === filter.filterType
-                            );
-                        }
-                        return { ...filter, recent: isRecent };
-                    })
-                    .sort((obj) => (obj.recent ? -1 : 1))}
+                options={[
+                    ...recentGlobalFilters.map((filter) => {
+                        return { ...filter, recent: true };
+                    }),
+                    ...filters
+                        .map((filter) => {
+                            return { ...filter, recent: false };
+                        })
+                        .sort((a: Filter, b: Filter) => {
+                            // only the countries are sorted alphabetically
+                            if (a.filterType === FilterType.COUNTRY && b.filterType === FilterType.COUNTRY) {
+                                return translate(a.label).localeCompare(translate(b.label));
+                            }
+                            return 0;
+                        }),
+                ]}
                 onChange={handleChange}
-                groupBy={(option: any) => option.recent}
+                groupBy={(option: Filter): string => (option.recent ? recentFilter : option.filterType)}
                 // renderInput : the inputfield that contains the chips, adornments and label
                 renderInput={(params) => (
                     <TextField
@@ -187,35 +198,40 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                     />
                 )}
                 // renderTags : the chips in the inputField
-                renderTags={(value, getTagsProps) =>
-                    value.map((element, index) => (
+                renderTags={(filters: Filter[], getTagsProps) =>
+                    filters.map((element: Filter, index: number) => (
                         <Chip
                             size={'small'}
                             label={getOptionLabel(element)}
                             {...getTagsProps({ index })}
-                            sx={getChipStyle(element)}
+                            sx={getChipStyle(element.filterType)}
                         />
                     ))
                 }
-                // renderGroup : the box below that is visible when we focus on the AutoComplete
+                // renderGroup : the boxes below that are visible when we focus on the AutoComplete
                 renderGroup={(item) => {
                     const { group, children } = item;
-                    const itemRecentAvailable = !!group;
+                    const recent: boolean = group === recentFilter;
+                    const numOfGroupOptions: number = numberOfOptions.get(group) ?? 0;
                     return (
-                        <Box
-                            key={'keyBoxGroup_' + group}
-                            sx={mergeSx(styles.chipBox, itemRecentAvailable && styles.recentBox)}
-                        >
-                            {itemRecentAvailable && (
-                                <Box sx={styles.recentLabel}>
-                                    <FormattedMessage id="results.globalFilter.recent" />
-                                </Box>
-                            )}
+                        <Box key={'keyBoxGroup_' + group} sx={mergeSx(styles.chipBox, !recent && styles.filterTypeBox)}>
+                            <Box sx={styles.groupLabel}>
+                                <FormattedMessage id={'results.globalFilter.' + group} />
+                            </Box>
                             {children}
+                            {!recent && numOfGroupOptions - DEFAULT_NB_OPTIONS_DISPLAYED > 0 && (
+                                <Chip
+                                    component="li"
+                                    label={'+ ' + (numOfGroupOptions - DEFAULT_NB_OPTIONS_DISPLAYED)}
+                                    size="small"
+                                    sx={getChipStyle(group)}
+                                    onClick={() => setNumberOfOptions(new Map([...numberOfOptions, [group, -1]]))}
+                                />
+                            )}
                         </Box>
                     );
                 }}
-                // renderOption : the chips that are in the box that is visible when we focus on the AutoComplete
+                // renderOption : the chips that are in the boxes that is visible when we focus on the AutoComplete
                 renderOption={(props, option: Filter) => {
                     const { children, color, ...otherProps } = props;
                     return (
@@ -224,7 +240,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                             component="li"
                             label={getOptionLabel(option)}
                             size="small"
-                            sx={getChipStyle(option)}
+                            sx={getChipStyle(option.filterType)}
                         />
                     );
                 }}
@@ -232,14 +248,32 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 isOptionEqualToValue={(option: Filter, value: Filter) =>
                     option.label === value.label && option.filterType === value.filterType
                 }
-                // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
-                filterOptions={(options: Filter[], state: FilterOptionsState<Filter>) =>
-                    options.filter((option) => {
-                        const labelToMatch =
-                            option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
-                        return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
-                    })
-                }
+                filterOptions={(options: Filter[], state: FilterOptionsState<Filter>) => {
+                    const numByGroup: Map<string, number> = new Map();
+                    const filteredOptions: Filter[] = options
+                        // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
+                        .filter((option) => {
+                            const labelToMatch =
+                                option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
+                            return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
+                        })
+                        // display only a part of the options if there are too many (unless required by the user)
+                        .filter((option: Filter) => {
+                            if (option.recent || numberOfOptions.get(option.filterType) === -1) {
+                                return true;
+                            }
+                            const num = numByGroup.get(option.filterType) ?? 0;
+                            numByGroup.set(option.filterType, num + 1);
+                            return num < DEFAULT_NB_OPTIONS_DISPLAYED;
+                        });
+
+                    // if the numberOfOptions has not been set yet :
+                    if (Array.from(numberOfOptions.values()).find((number) => number !== 0) === undefined) {
+                        setNumberOfOptions(numByGroup);
+                    }
+
+                    return filteredOptions;
+                }}
             />
         </Box>
     );

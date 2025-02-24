@@ -231,6 +231,7 @@
     "maxSelection": "selections maximum",
     "options": "options",
 
+    "Dynawo": "Dynawo",
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParametersChangeError": "Dynamic simulation parameters change error",
@@ -259,7 +260,6 @@
     "DynamicSimulationSeriesListAvailableCurves": "Available curves",
     "DynamicSimulationSeriesListRightAxis": "Right axis",
     "DynamicSimulationResultLayoutCols": "Columns",
-    "DynamicSimulationProviderDynawo": "Dynawo",
     "DynamicSimulationTimeDelay": "Time delay",
     "DynamicSimulationSolver": "Solver",
     "DynamicSimulationMapping": "Mapping",
@@ -374,6 +374,15 @@
     "DynamicSimulationTimelineEventTime": "Instant (s)",
     "DynamicSimulationTimelineEventModelName": "Equipment/Model",
     "DynamicSimulationTimelineEventModelMessage": "Message",
+
+    "startDynamicSecurityAnalysisError": "An error occurred while starting the dynamic security analysis",
+    "DynamicSecurityAnalysis": "Dynamic security analysis",
+    "DynamicSecurityAnalysisRunError": "An error occurred while executing the dynamic security analysis",
+    "DynamicSecurityAnalysisContingency": "Contingency",
+    "DynamicSecurityAnalysisScenario": "Scenario",
+    "DynamicSecurityAnalysisScenarioDuration": "Scenario duration",
+    "DynamicSecurityAnalysisContingenciesStartTime": "Contingencies start time",
+    "DynamicSecurityAnalysisTabStatus": "Status",
 
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
@@ -498,8 +507,10 @@
     "LoadFlowResultsStatus": "Status",
     "ComputationResultsLogs": "Logs",
 
-    "results.globalFilter.fillerText": "Country or voltage level",
-    "results.globalFilter.recent": "Recent:",
+    "results.globalFilter.fillerText": "Filtering",
+    "results.globalFilter.recent": "Recent",
+    "results.globalFilter.country": "Countries",
+    "results.globalFilter.voltageLevel": "Voltage levels",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
@@ -806,6 +817,11 @@
     "TemporaryLimitValue": "Value (A)",
     "TemporaryLimitNameUnicityError": "Temporary limit names must be unique in the table",
     "TemporaryLimitDurationUnicityError": "Temporary limit acceptable durations must be unique in the table",
+    "StateEstimationTab": "State estimation",
+    "MeasurementsSection": "Measurements",
+    "ValidMeasurement": "Valid",
+    "InvalidMeasurement": "Invalid",
+
     "shuntCompensatorId": "Shunt compensator ID",
     "shuntCompensatorName": "Shunt compensator name",
     "connectedToHvdc": "Connected To HVDC",

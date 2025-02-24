@@ -4,16 +4,20 @@
     "license": "MPL-2.0",
     "private": true,
     "type": "module",
+    "engines": {
+        "node": ">=22",
+        "npm": "^10.9.2"
+    },
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
-        "@gridsuite/commons-ui": "file:../commons-ui/gridsuite-commons-ui-0.83.0.tgz",
+        "@gridsuite/commons-ui": "0.85.0",
         "@hookform/resolvers": "^4.0.0",
         "@mui/icons-material": "^5.16.14",
         "@mui/lab": "5.0.0-alpha.175",
         "@mui/material": "^5.16.14",
         "@mui/x-tree-view": "^6.17.0",
-        "@powsybl/network-viewer": "file:../powsybl-network-viewer/powsybl-network-viewer-1.6.0.tgz",
+        "@powsybl/network-viewer": "1.6.0",
         "@reduxjs/toolkit": "^2.5.1",
         "@svgdotjs/svg.js": "^3.2.4",
         "@svgdotjs/svg.panzoom.js": "^2.1.2",
@@ -52,6 +56,13 @@
         "uuid": "^11.0.5",
         "yup": "^1.6.1"
     },
+    "overrides": {
+        "react-plotly.js": {
+            "plotly.js": {
+                "esbuild-style-plugin": "npm:dry-uninstall@^0.3.0"
+            }
+        }
+    },
     "scripts": {
         "start": "vite",
         "start:open": "vite --open",
@@ -76,7 +87,7 @@
         "@types/license-checker": "^25.0.6",
         "@types/localized-countries": "^2.0.3",
         "@types/lucene-escape-query": "^1.0.2",
-        "@types/node": "^18.19.75",
+        "@types/node": "^22.13.4",
         "@types/plotly.js-basic-dist-min": "^2.12.4",
         "@types/qs": "^6.9.18",
         "@types/react": "^18.3.18",
@@ -86,8 +97,8 @@
         "@types/react-plotly.js": "^2.6.3",
         "@types/react-resizable": "^3.0.8",
         "@types/react-window": "^1.8.8",
-        "@typescript-eslint/eslint-plugin": "^6.21.0",
-        "@typescript-eslint/parser": "^6.21.0",
+        "@typescript-eslint/eslint-plugin": "^7.18.0",
+        "@typescript-eslint/parser": "^7.18.0",
         "@vitejs/plugin-react": "^4.3.4",
         "babel-eslint": "^10.1.0",
         "babel-preset-vite": "^1.1.3",
