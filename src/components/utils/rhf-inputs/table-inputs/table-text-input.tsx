@@ -11,8 +11,8 @@ import { useIntl } from 'react-intl';
 
 interface TableTextInputProps {
     name: string;
-    showErrorMsg: boolean;
-    inputProps: InputBaseComponentProps;
+    showErrorMsg?: boolean;
+    inputProps?: InputBaseComponentProps;
 }
 
 export const TableTextInput = ({ name, showErrorMsg, inputProps, ...props }: TableTextInputProps) => {

@@ -22,7 +22,7 @@ import { useController, useFieldArray } from 'react-hook-form';
 import { isFieldRequired } from '../utils';
 
 interface ChipItemsInputProps {
-    label: string;
+    label?: string;
     name: string;
     hideErrorMessage: boolean;
 }

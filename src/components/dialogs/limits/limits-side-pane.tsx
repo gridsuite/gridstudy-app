@@ -21,7 +21,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
-import DndTable from '../../utils/dnd-table/dnd-table';
+import DndTable, { ColumnNumeric, ColumnText, DndColumn, DndColumnType } from '../../utils/dnd-table/dnd-table';
 import TemporaryLimitsTable from './temporary-limits-table';
 import { CurrentTreeNode } from '../../../redux/reducer';
 
@@ -58,14 +58,14 @@ export function LimitsSidePane({
     const useFieldArrayOutputTemporaryLimits = useFieldArray({
         name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}`,
     });
-    const columnsDefinition: ILimitColumnDef[] = useMemo(() => {
+    const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: any })[] = useMemo(() => {
         return [
             {
                 label: 'TemporaryLimitName',
                 dataKey: TEMPORARY_LIMIT_NAME,
                 initialValue: '',
                 editable: true,
-                numeric: false,
+                type: DndColumnType.TEXT,
                 maxWidth: 200,
             },
             {
@@ -73,7 +73,7 @@ export function LimitsSidePane({
                 dataKey: TEMPORARY_LIMIT_DURATION,
                 initialValue: null,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 maxWidth: 100,
             },
             {
@@ -81,7 +81,7 @@ export function LimitsSidePane({
                 dataKey: TEMPORARY_LIMIT_VALUE,
                 initialValue: null,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 maxWidth: 100,
             },
         ].map((column) => ({
@@ -92,16 +92,16 @@ export function LimitsSidePane({
 
     const newRowData = useMemo(() => {
         let newRowData: any = {};
-        columnsDefinition.forEach((column: ILimitColumnDef) => (newRowData[column.dataKey] = column.initialValue));
+        columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [columnsDefinition]);
     const createRows = () => [newRowData];
 
     const temporaryLimitHasPreviousValue = useCallback(
-        (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
+        (rowIndex: number, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
             return (
                 formatTemporaryLimits(temporaryLimits)?.filter(
-                    (l: TemporaryLimit) =>
+                    (l) =>
                         l.name === getValues(arrayFormName)[rowIndex]?.name &&
                         l.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
                 )?.length > 0
@@ -111,7 +111,7 @@ export function LimitsSidePane({
     );
 
     const shouldReturnPreviousValue = useCallback(
-        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
+        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
             return (
                 (temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
                     column.dataKey === TEMPORARY_LIMIT_VALUE) ||

@@ -5,18 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { IconButton, InputAdornment, InputBaseComponentProps, StandardTextFieldProps, TextField, TextFieldProps } from '@mui/material';
+import {
+    IconButton,
+    InputAdornment,
+    InputBaseComponentProps,
+    StandardTextFieldProps,
+    TextField,
+    TextFieldProps,
+} from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useMemo } from 'react';
 import { validateValueIsANumber } from 'components/utils/validation-functions';
 
-interface TableNumericalInputProps extends StandardTextFieldProps {
+export interface TableNumericalInputProps extends StandardTextFieldProps {
     name: string;
-    inputProps: InputBaseComponentProps;
-    previousValue: number;
+    inputProps?: InputBaseComponentProps;
+    previousValue?: number;
     valueModified: boolean;
-    adornment: {text: string};
+    adornment?: { text: string };
     isClearable?: boolean;
 }
 
@@ -96,7 +103,7 @@ export const TableNumericalInput = ({
                     fontSize: 'small',
                     color:
                         previousValue !== undefined && previousValue === parseFloat(value) && !valueModified
-                            ?  'grey'
+                            ? 'grey'
                             : undefined, // grey out the value if it is the same as the previous one
                     textAlign: style?.textAlign ?? 'left',
                 },

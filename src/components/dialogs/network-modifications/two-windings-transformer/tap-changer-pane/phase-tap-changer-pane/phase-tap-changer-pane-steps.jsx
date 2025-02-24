@@ -20,6 +20,7 @@ import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
 import { PHASE_TAP } from '../../creation/two-windings-transformer-creation-dialog';
+import { DndColumnType } from 'components/utils/dnd-table/dnd-table';
 
 const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {
     const intl = useIntl();
@@ -29,6 +30,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
             {
                 label: 'Tap',
                 dataKey: STEPS_TAP,
+                type: DndColumnType.TEXT,
             },
             {
                 label: 'DeltaResistance',
