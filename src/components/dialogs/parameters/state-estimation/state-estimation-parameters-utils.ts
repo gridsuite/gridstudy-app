@@ -109,8 +109,20 @@ export const qualityParametersFields = [
 
 export const loadboundsParametersFields = [P_MIN, P_MAX, Q_MIN, Q_MAX];
 
-interface WeightsParameters {
+interface VoltageLevelLabel {
+    voltageLevel: string;
+}
+
+interface VoltageLevelCode {
     voltageLevel: number;
+}
+
+//Quality parameters has a dedicated label for voltage level param
+interface ThresholdVoltageLevelCode {
+    thresholdVoltageLevel: number;
+}
+
+interface WeightsParameters extends VoltageLevelCode {
     weightV: number;
     weightActTransit: number;
     weightReaTransit: number;
@@ -121,24 +133,20 @@ interface WeightsParameters {
     weightIN: number;
 }
 
-interface WeightParametersForm extends Omit<WeightsParameters, 'voltageLevel'> {
-    voltageLevel: string;
-}
+interface WeightParametersForm extends VoltageLevelLabel, Omit<WeightsParameters, 'voltageLevel'> {}
 
-interface LoadBoundsDetailsParameters {
-    voltageLevel: number;
+interface LoadBoundsDetailsParameters extends VoltageLevelCode {
     pmin: number;
     pmax: number;
     qmin: number;
     qmax: number;
 }
 
-interface LoadBoundsDetailsParametersForm extends Omit<LoadBoundsDetailsParameters, 'voltageLevel'> {
-    voltageLevel: string;
-}
+interface LoadBoundsDetailsParametersForm
+    extends VoltageLevelLabel,
+        Omit<LoadBoundsDetailsParameters, 'voltageLevel'> {}
 
-interface ThresholdsPerVoltageLevel {
-    thresholdVoltageLevel: number;
+interface ThresholdsPerVoltageLevel extends ThresholdVoltageLevelCode {
     thresholdOutBoundsGapV: number;
     thresholdOutBoundsGapP: number;
     thresholdOutBoundsGapQ: number;
@@ -150,9 +158,9 @@ interface ThresholdsPerVoltageLevel {
     thresholdReaTransit: number;
 }
 
-interface ThresholdsPerVoltageLevelForm extends Omit<ThresholdsPerVoltageLevel, 'thresholdVoltageLevel'> {
-    voltageLevel: string;
-}
+interface ThresholdsPerVoltageLevelForm
+    extends VoltageLevelLabel,
+        Omit<ThresholdsPerVoltageLevel, 'thresholdVoltageLevel'> {}
 
 export interface StateEstimationParameters {
     estimParameters: {
@@ -259,52 +267,46 @@ export const fromStateEstimationParametersFormToParamValues = (
     };
 };
 
+const mapVoltageLevelData = <T extends VoltageLevelCode | ThresholdVoltageLevelCode, U extends VoltageLevelLabel>(
+    items: T[]
+): U[] =>
+    items.map((item) => {
+        const voltageLevelValue = 'thresholdVoltageLevel' in item ? item.thresholdVoltageLevel : item.voltageLevel;
+
+        return {
+            ...item,
+            [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(voltageLevelValue),
+        } as unknown as U;
+    });
+
 export const fromStateEstimationParametersParamToFormValues = (
     values: StateEstimationParameters['estimParameters']
-): StateEstimationParametersForm => {
-    let weightParameters: WeightParametersForm[] = values.weights.weightsParameters?.map((weight) => ({
-        ...weight,
-        [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(weight.voltageLevel),
-    }));
-
-    let thresholdPerVoltageLevel: ThresholdsPerVoltageLevelForm[] = values.quality.thresholdsPerVoltageLevel?.map(
-        (threshold) => ({
-            ...threshold,
-            voltageLevel: mapFromVoltageLevelCode(threshold.thresholdVoltageLevel),
-        })
-    );
-
-    let defaultBounds: LoadBoundsDetailsParametersForm[] = values.loadBounds.defaultBounds?.map((loadBound) => ({
-        ...loadBound,
-        [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(loadBound.voltageLevel),
-    }));
-
-    let defaultFixedBounds: LoadBoundsDetailsParametersForm[] = values.loadBounds.defaultFixedBounds?.map(
-        (loadBound) => ({
-            ...loadBound,
-            [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(loadBound.voltageLevel),
-        })
-    );
-
-    return {
-        [TabValue.GENERAL]: {
-            [PRINCIPAL_OBSERVABLE_ZONE]: values.principalObservableZone,
-            [ESTIM_LOG_LEVEL]: values.estimLogLevel,
-            [ESTIM_ALGO_TYPE]: values.estimAlgoType,
-        },
-        [TabValue.WEIGHTS]: {
-            [WEIGHTS_PARAMETERS]: weightParameters,
-        },
-        [TabValue.QUALITY]: {
-            ...values.quality,
-            [THRESHOLD_PER_VOLTAGE_LEVEL]: thresholdPerVoltageLevel,
-        },
-        [TabValue.LOADBOUNDS]: {
-            [DEFAULT_BOUNDS]: defaultBounds,
-            [DEFAULT_FIXED_BOUNDS]: defaultFixedBounds,
-        },
-    };
-};
+): StateEstimationParametersForm => ({
+    [TabValue.GENERAL]: {
+        [PRINCIPAL_OBSERVABLE_ZONE]: values.principalObservableZone,
+        [ESTIM_LOG_LEVEL]: values.estimLogLevel,
+        [ESTIM_ALGO_TYPE]: values.estimAlgoType,
+    },
+    [TabValue.WEIGHTS]: {
+        [WEIGHTS_PARAMETERS]: mapVoltageLevelData<WeightsParameters, WeightParametersForm>(
+            values.weights.weightsParameters
+        ),
+    },
+    [TabValue.QUALITY]: {
+        ...values.quality,
+        [THRESHOLD_PER_VOLTAGE_LEVEL]: mapVoltageLevelData<ThresholdsPerVoltageLevel, ThresholdsPerVoltageLevelForm>(
+            values.quality.thresholdsPerVoltageLevel
+        ),
+    },
+    [TabValue.LOADBOUNDS]: {
+        [DEFAULT_BOUNDS]: mapVoltageLevelData<LoadBoundsDetailsParameters, LoadBoundsDetailsParametersForm>(
+            values.loadBounds.defaultBounds
+        ),
+        [DEFAULT_FIXED_BOUNDS]: mapVoltageLevelData<LoadBoundsDetailsParameters, LoadBoundsDetailsParametersForm>(
+            values.loadBounds.defaultFixedBounds
+        ),
+    },
+});
 
 export const stateEstimationParametersFormSchema = yup.object().shape({
     [TabValue.GENERAL]: yup.object().shape({
