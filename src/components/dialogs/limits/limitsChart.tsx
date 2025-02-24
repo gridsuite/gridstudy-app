@@ -7,11 +7,11 @@
 
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useCallback, useMemo } from 'react';
-import { StackableSeriesType } from '@mui/x-charts/models/seriesType/common';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { CurrentLimits } from '../../../services/network-modification-types';
 import { BarSeriesType } from '@mui/x-charts/models/seriesType/bar';
+import { AxisValueFormatterContext } from '@mui/x-charts/models/axis';
 
 export interface LimitsGraphProps {
     limitsGroupFormName: string;
@@ -177,7 +177,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                     updatedSeries.push({
                         type: 'bar',
                         label: intl.formatMessage({ id: 'forbidden' }),
-                        data: [updatedTicks?.[updatedTicks?.length - 1]?.position ?? 0.0],
+                        data: [(updatedTicks?.[updatedTicks?.length - 1]?.position ?? 0.0) * 0.15],
                         color: colorForbidden,
                         stack: 'total',
                     });
@@ -190,6 +190,12 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             { series: [], ticks: [] }
         );
     }, [currentLimits, intl, formatTempo, isIncoherent]);
+
+    const config = {
+        id: 'topAxis',
+        valueFormatter: (value: number, context: AxisValueFormatterContext) =>
+            ticks.find((item: Ticks) => item.position === value)?.label,
+    };
 
     return (
         <BarChart
@@ -225,7 +231,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 tickLabelStyle: { fontSize: 10 },
                 disableLine: true,
                 position: 'top',
-                valueFormatter: (value: number) => ticks.find((item: Ticks) => item.position === value)?.label,
+                ...config,
             }}
             sx={{ pointerEvents: 'none' }}
         />
