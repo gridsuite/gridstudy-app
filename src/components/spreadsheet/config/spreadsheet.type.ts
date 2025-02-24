@@ -55,8 +55,9 @@ export type SpreadsheetEquipmentsByNodes = {
 export type ColumnState = { colId: string; name: string; visible: boolean };
 
 export type SpreadsheetConfig = {
+    name: string;
     sheetType: SpreadsheetEquipmentType;
-    customColumns: ColumnDefinitionDto[];
+    columns: ColumnDefinitionDto[];
 };
 
 export type SpreadsheetCollection = {

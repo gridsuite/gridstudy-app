@@ -137,8 +137,9 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
         const configs: SpreadsheetConfig[] = localTablesState
             .filter((table) => table.selected)
             .map((table) => ({
+                name: table.name,
                 sheetType: table.type,
-                customColumns: getReorderedColumns(table.index),
+                columns: getReorderedColumns(table.index),
             }));
 
         setSelectedConfigs(configs);

@@ -56,8 +56,9 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
         folderId,
     }: IElementCreationDialog) => {
         const spreadsheetConfig: SpreadsheetConfig = {
+            name: tableDefinition?.name,
             sheetType: tableDefinition?.type,
-            customColumns: reorderedColumns,
+            columns: reorderedColumns,
         };
 
         createSpreadsheetModel(name, description, folderId, spreadsheetConfig)
