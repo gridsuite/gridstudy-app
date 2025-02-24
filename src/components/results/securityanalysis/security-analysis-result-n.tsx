@@ -27,11 +27,10 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
     const rows = useMemo(() => {
         return result?.length // check if it's not Page object
             ? result?.map((preContingencyResult: PreContingencyResult) => {
-                  const { limitViolation, subjectId, locationId } = preContingencyResult;
+                  const { limitViolation, subjectId } = preContingencyResult;
                   return {
                       subjectId: subjectId,
-                      //TODO: to be removed added to separate column?
-                      locationId: locationId,
+                      locationId: limitViolation?.locationId,
                       limitType: intl.formatMessage({
                           id: limitViolation?.limitType,
                       }),

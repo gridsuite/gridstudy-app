@@ -74,7 +74,6 @@ export interface ConstraintsFromContingencyItem {
 
 export interface PreContingencyResult {
     subjectId?: string;
-    locationId?: string;
     status: string;
     limitViolation?: LimitViolation;
 }
