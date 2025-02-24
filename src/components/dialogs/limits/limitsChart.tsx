@@ -7,6 +7,7 @@
 
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useCallback, useMemo } from 'react';
+import { StackableSeriesType } from '@mui/x-charts/models/seriesType/common';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { CurrentLimits } from '../../../services/network-modification-types';
@@ -176,11 +177,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                     updatedSeries.push({
                         type: 'bar',
                         label: intl.formatMessage({ id: 'forbidden' }),
-                        data: [
-                            updatedTicks?.[updatedTicks?.length - 1]?.position
-                                ? updatedTicks?.[updatedTicks?.length - 1]?.position * 0.15
-                                : 0.0,
-                        ],
+                        data: [updatedTicks?.[updatedTicks?.length - 1]?.position ?? 0.0],
                         color: colorForbidden,
                         stack: 'total',
                     });
@@ -217,21 +214,19 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             }
             layout="horizontal"
             leftAxis={null}
-            xAxis={[
-                {
-                    tickInterval: [...ticks.map((item) => item.position)],
-                    disableLine: true,
-                    tickLabelStyle: { fontSize: 10 },
-                    id: 'bottomAxis',
-                },
-                {
-                    tickInterval: [...ticks.map((item) => item.position)],
-                    tickLabelStyle: { fontSize: 10 },
-                    disableLine: true,
-                    id: 'topAxis',
-                    valueFormatter: (value: Ticks) => value.label,
-                },
-            ]}
+            bottomAxis={{
+                tickInterval: [...ticks.map((item) => item.position)],
+                disableLine: true,
+                tickLabelStyle: { fontSize: 10 },
+                position: 'bottom',
+            }}
+            topAxis={{
+                tickInterval: [...ticks.map((item) => item.position)],
+                tickLabelStyle: { fontSize: 10 },
+                disableLine: true,
+                position: 'top',
+                valueFormatter: (value: number) => ticks.find((item: Ticks) => item.position === value)?.label,
+            }}
             sx={{ pointerEvents: 'none' }}
         />
     );
