@@ -16,6 +16,7 @@ import { AppState } from 'redux/reducer';
 import { setRemoveColumnDefinition } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
 import { DialogMenuProps } from './custom-aggrid-menu';
+import { deleteSpreadsheetColumn } from 'services/study-config';
 
 export interface CustomColumnConfigProps extends DialogMenuProps {
     tabIndex: number;
@@ -25,9 +26,10 @@ export interface CustomColumnConfigProps extends DialogMenuProps {
 export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabIndex, colId, onClose, anchorEl }) => {
     const intl = useIntl();
     const dialogOpen = useStateBoolean(false);
-    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex].columns);
+    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
+    const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
     const columnDefinition = useMemo(
-        () => columnsDefinitions.find((column) => column.id === colId),
+        () => columnsDefinitions?.find((column) => column?.id === colId),
         [colId, columnsDefinitions]
     );
 
@@ -51,15 +53,17 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabI
 
     const handleValidate = useCallback(() => {
         if (columnDefinition?.id) {
-            setConfirmationDialogOpen(false);
-            dispatch(
-                setRemoveColumnDefinition({
-                    index: tabIndex,
-                    value: columnDefinition?.id,
-                })
-            );
+            deleteSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid).then(() => {
+                setConfirmationDialogOpen(false);
+                dispatch(
+                    setRemoveColumnDefinition({
+                        index: tabIndex,
+                        value: columnDefinition?.id,
+                    })
+                );
+            });
         }
-    }, [columnDefinition?.id, dispatch, tabIndex]);
+    }, [columnDefinition?.id, columnDefinition?.uuid, dispatch, spreadsheetConfigUuid, tabIndex]);
 
     return (
         <>

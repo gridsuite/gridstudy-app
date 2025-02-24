@@ -14,10 +14,67 @@ function getSpreadsheetConfigUrl() {
     return `${PREFIX_STUDY_CONFIG_QUERIES}/v1/spreadsheet-configs`;
 }
 
+function getSpreadsheetConfigsCollectionsUrl() {
+    return `${PREFIX_STUDY_CONFIG_QUERIES}/v1/spreadsheet-config-collections`;
+}
+
 export function getSpreadsheetModel(spreadsheetModelUuid: UUID) {
     const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}`;
     return backendFetchJson(fetchUrl, {
         method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function createSpreadsheetColumn(spreadsheetModelUuid: UUID, column: any) {
+    const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}/columns`;
+    return backendFetchJson(fetchUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(column),
+    });
+}
+
+export function deleteSpreadsheetColumn(spreadsheetModelUuid: UUID, columnUuid: UUID) {
+    const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}/columns/${columnUuid}`;
+    return backendFetchJson(fetchUrl, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function updateSpreadsheetColumn(spreadsheetModelUuid: UUID, columnUuid: UUID, column: any) {
+    const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}/columns/${columnUuid}`;
+    return backendFetchJson(fetchUrl, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(column),
+    });
+}
+
+export function addSpreadsheetConfigToCollection(collectionUuid: UUID, spreadsheetModel: any) {
+    const fetchUrl = `${getSpreadsheetConfigsCollectionsUrl()}/${collectionUuid}/spreadsheet-configs`;
+    return backendFetchJson(fetchUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(spreadsheetModel),
+    });
+}
+
+export function removeSpreadsheetConfigFromCollection(collectionUuid: UUID, spreadsheetModelUuid: UUID) {
+    const fetchUrl = `${getSpreadsheetConfigsCollectionsUrl()}/${collectionUuid}/spreadsheet-configs/${spreadsheetModelUuid}`;
+    return backendFetchJson(fetchUrl, {
+        method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
         },

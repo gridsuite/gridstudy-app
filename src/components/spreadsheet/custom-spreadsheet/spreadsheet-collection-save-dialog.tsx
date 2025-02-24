@@ -124,7 +124,10 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                         type: column.type,
                         precision: column.precision,
                         formula: column.formula || '',
-                        dependencies: JSON.stringify(column.dependencies || []),
+                        dependencies:
+                            column.dependencies && column.dependencies.length > 0
+                                ? JSON.stringify(column.dependencies)
+                                : undefined,
                     };
                     return dto;
                 })
@@ -137,8 +140,9 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
         const configs: SpreadsheetConfig[] = localTablesState
             .filter((table) => table.selected)
             .map((table) => ({
+                name: table.name,
                 sheetType: table.type,
-                customColumns: getReorderedColumns(table.index),
+                columns: getReorderedColumns(table.index),
             }));
 
         setSelectedConfigs(configs);

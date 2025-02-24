@@ -23,7 +23,7 @@ import {
 import { AppState } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { getFetcher } from './config/equipment/common-config';
+import { getFetcher } from './config/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
 
@@ -48,6 +48,9 @@ export const useSpreadsheetEquipments = (
 
     const nodesIdToFetch = useMemo(() => {
         let nodesIdToFetch = new Set<string>();
+        if (!equipments) {
+            return nodesIdToFetch;
+        }
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
         if (equipments.nodesId.find((nodeId) => nodeId === currentNode?.id) === undefined) {
             nodesIdToFetch.add(currentNode?.id as string);
@@ -59,7 +62,7 @@ export const useSpreadsheetEquipments = (
             }
         });
         return nodesIdToFetch;
-    }, [currentNode?.id, equipments.nodesId, nodesAliases]);
+    }, [currentNode?.id, equipments, nodesAliases]);
 
     const shouldFetchEquipments = useMemo(() => nodesIdToFetch.size > 0, [nodesIdToFetch]);
 
@@ -88,6 +91,9 @@ export const useSpreadsheetEquipments = (
     }, [dispatch, nodesAliases, currentNode, allEquipments]);
 
     useEffect(() => {
+        if (!type) {
+            return;
+        }
         // updating data related to impacted elements
         const nodeId = currentNode?.id as UUID;
 
@@ -163,6 +169,7 @@ export const useSpreadsheetEquipments = (
         resetImpactedSubstationsIds,
         resetDeletedEquipments,
         resetImpactedElementTypes,
+        type,
     ]);
 
     useEffect(() => {
