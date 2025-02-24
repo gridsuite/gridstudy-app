@@ -7,10 +7,10 @@
 
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useCallback, useMemo } from 'react';
-import { StackableSeriesType } from '@mui/x-charts/models/seriesType/common';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { CurrentLimits } from '../../../services/network-modification-types';
+import { BarSeriesType } from '@mui/x-charts/models/seriesType/bar';
 
 export interface LimitsGraphProps {
     limitsGroupFormName: string;
@@ -21,21 +21,21 @@ const colorForbidden: string = '#b10303';
 
 interface Ticks {
     label: string;
-    position: number;
+    position: number | null;
     incoherent: boolean;
 }
 
 interface ThresholdData {
     label: string;
-    tempo: number | undefined;
-    value: number | undefined;
+    tempo: number | null;
+    value: number | null;
 }
 
 export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGraphProps>) {
     const currentLimits: CurrentLimits = useWatch({ name: `${limitsGroupFormName}` });
     const intl = useIntl();
 
-    const formatTempo = useCallback((tempo: number) => {
+    const formatTempo = useCallback((tempo: number | null) => {
         if (!tempo) {
             return '';
         }
@@ -51,7 +51,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
     }, []);
 
     const isIncoherent = useCallback(
-        (item: ThresholdData, previousItem?: ThresholdData) => {
+        (maxValueIst: number, item: ThresholdData, previousItem?: ThresholdData) => {
             // Incoherent cases :
             //  threshold without tempo that is not ist
             //  threshold with biggest tempo and biggest value
@@ -60,10 +60,12 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 (item.label === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
                 (!currentLimits.permanentLimit && !item.tempo);
 
+            const istValue = currentLimits.permanentLimit ? currentLimits.permanentLimit : maxValueIst;
+
             return (
                 ((!item.tempo && currentLimits.permanentLimit && !isIst) ||
-                    (!isIst && item.value < currentLimits.permanentLimit) ||
-                    (previousItem && item.tempo > previousItem.tempo) ||
+                    (!isIst && item.value && item.value < istValue) ||
+                    (previousItem && item.tempo && previousItem.tempo && item.tempo > previousItem.tempo) ||
                     (previousItem && !item.tempo && !previousItem.tempo)) ??
                 false
             );
@@ -72,12 +74,16 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
     );
 
     const { series, ticks } = useMemo(() => {
-        const data = [];
+        const data: ThresholdData[] = [];
         let noValueThresholdFound = false;
         let maxValueIst = 0;
 
         if (currentLimits?.permanentLimit) {
-            data.push({ label: intl.formatMessage({ id: 'IST' }), value: currentLimits.permanentLimit });
+            data.push({
+                label: intl.formatMessage({ id: 'IST' }),
+                value: currentLimits.permanentLimit,
+                tempo: null,
+            });
             maxValueIst = currentLimits.permanentLimit;
         }
 
@@ -104,52 +110,51 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             if (a.value && !b.value) {
                 return -1;
             }
-            if (!a.value && !b.value) {
+            if (!a.value && !b.value && a.tempo && b.tempo) {
                 return a.tempo - b.tempo;
             }
             if (!a.value && b.value) {
                 return 1;
             }
-            return a.value - b.value;
+            if (a.value && b.value) {
+                return a.value - b.value;
+            }
+            return 0;
         });
 
-        const maxValue = Math.max(...data.map((item) => item.value));
+        const maxValue = Math.max(...data.map((item) => item.value ?? 0));
         let colorIndex = 0;
         let previousSum = 0;
 
-        return data.reduce<{ series: StackableSeriesType[]; ticks: Ticks[] }>(
+        return data.reduce<{ series: BarSeriesType[]; ticks: Ticks[] }>(
             (acc, item, index) => {
-                const itemValue = parseFloat(item.value);
                 const isIst =
                     (item.label === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
-                    (!currentLimits.permanentLimit && !item.tempo && itemValue === maxValueIst);
-                let difference = item.value ? item.value - previousSum : undefined;
+                    (!currentLimits.permanentLimit && !item.tempo && item.value === maxValueIst);
+                const difference = item.value ? item.value - previousSum : undefined;
 
                 const color =
-                    isIst || !item.tempo || (item.tempo && currentLimits.permanentLimit > itemValue)
+                    isIst || !item.tempo || (item.tempo && item.value && maxValueIst >= item.value)
                         ? colorIST
                         : colors?.[colorIndex] ?? colors[colors.length - 1];
 
-                const incoherent: boolean = isIncoherent(item, index > 0 ? data[index - 1] : undefined);
+                const incoherent = isIncoherent(maxValueIst, item, index > 0 ? data[index - 1] : undefined);
 
-                if (itemValue >= maxValueIst) {
-                    previousSum = itemValue;
+                if (item.value && item.value >= maxValueIst) {
+                    previousSum = item.value;
                 }
-                if (itemValue > maxValueIst) {
+                if (item.value && item.value > maxValueIst) {
                     colorIndex++;
                 }
 
-                console.log('isIST : ', isIst);
-                console.log('maxValueISt : ', maxValueIst);
-                console.log('itemValue : ', itemValue);
-
-                const updatedSeries =
-                    (item.tempo && !itemValue) || parseFloat(item.value) >= maxValueIst
+                const updatedSeries: BarSeriesType[] =
+                    (item.tempo && !item.value) || (item.value && item.value >= maxValueIst)
                         ? [
                               ...acc.series,
                               {
+                                  type: 'bar',
                                   label:
-                                      isIst || itemValue === maxValueIst
+                                      isIst || item.value === maxValueIst
                                           ? intl.formatMessage({ id: 'unlimited' })
                                           : formatTempo(item.tempo),
                                   data: [difference ?? maxValue * 0.15],
@@ -158,15 +163,20 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                               },
                           ]
                         : [...acc.series];
-                const updatedTicks = [
+                const updatedTicks: Ticks[] = [
                     ...acc.ticks,
                     { position: item.value, label: item.label, incoherent: incoherent },
                 ];
 
-                if (index === data.length - 1 && !noValueThresholdFound) {
+                if (
+                    index === data.length - 1 &&
+                    updatedTicks[updatedTicks.length - 1].position &&
+                    !noValueThresholdFound
+                ) {
                     updatedSeries.push({
+                        type: 'bar',
                         label: intl.formatMessage({ id: 'forbidden' }),
-                        data: [updatedTicks[updatedTicks.length - 1].position * 0.15],
+                        data: [updatedTicks?.[updatedTicks?.length - 1]?.position ?? 0.0],
                         color: colorForbidden,
                         stack: 'total',
                     });
@@ -203,17 +213,21 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             }
             layout="horizontal"
             leftAxis={null}
-            bottomAxis={{
-                tickInterval: [...ticks.map((item) => item.position)],
-                disableLine: true,
-                tickLabelStyle: { fontSize: 10 },
-            }}
-            topAxis={{
-                tickInterval: [...ticks.map((item) => item.position)],
-                tickLabelStyle: { fontSize: 10 },
-                disableLine: true,
-                valueFormatter: (value) => ticks.find((item) => item.position === value)?.label,
-            }}
+            xAxis={[
+                {
+                    tickInterval: [...ticks.map((item) => item.position)],
+                    disableLine: true,
+                    tickLabelStyle: { fontSize: 10 },
+                    id: 'bottomAxis',
+                },
+                {
+                    tickInterval: [...ticks.map((item) => item.position)],
+                    tickLabelStyle: { fontSize: 10 },
+                    disableLine: true,
+                    id: 'topAxis',
+                    valueFormatter: (value: Ticks) => value.label,
+                },
+            ]}
             sx={{ pointerEvents: 'none' }}
         />
     );
