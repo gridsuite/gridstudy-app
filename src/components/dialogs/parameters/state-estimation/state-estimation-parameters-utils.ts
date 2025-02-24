@@ -109,99 +109,58 @@ export const qualityParametersFields = [
 
 export const loadboundsParametersFields = [P_MIN, P_MAX, Q_MIN, Q_MAX];
 
-const defaultVoltageLevels = [
-    VoltageLevels.VL_20_KV,
-    VoltageLevels.VL_45_KV,
-    VoltageLevels.VL_63_KV,
-    VoltageLevels.VL_90_KV,
-    VoltageLevels.VL_150_KV,
-    VoltageLevels.VL_225_KV,
-    VoltageLevels.VL_400_KV,
-];
+interface WeightsParameters {
+    voltageLevel: number;
+    weightV: number;
+    weightActTransit: number;
+    weightReaTransit: number;
+    weightActProd: number;
+    weightReaProd: number;
+    weightActLoad: number;
+    weightReaLoad: number;
+    weightIN: number;
+}
 
-const defaultWeightsParameters = {
-    [WEIGHT_V]: null,
-    [WEIGHT_ACT_TRANSIT]: null,
-    [WEIGHT_REA_TRANSIT]: null,
-    [WEIGHT_ACT_PROD]: null,
-    [WEIGHT_REA_PROD]: null,
-    [WEIGHT_ACT_LOAD]: null,
-    [WEIGHT_REA_LOAD]: null,
-    [WEIGHT_IN]: null,
-};
+interface WeightParametersForm extends Omit<WeightsParameters, 'voltageLevel'> {
+    voltageLevel: string;
+}
 
-const defaultQualityParameters = {
-    [THRESHOLD_OUT_BOUNDS_GAP_V]: null,
-    [THRESHOLD_OUT_BOUNDS_GAP_P]: null,
-    [THRESHOLD_OUT_BOUNDS_GAP_Q]: null,
-    [THRESHOLD_LOST_ACT_PROD]: null,
-    [THRESHOLD_LOST_REA_PROD]: null,
-    [THRESHOLD_LOST_ACT_LOAD]: null,
-    [THRESHOLD_LOST_REA_LOAD]: null,
-    [THRESHOLD_ACT_TRANSIT]: null,
-    [THRESHOLD_REA_TRANSIT]: null,
-};
+interface LoadBoundsDetailsParameters {
+    voltageLevel: number;
+    pmin: number;
+    pmax: number;
+    qmin: number;
+    qmax: number;
+}
 
-const defaultLoadboundsParameters = {
-    [P_MIN]: null,
-    [P_MAX]: null,
-    [Q_MIN]: null,
-    [Q_MAX]: null,
-};
+interface LoadBoundsDetailsParametersForm extends Omit<LoadBoundsDetailsParameters, 'voltageLevel'> {
+    voltageLevel: string;
+}
 
-type WeightsParameters = {
-    voltageLevel: number | string;
-    weightV?: number | null;
-    weightActTransit?: number | null;
-    weightReaTransit?: number | null;
-    weightActProd?: number | null;
-    weightReaProd?: number | null;
-    weightActLoad?: number | null;
-    weightReaLoad?: number | null;
-    weightIN?: number | null;
-};
-
-type LoadBoundsDetailsParameters = {
-    voltageLevel: number | string;
-    pmin?: number | null;
-    pmax?: number | null;
-    qmin?: number | null;
-    qmax?: number | null;
-};
-
-type ThresholdsPerVoltageLevel = {
+interface ThresholdsPerVoltageLevel {
     thresholdVoltageLevel: number;
-    thresholdOutBoundsGapV: number | null;
-    thresholdOutBoundsGapP: number | null;
-    thresholdOutBoundsGapQ: number | null;
-    thresholdLostActProd: number | null;
-    thresholdLostReaProd: number | null;
-    thresholdLostActLoad: number | null;
-    thresholdLostReaLoad: number | null;
-    thresholdActTransit: number | null;
-    thresholdReaTransit: number | null;
-};
+    thresholdOutBoundsGapV: number;
+    thresholdOutBoundsGapP: number;
+    thresholdOutBoundsGapQ: number;
+    thresholdLostActProd: number;
+    thresholdLostReaProd: number;
+    thresholdLostActLoad: number;
+    thresholdLostReaLoad: number;
+    thresholdActTransit: number;
+    thresholdReaTransit: number;
+}
 
-type ThresholdsPerVoltageLevelForm = {
-    voltageLevel: number | string;
-    thresholdOutBoundsGapV?: number | null;
-    thresholdOutBoundsGapP?: number | null;
-    thresholdOutBoundsGapQ?: number | null;
-    thresholdLostActProd?: number | null;
-    thresholdLostReaProd?: number | null;
-    thresholdLostActLoad?: number | null;
-    thresholdLostReaLoad?: number | null;
-    thresholdActTransit?: number | null;
-    thresholdReaTransit?: number | null;
-};
+interface ThresholdsPerVoltageLevelForm extends Omit<ThresholdsPerVoltageLevel, 'thresholdVoltageLevel'> {
+    voltageLevel: string;
+}
 
-export type StateEstimationParameters = {
+export interface StateEstimationParameters {
     estimParameters: {
         principalObservableZone: boolean;
         estimAlgoType: string;
         estimLogLevel: string;
         weights: {
-            weightsParameters: WeightsParameters[] | null;
+            weightsParameters: WeightsParameters[];
         };
         quality: {
             thresholdObservabilityRate: number;
@@ -214,14 +173,14 @@ export type StateEstimationParameters = {
             thresholdNbIter: number;
             thresholdNbLostTransits: number;
             qualityPerRegion: boolean;
-            thresholdsPerVoltageLevel: ThresholdsPerVoltageLevel[] | null;
+            thresholdsPerVoltageLevel: ThresholdsPerVoltageLevel[];
         };
         loadBounds: {
-            defaultBounds: LoadBoundsDetailsParameters[] | null;
-            defaultFixedBounds: LoadBoundsDetailsParameters[] | null;
+            defaultBounds: LoadBoundsDetailsParameters[];
+            defaultFixedBounds: LoadBoundsDetailsParameters[];
         };
     };
-};
+}
 
 const ESTIM_PARAMETERS = 'estimParameters';
 
@@ -267,26 +226,6 @@ export const mapToVoltageLevelCode = (code: string): number => {
     }
 };
 
-function filterVoltageLevelArray(arr: any[]): any[] {
-    // Check if every object in the array has only 'voltageLevel' or null values
-    if (arr.every((obj) => Object.keys(obj).every((key) => key === 'voltageLevel' || obj[key] === null))) {
-        return []; // Return an empty array if the condition is met
-    }
-
-    // Process the array to remove fields with null values and filter out objects with only 'voltageLevel'  return arr
-    return arr
-        .map((obj) => {
-            const newObj = { ...obj }; // Create a shallow copy of the object
-            Object.keys(newObj).forEach((key) => {
-                if (newObj[key] === null) {
-                    delete newObj[key]; // Remove the key if its value is null
-                }
-            });
-            return newObj; // Return the modified object
-        })
-        .filter((obj) => Object.keys(obj).length > 1); // Filter out objects with only 'voltageLevel'
-}
-
 export const fromStateEstimationParametersFormToParamValues = (
     params: StateEstimationParametersForm
 ): StateEstimationParameters => {
@@ -294,35 +233,27 @@ export const fromStateEstimationParametersFormToParamValues = (
         [ESTIM_PARAMETERS]: {
             ...params.general,
             [TabValue.WEIGHTS]: {
-                [WEIGHTS_PARAMETERS]: filterVoltageLevelArray(
-                    params.weights.weightsParameters?.map((weight) => ({
-                        ...weight,
-                        [VOLTAGE_LEVEL]: mapToVoltageLevelCode(weight.voltageLevel),
-                    }))
-                ),
+                [WEIGHTS_PARAMETERS]: params.weights.weightsParameters?.map((weight) => ({
+                    ...weight,
+                    [VOLTAGE_LEVEL]: mapToVoltageLevelCode(weight.voltageLevel),
+                })),
             },
             [TabValue.QUALITY]: {
                 ...params.quality,
-                thresholdsPerVoltageLevel: filterVoltageLevelArray(
-                    params.quality.thresholdsPerVoltageLevel?.map((threshold) => ({
-                        ...threshold,
-                        thresholdVoltageLevel: mapToVoltageLevelCode(threshold.voltageLevel),
-                    }))
-                ),
+                thresholdsPerVoltageLevel: params.quality.thresholdsPerVoltageLevel?.map((threshold) => ({
+                    ...threshold,
+                    thresholdVoltageLevel: mapToVoltageLevelCode(threshold.voltageLevel),
+                })),
             },
             [TabValue.LOADBOUNDS]: {
-                [DEFAULT_BOUNDS]: filterVoltageLevelArray(
-                    params.loadBounds.defaultBounds?.map((loadBound) => ({
-                        ...loadBound,
-                        [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
-                    }))
-                ),
-                [DEFAULT_FIXED_BOUNDS]: filterVoltageLevelArray(
-                    params.loadBounds.defaultFixedBounds?.map((loadBound) => ({
-                        ...loadBound,
-                        [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
-                    }))
-                ),
+                [DEFAULT_BOUNDS]: params.loadBounds.defaultBounds?.map((loadBound) => ({
+                    ...loadBound,
+                    [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
+                })),
+                [DEFAULT_FIXED_BOUNDS]: params.loadBounds.defaultFixedBounds?.map((loadBound) => ({
+                    ...loadBound,
+                    [VOLTAGE_LEVEL]: mapToVoltageLevelCode(loadBound.voltageLevel),
+                })),
             },
         },
     };
@@ -330,60 +261,30 @@ export const fromStateEstimationParametersFormToParamValues = (
 
 export const fromStateEstimationParametersParamToFormValues = (
     values: StateEstimationParameters['estimParameters']
-): any => {
-    //In case weights aren't defined, we set a default array to allow for array initialisation
-    let weightParameters: WeightsParameters[] | null =
-        values.weights.weightsParameters?.map((weight) => ({
-            ...weight,
-            [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(weight.voltageLevel),
-        })) ?? null;
+): StateEstimationParametersForm => {
+    let weightParameters: WeightParametersForm[] = values.weights.weightsParameters?.map((weight) => ({
+        ...weight,
+        [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(weight.voltageLevel),
+    }));
 
-    if (weightParameters?.length === 0) {
-        weightParameters = defaultVoltageLevels.map((voltageLevel) => ({
-            [VOLTAGE_LEVEL]: voltageLevel,
-            ...defaultWeightsParameters,
-        }));
-    }
-
-    //In case thresholds per voltage level aren't defined, we set a default array to allow for array initialisation
-    let thresholdPerVoltageLevel: ThresholdsPerVoltageLevelForm[] | null =
-        values.quality.thresholdsPerVoltageLevel?.map((threshold) => ({
+    let thresholdPerVoltageLevel: ThresholdsPerVoltageLevelForm[] = values.quality.thresholdsPerVoltageLevel?.map(
+        (threshold) => ({
             ...threshold,
             voltageLevel: mapFromVoltageLevelCode(threshold.thresholdVoltageLevel),
-        })) ?? null;
+        })
+    );
 
-    if (thresholdPerVoltageLevel?.length === 0) {
-        thresholdPerVoltageLevel = defaultVoltageLevels.map((voltageLevel) => ({
-            [VOLTAGE_LEVEL]: voltageLevel,
-            ...defaultQualityParameters,
-        }));
-    }
+    let defaultBounds: LoadBoundsDetailsParametersForm[] = values.loadBounds.defaultBounds?.map((loadBound) => ({
+        ...loadBound,
+        [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(loadBound.voltageLevel),
+    }));
 
-    let defaultBounds: LoadBoundsDetailsParameters[] | null =
-        values.loadBounds.defaultBounds?.map((loadBound) => ({
+    let defaultFixedBounds: LoadBoundsDetailsParametersForm[] = values.loadBounds.defaultFixedBounds?.map(
+        (loadBound) => ({
             ...loadBound,
             [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(loadBound.voltageLevel),
-        })) ?? null;
-
-    if (defaultBounds?.length === 0) {
-        defaultBounds = defaultVoltageLevels.map((voltageLevel) => ({
-            [VOLTAGE_LEVEL]: voltageLevel,
-            ...defaultLoadboundsParameters,
-        }));
-    }
-
-    let defaulFixedBounds: LoadBoundsDetailsParameters[] | null =
-        values.loadBounds.defaultFixedBounds?.map((loadBound) => ({
-            ...loadBound,
-            [VOLTAGE_LEVEL]: mapFromVoltageLevelCode(loadBound.voltageLevel),
-        })) ?? null;
-
-    if (defaulFixedBounds?.length === 0) {
-        defaulFixedBounds = defaultVoltageLevels.map((voltageLevel) => ({
-            [VOLTAGE_LEVEL]: voltageLevel,
-            ...defaultLoadboundsParameters,
-        }));
-    }
+        })
+    );
 
     return {
         [TabValue.GENERAL]: {
@@ -400,7 +301,7 @@ export const fromStateEstimationParametersParamToFormValues = (
         },
         [TabValue.LOADBOUNDS]: {
             [DEFAULT_BOUNDS]: defaultBounds,
-            [DEFAULT_FIXED_BOUNDS]: defaulFixedBounds,
+            [DEFAULT_FIXED_BOUNDS]: defaultFixedBounds,
         },
     };
 };
@@ -417,47 +318,45 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
             .of(
                 yup.object().shape({
                     [VOLTAGE_LEVEL]: yup.string().required(),
-                    [WEIGHT_V]: yup.number().nullable(),
-                    [WEIGHT_ACT_TRANSIT]: yup.number().nullable(),
-                    [WEIGHT_REA_TRANSIT]: yup.number().nullable(),
-                    [WEIGHT_ACT_PROD]: yup.number().nullable(),
-                    [WEIGHT_REA_PROD]: yup.number().nullable(),
-                    [WEIGHT_ACT_LOAD]: yup.number().nullable(),
-                    [WEIGHT_REA_LOAD]: yup.number().nullable(),
-                    [WEIGHT_IN]: yup.number().nullable(),
+                    [WEIGHT_V]: yup.number().required().min(0).label(WEIGHT_V),
+                    [WEIGHT_ACT_TRANSIT]: yup.number().required().max(0).label(WEIGHT_ACT_TRANSIT),
+                    [WEIGHT_REA_TRANSIT]: yup.number().required().min(0).label(WEIGHT_REA_TRANSIT),
+                    [WEIGHT_ACT_PROD]: yup.number().required().max(0).label(WEIGHT_ACT_PROD),
+                    [WEIGHT_REA_PROD]: yup.number().required().min(0).label(WEIGHT_REA_PROD),
+                    [WEIGHT_ACT_LOAD]: yup.number().required().max(0).label(WEIGHT_ACT_LOAD),
+                    [WEIGHT_REA_LOAD]: yup.number().required().min(0).label(WEIGHT_REA_LOAD),
+                    [WEIGHT_IN]: yup.number().required().min(0).label(WEIGHT_IN),
                 })
             )
-            .nullable()
             .required(),
     }),
     [TabValue.QUALITY]: yup.object().shape({
-        [THRESHOLD_OBSERVABILITY_RATE]: yup.number().required(),
-        [THRESHOLD_ACT_REDUNDANCY]: yup.number().required(),
-        [THRESHOLD_REA_REDUNDANCY]: yup.number().required(),
-        [THRESHOLD_NB_LOST_INJECTIONS]: yup.number().required(),
-        [THRESHOLD_NB_INVALID_MEASURE]: yup.number().required(),
-        [THRESHOLD_NB_CRITICAL_MEASURE]: yup.number().required(),
-        [THRESHOLD_NB_OUT_BOUNDS_GAP]: yup.number().required(),
-        [THRESHOLD_NB_ITER]: yup.number().required(),
-        [THRESHOLD_NB_LOST_TRANSITS]: yup.number().required(),
+        [THRESHOLD_OBSERVABILITY_RATE]: yup.number().required().min(0).label(THRESHOLD_OBSERVABILITY_RATE),
+        [THRESHOLD_ACT_REDUNDANCY]: yup.number().required().min(0).label(THRESHOLD_ACT_REDUNDANCY),
+        [THRESHOLD_REA_REDUNDANCY]: yup.number().required().min(0).label(THRESHOLD_REA_REDUNDANCY),
+        [THRESHOLD_NB_LOST_INJECTIONS]: yup.number().required().min(0).label(THRESHOLD_NB_LOST_INJECTIONS),
+        [THRESHOLD_NB_INVALID_MEASURE]: yup.number().required().min(0).label(THRESHOLD_NB_INVALID_MEASURE),
+        [THRESHOLD_NB_CRITICAL_MEASURE]: yup.number().required().min(0).label(THRESHOLD_NB_CRITICAL_MEASURE),
+        [THRESHOLD_NB_OUT_BOUNDS_GAP]: yup.number().required().min(0).label(THRESHOLD_NB_OUT_BOUNDS_GAP),
+        [THRESHOLD_NB_ITER]: yup.number().required().min(0).label(THRESHOLD_NB_ITER),
+        [THRESHOLD_NB_LOST_TRANSITS]: yup.number().required().min(0).label(THRESHOLD_NB_LOST_TRANSITS),
         [QUALITY_PER_REGION]: yup.boolean().required(),
         [THRESHOLD_PER_VOLTAGE_LEVEL]: yup
             .array()
             .of(
                 yup.object().shape({
                     [VOLTAGE_LEVEL]: yup.string().required(),
-                    [THRESHOLD_OUT_BOUNDS_GAP_V]: yup.number().nullable().required(),
-                    [THRESHOLD_OUT_BOUNDS_GAP_P]: yup.number().nullable().required(),
-                    [THRESHOLD_OUT_BOUNDS_GAP_Q]: yup.number().nullable().required(),
-                    [THRESHOLD_LOST_ACT_PROD]: yup.number().nullable().required(),
-                    [THRESHOLD_LOST_REA_PROD]: yup.number().nullable().required(),
-                    [THRESHOLD_LOST_ACT_LOAD]: yup.number().nullable().required(),
-                    [THRESHOLD_LOST_REA_LOAD]: yup.number().nullable().required(),
-                    [THRESHOLD_ACT_TRANSIT]: yup.number().nullable().required(),
-                    [THRESHOLD_REA_TRANSIT]: yup.number().nullable().required(),
+                    [THRESHOLD_OUT_BOUNDS_GAP_V]: yup.number().required().min(0).label(THRESHOLD_OUT_BOUNDS_GAP_V),
+                    [THRESHOLD_OUT_BOUNDS_GAP_P]: yup.number().required().min(0).label(THRESHOLD_OUT_BOUNDS_GAP_P),
+                    [THRESHOLD_OUT_BOUNDS_GAP_Q]: yup.number().required().min(0).label(THRESHOLD_OUT_BOUNDS_GAP_Q),
+                    [THRESHOLD_LOST_ACT_PROD]: yup.number().required().min(0).label(THRESHOLD_LOST_ACT_PROD),
+                    [THRESHOLD_LOST_REA_PROD]: yup.number().required().min(0).label(THRESHOLD_LOST_REA_PROD),
+                    [THRESHOLD_LOST_ACT_LOAD]: yup.number().required().min(0).label(THRESHOLD_LOST_ACT_LOAD),
+                    [THRESHOLD_LOST_REA_LOAD]: yup.number().required().min(0).label(THRESHOLD_LOST_REA_LOAD),
+                    [THRESHOLD_ACT_TRANSIT]: yup.number().required().min(0).label(THRESHOLD_ACT_TRANSIT),
+                    [THRESHOLD_REA_TRANSIT]: yup.number().required().min(0).label(THRESHOLD_REA_TRANSIT),
                 })
             )
-            .nullable()
             .required(),
     }),
     [TabValue.LOADBOUNDS]: yup.object().shape({
@@ -466,26 +365,24 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
             .of(
                 yup.object().shape({
                     [VOLTAGE_LEVEL]: yup.string().required(),
-                    [P_MIN]: yup.number().nullable().required(),
-                    [P_MAX]: yup.number().nullable().required(),
-                    [Q_MIN]: yup.number().nullable().required(),
-                    [Q_MAX]: yup.number().nullable().required(),
+                    [P_MIN]: yup.number().required(),
+                    [P_MAX]: yup.number().required().min(0).label(P_MAX),
+                    [Q_MIN]: yup.number().required(),
+                    [Q_MAX]: yup.number().required(),
                 })
             )
-            .nullable()
             .required(),
         [DEFAULT_FIXED_BOUNDS]: yup
             .array()
             .of(
                 yup.object().shape({
                     [VOLTAGE_LEVEL]: yup.string().required(),
-                    [P_MIN]: yup.number().nullable().required(),
-                    [P_MAX]: yup.number().nullable().required(),
-                    [Q_MIN]: yup.number().nullable().required(),
-                    [Q_MAX]: yup.number().nullable().required(),
+                    [P_MIN]: yup.number().required(),
+                    [P_MAX]: yup.number().required().min(0).label(P_MAX),
+                    [Q_MIN]: yup.number().required(),
+                    [Q_MAX]: yup.number().required(),
                 })
             )
-            .nullable()
             .required(),
     }),
 });
