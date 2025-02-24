@@ -30,6 +30,7 @@ export const DC_POWER_FACTOR = 'dcPowerFactor';
 
 export const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 0.5;
 export const MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 1;
+export const DEFAULT_LIMIT_REDUCTION_VALUE = 0.8;
 
 export const alertThresholdMarks = [
     {
