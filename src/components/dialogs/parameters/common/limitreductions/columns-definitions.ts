@@ -14,6 +14,7 @@ import {
 } from 'utils/config-params';
 import yup from '../../../../utils/yup-config';
 import { NumberSchema } from 'yup';
+import { UUID } from 'crypto';
 
 export const LIMIT_REDUCTIONS_FORM = 'limitReductionsForm';
 export const VOLTAGE_LEVELS_FORM = 'voltageLevelsForm';
@@ -45,6 +46,7 @@ export interface ILimitReductionsByVoltageLevel {
 }
 
 export interface ISAParameters {
+    uuid?: UUID;
     [PARAM_SA_PROVIDER]: string;
     limitReductions: ILimitReductionsByVoltageLevel[];
     [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: number;

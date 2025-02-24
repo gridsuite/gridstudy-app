@@ -5,15 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const TYPES = {
-    STRING_LIST: 'STRING_LIST',
-    BOOLEAN: 'BOOLEAN',
-    COUNTRIES: 'COUNTRIES',
-    DOUBLE: 'DOUBLE',
-    STRING: 'STRING',
-    INTEGER: 'INTEGER',
-};
-
 export const COMMON_PARAMETERS = 'commonParameters';
 export const SPECIFIC_PARAMETERS = 'specificParametersPerProvider';
 
@@ -37,13 +28,14 @@ export const SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON = 'shuntCompensatorVoltageCont
 export const DC_USE_TRANSFORMER_RATIO = 'dcUseTransformerRatio';
 export const DC_POWER_FACTOR = 'dcPowerFactor';
 
-export const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 50;
-const MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 100;
+export const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 0.5;
+export const MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 1;
+export const DEFAULT_LIMIT_REDUCTION_VALUE = 0.8;
 
 export const alertThresholdMarks = [
     {
         value: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
-        label: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION.toString(),
+        label: '50',
     },
     {
         value: MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
