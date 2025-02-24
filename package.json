@@ -5,8 +5,8 @@
     "private": true,
     "type": "module",
     "engines": {
-        "node": ">=18",
-        "npm": ">=10"
+        "node": ">=22",
+        "npm": "^10.9.2"
     },
     "dependencies": {
         "@emotion/react": "^11.14.0",
@@ -18,7 +18,7 @@
         "@mui/material": "^5.16.14",
         "@mui/x-charts": "^7.25.0",
         "@mui/x-tree-view": "^6.17.0",
-        "@powsybl/network-viewer": "1.6.0",
+        "@powsybl/network-viewer": "1.7.0",
         "@reduxjs/toolkit": "^2.5.1",
         "@svgdotjs/svg.js": "^3.2.4",
         "@svgdotjs/svg.panzoom.js": "^2.1.2",
@@ -88,7 +88,7 @@
         "@types/license-checker": "^25.0.6",
         "@types/localized-countries": "^2.0.3",
         "@types/lucene-escape-query": "^1.0.2",
-        "@types/node": "^18.19.75",
+        "@types/node": "^22.13.4",
         "@types/plotly.js-basic-dist-min": "^2.12.4",
         "@types/qs": "^6.9.18",
         "@types/react": "^18.3.18",
