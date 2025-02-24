@@ -21,6 +21,7 @@ export interface LimitViolation {
     loading?: number;
     side?: string;
     value?: number;
+    locationId?: string;
 }
 
 interface Element {
@@ -59,12 +60,10 @@ export interface SecurityAnalysisNmkTableRow {
 export interface Constraint {
     limitViolation?: LimitViolation;
     subjectId?: string;
-    locationId: string;
 }
 
 export interface ContingenciesFromConstraintItem {
     subjectId?: string;
-    locationId: string;
     contingencies?: Contingency[];
 }
 

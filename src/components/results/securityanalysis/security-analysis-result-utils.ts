@@ -67,11 +67,11 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
             violationCount: subjectLimitViolations.length,
         });
         subjectLimitViolations?.forEach((constraint: Constraint) => {
-            const { limitViolation = {} as LimitViolation, subjectId, locationId } = constraint || {};
+            const { limitViolation = {} as LimitViolation, subjectId } = constraint || {};
 
             rows.push({
                 subjectId: subjectId,
-                locationId: locationId,
+                locationId: limitViolation.locationId,
                 limitType: limitViolation.limitType
                     ? intl.formatMessage({
                           id: limitViolation.limitType,
@@ -96,9 +96,9 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
 export const flattenNmKResultsConstraints = (intl: IntlShape, result: ContingenciesFromConstraintItem[] = []) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
 
-    result?.forEach(({ contingencies = [], subjectId, locationId }) => {
+    result?.forEach(({ contingencies = [], subjectId }) => {
         if (!rows.find((row) => row.subjectId === subjectId)) {
-            rows.push({ locationId: locationId });
+            rows.push({ subjectId });
 
             contingencies.forEach(({ contingency = {}, limitViolation = {} }) => {
                 rows.push({
@@ -122,7 +122,8 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
-                    linkedElementId: locationId,
+                    locationId: limitViolation.locationId,
+                    linkedElementId: subjectId,
                 });
             });
         }
@@ -355,8 +356,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
-            colId: 'locationId',
-            field: 'locationId',
+            colId: 'subjectId',
+            field: 'subjectId',
             cellRenderer: subjectIdRenderer,
             context: {
                 sortParams: { ...sortParams, isChildren: true },
@@ -385,6 +386,22 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
 
                     filterEnums,
                     getEnumLabel,
+                },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'Bus' }),
+            colId: 'locationId',
+            field: 'locationId',
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        ...filterParams,
+                    },
                 },
             },
         }),
@@ -526,8 +543,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
-            colId: 'locationId',
-            field: 'locationId',
+            colId: 'subjectId',
+            field: 'subjectId',
             cellRenderer: subjectIdRenderer,
             context: {
                 sortParams,
@@ -592,6 +609,22 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
 
                     filterEnums,
                     getEnumLabel,
+                },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'Bus' }),
+            colId: 'locationId',
+            field: 'locationId',
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        ...filterParams,
+                    },
                 },
             },
         }),
@@ -717,7 +750,7 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
     const isFromContingency = !params.nodes.find((node) => Object.keys(node.data).length === 1);
 
     const agGridRows = params.nodes;
-    const idField = isFromContingency ? 'contingencyId' : 'locationId';
+    const idField = isFromContingency ? 'contingencyId' : 'subjectId';
     const linkedElementId = 'linkedElementId';
     const isContingency = !isFromContingency;
 
@@ -844,7 +877,7 @@ export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = ['securityAnalysisResult']
 
 export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     subjectId: 'subjectLimitViolation.subjectId',
-    locationId: 'subjectLimitViolation.locationId',
+    locationId: 'locationId',
     status: 'result.status',
     limitType: 'limitType',
     limitName: 'limitName',
@@ -857,7 +890,7 @@ export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
 
 export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
     subjectId: 'contingencyLimitViolations.subjectLimitViolation.subjectId',
-    locationId: 'contingencyLimitViolations.subjectLimitViolation.locationId',
+    locationId: 'contingencyLimitViolations.locationId',
     contingencyId: 'contingencyId',
     status: 'status',
     limitType: 'contingencyLimitViolations.limitType',
@@ -871,7 +904,7 @@ export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
 
 export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> = {
     subjectId: 'subjectId',
-    locationId: 'locationId',
+    locationId: 'contingencyLimitViolations.locationId',
     contingencyId: 'contingencyLimitViolations.contingency.contingencyId',
     status: 'contingencyLimitViolations.contingency.status',
     limitType: 'contingencyLimitViolations.limitType',

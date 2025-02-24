@@ -413,6 +413,7 @@
 
     "LimitType": "Type de limite",
     "ViolationType": "Type de contrainte",
+    "Bus": "Noeud électrique",
     "LimitSide": "Côté",
     "LimitName": "Nom du seuil",
     "Limit_name": "Seuil",

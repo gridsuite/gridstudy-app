@@ -53,14 +53,10 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
                 : flattenNmKResultsConstraints(intl, content as ContingenciesFromConstraintItem[]),
         [content, intl, isFromContingency]
     );
-    console.log(' rows: ', JSON.stringify(rows));
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
-            if (
-                (isFromContingency && params?.data?.contingencyId) ||
-                (!isFromContingency && params?.data?.locationId)
-            ) {
+            if ((isFromContingency && params?.data?.contingencyId) || (!isFromContingency && params?.data?.subjectId)) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
