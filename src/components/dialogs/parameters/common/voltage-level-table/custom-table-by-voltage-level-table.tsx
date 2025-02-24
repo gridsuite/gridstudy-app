@@ -6,10 +6,10 @@
  */
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { FunctionComponent, useMemo } from 'react';
-import { IColumnsDef, LIMIT_REDUCTIONS_FORM } from './columns-definitions';
+import { IColumnsDef, LIMIT_REDUCTIONS_FORM } from '../limitreductions/columns-definitions';
 import { useFieldArray } from 'react-hook-form';
-import LimitReductionTableRow from './limit-reduction-table-row';
-import { CustomTableByVoltageLevelTableRow } from '../voltage-level-table/custom-table-by-voltage-level-table-row';
+import LimitReductionTableRow from '../limitreductions/limit-reduction-table-row';
+import { CustomTableByVoltageLevelTableRow } from './custom-table-by-voltage-level-table-row';
 
 interface LimitReductionsTableProps {
     columnsDefinition: IColumnsDef[];
@@ -17,7 +17,7 @@ interface LimitReductionsTableProps {
     formName: string;
 }
 
-const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
+const CustomTableByVoltageLevelTable: FunctionComponent<LimitReductionsTableProps> = ({
     formName,
     columnsDefinition,
     tableHeight,
@@ -70,4 +70,4 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
     );
 };
 
-export default LimitReductionsTable;
+export default CustomTableByVoltageLevelTable;

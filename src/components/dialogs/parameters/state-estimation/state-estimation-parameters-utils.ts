@@ -151,22 +151,22 @@ const defaultLoadboundsParameters = {
 
 type WeightsParameters = {
     voltageLevel: number | string;
-    weightV: number | null;
-    weightActTransit: number | null;
-    weightReaTransit: number | null;
-    weightActProd: number | null;
-    weightReaProd: number | null;
-    weightActLoad: number | null;
-    weightReaLoad: number | null;
-    weightIN: number | null;
+    weightV?: number | null;
+    weightActTransit?: number | null;
+    weightReaTransit?: number | null;
+    weightActProd?: number | null;
+    weightReaProd?: number | null;
+    weightActLoad?: number | null;
+    weightReaLoad?: number | null;
+    weightIN?: number | null;
 };
 
 type LoadBoundsDetailsParameters = {
     voltageLevel: number | string;
-    pmin: number | null;
-    pmax: number | null;
-    qmin: number | null;
-    qmax: number | null;
+    pmin?: number | null;
+    pmax?: number | null;
+    qmin?: number | null;
+    qmax?: number | null;
 };
 
 type ThresholdsPerVoltageLevel = {
@@ -184,15 +184,15 @@ type ThresholdsPerVoltageLevel = {
 
 type ThresholdsPerVoltageLevelForm = {
     voltageLevel: number | string;
-    thresholdOutBoundsGapV: number | null;
-    thresholdOutBoundsGapP: number | null;
-    thresholdOutBoundsGapQ: number | null;
-    thresholdLostActProd: number | null;
-    thresholdLostReaProd: number | null;
-    thresholdLostActLoad: number | null;
-    thresholdLostReaLoad: number | null;
-    thresholdActTransit: number | null;
-    thresholdReaTransit: number | null;
+    thresholdOutBoundsGapV?: number | null;
+    thresholdOutBoundsGapP?: number | null;
+    thresholdOutBoundsGapQ?: number | null;
+    thresholdLostActProd?: number | null;
+    thresholdLostReaProd?: number | null;
+    thresholdLostActLoad?: number | null;
+    thresholdLostReaLoad?: number | null;
+    thresholdActTransit?: number | null;
+    thresholdReaTransit?: number | null;
 };
 
 export type StateEstimationParameters = {
@@ -268,7 +268,23 @@ export const mapToVoltageLevelCode = (code: string): number => {
 };
 
 function filterVoltageLevelArray(arr: any[]): any[] {
-    return !arr.every((obj) => Object.keys(obj).every((key) => key === 'voltageLevel' || obj[key] === null)) ? arr : [];
+    // Check if every object in the array has only 'voltageLevel' or null values
+    if (arr.every((obj) => Object.keys(obj).every((key) => key === 'voltageLevel' || obj[key] === null))) {
+        return []; // Return an empty array if the condition is met
+    }
+
+    // Process the array to remove fields with null values and filter out objects with only 'voltageLevel'  return arr
+    return arr
+        .map((obj) => {
+            const newObj = { ...obj }; // Create a shallow copy of the object
+            Object.keys(newObj).forEach((key) => {
+                if (newObj[key] === null) {
+                    delete newObj[key]; // Remove the key if its value is null
+                }
+            });
+            return newObj; // Return the modified object
+        })
+        .filter((obj) => Object.keys(obj).length > 1); // Filter out objects with only 'voltageLevel'
 }
 
 export const fromStateEstimationParametersFormToParamValues = (

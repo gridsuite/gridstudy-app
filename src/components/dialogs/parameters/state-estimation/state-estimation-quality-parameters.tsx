@@ -28,7 +28,7 @@ import LineSeparator from '../../commons/line-separator';
 import { useIntl } from 'react-intl';
 import { IColumnsDef } from '../common/limitreductions/columns-definitions';
 import { FieldLabel, SwitchInput } from '@gridsuite/commons-ui';
-import LimitReductionsTable from '../common/limitreductions/limit-reductions-table';
+import CustomTableByVoltageLevelTable from '../common/voltage-level-table/custom-table-by-voltage-level-table';
 
 export const StateEstimationQualityParameters = () => {
     const intl = useIntl();
@@ -132,7 +132,7 @@ export const StateEstimationQualityParameters = () => {
             <Box my={2}>
                 <LineSeparator />
             </Box>
-            <LimitReductionsTable
+            <CustomTableByVoltageLevelTable
                 formName={`${TabValue.QUALITY}.${THRESHOLD_PER_VOLTAGE_LEVEL}`}
                 columnsDefinition={columnsDefinition}
                 tableHeight={450}
