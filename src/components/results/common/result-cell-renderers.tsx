@@ -28,7 +28,7 @@ const styles = {
 
 export const StatusCellRender = (cellData: ICellRendererParams) => {
     const status = cellData.value;
-    const color = status === 'CONVERGED' ? styles.succeed : styles.fail;
+    const color = status === 'CONVERGED' || status === 'SUCCEED' ? styles.succeed : styles.fail;
     return (
         <Box sx={styles.cell}>
             <div style={{ display: 'flex', alignItems: 'center' }}>

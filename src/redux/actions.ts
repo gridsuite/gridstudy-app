@@ -17,7 +17,7 @@ import {
 import { Action } from 'redux';
 import { GsLang, GsLangUser, GsTheme, Identifiable } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import type { LiteralUnion, UnknownArray } from 'type-fest';
+import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
@@ -47,19 +47,23 @@ import {
     SPREADSHEET_STORE_FIELD,
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
-import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
-import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import {
+    SpreadsheetEquipmentsByNodes,
+    ColumnDefinition,
+    ColumnState,
+    SpreadsheetEquipmentType,
+    SpreadsheetTabDefinition,
+} from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 
 type MutableUnknownArray = unknown[];
 
-export type ColumnName<TValue = unknown> = {
+export type TableValue<TValue = unknown> = {
     index: number;
     value: TValue;
 };
@@ -97,7 +101,6 @@ export type AppActions =
     | SetFullscreenDiagramAction
     | ChangeDisplayedColumnsNamesAction
     | ChangeLockedColumnsNamesAction
-    | ChangeReorderedColumnsAction
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
@@ -133,10 +136,9 @@ export type AppActions =
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
     | LogsFilterAction
-    | UpdateCustomColumnsDefinitionsAction
-    | RemoveCustomColumnsDefinitionsAction
+    | UpdateColumnsDefinitionsAction
+    | RemoveColumnDefinitionAction
     | UpdateCustomColumnsNodesAliasesAction
-    | AddEquipmentsByNodesForCustomColumnsAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction;
@@ -144,34 +146,54 @@ export type AppActions =
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
     equipmentType: SpreadsheetEquipmentType;
-    equipments: Identifiable[];
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes;
 };
 
 export function loadEquipments(
     equipmentType: SpreadsheetEquipmentType,
-    equipments: Identifiable[]
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes
 ): LoadEquipmentsAction {
     return {
         type: LOAD_EQUIPMENTS,
         equipmentType: equipmentType,
-        equipments: equipments,
+        spreadsheetEquipmentByNodes: spreadsheetEquipmentByNodes,
     };
 }
+
+export type AdditionalNodeData = {
+    alias: string;
+    identifiables: Identifiable[];
+};
 
 export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS =
     'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
 export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<
     Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>
 > & {
-    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>;
+    equipmentType: SpreadsheetEquipmentType;
+    data: AdditionalNodeData[];
 };
 
 export function addAdditionalEquipmentsByNodesForCustomColumns(
-    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>
+    type: SpreadsheetEquipmentType,
+    data: AdditionalNodeData[]
 ): AddEquipmentsByNodesForCustomColumnsAction {
     return {
         type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
-        equipments: equipments,
+        equipmentType: type,
+        data,
+    };
+}
+
+export const REMOVE_NODE_DATA = 'REMOVE_NODE_DATA';
+export type RemoveNodeDataAction = Readonly<Action<typeof REMOVE_NODE_DATA>> & {
+    nodesIdToRemove: string[];
+};
+
+export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction {
+    return {
+        type: REMOVE_NODE_DATA,
+        nodesIdToRemove,
     };
 }
 
@@ -190,12 +212,17 @@ export function updateCustomColumnsNodesAliases(nodesAliases: NodeAlias[]): Upda
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
     equipments: Record<EquipmentUpdateType, Identifiable[]>;
+    nodeId: UUID;
 };
 
-export function updateEquipments(equipments: Record<EquipmentUpdateType, Identifiable[]>): UpdateEquipmentsAction {
+export function updateEquipments(
+    equipments: Record<EquipmentUpdateType, Identifiable[]>,
+    nodeId: UUID
+): UpdateEquipmentsAction {
     return {
         type: UPDATE_EQUIPMENTS,
         equipments: equipments,
+        nodeId: nodeId,
     };
 }
 
@@ -206,12 +233,14 @@ export type EquipmentToDelete = {
 export const DELETE_EQUIPMENTS = 'DELETE_EQUIPMENTS';
 export type DeleteEquipmentsAction = Readonly<Action<typeof DELETE_EQUIPMENTS>> & {
     equipments: EquipmentToDelete[];
+    nodeId: UUID;
 };
 
-export function deleteEquipments(equipments: EquipmentToDelete[]): DeleteEquipmentsAction {
+export function deleteEquipments(equipments: EquipmentToDelete[], nodeId: UUID): DeleteEquipmentsAction {
     return {
         type: DELETE_EQUIPMENTS,
         equipments,
+        nodeId,
     };
 }
 
@@ -273,6 +302,7 @@ export function mapEquipmentsCreated(
 
 export const RESET_MAP_EQUIPMENTS = 'RESET_MAP_EQUIPMENTS';
 export type ResetMapEquipmentsAction = Readonly<Action<typeof RESET_MAP_EQUIPMENTS>>;
+
 export function resetMapEquipment(): ResetMapEquipmentsAction {
     return {
         type: RESET_MAP_EQUIPMENTS,
@@ -614,11 +644,11 @@ export function setFullScreenDiagram(
 
 export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
 export type ChangeDisplayedColumnsNamesAction = Readonly<Action<typeof CHANGE_DISPLAYED_COLUMNS_NAMES>> & {
-    displayedColumnsNamesParams: ColumnName<string>[];
+    displayedColumnsNamesParams: TableValue<ColumnState[]>;
 };
 
 export function changeDisplayedColumns(
-    displayedColumnsParams: ColumnName<string>[]
+    displayedColumnsParams: TableValue<ColumnState[]>
 ): ChangeDisplayedColumnsNamesAction {
     return {
         type: CHANGE_DISPLAYED_COLUMNS_NAMES,
@@ -628,25 +658,13 @@ export function changeDisplayedColumns(
 
 export const CHANGE_LOCKED_COLUMNS_NAMES = 'CHANGE_LOCKED_COLUMNS_NAMES';
 export type ChangeLockedColumnsNamesAction = Readonly<Action<typeof CHANGE_LOCKED_COLUMNS_NAMES>> & {
-    lockedColumnsNamesParams: ColumnName<string>[];
+    lockedColumnsNamesParams: TableValue<Set<string>>;
 };
 
-export function changeLockedColumns(lockedColumnsParams: ColumnName<string>[]): ChangeLockedColumnsNamesAction {
+export function changeLockedColumns(lockedColumnsParams: TableValue<Set<string>>): ChangeLockedColumnsNamesAction {
     return {
         type: CHANGE_LOCKED_COLUMNS_NAMES,
         lockedColumnsNamesParams: lockedColumnsParams,
-    };
-}
-
-export const CHANGE_REORDERED_COLUMNS = 'CHANGE_REORDERED_COLUMNS';
-export type ChangeReorderedColumnsAction = Readonly<Action<typeof CHANGE_REORDERED_COLUMNS>> & {
-    reorderedColumnsParams: ColumnName<string>[];
-};
-
-export function changeReorderedColumns(reorderedColumnsParams: ColumnName<string>[]): ChangeReorderedColumnsAction {
-    return {
-        type: CHANGE_REORDERED_COLUMNS,
-        reorderedColumnsParams: reorderedColumnsParams,
     };
 }
 
@@ -680,6 +698,7 @@ export const CURRENT_ROOT_NETWORK = 'CURRENT_ROOT_NETWORK';
 export type CurrentRootNetworkAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK>> & {
     currentRootNetwork: UUID;
 };
+
 export function setCurrentRootNetwork(currentRootNetwork: UUID): CurrentRootNetworkAction {
     return {
         type: CURRENT_ROOT_NETWORK,
@@ -909,13 +928,15 @@ export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
     equipmentId: string;
     x: number;
     y: number;
+    scalingFactor: number;
 };
 
 export function storeNetworkAreaDiagramNodeMovement(
     nadIdentifier: string,
     equipmentId: string,
     x: number,
-    y: number
+    y: number,
+    scalingFactor: number
 ): StoreNetworkAreaDiagramNodeMovementAction {
     return {
         type: STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
@@ -923,6 +944,7 @@ export function storeNetworkAreaDiagramNodeMovement(
         equipmentId: equipmentId,
         x: x,
         y: y,
+        scalingFactor: scalingFactor,
     };
 }
 
@@ -1217,37 +1239,27 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
     };
 }
 
-export const UPDATE_CUSTOM_COLUMNS_DEFINITION = 'UPDATE_CUSTOM_COLUMNS_DEFINITION';
-export type UpdateCustomColumnsDefinitionsAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_DEFINITION>> & {
-    table: LiteralUnion<TablesDefinitionsNames, string>;
-    definition: ColumnWithFormula;
+export const UPDATE_COLUMNS_DEFINITION = 'UPDATE_COLUMNS_DEFINITION';
+export type UpdateColumnsDefinitionsAction = Readonly<Action<typeof UPDATE_COLUMNS_DEFINITION>> & {
+    colData: TableValue<ColumnDefinition>;
 };
 
-export function setUpdateCustomColumDefinitions(
-    table: LiteralUnion<TablesDefinitionsNames, string>,
-    customColumn: ColumnWithFormula
-): UpdateCustomColumnsDefinitionsAction {
+export function setUpdateColumnsDefinitions(colData: TableValue<ColumnDefinition>): UpdateColumnsDefinitionsAction {
     return {
-        type: UPDATE_CUSTOM_COLUMNS_DEFINITION,
-        table,
-        definition: customColumn,
+        type: UPDATE_COLUMNS_DEFINITION,
+        colData,
     };
 }
 
-export const REMOVE_CUSTOM_COLUMNS_DEFINITION = 'REMOVE_CUSTOM_COLUMNS_DEFINITION';
-export type RemoveCustomColumnsDefinitionsAction = Readonly<Action<typeof REMOVE_CUSTOM_COLUMNS_DEFINITION>> & {
-    table: LiteralUnion<TablesDefinitionsNames, string>;
-    definitionId: string;
+export const REMOVE_COLUMN_DEFINITION = 'REMOVE_COLUMN_DEFINITION';
+export type RemoveColumnDefinitionAction = Readonly<Action<typeof REMOVE_COLUMN_DEFINITION>> & {
+    definition: TableValue<string>;
 };
 
-export function setRemoveCustomColumDefinitions(
-    table: LiteralUnion<TablesDefinitionsNames, string>,
-    definitionId: string
-): RemoveCustomColumnsDefinitionsAction {
+export function setRemoveColumnDefinition(definition: TableValue<string>): RemoveColumnDefinitionAction {
     return {
-        type: REMOVE_CUSTOM_COLUMNS_DEFINITION,
-        table,
-        definitionId: definitionId,
+        type: REMOVE_COLUMN_DEFINITION,
+        definition,
     };
 }
 
@@ -1255,15 +1267,12 @@ export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
 
 export type UpdateTableDefinitionAction = {
     type: typeof UPDATE_TABLE_DEFINITION;
-    payload: { newTableDefinition: SpreadsheetTabDefinition; customColumns: ColumnWithFormula[] };
+    newTableDefinition: SpreadsheetTabDefinition;
 };
 
-export const updateTableDefinition = (
-    newTableDefinition: SpreadsheetTabDefinition,
-    customColumns: ColumnWithFormula[]
-): UpdateTableDefinitionAction => ({
+export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefinition): UpdateTableDefinitionAction => ({
     type: UPDATE_TABLE_DEFINITION,
-    payload: { newTableDefinition, customColumns },
+    newTableDefinition,
 });
 
 export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';

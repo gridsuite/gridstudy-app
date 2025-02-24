@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -15,11 +15,12 @@ import { TabPanel, useParameterState } from '../parameters';
 import { ISAParameters, TAB_INFO, TAB_VALUES } from '../common/limitreductions/columns-definitions';
 import ViolationsHidingParameters from './security-analysis-violations-hiding';
 import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
-import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_PROVIDER_OPENLOADFLOW } from '../../../../utils/config-params';
 
 const SecurityAnalysisParametersSelector: FunctionComponent<{
     params: ISAParameters | null;
-}> = ({ params }) => {
+    currentProvider?: string;
+}> = ({ params, currentProvider }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [tabSelected, setTabSelected] = useState(TAB_VALUES.General);
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: number) => {
@@ -32,13 +33,20 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
             : tabSelected;
     }, [params, tabSelected]);
 
+    useEffect(() => {
+        if (currentProvider !== PARAM_PROVIDER_OPENLOADFLOW) {
+            setTabSelected(TAB_VALUES.General);
+        }
+    }, [currentProvider]);
+
     return (
         <>
             <Grid sx={{ width: '100%' }}>
                 <Tabs value={tabValue} onChange={handleTabChange}>
                     {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map(
                         (tab, index) =>
-                            (tab.label !== TAB_VALUES[TAB_VALUES.LimitReductions] || params?.limitReductions) && (
+                            (tab.label !== TAB_VALUES[TAB_VALUES.LimitReductions] ||
+                                (currentProvider === PARAM_PROVIDER_OPENLOADFLOW && params?.limitReductions)) && (
                                 <Tab
                                     key={tab.label}
                                     label={<FormattedMessage id={tab.label} />}
@@ -56,11 +64,13 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
                 {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map((tab, index) => (
                     <TabPanel key={tab.label} value={tabValue} index={index}>
                         {tabValue === TAB_VALUES.General && <ViolationsHidingParameters />}
-                        {tabValue === TAB_VALUES.LimitReductions && params?.limitReductions && (
-                            <Grid sx={{ width: '100%' }}>
-                                <LimitReductionsTableForm limits={params.limitReductions} />
-                            </Grid>
-                        )}
+                        {tabValue === TAB_VALUES.LimitReductions &&
+                            currentProvider === PARAM_PROVIDER_OPENLOADFLOW &&
+                            params?.limitReductions && (
+                                <Grid sx={{ width: '100%' }}>
+                                    <LimitReductionsTableForm limits={params.limitReductions} />
+                                </Grid>
+                            )}
                     </TabPanel>
                 ))}
             </Grid>

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Box,
@@ -24,42 +24,48 @@ import {
     CustomFormProvider,
     ExpandingTextField,
     MultipleAutocompleteInput,
+    IntegerInput,
     SubmitButton,
     TextInput,
     UseStateBooleanReturn,
+    AutocompleteInput,
 } from '@gridsuite/commons-ui';
 import { useForm, useWatch } from 'react-hook-form';
 import {
-    COLUMN_ID,
     COLUMN_DEPENDENCIES,
+    COLUMN_ID,
     COLUMN_NAME,
+    COLUMN_TYPE,
     CustomColumnForm,
     customColumnFormSchema,
     FORMULA,
     initialCustomColumnForm,
+    PRECISION,
 } from './custom-columns-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
-import { ColumnWithFormula } from 'types/custom-columns.types';
-import { AppState } from 'redux/reducer';
-import { setUpdateCustomColumDefinitions } from 'redux/actions';
+import { setUpdateColumnsDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
+import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { v4 as uuid4 } from 'uuid';
+import { useFilterSelector } from 'hooks/use-filter-selector';
+import { FilterType } from 'types/custom-aggrid-types';
+import { AppState } from 'redux/reducer';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
+    colId?: string;
     tabIndex: number;
-    customColumnsDefinition?: ColumnWithFormula;
-    customColumnsDefinitions?: ColumnWithFormula[];
     isCreate?: boolean;
 };
 
 const styles = {
     dialogContent: {
         width: '40%',
-        height: '55%',
+        height: '65%',
         maxWidth: 'none',
         margin: 'auto',
     },
@@ -70,9 +76,8 @@ const styles = {
 
 export default function CustomColumnDialog({
     open,
+    colId,
     tabIndex,
-    customColumnsDefinition,
-    customColumnsDefinitions,
     isCreate = true,
 }: Readonly<CustomColumnDialogProps>) {
     const formMethods = useForm({
@@ -82,20 +87,45 @@ export default function CustomColumnDialog({
 
     const { setError, control } = formMethods;
     const columnId = useWatch({ control, name: COLUMN_ID });
-    const hasColumnIdChanged = columnId !== customColumnsDefinition?.[COLUMN_ID];
+    const watchColumnType = useWatch({ control, name: COLUMN_TYPE });
+    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex].columns);
+    const tableName = useSelector((state: AppState) => state.tables.definitions[tabIndex].name);
+
+    const columnDefinition = useMemo(
+        () => columnsDefinitions.find((column) => column.id === colId),
+        [colId, columnsDefinitions]
+    );
+    const hasColumnIdChanged = columnId !== columnDefinition?.[COLUMN_ID];
 
     const { handleSubmit, reset } = formMethods;
     const dispatch = useDispatch<AppDispatch>();
 
     const intl = useIntl();
 
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
-
     const columnNameField = (
         <TextInput name={COLUMN_NAME} label={'spreadsheet/custom_column/column_name'} formProps={{ autoFocus: true }} />
     );
 
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
+
+    const columnType = (
+        <AutocompleteInput
+            name={COLUMN_TYPE}
+            label={'spreadsheet/custom_column/column_type'}
+            options={Object.keys(COLUMN_TYPES)}
+            getOptionLabel={(option: any) => intl.formatMessage({ id: option })}
+            size="small"
+            fullWidth
+        />
+    );
+
+    const precisionField = (
+        <IntegerInput
+            name={PRECISION}
+            label="spreadsheet/custom_column/column_precision"
+            formProps={{ size: 'small' }}
+        />
+    );
 
     const formulaField = (
         <ExpandingTextField
@@ -107,9 +137,11 @@ export default function CustomColumnDialog({
         />
     );
 
+    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, tableName);
+
     const onSubmit = useCallback(
         (newParams: CustomColumnForm) => {
-            const existingColumn = customColumnsDefinitions?.find((column) => column.id === newParams.id);
+            const existingColumn = columnsDefinitions?.find((column) => column.id === newParams.id);
 
             if (existingColumn) {
                 if (isCreate || hasColumnIdChanged) {
@@ -119,10 +151,13 @@ export default function CustomColumnDialog({
                     });
                     return;
                 }
+                // if we are editing an existing column, we need to remove the existing filter
+                const updatedFilters = filters.filter((filter) => filter.column !== existingColumn.id);
+                dispatchFilters(updatedFilters);
             }
 
-            if (customColumnsDefinitions) {
-                const newItems: Item[] = [...customColumnsDefinitions, newParams];
+            if (columnsDefinitions) {
+                const newItems: Item[] = [...columnsDefinitions, newParams];
                 if (hasCyclicDependencies(newItems)) {
                     setError(COLUMN_DEPENDENCIES, {
                         type: 'validate',
@@ -133,43 +168,52 @@ export default function CustomColumnDialog({
             }
 
             dispatch(
-                setUpdateCustomColumDefinitions(tablesNames[tabIndex], {
-                    uuid: customColumnsDefinition?.uuid || crypto.randomUUID(),
-                    id: newParams.id,
-                    name: newParams.name,
-                    formula: newParams.formula,
-                    dependencies: newParams.dependencies,
+                setUpdateColumnsDefinitions({
+                    index: tabIndex,
+                    value: {
+                        uuid: columnDefinition?.uuid || uuid4(),
+                        id: newParams.id,
+                        name: newParams.name,
+                        type: COLUMN_TYPES[newParams.type],
+                        precision: newParams.precision,
+                        formula: newParams.formula,
+                        dependencies: newParams.dependencies,
+                    },
                 })
             );
             reset(initialCustomColumnForm);
             open.setFalse();
         },
         [
-            customColumnsDefinitions,
+            columnsDefinitions,
             dispatch,
-            tablesNames,
             tabIndex,
-            customColumnsDefinition?.uuid,
+            columnDefinition?.uuid,
             reset,
             open,
             isCreate,
             hasColumnIdChanged,
+            filters,
+            dispatchFilters,
             setError,
         ]
     );
 
     useEffect(() => {
-        if (open.value && customColumnsDefinition) {
+        if (open.value && columnDefinition) {
+            const { name, id, type, precision, formula, dependencies } = columnDefinition;
             reset({
-                [COLUMN_NAME]: customColumnsDefinition.name,
-                [COLUMN_ID]: customColumnsDefinition.id,
-                [FORMULA]: customColumnsDefinition.formula,
-                [COLUMN_DEPENDENCIES]: customColumnsDefinition.dependencies,
+                [COLUMN_NAME]: name,
+                [COLUMN_ID]: id,
+                [COLUMN_TYPE]: type,
+                [PRECISION]: precision,
+                [FORMULA]: formula,
+                [COLUMN_DEPENDENCIES]: dependencies,
             });
         } else {
             reset(initialCustomColumnForm);
         }
-    }, [customColumnsDefinition, tabIndex, open.value, reset]);
+    }, [columnDefinition, tabIndex, open.value, reset]);
 
     return (
         <CustomFormProvider validationSchema={customColumnFormSchema} {...formMethods}>
@@ -213,16 +257,30 @@ export default function CustomColumnDialog({
                             {columnIdField}
                         </Grid>
                         <Grid item sx={styles.field}>
+                            {columnType}
+                        </Grid>
+                        {watchColumnType === COLUMN_TYPES.NUMBER && (
+                            <Grid item sx={styles.field}>
+                                {precisionField}
+                            </Grid>
+                        )}
+                        <Grid item sx={styles.field}>
                             {formulaField}
                         </Grid>
                         <Grid item sx={styles.field}>
                             <MultipleAutocompleteInput
-                                label={intl.formatMessage({ id: 'spreadsheet/custom_column/column_dependencies' })}
+                                label="spreadsheet/custom_column/column_dependencies"
                                 name={COLUMN_DEPENDENCIES}
-                                options={customColumnsDefinitions?.map((definition) => definition.id) ?? []}
+                                options={
+                                    columnsDefinitions
+                                        ?.map((definition) => definition.id)
+                                        .filter((id) => id !== columnId) ?? []
+                                }
                                 disableClearable={false}
                                 disableCloseOnSelect
+                                allowNewValue={false}
                                 freeSolo={false}
+                                onBlur={undefined}
                             />
                         </Grid>
                     </Grid>

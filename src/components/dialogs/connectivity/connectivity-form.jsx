@@ -81,17 +81,19 @@ export const ConnectivityForm = ({
             return;
         }
         if (watchVoltageLevelId) {
-            fetchBusesOrBusbarSectionsForVoltageLevel(
-                studyUuid,
-                currentNodeUuid,
-                currentRootNetworkUuid,
-                watchVoltageLevelId
-            ).then((busesOrbusbarSections) => {
-                setBusOrBusbarSectionOptions(busesOrbusbarSections);
-            });
-        } else {
-            setBusOrBusbarSectionOptions([]);
-            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
+            const existingVoltageLevelOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
+            if (existingVoltageLevelOption) {
+                fetchBusesOrBusbarSectionsForVoltageLevel(
+                    studyUuid,
+                    currentNodeUuid,
+                    currentRootNetworkUuid,
+                    watchVoltageLevelId
+                ).then((busesOrbusbarSections) => {
+                    setBusOrBusbarSectionOptions(busesOrbusbarSections || []);
+                });
+            } else {
+                setBusOrBusbarSectionOptions([]);
+            }
         }
     }, [
         watchVoltageLevelId,
@@ -99,7 +101,6 @@ export const ConnectivityForm = ({
         currentNodeUuid,
         currentRootNetworkUuid,
         voltageLevelOptions,
-        setValue,
         id,
         isEquipmentModification,
     ]);
@@ -115,7 +116,9 @@ export const ConnectivityForm = ({
 
     const handleChange = useCallback(() => {
         onVoltageLevelChangeCallback?.();
-    }, [onVoltageLevelChangeCallback]);
+        setBusOrBusbarSectionOptions([]);
+        setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
+    }, [id, onVoltageLevelChangeCallback, setValue]);
 
     useEffect(() => {
         if (isEquipmentModification) {
@@ -144,6 +147,7 @@ export const ConnectivityForm = ({
             onChangeCallback={handleChange}
             allowNewValue
             forcePopupIcon
+            selectOnFocus
             name={`${id}.${VOLTAGE_LEVEL}`}
             label={voltageLevelSelectLabel}
             options={voltageLevelOptions}

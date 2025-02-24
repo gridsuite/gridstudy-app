@@ -65,12 +65,7 @@ const formatCustomFiltersForAgGrid = (filters: FilterConfig[]): FilterModel => {
                 type: filters[0].type,
                 tolerance: filters[0].tolerance,
                 operator: 'OR',
-                // Dynamically add additional conditions
-                // Each additional condition is added as 'condition1', 'condition2', etc.
-                ...conditions.reduce((acc: FilterModel, condition: FilterModel, index: number) => {
-                    acc[`condition${index + 1}`] = condition;
-                    return acc;
-                }, {}),
+                conditions,
             };
         }
     });

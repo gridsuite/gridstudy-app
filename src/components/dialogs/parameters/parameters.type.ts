@@ -11,6 +11,7 @@ import { ILimitReductionsByVoltageLevel, ISAParameters } from './common/limitred
 import { NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
 import { DynamicSimulationParametersFetchReturn } from 'services/study/dynamic-simulation.type';
+import { DynamicSecurityAnalysisParametersFetchReturn } from '../../../services/study/dynamic-security-analysis.type';
 
 enum ParameterType {
     BOOLEAN = 'BOOLEAN',
@@ -40,6 +41,8 @@ export type ParametersInfos<T extends ComputingType> = T extends ComputingType.S
     ? LoadFlowParametersInfos
     : T extends ComputingType.DYNAMIC_SIMULATION
     ? DynamicSimulationParametersFetchReturn
+    : T extends ComputingType.DYNAMIC_SECURITY_ANALYSIS
+    ? DynamicSecurityAnalysisParametersFetchReturn
     : Record<string, any>;
 
 export type UseParametersBackendReturnProps<T extends ComputingType> = [

@@ -5,27 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { FunctionComponent, useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
-import { TABLES_NAMES } from './config/config-tables';
-import {
-    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-} from './utils/constants';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { updateConfigParameter } from '../../services/config';
 import { AppState } from '../../redux/reducer';
-import { changeDisplayedColumns, changeLockedColumns, changeReorderedColumns } from 'redux/actions';
+import { changeDisplayedColumns, changeLockedColumns } from 'redux/actions';
 import { spreadsheetStyles } from './utils/style';
 
 const MAX_LOCKS_PER_TAB = 5;
@@ -51,39 +43,23 @@ const styles = {
 
 interface ColumnsConfigProps {
     tabIndex: number;
-    reorderedTableDefinitionIndexes: string[];
-    setReorderedTableDefinitionIndexes: (indices: string[]) => void;
-    selectedColumnsNames: Set<string>;
-    setSelectedColumnsNames: (names: Set<string>) => void;
-    lockedColumnsNames: Set<string>;
-    setLockedColumnsNames: (names: Set<string>) => void;
     disabled: boolean;
 }
 
-export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
-    tabIndex,
-    reorderedTableDefinitionIndexes,
-    setReorderedTableDefinitionIndexes,
-    selectedColumnsNames,
-    setSelectedColumnsNames,
-    lockedColumnsNames,
-    setLockedColumnsNames,
-    disabled,
-}) => {
-    const [popupSelectColumnNames, setPopupSelectColumnNames] = useState<boolean>(false);
-
-    const allDisplayedColumnsNames = useSelector((state: AppState) => state.tables.columnsNamesJson);
-    const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
-    const allReorderedTableDefinitionIndexes = useSelector(
-        (state: AppState) => state.allReorderedTableDefinitionIndexes
-    );
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
-    const columnsNames = useSelector((state: AppState) => state.tables.columnsNames);
-
+export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex, disabled }) => {
     const dispatch = useDispatch();
-
-    const { snackError } = useSnackMessage();
     const intl = useIntl();
+
+    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
+    const lockedColumns = useSelector((state: AppState) => state.allLockedColumnsNames[tabIndex]);
+    const formattedLockedColumns: Set<string> = useMemo(
+        () => new Set(lockedColumns ? JSON.parse(lockedColumns) : []),
+        [lockedColumns]
+    );
+
+    const [localColumnsStates, setLocalColumnsStates] = useState(columnsStates);
+    const [localLockedColumns, setLocalLockedColumns] = useState<Set<string>>(formattedLockedColumns);
+    const [popupSelectColumnNames, setPopupSelectColumnNames] = useState<boolean>(false);
 
     const handleOpenPopupSelectColumnNames = useCallback(() => {
         setPopupSelectColumnNames(true);
@@ -93,161 +69,91 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
         setPopupSelectColumnNames(false);
     }, []);
 
+    useEffect(() => {
+        setLocalColumnsStates(columnsStates);
+        setLocalLockedColumns(formattedLockedColumns);
+    }, [columnsStates, formattedLockedColumns]);
+
     const handleCancelPopupSelectColumnNames = useCallback(() => {
-        const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
-        setSelectedColumnsNames(new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []));
-        const allLockedTemp = allLockedColumnsNames[tabIndex];
-        setLockedColumnsNames(new Set(allLockedTemp ? JSON.parse(allLockedTemp) : []));
-        const allReorderedTemp = allReorderedTableDefinitionIndexes[tabIndex];
-        setReorderedTableDefinitionIndexes(allReorderedTemp ? JSON.parse(allReorderedTemp) : []);
+        setLocalColumnsStates(columnsStates);
+        setLocalLockedColumns(formattedLockedColumns);
         handleCloseColumnsSettingDialog();
-    }, [
-        allDisplayedColumnsNames,
-        tabIndex,
-        setSelectedColumnsNames,
-        allLockedColumnsNames,
-        setLockedColumnsNames,
-        allReorderedTableDefinitionIndexes,
-        setReorderedTableDefinitionIndexes,
-        handleCloseColumnsSettingDialog,
-    ]);
+    }, [columnsStates, formattedLockedColumns, handleCloseColumnsSettingDialog]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
-        const saveConfigParameter = async (
-            prefix: string,
-            value: any,
-            index: number,
-            setState: Function,
-            allState: any[],
-            dispatchAction: Function
-        ) => {
-            // for newly added tabs, we should not save the state in the database because the tabs are only persisted in the redux store
-            // we should only save the state in the redux store
-            if (index < TABLES_NAMES.length) {
-                updateConfigParameter(prefix + tablesNames[index], JSON.stringify(value)).catch((error) => {
-                    const allTemp = allState[index];
-                    setState(new Set(allTemp ? JSON.parse(allTemp) : []));
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsChangingError',
-                    });
-                });
-            } else {
-                const columns = new Array(tablesNames.length);
-                columns[index] = {
-                    index: index,
-                    value: JSON.stringify(value),
-                };
-                dispatch(dispatchAction(columns));
-            }
-        };
-
-        const selectedColumnsArray = Array.from(selectedColumnsNames);
-        const lockedColumnsToSave = [...lockedColumnsNames].filter((name) => selectedColumnsNames.has(name));
-
-        saveConfigParameter(
-            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-            selectedColumnsArray,
-            tabIndex,
-            setSelectedColumnsNames,
-            allDisplayedColumnsNames,
-            changeDisplayedColumns
-        );
-        saveConfigParameter(
-            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-            lockedColumnsToSave,
-            tabIndex,
-            setLockedColumnsNames,
-            allLockedColumnsNames,
-            changeLockedColumns
-        );
-        saveConfigParameter(
-            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-            reorderedTableDefinitionIndexes,
-            tabIndex,
-            () => {},
-            [],
-            changeReorderedColumns
-        );
-
+        dispatch(changeDisplayedColumns({ index: tabIndex, value: localColumnsStates }));
+        dispatch(changeLockedColumns({ index: tabIndex, value: localLockedColumns }));
         handleCloseColumnsSettingDialog();
-    }, [
-        tabIndex,
-        lockedColumnsNames,
-        tablesNames,
-        setLockedColumnsNames,
-        reorderedTableDefinitionIndexes,
-        handleCloseColumnsSettingDialog,
-        selectedColumnsNames,
-        allDisplayedColumnsNames,
-        setSelectedColumnsNames,
-        snackError,
-        dispatch,
-        allLockedColumnsNames,
-    ]);
+    }, [tabIndex, localLockedColumns, handleCloseColumnsSettingDialog, localColumnsStates, dispatch]);
+
     const handleToggle = (value: string) => () => {
-        const newChecked = new Set(selectedColumnsNames.values());
-        const newLocked = new Set(lockedColumnsNames.values());
-        if (selectedColumnsNames.has(value)) {
-            newChecked.delete(value);
-            if (lockedColumnsNames.has(value)) {
-                newLocked.delete(value);
-            }
-        } else {
-            newChecked.add(value);
-        }
-        setSelectedColumnsNames(newChecked);
-        setLockedColumnsNames(newLocked);
+        setLocalColumnsStates((prevSelectedColumnsNames) => {
+            const idx = prevSelectedColumnsNames.findIndex((col) => col.colId === value);
+            const newColumns = [...prevSelectedColumnsNames];
+            newColumns[idx] = {
+                colId: newColumns[idx].colId,
+                visible: !newColumns[idx].visible,
+            };
+            return newColumns;
+        });
+        setLocalLockedColumns((prevLockedColumnsNames) => {
+            const newLockedColumns = new Set(prevLockedColumnsNames);
+            newLockedColumns.delete(value);
+            return newLockedColumns;
+        });
     };
 
     const handleToggleAll = () => {
-        let isAllChecked = selectedColumnsNames.size === columnsNames[tabIndex].size;
+        let isAllChecked = localColumnsStates.filter((col) => !col.visible).length === 0;
         // If all columns are selected/checked, then we hide all of them.
-        setSelectedColumnsNames(isAllChecked ? new Set() : columnsNames[tabIndex]);
+        setLocalColumnsStates((prevSelectedColumnsNames) => {
+            return prevSelectedColumnsNames.map((col) => {
+                return {
+                    colId: col.colId,
+                    visible: !isAllChecked,
+                };
+            });
+        });
         if (isAllChecked) {
-            setLockedColumnsNames(new Set());
+            setLocalLockedColumns(new Set());
         }
     };
 
     const handleClickOnLock = (value: string) => () => {
-        const newLocked = new Set(lockedColumnsNames.values());
-        if (lockedColumnsNames.has(value)) {
-            newLocked.delete(value);
-        } else {
-            if (lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
-                newLocked.add(value);
-            }
+        if (localColumnsStates.filter((col) => col.colId === value && col.visible).length === 0) {
+            return;
         }
-        setLockedColumnsNames(newLocked);
+        const newLocked = new Set(localLockedColumns.values());
+        if (localLockedColumns.has(value)) {
+            newLocked.delete(value);
+        } else if (localLockedColumns.size < MAX_LOCKS_PER_TAB) {
+            newLocked.add(value);
+        }
+        setLocalLockedColumns(newLocked);
     };
 
     const handleDrag = useCallback(
         ({ source, destination }: DropResult) => {
             if (destination) {
-                let reorderedTableDefinitionIndexesTemp = [...reorderedTableDefinitionIndexes];
+                let reorderedTableDefinitionIndexesTemp = [...localColumnsStates];
                 const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
                 reorderedTableDefinitionIndexesTemp.splice(destination.index, 0, reorderedItem);
-                setReorderedTableDefinitionIndexes(reorderedTableDefinitionIndexesTemp);
+                setLocalColumnsStates(reorderedTableDefinitionIndexesTemp);
             }
         },
-        [reorderedTableDefinitionIndexes, setReorderedTableDefinitionIndexes]
+        [localColumnsStates]
     );
 
     const renderColumnConfigLockIcon = (value: string) => {
-        if (selectedColumnsNames.has(value)) {
-            if (lockedColumnsNames.has(value)) {
-                return <LockIcon sx={styles.columnConfigClosedLock} />;
-            } else {
-                if (lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
-                    return <LockOpenIcon sx={styles.columnConfigOpenLock} />;
-                }
-            }
+        if (localLockedColumns?.has(value)) {
+            return <LockIcon sx={styles.columnConfigClosedLock} />;
         }
+        return <LockOpenIcon sx={styles.columnConfigOpenLock} />;
     };
 
     const checkListColumnsNames = () => {
-        let isAllChecked = selectedColumnsNames.size === columnsNames[tabIndex].size;
-        let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
+        let isAllChecked = localColumnsStates.filter((col) => !col.visible).length === 0;
+        let isSomeChecked = localColumnsStates.filter((col) => col.visible).length !== 0;
 
         return (
             <>
@@ -262,7 +168,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
                     <Droppable droppableId="network-table-columns-list">
                         {(provided) => (
                             <div ref={provided.innerRef} {...provided.droppableProps}>
-                                {[...reorderedTableDefinitionIndexes].map((value, index) => (
+                                {[...localColumnsStates].map(({ colId, visible }, index) => (
                                     <Draggable
                                         draggableId={tabIndex + '-' + index}
                                         index={index}
@@ -281,21 +187,21 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
                                                     </IconButton>
 
                                                     <ListItemIcon
-                                                        onClick={handleClickOnLock(value)}
+                                                        onClick={handleClickOnLock(colId)}
                                                         style={{
                                                             minWidth: 0,
                                                             width: '20px',
                                                         }}
                                                     >
-                                                        {renderColumnConfigLockIcon(value)}
+                                                        {renderColumnConfigLockIcon(colId)}
                                                     </ListItemIcon>
-                                                    <ListItemIcon onClick={handleToggle(value)}>
-                                                        <Checkbox checked={selectedColumnsNames.has(value)} />
+                                                    <ListItemIcon onClick={handleToggle(colId)}>
+                                                        <Checkbox checked={visible} />
                                                     </ListItemIcon>
                                                     <ListItemText
-                                                        onClick={handleToggle(value)}
+                                                        onClick={handleToggle(colId)}
                                                         primary={intl.formatMessage({
-                                                            id: `${value}`,
+                                                            id: `${colId}`,
                                                         })}
                                                     />
                                                 </ListItem>

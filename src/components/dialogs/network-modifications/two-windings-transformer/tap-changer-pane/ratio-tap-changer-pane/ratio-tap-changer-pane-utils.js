@@ -234,13 +234,13 @@ export const getRatioTapChangerModificationValidationSchema = (previousValues, i
     return ratioTapChangerModificationValidationSchema(previousValues, id);
 };
 
-const ratioTapChangerEmptyFormData = (id) => ({
+const ratioTapChangerEmptyFormData = (isModification, id) => ({
     [id]: {
         [ENABLED]: false,
         [LOAD_TAP_CHANGING_CAPABILITIES]: false,
         [REGULATION_MODE]: null,
         [REGULATION_TYPE]: null,
-        [REGULATION_SIDE]: SIDE.SIDE1.id,
+        [REGULATION_SIDE]: isModification ? null : SIDE.SIDE1.id,
         [TARGET_V]: null,
         [TARGET_DEADBAND]: null,
         [LOW_TAP_POSITION]: null,
@@ -251,8 +251,8 @@ const ratioTapChangerEmptyFormData = (id) => ({
     },
 });
 
-export const getRatioTapChangerEmptyFormData = (id = RATIO_TAP_CHANGER) => {
-    return ratioTapChangerEmptyFormData(id);
+export const getRatioTapChangerEmptyFormData = (isModification = false, id = RATIO_TAP_CHANGER) => {
+    return ratioTapChangerEmptyFormData(isModification, id);
 };
 
 export const getRatioTapChangerFormData = (

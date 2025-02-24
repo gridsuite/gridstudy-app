@@ -215,6 +215,7 @@ export interface StaticVarCompensatorCreationInfo {
 export interface TwoWindingsTransformerModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
+    modificationUuid?: string;
     twoWindingsTransformerId: string;
     twoWindingsTransformerName: AttributeModification<string> | null;
     r: AttributeModification<number> | null;
@@ -232,8 +233,6 @@ export interface TwoWindingsTransformerModificationInfo {
     busOrBusbarSectionId2?: string;
     ratioTapChanger: Record<string, any> | null;
     phaseTapChanger: Record<string, any> | null;
-    isUpdate?: boolean;
-    modificationUuid?: string;
     connectionName1?: string | null;
     connectionDirection1?: string | null;
     connectionName2?: string | null;
@@ -243,6 +242,19 @@ export interface TwoWindingsTransformerModificationInfo {
     connected1?: boolean;
     connected2?: boolean;
     properties: Property[];
+    p1MeasurementValue: number | null;
+    p1MeasurementValidity: boolean | null;
+    q1MeasurementValue: number | null;
+    q1MeasurementValidity: boolean | null;
+    p2MeasurementValue: number | null;
+    p2MeasurementValidity: boolean | null;
+    q2MeasurementValue: number | null;
+    q2MeasurementValidity: boolean | null;
+}
+
+export interface OperationalLimitsGroup {
+    id: string;
+    currentLimits: CurrentLimits;
 }
 
 export interface TemporaryLimit {
@@ -252,8 +264,10 @@ export interface TemporaryLimit {
     selected: boolean;
     name: string;
 }
+
 export interface CurrentLimits {
-    permanentLimit: number;
+    id?: string;
+    permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
 }
 
@@ -480,8 +494,10 @@ export interface LineCreationInfo {
     busOrBusbarSectionId2: string;
     permanentCurrentLimit1: number;
     permanentCurrentLimit2: number;
-    temporaryCurrentLimits1: TemporaryLimit[];
-    temporaryCurrentLimits2: TemporaryLimit[];
+    limitsGroups1: OperationalLimitsGroup[];
+    limitsGroups2: OperationalLimitsGroup[];
+    selectedLimitsGroup1: string;
+    selectedLimitsGroup2: string;
     isUpdate: boolean;
     modificationUuid: string;
     connectionName1: string | null;
@@ -498,6 +514,7 @@ export interface LineCreationInfo {
 export interface LineModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
+    modificationUuid: string;
     lineId: string;
     lineName: string | null;
     r: number;
@@ -520,14 +537,22 @@ export interface LineModificationInfo {
     connectionPosition2: string | null;
     connected1: boolean;
     connected2: boolean;
-    isUpdate: boolean;
-    modificationUuid: string;
     properties?: Property[];
+    p1MeasurementValue: number | null;
+    p1MeasurementValidity: boolean | null;
+    q1MeasurementValue: number | null;
+    q1MeasurementValidity: boolean | null;
+    p2MeasurementValue: number | null;
+    p2MeasurementValidity: boolean | null;
+    q2MeasurementValue: number | null;
+    q2MeasurementValidity: boolean | null;
 }
 
 export interface TwoWindingsTransformerCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
+    isUpdate: boolean;
+    modificationUuid: string;
     twoWindingsTransformerId: string;
     twoWindingsTransformerName: string | null;
     r: number;
@@ -537,16 +562,16 @@ export interface TwoWindingsTransformerCreationInfo {
     ratedS: number | null;
     ratedU1: number;
     ratedU2: number;
-    currentLimit1: CurrentLimits;
-    currentLimit2: CurrentLimits;
+    limitsGroups1: OperationalLimitsGroup[];
+    limitsGroups2: OperationalLimitsGroup[];
+    selectedLimitsGroup1: string;
+    selectedLimitsGroup2: string;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
     busOrBusbarSectionId2: string;
     ratioTapChanger: any;
     phaseTapChanger: any;
-    isUpdate: boolean;
-    modificationUuid: string;
     connectionName1: string | null;
     connectionDirection1: string | null;
     connectionName2: string | null;
