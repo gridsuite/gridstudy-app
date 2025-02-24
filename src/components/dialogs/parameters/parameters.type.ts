@@ -13,20 +13,24 @@ import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
 import { DynamicSimulationParametersFetchReturn } from 'services/study/dynamic-simulation.type';
 import { DynamicSecurityAnalysisParametersFetchReturn } from '../../../services/study/dynamic-security-analysis.type';
 
-enum ParameterType {
+export enum ParameterType {
     BOOLEAN = 'BOOLEAN',
     STRING = 'STRING',
     STRING_LIST = 'STRING_LIST',
     DOUBLE = 'DOUBLE',
     INTEGER = 'INTEGER',
+    COUNTRIES = 'COUNTRIES',
 }
 
-type SpecificParameterInfos = {
-    names: string[];
+export type SpecificParameterInfos = {
+    name: string;
     type: ParameterType;
-    defaultValue: any;
-    possibleValues: any[];
-    categoryKey: string;
+    names?: string[];
+    defaultValue?: any;
+    possibleValues?: any[];
+    categoryKey?: string;
+    description?: string;
+    label?: string;
 };
 
 export type SpecificParametersInfos = Record<string, SpecificParameterInfos>;

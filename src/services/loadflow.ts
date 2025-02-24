@@ -6,7 +6,6 @@
  */
 
 import { backendFetchJson } from './utils';
-import { UUID } from 'crypto';
 
 const PREFIX_LOADFLOW_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/loadflow';
 
@@ -35,7 +34,7 @@ export function getLoadFlowDefaultLimitReductions() {
     return backendFetchJson(getLoadFlowDefaultLimitReductionsUrl);
 }
 
-export function fetchLoadFlowParameters(parameterUuid: UUID) {
+export function fetchLoadFlowParameters(parameterUuid: string) {
     console.info('fetch load flow parameters');
     const url = getLoadFlowUrl() + 'parameters/' + encodeURIComponent(parameterUuid);
     console.debug(url);

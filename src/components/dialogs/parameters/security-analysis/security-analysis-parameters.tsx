@@ -16,6 +16,7 @@ import {
     ElementType,
     MuiSelectInput,
     SubmitButton,
+    TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis';
@@ -26,6 +27,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
     getSAParametersFromSchema,
     ILimitReductionsByVoltageLevel,
+    ISAParameters,
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
@@ -70,36 +72,6 @@ export const SecurityAnalysisParameters: FunctionComponent<{
             }));
     }, [providers]);
 
-    const resetSAParametersAndProvider = useCallback(() => {
-        resetParameters();
-        resetProvider();
-    }, [resetParameters, resetProvider]);
-
-    const resetSAParameters = useCallback(() => {
-        resetParameters();
-    }, [resetParameters]);
-
-    const handleLoadParameter = useCallback(
-        (newParams: Record<string, any>) => {
-            if (newParams && newParams.length > 0) {
-                setOpenSelectParameterDialog(false);
-                fetchSecurityAnalysisParameters(newParams[0].id)
-                    .then((parameters) => {
-                        console.info('loading the following security analysis parameters : ' + parameters.uuid);
-                        updateParameters({ ...parameters });
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        });
-                    });
-            }
-            setOpenSelectParameterDialog(false);
-        },
-        [snackError, updateParameters]
-    );
     const formSchema = useMemo(() => {
         return getSAParametersFromSchema(params?.limitReductions);
     }, [params?.limitReductions]);
@@ -117,7 +89,42 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         resolver: yupResolver(formSchema),
     });
 
-    const watchProvider = formMethods.watch('provider');
+    const { handleSubmit, formState, reset, getValues, watch } = formMethods;
+
+    const watchProvider = watch('provider');
+
+    const resetSAParametersAndProvider = useCallback(() => {
+        resetParameters();
+        resetProvider();
+    }, [resetParameters, resetProvider]);
+
+    const resetSAParameters = useCallback(() => {
+        resetParameters();
+    }, [resetParameters]);
+
+    const handleLoadParameter = useCallback(
+        (newParams: TreeViewFinderNodeProps[]) => {
+            if (newParams && newParams.length > 0) {
+                setOpenSelectParameterDialog(false);
+                fetchSecurityAnalysisParameters(newParams[0].id)
+                    .then((parameters: ISAParameters) => {
+                        console.info('loading the following security analysis parameters : ' + parameters.uuid);
+                        reset(toFormValueSaParameters(parameters), {
+                            keepDefaultValues: true,
+                        });
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            }
+            setOpenSelectParameterDialog(false);
+        },
+        [reset, snackError]
+    );
 
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
@@ -141,25 +148,28 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         [params?.limitReductions]
     );
 
-    const { handleSubmit, formState, reset } = formMethods;
+    const formatNewParams = useCallback(
+        (formData: Record<string, any>) => {
+            return {
+                [PARAM_SA_PROVIDER]: formData[PARAM_SA_PROVIDER],
+                [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: formData[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]:
+                    formData[PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: formData[PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD],
+                [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]:
+                    formData[PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: formData[PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD],
+                limitReductions: toLimitReductions(formData[LIMIT_REDUCTIONS_FORM]),
+            };
+        },
+        [toLimitReductions]
+    );
 
     const updateSAParameters = useCallback(
-        //remove any type since we now know what to expect according to yup schema
-        (formLimits: Record<string, any>) => {
-            updateParameters({
-                ...params,
-                [PARAM_SA_PROVIDER]: formLimits[PARAM_SA_PROVIDER],
-                [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: formLimits[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] / 100,
-                [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]:
-                    formLimits[PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
-                [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: formLimits[PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD],
-                [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]:
-                    formLimits[PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
-                [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: formLimits[PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD],
-                limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
-            });
+        (formData: Record<string, any>) => {
+            updateParameters(formatNewParams(formData));
         },
-        [params, updateParameters, toLimitReductions]
+        [updateParameters, formatNewParams]
     );
 
     useEffect(() => {
@@ -266,9 +276,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                 <CreateParameterDialog
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
-                    parameterValues={() => {
-                        return { ...params };
-                    }}
+                    parameterValues={() => formatNewParams(getValues())}
                     parameterFormatter={(newParams) => newParams}
                     parameterType={ElementType.SECURITY_ANALYSIS_PARAMETERS}
                 />
