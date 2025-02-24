@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import RunningStatus from './utils/running-status';
 import ComputingType from './computing-status/computing-type';
 
-import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from '../utils/config-params';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -70,8 +70,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isModificationsInProgress = useSelector((state) => state.isModificationsInProgress);
-
-    const limitReductionParam = useSelector((state) => Number(state[PARAM_LIMIT_REDUCTION]));
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
@@ -163,13 +161,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.LOAD_FLOW,
                         null,
-                        () =>
-                            startLoadFlow(
-                                studyUuid,
-                                currentNode?.id,
-                                currentRootNetworkUuid,
-                                limitReductionParam / 100.0
-                            ),
+                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
                         'startLoadFlowError'
@@ -330,15 +322,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 },
             },
         };
-    }, [
-        dispatch,
-        snackError,
-        startComputationAsync,
-        studyUuid,
-        limitReductionParam,
-        currentNode?.id,
-        currentRootNetworkUuid,
-    ]);
+    }, [dispatch, snackError, startComputationAsync, studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(

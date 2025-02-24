@@ -59,26 +59,17 @@ export function setLoadFlowProvider(studyUuid: UUID, newProvider: string) {
     });
 }
 
-export function startLoadFlow(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    limitReduction: number
-) {
+export function startLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         'Running loadflow on ' +
             studyUuid +
             ' on root network ' +
             currentRootNetworkUuid +
             ' and node ' +
-            currentNodeUuid +
-            ' with limit reduction ' +
-            limitReduction
+            currentNodeUuid
     );
     const startLoadFlowUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/loadflow/run?limitReduction=' +
-        limitReduction.toString();
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }

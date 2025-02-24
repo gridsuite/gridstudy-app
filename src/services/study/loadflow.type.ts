@@ -9,9 +9,12 @@ import { ILimitReductionsByVoltageLevel } from 'components/dialogs/parameters/co
 import { UUID } from 'crypto';
 
 export interface LoadFlowParametersInfos {
-    uuid: UUID;
+    uuid?: UUID;
     provider: string;
+    limitReduction: number;
     commonParameters: Record<string, boolean | string | string[] | number>;
-    specificParametersPerProvider: Record<string, Record<string, string>>;
+    specificParametersPerProvider: SpecificParametersPerProvider;
     limitReductions: ILimitReductionsByVoltageLevel[];
 }
+
+export type SpecificParametersPerProvider = Record<string, Record<string, string>>;
