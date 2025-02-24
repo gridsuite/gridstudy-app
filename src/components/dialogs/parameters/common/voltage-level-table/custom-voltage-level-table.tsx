@@ -17,7 +17,7 @@ interface LimitReductionsTableProps {
     formName: string;
 }
 
-const CustomTableByVoltageLevelTable: FunctionComponent<LimitReductionsTableProps> = ({
+const CustomVoltageLevelTable: FunctionComponent<LimitReductionsTableProps> = ({
     formName,
     columnsDefinition,
     tableHeight,
@@ -70,4 +70,4 @@ const CustomTableByVoltageLevelTable: FunctionComponent<LimitReductionsTableProp
     );
 };
 
-export default CustomTableByVoltageLevelTable;
+export default CustomVoltageLevelTable;

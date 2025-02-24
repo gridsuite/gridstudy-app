@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import GridSection from '../../commons/grid-section';
-import CustomTableByVoltageLevelTable from '../common/voltage-level-table/custom-table-by-voltage-level-table';
+import CustomVoltageLevelTable from '../common/voltage-level-table/custom-voltage-level-table';
 
 export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
     const intl = useIntl();
@@ -41,7 +41,7 @@ export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
         <Grid container>
             <GridSection title="StateEstimationParametersDefaultBoundsSection" heading={4} />
 
-            <CustomTableByVoltageLevelTable
+            <CustomVoltageLevelTable
                 formName={`${TabValue.LOADBOUNDS}.${DEFAULT_BOUNDS}`}
                 columnsDefinition={columnsDefinition}
                 tableHeight={450}
@@ -52,7 +52,7 @@ export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
             </Box>
             <GridSection title="StateEstimationParametersDefaultFixedBoundsSection" heading={4} />
 
-            <CustomTableByVoltageLevelTable
+            <CustomVoltageLevelTable
                 formName={`${TabValue.LOADBOUNDS}.${DEFAULT_FIXED_BOUNDS}`}
                 columnsDefinition={columnsDefinition}
                 tableHeight={450}

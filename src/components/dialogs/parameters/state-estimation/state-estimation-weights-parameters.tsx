@@ -9,7 +9,7 @@ import { VOLTAGE_LEVEL, WEIGHTS_PARAMETERS } from '../../../utils/field-constant
 import { TabValue, weightsParametersFields } from './state-estimation-parameters-utils';
 import { IColumnsDef } from '../common/limitreductions/columns-definitions';
 import { useIntl } from 'react-intl';
-import CustomTableByVoltageLevelTable from '../common/voltage-level-table/custom-table-by-voltage-level-table';
+import CustomVoltageLevelTable from '../common/voltage-level-table/custom-voltage-level-table';
 
 export const StateEstimationWeightsParameters: FunctionComponent = () => {
     const intl = useIntl();
@@ -35,7 +35,7 @@ export const StateEstimationWeightsParameters: FunctionComponent = () => {
     }, [intl]);
 
     return (
-        <CustomTableByVoltageLevelTable
+        <CustomVoltageLevelTable
             formName={`${TabValue.WEIGHTS}.${WEIGHTS_PARAMETERS}`}
             columnsDefinition={columnsDefinition}
             tableHeight={450}
