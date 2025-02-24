@@ -253,7 +253,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 true,
                 dynamicCssRules,
                 OnToggleHoverCallback,
-                null
+                null,
+                false
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
