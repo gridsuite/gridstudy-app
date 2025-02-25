@@ -55,7 +55,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
         (maxValueIst: number, item: ThresholdData, previousItem?: ThresholdData) => {
             // Incoherent cases :
             //  threshold without tempo that is not ist
-            //  threshold with biggest tempo and biggest value
+            //  threshold with biggest tempo and biggest value than the previous threshold
             //  more than one threshold without value
             const isIst =
                 (item.label === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
