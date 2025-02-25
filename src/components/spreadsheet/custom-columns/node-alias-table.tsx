@@ -49,7 +49,7 @@ const NodeAliasTable = () => {
                 initialValue: '',
                 editable: true,
                 autocomplete: true,
-                options: nodeNames,
+                options: nodeNames, // note: 'Root' node should be translated (like in app topbar)
                 width: '30%',
                 maxWidth: '30%',
             },

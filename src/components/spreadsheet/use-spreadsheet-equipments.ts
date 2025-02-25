@@ -9,23 +9,23 @@ import { Identifiable } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { UUID } from 'crypto';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     deleteEquipments,
     EquipmentToDelete,
     loadEquipments,
+    reloadNodesAliases,
     removeNodeData,
     resetEquipments,
     resetEquipmentsByTypes,
     updateEquipments,
 } from 'redux/actions';
-import { AppState } from 'redux/reducer';
-import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import { AppState, initialReloadNodesAliases } from 'redux/reducer';
+import { SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/equipment/common-config';
-import { isNodeBuilt } from 'components/graph/util/model-functions';
-import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
+import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 
@@ -45,23 +45,71 @@ export const useSpreadsheetEquipments = (
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
+    const nodesAliasesToReload = useSelector((state: AppState) => state.reloadNodesAliases);
+    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
+
+    const idsToBuildStatus = useMemo(() => {
+        let map = new Map();
+        treeModel?.treeNodes.forEach((treeNode) => {
+            map.set(treeNode.id, treeNode.data.globalBuildStatus);
+        });
+        return map;
+    }, [treeModel]);
 
     const nodesIdToFetch = useMemo(() => {
-        let nodesIdToFetch = new Set<string>();
+        let nodeIds = new Set<string>();
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
-        if (equipments.nodesId.find((nodeId) => nodeId === currentNode?.id) === undefined) {
-            nodesIdToFetch.add(currentNode?.id as string);
+        const currentNodeId = currentNode?.id as string;
+        if (
+            currentNodeId &&
+            isStatusBuilt(idsToBuildStatus.get(currentNodeId)) &&
+            equipments.nodesId.find((nodeId) => nodeId === currentNode?.id) === undefined
+        ) {
+            nodeIds.add(currentNodeId);
         }
         //Then we do the same for the other nodes we need the data of (the ones defined in aliases)
         nodesAliases.forEach((nodeAlias) => {
-            if (equipments.nodesId.find((nodeId) => nodeId === nodeAlias.id) === undefined) {
-                nodesIdToFetch.add(nodeAlias.id);
+            if (
+                isStatusBuilt(idsToBuildStatus.get(nodeAlias.id)) &&
+                equipments.nodesId.find((nodeId) => nodeId === nodeAlias.id) === undefined
+            ) {
+                nodeIds.add(nodeAlias.id);
             }
         });
-        return nodesIdToFetch;
-    }, [currentNode?.id, equipments.nodesId, nodesAliases]);
+        return nodeIds;
+    }, [currentNode?.id, equipments.nodesId, idsToBuildStatus, nodesAliases]);
 
-    const shouldFetchEquipments = useMemo(() => nodesIdToFetch.size > 0, [nodesIdToFetch]);
+    const loadEquipmentData = useCallback(
+        (nodeIds: Set<string>) => {
+            if (studyUuid && currentRootNetworkUuid) {
+                setErrorMessage(null);
+                setIsFetching(true);
+                let fetcherPromises: Promise<unknown>[] = [];
+                let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
+                    nodesId: [],
+                    equipmentsByNodeId: {},
+                };
+                nodeIds.forEach((nodeId) => {
+                    const promise = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
+                    fetcherPromises.push(promise);
+                    promise.then((results) => {
+                        let fetchedEquipments = results.flat();
+                        spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
+                        if (formatFetchedEquipments) {
+                            fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
+                            spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
+                        }
+                    });
+                });
+
+                Promise.all(fetcherPromises).then(() => {
+                    dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
+                    setIsFetching(false);
+                });
+            }
+        },
+        [currentRootNetworkUuid, dispatch, formatFetchedEquipments, studyUuid, type]
+    );
 
     const {
         impactedSubstationsIds,
@@ -167,50 +215,28 @@ export const useSpreadsheetEquipments = (
 
     useEffect(() => {
         if (
-            shouldFetchEquipments &&
-            studyUuid &&
-            currentRootNetworkUuid &&
+            nodesIdToFetch.size > 0 &&
             currentNode?.id &&
             isNetworkModificationTreeModelUpToDate &&
             isNodeBuilt(currentNode)
         ) {
-            setErrorMessage(null);
-            setIsFetching(true);
-            let fetchers: Promise<unknown>[] = [];
-            let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
-                nodesId: [],
-                equipmentsByNodeId: {},
-            };
-
-            nodesIdToFetch.forEach((nodeId) => {
-                const fetcherPromises = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
-                fetchers.push(fetcherPromises);
-                fetcherPromises.then((results) => {
-                    let fetchedEquipments = results.flat();
-                    spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                    if (formatFetchedEquipments) {
-                        fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
-                        spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
-                    }
-                });
-            });
-
-            Promise.all(fetchers).then(() => {
-                dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
-                setIsFetching(false);
-            });
+            loadEquipmentData(nodesIdToFetch);
         }
-    }, [
-        shouldFetchEquipments,
-        studyUuid,
-        currentNode,
-        currentRootNetworkUuid,
-        isNetworkModificationTreeModelUpToDate,
-        dispatch,
-        formatFetchedEquipments,
-        nodesIdToFetch,
-        type,
-    ]);
+    }, [currentNode, isNetworkModificationTreeModelUpToDate, loadEquipmentData, nodesIdToFetch]);
+
+    useEffect(() => {
+        if (nodesAliasesToReload.sheetType === type && nodesAliasesToReload.nodesId.length) {
+            let idsToRelaod = new Set<string>();
+            nodesAliasesToReload.nodesId.forEach((nodeId) => {
+                if (isStatusBuilt(idsToBuildStatus.get(nodeId))) {
+                    idsToRelaod.add(nodeId);
+                }
+            });
+            loadEquipmentData(idsToRelaod);
+            // reset reload action
+            dispatch(reloadNodesAliases(initialReloadNodesAliases));
+        }
+    }, [dispatch, idsToBuildStatus, loadEquipmentData, nodesAliasesToReload, type]);
 
     return { equipments, errorMessage, isFetching };
 };
