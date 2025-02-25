@@ -27,7 +27,7 @@ import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
-import { AutocompleteInput, CheckboxInput, ElementType, RawReadOnlyInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CheckboxInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
 import { ErrorInput } from '@gridsuite/commons-ui';
@@ -35,7 +35,7 @@ import { FieldErrorAlert } from '@gridsuite/commons-ui';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
-import { EQUIPMENT_TYPES } from '../equipment-types';
+import { ColumnBase, DndColumn, DndColumnType } from './dnd-table.type';
 
 export const MAX_ROWS_NUMBER = 100;
 const styles = {
@@ -78,54 +78,6 @@ function MultiCheckbox({ arrayFormName, handleClickCheck, handleClickUncheck, ..
         />
     );
 }
-
-export enum DndColumnType {
-    TEXT = 'TEXT',
-    NUMERIC = 'NUMERIC',
-    AUTOCOMPLETE = 'AUTOCOMPLETE',
-    CHIP_ITEMS = 'CHIP_ITEMS',
-    DIRECTORY_ITEMS = 'DIRECTORY_ITEMS',
-}
-
-interface ColumnBase {
-    dataKey: string;
-    maxWidth?: number | string;
-    width?: number | string;
-    label?: string;
-    extra?: JSX.Element;
-    editable?: boolean;
-    type: DndColumnType;
-}
-
-export interface ColumnText extends ColumnBase {
-    type: DndColumnType.TEXT;
-    showErrorMsg?: boolean;
-}
-
-export interface ColumnNumeric extends ColumnBase {
-    type: DndColumnType.NUMERIC;
-    adornment?: { text: string };
-    clearable?: boolean;
-    textAlign?: 'right' | 'left';
-}
-
-export interface ColumnAutocomplete extends ColumnBase {
-    type: DndColumnType.AUTOCOMPLETE;
-    options: string[];
-}
-
-export interface ColumnDirectoryItem extends ColumnBase {
-    type: DndColumnType.DIRECTORY_ITEMS;
-    equipmentTypes: EQUIPMENT_TYPES[];
-    elementType: ElementType;
-    titleId: string;
-}
-
-export interface ColumnChipsItem extends ColumnBase {
-    type: DndColumnType.CHIP_ITEMS;
-}
-
-export type DndColumn = ColumnNumeric | ColumnAutocomplete | ColumnText | ColumnDirectoryItem | ColumnChipsItem;
 
 interface DefaultTableCellProps {
     arrayFormName: string;

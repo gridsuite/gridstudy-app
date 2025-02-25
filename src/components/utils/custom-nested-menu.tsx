@@ -6,7 +6,7 @@
  */
 import { PropsWithChildren, useState } from 'react';
 import { NestedMenuItem, NestedMenuItemProps } from 'mui-nested-menu';
-import { Box, MenuItem, MenuItemProps, SxProps } from '@mui/material';
+import { Box, MenuItem, MenuItemProps, SxProps, Theme } from '@mui/material';
 import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
@@ -25,7 +25,7 @@ const styles = {
 };
 
 interface CustomNestedMenuItemProps extends PropsWithChildren, Omit<NestedMenuItemProps, 'parentMenuOpen'> {
-    sx?: SxProps;
+    sx?: SxProps<Theme>;
 }
 
 export const CustomNestedMenuItem = (props: CustomNestedMenuItemProps) => {

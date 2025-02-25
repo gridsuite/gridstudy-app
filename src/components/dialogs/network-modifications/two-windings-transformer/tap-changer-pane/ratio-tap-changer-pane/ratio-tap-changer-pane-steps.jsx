@@ -19,7 +19,7 @@ import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
 import { RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
-import { DndColumnType } from 'components/utils/dnd-table/dnd-table';
+import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {
     const intl = useIntl();

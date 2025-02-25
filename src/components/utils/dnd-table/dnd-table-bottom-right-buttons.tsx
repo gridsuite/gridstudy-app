@@ -39,7 +39,7 @@ const DndTableBottomRightButtons = ({
 }: DndTableBottomRightButtonsProps) => {
     const intl = useIntl();
 
-    const currentRows: any[] = useWatch({
+    const currentRows: ({ selected: boolean } & Record<string, any>)[] = useWatch({
         name: arrayFormName,
     });
 

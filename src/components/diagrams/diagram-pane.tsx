@@ -229,7 +229,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 console.log('debug', 'createNetworkAreaDiagramView', state);
                 if (ids?.length) {
                     const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth);
-                    return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM).then((svg: DiagramSvg) => {
+                    return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM).then((svg) => {
                         let nadTitle = '';
                         let substationsIds: UUID[] = [];
                         svg.additionalMetadata?.voltageLevels

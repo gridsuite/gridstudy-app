@@ -21,9 +21,10 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
-import DndTable, { ColumnNumeric, ColumnText, DndColumn, DndColumnType } from '../../utils/dnd-table/dnd-table';
+import DndTable from '../../utils/dnd-table/dnd-table';
 import TemporaryLimitsTable from './temporary-limits-table';
 import { CurrentTreeNode } from '../../../redux/reducer';
+import { ColumnNumeric, ColumnText, DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;

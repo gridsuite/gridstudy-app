@@ -16,7 +16,7 @@ import { SELECTED } from '../../utils/field-constants';
 import { TableNumericalInput } from '../../utils/rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../../utils/rhf-inputs/table-inputs/table-text-input';
 import { TemporaryLimit } from '../../../services/network-modification-types';
-import { ColumnNumeric, ColumnText, DndColumnType } from 'components/utils/dnd-table/dnd-table';
+import { ColumnNumeric, ColumnText, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 const styles = {
     columnsStyle: {

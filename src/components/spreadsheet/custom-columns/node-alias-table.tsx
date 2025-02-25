@@ -8,11 +8,12 @@
 import React, { useMemo } from 'react';
 import { NODE_ALIAS, NODE_NAME, NODES_ALIASES } from './custom-columns-nodes-form-utils';
 import { useSelector } from 'react-redux';
-import DndTable, { DndColumn, DndColumnType } from '../../utils/dnd-table/dnd-table';
+import DndTable from '../../utils/dnd-table/dnd-table';
 import { SELECTED } from '../../utils/field-constants';
 import { useFieldArray } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { AppState, CurrentTreeNode } from '../../../redux/reducer';
+import { DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 const NodeAliasTable = () => {
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
