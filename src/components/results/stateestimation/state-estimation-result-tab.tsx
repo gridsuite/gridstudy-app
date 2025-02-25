@@ -12,7 +12,6 @@ import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { QualityCriterionResult, StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
-import { useNodeData } from '../../study-container';
 import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
 import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer';
@@ -26,6 +25,7 @@ import {
 } from './state-estimation-result-utils';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { stateEstimationResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { useNodeData } from 'components/use-node-data';
 
 const styles = {
     flexWrapper: {

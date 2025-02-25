@@ -8,9 +8,7 @@
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { Box, darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Typography } from '@mui/material';
-import { Theme } from '@mui/material/styles';
-import { useParametersBackend, useParameterState } from './dialogs/parameters/parameters';
+import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
@@ -39,7 +37,7 @@ import {
 } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
-import { ShortCircuitParameters, useGetShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
+import { ShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import LoadFlowParameters from './dialogs/parameters/loadflow/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
@@ -50,10 +48,7 @@ import {
     getNonEvacuatedEnergyParameters,
     updateNonEvacuatedEnergyProvider,
 } from 'services/study/non-evacuated-energy';
-import {
-    NonEvacuatedEnergyParameters,
-    useGetNonEvacuatedEnergyParameters,
-} from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
+import { NonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
 import ComputingType from './computing-status/computing-type';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
@@ -62,75 +57,11 @@ import { NetworkVisualizationsParameters } from './dialogs/parameters/network-vi
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
-
-const stylesLayout = {
-    // <Tabs/> need attention with parents flex
-    rootContainer: {
-        width: '100%',
-        height: '100%',
-    },
-    columnContainer: {
-        height: '100%',
-    },
-    listDisplayContainer: {
-        overflow: 'auto',
-        flex: 1,
-    },
-    listDisplay: {
-        height: '100%',
-    },
-};
-export const tabStyles = {
-    listTitleDisplay: (theme: Theme) => ({
-        paddingTop: 1,
-        paddingBottom: 1,
-        paddingLeft: theme.spacing(2),
-        width: '100%',
-        fontSize: '1.1rem',
-        backgroundColor:
-            theme.palette.mode === 'light'
-                ? darken(theme.palette.background.paper, 0.1)
-                : theme.palette.background.paper,
-    }),
-    listDisplay: (theme: Theme) => ({
-        ...stylesLayout.listDisplay,
-        backgroundColor:
-            theme.palette.mode === 'light'
-                ? darken(theme.palette.background.paper, 0.1)
-                : theme.palette.background.paper,
-        '.MuiTab-root.MuiButtonBase-root': {
-            textTransform: 'none', //tab text not upper-case
-            textAlign: 'left',
-            alignItems: 'stretch',
-        },
-        '.MuiTabs-scrollButtons.Mui-disabled': {
-            opacity: 0.3,
-        },
-        '.MuiTabScrollButton-root:nth-of-type(1)': {
-            height: '30px', //40px by default
-        },
-    }),
-    parametersBox: (theme: Theme) => ({
-        backgroundColor:
-            theme.palette.mode === 'light'
-                ? theme.palette.background.paper
-                : lighten(theme.palette.background.paper, 0.2),
-        height: '100%',
-        position: 'relative',
-        padding: 0,
-    }),
-    contentBox: {
-        paddingTop: 6,
-        paddingBottom: 2,
-        paddingLeft: 8,
-        paddingRight: 8,
-        height: '100%',
-    },
-    dividerTab: (theme: Theme) => ({
-        padding: 0,
-        minHeight: theme.spacing(1),
-    }),
-};
+import { useGetNonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/use-get-non-evacuated-energy-parameters';
+import { stylesLayout, tabStyles } from './utils/tab-utils';
+import { useParametersBackend } from './dialogs/parameters/use-parameters-backend';
+import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
