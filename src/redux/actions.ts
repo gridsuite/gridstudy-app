@@ -52,7 +52,6 @@ import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
     ColumnDefinition,
-    ColumnState,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet/config/spreadsheet.type';
@@ -96,8 +95,6 @@ export type AppActions =
     | ResetMapReloadedAction
     | MapEquipmentsInitializedAction
     | SetFullscreenDiagramAction
-    | ChangeDisplayedColumnsNamesAction
-    | ChangeLockedColumnsNamesAction
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
@@ -544,11 +541,6 @@ export type StudyUpdatedAction = Readonly<Action<typeof STUDY_UPDATED>> & {
     eventData: StudyUpdatedEventData;
 };
 
-/*
-export type StudyUpdated = {
-    force: IntRange<0, 1>;
-} & (StudyUpdatedUndefined | StudyUpdatedStudy);
- */
 export function studyUpdated(eventData: StudyUpdatedEventData): StudyUpdatedAction {
     return { type: STUDY_UPDATED, eventData };
 }
@@ -614,32 +606,6 @@ export function setFullScreenDiagram(
             svgType: svgTypeParam!,
         };
     }
-}
-
-export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
-export type ChangeDisplayedColumnsNamesAction = Readonly<Action<typeof CHANGE_DISPLAYED_COLUMNS_NAMES>> & {
-    displayedColumnsNamesParams: TableValue<ColumnState[]>;
-};
-
-export function changeDisplayedColumns(
-    displayedColumnsParams: TableValue<ColumnState[]>
-): ChangeDisplayedColumnsNamesAction {
-    return {
-        type: CHANGE_DISPLAYED_COLUMNS_NAMES,
-        displayedColumnsNamesParams: displayedColumnsParams,
-    };
-}
-
-export const CHANGE_LOCKED_COLUMNS_NAMES = 'CHANGE_LOCKED_COLUMNS_NAMES';
-export type ChangeLockedColumnsNamesAction = Readonly<Action<typeof CHANGE_LOCKED_COLUMNS_NAMES>> & {
-    lockedColumnsNamesParams: TableValue<Set<string>>;
-};
-
-export function changeLockedColumns(lockedColumnsParams: TableValue<Set<string>>): ChangeLockedColumnsNamesAction {
-    return {
-        type: CHANGE_LOCKED_COLUMNS_NAMES,
-        lockedColumnsNamesParams: lockedColumnsParams,
-    };
 }
 
 export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';

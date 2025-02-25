@@ -35,7 +35,7 @@ import { FilterType } from '../../types/custom-aggrid-types';
 import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useEquipmentModification } from './equipment-modification/use-equipment-modification';
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
-import { changeDisplayedColumns } from '../../redux/actions';
+import { updateTableDefinition } from 'redux/actions';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -101,13 +101,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState<number>(0);
 
-    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates);
-    const formattedDisplayedColumnsNames = useMemo(() => columnsStates[tabIndex], [columnsStates, tabIndex]);
-    const lockedColumns = useSelector((state: AppState) => state.allLockedColumnsNames);
-    const formattedLockedColumns = useMemo(
-        () => new Set(lockedColumns[tabIndex] ? JSON.parse(lockedColumns[tabIndex]) : []),
-        [lockedColumns, tabIndex]
-    );
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
@@ -116,18 +109,29 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const [rowData, setRowData] = useState<Identifiable[]>([]);
 
-    const isLockedColumnNamesEmpty = useMemo(() => formattedLockedColumns.size === 0, [formattedLockedColumns.size]);
-
     const tableDefinition = useMemo(() => tablesDefinitions[tabIndex], [tabIndex, tablesDefinitions]);
+    const isLockedColumnNamesEmpty = useMemo(
+        () => tableDefinition?.columns?.map((col) => col.locked).length === 0,
+        [tableDefinition?.columns]
+    );
+
+    const shooldDisableButtons = useMemo(
+        () => disabled || tablesDefinitions.length === 0,
+        [disabled, tablesDefinitions]
+    );
     const columnsDefinitions = useCustomColumn(tabIndex);
     const reorderedColsDefs = useMemo(() => {
-        const visibleColumnsIds = formattedDisplayedColumnsNames?.filter((col) => col.visible).map((col) => col.colId);
-        const columns = columnsDefinitions?.reduce((acc, item) => {
-            acc[item.colId] = item;
-            return acc;
-        }, {} as Record<string, CustomColDef>);
-        return visibleColumnsIds?.map((id) => columns[id]);
-    }, [formattedDisplayedColumnsNames, columnsDefinitions]);
+        const columns = tableDefinition?.columns?.filter((column) => column.visible);
+        return columns?.map((column) => {
+            const colDef = columnsDefinitions.reduce((acc, curr) => {
+                if (curr.colId === column.id) {
+                    return curr;
+                }
+                return acc;
+            }, {} as CustomColDef);
+            return colDef;
+        });
+    }, [columnsDefinitions, tableDefinition?.columns]);
 
     const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition?.name]);
     const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.name);
@@ -140,11 +144,11 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [sortConfig]);
 
     const updateLockedColumnsConfig = useCallback(() => {
-        const lockedColumnsConfig = reorderedColsDefs
-            ?.filter((column) => formattedLockedColumns.has(column.colId))
-            .map((column) => {
+        const lockedColumnsConfig = tableDefinition?.columns
+            ?.filter((column) => column.visible && column.locked)
+            ?.map((column) => {
                 const s: ColumnState = {
-                    colId: column.colId ?? '',
+                    colId: column.id ?? '',
                     pinned: 'left',
                 };
                 return s;
@@ -153,7 +157,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             state: lockedColumnsConfig,
             defaultState: { pinned: null },
         });
-    }, [formattedLockedColumns, reorderedColsDefs]);
+    }, [tableDefinition]);
 
     useEffect(() => {
         gridRef.current?.api?.setGridOption('columnDefs', reorderedColsDefs);
@@ -296,14 +300,22 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         (event: ColumnMovedEvent) => {
             const colId = event.column?.getColId();
             if (colId && event.finished && event.toIndex !== undefined) {
-                let reorderedTableDefinitionIndexesTemp = [...formattedDisplayedColumnsNames];
-                const sourceIndex = reorderedTableDefinitionIndexesTemp.findIndex((col) => col.colId === colId);
+                let reorderedTableDefinitionIndexesTemp = [...tableDefinition.columns.filter((col) => col.visible)];
+                const sourceIndex = reorderedTableDefinitionIndexesTemp.findIndex((col) => col.id === colId);
                 const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(sourceIndex, 1);
                 reorderedTableDefinitionIndexesTemp.splice(event.toIndex, 0, reorderedItem);
-                dispatch(changeDisplayedColumns({ index: tabIndex, value: reorderedTableDefinitionIndexesTemp }));
+                dispatch(
+                    updateTableDefinition({
+                        ...tableDefinition,
+                        columns: [
+                            ...reorderedTableDefinitionIndexesTemp,
+                            ...tableDefinition.columns.filter((col) => !col.visible),
+                        ],
+                    })
+                );
             }
         },
-        [dispatch, formattedDisplayedColumnsNames, tabIndex]
+        [dispatch, tableDefinition]
     );
 
     const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({
@@ -330,17 +342,17 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     <Grid item>
                         <ColumnsConfig
                             tabIndex={tabIndex}
-                            disabled={disabled || !tableDefinition || tableDefinition?.columns.length === 0}
+                            disabled={shooldDisableButtons || tableDefinition?.columns.length === 0}
                         />
                     </Grid>
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsConfig tabIndex={tabIndex} disabled={!tableDefinition} />
+                            <CustomColumnsConfig tabIndex={tabIndex} disabled={shooldDisableButtons} />
                         </Grid>
                     )}
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsNodesConfig disabled={!tableDefinition} />
+                            <CustomColumnsNodesConfig disabled={shooldDisableButtons} />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
@@ -350,14 +362,14 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             gridRef={gridRef}
                             columns={reorderedColsDefs}
                             tableName={tableDefinition?.name}
-                            disabled={disabled || !tableDefinition || rowData.length === 0}
+                            disabled={shooldDisableButtons || rowData.length === 0}
                         />
                     </Grid>
                 </Grid>
             </Grid>
-            {disabled || !tableDefinition ? (
+            {disabled || shooldDisableButtons ? (
                 <Alert sx={styles.invalidNode} severity="warning">
-                    <FormattedMessage id={!tableDefinition ? 'NoSpreadsheets' : 'InvalidNode'} />
+                    <FormattedMessage id={shooldDisableButtons ? 'NoSpreadsheets' : 'InvalidNode'} />
                 </Alert>
             ) : (
                 <Box sx={mergeSx(styles.table)}>

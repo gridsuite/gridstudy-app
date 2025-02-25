@@ -27,6 +27,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/delete_custom_column_confirmation':
         'Êtes-vous sûr de vouloir supprimer la colonne "{columnName}" ?',
     'spreadsheet/custom_column/column_id_already_exist': 'Id de colonne déjà existant',
+    'spreadsheet/custom_column/column_name_already_exist': 'Nom de colonne déjà existant',
     'spreadsheet/custom_column/dependencies': "La formule fait référence à d'autres colonnes",
     'spreadsheet/custom_column/nodes': 'Nœuds',
     'spreadsheet/custom_column/parameter_nodes': 'Parametrer les alias de nœuds',

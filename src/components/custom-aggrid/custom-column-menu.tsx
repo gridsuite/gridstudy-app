@@ -17,20 +17,21 @@ import { setRemoveColumnDefinition } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
 import { DialogMenuProps } from './custom-aggrid-menu';
 import { deleteSpreadsheetColumn } from 'services/study-config';
+import { UUID } from 'crypto';
 
 export interface CustomColumnConfigProps extends DialogMenuProps {
     tabIndex: number;
-    colId: string;
+    colUuid: UUID;
 }
 
-export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabIndex, colId, onClose, anchorEl }) => {
+export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabIndex, colUuid, onClose, anchorEl }) => {
     const intl = useIntl();
     const dialogOpen = useStateBoolean(false);
     const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
     const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
     const columnDefinition = useMemo(
-        () => columnsDefinitions?.find((column) => column?.id === colId),
-        [colId, columnsDefinitions]
+        () => columnsDefinitions?.find((column) => column?.uuid === colUuid),
+        [colUuid, columnsDefinitions]
     );
 
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
@@ -81,7 +82,7 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabI
             </Menu>
 
             {dialogOpen.value && (
-                <CustomColumnDialog open={dialogOpen} colId={colId} tabIndex={tabIndex} isCreate={false} />
+                <CustomColumnDialog open={dialogOpen} colUuid={colUuid} tabIndex={tabIndex} isCreate={false} />
             )}
             {confirmationDialogOpen && (
                 <PopupConfirmationDialog

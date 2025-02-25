@@ -27,6 +27,7 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/delete_custom_column_confirmation':
         'Are you sure you want to delete the column "{columnName}"?',
     'spreadsheet/custom_column/column_id_already_exist': 'Column id already exists',
+    'spreadsheet/custom_column/column_name_already_exist': 'Column name already exists',
     'spreadsheet/custom_column/dependencies': 'The formula is linked to other columns',
     'spreadsheet/custom_column/nodes': 'Nodes',
     'spreadsheet/custom_column/parameter_nodes': 'Parameter nodes aliases',

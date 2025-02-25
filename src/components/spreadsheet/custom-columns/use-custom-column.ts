@@ -79,13 +79,12 @@ export function useCustomColumn(tabIndex: number) {
                             Menu: CustomColumnMenu,
                             menuParams: {
                                 tabIndex,
-                                colId: colDef.id,
+                                colUuid: colDef.uuid,
                             },
                         },
                     },
                     valueGetter: createValueGetter(colDef),
                     editable: false,
-                    suppressMovable: true,
                 };
             }),
         [tableDefinition?.columns, tableDefinition?.name, tabIndex, createValueGetter]

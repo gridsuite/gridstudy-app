@@ -40,10 +40,6 @@ import {
     AppActions,
     CENTER_ON_SUBSTATION,
     CenterOnSubstationAction,
-    CHANGE_DISPLAYED_COLUMNS_NAMES,
-    CHANGE_LOCKED_COLUMNS_NAMES,
-    ChangeDisplayedColumnsNamesAction,
-    ChangeLockedColumnsNamesAction,
     CLOSE_DIAGRAM,
     CLOSE_DIAGRAMS,
     CLOSE_STUDY,
@@ -286,7 +282,6 @@ import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
-    ColumnState,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet/config/spreadsheet.type';
@@ -493,7 +488,6 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allLockedColumnsNames: string[];
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
@@ -609,13 +603,11 @@ const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 interface TablesState {
     uuid: UUID | null;
     definitions: SpreadsheetTabDefinition[];
-    columnsStates: ColumnState[][];
 }
 
 const initialTablesState: TablesState = {
     uuid: null,
     definitions: [],
-    columnsStates: [],
 };
 
 const initialState: AppState = {
@@ -643,7 +635,6 @@ const initialState: AppState = {
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
     fullScreenDiagram: null,
-    allLockedColumnsNames: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     isEventScenarioDrawerOpen: false,
@@ -855,20 +846,22 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
         const { newTableDefinition } = action;
-        state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
-        state.tables.columnsStates.push(
-            newTableDefinition.columns.map((col) => ({ colId: col.id, name: col.name, visible: true }))
+        const existingTableDefinition = state.tables.definitions.find(
+            (tabDef) => tabDef.uuid === newTableDefinition.uuid
         );
+        if (existingTableDefinition) {
+            Object.assign(existingTableDefinition, newTableDefinition);
+        } else {
+            state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
+        }
     });
 
     builder.addCase(INIT_TABLE_DEFINITIONS, (state, action: InitTableDefinitionsAction) => {
         state.tables.uuid = action.collectionUuid;
-        state.tables.definitions = action.tableDefinitions;
-        state.tables.columnsStates = action.tableDefinitions.map((table) =>
-            table.columns.map((col) => {
-                return { colId: col.id, name: col.name, visible: true };
-            })
-        );
+        state.tables.definitions = action.tableDefinitions.map((tabDef) => ({
+            ...tabDef,
+            columns: tabDef.columns.map((col) => ({ ...col, visible: true, locked: false })),
+        }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.name)
             .reduce((acc, tabName) => ({ ...acc, [tabName]: [] }), {});
@@ -889,7 +882,6 @@ export const reducer = createReducer(initialState, (builder) => {
         const removedTableName = state.tables.definitions[action.tabIndex].name;
 
         state.tables.definitions.splice(action.tabIndex, 1);
-        state.tables.columnsStates.splice(action.tabIndex, 1);
 
         // Update indexes of remaining table definitions
         state.tables.definitions.forEach((table, idx) => {
@@ -1118,20 +1110,6 @@ export const reducer = createReducer(initialState, (builder) => {
                   svgType: action.svgType,
               }
             : null;
-    });
-
-    builder.addCase(CHANGE_DISPLAYED_COLUMNS_NAMES, (state, action: ChangeDisplayedColumnsNamesAction) => {
-        const newDisplayedColumnsNames = [...state.tables.columnsStates];
-        newDisplayedColumnsNames[action.displayedColumnsNamesParams.index] = action.displayedColumnsNamesParams.value;
-        state.tables.columnsStates = newDisplayedColumnsNames;
-    });
-
-    builder.addCase(CHANGE_LOCKED_COLUMNS_NAMES, (state, action: ChangeLockedColumnsNamesAction) => {
-        let newLockedColumnsNames = [...state.allLockedColumnsNames];
-        newLockedColumnsNames[action.lockedColumnsNamesParams.index] = JSON.stringify(
-            Array.from(action.lockedColumnsNamesParams.value)
-        );
-        state.allLockedColumnsNames = newLockedColumnsNames;
     });
 
     builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action: FavoriteContingencyListsAction) => {
@@ -1764,7 +1742,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const tableDefinition = state.tables.definitions[colData.index];
 
         if (tableDefinition) {
-            const existingColumnIndex = tableDefinition.columns.findIndex((col) => col.id === colData.value.id);
+            const existingColumnIndex = tableDefinition.columns.findIndex((col) => col.uuid === colData.value.uuid);
 
             if (existingColumnIndex !== -1) {
                 // Update existing column
@@ -1772,11 +1750,6 @@ export const reducer = createReducer(initialState, (builder) => {
             } else {
                 // Add new column if not found
                 tableDefinition.columns.push(colData.value);
-                state.tables.columnsStates[colData.index].push({
-                    colId: colData.value.id,
-                    name: colData.value.name,
-                    visible: true,
-                });
             }
         }
     });
@@ -1787,8 +1760,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
         if (tableDefinition) {
             tableDefinition.columns = tableDefinition.columns.filter((col) => col.id !== value);
-            // remove column from columnsStates
-            state.tables.columnsStates[index] = state.tables.columnsStates[index].filter((col) => col.colId !== value);
         }
     });
 

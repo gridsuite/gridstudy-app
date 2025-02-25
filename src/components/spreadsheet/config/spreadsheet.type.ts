@@ -41,6 +41,8 @@ export type ColumnDefinition = {
     precision?: number;
     formula: string;
     dependencies?: string[];
+    visible?: boolean;
+    locked?: boolean;
 };
 
 export type ColumnDefinitionDto = Omit<ColumnDefinition, 'dependencies'> & {

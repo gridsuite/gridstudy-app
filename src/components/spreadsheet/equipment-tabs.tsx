@@ -6,7 +6,7 @@
  */
 
 import { Grid, Tab, Tabs, IconButton, Box, Typography } from '@mui/material';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
@@ -15,7 +15,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { AppDispatch } from 'redux/store';
 import { removeTableDefinition } from 'redux/actions';
 import { removeSpreadsheetConfigFromCollection } from 'services/study-config';
-import { UUID } from 'crypto';
 import { PopupConfirmationDialog } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 
@@ -78,21 +77,27 @@ const TabLabel: React.FC<{ name: string; onRemove: () => void; disabled: boolean
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex, handleSwitchTab, disabled }) => {
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
-    const speadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
+    const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
     const intl = useIntl();
     const dispatch = useDispatch<AppDispatch>();
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
     const [tabToBeRemovedIndex, setTabToBeRemovedIndex] = useState<number>(tabIndex);
     const handleRemoveTab = () => {
-        const tableId = tablesDefinitions.find((def) => def.index === tabToBeRemovedIndex)?.uuid;
-        removeSpreadsheetConfigFromCollection(speadsheetsCollectionUuid as UUID, tableId as UUID).then(() => {
+        const tableUuid = tablesDefinitions.find((def) => def.index === tabToBeRemovedIndex)?.uuid;
+        if (!tableUuid || !spreadsheetsCollectionUuid) {
+            return;
+        }
+        removeSpreadsheetConfigFromCollection(spreadsheetsCollectionUuid, tableUuid).then(() => {
             dispatch(removeTableDefinition(tabToBeRemovedIndex));
-            if (tabToBeRemovedIndex === tabIndex) {
-                handleSwitchTab(0);
-            }
             setConfirmationDialogOpen(false);
         });
     };
+
+    useEffect(() => {
+        if (tabIndex >= tablesDefinitions.length) {
+            handleSwitchTab(tablesDefinitions.length - 1);
+        }
+    }, [tabIndex, tablesDefinitions.length, handleSwitchTab]);
 
     const handleRemoveTabClick = (tabIndex: number) => {
         setTabToBeRemovedIndex(tabIndex);

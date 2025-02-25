@@ -22,7 +22,6 @@ export type CustomSpreadsheetSaveDialogProps = {
 export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly<CustomSpreadsheetSaveDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
-    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
 
     const customColumns = useMemo(() => {
         return tableDefinition?.columns.reduce((acc, item) => {
@@ -33,22 +32,17 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
                 type: item.type,
                 precision: item.precision,
                 formula: item.formula,
-                dependencies:
-                    item.dependencies && item.dependencies.length > 0 ? JSON.stringify(item.dependencies) : undefined,
+                dependencies: item.dependencies?.length ? JSON.stringify(item.dependencies) : undefined,
             };
             return acc;
         }, {} as Record<string, ColumnDefinitionDto>);
     }, [tableDefinition?.columns]);
 
-    const reorderedColumnsIds = useMemo(() => {
-        return columnsStates?.map((col) => col.colId);
-    }, [columnsStates]);
-
     const reorderedColumns = useMemo(() => {
-        return reorderedColumnsIds && customColumns
-            ? reorderedColumnsIds.map((colId: string) => customColumns[colId])
+        return tableDefinition?.columns && customColumns
+            ? tableDefinition?.columns?.filter((column) => column.visible).map((column) => customColumns[column.id])
             : [];
-    }, [reorderedColumnsIds, customColumns]);
+    }, [tableDefinition, customColumns]);
 
     const saveSpreadsheetColumnsConfiguration = ({
         name,
