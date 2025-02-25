@@ -45,11 +45,6 @@ const styles = {
         textTransform: 'none',
     },
 };
-export const addSelectedFieldToRows = (rows) => {
-    return rows?.map((row) => {
-        return { ...row, [SELECTED]: false };
-    });
-};
 
 function MultiCheckbox({ arrayFormName, handleClickCheck, handleClickUncheck, ...props }) {
     const arrayToWatch = useWatch({

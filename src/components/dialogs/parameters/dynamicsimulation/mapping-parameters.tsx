@@ -5,23 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { DefParam, makeComponents, TYPES } from '../util/make-component-utils';
 import { FunctionComponent, useMemo } from 'react';
 import { getIdOrSelf } from '../../dialog-utils';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { MappingInfos } from 'services/study/dynamic-simulation.type';
-
-export const MAPPING = 'mapping';
-
-export const formSchema = yup.object().shape({
-    [MAPPING]: yup.string().required(),
-});
-
-export const emptyFormData = {
-    [MAPPING]: '',
-};
+import { MAPPING } from './dynamic-simulation-utils';
 
 interface MappingParametersProps {
     mapping?: {
