@@ -20,9 +20,9 @@ import {
     DC,
     DC_POWER_FACTOR,
     DC_USE_TRANSFORMER_RATIO,
+    DEFAULT_LIMIT_REDUCTION_VALUE,
     DISTRIBUTED_SLACK,
     HVDC_AC_EMULATION,
-    MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
     PHASE_SHIFTER_REGULATION_ON,
     READ_SLACK_BUS,
     SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON,
@@ -153,7 +153,7 @@ export const setLimitReductions = (
         );
         formMethods.setValue(PARAM_LIMIT_REDUCTION, null);
     } else {
-        formMethods.setValue(PARAM_LIMIT_REDUCTION, MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION);
+        formMethods.setValue(PARAM_LIMIT_REDUCTION, DEFAULT_LIMIT_REDUCTION_VALUE);
         formMethods.setValue(LIMIT_REDUCTIONS_FORM, []);
     }
 };
