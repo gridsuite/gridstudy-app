@@ -9,7 +9,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import { useCallback, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { CurrentLimits } from '../../../services/network-modification-types';
+import { CurrentLimits, Limit } from '../../../services/network-modification-types';
 import { BarSeriesType } from '@mui/x-charts/models/seriesType/bar';
 import { AxisValueFormatterContext } from '@mui/x-charts/models/axis';
 
@@ -26,48 +26,45 @@ interface Ticks {
     incoherent: boolean;
 }
 
-interface ThresholdData {
-    label: string;
-    tempo: number | null;
-    value: number | null;
-}
+const formatTempo = (tempo: number | null) => {
+    if (!tempo) {
+        return '';
+    }
+    const min = Math.floor(tempo / 60);
+    const sec = tempo % 60;
+    if (min > 0 && sec === 0) {
+        return `${min}min`;
+    }
+    if (min === 0 && sec > 0) {
+        return `${sec}s`;
+    }
+    return `${min}min${sec}s`;
+};
 
 export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGraphProps>) {
     const currentLimits: CurrentLimits = useWatch({ name: `${limitsGroupFormName}` });
     const intl = useIntl();
 
-    const formatTempo = useCallback((tempo: number | null) => {
-        if (!tempo) {
-            return '';
-        }
-        const min = Math.floor(tempo / 60);
-        const sec = tempo % 60;
-        if (min > 0 && sec === 0) {
-            return `${min}min`;
-        }
-        if (min === 0 && sec > 0) {
-            return `${sec}s`;
-        }
-        return `${min}min${sec}s`;
-    }, []);
-
     const isIncoherent = useCallback(
-        (maxValueIst: number, item: ThresholdData, previousItem?: ThresholdData) => {
+        (maxValueIst: number, item: Limit, previousItem?: Limit) => {
             // Incoherent cases :
             //  threshold without tempo that is not ist
             //  threshold with biggest tempo and biggest value than the previous threshold
             //  more than one threshold without value
             const isIst =
-                (item.label === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
-                (!currentLimits.permanentLimit && !item.tempo);
+                (item.name === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
+                (!currentLimits.permanentLimit && !item.acceptableDuration);
 
             const istValue = currentLimits.permanentLimit ? currentLimits.permanentLimit : maxValueIst;
 
             return (
-                ((!item.tempo && currentLimits.permanentLimit && !isIst) ||
+                ((!item.acceptableDuration && currentLimits.permanentLimit && !isIst) ||
                     (!isIst && item.value && item.value < istValue) ||
-                    (previousItem && item.tempo && previousItem.tempo && item.tempo > previousItem.tempo) ||
-                    (previousItem && !item.tempo && !previousItem.tempo)) ??
+                    (previousItem &&
+                        item.acceptableDuration &&
+                        previousItem.acceptableDuration &&
+                        item.acceptableDuration > previousItem.acceptableDuration) ||
+                    (previousItem && !item.acceptableDuration && !previousItem.acceptableDuration)) ??
                 false
             );
         },
@@ -75,15 +72,15 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
     );
 
     const { series, ticks } = useMemo(() => {
-        const thresholds: ThresholdData[] = [];
+        const thresholds: Limit[] = [];
         let noValueThresholdFound = false;
-        let maxValueIst = 0;
+        let maxValueIst: number = 0;
 
         if (currentLimits?.permanentLimit) {
             thresholds.push({
-                label: intl.formatMessage({ id: 'IST' }),
+                name: intl.formatMessage({ id: 'IST' }),
                 value: currentLimits.permanentLimit,
-                tempo: null,
+                acceptableDuration: null,
             });
             maxValueIst = currentLimits.permanentLimit;
         }
@@ -99,9 +96,9 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                         maxValueIst = Math.max(maxValueIst, field.value);
                     }
                     thresholds.push({
-                        label: field.name,
+                        name: field.name,
                         value: field.value,
-                        tempo: field.acceptableDuration,
+                        acceptableDuration: field.acceptableDuration,
                     });
                 });
         }
@@ -111,8 +108,8 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             if (a.value && !b.value) {
                 return -1;
             }
-            if (!a.value && !b.value && a.tempo && b.tempo) {
-                return a.tempo - b.tempo;
+            if (!a.value && !b.value && a.acceptableDuration && b.acceptableDuration) {
+                return a.acceptableDuration - b.acceptableDuration;
             }
             if (!a.value && b.value) {
                 return 1;
@@ -130,12 +127,14 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
         return thresholds.reduce<{ series: BarSeriesType[]; ticks: Ticks[] }>(
             (acc, item, index) => {
                 const isIst =
-                    (item.label === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
-                    (!currentLimits.permanentLimit && !item.tempo && item.value === maxValueIst);
+                    (item.name === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
+                    (!currentLimits.permanentLimit && !item.acceptableDuration && item.value === maxValueIst);
                 const difference = item.value ? item.value - previousSum : undefined;
 
                 const color =
-                    isIst || !item.tempo || (item.tempo && item.value && maxValueIst >= item.value)
+                    isIst ||
+                    !item.acceptableDuration ||
+                    (item.acceptableDuration && item.value && maxValueIst >= item.value)
                         ? colorIST
                         : colors?.[colorIndex] ?? colors[colors.length - 1];
 
@@ -149,7 +148,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 }
 
                 const updatedSeries: BarSeriesType[] =
-                    (item.tempo && !item.value) || (item.value && item.value >= maxValueIst)
+                    (item.acceptableDuration && !item.value) || (item.value && item.value >= maxValueIst)
                         ? [
                               ...acc.series,
                               {
@@ -157,7 +156,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                                   label:
                                       isIst || item.value === maxValueIst
                                           ? intl.formatMessage({ id: 'unlimited' })
-                                          : formatTempo(item.tempo),
+                                          : formatTempo(item.acceptableDuration),
                                   data: [difference ?? maxValue * 0.15],
                                   color: item.value ? color : colorForbidden,
                                   stack: 'total',
@@ -166,7 +165,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                         : [...acc.series];
                 const updatedTicks: Ticks[] = [
                     ...acc.ticks,
-                    { position: item.value, label: item.label, incoherent: incoherent },
+                    { position: item.value, label: item.name, incoherent: incoherent },
                 ];
 
                 if (
@@ -189,7 +188,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             },
             { series: [], ticks: [] }
         );
-    }, [currentLimits, intl, formatTempo, isIncoherent]);
+    }, [currentLimits, intl, isIncoherent]);
 
     const config = {
         id: 'topAxis',
