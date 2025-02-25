@@ -21,7 +21,7 @@ import { formatFetchedEquipments } from './utils/equipment-table-utils';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
-import { AppState, CurrentTreeNode, EquipmentUpdateType, getUpdateTypeFromEquipmentType } from '../../redux/reducer';
+import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
@@ -191,38 +191,23 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition.type]
     );
 
-    const highlightUpdatedEquipment = useCallback(
-        (updatedEquipments: Record<EquipmentUpdateType, Identifiable[]>) => {
-            if (!equipmentToUpdateId) {
-                return;
-            }
+    const highlightUpdatedEquipment = useCallback(() => {
+        if (!equipmentToUpdateId) {
+            return;
+        }
 
-            const equipmentUpdateType = getUpdateTypeFromEquipmentType(tableDefinition.type);
-            const updatedEquipmentsOfType = equipmentUpdateType && updatedEquipments[equipmentUpdateType];
+        const api = gridRef.current?.api;
+        const rowNode = api?.getRowNode(equipmentToUpdateId);
 
-            if (updatedEquipmentsOfType) {
-                // Find the specific updated equipment
-                const updatedEquipment = updatedEquipmentsOfType.find(
-                    (equipment) => equipment.id === equipmentToUpdateId
-                );
+        if (rowNode && api) {
+            api.flashCells({
+                rowNodes: [rowNode],
+                flashDuration: 1000,
+            });
+        }
 
-                if (updatedEquipment) {
-                    const api = gridRef.current?.api;
-                    const rowNode = api?.getRowNode(updatedEquipment.id);
-
-                    if (rowNode && api) {
-                        api.flashCells({
-                            rowNodes: [rowNode],
-                            flashDuration: 1000,
-                        });
-                    }
-                }
-            }
-
-            setEquipmentToUpdateId(null);
-        },
-        [tableDefinition.type, equipmentToUpdateId]
-    );
+        setEquipmentToUpdateId(null);
+    }, [equipmentToUpdateId]);
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         tableDefinition.type,
