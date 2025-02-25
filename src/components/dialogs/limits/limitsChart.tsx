@@ -57,14 +57,20 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
 
             const istValue = currentLimits.permanentLimit ? currentLimits.permanentLimit : maxValueIst;
 
+            const itemTempoGreaterThanPrevious: boolean =
+                (item?.acceptableDuration &&
+                    previousItem?.acceptableDuration &&
+                    item.acceptableDuration > previousItem.acceptableDuration) ||
+                false;
+
+            const atLeastTwoItemsWithNotempo: boolean =
+                (previousItem?.acceptableDuration && !item.acceptableDuration) || false;
+
             return (
-                ((!item.acceptableDuration && currentLimits.permanentLimit && !isIst) ||
-                    (!isIst && item.value && item.value < istValue) ||
-                    (previousItem &&
-                        item.acceptableDuration &&
-                        previousItem.acceptableDuration &&
-                        item.acceptableDuration > previousItem.acceptableDuration) ||
-                    (previousItem && !item.acceptableDuration && !previousItem.acceptableDuration)) ??
+                (!item.acceptableDuration && currentLimits.permanentLimit && !isIst) ||
+                (!isIst && item.value && item.value < istValue) ||
+                itemTempoGreaterThanPrevious ||
+                atLeastTwoItemsWithNotempo ||
                 false
             );
         },
