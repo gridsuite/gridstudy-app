@@ -15,7 +15,6 @@ import {
     PARAM_MAP_BASEMAP,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../../utils/config-params';
-import { styles } from '../parameters';
 import LineSeparator from '../../commons/line-separator';
 import { mergeSx, MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
@@ -31,6 +30,7 @@ import {
     TabValue,
 } from './network-visualizations-utils';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { styles } from '../parameters-style';
 
 export const MapParameters = () => {
     const { setValue, getValues, control } = useFormContext();

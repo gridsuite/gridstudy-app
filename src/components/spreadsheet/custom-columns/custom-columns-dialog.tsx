@@ -60,7 +60,7 @@ import { ColumnDefinition } from '../config/spreadsheet.type';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
-    colUuid: UUID;
+    colUuid?: UUID;
     tabIndex: number;
     isCreate?: boolean;
 };
@@ -188,7 +188,7 @@ export default function CustomColumnDialog({
             const existingColumn = columnsDefinitions?.find((column) => column.uuid === colUuid);
             let isUpdate = false;
 
-            if (!validateParams(columnsDefinitions, newParams, colUuid, setError)) {
+            if (colUuid && !validateParams(columnsDefinitions, newParams, colUuid, setError)) {
                 return;
             }
 

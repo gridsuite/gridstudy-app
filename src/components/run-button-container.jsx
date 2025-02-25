@@ -15,18 +15,19 @@ import RunningStatus from './utils/running-status';
 import ComputingType from './computing-status/computing-type';
 
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import { useParameterState } from './dialogs/parameters/parameters';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import ContingencyListSelector from './dialogs/contingency-list-selector';
-import DynamicSimulationParametersSelector, {
-    checkDynamicSimulationParameters,
-} from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+import DynamicSimulationParametersSelector from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 
 import { startSensitivityAnalysis, stopSensitivityAnalysis } from '../services/study/sensitivity-analysis';
 import { startNonEvacuatedEnergy, stopNonEvacuatedEnergy } from '../services/study/non-evacuated-energy';
-import { startDynamicSimulation, stopDynamicSimulation } from '../services/study/dynamic-simulation';
+import {
+    fetchDynamicSimulationParameters,
+    startDynamicSimulation,
+    stopDynamicSimulation,
+} from '../services/study/dynamic-simulation';
 import { startLoadFlow, stopLoadFlow } from '../services/study/loadflow';
 import { startSecurityAnalysis, stopSecurityAnalysis } from '../services/study/security-analysis';
 import { startShortCircuitAnalysis, stopShortCircuitAnalysis } from '../services/study/short-circuit-analysis';
@@ -35,7 +36,17 @@ import { startStateEstimation, stopStateEstimation } from '../services/study/sta
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { startDynamicSecurityAnalysis, stopDynamicSecurityAnalysis } from '../services/study/dynamic-security-analysis';
+import { useParameterState } from './dialogs/parameters/use-parameters-state';
 
+const checkDynamicSimulationParameters = (studyUuid) => {
+    return fetchDynamicSimulationParameters(studyUuid).then((params) => {
+        // check mapping configuration
+        const mappings = params.mappings.map((elem) => elem.name);
+        const mapping = params.mapping;
+        const isMappingValid = mappings.includes(mapping);
+        return isMappingValid;
+    });
+};
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 

@@ -22,8 +22,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { ElementType } from '@gridsuite/commons-ui';
 import { VoltageAdornment } from '../../dialog-utils';
-import { styles } from '../parameters';
 import Alert from '@mui/material/Alert';
+import { styles } from '../parameters-style';
 
 // TODO: to fix when either migrating DndTable to typescript or using something else than DndTable
 const DndTableTyped = DndTable as React.ComponentType<any>;

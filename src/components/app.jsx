@@ -13,7 +13,6 @@ import {
     OptionalServicesStatus,
 } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
-import { StudyView } from './study-pane';
 import {
     AuthenticationRouter,
     CardErrorBoundary,
@@ -54,6 +53,7 @@ import {
 } from '../redux/actions';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
+import { StudyView } from './utils/utils';
 
 const noUserManager = { instance: null, error: null };
 
