@@ -80,7 +80,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
         let maxValueIst = 0;
 
         if (currentLimits?.permanentLimit) {
-            data.push({
+            thresholds.push({
                 label: intl.formatMessage({ id: 'IST' }),
                 value: currentLimits.permanentLimit,
                 tempo: null,
@@ -98,7 +98,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                     if (!field.acceptableDuration && field.value) {
                         maxValueIst = Math.max(maxValueIst, field.value);
                     }
-                    data.push({
+                    thresholds.push({
                         label: field.name,
                         value: field.value,
                         tempo: field.acceptableDuration,
@@ -107,7 +107,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
         }
 
         // Sort by value, if no value put at the end
-        data.sort((a, b) => {
+        thresholds.sort((a, b) => {
             if (a.value && !b.value) {
                 return -1;
             }
@@ -123,11 +123,11 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             return 0;
         });
 
-        const maxValue = Math.max(...data.map((item) => item.value ?? 0));
+        const maxValue = Math.max(...thresholds.map((item) => item.value ?? 0));
         let colorIndex = 0;
         let previousSum = 0;
 
-        return data.reduce<{ series: BarSeriesType[]; ticks: Ticks[] }>(
+        return thresholds.reduce<{ series: BarSeriesType[]; ticks: Ticks[] }>(
             (acc, item, index) => {
                 const isIst =
                     (item.label === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
@@ -139,7 +139,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                         ? colorIST
                         : colors?.[colorIndex] ?? colors[colors.length - 1];
 
-                const incoherent = isIncoherent(maxValueIst, item, index > 0 ? data[index - 1] : undefined);
+                const incoherent = isIncoherent(maxValueIst, item, index > 0 ? thresholds[index - 1] : undefined);
 
                 if (item.value && item.value >= maxValueIst) {
                     previousSum = item.value;
@@ -170,7 +170,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 ];
 
                 if (
-                    index === data.length - 1 &&
+                    index === thresholds.length - 1 &&
                     updatedTicks[updatedTicks.length - 1].position &&
                     !noValueThresholdFound
                 ) {
