@@ -67,9 +67,7 @@ import {
     Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import StaticVarCompensatorCreationDialogTabs, {
-    StaticVarCompensatorCreationDialogTab,
-} from './static-var-compensator-creation-dialog-tabs';
+import StaticVarCompensatorCreationDialogTabs from './static-var-compensator-creation-dialog-tabs';
 import { Grid } from '@mui/material';
 import StaticVarCompensatorCreationForm from './static-var-compensator-creation-form';
 import StaticVarCompensatorCreationDialogHeader from './static-var-compensator-creation-dialog-header';
@@ -84,6 +82,7 @@ import {
     getStandbyAutomatonFormValidationSchema,
 } from './standby-automaton-form-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
+import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 
 export type StaticVarCompensatorCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
