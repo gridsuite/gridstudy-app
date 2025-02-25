@@ -75,7 +75,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
     );
 
     const { series, ticks } = useMemo(() => {
-        const data: ThresholdData[] = [];
+        const thresholds: ThresholdData[] = [];
         let noValueThresholdFound = false;
         let maxValueIst = 0;
 
