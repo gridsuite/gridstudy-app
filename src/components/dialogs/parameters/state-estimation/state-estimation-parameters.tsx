@@ -9,7 +9,8 @@ import { CustomFormProvider, SubmitButton, useSnackMessage } from '@gridsuite/co
 import { GENERAL } from '../voltageinit/voltage-init-parameters-form';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { mergeSx } from '../../../utils/functions';
-import { styles, TabPanel } from '../parameters';
+import { styles } from '../parameters-style';
+import { TabPanel } from '../parameters';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import { FormattedMessage } from 'react-intl';
 import { useForm } from 'react-hook-form';

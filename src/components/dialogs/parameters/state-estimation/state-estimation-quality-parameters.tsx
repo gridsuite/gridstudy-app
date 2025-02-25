@@ -6,7 +6,7 @@
  */
 import GridSection from '../../commons/grid-section';
 import { ParameterFloat } from '../widget';
-import { styles } from '../parameters';
+import { styles } from '../parameters-style';
 import { qualityParametersFields, TabValue } from './state-estimation-parameters-utils';
 import {
     QUALITY_PER_REGION,
