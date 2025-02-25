@@ -846,6 +846,18 @@ export const NetworkMapTab = ({
         if (!rootNodeId) {
             return;
         }
+        if (studyUpdatedForce.eventData.headers) {
+            console.log('=========== rootNetworkModified !', studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER]);
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'rootNetworkModified' &&
+                studyUpdatedForce.eventData.headers['rootNetwork'] === currentRootNetworkUuid
+            ) {
+                setInitialized(false);
+                setIsRootNodeGeoDataLoaded(false);
+                dispatch(resetMapEquipment());
+                return;
+            }
+        }
         // when root network has just been changed, we reset map equipment and geo data, they will be loaded as if we were opening a new study
         if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
             setInitialized(false);
@@ -853,6 +865,7 @@ export const NetworkMapTab = ({
             dispatch(resetMapEquipment());
             return;
         }
+
         if (disabled) {
             return;
         }
@@ -901,6 +914,7 @@ export const NetworkMapTab = ({
         studyUuid,
         currentNode,
         currentRootNetworkUuid,
+        studyUpdatedForce.eventData.headers,
         loadMapEquipments,
         dispatch,
         updateMapEquipmentsAndGeoData,
