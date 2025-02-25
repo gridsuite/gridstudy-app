@@ -414,7 +414,7 @@ DndTable.propTypes = {
     arrayFormName: PropTypes.string.isRequired,
     useFieldArrayOutput: PropTypes.object.isRequired,
     columnsDefinition: PropTypes.array.isRequired,
-    tableHeight: PropTypes.number.isRequired,
+    tableHeight: PropTypes.number,
     allowedToAddRows: PropTypes.func,
     createRows: PropTypes.func.isRequired,
     handleUploadButton: PropTypes.func,
