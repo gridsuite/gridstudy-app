@@ -55,7 +55,6 @@ import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 
-import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import {
     addModificationTypeToTemporaryLimits,
     getLimitsEmptyFormData,
@@ -70,7 +69,7 @@ import {
     getCharacteristicsValidationSchema,
     getCharacteristicsWithOutConnectivityFormData,
 } from '../characteristics-pane/line-characteristics-pane-utils';
-import { formatTemporaryLimits } from 'components/utils/utils';
+import { addSelectedFieldToRows, formatTemporaryLimits } from 'components/utils/utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -99,13 +98,7 @@ import {
     getBranchActiveReactivePowerEmptyFormData,
     getBranchActiveReactivePowerValidationSchema,
 } from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
-
-export const LineModificationDialogTab = {
-    CONNECTIVITY_TAB: 0,
-    CHARACTERISTICS_TAB: 1,
-    LIMITS_TAB: 2,
-    MEASUREMENTS_TAB: 3,
-};
+import { LineModificationDialogTab } from '../line-utils';
 
 /**
  * Dialog to modify a line in the network

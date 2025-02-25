@@ -7,7 +7,6 @@
 
 import { useCallback, useMemo } from 'react';
 import Menu from '@mui/material/Menu';
-import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { useSelector } from 'react-redux';
@@ -18,6 +17,7 @@ import { AppState } from 'redux/reducer';
 import { EquipmentType } from '@gridsuite/commons-ui';
 import { BaseEquipmentMenuProps } from './base-equipment-menu';
 import { MenuBranchProps } from './operating-status-menu';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 const styles = {
     menu: {

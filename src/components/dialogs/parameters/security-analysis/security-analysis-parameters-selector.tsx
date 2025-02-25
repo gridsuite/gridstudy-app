@@ -11,11 +11,12 @@ import { FormattedMessage } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
 import { Tab, Tabs } from '@mui/material';
-import { TabPanel, useParameterState } from '../parameters';
+import { TabPanel } from '../parameters';
 import { ISAParameters, TAB_INFO, TAB_VALUES } from '../common/limitreductions/columns-definitions';
 import ViolationsHidingParameters from './security-analysis-violations-hiding';
 import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
 import { PARAM_DEVELOPER_MODE, PARAM_PROVIDER_OPENLOADFLOW } from '../../../../utils/config-params';
+import { useParameterState } from '../use-parameters-state';
 
 const SecurityAnalysisParametersSelector: FunctionComponent<{
     params: ISAParameters | null;

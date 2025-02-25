@@ -7,11 +7,11 @@
 
 import ComputingType from 'components/computing-status/computing-type';
 import { IService } from 'components/result-view-tab';
-import { StudyView } from 'components/study-pane';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
+import { StudyView } from 'components/utils/utils';
 
 export enum ResultsTabsRootLevel {
     LOAD_FLOW = 0,

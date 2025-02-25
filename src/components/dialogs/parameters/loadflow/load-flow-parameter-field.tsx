@@ -18,9 +18,9 @@ import {
     SwitchInput,
     TextInput,
 } from '@gridsuite/commons-ui';
-import { styles } from '../parameters';
 import LineSeparator from 'components/dialogs/commons/line-separator';
 import { ParameterType } from '../parameters.type';
+import { styles } from '../parameters-style';
 
 interface LoadFlowParameterFieldProps {
     id: string;

@@ -8,8 +8,7 @@
 import { useEffect, useRef } from 'react';
 import { getIn } from 'yup';
 import { isBlankOrEmpty, toNumber } from './validation-functions';
-import { CURRENT_LIMITS, ID } from './field-constants';
-import { addSelectedFieldToRows } from './dnd-table/dnd-table';
+import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -283,3 +282,17 @@ export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
     const length = (stop - start) / step + 1;
     return Array.from({ length }, (_, index) => start + index * step);
 }
+
+export const StudyView = {
+    MAP: 'Map',
+    SPREADSHEET: 'Spreadsheet',
+    RESULTS: 'Results',
+    LOGS: 'Logs',
+    PARAMETERS: 'Parameters',
+};
+
+export const addSelectedFieldToRows = (rows) => {
+    return rows?.map((row) => {
+        return { ...row, [SELECTED]: false };
+    });
+};
