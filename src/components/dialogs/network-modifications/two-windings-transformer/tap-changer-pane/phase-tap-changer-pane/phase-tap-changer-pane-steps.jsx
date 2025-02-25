@@ -20,6 +20,7 @@ import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
 import { PHASE_TAP } from '../../creation/two-windings-transformer-creation-dialog';
+import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {
     const intl = useIntl();
@@ -29,13 +30,14 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
             {
                 label: 'Tap',
                 dataKey: STEPS_TAP,
+                type: DndColumnType.TEXT,
             },
             {
                 label: 'DeltaResistance',
                 dataKey: STEPS_RESISTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -43,7 +45,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_REACTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -51,7 +53,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_CONDUCTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -59,7 +61,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_SUSCEPTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -67,7 +69,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_RATIO,
                 initialValue: 1,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -75,7 +77,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
                 dataKey: STEPS_ALPHA,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
         ].map((column) => ({

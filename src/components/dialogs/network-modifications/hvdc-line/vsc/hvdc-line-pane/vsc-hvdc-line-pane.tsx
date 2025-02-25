@@ -147,8 +147,6 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
                     name={`${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`}
                     label={'angleDroopActivePowerControlLabel'}
                     previousValue={previousAngleDropPowerControl()}
-                    id={undefined}
-                    formProps={undefined}
                 />
             );
         } else {

@@ -8,14 +8,13 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { OverflowableText } from '@gridsuite/commons-ui';
+import { mergeSx, OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { stopDiagramBlink } from '../../redux/actions';
-import { mergeSx } from '../utils/functions';
 import { Theme } from '@mui/material';
 import { AppState } from 'redux/reducer';
 
@@ -121,7 +120,7 @@ const DiagramHeader: React.FC<DiagramHeaderProps> = ({
      */
 
     return (
-        <Box sx={mergeSx(styles.header, blinking && styles.blink)}>
+        <Box sx={mergeSx(styles.header, blinking ? styles.blink : undefined)}>
             <OverflowableText sx={{ flexGrow: '1' }} text={diagramTitle} />
             <Box>
                 <Box

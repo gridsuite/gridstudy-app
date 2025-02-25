@@ -24,9 +24,7 @@ import { ElementType } from '@gridsuite/commons-ui';
 import { VoltageAdornment } from '../../dialog-utils';
 import { styles } from '../parameters';
 import Alert from '@mui/material/Alert';
-
-// TODO: to fix when either migrating DndTable to typescript or using something else than DndTable
-const DndTableTyped = DndTable as React.ComponentType<any>;
+import { DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 const VoltageLimitsParameters = () => {
     const intl = useIntl();
@@ -44,38 +42,40 @@ const VoltageLimitsParameters = () => {
         );
     }, [intl]);
 
-    const VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS = useMemo(() => {
-        return [
-            {
-                label: 'VoltageLevelFilter',
-                dataKey: FILTERS,
-                initialValue: [],
-                editable: true,
-                directoryItems: true,
-                equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL],
-                elementType: ElementType.FILTER,
-                titleId: 'FiltersListsSelection',
-                extra: VoltageLevelFilterTooltip,
-            },
-            {
-                label: 'LowVoltageLimitAdjustment',
-                dataKey: LOW_VOLTAGE_LIMIT,
-                initialValue: null,
-                editable: true,
-                numeric: true,
-                adornment: VoltageAdornment,
-                textAlign: 'right',
-            },
-            {
-                label: 'HighVoltageLimitAdjustment',
-                dataKey: HIGH_VOLTAGE_LIMIT,
-                initialValue: null,
-                editable: true,
-                numeric: true,
-                adornment: VoltageAdornment,
-                textAlign: 'right',
-            },
-        ].map((column) => ({
+    const VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS: (DndColumn & { initialValue: any })[] = useMemo(() => {
+        return (
+            [
+                {
+                    label: 'VoltageLevelFilter',
+                    dataKey: FILTERS,
+                    initialValue: [],
+                    editable: true,
+                    type: DndColumnType.DIRECTORY_ITEMS,
+                    equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL],
+                    elementType: ElementType.FILTER,
+                    titleId: 'FiltersListsSelection',
+                    extra: VoltageLevelFilterTooltip,
+                },
+                {
+                    label: 'LowVoltageLimitAdjustment',
+                    dataKey: LOW_VOLTAGE_LIMIT,
+                    initialValue: null,
+                    editable: true,
+                    type: DndColumnType.NUMERIC,
+                    adornment: VoltageAdornment,
+                    textAlign: 'right',
+                },
+                {
+                    label: 'HighVoltageLimitAdjustment',
+                    dataKey: HIGH_VOLTAGE_LIMIT,
+                    initialValue: null,
+                    editable: true,
+                    type: DndColumnType.NUMERIC,
+                    adornment: VoltageAdornment,
+                    textAlign: 'right',
+                },
+            ] satisfies (DndColumn & { initialValue: any })[]
+        ).map((column) => ({
             ...column,
             label: intl
                 .formatMessage({ id: column.label })
@@ -84,38 +84,40 @@ const VoltageLimitsParameters = () => {
         }));
     }, [VoltageLevelFilterTooltip, intl]);
 
-    const VOLTAGE_LIMITS_DEFAULT_COLUMNS_DEFINITIONS = useMemo(() => {
-        return [
-            {
-                label: 'VoltageLevelFilter',
-                dataKey: FILTERS,
-                initialValue: [],
-                editable: true,
-                directoryItems: true,
-                equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL],
-                elementType: ElementType.FILTER,
-                titleId: 'FiltersListsSelection',
-                extra: VoltageLevelFilterTooltip,
-            },
-            {
-                label: 'LowVoltageLimitDefault',
-                dataKey: LOW_VOLTAGE_LIMIT,
-                initialValue: null,
-                editable: true,
-                numeric: true,
-                adornment: VoltageAdornment,
-                textAlign: 'right',
-            },
-            {
-                label: 'HighVoltageLimitDefault',
-                dataKey: HIGH_VOLTAGE_LIMIT,
-                initialValue: null,
-                editable: true,
-                numeric: true,
-                adornment: VoltageAdornment,
-                textAlign: 'right',
-            },
-        ].map((column) => ({
+    const VOLTAGE_LIMITS_DEFAULT_COLUMNS_DEFINITIONS: (DndColumn & { initialValue: any[] | null })[] = useMemo(() => {
+        return (
+            [
+                {
+                    label: 'VoltageLevelFilter',
+                    dataKey: FILTERS,
+                    initialValue: [],
+                    editable: true,
+                    type: DndColumnType.DIRECTORY_ITEMS,
+                    equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL],
+                    elementType: ElementType.FILTER,
+                    titleId: 'FiltersListsSelection',
+                    extra: VoltageLevelFilterTooltip,
+                },
+                {
+                    label: 'LowVoltageLimitDefault',
+                    dataKey: LOW_VOLTAGE_LIMIT,
+                    initialValue: null,
+                    editable: true,
+                    type: DndColumnType.NUMERIC,
+                    adornment: VoltageAdornment,
+                    textAlign: 'right',
+                },
+                {
+                    label: 'HighVoltageLimitDefault',
+                    dataKey: HIGH_VOLTAGE_LIMIT,
+                    initialValue: null,
+                    editable: true,
+                    type: DndColumnType.NUMERIC,
+                    adornment: VoltageAdornment,
+                    textAlign: 'right',
+                },
+            ] satisfies (DndColumn & { initialValue: any[] | null })[]
+        ).map((column) => ({
             ...column,
             label: intl
                 .formatMessage({ id: column.label })
@@ -162,7 +164,7 @@ const VoltageLimitsParameters = () => {
             <Alert sx={styles.adjustExistingLimitsInfo} severity="info" variant="outlined">
                 <FormattedMessage id="AdjustExistingLimitsInfo" />
             </Alert>
-            <DndTableTyped
+            <DndTable
                 arrayFormName={`${VOLTAGE_LIMITS_MODIFICATION}`}
                 columnsDefinition={VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS}
                 useFieldArrayOutput={useVoltageLimitsModificationFieldArrayOutput}
@@ -175,7 +177,7 @@ const VoltageLimitsParameters = () => {
             <Typography component="span" variant="h6">
                 <FormattedMessage id="SetDefaultLimits" />
             </Typography>
-            <DndTableTyped
+            <DndTable
                 arrayFormName={`${VOLTAGE_LIMITS_DEFAULT}`}
                 columnsDefinition={VOLTAGE_LIMITS_DEFAULT_COLUMNS_DEFINITIONS}
                 useFieldArrayOutput={useVoltageLimitsDefaultFieldArrayOutput}

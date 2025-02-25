@@ -22,8 +22,7 @@ import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import ResponsiveGridLayout from '../common/gridlayout/responsive-grid-layout';
 import { lighten } from '@mui/material/styles';
-import { useDebounce } from '@gridsuite/commons-ui';
-import { mergeSx } from '../../../utils/functions';
+import { mergeSx, useDebounce } from '@gridsuite/commons-ui';
 import { arrayFrom } from '../../../utils/utils';
 
 const styles = {

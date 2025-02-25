@@ -15,8 +15,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { SELECTED } from '../../utils/field-constants';
 import { TableNumericalInput } from '../../utils/rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../../utils/rhf-inputs/table-inputs/table-text-input';
-import { ILimitColumnDef } from './limits-side-pane';
 import { TemporaryLimit } from '../../../services/network-modification-types';
+import { ColumnNumeric, ColumnText, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 const styles = {
     columnsStyle: {
@@ -30,33 +30,24 @@ const styles = {
 
 interface CustomTableCellProps {
     name: string;
-    column: ILimitColumnDef;
+    column: ColumnText | ColumnNumeric;
     disabled: boolean;
-    previousValue: number | string | null | undefined;
+    previousValue: number | undefined;
     valueModified: boolean;
 }
 
 function EditableTableCell({ name, column, previousValue, valueModified, ...props }: Readonly<CustomTableCellProps>) {
     return (
         <TableCell sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
-            {column.numeric ? (
+            {column.type === DndColumnType.NUMERIC ? (
                 <TableNumericalInput
-                    style={undefined}
-                    inputProps={undefined}
-                    adornment={undefined}
                     name={name}
                     previousValue={previousValue}
                     valueModified={valueModified}
                     {...props}
                 />
             ) : (
-                <TableTextInput
-                    style={undefined}
-                    inputProps={undefined}
-                    name={name}
-                    showErrorMsg={column.showErrorMsg}
-                    {...props}
-                />
+                <TableTextInput name={name} showErrorMsg={column.showErrorMsg} {...props} />
             )}
         </TableCell>
     );
@@ -64,19 +55,19 @@ function EditableTableCell({ name, column, previousValue, valueModified, ...prop
 
 interface TemporaryLimitsTableProps {
     arrayFormName: string;
-    columnsDefinition: ILimitColumnDef[];
+    columnsDefinition: (ColumnText | ColumnNumeric)[];
     createRow: () => any[];
     disabled?: boolean;
     previousValues: TemporaryLimit[];
     disableTableCell: (
         rowIndex: number,
-        column: ILimitColumnDef,
+        column: ColumnText | ColumnNumeric,
         arrayFormName: string,
         temporaryLimits: TemporaryLimit[]
     ) => boolean;
     getPreviousValue: (
         rowIndex: number,
-        column: ILimitColumnDef,
+        column: ColumnText | ColumnNumeric,
         arrayFormName: string,
         temporaryLimits: TemporaryLimit[]
     ) => number | undefined;
@@ -98,7 +89,7 @@ function TemporaryLimitsTable({
     const { fields, append, remove } = useFieldArray({ name: arrayFormName });
     const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
 
-    function renderTableCell(rowId: string, rowIndex: number, column: ILimitColumnDef) {
+    function renderTableCell(rowId: string, rowIndex: number, column: ColumnText | ColumnNumeric) {
         const name = `${arrayFormName}[${rowIndex}].${column.dataKey}`;
         return (
             <EditableTableCell
@@ -128,7 +119,7 @@ function TemporaryLimitsTable({
         return (
             <TableHead>
                 <TableRow>
-                    {columnsDefinition.map((column: ILimitColumnDef) => (
+                    {columnsDefinition.map((column) => (
                         <TableCell key={column.dataKey} sx={{ width: column.width, maxWidth: column.maxWidth }}>
                             <Box sx={styles.columnsStyle}>{column.label}</Box>
                         </TableCell>

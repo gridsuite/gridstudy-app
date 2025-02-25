@@ -19,10 +19,13 @@ import {
     DEFAULT_WIDTH_SUBSTATION,
     DEFAULT_WIDTH_VOLTAGE_LEVEL,
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
+    DiagramAdditionalMetadata,
+    DiagramSvg,
     DiagramType,
     MAP_BOTTOM_OFFSET,
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
     NoSvg,
+    SldSvg,
     Svg,
     useDiagram,
     ViewState,
@@ -36,12 +39,11 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { EquipmentType, OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, mergeSx, OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
-import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
@@ -131,18 +133,19 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
         ]
     );
 
+    type FetchSvgDataFn = {
+        (svgUrl: string | null, svgType: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL): Promise<SldSvg>;
+        (svgUrl: string | null, svgType: DiagramType.NETWORK_AREA_DIAGRAM): Promise<DiagramSvg>;
+    };
     // this callback returns a promise
-    const fetchSvgData = useCallback(
-        (svgUrl: string | null, svgType: DiagramType): Promise<Svg> => {
+    const fetchSvgData = useCallback<FetchSvgDataFn>(
+        (svgUrl, svgType): any => {
             if (svgUrl) {
-                const fetchSvgPromise: Promise<Svg> = fetchSvg(svgUrl);
-                return fetchSvgPromise
+                return fetchSvg(svgUrl)
                     .then((data: Svg | null) => {
                         if (data !== null) {
                             return {
-                                svg: data.svg,
-                                metadata: data.metadata,
-                                additionalMetadata: data.additionalMetadata,
+                                ...data,
                                 error: undefined,
                             };
                         } else {
@@ -206,7 +209,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             function createVoltageLevelDiagramView(id: UUID, state: ViewState | undefined) {
                 const svgUrl = checkAndGetVoltageLevelSingleLineDiagramUrl(id);
                 return fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL).then((svg) => {
-                    let label = getNameOrId(svg.additionalMetadata) ?? id;
+                    let label = getNameOrId(svg.additionalMetadata);
                     let substationId = svg.additionalMetadata?.substationId;
                     return {
                         id: id,
@@ -230,17 +233,14 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                         let nadTitle = '';
                         let substationsIds: UUID[] = [];
                         svg.additionalMetadata?.voltageLevels
-                            .map((vl: { name: string; substationId: UUID }) => ({
-                                name: getNameOrId(vl),
+                            .map((vl) => ({
+                                name: getNameOrId({ name: vl.name, id: vl.substationId }),
                                 substationId: vl.substationId,
                             }))
                             .sort(
-                                (
-                                    vlA: { name: string; substationId: UUID },
-                                    vlB: { name: string; substationId: UUID }
-                                ) => vlA.name.toLowerCase().localeCompare(vlB.name.toLowerCase())
+                                (vlA, vlB) => vlA.name?.toLowerCase().localeCompare(vlB.name?.toLowerCase() ?? '') || 0
                             )
-                            .forEach((voltageLevel: { name: string; substationId: UUID }) => {
+                            .forEach((voltageLevel) => {
                                 const name = voltageLevel.name;
                                 if (name !== null) {
                                     nadTitle += (nadTitle !== '' ? ', ' : '') + name;
@@ -260,7 +260,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
                             substationIds: substationsIds,
-                            nadMetadata: svg.metadata as DiagramMetadata,
+                            nadMetadata: svg.metadata,
                             scalingFactor: svg.additionalMetadata?.scalingFactor,
                             ...svg,
                         };
@@ -540,7 +540,8 @@ export function DiagramPane({
                         } as unknown as DiagramView;
                         dispatch(
                             setNetworkAreaDiagramNbVoltageLevels(
-                                networkAreaDiagramView.additionalMetadata?.nbVoltageLevels ?? 0
+                                (networkAreaDiagramView.additionalMetadata as DiagramAdditionalMetadata)
+                                    ?.nbVoltageLevels ?? 0
                             )
                         );
                         return updatedViews;
@@ -1018,7 +1019,7 @@ export function DiagramPane({
 
     const getDiagramTitle = (diagramView: DiagramView) => {
         return diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
-            ? diagramView.name + ' - ' + translate(diagramView.country)
+            ? diagramView.name + ' - ' + (diagramView.country ? translate(diagramView.country) : '')
             : diagramView.name;
     };
 
@@ -1047,7 +1048,10 @@ export function DiagramPane({
         <AutoSizer doNotBailOutOnEmptyChildren>
             {({ width, height }) => (
                 <Box
-                    sx={mergeSx(styles.availableDiagramSurfaceArea, fullScreenDiagram?.id && styles.fullscreen)}
+                    sx={mergeSx(
+                        styles.availableDiagramSurfaceArea,
+                        fullScreenDiagram?.id ? styles.fullscreen : undefined
+                    )}
                     style={{
                         width: width + 'px',
                         height: height + 'px',

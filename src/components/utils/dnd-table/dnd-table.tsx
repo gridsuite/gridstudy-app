@@ -6,10 +6,11 @@
  */
 
 import { useMemo, useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { UseFieldArrayReturn, useFormContext, useWatch } from 'react-hook-form';
 import {
     Box,
     Checkbox,
+    CheckboxProps,
     Grid,
     Table,
     TableBody,
@@ -20,7 +21,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd';
 import { useIntl } from 'react-intl';
 import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
@@ -34,6 +35,7 @@ import { FieldErrorAlert } from '@gridsuite/commons-ui';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
+import { ColumnBase, DndColumn, DndColumnType } from './dnd-table.type';
 
 export const MAX_ROWS_NUMBER = 100;
 const styles = {
@@ -45,14 +47,20 @@ const styles = {
         textTransform: 'none',
     },
 };
-export const addSelectedFieldToRows = (rows) => {
+export const addSelectedFieldToRows = (rows: any[]) => {
     return rows?.map((row) => {
         return { ...row, [SELECTED]: false };
     });
 };
 
-function MultiCheckbox({ arrayFormName, handleClickCheck, handleClickUncheck, ...props }) {
-    const arrayToWatch = useWatch({
+interface MultiCheckboxProps extends Omit<CheckboxProps, 'checked' | 'indeterminate' | 'onChange'> {
+    arrayFormName: string;
+    handleClickCheck: () => void;
+    handleClickUncheck: () => void;
+}
+
+function MultiCheckbox({ arrayFormName, handleClickCheck, handleClickUncheck, ...props }: MultiCheckboxProps) {
+    const arrayToWatch: ({ selected: boolean } & Record<string, any>)[] = useWatch({
         name: arrayFormName,
     });
 
@@ -71,7 +79,13 @@ function MultiCheckbox({ arrayFormName, handleClickCheck, handleClickUncheck, ..
     );
 }
 
-function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
+interface DefaultTableCellProps {
+    arrayFormName: string;
+    rowIndex: number;
+    column: ColumnBase;
+}
+
+function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }: DefaultTableCellProps) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 1 }}>
             <RawReadOnlyInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
@@ -79,11 +93,28 @@ function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
     );
 }
 
-function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, valueModified, ...props }) {
+interface EditableTableCellProps {
+    arrayFormName: string;
+    rowIndex: number;
+    column: DndColumn;
+    previousValue?: number;
+    valueModified: boolean;
+    disabled?: boolean;
+}
+
+function EditableTableCell({
+    arrayFormName,
+    rowIndex,
+    column,
+    previousValue,
+    valueModified,
+    ...props
+}: EditableTableCellProps) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 0.5, maxWidth: column.maxWidth }}>
-            {column.numeric && (
+            {column.type === DndColumnType.NUMERIC && (
                 <TableNumericalInput
+                    {...props}
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     previousValue={previousValue}
                     valueModified={valueModified}
@@ -92,17 +123,16 @@ function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, val
                     style={{
                         textAlign: column?.textAlign,
                     }}
-                    {...props}
                 />
             )}
-            {!column.numeric && !column.directoryItems && !column.chipItems && !column.autocomplete && (
+            {column.type === DndColumnType.TEXT && (
                 <TableTextInput
+                    {...props}
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     showErrorMsg={column.showErrorMsg}
-                    {...props}
                 />
             )}
-            {column.autocomplete && (
+            {column.type === DndColumnType.AUTOCOMPLETE && (
                 <AutocompleteInput
                     forcePopupIcon
                     freeSolo
@@ -113,45 +143,83 @@ function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, val
                     size={'small'}
                 />
             )}
-            {column.directoryItems && (
+            {column.type === DndColumnType.DIRECTORY_ITEMS && (
                 <DirectoryItemsInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     equipmentTypes={column.equipmentTypes}
                     elementType={column.elementType}
                     titleId={column.titleId}
                     hideErrorMessage={true}
+                    label={undefined}
                 />
             )}
-            {column.chipItems && (
+            {column.type === DndColumnType.CHIP_ITEMS && (
                 <ChipItemsInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} hideErrorMessage={true} />
             )}
         </TableCell>
     );
 }
 
-const DndTable = ({
-    arrayFormName,
-    useFieldArrayOutput,
-    columnsDefinition,
-    tableHeight,
-    allowedToAddRows = () => Promise.resolve(true),
-    createRows,
-    handleUploadButton,
-    uploadButtonMessageId,
-    handleResetButton,
-    resetButtonMessageId,
-    disabled = false,
-    withResetButton = false,
-    withLeftButtons = true,
-    withAddRowsDialog = true,
-    previousValues,
-    disableTableCell,
-    getPreviousValue,
-    isValueModified,
-    disableAddingRows = false,
-    showMoveArrow = true,
-    disableDragAndDrop = false,
-}) => {
+interface DndTableBaseProps {
+    arrayFormName: string;
+    useFieldArrayOutput: UseFieldArrayReturn;
+    columnsDefinition: DndColumn[];
+    tableHeight?: number;
+    allowedToAddRows?: () => Promise<boolean>;
+    createRows?: (numberOfRows: number) => {
+        [key: string]: any;
+    }[];
+    disabled?: boolean;
+    withResetButton?: boolean;
+    withLeftButtons?: boolean;
+    withAddRowsDialog?: boolean;
+    previousValues?: any[];
+    disableTableCell?: (rowIndex: number, column: any, arrayFormName: string, temporaryLimits?: any[]) => boolean;
+    getPreviousValue?: (
+        rowIndex: number,
+        column: any,
+        arrayFormName: string,
+        temporaryLimits?: any[]
+    ) => number | undefined;
+    isValueModified?: (index: number, arrayFormName: string) => boolean;
+    disableAddingRows?: boolean;
+    showMoveArrow?: boolean;
+    disableDragAndDrop?: boolean;
+}
+
+interface DndTableWithLeftButtonsProps extends DndTableBaseProps {
+    withLeftButtons?: true;
+    handleUploadButton: () => void;
+    uploadButtonMessageId: string;
+    handleResetButton: () => void;
+    resetButtonMessageId: string;
+}
+
+interface DndTableWithoutLeftButtonsProps extends DndTableBaseProps {
+    withLeftButtons: false;
+}
+
+type DndTableProps = DndTableWithLeftButtonsProps | DndTableWithoutLeftButtonsProps;
+
+const DndTable = (props: DndTableProps) => {
+    const {
+        arrayFormName,
+        useFieldArrayOutput,
+        columnsDefinition,
+        tableHeight,
+        allowedToAddRows = () => Promise.resolve(true),
+        createRows,
+        disabled = false,
+        withResetButton = false,
+        withAddRowsDialog = true,
+        previousValues,
+        disableTableCell,
+        getPreviousValue,
+        isValueModified,
+        disableAddingRows = false,
+        showMoveArrow = true,
+        disableDragAndDrop = false,
+    } = props;
     const intl = useIntl();
 
     const { getValues, setValue, setError, clearErrors } = useFormContext();
@@ -166,7 +234,7 @@ const DndTable = ({
 
     const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
 
-    function renderTableCell(rowId, rowIndex, column) {
+    function renderTableCell(rowId: string, rowIndex: number, column: DndColumn) {
         let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;
         return (
             <CustomTableCell
@@ -202,21 +270,25 @@ const DndTable = ({
         setOpenAddRowsDialog(false);
     }
 
-    function addNewRows(numberOfRows) {
+    function addNewRows(numberOfRows: number) {
         // checking if not exceeding 100 steps
         if (currentRows.length + numberOfRows > MAX_ROWS_NUMBER) {
             setError(arrayFormName, {
                 type: 'custom',
-                message: {
-                    id: 'MaximumRowNumberError',
-                    value: MAX_ROWS_NUMBER,
-                },
+                message: intl.formatMessage(
+                    {
+                        id: 'MaximumRowNumberError',
+                    },
+                    {
+                        value: MAX_ROWS_NUMBER,
+                    }
+                ),
             });
             return;
         }
         clearErrors(arrayFormName);
 
-        const rowsToAdd = createRows(numberOfRows).map((row) => {
+        const rowsToAdd = createRows?.(numberOfRows).map((row) => {
             return { ...row, [SELECTED]: false };
         });
 
@@ -279,7 +351,7 @@ const DndTable = ({
         }
     }
 
-    function onDragEnd(result) {
+    function onDragEnd(result: DropResult) {
         // dropped outside the list
         if (!result.destination) {
             return;
@@ -316,7 +388,7 @@ const DndTable = ({
         );
     }
 
-    function renderTableBody(providedDroppable) {
+    function renderTableBody(providedDroppable: DroppableProvided) {
         return (
             <TableBody>
                 {currentRows.map((row, index) => (
@@ -384,17 +456,17 @@ const DndTable = ({
                 <ErrorInput name={arrayFormName} InputField={FieldErrorAlert} />
             </Grid>
             <Grid container item>
-                {withLeftButtons && (
+                {props.withLeftButtons === undefined || props.withLeftButtons ? (
                     <DndTableBottomLeftButtons
-                        handleUploadButton={handleUploadButton}
-                        uploadButtonMessageId={uploadButtonMessageId}
-                        handleResetButton={handleResetButton}
-                        resetButtonMessageId={resetButtonMessageId}
                         withResetButton={withResetButton}
                         disableUploadButton={disableAddingRows}
                         disabled={disabled}
+                        handleUploadButton={props.handleResetButton}
+                        uploadButtonMessageId={props.uploadButtonMessageId}
+                        handleResetButton={props.handleResetButton}
+                        resetButtonMessageId={props.resetButtonMessageId}
                     />
-                )}
+                ) : null}
                 <DndTableBottomRightButtons
                     arrayFormName={arrayFormName}
                     handleAddButton={handleAddRowsButton}

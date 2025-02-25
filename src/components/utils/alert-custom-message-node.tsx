@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { mergeSx } from '@gridsuite/commons-ui';
 import Alert from '@mui/material/Alert';
 import { FormattedMessage } from 'react-intl';
-import PropTypes from 'prop-types';
-import { mergeSx } from './functions';
 
 const styles = {
     customMessageNode: {
@@ -18,24 +17,19 @@ const styles = {
     },
 };
 
-const AlertCustomMessageNode = (props) => {
-    const { noMargin, message } = props;
+interface AlertCustomMessageNodeProps {
+    message: string;
+    noMargin?: boolean;
+}
+
+const AlertCustomMessageNode = (props: AlertCustomMessageNodeProps) => {
+    const { noMargin = false, message } = props;
 
     return (
-        <Alert sx={mergeSx(!noMargin && styles.customMessageNode)} severity="warning">
+        <Alert sx={mergeSx(!noMargin ? styles.customMessageNode : undefined)} severity="warning">
             <FormattedMessage id={message} />
         </Alert>
     );
-};
-
-AlertCustomMessageNode.defaultProps = {
-    noMargin: false,
-    message: '',
-};
-
-AlertCustomMessageNode.propTypes = {
-    noMargin: PropTypes.bool,
-    message: PropTypes.string,
 };
 
 export default AlertCustomMessageNode;

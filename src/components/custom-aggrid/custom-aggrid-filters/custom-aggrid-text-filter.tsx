@@ -9,8 +9,8 @@ import { TextField, Grid, InputAdornment, IconButton } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { DisplayRounding } from '../display-rounding';
 import { FILTER_DATA_TYPES } from '../custom-aggrid-header.type';
-import { mergeSx } from '../../utils/functions';
 import { useIntl } from 'react-intl';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
     input: {
@@ -60,7 +60,7 @@ export const CustomAggridTextFilter: React.FC<CustomAggridTextFilterProps> = ({
                     inputProps={{
                         type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
                     }}
-                    sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
+                    sx={mergeSx(styles.input, isNumberInput ? styles.noArrows : undefined)}
                     InputProps={{
                         endAdornment: value ? (
                             <InputAdornment position="end">

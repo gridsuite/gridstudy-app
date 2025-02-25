@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useState } from 'react';
-import { NestedMenuItem } from 'mui-nested-menu';
-import { mergeSx } from './functions';
-import { Box, MenuItem } from '@mui/material';
+import { PropsWithChildren, useState } from 'react';
+import { NestedMenuItem, NestedMenuItemProps } from 'mui-nested-menu';
+import { Box, MenuItem, MenuItemProps, SxProps, Theme } from '@mui/material';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
     highlightedParentLine: {
@@ -24,15 +24,19 @@ const styles = {
     },
 };
 
-export const CustomNestedMenuItem = (props) => {
+interface CustomNestedMenuItemProps extends PropsWithChildren, Omit<NestedMenuItemProps, 'parentMenuOpen'> {
+    sx?: SxProps<Theme>;
+}
+
+export const CustomNestedMenuItem = (props: CustomNestedMenuItemProps) => {
     const { sx, children, ...other } = props;
     const [isSubMenuActive, setSubMenuActive] = useState(false);
 
     return (
         <NestedMenuItem
+            {...other}
             parentMenuOpen={true}
             sx={mergeSx(isSubMenuActive ? styles.highlightedParentLine : styles.highlightedLine, sx)}
-            {...other}
         >
             <Box onMouseEnter={() => setSubMenuActive(true)} onMouseLeave={() => setSubMenuActive(false)}>
                 {children}
@@ -41,7 +45,7 @@ export const CustomNestedMenuItem = (props) => {
     );
 };
 
-export const CustomMenuItem = (props) => {
+export const CustomMenuItem = (props: MenuItemProps) => {
     const { sx, ...other } = props;
 
     return <MenuItem sx={mergeSx(styles.highlightedLine, sx)} {...other} />;

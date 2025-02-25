@@ -13,6 +13,7 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    mergeSx,
     SubmitButton,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -26,7 +27,6 @@ import {
 import { fetchShortCircuitParameters } from '../../../services/short-circuit-analysis';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
-import { mergeSx } from '../../utils/functions';
 import yup from '../../utils/yup-config';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,

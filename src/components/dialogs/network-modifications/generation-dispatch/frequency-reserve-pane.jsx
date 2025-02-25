@@ -14,6 +14,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { ElementType } from '@gridsuite/commons-ui';
 import { Tooltip, IconButton } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
+import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
     const intl = useIntl();
@@ -25,8 +26,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
                 dataKey: GENERATORS_FILTERS,
                 initialValue: [],
                 editable: true,
-                numeric: false,
-                directoryItems: true,
+                type: DndColumnType.DIRECTORY_ITEMS,
                 equipmentTypes: [EQUIPMENT_TYPES.GENERATOR],
                 elementType: ElementType.FILTER,
                 titleId: 'FiltersListsSelection',
@@ -36,7 +36,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
                 dataKey: FREQUENCY_RESERVE,
                 initialValue: null,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
             },
         ].map((column) => ({
             ...column,

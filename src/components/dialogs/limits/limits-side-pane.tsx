@@ -24,6 +24,7 @@ import { TemporaryLimit } from '../../../services/network-modification-types';
 import DndTable from '../../utils/dnd-table/dnd-table';
 import TemporaryLimitsTable from './temporary-limits-table';
 import { CurrentTreeNode } from '../../../redux/reducer';
+import { ColumnNumeric, ColumnText, DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
@@ -58,14 +59,14 @@ export function LimitsSidePane({
     const useFieldArrayOutputTemporaryLimits = useFieldArray({
         name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}`,
     });
-    const columnsDefinition: ILimitColumnDef[] = useMemo(() => {
+    const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: any })[] = useMemo(() => {
         return [
             {
                 label: 'TemporaryLimitName',
                 dataKey: TEMPORARY_LIMIT_NAME,
                 initialValue: '',
                 editable: true,
-                numeric: false,
+                type: DndColumnType.TEXT as const,
                 maxWidth: 200,
             },
             {
@@ -73,7 +74,7 @@ export function LimitsSidePane({
                 dataKey: TEMPORARY_LIMIT_DURATION,
                 initialValue: null,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC as const,
                 maxWidth: 100,
             },
             {
@@ -81,7 +82,7 @@ export function LimitsSidePane({
                 dataKey: TEMPORARY_LIMIT_VALUE,
                 initialValue: null,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC as const,
                 maxWidth: 100,
             },
         ].map((column) => ({
@@ -92,16 +93,19 @@ export function LimitsSidePane({
 
     const newRowData = useMemo(() => {
         let newRowData: any = {};
-        columnsDefinition.forEach((column: ILimitColumnDef) => (newRowData[column.dataKey] = column.initialValue));
+        columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [columnsDefinition]);
     const createRows = () => [newRowData];
 
     const temporaryLimitHasPreviousValue = useCallback(
-        (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
+        (rowIndex: number, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
+            if (!temporaryLimits) {
+                return false;
+            }
             return (
                 formatTemporaryLimits(temporaryLimits)?.filter(
-                    (l: TemporaryLimit) =>
+                    (l) =>
                         l.name === getValues(arrayFormName)[rowIndex]?.name &&
                         l.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
                 )?.length > 0
@@ -111,7 +115,7 @@ export function LimitsSidePane({
     );
 
     const shouldReturnPreviousValue = useCallback(
-        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
+        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
             return (
                 (temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
                     column.dataKey === TEMPORARY_LIMIT_VALUE) ||
@@ -133,7 +137,10 @@ export function LimitsSidePane({
     );
 
     const getPreviousValue = useCallback(
-        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
+        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
+            if (!temporaryLimits) {
+                return undefined;
+            }
             const formattedTemporaryLimits = formatTemporaryLimits(temporaryLimits);
             if (!temporaryLimits?.length) {
                 return undefined;
@@ -155,7 +162,7 @@ export function LimitsSidePane({
     );
 
     const disableTableCell = useCallback(
-        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimit[]) => {
+        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
             return getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
