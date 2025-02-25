@@ -33,6 +33,8 @@ const backend_locale_en = {
 
     // Voltage init results
     REACTIVE_SLACKS_OVER_THRESHOLD: `Reactive slack exceeds {threshold} MVar for at least one bus`,
+    VOLTAGE_LEVEL_LIMITS_OUT_OF_NOMINAL_VOLTAGE_RANGE:
+        'Acceptable voltage range for at least one voltage level seems to be inconsistent with nominal voltage',
 
     // State estimation results
     UNKNOWN: 'Unknown',
