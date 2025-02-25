@@ -9,8 +9,9 @@ import { mergeSx, SliderInput } from '@gridsuite/commons-ui';
 import { Mark } from '@mui/base/useSlider';
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { UseParameterStateParamName, styles } from '../parameters';
 import { sanitizePercentageValue } from 'components/dialogs/percentage-area/percentage-area-utils';
+import { styles } from '../parameters-style';
+import { UseParameterStateParamName } from '../use-parameters-state';
 
 type SliderParameterLineProps = {
     readonly paramNameId: UseParameterStateParamName;

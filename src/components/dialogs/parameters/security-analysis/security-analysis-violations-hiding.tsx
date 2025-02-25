@@ -8,7 +8,6 @@
 import { FunctionComponent } from 'react';
 import { Grid, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { styles } from '../parameters';
 import Typography from '@mui/material/Typography';
 import InfoIcon from '@mui/icons-material/Info';
 import {
@@ -19,6 +18,7 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from '../../../../utils/config-params';
 import { FloatInput } from '@gridsuite/commons-ui';
+import { styles } from '../parameters-style';
 
 interface FieldToShow {
     label: string;
