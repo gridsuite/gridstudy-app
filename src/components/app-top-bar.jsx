@@ -139,7 +139,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         />
                     </Box>
                 )}
-                {user && studyUuid && (
+                {user && studyUuid && currentRootNetworkUuid && (
                     <Box sx={styles.boxContent}>
                         <Tabs
                             value={tabIndex}
