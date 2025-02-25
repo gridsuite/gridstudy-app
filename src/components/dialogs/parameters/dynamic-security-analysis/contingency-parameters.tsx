@@ -5,33 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { makeComponents, TYPES } from '../util/make-component-utils';
 import ParameterLineDirectoryItemsInput from '../widget/parameter-line-directory-items-input';
 import { ElementType } from '@gridsuite/commons-ui';
-import { ID, NAME } from '../../../utils/field-constants';
 
 export const CONTINGENCIES_START_TIME = 'contingenciesStartTime';
 export const CONTINGENCIES_LIST_INFOS = 'contingencyListInfos';
-
-export const formSchema = yup.object().shape({
-    [CONTINGENCIES_START_TIME]: yup.number().required(),
-    [CONTINGENCIES_LIST_INFOS]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [ID]: yup.string().required(),
-                [NAME]: yup.string().required(),
-            })
-        )
-        .required(),
-});
-
-export const emptyFormData = {
-    [CONTINGENCIES_START_TIME]: 0,
-    [CONTINGENCIES_LIST_INFOS]: [],
-};
 
 const defParams = {
     [CONTINGENCIES_START_TIME]: {

@@ -16,6 +16,7 @@ import { addToRecentGlobalFilters } from '../../../redux/actions';
 import { AppState } from '../../../redux/reducer';
 import { AppDispatch } from '../../../redux/store';
 import { cyan } from '@mui/material/colors';
+import { FilterType } from './utils';
 
 const styles = {
     autocomplete: (theme: Theme) => ({

@@ -19,6 +19,32 @@ import {
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Identifiable } from '@gridsuite/commons-ui';
+import { IntlShape } from 'react-intl';
+
+export const NA_Value = 'N/A';
+
+export const formatNAValue = (value: string, intl: IntlShape): string => {
+    return value === NA_Value ? intl.formatMessage({ id: 'Undefined' }) : value;
+};
+
+export const convertDuration = (duration: number) => {
+    if (!duration || isNaN(duration)) {
+        return '';
+    }
+
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+
+    if (seconds === 0) {
+        return minutes + ' mn';
+    }
+
+    if (minutes === 0) {
+        return seconds + ' s';
+    }
+
+    return `${minutes}' ${seconds}"`;
+};
 
 /*
  * This function is used to format the data of the table to be able to display it in the table
