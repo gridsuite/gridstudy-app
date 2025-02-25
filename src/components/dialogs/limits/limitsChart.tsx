@@ -199,8 +199,8 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
 
     return (
         <BarChart
-            margin={{ left: 0, right: 0 }}
-            height={140}
+            margin={{ left: 0, right: 0, top: 20 }}
+            height={110}
             slotProps={{
                 legend: {
                     direction: 'row',
