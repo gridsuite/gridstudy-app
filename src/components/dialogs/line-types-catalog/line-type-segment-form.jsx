@@ -26,11 +26,11 @@ import {
 import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog';
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
-import { emptyLineSegment } from './line-type-segment-dialog';
 import { calculateReactance, calculateResistance, calculateSusceptance } from '../../utils/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
+import { emptyLineSegment } from './line-type-segment-utils';
 
 const styles = {
     header: {
