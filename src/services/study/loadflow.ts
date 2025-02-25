@@ -13,8 +13,8 @@ import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 
 interface QueryParams {
     sort?: SortConfig[];
-    filters: FilterConfig[] | null;
-    globalFilters?: GlobalFilter;
+    filters: FilterConfig[] | null; // column filters
+    globalFilters?: GlobalFilter; // global filters, may contain generic filters applied to all the equipments
 }
 
 export function getDefaultLoadFlowProvider() {

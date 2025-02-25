@@ -511,6 +511,7 @@
 
     "results.globalFilter.fillerText": "Filtrage",
     "results.globalFilter.recent": "Récents",
+    "results.globalFilter.filter": "Filtres",
     "results.globalFilter.country": "Pays",
     "results.globalFilter.voltageLevel": "Niveaux de tension",
 

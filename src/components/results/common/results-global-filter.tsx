@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
 import { AppState } from '../../../redux/reducer';
 import { AppDispatch } from '../../../redux/store';
+import { cyan } from '@mui/material/colors';
 import { FilterType } from './utils';
 
 const styles = {
@@ -95,6 +96,17 @@ const styles = {
             backgroundColor: theme.palette.secondary.dark + `!important`,
         },
     }),
+    chipFilter: () => ({
+        '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
+            backgroundColor: cyan['500'] + `!important`,
+        },
+        '&.MuiChip-root:hover': {
+            backgroundColor: cyan['700'] + `!important`,
+        },
+        '&.MuiChip-root:focus': {
+            backgroundColor: cyan['700'] + `!important`,
+        },
+    }),
 };
 
 const recentFilter: string = 'recent';
@@ -118,11 +130,13 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch<AppDispatch>();
     const recentGlobalFilters: Filter[] = useSelector((state: AppState) => state.recentGlobalFilters);
+    // Map <FilterType, number of options of this type>
     // -1 number of options means that the user required everything to be displayed no matter the number of options
     const [numberOfOptions, setNumberOfOptions] = useState<Map<string, number>>(
         new Map([
             [FilterType.COUNTRY, 0],
             [FilterType.VOLTAGE_LEVEL, 0],
+            [FilterType.FILTER, 0],
         ])
     );
 
@@ -131,14 +145,24 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
         [translate]
     );
 
-    const getChipStyle = useCallback(
-        (filterType: string) =>
-            mergeSx(styles.chip, filterType === FilterType.COUNTRY ? styles.chipCountry : styles.chipVoltageLevel),
-        []
-    );
+    const getChipStyle = useCallback((filterType: string) => {
+        let chipStyle;
+        switch (filterType) {
+            case FilterType.COUNTRY:
+                chipStyle = styles.chipCountry;
+                break;
+            case FilterType.VOLTAGE_LEVEL:
+                chipStyle = styles.chipVoltageLevel;
+                break;
+            case FilterType.FILTER:
+                chipStyle = styles.chipFilter;
+                break;
+        }
+        return mergeSx(styles.chip, chipStyle);
+    }, []);
 
     const handleChange = useCallback(
-        (_event: SyntheticEvent<Element, Event>, value: Filter[]) => {
+        (_event: SyntheticEvent<Element, Event>, value: Filter[]): void => {
             // Updates the "recent" filters
             dispatch(addToRecentGlobalFilters(value));
             onChange(value);
@@ -248,8 +272,8 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                     const numByGroup: Map<string, number> = new Map();
                     const filteredOptions: Filter[] = options
                         // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
-                        .filter((option) => {
-                            const labelToMatch =
+                        .filter((option: Filter) => {
+                            const labelToMatch: string =
                                 option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
                             return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
                         })
