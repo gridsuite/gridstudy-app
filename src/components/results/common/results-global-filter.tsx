@@ -109,12 +109,6 @@ const styles = {
     }),
 };
 
-export enum FilterType {
-    COUNTRY = 'country',
-    VOLTAGE_LEVEL = 'voltageLevel',
-    FILTER = 'filter', // generic filters which uses the filter library
-}
-
 const recentFilter: string = 'recent';
 
 export interface Filter {
