@@ -1489,7 +1489,7 @@
     "createRootNetworksError": "An error occurred while creating the root network",
 
     "unlimited": "Unlimited",
-    "forbidden": "Forbidden"
+    "forbidden": "Forbidden",
 
     "StateEstimationParametersGeneralTabLabel": "General",
     "StateEstimationParametersWeightsTabLabel": "Weights",
