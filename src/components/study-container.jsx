@@ -241,15 +241,14 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const [errorMessage, setErrorMessage] = useState(undefined);
 
-    // For the first network existence check StudyPane is not rendered until network is found
-    // then it will be true even after root network change
-    const [isStudyNetworkFound, setIsStudyNetworkFound] = useState(false);
-    const isStudyNetworkFoundRef = useRef(false);
-    isStudyNetworkFoundRef.current = isStudyNetworkFound;
+    // For the first network existence check and indexation check StudyPane is not rendered until network is found
+    // then those states will be true even after root network change
+    const [isFirstStudyNetworkFound, setIsFirstStudyNetworkFound] = useState(false);
+    const [isFirstStudyIndexationFound, setIsFirstStudyIndexationFound] = useState(false);
+
     const studyIndexationStatus = useSelector((state) => state.studyIndexationStatus);
     const studyIndexationStatusRef = useRef();
     studyIndexationStatusRef.current = studyIndexationStatus;
-    const [isStudyIndexationPending, setIsStudyIndexationPending] = useState(false);
 
     const [initialTitle] = useState(document.title);
 
@@ -583,13 +582,12 @@ export function StudyContainer({ view, onChangeTab }) {
     );
 
     const checkStudyIndexation = useCallback(() => {
-        setIsStudyIndexationPending(true);
         return fetchStudyIndexationStatus(studyUuid, currentRootNetworkUuid)
             .then((status) => {
                 switch (status) {
                     case StudyIndexationStatus.INDEXED: {
                         dispatch(setStudyIndexationStatus(status));
-                        setIsStudyIndexationPending(false);
+                        setIsFirstStudyIndexationFound(true);
                         break;
                     }
                     case StudyIndexationStatus.INDEXING_ONGOING: {
@@ -599,20 +597,17 @@ export function StudyContainer({ view, onChangeTab }) {
                     case StudyIndexationStatus.NOT_INDEXED: {
                         dispatch(setStudyIndexationStatus(status));
                         reindexAllStudy(studyUuid, currentRootNetworkUuid)
+                            .then(() => setIsFirstStudyIndexationFound(true))
                             .catch((error) => {
                                 // unknown error when trying to reindex study
                                 snackError({
                                     headerId: 'studyIndexationError',
                                     messageTxt: error,
                                 });
-                            })
-                            .finally(() => {
-                                setIsStudyIndexationPending(false);
                             });
                         break;
                     }
                     default: {
-                        setIsStudyIndexationPending(false);
                         snackError({
                             headerId: 'studyIndexationStatusUnknown',
                             headerValues: { status: status },
@@ -624,7 +619,6 @@ export function StudyContainer({ view, onChangeTab }) {
             })
             .catch(() => {
                 // unknown error when checking study indexation status
-                setIsStudyIndexationPending(false);
                 snackError({
                     headerId: 'checkstudyIndexationError',
                 });
@@ -637,12 +631,12 @@ export function StudyContainer({ view, onChangeTab }) {
                 .then((response) => {
                     if (response.status === HttpStatusCode.OK) {
                         successCallback && successCallback();
-                        setIsStudyNetworkFound(true);
+                        setIsFirstStudyNetworkFound(true);
                         checkStudyIndexation().then(loadTree);
                     } else {
                         // response.state === NO_CONTENT
                         // if network is not found, we try to recreate study network from existing case
-                        setIsStudyNetworkFound(false);
+                        setIsFirstStudyNetworkFound(false);
                         recreateStudyNetwork(studyUuid, currentRootNetworkUuid)
                             .then(() => {
                                 snackWarning({
@@ -684,10 +678,13 @@ export function StudyContainer({ view, onChangeTab }) {
         if (!studyUuid || !currentRootNetworkUuid) {
             return;
         }
-        if (!isStudyNetworkFoundRef.current || currentRootNetworkRef.current !== currentRootNetworkUuid) {
+        if (
+            !isFirstStudyNetworkFound ||
+            (currentRootNetworkRef.current && currentRootNetworkRef.current !== currentRootNetworkUuid)
+        ) {
             checkNetworkExistenceAndRecreateIfNotFound();
         }
-    }, [currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
+    }, [currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid, isFirstStudyNetworkFound]);
 
     // study_network_recreation_done notification
     // checking another time if we can find network, if we do, we display a snackbar info
@@ -821,12 +818,7 @@ export function StudyContainer({ view, onChangeTab }) {
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || errorMessage}
-            loading={
-                studyPending ||
-                !paramsLoaded ||
-                !isStudyNetworkFound ||
-                (studyIndexationStatus !== StudyIndexationStatus.INDEXED && isStudyIndexationPending)
-            } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            loading={studyPending || !paramsLoaded || !isFirstStudyNetworkFound || !isFirstStudyIndexationFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
             <StudyPane
