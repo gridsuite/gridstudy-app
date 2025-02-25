@@ -85,7 +85,6 @@ export function useCustomColumn(tabIndex: number) {
                     },
                     valueGetter: createValueGetter(colDef),
                     editable: false,
-                    suppressMovable: true,
                     enableCellChangeFlash: true,
                 };
             }),
