@@ -10,7 +10,7 @@ import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { EQUIPMENT, ID, TYPE, VOLTAGE_LEVEL } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';
 
@@ -41,20 +41,17 @@ const RegulatingTerminalForm = ({
     previousEquipmentSectionTypeValue,
 }) => {
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
-    const { setValue } = useFormContext();
-
-    const watchVoltageLevelId = useWatch({
-        name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
-    });
+    const { setValue, getValues } = useFormContext();
+    const [voltageLevelId, setVoltageLevelId] = useState(getValues(`${id}.${VOLTAGE_LEVEL}.${ID}`));
 
     useEffect(() => {
-        if (watchVoltageLevelId) {
+        if (voltageLevelId) {
             fetchVoltageLevelEquipments(
                 studyUuid,
                 currentNodeUuid,
                 currentRootNetworkUuid,
                 undefined,
-                watchVoltageLevelId,
+                voltageLevelId,
                 true
             ).then((values) => {
                 setEquipmentsOptions(values);
@@ -62,11 +59,12 @@ const RegulatingTerminalForm = ({
         } else {
             setEquipmentsOptions([]);
         }
-    }, [watchVoltageLevelId, id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
+    }, [voltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const resetEquipment = useCallback(() => {
+        setVoltageLevelId(getValues(`${id}.${VOLTAGE_LEVEL}.${ID}`));
         setValue(`${id}.${EQUIPMENT}`, null);
-    }, [id, setValue]);
+    }, [id, setValue, getValues]);
 
     return (
         <>
@@ -108,6 +106,7 @@ const RegulatingTerminalForm = ({
                                 return filtered;
                             }}
                             PopperComponent={FittingPopper}
+                            onBlur={(event) => setVoltageLevelId(event.target.value)}
                         />
                     }
                 </Grid>
@@ -134,7 +133,7 @@ const RegulatingTerminalForm = ({
                             autoHighlight
                             selectOnFocus
                             id="equipment"
-                            disabled={!watchVoltageLevelId || disabled}
+                            disabled={!voltageLevelId || disabled}
                             previousValue={previousEquipmentSectionTypeValue}
                             options={equipmentsOptions}
                             getOptionLabel={(equipment) => {
