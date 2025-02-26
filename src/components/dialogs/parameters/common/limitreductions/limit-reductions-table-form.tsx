@@ -10,9 +10,10 @@ import {
     ILimitReductionsByVoltageLevel,
     ITemporaryLimitReduction,
     LIMIT_DURATION_FORM,
+    LIMIT_REDUCTIONS_FORM,
 } from './columns-definitions';
 import { useIntl } from 'react-intl';
-import LimitReductionsTable from './limit-reductions-table';
+import CustomVoltageLevelTable from '../voltage-level-table/custom-voltage-level-table';
 
 const getLabelColumn = (limit: ITemporaryLimitReduction) => {
     const lowBound = `${Math.trunc(limit.limitDuration.lowBound / 60)} min`;
@@ -67,7 +68,13 @@ const LimitReductionsTableForm: FunctionComponent<{
         return columnsDefinition;
     }, [intl, limits, getToolTipColumn]);
 
-    return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={450} />;
+    return (
+        <CustomVoltageLevelTable
+            formName={LIMIT_REDUCTIONS_FORM}
+            columnsDefinition={columnsDefinition}
+            tableHeight={450}
+        />
+    );
 };
 
 export default LimitReductionsTableForm;
