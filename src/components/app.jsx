@@ -210,25 +210,18 @@ const App = () => {
                 });
             });
 
-            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid)
-                .then((config) => {
-                    const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                        return {
-                            uuid: spreadsheetConfig.id,
-                            index: index,
-                            name: spreadsheetConfig.name,
-                            columns: spreadsheetConfig.columns,
-                            type: spreadsheetConfig.sheetType,
-                        };
-                    });
-                    dispatch(initTableDefinitions(config.id, tableDefinitions));
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'spreadsheetConfigCollectionRetrievingError',
-                    });
+            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((config) => {
+                const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
+                    return {
+                        uuid: spreadsheetConfig.id,
+                        index: index,
+                        name: spreadsheetConfig.name,
+                        columns: spreadsheetConfig.columns,
+                        type: spreadsheetConfig.sheetType,
+                    };
                 });
+                dispatch(initTableDefinitions(config.id, tableDefinitions));
+            });
 
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {

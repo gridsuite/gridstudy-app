@@ -61,7 +61,7 @@ export default function CustomSpreadsheetConfigDialog({
     selectedOption,
 }: Readonly<CustomSpreadsheetConfigDialogProps>) {
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
-    const speadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
+    const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
     const tablesNames = useMemo(() => tablesDefinitions.map((def) => def.name), [tablesDefinitions]);
     const emptySpreadsheetFormSchema = useMemo(() => getEmptySpreadsheetFormSchema(tablesNames), [tablesNames]);
     const spreadsheetFromModelFormSchema = useMemo(() => getSpreadsheetFromModelFormSchema(tablesNames), [tablesNames]);
@@ -98,7 +98,7 @@ export default function CustomSpreadsheetConfigDialog({
                     sheetType: equipmentType,
                     tabIndex,
                     tabName,
-                    speadsheetsCollectionUuid: speadsheetsCollectionUuid as UUID,
+                    spreadsheetsCollectionUuid: spreadsheetsCollectionUuid as UUID,
                     dispatch,
                     snackError,
                     open,
@@ -115,7 +115,7 @@ export default function CustomSpreadsheetConfigDialog({
                             sheetType: selectedModel.sheetType,
                             tabIndex,
                             tabName,
-                            speadsheetsCollectionUuid: speadsheetsCollectionUuid as UUID,
+                            spreadsheetsCollectionUuid: spreadsheetsCollectionUuid as UUID,
                             dispatch,
                             snackError,
                             open,
@@ -130,7 +130,7 @@ export default function CustomSpreadsheetConfigDialog({
                     });
             }
         },
-        [selectedOption?.id, open, tablesDefinitions.length, speadsheetsCollectionUuid, dispatch, snackError]
+        [selectedOption?.id, open, tablesDefinitions.length, spreadsheetsCollectionUuid, dispatch, snackError]
     );
 
     useEffect(() => {

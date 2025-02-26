@@ -82,7 +82,7 @@ interface AddNewSpreadsheetParams {
     sheetType: SpreadsheetEquipmentType;
     tabIndex: number;
     tabName: string;
-    speadsheetsCollectionUuid: UUID;
+    spreadsheetsCollectionUuid: UUID;
     dispatch: Dispatch;
     snackError: any;
     open: UseStateBooleanReturn;
@@ -93,7 +93,7 @@ export const addNewSpreadsheet = ({
     sheetType,
     tabIndex,
     tabName,
-    speadsheetsCollectionUuid,
+    spreadsheetsCollectionUuid,
     dispatch,
     snackError,
     open,
@@ -101,7 +101,7 @@ export const addNewSpreadsheet = ({
     const newTableDefinition = createNewTableDefinition(columns, sheetType, tabIndex, tabName);
     const spreadsheetConfig = createSpreadsheetConfig(columns, sheetType, tabName);
 
-    addSpreadsheetConfigToCollection(speadsheetsCollectionUuid, spreadsheetConfig)
+    addSpreadsheetConfigToCollection(spreadsheetsCollectionUuid, spreadsheetConfig)
         .then((uuid: UUID) => handleSuccess(uuid, newTableDefinition, tabName, dispatch, snackError, open))
         .catch((error) => {
             snackError({

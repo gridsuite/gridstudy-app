@@ -185,12 +185,12 @@ export default function CustomColumnDialog({
 
     const onSubmit = useCallback(
         async (newParams: CustomColumnForm) => {
-            const existingColumn = columnsDefinitions?.find((column) => column.uuid === colUuid);
-            let isUpdate = false;
-
             if (colUuid && !validateParams(columnsDefinitions, newParams, colUuid, setError)) {
                 return;
             }
+
+            const existingColumn = columnsDefinitions?.find((column) => column.uuid === colUuid);
+            let isUpdate = false;
 
             if (existingColumn) {
                 isUpdate = true;

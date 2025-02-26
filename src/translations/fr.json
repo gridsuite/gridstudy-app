@@ -1094,7 +1094,6 @@
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
     "NoSpreadsheets": "Vous n'avez pas de feuille de calcul, veuillez en créer une",
-    "spreadsheetConfigCollectionRetrievingError": "Erreur lors de la récupération des configurations de feuilles de calcul",
 
     "depth": "Profondeur : ",
 
