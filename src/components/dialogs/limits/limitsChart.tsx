@@ -55,7 +55,9 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 (item.name === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
                 (!currentLimits.permanentLimit && !item.acceptableDuration);
 
-            const permanentLimitValue = currentLimits.permanentLimit ? currentLimits.permanentLimit : maxValuePermanentLimit;
+            const permanentLimitValue = currentLimits.permanentLimit
+                ? currentLimits.permanentLimit
+                : maxValuePermanentLimit;
 
             const itemTempoGreaterThanPrevious: boolean =
                 (item?.acceptableDuration &&
@@ -134,7 +136,9 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             (acc, item, index) => {
                 const isPermanentLimit =
                     (item.name === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
-                    (!currentLimits.permanentLimit && !item.acceptableDuration && item.value === maxValuePermanentLimit);
+                    (!currentLimits.permanentLimit &&
+                        !item.acceptableDuration &&
+                        item.value === maxValuePermanentLimit);
                 const difference = item.value ? item.value - previousSum : undefined;
 
                 const color =
@@ -144,7 +148,11 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                         ? colorPermanentLimit
                         : colors?.[colorIndex] ?? colors[colors.length - 1];
 
-                const incoherent = isIncoherent(maxValuePermanentLimit, item, index > 0 ? thresholds[index - 1] : undefined);
+                const incoherent = isIncoherent(
+                    maxValuePermanentLimit,
+                    item,
+                    index > 0 ? thresholds[index - 1] : undefined
+                );
 
                 if (item.value && item.value >= maxValuePermanentLimit) {
                     previousSum = item.value;
