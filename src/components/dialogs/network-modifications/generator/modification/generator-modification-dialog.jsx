@@ -125,8 +125,9 @@ const formSchema = yup
         [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         ...getConnectivityWithPositionValidationSchema(true),
+        [VOLTAGE_REGULATION]: yup.bool().nullable(),
         ...getSetPointsSchema(true),
-        ...getReactiveLimitsSchema(true),
+        [REACTIVE_LIMITS]: getReactiveLimitsSchema(true),
     })
     .concat(modificationPropertiesSchema)
     .required();

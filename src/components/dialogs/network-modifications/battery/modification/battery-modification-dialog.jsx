@@ -100,7 +100,7 @@ const formSchema = yup
         [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         ...getConnectivityWithPositionValidationSchema(true),
-        ...getReactiveLimitsSchema(true),
+        [REACTIVE_LIMITS]: getReactiveLimitsSchema(true),
         ...getFrequencyRegulationSchema(true),
     })
     .concat(modificationPropertiesSchema)

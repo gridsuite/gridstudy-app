@@ -86,7 +86,7 @@ const formSchema = yup
         [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
         ...getActivePowerSetPointSchema(false),
-        ...getReactiveLimitsSchema(),
+        [REACTIVE_LIMITS]: getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
         ...getFrequencyRegulationSchema(),
     })

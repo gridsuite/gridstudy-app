@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import {
     ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
@@ -24,6 +23,7 @@ import {
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
 import { Property } from '../../common/properties/property-utils';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 export type LoadCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -45,7 +45,7 @@ export type LoadCreationSchemaForm = {
 
 export interface LoadCreationInfos {
     uuid: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     equipmentId: string;
     equipmentName: string;
     loadType: string;

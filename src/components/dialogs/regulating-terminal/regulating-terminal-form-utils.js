@@ -84,12 +84,12 @@ export const getRegulatingTerminalEquipmentData = ({ equipmentId, equipmentName 
 };
 
 export const getRegulatingTerminalFormData = ({
-    voltageLevelId = null,
+    voltageLevelId,
     voltageLevelName,
     voltageLevelNominalVoltage,
     voltageLevelSubstationId,
     voltageLevelTopologyKind,
-    equipmentId = null,
+    equipmentId,
     equipmentName,
     equipmentType,
 }) => {

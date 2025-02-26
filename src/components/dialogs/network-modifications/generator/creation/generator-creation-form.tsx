@@ -36,8 +36,21 @@ import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { WritableDeep } from 'type-fest';
 
-const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
+export interface GeneratorCreationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+}
+
+export default function GeneratorCreationForm({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+}: Readonly<GeneratorCreationFormProps>) {
     const currentNodeUuid = currentNode?.id;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
@@ -51,7 +64,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid 
         <SelectInput
             name={ENERGY_SOURCE}
             label={'energySource'}
-            options={ENERGY_SOURCES}
+            options={ENERGY_SOURCES as WritableDeep<typeof ENERGY_SOURCES>}
             fullWidth
             size={'small'}
             disableClearable={true}
@@ -66,6 +79,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid 
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
+            previousValues={undefined}
         />
     );
 
@@ -135,6 +149,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid 
                 currentNodeUuid={currentNodeUuid}
                 currentRootNetworkUuid={currentRootNetworkUuid}
                 voltageLevelOptions={voltageLevelOptions}
+                previousValues={undefined}
             />
 
             {/* Short Circuit of start part */}
@@ -157,6 +172,4 @@ const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid 
             <PropertiesForm networkElementType={'generator'} />
         </>
     );
-};
-
-export default GeneratorCreationForm;
+}

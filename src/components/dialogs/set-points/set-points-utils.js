@@ -24,6 +24,10 @@ import {
     VOLTAGE_SET_POINT,
     MINIMUM_ACTIVE_POWER,
     MAXIMUM_ACTIVE_POWER,
+    VALUE,
+    PREVIOUS_VALUE,
+    DELETION_MARK,
+    ADDED,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { REGULATION_TYPES } from 'components/network/constants';
@@ -60,7 +64,7 @@ const getVoltageRegulationEmptyFormData = (isEquipmentModification) => ({
     ...getRegulatingTerminalEmptyFormData(),
 });
 
-const getVoltageRegulationSchema = (isEquipmentModification) => ({
+export const getVoltageRegulationSchema = (isEquipmentModification = false) => ({
     [VOLTAGE_REGULATION_TYPE]: yup.string().nullable(),
 
     [VOLTAGE_SET_POINT]: yup
@@ -110,31 +114,20 @@ export const getSetPointsEmptyFormData = (isEquipmentModification = false) => ({
 });
 
 export const getSetPointsSchema = (isEquipmentModification = false) => ({
-    [VOLTAGE_REGULATION]: yup
-        .bool()
-        .nullable()
-        .when([], {
-            is: () => !isEquipmentModification,
-            then: (schema) => schema.required(),
-        }),
-    ...getActivePowerSetPointSchema(isEquipmentModification),
-    ...getReactivePowerSetPointSchema(isEquipmentModification),
     ...getVoltageRegulationSchema(isEquipmentModification),
-    ...getFrequencyRegulationSchema(isEquipmentModification),
 });
 
-const getReactivePowerSetPointSchema = (isEquipmentModification) => ({
-    [REACTIVE_POWER_SET_POINT]: yup
+export const getReactivePowerSetPointSchema = (isEquipmentModification = false) =>
+    yup
         .number()
         .nullable()
         .when([VOLTAGE_REGULATION], {
             is: (value) => !isEquipmentModification && !value,
             then: (schema) => schema.required(),
-        }),
-});
+        });
 
-export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
-    [ACTIVE_POWER_SET_POINT]: yup
+export const getActivePowerSetPointSchema = (isEquipmentModification = false) =>
+    yup
         .number()
         .when([], {
             is: () => isEquipmentModification,
@@ -164,12 +157,4 @@ export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
                         }
                     );
             },
-        }),
-});
-
-export const getPreviousBooleanValue = (value) => {
-    if (value === null) {
-        return null;
-    }
-    return value ? 'On' : 'Off';
-};
+        });
