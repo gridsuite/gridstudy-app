@@ -67,6 +67,7 @@ const spreadsheetEn = {
     'spreadsheet/filter/config': 'Gridsuite filters',
     'spreadsheet/remove_spreadsheet_confirmation':
         'Are you sure you want to remove the spreadsheet "{spreadsheetName}"?',
+    'spreadsheet/remove_spreadsheet_error': 'Error while removing spreadsheet',
 
     // Column types
     TEXT: 'Text',

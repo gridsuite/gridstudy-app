@@ -15,7 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { AppDispatch } from 'redux/store';
 import { removeTableDefinition } from 'redux/actions';
 import { removeSpreadsheetConfigFromCollection } from 'services/study-config';
-import { PopupConfirmationDialog } from '@gridsuite/commons-ui';
+import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 
 interface EquipmentTabsProps {
@@ -79,6 +79,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
     const dispatch = useDispatch<AppDispatch>();
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
     const [tabToBeRemovedIndex, setTabToBeRemovedIndex] = useState<number>(tabIndex);
@@ -87,10 +88,20 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
         if (!tableUuid || !spreadsheetsCollectionUuid) {
             return;
         }
-        removeSpreadsheetConfigFromCollection(spreadsheetsCollectionUuid, tableUuid).then(() => {
-            dispatch(removeTableDefinition(tabToBeRemovedIndex));
-            setConfirmationDialogOpen(false);
-        });
+        removeSpreadsheetConfigFromCollection(spreadsheetsCollectionUuid, tableUuid)
+            .then(() => {
+                if (tabToBeRemovedIndex < tabIndex) {
+                    handleSwitchTab(tabIndex - 1);
+                }
+                dispatch(removeTableDefinition(tabToBeRemovedIndex));
+                setConfirmationDialogOpen(false);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'spreadsheet/remove_spreadsheet_error',
+                });
+            });
     };
 
     useEffect(() => {
