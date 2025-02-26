@@ -80,7 +80,7 @@ export function LimitsGroupsContextualMenu({
     };
 
     const handleDuplicateTab = () => {
-        let newName: string;
+        let newName: string = '';
         if (indexSelectedLimitSet1 !== null) {
             const duplicatedLimits1: OperationalLimitsGroup = getValues(
                 `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`
