@@ -54,15 +54,6 @@ import {
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
-import {
-    getGenericRowNewParams,
-    getSensiHvdcformatNewParams,
-    getSensiInjectionsformatNewParams,
-    getSensiInjectionsSetformatNewParams,
-    getSensiNodesformatNewParams,
-    getSensiPstformatNewParams,
-    IRowNewParams,
-} from './utils';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import LineSeparator from '../../commons/line-separator';
@@ -71,7 +62,17 @@ import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-a
 import ComputingType from 'components/computing-status/computing-type';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import { styles } from '../parameters-style';
-import { formSchema, SensitivityAnalysisParametersFormSchema } from './sensitivity-analysis.type';
+import {
+    formSchema,
+    getGenericRowNewParams,
+    getSensiHvdcformatNewParams,
+    getSensiInjectionsformatNewParams,
+    getSensiInjectionsSetformatNewParams,
+    getSensiNodesformatNewParams,
+    getSensiPstformatNewParams,
+    IRowNewParams,
+    SensitivityAnalysisParametersFormSchema,
+} from './shared-functions';
 
 interface SensitivityAnalysisParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;

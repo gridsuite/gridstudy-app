@@ -47,11 +47,13 @@ import {
 import { setNonEvacuatedEnergyParameters } from '../../../../services/study/non-evacuated-energy';
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
 import {
+    formSchema,
     getContingenciesParams,
     getGenerationStagesDefinitionParams,
     getGenerationStagesSelectionParams,
     getGeneratorsCappingsParams,
     getMonitoredBranchesParams,
+    NonEvacuatedEnergyParametersForm,
     UseGetNonEvacuatedEnergyParametersReturnProps,
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
@@ -61,7 +63,6 @@ import LineSeparator from '../../commons/line-separator';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { styles } from '../parameters-style';
-import { formSchema, NonEvacuatedEnergyParametersForm } from './non-evacuated-energy.type';
 
 interface NonEvacuatedEnergyParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.NON_EVACUATED_ENERGY_ANALYSIS>;
