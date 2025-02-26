@@ -141,7 +141,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
                 <PopupConfirmationDialog
                     message={intl.formatMessage(
                         {
-                            id: 'spreadsheet/remove_spreasheet_confirmation',
+                            id: 'spreadsheet/remove_spreadsheet_confirmation',
                         },
                         { spreadsheetName: tablesDefinitions[tabToBeRemovedIndex]?.name }
                     )}

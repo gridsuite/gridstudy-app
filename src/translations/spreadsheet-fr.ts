@@ -57,6 +57,7 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model':
         'Vous devez sélectionner un seul modèle de tableur',
     'spreadsheet/create_new_spreadsheet/error_loading_model': 'Erreur lors de la récupération du modèle de tableur',
+    'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': "Erreur lors de l'ajout du tableur",
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',
@@ -64,7 +65,7 @@ const spreadsheetFr = {
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'Aucun nœud avec ce nom',
     'spreadsheet/parameter_aliases/unique_aliases': 'Les alias doivent être unique',
     'spreadsheet/filter/config': 'Filtres Gridsuite',
-    'spreadsheet/remove_spreasheet_confirmation': 'Êtes-vous sûr de vouloir supprimer le tableur {spreadsheetName} ?',
+    'spreadsheet/remove_spreadsheet_confirmation': 'Êtes-vous sûr de vouloir supprimer le tableur {spreadsheetName} ?',
 
     // Column types
     TEXT: 'Texte',

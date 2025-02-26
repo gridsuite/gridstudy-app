@@ -56,6 +56,7 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model':
         'You must select only one spreadsheet model',
     'spreadsheet/create_new_spreadsheet/error_loading_model': 'Error while retrieving spreadsheet model',
+    'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': 'Error while adding spreadsheet',
     'spreadsheet/parameter_aliases/node_name': 'Node name',
     'spreadsheet/parameter_aliases/node_alias': 'Node alias',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Cannot exceed 10 characters',
@@ -63,7 +64,7 @@ const spreadsheetEn = {
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'No node with this name',
     'spreadsheet/parameter_aliases/unique_aliases': 'Aliases should be unique',
     'spreadsheet/filter/config': 'Gridsuite filters',
-    'spreadsheet/remove_spreasheet_confirmation':
+    'spreadsheet/remove_spreadsheet_confirmation':
         'Are you sure you want to remove the spreadsheet "{spreadsheetName}"?',
 
     // Column types

@@ -31,22 +31,15 @@ import {
 import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
 import { NEW_SPREADSHEET_CREATION_OPTIONS } from '../constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
 import { TABLES_TYPES } from '../config/tables-types';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
-import { addSpreadsheetConfigToCollection, getSpreadsheetModel } from 'services/study-config';
-import type {
-    ColumnDefinition,
-    ColumnDefinitionDto,
-    SpreadsheetEquipmentType,
-    SpreadsheetTabDefinition,
-} from '../config/spreadsheet.type';
-import { SortWay } from '../../../types/custom-aggrid-types';
+import { getSpreadsheetModel } from 'services/study-config';
+import type { ColumnDefinitionDto, SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { COLUMN_DEPENDENCIES } from '../custom-columns/custom-columns-form';
-import { v4 as uuid4 } from 'uuid';
 import { UUID } from 'crypto';
+import { addNewSpreadsheet } from './custom-spreadsheet-utils';
 
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
@@ -94,90 +87,49 @@ export default function CustomSpreadsheetConfigDialog({
 
     const onSubmit = useCallback(
         (newParams: any) => {
-            if (selectedOption?.id === NEW_SPREADSHEET_CREATION_OPTIONS.EMPTY.id) {
-                // New tab with default columns
-                const equipmentType = newParams.equipmentType as SpreadsheetEquipmentType;
-                const tabIndex = tablesDefinitions.length;
-                const tabName = newParams[SPREADSHEET_NAME];
-                const newTableDefinition: SpreadsheetTabDefinition = {
-                    uuid: uuid4() as UUID,
-                    index: tabIndex,
-                    name: tabName,
-                    type: equipmentType,
+            const isCreatingEmptySpreadsheet = selectedOption?.id === NEW_SPREADSHEET_CREATION_OPTIONS.EMPTY.id;
+            const tabIndex = tablesDefinitions.length;
+            const tabName = newParams[SPREADSHEET_NAME];
+            const equipmentType = newParams.equipmentType as SpreadsheetEquipmentType;
+
+            if (isCreatingEmptySpreadsheet) {
+                addNewSpreadsheet({
                     columns: [],
-                };
-                const spreadsheetConfig = {
-                    name: tabName,
                     sheetType: equipmentType,
-                    columns: [],
-                };
-                addSpreadsheetConfigToCollection(speadsheetsCollectionUuid as UUID, spreadsheetConfig).then(
-                    (uuid: UUID) => {
-                        newTableDefinition.uuid = uuid;
-                        dispatch(updateTableDefinition(newTableDefinition));
-                        dispatch(addFilterForNewSpreadsheet(tabName, []));
-                        dispatch(
-                            addSortForNewSpreadsheet(tabName, [
-                                {
-                                    colId: 'id',
-                                    sort: SortWay.ASC,
-                                },
-                            ])
-                        );
-                    }
-                );
+                    tabIndex,
+                    tabName,
+                    speadsheetsCollectionUuid: speadsheetsCollectionUuid as UUID,
+                    dispatch,
+                    snackError,
+                    open,
+                });
             } else {
-                // Load existing model into new tab
                 getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id)
                     .then((selectedModel: { columns: ColumnDefinitionDto[]; sheetType: SpreadsheetEquipmentType }) => {
-                        const tabIndex = tablesDefinitions.length;
-                        const tabName = newParams[SPREADSHEET_NAME];
-                        const newTableDefinition: SpreadsheetTabDefinition = {
-                            uuid: uuid4() as UUID,
-                            index: tabIndex,
-                            name: tabName,
-                            type: selectedModel.sheetType,
-                            columns: selectedModel.columns.map((col) => {
-                                return {
-                                    ...col,
-                                    [COLUMN_DEPENDENCIES]:
-                                        col.dependencies && col.dependencies.length > 0
-                                            ? JSON.parse(col.dependencies)
-                                            : undefined,
-                                } as ColumnDefinition;
-                            }),
-                        };
-                        const spreadsheetConfig = {
-                            name: tabName,
+                        const columns = selectedModel.columns.map((col) => ({
+                            ...col,
+                            [COLUMN_DEPENDENCIES]: col.dependencies?.length ? JSON.parse(col.dependencies) : undefined,
+                        }));
+                        addNewSpreadsheet({
+                            columns,
                             sheetType: selectedModel.sheetType,
-                            columns: newTableDefinition.columns,
-                        };
-                        addSpreadsheetConfigToCollection(speadsheetsCollectionUuid as UUID, spreadsheetConfig).then(
-                            (uuid: UUID) => {
-                                newTableDefinition.uuid = uuid;
-                                dispatch(updateTableDefinition(newTableDefinition));
-                                dispatch(addFilterForNewSpreadsheet(tabName, []));
-                                dispatch(
-                                    addSortForNewSpreadsheet(tabName, [
-                                        {
-                                            colId: 'id',
-                                            sort: SortWay.ASC,
-                                        },
-                                    ])
-                                );
-                            }
-                        );
+                            tabIndex,
+                            tabName,
+                            speadsheetsCollectionUuid: speadsheetsCollectionUuid as UUID,
+                            dispatch,
+                            snackError,
+                            open,
+                        });
                     })
                     .catch((error) => {
                         snackError({
                             messageTxt: error,
                             headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
                         });
+                        open.setFalse();
                     });
             }
-            open.setFalse();
         },
-
         [selectedOption?.id, open, tablesDefinitions.length, speadsheetsCollectionUuid, dispatch, snackError]
     );
 
