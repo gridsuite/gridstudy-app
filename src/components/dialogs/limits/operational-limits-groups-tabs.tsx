@@ -306,7 +306,7 @@ export function OperationalLimitsGroupsTabs({
             const newIndex: number = limitsGroups1.length;
             appendEmptyOperationalLimitsGroup(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`, '');
             appendEmptyOperationalLimitsGroup(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}`, '');
-            startEditingLimitsGroup(newIndex, `LIMIT_SET`);
+            startEditingLimitsGroup(newIndex, `DEFAULT`);
         }
     }, [
         editingTabIndex,
