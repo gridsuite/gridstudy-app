@@ -35,6 +35,8 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
     'spreadsheet/custom_column/creates_cyclic_dependency':
         'Les dépendances de la colonne créent un cycle de dépendances',
+    'spreadsheet/custom_column/error_saving_or_updating_column':
+        'Erreur lors de la sauvegarde ou de la mise à jour de la colonne',
     'spreadsheet/save/button': 'Enregistrer',
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/collection': 'Collection',

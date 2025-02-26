@@ -233,7 +233,7 @@ export default function CustomColumnDialog({
                 .catch((error) => {
                     snackError({
                         messageTxt: error,
-                        headerId: 'spreadsheet/custom_column/error_message',
+                        headerId: 'spreadsheet/custom_column/error_saving_or_updating_column',
                     });
                 });
         },

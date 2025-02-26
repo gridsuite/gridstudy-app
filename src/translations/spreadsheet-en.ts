@@ -34,6 +34,7 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/parameter_nodes': 'Parameter nodes aliases',
     'spreadsheet/custom_column/add_alias': 'Add an alias',
     'spreadsheet/custom_column/creates_cyclic_dependency': 'Column dependencies create a cyclic dependency',
+    'spreadsheet/custom_column/error_saving_or_updating_column': 'Error while saving or updating column',
     'spreadsheet/save/button': 'Save',
     'spreadsheet/save/options/model': 'As a model',
     'spreadsheet/save/options/collection': 'Collection',
