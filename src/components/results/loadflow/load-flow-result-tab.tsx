@@ -10,7 +10,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
+import { GlobalFilter, LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
@@ -29,10 +29,9 @@ import {
     mappingTabs,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
-import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import ResultsGlobalFilter, { Filter } from '../common/results-global-filter';
+import ResultsGlobalFilter from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -44,6 +43,11 @@ import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { FilterType } from '../common/utils';
 import { useNodeData } from 'components/use-node-data';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_TEXT_COMPARATORS,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { Filter } from '../common/filter.type';
 
 const styles = {
     flexWrapper: {
@@ -62,12 +66,6 @@ const styles = {
         flexGrow: 1,
     },
 };
-
-export interface GlobalFilter {
-    nominalV?: string[];
-    countryCode?: string[];
-    limitViolationsTypes?: LimitTypes[];
-}
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,

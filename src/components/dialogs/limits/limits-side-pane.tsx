@@ -23,27 +23,7 @@ import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
 import DndTable from '../../utils/dnd-table/dnd-table';
 import TemporaryLimitsTable from './temporary-limits-table';
-import { CurrentTreeNode } from '../../../redux/reducer';
-
-export interface LimitsSidePaneProps {
-    limitsGroupFormName: string;
-    permanentCurrentLimitPreviousValue: number | null | undefined;
-    temporaryLimitsPreviousValues: TemporaryLimit[];
-    clearableFields: boolean | undefined;
-    currentNode?: CurrentTreeNode;
-    onlySelectedLimitsGroup: boolean;
-}
-
-export interface ILimitColumnDef {
-    label: string;
-    dataKey: string;
-    initialValue: string | null;
-    editable: boolean;
-    numeric: boolean;
-    width?: number;
-    maxWidth?: number;
-    showErrorMsg?: boolean;
-}
+import { ILimitColumnDef, LimitsSidePaneProps } from './limits.type';
 
 export function LimitsSidePane({
     limitsGroupFormName,

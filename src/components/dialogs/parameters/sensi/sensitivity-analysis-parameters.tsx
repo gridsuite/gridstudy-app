@@ -47,7 +47,6 @@ import {
     SENSITIVITY_TYPE,
     SUPERVISED_VOLTAGE_LEVELS,
 } from '../../../utils/field-constants';
-import yup from '../../../utils/yup-config';
 import {
     fetchSensitivityAnalysisParameters,
     getSensitivityAnalysisFactorsCount,
@@ -58,15 +57,10 @@ import SensitivityParametersSelector from './sensitivity-parameters-selector';
 import {
     getGenericRowNewParams,
     getSensiHvdcformatNewParams,
-    getSensiHVDCsFormSchema,
     getSensiInjectionsformatNewParams,
-    getSensiInjectionsFormSchema,
     getSensiInjectionsSetformatNewParams,
-    getSensiInjectionsSetFormSchema,
     getSensiNodesformatNewParams,
-    getSensiNodesFormSchema,
     getSensiPstformatNewParams,
-    getSensiPSTsFormSchema,
     IRowNewParams,
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
@@ -77,28 +71,12 @@ import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-a
 import ComputingType from 'components/computing-status/computing-type';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import { styles } from '../parameters-style';
+import { formSchema, SensitivityAnalysisParametersFormSchema } from './sensitivity-analysis.type';
 
 interface SensitivityAnalysisParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;
     setHaveDirtyFields: any;
 }
-
-const formSchema = yup
-    .object()
-    .shape({
-        [PROVIDER]: yup.string().required(),
-        [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
-        [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
-        [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
-        ...getSensiInjectionsSetFormSchema(),
-        ...getSensiInjectionsFormSchema(),
-        ...getSensiHVDCsFormSchema(),
-        ...getSensiPSTsFormSchema(),
-        ...getSensiNodesFormSchema(),
-    })
-    .required();
-
-export type SensitivityAnalysisParametersFormSchema = yup.InferType<typeof formSchema>;
 
 const numberMax = 500000;
 

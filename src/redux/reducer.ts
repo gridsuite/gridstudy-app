@@ -268,7 +268,6 @@ import {
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
-import { Filter } from '../components/results/common/results-global-filter';
 import {
     EQUIPMENT_TYPES as NetworkViewerEquipmentType,
     LineFlowColorMode,
@@ -290,6 +289,7 @@ import {
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
+import { Filter } from '../components/results/common/filter.type';
 
 export enum NotificationType {
     STUDY = 'study',

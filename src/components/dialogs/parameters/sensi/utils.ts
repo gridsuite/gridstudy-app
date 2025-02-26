@@ -29,7 +29,7 @@ import {
     COUNT,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
-import { SensitivityAnalysisParametersFormSchema } from './sensitivity-analysis-parameters';
+import { SensitivityAnalysisParametersFormSchema } from './sensitivity-analysis.type';
 
 export const getSensiHVDCsFormSchema = () => ({
     [PARAMETER_SENSI_HVDC]: yup.array().of(

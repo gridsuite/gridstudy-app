@@ -7,63 +7,10 @@
 
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
-import { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from 'redux/reducer';
+import { CurrentTreeNode } from 'redux/reducer';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../tree-node.type';
+import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } from './shared-functions';
 
-export function getModificationNodeDataOrUndefined(node: NetworkModificationNodeData | RootNodeData) {
-    if (isModificationNode(node)) {
-        return node;
-    }
-    return undefined;
-}
-
-// type guard to check if the node is a modification node
-export function isModificationNode(
-    node: NetworkModificationNodeData | RootNodeData
-): node is NetworkModificationNodeData {
-    return node.type === NodeType.NETWORK_MODIFICATION;
-}
-
-export function isRootNode(node: NetworkModificationNodeData | RootNodeData): node is NetworkModificationNodeData {
-    return node.type === NodeType.ROOT;
-}
-
-function convertRootNodeToReactFlowModelNode(node: NetworkModificationNodeData | RootNodeData): ReactFlowRootNodeData {
-    return {
-        label: node.name,
-        description: node.description ?? undefined,
-    };
-}
-
-function convertModificationNodeToReactFlowModelNode(node: NetworkModificationNodeData): ReactFlowModificationNodeData {
-    const networkModificationNodeData = getModificationNodeDataOrUndefined(node);
-    const globalBuildStatus = networkModificationNodeData?.nodeBuildStatus?.globalBuildStatus;
-    const localBuildStatus = networkModificationNodeData?.nodeBuildStatus?.localBuildStatus;
-    return {
-        label: node.name,
-        description: node.description ?? undefined,
-        globalBuildStatus: globalBuildStatus,
-        localBuildStatus: localBuildStatus,
-    };
-}
-
-export function convertNodetoReactFlowModelNode(
-    node: NetworkModificationNodeData | RootNodeData,
-    parentId?: UUID
-): CurrentTreeNode {
-    return {
-        id: node.id,
-        type: node.type,
-        position: { x: 0, y: 0 },
-        parentId: parentId,
-        data: isRootNode(node)
-            ? convertRootNodeToReactFlowModelNode(node)
-            : convertModificationNodeToReactFlowModelNode(node),
-        draggable: isModificationNode(node),
-    };
-}
-
-// Return the first node of type nodeType and specific buildStatus
 // in the tree model
 export function getFirstNodeOfType(
     elements: NetworkModificationNodeData | RootNodeData,

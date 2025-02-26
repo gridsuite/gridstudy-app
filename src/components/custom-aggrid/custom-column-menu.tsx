@@ -15,12 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { setRemoveColumnDefinition } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
-import { DialogMenuProps } from './custom-aggrid-menu';
-
-export interface CustomColumnConfigProps extends DialogMenuProps {
-    tabIndex: number;
-    colId: string;
-}
+import { CustomColumnConfigProps } from './custom-aggrid.type';
 
 export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabIndex, colId, onClose, anchorEl }) => {
     const intl = useIntl();

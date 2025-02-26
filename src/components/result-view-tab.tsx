@@ -29,6 +29,7 @@ import { Box, Paper, Tab, Tabs } from '@mui/material';
 import { StateEstimationResultTab } from './results/stateestimation/state-estimation-result-tab';
 import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysis/dynamic-security-analysis-result-tab';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import { IService } from './result-view-tab.type';
 
 const styles = {
     table: {
@@ -51,13 +52,6 @@ interface IResultViewTabProps {
     openVoltageLevelDiagram: (voltageLevelId: string) => void;
     disabled: boolean;
     view: string;
-}
-
-export interface IService {
-    id: string;
-    computingType: ComputingType[];
-    displayed: boolean;
-    renderResult: React.ReactNode;
 }
 
 /**

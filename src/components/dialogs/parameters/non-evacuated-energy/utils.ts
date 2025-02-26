@@ -35,8 +35,8 @@ import {
     STAGES_DEFINITION_GENERATORS,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
-import { NonEvacuatedEnergyParametersForm } from './non-evacuated-energy-parameters';
 import { NonEvacuatedEnergyParametersInfos, EnergySource } from 'services/study/non-evacuated-energy.type';
+import { NonEvacuatedEnergyParametersForm } from './non-evacuated-energy.type';
 
 export type UseGetNonEvacuatedEnergyParametersReturnProps = [
     NonEvacuatedEnergyParametersInfos | null,
