@@ -6,8 +6,9 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { DeletedEquipment, NetworkImpactsInfos, AppState, NotificationType } from '../redux/reducer';
 import { UUID } from 'crypto';
+import { DeletedEquipment, NetworkImpactsInfos, NotificationType } from '../redux/reducer.type';
+import { AppState } from '../redux/app-state.type';
 
 interface StudyImpactsWithReset extends NetworkImpactsInfos {
     resetImpactedSubstationsIds: () => void;

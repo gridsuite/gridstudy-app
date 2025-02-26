@@ -14,7 +14,6 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
-    DiagramType,
 } from '../diagram-common';
 import {
     CSS_RULE,
@@ -27,7 +26,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from '../../computing-status/computing-type';
-import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
 import { getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
@@ -35,6 +33,9 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
+import { DiagramType } from '../diagram.type';
+import { NadNodeMovement, NadTextMovement } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/app-state.type';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -146,6 +147,7 @@ type NetworkAreaDiagramContentProps = {
     readonly diagramId: UUID;
     visible: boolean;
 };
+
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();

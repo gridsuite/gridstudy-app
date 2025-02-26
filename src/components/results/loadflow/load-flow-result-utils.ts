@@ -22,7 +22,6 @@ import {
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType, { ComputingType } from '../../computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
@@ -36,6 +35,8 @@ import {
     FILTER_TEXT_COMPARATORS,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export const convertMillisecondsToMinutesSeconds = (durationInMilliseconds: number): string => {
     const durationInSeconds = Math.floor(durationInMilliseconds / 1000);

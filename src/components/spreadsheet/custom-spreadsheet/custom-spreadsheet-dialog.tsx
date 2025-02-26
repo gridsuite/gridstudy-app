@@ -33,7 +33,6 @@ import { NEW_SPREADSHEET_CREATION_OPTIONS } from '../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
 import { TABLES_DEFINITIONS, TABLES_TYPES } from '../config/config-tables';
-import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
 import { getSpreadsheetModel } from 'services/study-config';
@@ -46,6 +45,8 @@ import type {
 import { SortWay } from '../../../types/custom-aggrid-types';
 import { COLUMN_DEPENDENCIES } from '../custom-columns/custom-columns-form';
 import { v4 as uuid4 } from 'uuid';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;

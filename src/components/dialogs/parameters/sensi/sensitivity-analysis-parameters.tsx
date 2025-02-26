@@ -57,7 +57,6 @@ import SensitivityParametersSelector from './sensitivity-parameters-selector';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import LineSeparator from '../../commons/line-separator';
-import { AppState } from 'redux/reducer';
 import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
 import ComputingType from 'components/computing-status/computing-type';
 import { UseParametersBackendReturnProps } from '../parameters.type';
@@ -73,6 +72,8 @@ import {
     IRowNewParams,
     SensitivityAnalysisParametersFormSchema,
 } from './shared-functions';
+
+import { AppState } from '../../../../redux/app-state.type';
 
 interface SensitivityAnalysisParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;

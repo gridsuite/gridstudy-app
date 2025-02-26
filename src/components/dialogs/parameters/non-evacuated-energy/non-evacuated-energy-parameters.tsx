@@ -58,11 +58,12 @@ import {
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
 import ComputingType from '../../../computing-status/computing-type';
-import { AppState } from 'redux/reducer';
 import LineSeparator from '../../commons/line-separator';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { styles } from '../parameters-style';
+
+import { AppState } from '../../../../redux/app-state.type';
 
 interface NonEvacuatedEnergyParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.NON_EVACUATED_ENERGY_ANALYSIS>;

@@ -16,11 +16,12 @@ import { FormattedMessage } from 'react-intl';
 import { RunningStatus } from '../../../utils/running-status';
 import { ComputationReportViewer } from '../../common/computation-report-viewer';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
 import { ComputingType } from '../../../computing-status/computing-type';
 import { RESULTS_LOADING_DELAY } from '../../../network/constants';
 import { nonEvacuatedEnergyResultInvalidations } from '../../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
+
+import { AppState } from '../../../../redux/app-state.type';
 
 const styles = {
     container: {

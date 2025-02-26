@@ -18,7 +18,7 @@ import {
 import { AmpereAdornment } from '../dialog-utils';
 import { useCallback, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import { formatTemporaryLimits } from '../../utils/utils.js';
+import { formatTemporaryLimits } from '../../utils/utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
 import DndTable from '../../utils/dnd-table/dnd-table';

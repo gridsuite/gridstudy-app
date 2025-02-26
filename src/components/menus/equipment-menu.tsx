@@ -13,11 +13,12 @@ import { useSelector } from 'react-redux';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
-import { AppState } from 'redux/reducer';
 import { EquipmentType } from '@gridsuite/commons-ui';
 import { BaseEquipmentMenuProps } from './base-equipment-menu';
 import { MenuBranchProps } from './operating-status-menu';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+
+import { AppState } from '../../redux/app-state.type';
 
 const styles = {
     menu: {

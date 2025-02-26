@@ -12,7 +12,8 @@ import DndTable from '../../utils/dnd-table/dnd-table';
 import { SELECTED } from '../../utils/field-constants';
 import { useFieldArray } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { AppState, CurrentTreeNode } from '../../../redux/reducer';
+import { CurrentTreeNode } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/app-state.type';
 
 // TODO: to fix when either migrating DndTable to typescript or using something else than DndTable
 const DndTableTyped = DndTable as React.ComponentType<any>;

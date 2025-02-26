@@ -41,10 +41,11 @@ import {
     VoltageInitParametersForm,
     voltageInitParametersFormSchema,
 } from './voltage-init-parameters-form';
-import { AppState } from '../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { useGetVoltageInitParameters } from './use-get-voltage-init-parameters';
 import { styles } from '../parameters-style';
+
+import { AppState } from '../../../../redux/app-state.type';
 
 export const VoltageInitParameters = ({
     setHaveDirtyFields,

@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import RunningStatus from 'components/utils/running-status';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+
+import { AppState } from '../redux/app-state.type';
 
 /**
  * Custom hook that calculates the number of computation notifications.

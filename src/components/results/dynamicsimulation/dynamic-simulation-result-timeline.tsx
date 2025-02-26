@@ -12,7 +12,6 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
 import ComputingType from '../../computing-status/computing-type';
 import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
@@ -32,6 +31,8 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const styles = {
     loader: {

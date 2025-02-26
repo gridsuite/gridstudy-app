@@ -97,7 +97,7 @@ import {
     getBranchActiveReactivePowerEditData,
     getBranchActiveReactivePowerEmptyFormData,
     getBranchActiveReactivePowerValidationSchema,
-} from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
+} from '../../common/measurements/branch-active-reactive-power-form-utils';
 import { LineModificationDialogTab } from '../line-utils';
 
 /**

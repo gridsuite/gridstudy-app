@@ -6,9 +6,12 @@
  */
 
 import { legacy_createStore as createStore, Store } from 'redux';
-import { Actions, AppState, reducer } from './reducer';
+import { reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 import { setUserStore } from './user-store';
+import { Actions } from './actions.type';
+
+import { AppState } from './app-state.type';
 
 export const store = createStore(
     reducer,

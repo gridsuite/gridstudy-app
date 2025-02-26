@@ -20,7 +20,8 @@ import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 import { CustomMenuItem, CustomNestedMenuItem } from '../utils/custom-nested-menu';
 import { Equipment, EquipmentType } from '@gridsuite/commons-ui';
-import { AppState } from 'redux/reducer';
+
+import { AppState } from '../../redux/app-state.type';
 
 const styles = {
     menuItem: {

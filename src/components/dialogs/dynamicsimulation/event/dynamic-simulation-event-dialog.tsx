@@ -22,7 +22,8 @@ import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+
+import { AppState } from '../../../../redux/app-state.type';
 
 export type DynamicSimulationEventDialogProps = {
     equipmentId: string;

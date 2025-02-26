@@ -45,7 +45,6 @@ import {
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from 'redux/store';
 import { setUpdateColumnsDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
@@ -53,7 +52,10 @@ import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type
 import { v4 as uuid4 } from 'uuid';
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
-import { AppState } from 'redux/reducer';
+
+import { AppDispatch } from '../../../redux/store';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;

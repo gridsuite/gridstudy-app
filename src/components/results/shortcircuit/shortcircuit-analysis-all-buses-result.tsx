@@ -12,10 +12,11 @@ import {
 } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+
+import { AppState } from '../../../redux/app-state.type';
 
 interface ShortCircuitAnalysisAllBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;

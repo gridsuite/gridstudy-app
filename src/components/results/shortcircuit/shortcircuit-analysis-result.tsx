@@ -13,7 +13,6 @@ import {
     SCAPagedResults,
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
-import { AppState } from 'redux/reducer';
 import { RunningStatus } from 'components/utils/running-status';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
@@ -39,6 +38,8 @@ import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+
+import { AppState } from '../../../redux/app-state.type';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;

@@ -14,8 +14,9 @@ import { LIGHT_THEME, OverflowableText } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
 import { Box, Theme } from '@mui/material';
-import { AppState, ModificationNode } from 'redux/reducer';
 import { CopyType } from 'components/network-modification.type';
+import { ModificationNode } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/app-state.type';
 
 const BUILT_NODE_BANNER_COLOR = '#74a358';
 const BUILT_WITH_WARNING_NODE_BANNER_COLOR = '#FFA500';

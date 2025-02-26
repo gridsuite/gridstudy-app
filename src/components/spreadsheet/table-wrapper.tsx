@@ -21,7 +21,6 @@ import { formatFetchedEquipments } from './utils/equipment-table-utils';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
-import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
@@ -36,6 +35,8 @@ import { useEquipmentModification } from './equipment-modification/use-equipment
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
 import { changeDisplayedColumns } from '../../redux/actions';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { CurrentTreeNode } from '../../redux/reducer.type';
+import { AppState } from '../../redux/app-state.type';
 
 const styles = {
     table: (theme: Theme) => ({

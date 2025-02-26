@@ -12,10 +12,12 @@ import { CUSTOM_COLUMNS_MENU_DEFINITION, DELETE, UPDATE } from '../spreadsheet/c
 import { FormattedMessage, useIntl } from 'react-intl';
 import CustomColumnDialog from '../spreadsheet/custom-columns/custom-columns-dialog';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { setRemoveColumnDefinition } from 'redux/actions';
-import { AppDispatch } from 'redux/store';
 import { CustomColumnConfigProps } from './custom-aggrid.type';
+
+import { AppDispatch } from '../../redux/store';
+
+import { AppState } from '../../redux/app-state.type';
 
 export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabIndex, colId, onClose, anchorEl }) => {
     const intl = useIntl();

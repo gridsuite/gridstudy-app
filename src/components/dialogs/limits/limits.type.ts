@@ -1,5 +1,6 @@
 import { TemporaryLimit } from '../../../services/network-modification-types';
-import { CurrentTreeNode } from '../../../redux/reducer';
+
+import { CurrentTreeNode } from '../../../redux/reducer.type';
 
 export interface ILimitColumnDef {
     label: string;

@@ -18,7 +18,6 @@ import {
     IElementCreationDialog,
     ElementCreationDialog,
 } from '@gridsuite/commons-ui';
-import { AppState } from '../../../redux/reducer';
 import { SelectOptionsDialog } from '../../../utils/dialogs';
 import {
     SpreadsheetConfig,
@@ -28,6 +27,8 @@ import {
 } from '../config/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection } from '../../../services/explore';
+
+import { AppState } from '../../../redux/app-state.type';
 
 interface SpreadsheetCollectionSaveDialogProps {
     open: UseStateBooleanReturn;

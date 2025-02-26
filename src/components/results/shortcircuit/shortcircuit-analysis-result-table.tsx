@@ -13,7 +13,6 @@ import { GridReadyEvent, RowClassParams, RowDataUpdatedEvent, ValueGetterParams 
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
-import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { CustomAGGrid, unitToKiloUnit } from '@gridsuite/commons-ui';
@@ -30,6 +29,8 @@ import {
     FILTER_TEXT_COMPARATORS,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+
+import { AppState } from '../../../redux/app-state.type';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];

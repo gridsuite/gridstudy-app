@@ -11,7 +11,6 @@ import { FormattedMessage } from 'react-intl';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
@@ -27,6 +26,8 @@ import { tripEquipment } from '../../services/study/network-modifications';
 import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+
+import { AppState } from '../../redux/app-state.type';
 
 interface BusMenuProps {
     busId: string;

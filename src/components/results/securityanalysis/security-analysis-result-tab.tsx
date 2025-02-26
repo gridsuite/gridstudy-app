@@ -8,7 +8,6 @@
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
-import { AppState } from '../../../redux/reducer';
 
 import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
@@ -40,6 +39,8 @@ import { securityAnalysisResultInvalidations } from '../../computing-status/use-
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
 import { getStoreFields, RESULT_TYPE } from './security-analysis-columns-definition';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const styles = {
     tabsAndToolboxContainer: {

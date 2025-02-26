@@ -25,7 +25,6 @@ import {
 } from '../../../../../utils/field-constants';
 import yup from '../../../../../utils/yup-config';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
-import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
@@ -59,6 +58,7 @@ import {
     getLccHvdcLineFromSearchCopy,
     getLccHvdcLineSchema,
 } from './lcc-creation-utils';
+import { CurrentTreeNode } from '../../../../../../redux/reducer.type';
 
 export type LccCreationSchemaForm = {
     [EQUIPMENT_ID]: string;

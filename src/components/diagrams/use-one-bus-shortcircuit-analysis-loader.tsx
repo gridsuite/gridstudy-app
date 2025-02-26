@@ -9,10 +9,11 @@ import { UUID } from 'crypto';
 import { ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { Chip, darken, lighten, Theme } from '@mui/material';
 import { setOneBusShortcircuitAnalysisDiagram } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
+
+import { AppState } from '../../redux/app-state.type';
 
 /**
  * A hook that handles the logic behind the diagram one bus shortcircuit analysis loader

@@ -20,9 +20,10 @@ import { CancelButton, CheckBoxList, useModificationLabelComputer } from '@grids
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { NetworkModificationMetadata } from 'components/graph/menus/network-modification-menu.type';
 import { toggleElementFromList } from 'components/utils/utils';
+
+import { AppState } from '../../redux/app-state.type';
 
 const styles = {
     text: (theme: Theme) => ({

@@ -7,13 +7,7 @@
 
 import { createReducer, Draft } from '@reduxjs/toolkit';
 import {
-    AuthenticationActions,
     AuthenticationRouterErrorAction,
-    AuthenticationRouterErrorState,
-    CommonStoreState,
-    GsLang,
-    GsLangUser,
-    GsTheme,
     Identifiable,
     LOGOUT_ERROR,
     LogoutErrorAction,
@@ -29,169 +23,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
-    ADD_FILTER_FOR_NEW_SPREADSHEET,
-    ADD_NOTIFICATION,
-    ADD_SORT_FOR_NEW_SPREADSHEET,
-    ADD_TO_RECENT_GLOBAL_FILTERS,
-    AddFilterForNewSpreadsheetAction,
-    AddNotificationAction,
-    AddSortForNewSpreadsheetAction,
-    AddToRecentGlobalFiltersAction,
-    AppActions,
-    CENTER_ON_SUBSTATION,
-    CenterOnSubstationAction,
-    CHANGE_DISPLAYED_COLUMNS_NAMES,
-    CHANGE_LOCKED_COLUMNS_NAMES,
-    ChangeDisplayedColumnsNamesAction,
-    ChangeLockedColumnsNamesAction,
-    CLOSE_DIAGRAM,
-    CLOSE_DIAGRAMS,
-    CLOSE_STUDY,
-    CloseDiagramAction,
-    CloseDiagramsAction,
-    CloseStudyAction,
-    CURRENT_ROOT_NETWORK,
-    CURRENT_TREE_NODE,
-    CurrentRootNetworkAction,
-    CurrentTreeNodeAction,
-    DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    DecrementNetworkAreaDiagramDepthAction,
-    DELETE_EQUIPMENTS,
-    DeleteEquipmentsAction,
-    DYNAMIC_SIMULATION_RESULT_FILTER,
-    DynamicSimulationResultFilterAction,
-    ENABLE_DEVELOPER_MODE,
-    EnableDeveloperModeAction,
-    FAVORITE_CONTINGENCY_LISTS,
-    FavoriteContingencyListsAction,
-    INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    IncrementNetworkAreaDiagramDepthAction,
-    LOAD_EQUIPMENTS,
-    LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
-    LoadEquipmentsAction,
-    LOADFLOW_RESULT_FILTER,
-    LoadflowResultFilterAction,
-    LoadNetworkModificationTreeSuccessAction,
-    LOGS_FILTER,
-    LogsFilterAction,
-    MAP_DATA_LOADING,
-    MAP_EQUIPMENTS_CREATED,
-    MAP_EQUIPMENTS_INITIALIZED,
-    MapDataLoadingAction,
-    MapEquipmentsCreatedAction,
-    MapEquipmentsInitializedAction,
-    MINIMIZE_DIAGRAM,
-    MinimizeDiagramAction,
-    NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
-    NETWORK_MODIFICATION_HANDLE_SUBTREE,
-    NETWORK_MODIFICATION_TREE_NODE_ADDED,
-    NETWORK_MODIFICATION_TREE_NODE_MOVED,
-    NETWORK_MODIFICATION_TREE_NODES_REMOVED,
-    NETWORK_MODIFICATION_TREE_NODES_REORDER,
-    NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-    NetworkAreaDiagramNbVoltageLevelsAction,
-    NetworkModificationHandleSubtreeAction,
-    NetworkModificationTreeNodeAddedAction,
-    NetworkModificationTreeNodeMovedAction,
-    NetworkModificationTreeNodesRemovedAction,
-    NetworkModificationTreeNodesReorderAction,
-    NetworkModificationTreeNodesUpdatedAction,
-    NODE_SELECTION_FOR_COPY,
-    NodeSelectionForCopyAction,
-    OPEN_DIAGRAM,
-    OPEN_NAD_LIST,
-    OPEN_STUDY,
-    OpenDiagramAction,
-    OpenNadListAction,
-    OpenStudyAction,
-    REMOVE_COLUMN_DEFINITION,
-    REMOVE_NODE_DATA,
-    REMOVE_NOTIFICATION_BY_NODE,
-    RemoveColumnDefinitionAction,
-    RemoveNodeDataAction,
-    RemoveNotificationByNodeAction,
-    RESET_EQUIPMENTS,
-    RESET_EQUIPMENTS_BY_TYPES,
-    RESET_EQUIPMENTS_POST_LOADFLOW,
-    RESET_LOGS_FILTER,
-    RESET_MAP_EQUIPMENTS,
-    RESET_MAP_RELOADED,
-    RESET_NETWORK_AREA_DIAGRAM_DEPTH,
-    ResetEquipmentsAction,
-    ResetEquipmentsByTypesAction,
-    ResetEquipmentsPostLoadflowAction,
-    ResetLogsFilterAction,
-    ResetMapEquipmentsAction,
-    ResetMapReloadedAction,
-    ResetNetworkAreaDiagramDepthAction,
-    SAVE_SPREADSHEET_GS_FILTER,
-    SaveSpreadSheetGsFilterAction,
-    SECURITY_ANALYSIS_RESULT_FILTER,
-    SecurityAnalysisResultFilterAction,
-    SELECT_COMPUTED_LANGUAGE,
-    SELECT_LANGUAGE,
-    SELECT_THEME,
-    SelectComputedLanguageAction,
-    SelectLanguageAction,
-    SelectThemeAction,
-    SENSITIVITY_ANALYSIS_RESULT_FILTER,
-    SensitivityAnalysisResultFilterAction,
-    SET_COMPUTATION_STARTING,
-    SET_COMPUTING_STATUS,
-    SET_EVENT_SCENARIO_DRAWER_OPEN,
-    SET_FULLSCREEN_DIAGRAM,
-    SET_LAST_COMPLETED_COMPUTATION,
-    SET_MODIFICATIONS_DRAWER_OPEN,
-    SET_MODIFICATIONS_IN_PROGRESS,
-    SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-    SET_OPTIONAL_SERVICES,
-    SET_PARAMS_LOADED,
-    SET_STUDY_DISPLAY_MODE,
-    SET_STUDY_INDEXATION_STATUS,
-    SetComputationStartingAction,
-    SetComputingStatusAction,
-    SetEventScenarioDrawerOpenAction,
-    SetFullscreenDiagramAction,
-    SetLastCompletedComputationAction,
-    SetModificationsDrawerOpenAction,
-    SetModificationsInProgressAction,
-    SetOneBusShortcircuitAnalysisDiagramAction,
-    SetOptionalServicesAction,
-    SetParamsLoadedAction,
-    SetStudyDisplayModeAction,
-    SetStudyIndexationStatusAction,
-    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
-    ShortcircuitAnalysisResultFilterAction,
-    SPREADSHEET_FILTER,
-    SpreadsheetFilterAction,
-    STATEESTIMATION_RESULT_FILTER,
-    StateEstimationResultFilterAction,
-    STOP_DIAGRAM_BLINK,
-    StopDiagramBlinkAction,
-    STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-    STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
-    StoreNetworkAreaDiagramNodeMovementAction,
-    StoreNetworkAreaDiagramTextNodeMovementAction,
-    STUDY_UPDATED,
-    StudyUpdatedAction,
-    TABLE_SORT,
-    TableSortAction,
-    TOGGLE_PIN_DIAGRAM,
-    TogglePinDiagramAction,
-    UPDATE_COLUMNS_DEFINITION,
-    UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
-    UPDATE_EQUIPMENTS,
-    UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
-    UPDATE_TABLE_DEFINITION,
-    UpdateColumnsDefinitionsAction,
-    UpdateCustomColumnsNodesAliasesAction,
-    UpdateEquipmentsAction,
-    UpdateNetworkVisualizationParametersAction,
-    UpdateTableDefinitionAction,
-    USE_NAME,
-    UseNameAction,
-} from './actions';
-import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
     getLocalStorageTheme,
@@ -200,12 +31,9 @@ import {
 } from './session-storage/local-storage';
 import { TABLES_DEFINITIONS } from '../components/spreadsheet/config/config-tables';
 import {
-    MAP_BASEMAP_CARTO,
-    MAP_BASEMAP_CARTO_NOLABEL,
     MAP_BASEMAP_MAPBOX,
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
-    PARAM_COMPUTED_LANGUAGE,
     PARAM_DEVELOPER_MODE,
     PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
@@ -226,12 +54,11 @@ import {
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
-import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
+import { OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     ALL_BUSES,
@@ -268,296 +95,196 @@ import {
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
-import {
-    EQUIPMENT_TYPES as NetworkViewerEquipmentType,
-    LineFlowColorMode,
-    LineFlowMode,
-} from '@powsybl/network-viewer';
-import type { UnknownArray, ValueOf } from 'type-fest';
-import { Node } from '@xyflow/react';
+import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
-import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
+import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
-import { BUILD_STATUS } from '../components/network/constants';
-import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
-    ColumnState,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet/config/spreadsheet.type';
-import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
-import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { ExpertFilter } from '../services/study/filter';
-import { Filter } from '../components/results/common/filter.type';
+import { SortWay } from '../types/custom-aggrid-types';
+import {
+    AddFilterForNewSpreadsheetAction,
+    AddNotificationAction,
+    AddSortForNewSpreadsheetAction,
+    AddToRecentGlobalFiltersAction,
+    CenterOnSubstationAction,
+    ChangeDisplayedColumnsNamesAction,
+    ChangeLockedColumnsNamesAction,
+    CloseDiagramAction,
+    CloseDiagramsAction,
+    CloseStudyAction,
+    CurrentRootNetworkAction,
+    CurrentTreeNodeAction,
+    DecrementNetworkAreaDiagramDepthAction,
+    DeleteEquipmentsAction,
+    DynamicSimulationResultFilterAction,
+    EnableDeveloperModeAction,
+    FavoriteContingencyListsAction,
+    IncrementNetworkAreaDiagramDepthAction,
+    LoadEquipmentsAction,
+    LoadflowResultFilterAction,
+    LoadNetworkModificationTreeSuccessAction,
+    LogsFilterAction,
+    MapDataLoadingAction,
+    MapEquipmentsCreatedAction,
+    MapEquipmentsInitializedAction,
+    MinimizeDiagramAction,
+    NetworkAreaDiagramNbVoltageLevelsAction,
+    NetworkModificationHandleSubtreeAction,
+    NetworkModificationTreeNodeAddedAction,
+    NetworkModificationTreeNodeMovedAction,
+    NetworkModificationTreeNodesRemovedAction,
+    NetworkModificationTreeNodesReorderAction,
+    NetworkModificationTreeNodesUpdatedAction,
+    NodeSelectionForCopyAction,
+    OpenDiagramAction,
+    OpenNadListAction,
+    OpenStudyAction,
+    RemoveColumnDefinitionAction,
+    RemoveNodeDataAction,
+    RemoveNotificationByNodeAction,
+    ResetEquipmentsAction,
+    ResetEquipmentsByTypesAction,
+    ResetEquipmentsPostLoadflowAction,
+    ResetLogsFilterAction,
+    ResetMapEquipmentsAction,
+    ResetMapReloadedAction,
+    ResetNetworkAreaDiagramDepthAction,
+    SaveSpreadSheetGsFilterAction,
+    SecurityAnalysisResultFilterAction,
+    SelectComputedLanguageAction,
+    SelectLanguageAction,
+    SelectThemeAction,
+    SensitivityAnalysisResultFilterAction,
+    SetComputationStartingAction,
+    SetComputingStatusAction,
+    SetEventScenarioDrawerOpenAction,
+    SetFullscreenDiagramAction,
+    SetLastCompletedComputationAction,
+    SetModificationsDrawerOpenAction,
+    SetModificationsInProgressAction,
+    SetOneBusShortcircuitAnalysisDiagramAction,
+    SetOptionalServicesAction,
+    SetParamsLoadedAction,
+    SetStudyDisplayModeAction,
+    SetStudyIndexationStatusAction,
+    ShortcircuitAnalysisResultFilterAction,
+    SpreadsheetFilterAction,
+    StateEstimationResultFilterAction,
+    StopDiagramBlinkAction,
+    StoreNetworkAreaDiagramNodeMovementAction,
+    StoreNetworkAreaDiagramTextNodeMovementAction,
+    StudyUpdatedAction,
+    TableSortAction,
+    TogglePinDiagramAction,
+    UpdateColumnsDefinitionsAction,
+    UpdateCustomColumnsNodesAliasesAction,
+    UpdateEquipmentsAction,
+    UpdateNetworkVisualizationParametersAction,
+    UpdateTableDefinitionAction,
+    UseNameAction,
+} from './actions.type';
+import {
+    ADD_FILTER_FOR_NEW_SPREADSHEET,
+    ADD_NOTIFICATION,
+    ADD_SORT_FOR_NEW_SPREADSHEET,
+    ADD_TO_RECENT_GLOBAL_FILTERS,
+    CENTER_ON_SUBSTATION,
+    CHANGE_DISPLAYED_COLUMNS_NAMES,
+    CHANGE_LOCKED_COLUMNS_NAMES,
+    CLOSE_DIAGRAM,
+    CLOSE_DIAGRAMS,
+    CLOSE_STUDY,
+    CURRENT_ROOT_NETWORK,
+    CURRENT_TREE_NODE,
+    DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    DELETE_EQUIPMENTS,
+    DYNAMIC_SIMULATION_RESULT_FILTER,
+    ENABLE_DEVELOPER_MODE,
+    FAVORITE_CONTINGENCY_LISTS,
+    INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    LOAD_EQUIPMENTS,
+    LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
+    LOADFLOW_RESULT_FILTER,
+    LOGS_FILTER,
+    MAP_DATA_LOADING,
+    MAP_EQUIPMENTS_CREATED,
+    MAP_EQUIPMENTS_INITIALIZED,
+    MINIMIZE_DIAGRAM,
+    NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
+    NETWORK_MODIFICATION_HANDLE_SUBTREE,
+    NETWORK_MODIFICATION_TREE_NODE_ADDED,
+    NETWORK_MODIFICATION_TREE_NODE_MOVED,
+    NETWORK_MODIFICATION_TREE_NODES_REMOVED,
+    NETWORK_MODIFICATION_TREE_NODES_REORDER,
+    NETWORK_MODIFICATION_TREE_NODES_UPDATED,
+    NODE_SELECTION_FOR_COPY,
+    OPEN_DIAGRAM,
+    OPEN_NAD_LIST,
+    OPEN_STUDY,
+    REMOVE_COLUMN_DEFINITION,
+    REMOVE_NODE_DATA,
+    REMOVE_NOTIFICATION_BY_NODE,
+    RESET_EQUIPMENTS,
+    RESET_EQUIPMENTS_BY_TYPES,
+    RESET_EQUIPMENTS_POST_LOADFLOW,
+    RESET_LOGS_FILTER,
+    RESET_MAP_EQUIPMENTS,
+    RESET_MAP_RELOADED,
+    RESET_NETWORK_AREA_DIAGRAM_DEPTH,
+    SAVE_SPREADSHEET_GS_FILTER,
+    SECURITY_ANALYSIS_RESULT_FILTER,
+    SELECT_COMPUTED_LANGUAGE,
+    SELECT_LANGUAGE,
+    SELECT_THEME,
+    SENSITIVITY_ANALYSIS_RESULT_FILTER,
+    SET_COMPUTATION_STARTING,
+    SET_COMPUTING_STATUS,
+    SET_EVENT_SCENARIO_DRAWER_OPEN,
+    SET_FULLSCREEN_DIAGRAM,
+    SET_LAST_COMPLETED_COMPUTATION,
+    SET_MODIFICATIONS_DRAWER_OPEN,
+    SET_MODIFICATIONS_IN_PROGRESS,
+    SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+    SET_OPTIONAL_SERVICES,
+    SET_PARAMS_LOADED,
+    SET_STUDY_DISPLAY_MODE,
+    SET_STUDY_INDEXATION_STATUS,
+    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+    SPREADSHEET_FILTER,
+    STATEESTIMATION_RESULT_FILTER,
+    STOP_DIAGRAM_BLINK,
+    STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+    STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
+    STUDY_UPDATED,
+    TABLE_SORT,
+    TOGGLE_PIN_DIAGRAM,
+    UPDATE_COLUMNS_DEFINITION,
+    UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
+    UPDATE_EQUIPMENTS,
+    UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+    UPDATE_TABLE_DEFINITION,
+    USE_NAME,
+} from './actions-fields';
+import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
+import {
+    EquipmentUpdateType,
+    GsFilterSpreadsheetState,
+    LogsFilterState,
+    NadNodeMovement,
+    NadTextMovement,
+    NodeAlias,
+    SpreadsheetNetworkState,
+    StudyIndexationStatus,
+    Substation,
+    TableSortConfig,
+    TablesState,
+} from './reducer.type';
+import { AppState } from './app-state.type';
 
-export enum NotificationType {
-    STUDY = 'study',
-    COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
-    NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
-}
-
-export enum StudyIndexationStatus {
-    NOT_INDEXED = 'NOT_INDEXED',
-    INDEXING_ONGOING = 'INDEXING_ONGOING',
-    INDEXED = 'INDEXED',
-}
-
-export interface OneBusShortCircuitAnalysisDiagram {
-    diagramId: string;
-    nodeId: UUID;
-}
-
-// Headers
-export interface StudyUpdatedEventDataHeader {
-    studyUuid: UUID;
-    parentNode: UUID;
-    rootNetwork: UUID;
-    rootNetworks: UUID[];
-    timestamp: number;
-    updateType?: string;
-    node?: UUID;
-    nodes?: UUID[];
-    error?: string;
-    userId?: string;
-    computationType?: ComputingType;
-}
-
-// Payloads
-export interface DeletedEquipment {
-    equipmentId: string;
-    equipmentType: NetworkViewerEquipmentType;
-}
-
-export interface NetworkImpactsInfos {
-    impactedSubstationsIds: UUID[];
-    deletedEquipments: DeletedEquipment[];
-    impactedElementTypes: string[];
-}
-
-// EventData
-export interface StudyUpdatedEventData {
-    headers: StudyUpdatedEventDataHeader;
-    payload: NetworkImpactsInfos;
-}
-
-interface StudyUpdatedEventDataUnknown {
-    headers: StudyUpdatedEventDataHeader;
-    payload: string;
-}
-
-// Notification types
-type StudyUpdatedStudy = {
-    type: NotificationType.STUDY;
-    eventData: StudyUpdatedEventData;
-};
-
-type StudyUpdatedUndefined = {
-    type: undefined;
-    eventData: StudyUpdatedEventDataUnknown;
-};
-
-// Redux state
-export type StudyUpdated = {
-    force: number; //IntRange<0, 1>;
-} & (StudyUpdatedUndefined | StudyUpdatedStudy);
-
-type NodeCommonData = {
-    label: string;
-    globalBuildStatus?: BUILD_STATUS;
-    description?: string;
-    readOnly?: boolean;
-};
-export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
-
-export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETWORK_MODIFICATION> & {
-    id: UUID;
-};
-
-export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
-export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
-
-export type CurrentTreeNode = ModificationNode | RootNode;
-
-// type guard to check if the node is a Root
-export function isReactFlowRootNodeData(node: CurrentTreeNode): node is RootNode {
-    return node.type === NodeType.ROOT;
-}
-
-export interface ComputingStatus {
-    [ComputingType.LOAD_FLOW]: RunningStatus;
-    [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
-    [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
-    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
-    [ComputingType.SHORT_CIRCUIT]: RunningStatus;
-    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
-    [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
-    [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
-    [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
-    [ComputingType.STATE_ESTIMATION]: RunningStatus;
-}
-
-export type TableSortConfig = Record<string, SortConfig[]>;
-export type TableSort = {
-    [SPREADSHEET_SORT_STORE]: TableSortConfig;
-    [LOADFLOW_RESULT_SORT_STORE]: TableSortConfig;
-    [SECURITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
-    [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
-};
-export type TableSortKeysType = keyof TableSort;
-
-export type SpreadsheetFilterState = Record<string, FilterConfig[]>;
-
-export type DiagramState = {
-    id: UUID;
-    svgType: DiagramType;
-    state: ViewState;
-    needsToBlink?: boolean;
-};
-
-export type NadNodeMovement = {
-    nadIdentifier: string;
-    equipmentId: string;
-    x: number;
-    y: number;
-    scalingFactor: number;
-};
-
-export type NadTextMovement = {
-    nadIdentifier: string;
-    equipmentId: string;
-    shiftX: number;
-    shiftY: number;
-    connectionShiftX: number;
-    connectionShiftY: number;
-};
-
-/**
- * Represent a node in the network modifications tree that is selected.
- */
-export type NodeSelectionForCopy = {
-    sourceStudyUuid: UUID | null;
-    nodeId: UUID | null;
-    copyType: ValueOf<typeof CopyType> | null;
-    allChildrenIds: string[] | null;
-};
-
-export type NodeAlias = {
-    id: UUID;
-    name: string;
-    alias: string;
-};
-
-export type Actions = AppActions | AuthenticationActions;
-
-export interface AppState extends CommonStoreState {
-    signInCallbackError: Error | null;
-    authenticationRouterError: AuthenticationRouterErrorState | null;
-    showAuthenticationRouterLogin: boolean;
-
-    studyUpdated: StudyUpdated;
-    studyUuid: UUID | null;
-    currentTreeNode: CurrentTreeNode | null;
-    currentRootNetwork: UUID | null;
-    computingStatus: ComputingStatus;
-    lastCompletedComputation: ComputingType | null;
-    computationStarting: boolean;
-    optionalServices: IOptionalService[];
-    oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
-    notificationIdList: UUID[];
-    nonEvacuatedEnergyNotif: boolean;
-    recentGlobalFilters: Filter[];
-    mapEquipments: GSMapEquipments | undefined;
-    networkAreaDiagramNbVoltageLevels: number;
-    networkAreaDiagramDepth: number;
-    studyDisplayMode: StudyDisplayMode;
-    studyIndexationStatus: StudyIndexationStatus;
-    tableSort: TableSort;
-    tables: TablesState;
-
-    nodeSelectionForCopy: NodeSelectionForCopy;
-    geoData: null;
-    networkModificationTreeModel: NetworkModificationTreeModel | null;
-    isNetworkModificationTreeModelUpToDate: boolean;
-    mapDataLoading: boolean;
-    diagramStates: DiagramState[];
-    nadNodeMovements: NadNodeMovement[];
-    nadTextNodeMovements: NadTextMovement[];
-    fullScreenDiagram: null | {
-        id: string;
-        svgType?: DiagramType;
-    };
-    allLockedColumnsNames: string[];
-    isExplorerDrawerOpen: boolean;
-    isModificationsDrawerOpen: boolean;
-    isEventScenarioDrawerOpen: boolean;
-    centerOnSubstation: undefined | { to: string };
-    isModificationsInProgress: boolean;
-    reloadMap: boolean;
-    isMapEquipmentsInitialized: boolean;
-    spreadsheetNetwork: SpreadsheetNetworkState;
-    gsFilterSpreadsheetState: GsFilterSpreadsheetState;
-    customColumnsNodesAliases: NodeAlias[];
-    networkVisualizationsParameters: NetworkVisualizationParameters;
-
-    [PARAM_THEME]: GsTheme;
-    [PARAM_LANGUAGE]: GsLang;
-    [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
-    [PARAM_LIMIT_REDUCTION]: number;
-    [PARAM_USE_NAME]: boolean;
-    [PARAM_LINE_FULL_PATH]: boolean;
-    [PARAM_LINE_PARALLEL_PATH]: boolean;
-    [PARAM_LINE_FLOW_ALERT_THRESHOLD]: number;
-    [PARAM_MAP_MANUAL_REFRESH]: boolean;
-    [PARAM_MAP_BASEMAP]: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL; //TODO enum
-    [PARAM_LINE_FLOW_MODE]: LineFlowMode;
-    [PARAM_LINE_FLOW_COLOR_MODE]: LineFlowColorMode;
-    [PARAM_CENTER_LABEL]: boolean;
-    [PARAM_DIAGONAL_LABEL]: boolean;
-    [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
-    [PARAM_COMPONENT_LIBRARY]: unknown | null;
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UnknownArray;
-    [PARAM_DEVELOPER_MODE]: boolean;
-    [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
-    [PARAMS_LOADED]: boolean;
-
-    [LOADFLOW_RESULT_STORE_FIELD]: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: FilterConfig[];
-        [LOADFLOW_RESULT]: FilterConfig[];
-    };
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SECURITY_ANALYSIS_RESULT_N]: FilterConfig[];
-        [SECURITY_ANALYSIS_RESULT_N_K]: FilterConfig[];
-    };
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SENSITIVITY_IN_DELTA_MW_N]: FilterConfig[];
-        [SENSITIVITY_IN_DELTA_MW_N_K]: FilterConfig[];
-        [SENSITIVITY_IN_DELTA_A_N]: FilterConfig[];
-        [SENSITIVITY_IN_DELTA_A_N_K]: FilterConfig[];
-        [SENSITIVITY_AT_NODE_N]: FilterConfig[];
-        [SENSITIVITY_AT_NODE_N_K]: FilterConfig[];
-    };
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
-        [ONE_BUS]: FilterConfig[];
-        [ALL_BUSES]: FilterConfig[];
-    };
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
-        [TIMELINE]: FilterConfig[];
-    };
-    [STATEESTIMATION_RESULT_STORE_FIELD]: {
-        [STATEESTIMATION_QUALITY_CRITERION]: FilterConfig[];
-        [STATEESTIMATION_QUALITY_PER_REGION]: FilterConfig[];
-    };
-    [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
-
-    [LOGS_STORE_FIELD]: LogsFilterState;
-}
-
-export type LogsFilterState = Record<string, FilterConfig[]>;
 const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
@@ -577,7 +304,6 @@ const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: {},
 };
 
-export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.SUBSTATION]: emptySpreadsheetEquipmentsByNodes,
     [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: emptySpreadsheetEquipmentsByNodes,
@@ -600,13 +326,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
 
 const initialCustomColumnsNodesAliases: NodeAlias[] = [];
 
-export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
-
-interface TablesState {
-    definitions: SpreadsheetTabDefinition[];
-    columnsStates: ColumnState[][];
-}
 
 const initialTablesState: TablesState = {
     definitions: TABLES_DEFINITIONS,
@@ -1774,26 +1494,6 @@ function updateSubstationAfterVLDeletion(currentSubstations: Substation[], VLToD
     return currentSubstations;
 }
 
-export enum EquipmentUpdateType {
-    LINES = 'lines',
-    TIE_LINES = 'tieLines',
-    TWO_WINDINGS_TRANSFORMERS = 'twoWindingsTransformers',
-    THREE_WINDINGS_TRANSFORMERS = 'threeWindingsTransformers',
-    GENERATORS = 'generators',
-    LOADS = 'loads',
-    BATTERIES = 'batteries',
-    DANGLING_LINES = 'danglingLines',
-    HVDC_LINES = 'hvdcLines',
-    LCC_CONVERTER_STATIONS = 'lccConverterStations',
-    VSC_CONVERTER_STATIONS = 'vscConverterStations',
-    SHUNT_COMPENSATORS = 'shuntCompensators',
-    STATIC_VAR_COMPENSATORS = 'staticVarCompensators',
-    VOLTAGE_LEVELS = 'voltageLevels',
-    SUBSTATIONS = 'substations',
-    BUSES = 'buses',
-    BUSBAR_SECTIONS = 'busbarSections',
-}
-
 export function getUpdateTypeFromEquipmentType(equipmentType: EQUIPMENT_TYPES): EquipmentUpdateType | undefined {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.LINE:
@@ -1883,10 +1583,6 @@ function deleteEquipment(currentEquipments: Identifiable[], equipmentToDeleteId:
     }
     return currentEquipments;
 }
-
-export type Substation = Identifiable & {
-    voltageLevels: Identifiable[];
-};
 
 function updateSubstationsAndVoltageLevels(
     currentSubstations: Substation[],

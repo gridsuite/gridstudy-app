@@ -9,7 +9,6 @@ import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
-    DiagramType,
     getEquipmentTypeFromFeederType,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
@@ -18,7 +17,6 @@ import {
     MIN_HEIGHT,
     MIN_WIDTH,
     styles,
-    useDiagram,
 } from '../diagram-common';
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu, { MapEquipment } from '../../menus/base-equipment-menu';
@@ -50,10 +48,13 @@ import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
-import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import { DiagramType } from '../diagram.type';
+import { useDiagram } from '../use-diagram';
+
+import { AppState } from '../../../redux/app-state.type';
 
 type EquipmentMenuState = {
     position: [number, number];
@@ -62,6 +63,7 @@ type EquipmentMenuState = {
     svgId: string | null;
     display: boolean;
 };
+
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly studyUuid: UUID;

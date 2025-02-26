@@ -17,9 +17,10 @@ import { FC } from 'react';
 import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/use-search-matching-equipments';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
+
+import { AppState } from '../../redux/app-state.type';
 
 interface EquipmentSearchDialogProps {
     open: boolean;

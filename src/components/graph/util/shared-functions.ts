@@ -1,6 +1,6 @@
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../tree-node.type';
 import { UUID } from 'crypto';
-import { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from '../../../redux/reducer';
+import { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from '../../../redux/reducer.type';
 
 // type guard to check if the node is a modification node
 export function isModificationNode(

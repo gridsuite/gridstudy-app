@@ -10,10 +10,11 @@ import { Button } from '@mui/material';
 import AddColumnRightLight from 'images/add_column_right_light.svg?react';
 import AddColumnRightDark from 'images/add_column_right_dark.svg?react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
 import { LIGHT_THEME, useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnDialog from './custom-columns-dialog';
 import { spreadsheetStyles } from '../utils/style';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export type CustomColumnsConfigProps = {
     tabIndex: number;

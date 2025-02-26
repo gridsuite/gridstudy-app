@@ -14,7 +14,6 @@ import { GlobalFilter, LimitTypes, LoadFlowTabProps } from './load-flow-result.t
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
-import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -48,6 +47,8 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { Filter } from '../common/filter.type';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const styles = {
     flexWrapper: {

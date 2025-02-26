@@ -12,7 +12,6 @@ import { Box, useTheme } from '@mui/material';
 import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 
 import { ComputingType } from '../../computing-status/computing-type';
-import { AppState } from '../../../redux/reducer';
 
 import { LimitViolationResultProps } from './load-flow-result.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
@@ -24,6 +23,8 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> = ({
     result,

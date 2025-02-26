@@ -11,13 +11,14 @@ import { useSelector } from 'react-redux';
 import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from 'components/utils/optional-services';
 import { isComputationParametersUpdated } from './common/computation-parameters-util';
-import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import { UUID } from 'crypto';
 import { User } from 'oidc-client';
 import { ParametersInfos, SpecificParametersInfos, UseParametersBackendReturnProps } from './parameters.type';
 import { formatComputingTypeLabel } from '../../computing-status/computing-type';
 import { ILimitReductionsByVoltageLevel } from './common/limitreductions/columns-definitions';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const INITIAL_PROVIDERS = {};
 

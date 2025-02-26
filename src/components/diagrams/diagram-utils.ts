@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DiagramState } from '../../redux/reducer';
-import { DiagramType } from './diagram-common';
+import { DiagramType } from './diagram.type';
+import { DiagramState } from '../../redux/reducer.type';
 
 /**
  * SORTING FUNCTIONS

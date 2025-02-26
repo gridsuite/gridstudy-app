@@ -1,5 +1,5 @@
-import { TableSortKeysType } from '../../redux/reducer';
 import { DialogMenuProps } from './custom-aggrid-menu';
+import { TableSortKeysType } from '../../redux/reducer.type';
 
 export type SortParams = {
     table: TableSortKeysType;

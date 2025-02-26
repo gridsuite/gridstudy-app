@@ -13,10 +13,12 @@ import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
-import { AppState } from '../../../redux/reducer';
-import { AppDispatch } from '../../../redux/store';
 import { FilterType } from './utils';
 import { Filter } from './filter.type';
+
+import { AppDispatch } from '../../../redux/store';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const styles = {
     autocomplete: (theme: Theme) => ({

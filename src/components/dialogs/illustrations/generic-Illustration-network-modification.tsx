@@ -12,7 +12,8 @@ import Paper from '@mui/material/Paper';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import { AccordionIllustration } from './AccordionIllustration';
 import { PARAM_THEME } from 'utils/config-params';
-import { AppState } from 'redux/reducer';
+
+import { AppState } from '../../../redux/app-state.type';
 
 interface ReplacedText {
     eltId: string;

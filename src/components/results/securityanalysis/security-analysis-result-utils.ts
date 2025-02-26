@@ -19,11 +19,12 @@ import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '..
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType, { ComputingType } from '../../computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 import { FilterConfig } from '../../../types/custom-aggrid-types';
 import { RESULT_TYPE } from './security-analysis-columns-definition';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export const flattenNmKResultsContingencies = (intl: IntlShape, result: ConstraintsFromContingencyItem[] = []) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];

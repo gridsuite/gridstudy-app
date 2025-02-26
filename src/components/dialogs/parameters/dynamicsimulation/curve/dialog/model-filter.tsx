@@ -15,8 +15,9 @@ import { useSelector } from 'react-redux';
 
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import { AppState } from 'redux/reducer';
 import { ModelVariable } from '../../dynamic-simulation.type';
+
+import { AppState } from '../../../../../../redux/app-state.type';
 
 interface ModelVariableDefinitionInfos {
     name: string;

@@ -17,7 +17,6 @@ import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
@@ -27,6 +26,8 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button';
 import { UUID } from 'crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+
+import { AppState } from '../../../redux/app-state.type';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;

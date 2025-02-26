@@ -12,7 +12,6 @@ import { SingleLineDiagramParameters } from './single-line-diagram-parameters';
 import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
 import { MapParameters } from './map-parameters';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, NotificationType } from '../../../../redux/reducer';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -42,6 +41,8 @@ import { fetchNetworkVisualizationsParameters } from '../../../../services/study
 import { User } from 'oidc-client';
 import { getAvailableComponentLibraries } from 'services/study';
 import { styles } from '../parameters-style';
+import { NotificationType } from '../../../../redux/reducer.type';
+import { AppState } from '../../../../redux/app-state.type';
 
 const useGetAvailableComponentLibraries = (user: User | null) => {
     const [componentLibraries, setComponentLibraries] = useState<string[]>([]);

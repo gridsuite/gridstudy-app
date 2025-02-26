@@ -17,9 +17,10 @@ import TwoWindingsTransformerModificationDialog from 'components/dialogs/network
 import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+
+import { AppState } from '../../../redux/app-state.type';
 
 interface UseEquipmentModificationProps {
     studyUuid: string;

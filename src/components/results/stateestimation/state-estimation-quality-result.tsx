@@ -12,7 +12,6 @@ import { Box, useTheme } from '@mui/material';
 import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 
 import { ComputingType } from '../../computing-status/computing-type';
-import { AppState } from '../../../redux/reducer';
 
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
@@ -24,6 +23,8 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({
     result,

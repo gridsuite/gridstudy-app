@@ -31,7 +31,6 @@ import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-s
 import { SELECTION_TYPES } from './selection-types';
 import { openNadList } from 'redux/actions';
 import { Nullable } from 'components/utils/ts-utils';
-import { AppState } from 'redux/reducer';
 import { SelectionCreationPanelForm } from './selection-creation-panel-form';
 import {
     SelectionCreationPaneFields,
@@ -39,6 +38,8 @@ import {
     getSelectionCreationSchema,
 } from './selection-creation-schema';
 import { VoltageLevel } from '../../utils/equipment-types';
+
+import { AppState } from '../../../redux/app-state.type';
 
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];

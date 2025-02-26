@@ -14,7 +14,6 @@ import { BranchSide } from 'components/utils/constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, Tooltip } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import {
     RESULT_TYPE,
@@ -22,6 +21,8 @@ import {
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-columns-definition';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const styles = {
     button: {

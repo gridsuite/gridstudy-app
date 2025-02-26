@@ -29,7 +29,7 @@ import {
 } from './graph/layout';
 import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './root-network-panel';
-import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
+import { updateNodesColumnPositions } from '../services/study/tree-subtree';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';

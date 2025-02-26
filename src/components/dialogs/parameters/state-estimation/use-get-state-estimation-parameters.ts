@@ -7,7 +7,6 @@
 
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
@@ -16,6 +15,8 @@ import { isComputationParametersUpdated } from '../common/computation-parameters
 import { UUID } from 'crypto';
 import { StateEstimationParameters } from './state-estimation-parameters-utils';
 import { getStateEstimationStudyParameters } from '../../../../services/study/state-estimation';
+
+import { AppState } from '../../../../redux/app-state.type';
 
 export type UseGetStateEstimationParametersProps = [
     StateEstimationParameters | null,

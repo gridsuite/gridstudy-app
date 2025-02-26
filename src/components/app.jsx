@@ -51,7 +51,7 @@ import {
     setUpdateNetworkVisualizationParameters,
 } from '../redux/actions';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
-import { getNetworkVisualizationParameters } from '../services/study/study-config.ts';
+import { getNetworkVisualizationParameters } from '../services/study/study-config';
 import { StudyView } from './utils/utils';
 
 const noUserManager = { instance: null, error: null };

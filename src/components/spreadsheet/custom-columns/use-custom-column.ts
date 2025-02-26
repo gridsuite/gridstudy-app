@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback, useMemo } from 'react';
-import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
@@ -20,6 +19,8 @@ import {
 import { validateFormulaResult } from './formula-validator';
 import { ColumnDefinition } from '../config/spreadsheet.type';
 import { CustomColDef } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export function useCustomColumn(tabIndex: number) {
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);

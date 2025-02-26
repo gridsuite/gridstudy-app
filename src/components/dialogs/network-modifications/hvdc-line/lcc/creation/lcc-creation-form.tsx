@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { UUID } from 'crypto';
-import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { Box } from '@mui/material';
 import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../../utils/field-constants';
 import LccHvdcLine from './lcc-hvdc-line';
 import { LccCreationDialogTab } from './lcc-creation.type';
 import LccConverterStation from './lcc-converter-station';
+import { CurrentTreeNode } from '../../../../../../redux/reducer.type';
 
 interface LccCreationFormProps {
     tabIndex: number;

@@ -13,8 +13,6 @@ import { useForm } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from 'redux/store';
-import { AppState, CurrentTreeNode, NodeAlias } from 'redux/reducer';
 import {
     CustomColumnNodesForm,
     customColumnNodesFormSchema,
@@ -24,6 +22,10 @@ import {
 import NodeAliasTable from './node-alias-table';
 import { updateCustomColumnsNodesAliases } from '../../../redux/actions';
 import { UUID } from 'crypto';
+import { CurrentTreeNode, NodeAlias } from '../../../redux/reducer.type';
+
+import { AppDispatch } from '../../../redux/store';
+import { AppState } from '../../../redux/app-state.type';
 
 export type CustomColumnNodesDialogProps = {
     open: UseStateBooleanReturn;

@@ -18,7 +18,6 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
 import { percentageTextField, ReactivePowerAdornment, VoltageAdornment } from '../../../../dialog-utils';
-import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
@@ -34,6 +33,7 @@ import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
+import { CurrentTreeNode } from '../../../../../../redux/reducer.type';
 
 interface VscConverterStationPaneProps {
     id: string;
