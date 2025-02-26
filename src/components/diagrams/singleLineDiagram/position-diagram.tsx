@@ -18,7 +18,8 @@ import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
 import { fetchSvg } from '../../../services/study';
 import { mergeSx } from '../../utils/functions';
-import { AppState } from 'redux/reducer';
+
+import { AppState } from '../../../redux/app-state.type';
 
 interface PositionDiagramProps {
     diagramTitle: string;

@@ -34,10 +34,10 @@ import {
 } from '../../common/properties/property-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { LoadCreationInfos, LoadCreationSchemaForm, LoadFormInfos } from './load-creation.type';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
+import { CurrentTreeNode } from '../../../../../redux/reducer.type';
 
 /**
  * Dialog to create a load in the network

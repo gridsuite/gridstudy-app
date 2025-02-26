@@ -15,8 +15,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { SELECTED } from '../../utils/field-constants';
 import { TableNumericalInput } from '../../utils/rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../../utils/rhf-inputs/table-inputs/table-text-input';
-import { ILimitColumnDef } from './limits-side-pane';
 import { TemporaryLimit } from '../../../services/network-modification-types';
+import { ILimitColumnDef } from './limits.type';
 
 const styles = {
     columnsStyle: {

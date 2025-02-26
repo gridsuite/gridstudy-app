@@ -9,15 +9,9 @@ import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import {
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-header.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
 import ComputingType from '../../computing-status/computing-type';
 import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
@@ -32,6 +26,13 @@ import { AgGridReact } from 'ag-grid-react';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const styles = {
     loader: {

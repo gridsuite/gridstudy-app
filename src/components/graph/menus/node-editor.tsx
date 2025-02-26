@@ -14,8 +14,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setModificationsDrawerOpen } from '../../../redux/actions';
 import { updateTreeNode } from '../../../services/study/tree-subtree';
 import { Box } from '@mui/material';
-import { AppState } from '../../../redux/reducer';
 import { Theme } from '@mui/material/styles';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const styles = {
     paper: (theme: Theme) => ({

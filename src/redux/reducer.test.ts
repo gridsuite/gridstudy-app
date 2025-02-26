@@ -7,7 +7,7 @@
 
 // Because of a circular import issue, we have to import the store to run the
 // unit tests, even if your IDE is showing that the import is unused.
-import { Actions, AppState, reducer as appReducer } from './reducer';
+import { reducer as appReducer } from './reducer';
 import {
     closeDiagram,
     closeDiagrams,
@@ -20,9 +20,12 @@ import {
     stopDiagramBlink,
     togglePinDiagram,
 } from './actions';
-import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { Reducer } from 'redux';
 import { UUID } from 'crypto';
+import { DiagramType, ViewState } from '../components/diagrams/diagram.type';
+import { Actions } from './actions.type';
+
+import { AppState } from './app-state.type';
 
 const reducer = appReducer as Reducer<Partial<AppState>, Actions>;
 

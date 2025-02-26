@@ -11,7 +11,6 @@ import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
 import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 import { ComputingType } from '../../computing-status/computing-type';
-import { AppState } from '../../../redux/reducer';
 
 import { LoadflowResultProps } from './load-flow-result.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
@@ -24,6 +23,8 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result, isLoadingResult, columnDefs }) => {
     const theme = useTheme();

@@ -6,15 +6,11 @@
  */
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, TableSortKeysType } from '../../../redux/reducer';
 import { setTableSort } from '../../../redux/actions';
 import { SortWay } from '../../../types/custom-aggrid-types';
+import { SortParams } from '../custom-aggrid.type';
 
-export type SortParams = {
-    table: TableSortKeysType;
-    tab: string;
-    isChildren?: boolean;
-};
+import { AppState } from '../../../redux/app-state.type';
 
 export const useCustomAggridSort = (colId: string, sortParams?: SortParams) => {
     const sortConfig = useSelector((state: AppState) =>

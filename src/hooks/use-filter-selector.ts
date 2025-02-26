@@ -26,8 +26,9 @@ import {
     setStateEstimationResultFilter,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
 import { FilterConfig, FilterType } from '../types/custom-aggrid-types';
+
+import { AppState } from '../redux/app-state.type';
 
 const FILTER_PARAMS: Record<
     FilterType,

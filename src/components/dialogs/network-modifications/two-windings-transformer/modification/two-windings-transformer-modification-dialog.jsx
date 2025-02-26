@@ -140,12 +140,12 @@ import {
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
 } from '../../../connectivity/connectivity-form-utils';
-import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';
+import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form';
 import {
     getBranchActiveReactivePowerEditData,
     getBranchActiveReactivePowerEmptyFormData,
     getBranchActiveReactivePowerValidationSchema,
-} from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
+} from '../../common/measurements/branch-active-reactive-power-form-utils';
 import { TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
 
 const emptyFormData = {

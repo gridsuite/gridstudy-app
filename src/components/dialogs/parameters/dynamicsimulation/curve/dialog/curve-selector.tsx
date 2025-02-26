@@ -7,12 +7,13 @@
 
 import { Grid, Theme, Typography } from '@mui/material';
 import EquipmentFilter, { GetSelectedEquipmentsHandle } from './equipment-filter';
-import ModelFilter, { GetSelectedVariablesHandle, ModelVariable } from './model-filter';
+import ModelFilter, { GetSelectedVariablesHandle } from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { getReferencedEquipmentTypeForModel } from './curve-selector-utils';
 import { IdentifiableAttributes } from 'services/study/filter';
+import { ModelVariable } from '../../dynamic-simulation.type';
 
 const styles = {
     h6: (theme: Theme) => ({

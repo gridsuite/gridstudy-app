@@ -8,7 +8,8 @@ import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selec
 import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
 import { Grid } from '@mui/material';
 import { useCustomAggridComparatorFilter } from './hooks/use-custom-aggrid-comparator-filter';
-import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
+
+import { CustomAggridFilterParams } from './custom-aggrid-filter.type';
 
 export const CustomAggridComparatorFilter = ({ api, colId, filterParams }: CustomAggridFilterParams) => {
     const {

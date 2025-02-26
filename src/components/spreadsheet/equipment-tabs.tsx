@@ -8,9 +8,10 @@
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+
+import { AppState } from '../../redux/app-state.type';
 
 interface EquipmentTabsProps {
     tabIndex: number;

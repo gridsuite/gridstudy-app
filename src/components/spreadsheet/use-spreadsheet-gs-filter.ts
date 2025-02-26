@@ -10,8 +10,9 @@ import { IRowNode } from 'ag-grid-community';
 import { evaluateFilters, ExpertFilter } from '../../services/study/filter';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
+
+import { AppState } from '../../redux/app-state.type';
 
 export const useSpreadsheetGsFilter = (equipmentType: SpreadsheetEquipmentType) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

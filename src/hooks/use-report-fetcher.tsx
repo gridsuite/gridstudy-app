@@ -6,7 +6,6 @@
  */
 
 import { useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
 import { useCallback, useMemo, useState } from 'react';
 import { fetchNodeReportLogs, fetchNodeSeverities, fetchParentNodesReport } from '../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -15,6 +14,8 @@ import { getContainerDefaultSeverityList, REPORT_SEVERITY } from '../utils/repor
 import { mapReportLogs } from '../utils/report/report-log.mapper';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE, GLOBAL_REPORT_NODE_LABEL } from '../utils/report/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
+
+import { AppState } from '../redux/app-state.type';
 
 function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<string, string>): Report {
     if (!Array.isArray(report)) {

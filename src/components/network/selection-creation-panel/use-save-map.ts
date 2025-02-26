@@ -8,10 +8,11 @@ import { Equipment, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { SELECTION_TYPES } from './selection-types';
 import { createMapContingencyList, createMapFilter } from '../../../services/study/network-map';
 import { DestinationFolder, SelectionCreationPanelNotNadFields } from './selection-creation-schema';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export type UseSaveMapOutput = {
     pendingState: boolean;

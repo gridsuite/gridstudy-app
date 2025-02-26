@@ -16,12 +16,13 @@ import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { StatusCellRender } from '../common/result-cell-renderers';
 import { UUID } from 'crypto';
 import RunningStatus from '../../utils/running-status';
-import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { fetchDynamicSecurityAnalysisStatus } from '../../../services/study/dynamic-security-analysis';
 import { MEDIUM_COLUMN_WIDTH } from '../dynamicsimulation/utils/dynamic-simulation-result-utils';
 import { dynamicSecurityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const styles = {
     loader: {

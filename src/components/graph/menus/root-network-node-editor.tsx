@@ -21,7 +21,6 @@ import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
-import { AppState } from 'redux/reducer';
 import { RootNetworkMetadata } from './network-modification-menu.type';
 
 import {
@@ -33,6 +32,8 @@ import { createRootNetwork, deleteRootNetworks, fetchRootNetworks } from 'servic
 import { setCurrentRootNetwork } from 'redux/actions';
 import RootNetworkCreationDialog, { FormData } from 'components/dialogs/root-network/root-network-creation-dialog';
 import { isChecked, isPartial } from './network-modification-node-editor-utils';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },

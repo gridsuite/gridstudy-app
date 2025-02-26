@@ -15,9 +15,9 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { UUID } from 'crypto';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { CurrentTreeNode } from '../../../../../redux/reducer.type';
 
 export interface LoadCreationFormProps {
     studyUuid: UUID;

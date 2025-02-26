@@ -51,8 +51,9 @@ import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
-import { AppState, CurrentTreeNode } from 'redux/reducer';
 import { UPDATE_TYPE_HEADER } from 'components/use-node-data';
+import { CurrentTreeNode } from '../../redux/reducer.type';
+import { AppState } from '../../redux/app-state.type';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;

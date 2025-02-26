@@ -12,7 +12,6 @@ import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@m
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { AppState } from 'redux/reducer';
 import {
     getLoadFlowDefaultLimitReductions,
     getLoadFlowProviders,
@@ -62,6 +61,8 @@ import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParametersBackend } from './dialogs/parameters/use-parameters-backend';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
+
+import { AppState } from '../redux/app-state.type';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',

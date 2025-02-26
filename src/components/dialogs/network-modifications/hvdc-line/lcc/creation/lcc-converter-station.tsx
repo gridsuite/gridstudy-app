@@ -14,7 +14,6 @@ import {
     POWER_FACTOR,
 } from '../../../../../utils/field-constants';
 import { percentageTextField } from '../../../../dialog-utils';
-import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
@@ -23,6 +22,7 @@ import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 
 import FiltersShuntCompensatorTable from './filters-shunt-compensator-table';
+import { CurrentTreeNode } from '../../../../../../redux/reducer.type';
 
 interface LccConverterStationProps {
     id: string;

@@ -19,8 +19,9 @@ import {
     spreadsheetGsFilterFormSchema,
 } from './utils/spreadsheet-gs-filter-utils';
 import { SPREADSHEET_GS_FILTER } from '../utils/field-constants';
-import { AppState } from '../../redux/reducer';
 import { ExpertFilter } from '../../services/study/filter';
+
+import { AppState } from '../../redux/app-state.type';
 
 const styles = {
     inputContainer: {

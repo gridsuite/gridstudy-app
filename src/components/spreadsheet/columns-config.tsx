@@ -16,9 +16,10 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { AppState } from '../../redux/reducer';
 import { changeDisplayedColumns, changeLockedColumns } from 'redux/actions';
 import { spreadsheetStyles } from './utils/style';
+
+import { AppState } from '../../redux/app-state.type';
 
 const MAX_LOCKS_PER_TAB = 5;
 

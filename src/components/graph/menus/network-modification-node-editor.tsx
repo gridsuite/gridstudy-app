@@ -72,7 +72,6 @@ import ImportModificationDialog from 'components/dialogs/import-modification-dia
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
 import { DropResult } from 'react-beautiful-dnd';
-import { AppState, StudyUpdated } from 'redux/reducer';
 import { createCompositeModifications } from '../../../services/explore';
 import { fetchNetworkModification } from '../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../services/study';
@@ -98,6 +97,8 @@ import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-fo
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { isChecked, isPartial, styles } from './network-modification-node-editor-utils';
+import { StudyUpdated } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/app-state.type';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',

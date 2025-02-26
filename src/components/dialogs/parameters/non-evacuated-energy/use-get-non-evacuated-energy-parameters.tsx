@@ -13,10 +13,11 @@ import ComputingType from '../../../computing-status/computing-type';
 import { isComputationParametersUpdated } from '../common/computation-parameters-util';
 import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/optional-services';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
-import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { UseGetNonEvacuatedEnergyParametersReturnProps } from './utils';
+
+import { AppState } from '../../../../redux/app-state.type';
 
 export const useGetNonEvacuatedEnergyParameters = (): UseGetNonEvacuatedEnergyParametersReturnProps => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

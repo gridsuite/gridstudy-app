@@ -15,11 +15,12 @@ import { NodeInsertModes } from '../nodes/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 import { BUILD_STATUS } from '../../network/constants';
-import { type AppState, type CurrentTreeNode, type NodeSelectionForCopy } from 'redux/reducer';
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
 import { NodeType } from '../tree-node.type';
+import { CurrentTreeNode, NodeSelectionForCopy } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/app-state.type';
 
 type SubMenuItem = {
     onRoot: boolean;

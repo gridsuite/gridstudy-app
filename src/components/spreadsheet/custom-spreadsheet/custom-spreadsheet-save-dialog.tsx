@@ -15,9 +15,10 @@ import {
 import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
 import { v4 as uuid4 } from 'uuid';
 import { ColumnDefinitionDto, SpreadsheetConfig } from '../config/spreadsheet.type';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export type CustomSpreadsheetSaveDialogProps = {
     tabIndex: number;

@@ -40,11 +40,12 @@ import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 
 import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
-import { AppState } from 'redux/reducer';
 import LineSeparator from '../commons/line-separator';
 import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analysis.type';
 import { styles } from './parameters-style';
 import { UseGetShortCircuitParametersProps } from './use-get-short-circuit-parameters';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const formSchema = yup
     .object()

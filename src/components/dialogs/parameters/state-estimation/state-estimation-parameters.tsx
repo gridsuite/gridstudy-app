@@ -16,7 +16,6 @@ import { FormattedMessage } from 'react-intl';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
 import {
     fromStateEstimationParametersFormToParamValues,
     fromStateEstimationParametersParamToFormValues,
@@ -30,6 +29,8 @@ import { StateEstimationQualityParameters } from './state-estimation-quality-par
 import { StateEstimationLoadboundsParameters } from './state-estimation-loadbounds-parameters';
 import { updateStateEstimationParameters } from '../../../../services/study/state-estimation';
 import { UseGetStateEstimationParametersProps } from './use-get-state-estimation-parameters';
+
+import { AppState } from '../../../../redux/app-state.type';
 
 export const StateEstimationParameters = ({
     useStateEstimationParameters,

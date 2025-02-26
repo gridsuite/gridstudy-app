@@ -14,7 +14,6 @@ import { QualityCriterionResult, StateEstimationTabProps } from './state-estimat
 import { StateEstimationStatusResult } from './state-estimation-status-result';
 import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
 import RunningStatus from 'components/utils/running-status';
-import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { StateEstimationQualityResult } from './state-estimation-quality-result';
@@ -26,6 +25,8 @@ import {
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { stateEstimationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const styles = {
     flexWrapper: {

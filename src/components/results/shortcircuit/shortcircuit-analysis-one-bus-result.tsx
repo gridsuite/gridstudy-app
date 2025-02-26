@@ -13,13 +13,14 @@ import {
 } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+
+import { AppState } from '../../../redux/app-state.type';
 
 interface ShortCircuitAnalysisOneBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;

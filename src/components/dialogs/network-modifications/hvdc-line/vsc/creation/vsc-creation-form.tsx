@@ -10,9 +10,9 @@ import { FunctionComponent } from 'react';
 import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import { UUID } from 'crypto';
-import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { Box } from '@mui/material';
 import { VSC_CREATION_TABS } from '../vsc-utils';
+import { CurrentTreeNode } from '../../../../../../redux/reducer.type';
 
 interface VscCreationFormProps {
     tabIndex: number;

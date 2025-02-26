@@ -8,7 +8,6 @@
 import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import ReportViewer from '../../report-viewer/report-viewer';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import WaitingLoader from '../../utils/waiting-loader';
 import { useReportFetcher } from '../../../hooks/use-report-fetcher';
@@ -16,6 +15,8 @@ import { Report, SeverityLevel } from '../../../utils/report/report.type';
 import { BUILD_STATUS } from 'components/network/constants';
 import { Box } from '@mui/material';
 import { sortSeverityList } from 'utils/report/report-severity';
+
+import { AppState } from '../../../redux/app-state.type';
 
 interface ComputationReportViewerProps {
     reportType: ComputingType;

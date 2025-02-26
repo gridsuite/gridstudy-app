@@ -7,9 +7,10 @@
 import { NOTIFICATIONS_URL_KEYS, PREFIX_CONFIG_NOTIFICATION_WS } from 'components/utils/notificationsProvider-utils';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { type AppState } from 'redux/reducer';
 import { getUrlWithToken, getWsBase } from 'services/utils';
 import { APP_NAME } from 'utils/config-params';
+
+import { AppState } from '../redux/app-state.type';
 
 const useNotificationsUrlGenerator = (): Record<NOTIFICATIONS_URL_KEYS, string | undefined> => {
     // The websocket API doesn't allow relative urls

@@ -13,19 +13,20 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     deleteEquipments,
-    EquipmentToDelete,
     loadEquipments,
     removeNodeData,
     resetEquipments,
     resetEquipmentsByTypes,
     updateEquipments,
 } from 'redux/actions';
-import { AppState } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/equipment/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
+import { EquipmentToDelete } from '../../redux/actions.type';
+
+import { AppState } from '../../redux/app-state.type';
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 

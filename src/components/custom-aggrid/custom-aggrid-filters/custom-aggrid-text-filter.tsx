@@ -8,9 +8,9 @@ import React, { useMemo } from 'react';
 import { TextField, Grid, InputAdornment, IconButton } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { DisplayRounding } from '../display-rounding';
-import { FILTER_DATA_TYPES } from '../custom-aggrid-header.type';
 import { mergeSx } from '../../utils/functions';
 import { useIntl } from 'react-intl';
+import { FILTER_DATA_TYPES } from './custom-aggrid-filter.type';
 
 const styles = {
     input: {

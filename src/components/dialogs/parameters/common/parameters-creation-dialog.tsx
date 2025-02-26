@@ -9,8 +9,9 @@ import { FieldValues, UseFormGetValues } from 'react-hook-form';
 import { ElementCreationDialog, ElementType, IElementCreationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { createParameter } from 'services/explore';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
 import { useCallback } from 'react';
+
+import { AppState } from '../../../../redux/app-state.type';
 
 interface CreateParameterProps<T extends FieldValues> {
     open: boolean;

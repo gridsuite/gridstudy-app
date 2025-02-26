@@ -10,7 +10,6 @@ import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import CustomSpreadsheetSaveDialog from './custom-spreadsheet/custom-spreadsheet-save-dialog';
 import { useStateBoolean } from '@gridsuite/commons-ui';
@@ -18,6 +17,8 @@ import { useCsvExport } from './csv-export/use-csv-export';
 import { CsvExportProps } from './csv-export/csv-export.type';
 import { spreadsheetStyles } from './utils/style';
 import { SpreadsheetCollectionSaveDialog } from './custom-spreadsheet/spreadsheet-collection-save-dialog';
+
+import { AppState } from '../../redux/app-state.type';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',

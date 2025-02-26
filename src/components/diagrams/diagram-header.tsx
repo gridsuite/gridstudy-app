@@ -17,7 +17,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { stopDiagramBlink } from '../../redux/actions';
 import { mergeSx } from '../utils/functions';
 import { Theme } from '@mui/material';
-import { AppState } from 'redux/reducer';
+
+import { AppState } from '../../redux/app-state.type';
 
 const BLINK_LENGTH_MS = 1800;
 

@@ -8,12 +8,13 @@
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
 import ComputingType from '../../computing-status/computing-type';
 import RunningStatus from '../../utils/running-status';
 import { useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useIntl } from 'react-intl';
 import Overlay from '../common/Overlay';
+
+import { AppState } from '../../../redux/app-state.type';
 
 const DynamicSecurityAnalysisResultLogs = memo(() => {
     const dynamicSecurityAnalysisStatus = useSelector(

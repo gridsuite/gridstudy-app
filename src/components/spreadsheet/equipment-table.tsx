@@ -18,8 +18,8 @@ import {
     GridOptions,
     RowStyle,
 } from 'ag-grid-community';
-import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
+import { CurrentTreeNode } from '../../redux/reducer.type';
 
 const DEFAULT_ROW_HEIGHT = 28;
 

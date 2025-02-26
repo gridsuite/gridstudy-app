@@ -11,10 +11,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { setEventScenarioDrawerOpen } from '../../../../redux/actions';
 import { useIntl } from 'react-intl';
-import { AppState } from '../../../../redux/reducer';
 import EventModificationScenarioEditor from './event-modification-scenario-editor';
 import { Box } from '@mui/material';
 import { AppDispatch } from '../../../../redux/store';
+
+import { AppState } from '../../../../redux/app-state.type';
 
 const styles = {
     paper: {

@@ -6,8 +6,9 @@
  */
 
 import { useSelector } from 'react-redux';
-import { AppState } from '../redux/reducer';
 import { OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
+
+import { AppState } from '../redux/app-state.type';
 
 export const useOptionalServiceStatus = (serviceName: OptionalServicesNames): OptionalServicesStatus | undefined => {
     const optionalServices = useSelector((state: AppState) => state.optionalServices);

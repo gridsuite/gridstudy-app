@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 import {
     ElementSearchDialog,
     Equipment,
@@ -29,6 +28,8 @@ import {
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
+
+import { AppState } from '../../redux/app-state.type';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: Equipment) => void;

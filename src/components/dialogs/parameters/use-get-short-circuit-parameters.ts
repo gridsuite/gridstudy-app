@@ -13,9 +13,10 @@ import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optio
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import ComputingType from '../../computing-status/computing-type';
 import { isComputationParametersUpdated } from './common/computation-parameters-util';
-import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analysis.type';
+
+import { AppState } from '../../../redux/app-state.type';
 
 export type UseGetShortCircuitParametersProps = [
     ShortCircuitParametersInfos | null,
