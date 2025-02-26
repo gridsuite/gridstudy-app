@@ -356,10 +356,11 @@ export function OperationalLimitsGroupsTabs({
                                     {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (
                                         <IconButton
                                             size="small"
-                                            hidden
                                             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                                                 handleOpenMenu(e, index)
                                             }
+                                            // during the naming of a limit set no other limit set manipulation is allowed :
+                                            disabled={editingTabIndex !== -1}
                                         >
                                             <MenuIcon fontSize="small" />
                                         </IconButton>
@@ -371,27 +372,31 @@ export function OperationalLimitsGroupsTabs({
                     />
                 ))}
                 <Tab
+                    key="addLimitSet"
                     label={
                         editingTabIndex === -1 && (
                             <Box
                                 sx={{
                                     display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
                                     width: '100%',
-                                    flexGrow: 1,
                                 }}
                             >
                                 <IconButton
+                                    size="small"
                                     onClick={addNewLimitSet}
                                     sx={{
                                         align: 'right',
                                         marginLeft: 'auto',
                                     }}
                                 >
-                                    <AddCircleIcon />
+                                    <AddCircleIcon fontSize="small" />
                                 </IconButton>
                             </Box>
                         )
                     }
+                    sx={limitsStyles.limitsBackground}
                 />
             </Tabs>
             <LimitsGroupsContextualMenu
