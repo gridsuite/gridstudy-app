@@ -210,13 +210,22 @@ const App = () => {
                 });
             });
 
+            const mapColumns = (columns) => {
+                return columns.map((column) => {
+                    return {
+                        ...column,
+                        dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
+                    };
+                });
+            };
+
             const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((config) => {
                 const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
                     return {
                         uuid: spreadsheetConfig.id,
                         index: index,
                         name: spreadsheetConfig.name,
-                        columns: spreadsheetConfig.columns,
+                        columns: mapColumns(spreadsheetConfig.columns),
                         type: spreadsheetConfig.sheetType,
                     };
                 });

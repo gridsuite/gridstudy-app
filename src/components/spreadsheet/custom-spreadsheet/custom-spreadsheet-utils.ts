@@ -6,7 +6,12 @@
  */
 
 import { UUID } from 'crypto';
-import { ColumnDefinition, SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
+import {
+    ColumnDefinition,
+    ColumnDefinitionDto,
+    SpreadsheetEquipmentType,
+    SpreadsheetTabDefinition,
+} from '../config/spreadsheet.type';
 import { COLUMN_DEPENDENCIES } from '../custom-columns/custom-columns-form';
 import { Dispatch } from 'redux';
 import { UseStateBooleanReturn } from '@gridsuite/commons-ui';
@@ -57,8 +62,9 @@ const handleSuccess = (
     // we need to refetch the model to get the new column uuids
     getSpreadsheetModel(uuid)
         .then((model) => {
-            newTableDefinition.columns = model.columns.map((col: ColumnDefinition) => ({
+            newTableDefinition.columns = model.columns.map((col: ColumnDefinitionDto) => ({
                 ...col,
+                dependencies: col.dependencies?.length ? JSON.parse(col.dependencies) : undefined,
                 visible: true,
                 locked: false,
             }));
