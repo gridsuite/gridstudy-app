@@ -89,6 +89,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                 return {
                     ...col,
                     visible: !col.visible,
+                    locked: col.locked && !col.visible,
                 };
             }
             return col;
@@ -103,6 +104,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
             return {
                 ...col,
                 visible: !isAllChecked,
+                locked: col.locked && !col.visible,
             };
         });
         setLocalColumns(newLocalColumns);

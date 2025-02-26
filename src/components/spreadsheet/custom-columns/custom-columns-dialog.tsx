@@ -222,7 +222,7 @@ export default function CustomColumnDialog({
                                 formula: newParams.formula,
                                 dependencies: newParams.dependencies,
                                 visible: true,
-                                locked: false,
+                                locked: existingColumn?.locked,
                             },
                         })
                     );
