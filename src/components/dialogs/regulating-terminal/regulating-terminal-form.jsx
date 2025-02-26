@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Popper } from '@mui/material';
+import { Box, Grid, Popper } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { EQUIPMENT, ID, TYPE, VOLTAGE_LEVEL } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
@@ -75,103 +75,96 @@ const RegulatingTerminalForm = ({
     }, [id, setValue]);
 
     return (
-        <>
-            <Grid container direction={direction || 'row'} spacing={2}>
-                <Grid
-                    item
-                    xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
-                    align="start"
-                >
-                    {
-                        <AutocompleteInput
-                            name={`${id}.${VOLTAGE_LEVEL}`}
-                            label="VOLTAGE_LEVEL"
-                            size="small"
-                            // particular outputTransform case for string type when a user clicks outside after editing whatever input
-                            outputTransform={(value) => {
-                                console.log('XXX VL ID inputValue', { value });
-                                return typeof value === 'string' ? { id: value, label: value } : value;
-                            }}
-                            forcePopupIcon
-                            autoHighlight
-                            selectOnFocus
-                            disabled={disabled}
-                            id="voltage-level"
-                            options={voltageLevelOptions}
-                            getOptionLabel={(vl) => (vl?.id ? vl?.id : '')}
-                            onChangeCallback={resetEquipment}
-                            previousValue={previousRegulatingTerminalValue}
-                            /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+        <Grid container direction={direction || 'row'} spacing={2}>
+            <Grid
+                item
+                xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
+                align="start"
+            >
+                {
+                    <AutocompleteInput
+                        name={`${id}.${VOLTAGE_LEVEL}`}
+                        label="VOLTAGE_LEVEL"
+                        size="small"
+                        // particular outputTransform case for string type when a user clicks outside after editing whatever input
+                        outputTransform={(value) => {
+                            console.log('XXX VL ID inputValue', { value });
+                            return typeof value === 'string' ? { id: value, label: value } : value;
+                        }}
+                        forcePopupIcon
+                        autoHighlight
+                        selectOnFocus
+                        disabled={disabled}
+                        id="voltage-level"
+                        options={voltageLevelOptions}
+                        getOptionLabel={(vl) => (vl?.id ? vl?.id : '')}
+                        onChangeCallback={resetEquipment}
+                        previousValue={previousRegulatingTerminalValue}
+                        /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                             */
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
-                                console.log('XXX options', { options });
-                                if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
-                                    filtered.push({
-                                        id: params.inputValue,
-                                        label: params.inputValue,
-                                    });
-                                }
-                                return filtered;
-                            }}
-                            PopperComponent={FittingPopper}
-                        />
-                    }
-                </Grid>
-                <Grid
-                    item
-                    xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
-                    align="start"
-                >
-                    {/* TODO: autoComplete prop is not working properly with material-ui v4,
-                             it clears the field when blur event is raised, which actually forces the user to validate free input
-                             with enter key for it to be validated.
-                             check if autoComplete prop is fixed in v5 */}
-                    {
-                        <AutocompleteInput
-                            name={`${id}.${EQUIPMENT}`}
-                            //hack to work with freesolo autocomplete
-                            //setting null programatically when freesolo is enable wont empty the field
-                            inputTransform={(value) => (value === null ? '' : value)}
-                            outputTransform={(value) => (value === '' ? null : value)}
-                            label="Equipment"
-                            size="small"
-                            freeSolo
-                            forcePopupIcon
-                            autoHighlight
-                            selectOnFocus
-                            id="equipment"
-                            disabled={!watchVoltageLevelId || disabled}
-                            previousValue={previousEquipmentSectionTypeValue}
-                            options={equipmentsOptions}
-                            getOptionLabel={(equipment) => {
-                                return equipment === ''
-                                    ? '' // to clear field
-                                    : (equipment?.[TYPE] ?? equipmentSectionTypeDefaultValue) +
-                                          ' : ' +
-                                          equipment?.[ID] || '';
-                            }}
-                            /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+                        filterOptions={(options, params) => {
+                            const filtered = filter(options, params);
+                            console.log('XXX options', { options });
+                            if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
+                                filtered.push({
+                                    id: params.inputValue,
+                                    label: params.inputValue,
+                                });
+                            }
+                            return filtered;
+                        }}
+                        PopperComponent={FittingPopper}
+                        allowNewValue
+                    />
+                }
+            </Grid>
+            <Grid
+                item
+                xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
+                align="start"
+            >
+                {
+                    <AutocompleteInput
+                        name={`${id}.${EQUIPMENT}`}
+                        outputTransform={(value) => {
+                            return typeof value === 'string' ? { id: value, label: value } : value;
+                        }}
+                        label="Equipment"
+                        size="small"
+                        freeSolo
+                        forcePopupIcon
+                        autoHighlight
+                        selectOnFocus
+                        id="equipment"
+                        disabled={!watchVoltageLevelId || disabled}
+                        previousValue={previousEquipmentSectionTypeValue}
+                        options={equipmentsOptions}
+                        getOptionLabel={(equipment) => {
+                            return equipment === '' ? '' : equipment?.[ID] || '';
+                        }}
+                        renderOption={(props, option) => {
+                            return <Box {...props}>{`${option?.[TYPE]} : ${option?.[ID]}`}</Box>;
+                        }}
+                        /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                          */
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
-                                if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
-                                    filtered.push({
-                                        [TYPE]: equipmentSectionTypeDefaultValue,
-                                        [ID]: params.inputValue,
-                                    });
-                                }
-                                return filtered;
-                            }}
-                            allowNewValue
-                            PopperComponent={FittingPopper}
-                        />
-                    }
-                </Grid>
+                        filterOptions={(options, params) => {
+                            const filtered = filter(options, params);
+                            if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
+                                filtered.push({
+                                    [TYPE]: equipmentSectionTypeDefaultValue,
+                                    [ID]: params.inputValue,
+                                });
+                            }
+                            return filtered;
+                        }}
+                        allowNewValue
+                        PopperComponent={FittingPopper}
+                    />
+                }
             </Grid>
-        </>
+        </Grid>
     );
 };
 
