@@ -1757,9 +1757,20 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(REMOVE_COLUMN_DEFINITION, (state, action: RemoveColumnDefinitionAction) => {
         const { index, value } = action.definition;
         const tableDefinition = state.tables.definitions[index];
+        const tableSort = state.tableSort[SPREADSHEET_SORT_STORE];
+        const tableFilter = state[SPREADSHEET_STORE_FIELD];
 
         if (tableDefinition) {
             tableDefinition.columns = tableDefinition.columns.filter((col) => col.id !== value);
+        }
+        // remove sort and filter for the removed column
+        if (tableSort[tableDefinition.name]) {
+            tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter((sort) => sort.colId !== value);
+        }
+        if (tableFilter[tableDefinition.name]) {
+            tableFilter[tableDefinition.name] = tableFilter[tableDefinition.name].filter(
+                (filter) => filter.column !== value
+            );
         }
     });
 
