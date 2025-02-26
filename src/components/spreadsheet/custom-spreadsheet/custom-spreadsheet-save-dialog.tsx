@@ -46,7 +46,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
 
     const reorderedColumns = useMemo(() => {
         return tableDefinition?.columns && customColumns
-            ? tableDefinition?.columns?.filter((column) => column.visible).map((column) => customColumns[column.id])
+            ? tableDefinition?.columns?.map((column) => customColumns[column.id])
             : [];
     }, [tableDefinition, customColumns]);
 

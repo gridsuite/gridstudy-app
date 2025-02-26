@@ -116,7 +116,6 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
             const table = tables[tableIndex];
 
             return table.columns
-                .filter((column) => column.visible)
                 .map((state) => {
                     const column = table.columns.find((col) => col.id === state.id);
                     if (!column) {
