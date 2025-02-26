@@ -6,7 +6,16 @@
  */
 
 import { FunctionComponent, SyntheticEvent, useCallback, useState } from 'react';
-import { Autocomplete, Box, Chip, FilterOptionsState, InputAdornment, TextField, Theme } from '@mui/material';
+import {
+    Autocomplete,
+    AutocompleteRenderInputParams,
+    Box,
+    Chip,
+    FilterOptionsState,
+    InputAdornment,
+    TextField,
+    Theme,
+} from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../utils/functions';
@@ -198,9 +207,13 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 onChange={handleChange}
                 groupBy={(option: Filter): string => (option.recent ? recentFilter : option.filterType)}
                 // renderInput : the inputfield that contains the chips, adornments and label
-                renderInput={(params) => (
+                renderInput={(params: AutocompleteRenderInputParams) => (
                     <TextField
-                        {...params}
+                        id={params.id}
+                        size={params.size}
+                        fullWidth={params.fullWidth}
+                        inputProps={params.inputProps}
+                        disabled={params.disabled}
                         label={intl.formatMessage({
                             id: 'results.globalFilter.fillerText',
                         })}
@@ -221,7 +234,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 renderTags={(filters: Filter[], getTagsProps) =>
                     filters.map((element: Filter, index: number) => (
                         <Chip
-                            size={'small'}
+                            size="small"
                             label={getOptionLabel(element)}
                             {...getTagsProps({ index })}
                             sx={getChipStyle(element.filterType)}
