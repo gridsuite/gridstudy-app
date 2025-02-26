@@ -7,7 +7,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
-import { PopupConfirmationDialog, useStateBoolean } from '@gridsuite/commons-ui';
+import { PopupConfirmationDialog, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
 import { CUSTOM_COLUMNS_MENU_DEFINITION, DELETE, UPDATE } from '../spreadsheet/constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CustomColumnDialog from '../spreadsheet/custom-columns/custom-columns-dialog';
@@ -26,6 +26,7 @@ export interface CustomColumnConfigProps extends DialogMenuProps {
 
 export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabIndex, colUuid, onClose, anchorEl }) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
     const dialogOpen = useStateBoolean(false);
     const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
     const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
@@ -54,17 +55,24 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabI
 
     const handleValidate = useCallback(() => {
         if (columnDefinition?.id) {
-            deleteSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid).then(() => {
-                setConfirmationDialogOpen(false);
-                dispatch(
-                    setRemoveColumnDefinition({
-                        index: tabIndex,
-                        value: columnDefinition?.id,
-                    })
-                );
-            });
+            deleteSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid)
+                .then(() => {
+                    setConfirmationDialogOpen(false);
+                    dispatch(
+                        setRemoveColumnDefinition({
+                            index: tabIndex,
+                            value: columnDefinition?.id,
+                        })
+                    );
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerTxt: 'spreadsheet/custom_column/delete_column_error',
+                    });
+                });
         }
-    }, [columnDefinition?.id, columnDefinition?.uuid, dispatch, spreadsheetConfigUuid, tabIndex]);
+    }, [columnDefinition?.id, columnDefinition?.uuid, dispatch, snackError, spreadsheetConfigUuid, tabIndex]);
 
     return (
         <>

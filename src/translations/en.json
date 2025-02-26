@@ -1098,6 +1098,7 @@
     "LoadStudyAndParentsInfoError": "An error occurred while loading current study's name and path",
     "InvalidNode": "Node not built",
     "NoSpreadsheets": "You have no spreadsheets, please create one",
+    "spreadsheetConfigCollectionRetrievingError": "An error occurred while retrieving the spreadsheet configuration collection",
 
     "depth": "Depth: ",
 

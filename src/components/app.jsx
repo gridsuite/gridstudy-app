@@ -210,18 +210,25 @@ const App = () => {
                 });
             });
 
-            getSpreadsheetConfigCollection(studyUuid).then((config) => {
-                const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                    return {
-                        uuid: spreadsheetConfig.id,
-                        index: index,
-                        name: spreadsheetConfig.name,
-                        columns: spreadsheetConfig.columns,
-                        type: spreadsheetConfig.sheetType,
-                    };
+            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid)
+                .then((config) => {
+                    const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
+                        return {
+                            uuid: spreadsheetConfig.id,
+                            index: index,
+                            name: spreadsheetConfig.name,
+                            columns: spreadsheetConfig.columns,
+                            type: spreadsheetConfig.sheetType,
+                        };
+                    });
+                    dispatch(initTableDefinitions(config.id, tableDefinitions));
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'spreadsheetConfigCollectionRetrievingError',
+                    });
                 });
-                dispatch(initTableDefinitions(config.id, tableDefinitions));
-            });
 
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
@@ -265,6 +272,7 @@ const App = () => {
                 fetchCommonConfigPromise,
                 fetchAppConfigPromise,
                 fetchOptionalServices,
+                fetchSpreadsheetConfigPromise,
             ])
                 .then(() => {
                     dispatch(setParamsLoaded());

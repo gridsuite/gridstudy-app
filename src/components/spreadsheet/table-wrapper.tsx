@@ -316,6 +316,15 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }, 50);
     }, [scrollToEquipmentIndex, isFetching, rowData]);
 
+    // Create a map to store the original positions of all columns
+    const originalColumnPositions = useMemo(() => {
+        const positions = new Map<string, number>();
+        tableDefinition?.columns.forEach((col, index) => {
+            positions.set(col.id, index);
+        });
+        return positions;
+    }, [tableDefinition?.columns]);
+
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
             const colId = event.column?.getColId();
@@ -324,18 +333,27 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 const sourceIndex = reorderedTableDefinitionIndexesTemp.findIndex((col) => col.id === colId);
                 const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(sourceIndex, 1);
                 reorderedTableDefinitionIndexesTemp.splice(event.toIndex, 0, reorderedItem);
+
+                // Reinsert invisible columns in their original positions
+                const updatedColumns = [...reorderedTableDefinitionIndexesTemp];
+                tableDefinition.columns.forEach((col) => {
+                    if (!col.visible) {
+                        const originalIndex = originalColumnPositions.get(col.id);
+                        if (originalIndex !== undefined) {
+                            updatedColumns.splice(originalIndex, 0, col);
+                        }
+                    }
+                });
+
                 dispatch(
                     updateTableDefinition({
                         ...tableDefinition,
-                        columns: [
-                            ...reorderedTableDefinitionIndexesTemp,
-                            ...tableDefinition.columns.filter((col) => !col.visible),
-                        ],
+                        columns: updatedColumns,
                     })
                 );
             }
         },
-        [dispatch, tableDefinition]
+        [dispatch, tableDefinition, originalColumnPositions]
     );
 
     const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({
@@ -383,7 +401,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             gridRef={gridRef}
                             columns={reorderedColsDefs}
                             tableName={tableDefinition?.name}
-                            disabled={shooldDisableButtons || rowData.length === 0}
+                            disabled={shooldDisableButtons}
+                            dataSize={rowData.length}
                         />
                     </Grid>
                 </Grid>

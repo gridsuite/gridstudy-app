@@ -25,7 +25,11 @@ const createNewTableDefinition = (
     index: tabIndex,
     name: tabName,
     type: sheetType,
-    columns,
+    columns: columns.map((col) => ({
+        ...col,
+        visible: true,
+        locked: false,
+    })),
 });
 
 const createSpreadsheetConfig = (

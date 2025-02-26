@@ -94,8 +94,8 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
     };
 
     useEffect(() => {
-        if (tabIndex >= tablesDefinitions.length) {
-            handleSwitchTab(tablesDefinitions.length - 1);
+        if (tabIndex >= tablesDefinitions.length && tabIndex > 0) {
+            handleSwitchTab(tabIndex - 1);
         }
     }, [tabIndex, tablesDefinitions.length, handleSwitchTab]);
 

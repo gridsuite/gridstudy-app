@@ -35,6 +35,7 @@ interface SpreadsheetSaveOption {
 
 interface SpreadsheetSaveProps extends CsvExportProps {
     tabIndex: number;
+    dataSize?: number;
 }
 
 export default function SpreadsheetSave({
@@ -43,6 +44,7 @@ export default function SpreadsheetSave({
     columns,
     tableName,
     disabled,
+    dataSize,
 }: Readonly<SpreadsheetSaveProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
@@ -76,17 +78,17 @@ export default function SpreadsheetSave({
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
                 label: 'spreadsheet/save/options/csv',
                 action: () => downloadCSVData({ gridRef, columns, tableName }),
-                disabled: disabled,
+                disabled: dataSize === 0,
             },
         }),
         [
             customSaveDialogOpen.setTrue,
+            saveCollectionDialogOpen.setTrue,
+            dataSize,
             downloadCSVData,
             gridRef,
             columns,
             tableName,
-            disabled,
-            saveCollectionDialogOpen.setTrue,
         ]
     );
 
