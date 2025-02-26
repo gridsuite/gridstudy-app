@@ -7,7 +7,9 @@
 
 import {
     CheckBoxList,
+    ElementCreationDialog,
     ElementType,
+    IElementCreationDialog,
     MODIFICATION_TYPES,
     useModificationLabelComputer,
     useSnackMessage,
@@ -80,7 +82,6 @@ import {
     stashModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
-import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
@@ -642,7 +643,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'infoCreateModificationsMsg',
                     headerValues: {
                         nbModifications: String(selectedItems.length),
-                        studyDirectory: '/' + folderName,
+                        directory: folderName,
                     },
                 });
             })
@@ -910,14 +911,17 @@ const NetworkModificationNodeEditor = () => {
     };
     const renderCreateCompositeNetworkModificationsDialog = () => {
         return (
-            <ElementCreationDialog
-                open={createCompositeModificationDialogOpen}
-                onSave={doCreateCompositeModificationsElements}
-                onClose={() => setCreateCompositeModificationDialogOpen(false)}
-                type={ElementType.MODIFICATION}
-                titleId={'CreateCompositeModification'}
-                prefixIdForGeneratedName={'GeneratedModification'}
-            />
+            studyUuid && (
+                <ElementCreationDialog
+                    open={createCompositeModificationDialogOpen}
+                    onSave={doCreateCompositeModificationsElements}
+                    onClose={() => setCreateCompositeModificationDialogOpen(false)}
+                    type={ElementType.MODIFICATION}
+                    titleId="CreateCompositeModification"
+                    prefixIdForGeneratedName="GeneratedModification"
+                    studyUuid={studyUuid}
+                />
+            )
         );
     };
     const renderPaneSubtitle = () => {

@@ -11,11 +11,12 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
-        "@gridsuite/commons-ui": "0.85.0",
+        "@gridsuite/commons-ui": "0.86.0",
         "@hookform/resolvers": "^4.0.0",
         "@mui/icons-material": "^5.16.14",
         "@mui/lab": "5.0.0-alpha.175",
         "@mui/material": "^5.16.14",
+        "@mui/x-charts": "^7.25.0",
         "@mui/x-tree-view": "^6.17.0",
         "@powsybl/network-viewer": "1.7.0",
         "@reduxjs/toolkit": "^2.5.1",
