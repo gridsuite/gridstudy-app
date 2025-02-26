@@ -12,7 +12,7 @@ import { Dispatch } from 'redux';
 import { UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
 import { SortWay } from 'types/custom-aggrid-types';
-import { addSpreadsheetConfigToCollection } from 'services/study-config';
+import { addSpreadsheetConfigToCollection, getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 
 const createNewTableDefinition = (
@@ -50,13 +50,31 @@ const handleSuccess = (
     newTableDefinition: SpreadsheetTabDefinition,
     tabName: string,
     dispatch: Dispatch,
+    snackError: any,
     open: UseStateBooleanReturn
 ) => {
     newTableDefinition.uuid = uuid;
-    dispatch(updateTableDefinition(newTableDefinition));
-    dispatch(addFilterForNewSpreadsheet(tabName, []));
-    dispatch(addSortForNewSpreadsheet(tabName, [{ colId: 'id', sort: SortWay.ASC }]));
-    open.setFalse();
+    // we need to refetch the model to get the new column uuids
+    getSpreadsheetModel(uuid)
+        .then((model) => {
+            newTableDefinition.columns = model.columns.map((col: ColumnDefinition) => ({
+                ...col,
+                visible: true,
+                locked: false,
+            }));
+            dispatch(updateTableDefinition(newTableDefinition));
+            dispatch(addFilterForNewSpreadsheet(tabName, []));
+            dispatch(addSortForNewSpreadsheet(tabName, [{ colId: 'id', sort: SortWay.ASC }]));
+        })
+        .catch((error) => {
+            snackError({
+                messageTxt: error,
+                headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
+            });
+        })
+        .finally(() => {
+            open.setFalse();
+        });
 };
 
 interface AddNewSpreadsheetParams {
@@ -84,7 +102,7 @@ export const addNewSpreadsheet = ({
     const spreadsheetConfig = createSpreadsheetConfig(columns, sheetType, tabName);
 
     addSpreadsheetConfigToCollection(speadsheetsCollectionUuid, spreadsheetConfig)
-        .then((uuid: UUID) => handleSuccess(uuid, newTableDefinition, tabName, dispatch, open))
+        .then((uuid: UUID) => handleSuccess(uuid, newTableDefinition, tabName, dispatch, snackError, open))
         .catch((error) => {
             snackError({
                 messageTxt: error,
