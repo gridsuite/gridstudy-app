@@ -7,7 +7,7 @@
 
 import { mergeSx } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
-import { styles, TabPanel } from '../parameters';
+import { TabPanel } from '../parameters';
 import { TAB_VALUES } from './load-flow-parameters-utils';
 import LoadFlowGeneralParameters from './load-flow-general-parameters';
 import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
@@ -21,6 +21,7 @@ import {
 import { ILimitReductionsByVoltageLevel } from '../common/limitreductions/columns-definitions';
 import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
 import { SpecificParameterInfos } from '../parameters.type';
+import { styles } from '../parameters-style';
 
 const LoadFlowParametersContent = ({
     selectedTab,

@@ -32,8 +32,8 @@ import { getExportUrl } from '../../services/study/network';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import TextField from '@mui/material/TextField';
 import { useSelector } from 'react-redux';
-import { useParameterState } from './parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { useParameterState } from './parameters/use-parameters-state';
 
 const STRING_LIST = 'STRING_LIST';
 
