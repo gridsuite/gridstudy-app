@@ -32,7 +32,7 @@ import EquipmentDeletionDialog from 'components/dialogs/network-modifications/eq
 import GenerationDispatchDialog from 'components/dialogs/network-modifications/generation-dispatch/generation-dispatch-dialog';
 import GeneratorScalingDialog from 'components/dialogs/network-modifications/generator-scaling/generator-scaling-dialog';
 import { GeneratorCreationDialog } from 'components/dialogs/network-modifications/generator/creation/generator-creation-dialog';
-import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
+import { GeneratorModificationDialog } from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import LineCreationDialog from 'components/dialogs/network-modifications/line/creation/line-creation-dialog';

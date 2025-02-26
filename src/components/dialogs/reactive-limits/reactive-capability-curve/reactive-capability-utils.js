@@ -7,13 +7,7 @@
 
 import { toNumber, validateValueIsANumber } from 'components/utils/validation-functions';
 import yup from 'components/utils/yup-config';
-import {
-    MAX_Q,
-    MIN_Q,
-    P,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-} from 'components/utils/field-constants';
+import { MAX_Q, MIN_Q, P, REACTIVE_CAPABILITY_CURVE_CHOICE } from 'components/utils/field-constants';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';

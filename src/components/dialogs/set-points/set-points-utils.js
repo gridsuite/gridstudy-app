@@ -11,6 +11,8 @@ import {
     EQUIPMENT,
     FREQUENCY_REGULATION,
     ID,
+    MAXIMUM_ACTIVE_POWER,
+    MINIMUM_ACTIVE_POWER,
     NAME,
     NOMINAL_VOLTAGE,
     Q_PERCENT,
@@ -22,12 +24,6 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-    MINIMUM_ACTIVE_POWER,
-    MAXIMUM_ACTIVE_POWER,
-    VALUE,
-    PREVIOUS_VALUE,
-    DELETION_MARK,
-    ADDED,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { REGULATION_TYPES } from 'components/network/constants';
