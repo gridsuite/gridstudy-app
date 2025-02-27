@@ -36,11 +36,11 @@ const TabLabel: React.FC<{ name: string; onRemove: () => void; disabled: boolean
             justifyContent: 'center',
             position: 'relative',
             width: '100%',
-            minWidth: theme.spacing(12),
-            px: theme.spacing(4),
+            minWidth: theme.spacing(4),
+            px: theme.spacing(1),
             '& .MuiIconButton-root': {
                 position: 'absolute',
-                right: theme.spacing(1),
+                right: theme.spacing(-1.5),
                 opacity: 0,
             },
             '&:hover': {
@@ -54,6 +54,7 @@ const TabLabel: React.FC<{ name: string; onRemove: () => void; disabled: boolean
         })}
     >
         <Typography
+            variant="inherit"
             sx={{
                 width: '100%',
                 textAlign: 'center',
