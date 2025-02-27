@@ -17,7 +17,7 @@ import {
     REPLACING_LINE_2_NAME,
 } from 'components/utils/field-constants';
 import { useEffect, useState } from 'react';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../connectivity/connectivity-form.jsx';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useVoltageLevelsListInfos from '../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../commons/grid-section';

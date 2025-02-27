@@ -38,7 +38,7 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils';
+} from '../../../connectivity/connectivity-form-utils.js';
 import {
     getCharacteristicsCreateFormDataFromSearchCopy,
     getCharacteristicsEmptyFormData,

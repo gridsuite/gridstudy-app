@@ -40,7 +40,7 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils';
+} from '../../../connectivity/connectivity-form-utils.js';
 import BatteryCreationForm from './battery-creation-form';
 import { sanitizeString } from '../../../dialog-utils';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';

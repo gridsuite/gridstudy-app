@@ -74,7 +74,7 @@ import {
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
-import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
+import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils.js';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,

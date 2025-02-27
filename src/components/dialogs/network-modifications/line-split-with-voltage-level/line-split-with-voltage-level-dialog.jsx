@@ -30,7 +30,7 @@ import {
     getConnectivityWithoutPositionEmptyFormData,
     getConnectivityWithoutPositionValidationSchema,
     getNewVoltageLevelData,
-} from '../../connectivity/connectivity-form-utils';
+} from '../../connectivity/connectivity-form-utils.js';
 import LineSplitWithVoltageLevelForm from './line-split-with-voltage-level-form';
 import LineSplitWithVoltageLevelIllustration from './line-split-with-voltage-level-illustration';
 import {

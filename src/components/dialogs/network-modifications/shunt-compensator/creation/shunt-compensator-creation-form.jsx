@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { filledTextField } from '../../../dialog-utils';
 
 import { TextInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';

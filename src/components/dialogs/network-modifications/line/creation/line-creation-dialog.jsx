@@ -51,7 +51,7 @@ import { FetchStatus } from '../../../../../services/utils';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
-import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
+import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils.js';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import {
     getCharacteristicsEmptyFormData,

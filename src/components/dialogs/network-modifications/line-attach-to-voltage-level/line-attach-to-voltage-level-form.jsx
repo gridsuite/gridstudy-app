@@ -21,7 +21,7 @@ import {
 import { useMemo, useState } from 'react';
 
 import { TextInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../connectivity/connectivity-form.jsx';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';

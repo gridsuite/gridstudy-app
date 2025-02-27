@@ -6,7 +6,7 @@
  */
 
 import { Box, Grid } from '@mui/material';
-import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../../connectivity/connectivity-form.jsx';
 import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import TwoWindingsTransformerCharacteristicsPane from '../../characteristics-pane/two-windings-transformer-characteristics-pane';
 import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
