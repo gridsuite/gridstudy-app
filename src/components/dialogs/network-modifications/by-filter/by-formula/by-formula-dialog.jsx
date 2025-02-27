@@ -52,7 +52,7 @@ function getFieldOrConvertedUnitValue(input, fieldType, convert) {
     }
 }
 
-export function shouldConvert(input1, input2, operator) {
+function shouldConvert(input1, input2, operator) {
     const isNumber1 = input1 && (!isNaN(input1) || !isNaN(parseFloat(input1.replace(',', '.'))));
     const isNumber2 = input2 && (!isNaN(input2) || !isNaN(parseFloat(input2.replace(',', '.'))));
 

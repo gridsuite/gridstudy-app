@@ -18,7 +18,6 @@ import { Button, DialogActions, Grid } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
@@ -77,6 +76,7 @@ import { AppState } from 'redux/reducer';
 import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
 import ComputingType from 'components/computing-status/computing-type';
 import { UseParametersBackendReturnProps } from '../parameters.type';
+import { styles } from '../parameters-style';
 
 interface SensitivityAnalysisParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;

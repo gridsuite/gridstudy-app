@@ -12,7 +12,7 @@ export interface ParameterFloatProps {
     name: string;
     label: string;
     style: any;
-    adornment: any;
+    adornment?: any;
     tooltip?: string;
     labelSize: number;
     inputSize: number;

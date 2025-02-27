@@ -7,7 +7,8 @@
 
 import { Grid, Switch } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { UseParameterStateParamName, styles, useParameterState } from '../parameters';
+import { UseParameterStateParamName, useParameterState } from '../use-parameters-state';
+import { styles } from '../parameters-style';
 
 type SwitchParameterLineProps = {
     readonly paramNameId: UseParameterStateParamName;

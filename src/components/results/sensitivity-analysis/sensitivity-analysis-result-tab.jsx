@@ -16,6 +16,7 @@ import {
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
+    SensitivityResultTabs,
 } from './sensitivity-analysis-result-utils';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
@@ -28,11 +29,6 @@ import { downloadZipFile } from '../../../services/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
-
-export const SensitivityResultTabs = [
-    { id: 'N', label: 'N' },
-    { id: 'N_K', label: 'N-K' },
-];
 
 function getDisplayedColumns(params) {
     return params.api.getColumnDefs()?.map((c) => c.headerComponentParams.displayName);

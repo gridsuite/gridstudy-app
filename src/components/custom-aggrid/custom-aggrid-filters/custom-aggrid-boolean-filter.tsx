@@ -14,12 +14,7 @@ import { mergeSx } from 'components/utils/functions';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { CustomAggridFilterParams, FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
-
-export enum BooleanFilterValue {
-    TRUE = 'true',
-    FALSE = 'false',
-    UNDEFINED = 'undefinedValue',
-}
+import { BooleanFilterValue } from './utils/aggrid-filters-utils';
 
 const styles = {
     input: {

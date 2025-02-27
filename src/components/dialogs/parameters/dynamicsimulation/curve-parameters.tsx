@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../utils/yup-config';
 import { Box, Grid, Typography, useTheme } from '@mui/material';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
@@ -15,36 +14,15 @@ import { GlobalFilter } from '../../../spreadsheet/global-filter';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { Curve } from './curve/dialog/curve-preview';
+import { Curve as CurveType } from './curve/dialog/curve-preview';
 import { ValueFormatterParams } from 'ag-grid-community';
+import { Curve } from './dynamic-simulation-utils';
 
 const styles = {
     grid: {
         width: 'auto',
         height: '100%',
     },
-};
-
-export const CURVES = 'curves';
-
-// curve's fields
-const EQUIPMENT_ID = 'equipmentId';
-const VARIABLE_ID = 'variableId';
-
-export const formSchema = yup.object().shape({
-    [CURVES]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [EQUIPMENT_ID]: yup.string().required(),
-                [VARIABLE_ID]: yup.string().required(),
-            })
-        )
-        .nullable(),
-});
-
-export const emptyFormData = {
-    [CURVES]: [],
 };
 
 const CurveParameters = ({ path }: { path: string }) => {
@@ -54,10 +32,10 @@ const CurveParameters = ({ path }: { path: string }) => {
     const { control } = useFormContext();
     const { fields, append, remove } = useFieldArray({
         control,
-        name: `${path}.${CURVES}`,
+        name: `${path}.${Curve.CURVES}`,
     });
 
-    const rowData = fields as unknown as Curve[]; //TODO fix in a better way if possible
+    const rowData = fields as unknown as CurveType[]; //TODO fix in a better way if possible
 
     // handle open/close/append curve selector dialog
     const [open, setOpen] = useState(false);
@@ -65,13 +43,15 @@ const CurveParameters = ({ path }: { path: string }) => {
         setOpen((prevState) => !prevState);
     }, []);
     const handleAppend = useCallback(
-        (newCurves: Curve[]) => {
+        (newCurves: CurveType[]) => {
             // do save here
             const notYetAddedCurves = newCurves.filter(
                 // use functional keys to lookup
                 (curve) =>
                     !rowData.find(
-                        (elem) => elem[EQUIPMENT_ID] === curve[EQUIPMENT_ID] && elem[VARIABLE_ID] === curve[VARIABLE_ID]
+                        (elem) =>
+                            elem[Curve.EQUIPMENT_ID] === curve[Curve.EQUIPMENT_ID] &&
+                            elem[Curve.VARIABLE_ID] === curve[Curve.VARIABLE_ID]
                     )
             );
 
@@ -93,7 +73,9 @@ const CurveParameters = ({ path }: { path: string }) => {
         const indexesToRemove = selectedRows?.map((elem) =>
             // use functional keys to lookup
             rowData.findIndex(
-                (row) => elem[EQUIPMENT_ID] === row[EQUIPMENT_ID] && elem[VARIABLE_ID] === row[VARIABLE_ID]
+                (row) =>
+                    elem[Curve.EQUIPMENT_ID] === row[Curve.EQUIPMENT_ID] &&
+                    elem[Curve.VARIABLE_ID] === row[Curve.VARIABLE_ID]
             )
         );
 
@@ -112,7 +94,7 @@ const CurveParameters = ({ path }: { path: string }) => {
     const columnDefs = useMemo(() => {
         return [
             {
-                field: EQUIPMENT_ID,
+                field: Curve.EQUIPMENT_ID,
                 checkboxSelection: true,
                 headerCheckboxSelection: true,
                 headerCheckboxSelectionFilteredOnly: true,
@@ -122,7 +104,7 @@ const CurveParameters = ({ path }: { path: string }) => {
                 }),
             },
             {
-                field: VARIABLE_ID,
+                field: Curve.VARIABLE_ID,
                 minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveVariableHeader',

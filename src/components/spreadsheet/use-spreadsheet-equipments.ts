@@ -24,14 +24,15 @@ import {
 import { AppState, initialReloadNodesAliases } from 'redux/reducer';
 import { SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { getFetcher } from './config/equipment/common-config';
+import { getFetcher } from './config/common-config';
 import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
-    formatFetchedEquipments: FormatFetchedEquipments
+    formatFetchedEquipments: FormatFetchedEquipments,
+    highlightUpdatedEquipment: () => void
 ) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
@@ -58,6 +59,9 @@ export const useSpreadsheetEquipments = (
 
     const nodesIdToFetch = useMemo(() => {
         let nodeIds = new Set<string>();
+        if (!equipments) {
+          return nodeIds;
+        }
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
         const currentNodeId = currentNode?.id as string;
         if (
@@ -77,7 +81,7 @@ export const useSpreadsheetEquipments = (
             }
         });
         return nodeIds;
-    }, [currentNode?.id, equipments.nodesId, idsToBuildStatus, nodesAliases]);
+    }, [currentNode?.id, equipments, idsToBuildStatus, nodesAliases]);
 
     const loadEquipmentData = useCallback(
         (nodeIds: Set<string>) => {
@@ -136,6 +140,9 @@ export const useSpreadsheetEquipments = (
     }, [dispatch, nodesAliases, currentNode, allEquipments]);
 
     useEffect(() => {
+        if (!type) {
+            return;
+        }
         // updating data related to impacted elements
         const nodeId = currentNode?.id as UUID;
 
@@ -170,6 +177,7 @@ export const useSpreadsheetEquipments = (
         if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid && currentNode?.id) {
             // The formatting of the fetched equipments is done in the reducer
             fetchAllEquipments(studyUuid, nodeId, currentRootNetworkUuid, impactedSubstationsIds).then((values) => {
+                highlightUpdatedEquipment();
                 dispatch(updateEquipments(values, nodeId));
             });
             resetImpactedSubstationsIds();
@@ -211,6 +219,8 @@ export const useSpreadsheetEquipments = (
         resetImpactedSubstationsIds,
         resetDeletedEquipments,
         resetImpactedElementTypes,
+        type,
+        highlightUpdatedEquipment,
     ]);
 
     useEffect(() => {

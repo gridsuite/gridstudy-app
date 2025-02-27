@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { createContext, useContext, useState, FunctionComponent, ReactNode, useMemo } from 'react';
+import { createContext } from 'react';
 
 interface LoadFlowContextProps {
     showAdvancedLfParams: boolean;
@@ -14,29 +14,4 @@ interface LoadFlowContextProps {
     setShowSpecificLfParams: (state: boolean) => void;
 }
 
-const LoadFlowContext = createContext<LoadFlowContextProps | undefined>(undefined);
-
-export const LoadFlowProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
-    const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
-    const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
-
-    const contextValue = useMemo(
-        () => ({
-            showAdvancedLfParams,
-            setShowAdvancedLfParams,
-            showSpecificLfParams,
-            setShowSpecificLfParams,
-        }),
-        [showAdvancedLfParams, showSpecificLfParams]
-    );
-
-    return <LoadFlowContext.Provider value={contextValue}>{children}</LoadFlowContext.Provider>;
-};
-
-export const useLoadFlowContext = () => {
-    const context = useContext(LoadFlowContext);
-    if (!context) {
-        throw new Error('useLoadFlowContext must be used within a LoadFlowProvider');
-    }
-    return context;
-};
+export const LoadFlowContext = createContext<LoadFlowContextProps | undefined>(undefined);

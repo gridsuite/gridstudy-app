@@ -8,7 +8,6 @@
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo } from 'react';
-import { useNodeData } from '../../study-container';
 import { useSelector } from 'react-redux';
 import ComputingType from '../../computing-status/computing-type';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
@@ -22,6 +21,7 @@ import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { fetchDynamicSecurityAnalysisStatus } from '../../../services/study/dynamic-security-analysis';
 import { MEDIUM_COLUMN_WIDTH } from '../dynamicsimulation/utils/dynamic-simulation-result-utils';
 import { dynamicSecurityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { useNodeData } from 'components/use-node-data';
 
 const styles = {
     loader: {

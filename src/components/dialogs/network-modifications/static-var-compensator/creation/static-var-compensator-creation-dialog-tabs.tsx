@@ -9,13 +9,7 @@ import { Grid, Tab, Tabs } from '@mui/material';
 import { FunctionComponent } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { getTabStyle } from '../../../../utils/tab-utils';
-
-export const StaticVarCompensatorCreationDialogTab = {
-    CONNECTIVITY_TAB: 0,
-    SET_POINTS_LIMITS_TAB: 1,
-    AUTOMATON_TAB: 2,
-    ADDITIONAL_INFO_TAB: 3,
-};
+import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 
 export interface StaticVarCompensatorCreationDialogTabsProps {
     tabIndex: number;

@@ -29,18 +29,18 @@ import {
     RESULT_TYPE,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
-import { useNodeData } from '../../study-container';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { SECURITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useIntl } from 'react-intl/lib';
-import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import { useNodeData } from 'components/use-node-data';
 
 const styles = {
     tabsAndToolboxContainer: {

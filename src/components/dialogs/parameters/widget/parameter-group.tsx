@@ -9,7 +9,7 @@ import { ExpandCircleDown, ExpandMore, Settings as SettingsIcon } from '@mui/ico
 import { Accordion, AccordionDetails, AccordionSummary, Grid, Typography } from '@mui/material';
 import { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { styles } from '../parameters';
+import { styles } from '../parameters-style';
 
 type ParameterGroupProps = {
     label: string;

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UPDATE_TYPE_HEADER } from 'components/study-container';
 import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
@@ -15,6 +14,7 @@ import { AppState, StudyUpdated } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
+import { UPDATE_TYPE_HEADER } from 'components/use-node-data';
 
 interface UseComputingStatusProps {
     (

@@ -92,7 +92,6 @@ import {
     getTwoWindingsTransformerFormData,
     getTwoWindingsTransformerValidationSchema,
 } from './characteristics-pane/two-windings-transformer-creation-characteristics-pane-utils';
-import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import {
     getLimitsEmptyFormData,
     getAllLimitsFormData,
@@ -101,7 +100,7 @@ import {
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
-import { computeHighTapPosition, formatCompleteCurrentLimit } from 'components/utils/utils';
+import { addSelectedFieldToRows, computeHighTapPosition, formatCompleteCurrentLimit } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,
@@ -110,6 +109,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-utils';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -144,13 +144,6 @@ const formSchema = yup
     })
     .concat(creationPropertiesSchema)
     .required();
-
-export const TwoWindingsTransformerCreationDialogTab = {
-    CHARACTERISTICS_TAB: 0,
-    LIMITS_TAB: 1,
-    RATIO_TAP_TAB: 2,
-    PHASE_TAP_TAB: 3,
-};
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';

@@ -10,16 +10,16 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-header.type';
-import {
-    BooleanFilterValue,
-    CustomAggridBooleanFilter,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
+import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '../utils/cell-renderers';
 import { ColDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import {
+    BooleanFilterValue,
+    updateFilters,
+} from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 

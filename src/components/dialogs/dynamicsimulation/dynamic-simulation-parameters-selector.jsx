@@ -23,16 +23,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { getIdOrSelf } from '../dialog-utils';
 import GridItem from '../commons/grid-item';
 
-export const checkDynamicSimulationParameters = (studyUuid) => {
-    return fetchDynamicSimulationParameters(studyUuid).then((params) => {
-        // check mapping configuration
-        const mappings = params.mappings.map((elem) => elem.name);
-        const mapping = params.mapping;
-        const isMappingValid = mappings.includes(mapping);
-        return isMappingValid;
-    });
-};
-
 const MAPPING_SELECTION_LABEL = 'DynamicSimulationMappingSelection';
 const MAPPING = 'mapping';
 

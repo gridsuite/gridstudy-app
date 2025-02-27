@@ -5,8 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ElementType, useSnackMessage, UseStateBooleanReturn } from '@gridsuite/commons-ui';
-import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
+import {
+    ElementCreationDialog,
+    ElementType,
+    IElementCreationDialog,
+    useSnackMessage,
+    UseStateBooleanReturn,
+} from '@gridsuite/commons-ui';
 import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
@@ -22,10 +27,10 @@ export type CustomSpreadsheetSaveDialogProps = {
 export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly<CustomSpreadsheetSaveDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
-    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const customColumns = useMemo(() => {
-        return tableDefinition.columns.reduce((acc, item) => {
+        return tableDefinition?.columns.reduce((acc, item) => {
             acc[item.id] = {
                 uuid: item?.uuid ?? uuid4(),
                 id: item.id,
@@ -33,21 +38,17 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
                 type: item.type,
                 precision: item.precision,
                 formula: item.formula,
-                dependencies: JSON.stringify(item.dependencies),
+                dependencies: item.dependencies?.length ? JSON.stringify(item.dependencies) : undefined,
             };
             return acc;
         }, {} as Record<string, ColumnDefinitionDto>);
-    }, [tableDefinition.columns]);
-
-    const reorderedColumnsIds = useMemo(() => {
-        return columnsStates.map((col) => col.colId);
-    }, [columnsStates]);
+    }, [tableDefinition?.columns]);
 
     const reorderedColumns = useMemo(() => {
-        return reorderedColumnsIds && customColumns
-            ? reorderedColumnsIds.map((colId: string) => customColumns[colId])
+        return tableDefinition?.columns && customColumns
+            ? tableDefinition?.columns?.map((column) => customColumns[column.id])
             : [];
-    }, [reorderedColumnsIds, customColumns]);
+    }, [tableDefinition, customColumns]);
 
     const saveSpreadsheetColumnsConfiguration = ({
         name,
@@ -56,8 +57,9 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
         folderId,
     }: IElementCreationDialog) => {
         const spreadsheetConfig: SpreadsheetConfig = {
-            sheetType: tableDefinition.type,
-            customColumns: reorderedColumns,
+            name: tableDefinition?.name,
+            sheetType: tableDefinition?.type,
+            columns: reorderedColumns,
         };
 
         createSpreadsheetModel(name, description, folderId, spreadsheetConfig)
@@ -79,13 +81,14 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
 
     return (
         <>
-            {open.value && (
+            {open.value && studyUuid && (
                 <ElementCreationDialog
                     open={open.value}
                     onClose={open.setFalse}
                     onSave={saveSpreadsheetColumnsConfiguration}
                     type={ElementType.SPREADSHEET_CONFIG}
                     titleId={'spreadsheet/save/dialog_title'}
+                    studyUuid={studyUuid}
                 />
             )}
         </>

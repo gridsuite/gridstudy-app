@@ -7,7 +7,9 @@
 
 import {
     CheckBoxList,
+    ElementCreationDialog,
     ElementType,
+    IElementCreationDialog,
     MODIFICATION_TYPES,
     useModificationLabelComputer,
     useSnackMessage,
@@ -19,7 +21,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, Checkbox, CircularProgress, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -80,7 +82,6 @@ import {
     stashModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
-import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
@@ -96,80 +97,7 @@ import ModificationByAssignmentDialog from '../../dialogs/network-modifications/
 import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
-
-export const styles = {
-    listContainer: (theme: Theme) => ({
-        overflowY: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        paddingBottom: theme.spacing(8),
-    }),
-    listItem: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
-    checkBoxLabel: { flexGrow: '1' },
-    disabledModification: { opacity: 0.4 },
-    checkBoxIcon: { minWidth: 0, padding: 0 },
-    checkboxButton: {
-        padding: 0,
-        margin: 0,
-        display: 'flex',
-        alignItems: 'center',
-    },
-    modificationsTitle: (theme: Theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        margin: theme.spacing(0),
-        padding: theme.spacing(1),
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText,
-        overflow: 'hidden',
-    }),
-    toolbar: (theme: Theme) => ({
-        '&': {
-            // Necessary to overrides some @media specific styles that are defined elsewhere
-            padding: 0,
-            minHeight: 0,
-        },
-        border: theme.spacing(1),
-        margin: 0,
-        flexShrink: 0,
-    }),
-    toolbarIcon: (theme: Theme) => ({
-        marginRight: theme.spacing(1),
-    }),
-    toolbarCheckbox: (theme: Theme) => ({
-        marginLeft: theme.spacing(1.5),
-    }),
-    filler: {
-        flexGrow: 1,
-    },
-    circularProgress: (theme: Theme) => ({
-        marginRight: theme.spacing(2),
-        color: theme.palette.primary.contrastText,
-    }),
-    toolbarCircularProgress: (theme: Theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: theme.spacing(1.25),
-        marginRight: theme.spacing(2),
-        color: theme.palette.secondary.main,
-    }),
-    notification: (theme: Theme) => ({
-        flex: 1,
-        alignContent: 'center',
-        justifyContent: 'center',
-        marginTop: theme.spacing(4),
-        textAlign: 'center',
-        color: theme.palette.primary.main,
-    }),
-    icon: (theme: Theme) => ({
-        width: theme.spacing(3),
-    }),
-    iconEdit: (theme: Theme) => ({
-        marginRight: theme.spacing(1),
-    }),
-};
+import { isChecked, isPartial, styles } from './network-modification-node-editor-utils';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -183,17 +111,6 @@ const isEditableModification = (modif: NetworkModificationMetadata) => {
     }
     return !nonEditableModificationTypes.has(modif.type);
 };
-
-export function isChecked(s1: number) {
-    return s1 !== 0;
-}
-
-export function isPartial(s1: number, s2: number) {
-    if (s1 === 0) {
-        return false;
-    }
-    return s1 !== s2;
-}
 
 const NetworkModificationNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
@@ -726,7 +643,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'infoCreateModificationsMsg',
                     headerValues: {
                         nbModifications: String(selectedItems.length),
-                        studyDirectory: '/' + folderName,
+                        directory: folderName,
                     },
                 });
             })
@@ -994,14 +911,17 @@ const NetworkModificationNodeEditor = () => {
     };
     const renderCreateCompositeNetworkModificationsDialog = () => {
         return (
-            <ElementCreationDialog
-                open={createCompositeModificationDialogOpen}
-                onSave={doCreateCompositeModificationsElements}
-                onClose={() => setCreateCompositeModificationDialogOpen(false)}
-                type={ElementType.MODIFICATION}
-                titleId={'CreateCompositeModification'}
-                prefixIdForGeneratedName={'GeneratedModification'}
-            />
+            studyUuid && (
+                <ElementCreationDialog
+                    open={createCompositeModificationDialogOpen}
+                    onSave={doCreateCompositeModificationsElements}
+                    onClose={() => setCreateCompositeModificationDialogOpen(false)}
+                    type={ElementType.MODIFICATION}
+                    titleId="CreateCompositeModification"
+                    prefixIdForGeneratedName="GeneratedModification"
+                    studyUuid={studyUuid}
+                />
+            )
         );
     };
     const renderPaneSubtitle = () => {

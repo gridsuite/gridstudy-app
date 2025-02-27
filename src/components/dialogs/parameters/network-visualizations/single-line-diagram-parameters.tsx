@@ -7,17 +7,14 @@
 
 import { Grid } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useEffect, useMemo, useState } from 'react';
-import { getAvailableComponentLibraries } from '../../../../services/study';
+import { useMemo } from 'react';
 import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
 } from '../../../../utils/config-params';
-import { styles } from '../parameters';
 import LineSeparator from '../../commons/line-separator';
-import { User } from 'oidc-client';
 import { FormattedMessage } from 'react-intl';
 import { MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import {
@@ -28,22 +25,7 @@ import {
     SUBSTATION_LAYOUT,
     TabValue,
 } from './network-visualizations-utils';
-
-export const useGetAvailableComponentLibraries = (user: User | null) => {
-    const [componentLibraries, setComponentLibraries] = useState<string[]>([]);
-
-    useEffect(() => {
-        if (user !== null) {
-            getAvailableComponentLibraries().then((libraries) => {
-                if (libraries != null) {
-                    setComponentLibraries(libraries);
-                }
-            });
-        }
-    }, [user]);
-
-    return componentLibraries;
-};
+import { styles } from '../parameters-style';
 
 export const SingleLineDiagramParameters = ({ componentLibraries }: { componentLibraries: string[] }) => {
     const componentLibsRenderCache = useMemo(

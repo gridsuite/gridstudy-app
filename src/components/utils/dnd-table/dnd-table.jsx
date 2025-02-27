@@ -45,11 +45,6 @@ const styles = {
         textTransform: 'none',
     },
 };
-export const addSelectedFieldToRows = (rows) => {
-    return rows?.map((row) => {
-        return { ...row, [SELECTED]: false };
-    });
-};
 
 function MultiCheckbox({ arrayFormName, handleClickCheck, handleClickUncheck, ...props }) {
     const arrayToWatch = useWatch({
@@ -419,7 +414,7 @@ DndTable.propTypes = {
     arrayFormName: PropTypes.string.isRequired,
     useFieldArrayOutput: PropTypes.object.isRequired,
     columnsDefinition: PropTypes.array.isRequired,
-    tableHeight: PropTypes.number.isRequired,
+    tableHeight: PropTypes.number,
     allowedToAddRows: PropTypes.func,
     createRows: PropTypes.func.isRequired,
     handleUploadButton: PropTypes.func,

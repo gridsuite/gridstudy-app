@@ -14,6 +14,11 @@ import {
     SENSITIVITY_IN_DELTA_MW_N_K,
 } from 'utils/store-sort-filter-fields';
 
+export const SensitivityResultTabs = [
+    { id: 'N', label: 'N' },
+    { id: 'N_K', label: 'N-K' },
+];
+
 export const SENSITIVITY_IN_DELTA_MW = 'SensitivityInDeltaMW';
 export const SENSITIVITY_IN_DELTA_A = 'SensitivityInDeltaA';
 export const SENSITIVITY_AT_NODE = 'SensitivityAtNode';

@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Grid } from '@mui/material';
-import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { MuiSelectInput } from '@gridsuite/commons-ui';
 import { PROVIDER } from '../../../utils/field-constants';
 import LineSeparator from '../../commons/line-separator';
+import { styles } from '../parameters-style';
 
 export interface ProviderParamProps {
     options: { id: string; label: string }[];

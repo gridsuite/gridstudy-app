@@ -4,8 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-import { EnergySource } from 'services/study/non-evacuated-energy.type';
 import {
     CONTINGENCIES,
     ID,
@@ -38,6 +36,12 @@ import {
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import { NonEvacuatedEnergyParametersForm } from './non-evacuated-energy-parameters';
+import { NonEvacuatedEnergyParametersInfos, EnergySource } from 'services/study/non-evacuated-energy.type';
+
+export type UseGetNonEvacuatedEnergyParametersReturnProps = [
+    NonEvacuatedEnergyParametersInfos | null,
+    React.Dispatch<React.SetStateAction<NonEvacuatedEnergyParametersInfos | null>>
+];
 
 export const getGenerationStagesDefinitionFormSchema = () => ({
     [STAGES_DEFINITION]: yup.array().of(

@@ -28,7 +28,7 @@ interface FormulaProps {
     index: number;
 }
 
-export const OPERATOR_OPTIONS = [
+const OPERATOR_OPTIONS = [
     { id: 'ADDITION', label: '+' },
     { id: 'SUBTRACTION', label: '-' },
     { id: 'MULTIPLICATION', label: '*' },

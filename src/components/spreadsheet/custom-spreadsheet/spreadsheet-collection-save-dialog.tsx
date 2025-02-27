@@ -11,10 +11,15 @@ import { Checkbox, ListItem, ListItemButton, ListItemIcon, ListItemText, IconBut
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSelector } from 'react-redux';
-import { ElementType, UseStateBooleanReturn, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    UseStateBooleanReturn,
+    useSnackMessage,
+    IElementCreationDialog,
+    ElementCreationDialog,
+} from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer';
 import { SelectOptionsDialog } from '../../../utils/dialogs';
-import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
 import {
     SpreadsheetConfig,
     SpreadsheetCollection,
@@ -51,7 +56,7 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
     const { snackError, snackInfo } = useSnackMessage();
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
-    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [localTablesState, setLocalTablesState] = useState<TableState[]>([]);
     const [selectedConfigs, setSelectedConfigs] = useState<SpreadsheetConfig[]>([]);
@@ -109,11 +114,10 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
     const getReorderedColumns = useCallback(
         (tableIndex: number): ColumnDefinitionDto[] => {
             const table = tables[tableIndex];
-            const columnStates = columnsStates[tableIndex];
 
-            return columnStates
+            return table.columns
                 .map((state) => {
-                    const column = table.columns.find((col) => col.id === state.colId);
+                    const column = table.columns.find((col) => col.id === state.id);
                     if (!column) {
                         return null;
                     }
@@ -124,21 +128,22 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                         type: column.type,
                         precision: column.precision,
                         formula: column.formula || '',
-                        dependencies: JSON.stringify(column.dependencies || []),
+                        dependencies: column.dependencies?.length ? JSON.stringify(column.dependencies) : undefined,
                     };
                     return dto;
                 })
                 .filter((col): col is ColumnDefinitionDto => col !== null);
         },
-        [tables, columnsStates]
+        [tables]
     );
 
     const handleNext = useCallback(() => {
         const configs: SpreadsheetConfig[] = localTablesState
             .filter((table) => table.selected)
             .map((table) => ({
+                name: table.name,
                 sheetType: table.type,
-                customColumns: getReorderedColumns(table.index),
+                columns: getReorderedColumns(table.index),
             }));
 
         setSelectedConfigs(configs);
@@ -147,17 +152,17 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
     }, [localTablesState, getReorderedColumns, handleClose]);
 
     const handleSaveCollection = useCallback(
-        async ({ name, description, folderName, folderId }: IElementCreationDialog) => {
+        async (element: IElementCreationDialog) => {
             try {
                 const collection: SpreadsheetCollection = {
                     spreadsheetConfigs: selectedConfigs,
                 };
 
-                await saveSpreadsheetCollection(collection, name, description, folderId);
+                await saveSpreadsheetCollection(collection, element.name, element.description, element.folderId);
                 snackInfo({
                     headerId: 'spreadsheet/collection/save/success',
                     headerValues: {
-                        folderName: folderName,
+                        folderName: element.folderName,
                     },
                 });
                 setShowElementCreationDialog(false);
@@ -238,13 +243,14 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                 }}
                 disabled={!hasSelectedTables}
             />
-            {showElementCreationDialog && (
+            {showElementCreationDialog && studyUuid && (
                 <ElementCreationDialog
                     open={showElementCreationDialog}
                     onClose={() => setShowElementCreationDialog(false)}
                     onSave={handleSaveCollection}
                     type={ElementType.SPREADSHEET_CONFIG_COLLECTION}
                     titleId={'spreadsheet/collection/save/collection_name_dialog_title'}
+                    studyUuid={studyUuid}
                 />
             )}
         </>

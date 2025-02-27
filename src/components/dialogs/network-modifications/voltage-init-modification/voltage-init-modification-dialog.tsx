@@ -52,7 +52,7 @@ function check(x: number | undefined) {
     return x != null && 0 <= Math.abs(x);
 }
 
-export const EquipmentTypeTabs = {
+const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
     TRANSFORMER_TAB: 1,
     STATIC_VAR_COMPENSATOR_TAB: 2,

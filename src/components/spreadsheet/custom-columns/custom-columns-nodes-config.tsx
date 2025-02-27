@@ -41,10 +41,11 @@ interface NodesOption {
 }
 
 interface CustomColumnsNodesConfigProps {
+    disabled?: boolean;
     tabIndex: number;
 }
 
-export default function CustomColumnsNodesConfig({ tabIndex }: Readonly<CustomColumnsNodesConfigProps>) {
+export default function CustomColumnsNodesConfig({ disabled, tabIndex }: Readonly<CustomColumnsNodesConfigProps>) {
     const dialogOpen = useStateBoolean(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -134,7 +135,12 @@ export default function CustomColumnsNodesConfig({ tabIndex }: Readonly<CustomCo
 
     return (
         <>
-            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick}>
+            <Button
+                sx={spreadsheetStyles.spreadsheetButton}
+                size={'small'}
+                onClick={handleClick}
+                disabled={disabled}
+            >
                 <BuildIcon sx={styles.icon} />
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
             </Button>

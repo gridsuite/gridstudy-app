@@ -33,7 +33,6 @@ import {
     tripEquipment,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
@@ -43,6 +42,7 @@ import { BaseEquipmentMenuProps, MapEquipment } from './base-equipment-menu';
 import { CurrentTreeNode } from 'redux/reducer';
 import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
 import { UUID } from 'crypto';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 const styles = {
     menuItem: {

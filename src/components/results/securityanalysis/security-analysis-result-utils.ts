@@ -16,7 +16,7 @@ import {
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
-import { ContingencyCellRenderer, convertDuration, formatNAValue } from 'components/spreadsheet/utils/cell-renderers';
+import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
@@ -41,6 +41,7 @@ import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { convertDuration, formatNAValue } from 'components/spreadsheet/utils/equipment-table-utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {

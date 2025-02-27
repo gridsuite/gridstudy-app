@@ -7,7 +7,6 @@
 
 import { FunctionComponent, memo } from 'react';
 import { ParameterGroup } from '../widget';
-import { useLoadFlowContext } from './load-flow-parameters-context';
 import LoadFlowParameterField from './load-flow-parameter-field';
 import {
     BALANCE_TYPE,
@@ -30,6 +29,7 @@ import {
     WRITE_SLACK_BUS,
 } from './constants';
 import { ParameterType, SpecificParameterInfos } from '../parameters.type';
+import { useLoadFlowContext } from './use-load-flow-context';
 
 const basicParams: SpecificParameterInfos[] = [
     {

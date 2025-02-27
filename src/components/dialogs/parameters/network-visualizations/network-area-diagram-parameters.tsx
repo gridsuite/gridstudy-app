@@ -6,10 +6,10 @@
  */
 import { Grid } from '@mui/material';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../../utils/config-params';
-import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { INIT_NAD_WITH_GEO_DATA, TabValue } from './network-visualizations-utils';
 import { SwitchInput } from '@gridsuite/commons-ui';
+import { styles } from '../parameters-style';
 
 export const NetworkAreaDiagramParameters = () => {
     return (

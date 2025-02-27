@@ -36,3 +36,8 @@ export const getHeaderFormData = ({ equipmentId, equipmentName = '' }, id = TAB_
         [EQUIPMENT_NAME]: equipmentName,
     },
 });
+
+export const LineCreationDialogTab = {
+    CHARACTERISTICS_TAB: 0,
+    LIMITS_TAB: 1,
+};

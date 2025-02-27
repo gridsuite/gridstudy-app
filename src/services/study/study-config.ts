@@ -30,3 +30,10 @@ export function setNetworkVisualizationParameters(studyUuid: UUID, newParams: Ne
         body: JSON.stringify(newParams),
     });
 }
+
+export function getSpreadsheetConfigCollection(studyUuid: UUID) {
+    console.info('get spreadsheet config collection');
+    const url = getStudyUrl(studyUuid) + '/spreadsheet-config-collection';
+    console.debug(url);
+    return backendFetchJson(url);
+}

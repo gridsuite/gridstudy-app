@@ -16,7 +16,7 @@ import {
     useState,
 } from 'react';
 import { Box, Grid } from '@mui/material';
-import { LabelledButton, styles, useParameterState } from '../parameters';
+import { LabelledButton } from '../parameters';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../../utils/functions';
 import {
@@ -48,11 +48,13 @@ import {
     TAB_VALUES,
 } from './load-flow-parameters-utils';
 import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION, PARAM_PROVIDER_OPENLOADFLOW } from 'utils/config-params';
-import { LoadFlowProvider } from './load-flow-parameters-context';
 import { COMMON_PARAMETERS, SPECIFIC_PARAMETERS } from './constants';
 import LoadFlowParametersHeader from './load-flow-parameters-header';
 import LoadFlowParametersContent from './load-flow-parameters-content';
 import { LoadFlowParametersInfos, SpecificParametersPerProvider } from 'services/study/loadflow.type';
+import { LoadFlowProvider } from './load-flow-parameters-provider';
+import { useParameterState } from '../use-parameters-state';
+import { styles } from '../parameters-style';
 
 const LoadFlowParameters: FunctionComponent<{
     parametersBackend: UseParametersBackendReturnProps<ComputingType.LOAD_FLOW>;

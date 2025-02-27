@@ -14,7 +14,7 @@ import { styled } from '@mui/material/styles';
 import { treeItemClasses, TreeView, TreeItem } from '@mui/x-tree-view';
 import { ModelVariable } from '../dialog/model-filter';
 
-export enum CheckState {
+enum CheckState {
     UNCHECKED = 'UNCHECKED',
     CHECKED = 'CHECKED',
     INDETERMINATE = 'INDETERMINATE',

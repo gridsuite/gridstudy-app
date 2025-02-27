@@ -10,7 +10,6 @@ import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 're
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
@@ -29,6 +28,7 @@ import { usePrevious } from './utils/utils';
 import { Box, Paper, Tab, Tabs } from '@mui/material';
 import { StateEstimationResultTab } from './results/stateestimation/state-estimation-result-tab';
 import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysis/dynamic-security-analysis-result-tab';
+import { useParameterState } from './dialogs/parameters/use-parameters-state';
 
 const styles = {
     table: {

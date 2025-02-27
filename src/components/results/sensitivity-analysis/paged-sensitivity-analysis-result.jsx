@@ -15,6 +15,7 @@ import {
     mappingTabs,
     PAGE_OPTIONS,
     SENSITIVITY_AT_NODE,
+    SensitivityResultTabs,
 } from './sensitivity-analysis-result-utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -27,7 +28,6 @@ import {
 import { useSelector } from 'react-redux';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
-import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';

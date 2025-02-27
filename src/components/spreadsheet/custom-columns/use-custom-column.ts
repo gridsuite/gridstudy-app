@@ -28,7 +28,7 @@ export function useCustomColumn(tabIndex: number) {
             (params: ValueGetterParams): boolean | string | number | undefined => {
                 try {
                     const scope = { ...params.data };
-                    const colDependencies = colDef.dependencies;
+                    const colDependencies = colDef.dependencies ?? [];
                     colDependencies.forEach((dep) => {
                         scope[dep] = params.getValue(dep);
                     });
@@ -48,7 +48,7 @@ export function useCustomColumn(tabIndex: number) {
 
     return useMemo(
         () =>
-            tableDefinition.columns.map((colDef): CustomColDef => {
+            tableDefinition?.columns.map((colDef): CustomColDef => {
                 let baseDefinition: ColDef;
 
                 switch (colDef.type) {
@@ -79,15 +79,15 @@ export function useCustomColumn(tabIndex: number) {
                             Menu: CustomColumnMenu,
                             menuParams: {
                                 tabIndex,
-                                colId: colDef.id,
+                                colUuid: colDef.uuid,
                             },
                         },
                     },
                     valueGetter: createValueGetter(colDef),
                     editable: false,
-                    suppressMovable: true,
+                    enableCellChangeFlash: true,
                 };
             }),
-        [tableDefinition.columns, tableDefinition.name, tabIndex, createValueGetter]
+        [tableDefinition?.columns, tableDefinition?.name, tabIndex, createValueGetter]
     );
 }

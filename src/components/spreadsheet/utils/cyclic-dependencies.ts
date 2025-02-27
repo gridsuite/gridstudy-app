@@ -6,7 +6,7 @@
  */
 export type Item = {
     id: string;
-    dependencies: string[];
+    dependencies?: string[];
 };
 
 export const hasCyclicDependencies = (items: Item[]): boolean => {

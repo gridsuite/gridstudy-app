@@ -8,7 +8,6 @@
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo } from 'react';
-import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
 import { MEDIUM_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { useSelector } from 'react-redux';
@@ -22,6 +21,7 @@ import RunningStatus from '../../utils/running-status';
 import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { useNodeData } from 'components/use-node-data';
 
 const styles = {
     loader: {

@@ -40,10 +40,6 @@ import {
     AppActions,
     CENTER_ON_SUBSTATION,
     CenterOnSubstationAction,
-    CHANGE_DISPLAYED_COLUMNS_NAMES,
-    CHANGE_LOCKED_COLUMNS_NAMES,
-    ChangeDisplayedColumnsNamesAction,
-    ChangeLockedColumnsNamesAction,
     CLOSE_DIAGRAM,
     CLOSE_DIAGRAMS,
     CLOSE_STUDY,
@@ -66,6 +62,8 @@ import {
     FavoriteContingencyListsAction,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     IncrementNetworkAreaDiagramDepthAction,
+    INIT_TABLE_DEFINITIONS,
+    InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
@@ -109,9 +107,11 @@ import {
     REMOVE_COLUMN_DEFINITION,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
+    REMOVE_TABLE_DEFINITION,
     RemoveColumnDefinitionAction,
     RemoveNodeDataAction,
     RemoveNotificationByNodeAction,
+    RemoveTableDefinitionAction,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
@@ -200,7 +200,6 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import { TABLES_DEFINITIONS } from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -285,7 +284,6 @@ import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
-    ColumnState,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
     SpreadsheetEquipmentsReloadNodes,
@@ -493,7 +491,6 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allLockedColumnsNames: string[];
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
@@ -612,17 +609,13 @@ export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
 interface TablesState {
+    uuid: UUID | null;
     definitions: SpreadsheetTabDefinition[];
-    columnsStates: ColumnState[][];
 }
 
 const initialTablesState: TablesState = {
-    definitions: TABLES_DEFINITIONS,
-    columnsStates: TABLES_DEFINITIONS.map((table) =>
-        table.columns.map((col) => {
-            return { colId: col.id, visible: true };
-        })
-    ),
+    uuid: null,
+    definitions: [],
 };
 
 const initialState: AppState = {
@@ -650,7 +643,6 @@ const initialState: AppState = {
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
     fullScreenDiagram: null,
-    allLockedColumnsNames: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     isEventScenarioDrawerOpen: false,
@@ -744,24 +736,12 @@ const initialState: AppState = {
     },
 
     // Spreadsheet filters
-    [SPREADSHEET_STORE_FIELD]: Object.values(initialTablesState.definitions)
-        .map((tabDef) => tabDef.name)
-        .reduce((acc, tabName) => ({ ...acc, [tabName]: [] }), {}),
+    [SPREADSHEET_STORE_FIELD]: {},
 
     [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
 
     [TABLE_SORT_STORE]: {
-        [SPREADSHEET_SORT_STORE]: Object.values(initialTablesState.definitions)
-            .map((tabDef) => tabDef.name)
-            .reduce((acc, tabName) => {
-                acc[tabName] = [
-                    {
-                        colId: 'id',
-                        sort: SortWay.ASC,
-                    },
-                ];
-                return acc;
-            }, {} as TableSortConfig),
+        [SPREADSHEET_SORT_STORE]: {},
         [LOADFLOW_RESULT_SORT_STORE]: {
             [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
                 {
@@ -875,8 +855,55 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
         const { newTableDefinition } = action;
-        state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
-        state.tables.columnsStates.push(newTableDefinition.columns.map((col) => ({ colId: col.id, visible: true })));
+        const existingTableDefinition = state.tables.definitions.find(
+            (tabDef) => tabDef.uuid === newTableDefinition.uuid
+        );
+        if (existingTableDefinition) {
+            Object.assign(existingTableDefinition, newTableDefinition);
+        } else {
+            state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
+        }
+    });
+
+    builder.addCase(INIT_TABLE_DEFINITIONS, (state, action: InitTableDefinitionsAction) => {
+        state.tables.uuid = action.collectionUuid;
+        state.tables.definitions = action.tableDefinitions.map((tabDef) => ({
+            ...tabDef,
+            columns: tabDef.columns.map((col) => ({ ...col, visible: true, locked: false })),
+        }));
+        state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
+            .map((tabDef) => tabDef.name)
+            .reduce((acc, tabName) => ({ ...acc, [tabName]: [] }), {});
+        state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE] = Object.values(action.tableDefinitions)
+            .map((tabDef) => tabDef.name)
+            .reduce((acc, tabName) => {
+                acc[tabName] = [
+                    {
+                        colId: 'id',
+                        sort: SortWay.ASC,
+                    },
+                ];
+                return acc;
+            }, {} as TableSortConfig);
+    });
+
+    builder.addCase(REMOVE_TABLE_DEFINITION, (state, action: RemoveTableDefinitionAction) => {
+        const removedTableName = state.tables.definitions[action.tabIndex].name;
+
+        state.tables.definitions.splice(action.tabIndex, 1);
+
+        // Update indexes of remaining table definitions
+        state.tables.definitions.forEach((table, idx) => {
+            table.index = idx;
+        });
+
+        if (state[SPREADSHEET_STORE_FIELD]) {
+            delete state[SPREADSHEET_STORE_FIELD][removedTableName];
+        }
+
+        if (state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE]) {
+            delete state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE][removedTableName];
+        }
     });
 
     builder.addCase(
@@ -1092,20 +1119,6 @@ export const reducer = createReducer(initialState, (builder) => {
                   svgType: action.svgType,
               }
             : null;
-    });
-
-    builder.addCase(CHANGE_DISPLAYED_COLUMNS_NAMES, (state, action: ChangeDisplayedColumnsNamesAction) => {
-        const newDisplayedColumnsNames = [...state.tables.columnsStates];
-        newDisplayedColumnsNames[action.displayedColumnsNamesParams.index] = action.displayedColumnsNamesParams.value;
-        state.tables.columnsStates = newDisplayedColumnsNames;
-    });
-
-    builder.addCase(CHANGE_LOCKED_COLUMNS_NAMES, (state, action: ChangeLockedColumnsNamesAction) => {
-        let newLockedColumnsNames = [...state.allLockedColumnsNames];
-        newLockedColumnsNames[action.lockedColumnsNamesParams.index] = JSON.stringify(
-            Array.from(action.lockedColumnsNamesParams.value)
-        );
-        state.allLockedColumnsNames = newLockedColumnsNames;
     });
 
     builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action: FavoriteContingencyListsAction) => {
@@ -1742,7 +1755,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const tableDefinition = state.tables.definitions[colData.index];
 
         if (tableDefinition) {
-            const existingColumnIndex = tableDefinition.columns.findIndex((col) => col.id === colData.value.id);
+            const existingColumnIndex = tableDefinition.columns.findIndex((col) => col.uuid === colData.value.uuid);
 
             if (existingColumnIndex !== -1) {
                 // Update existing column
@@ -1750,10 +1763,6 @@ export const reducer = createReducer(initialState, (builder) => {
             } else {
                 // Add new column if not found
                 tableDefinition.columns.push(colData.value);
-                state.tables.columnsStates[colData.index].push({
-                    colId: colData.value.id,
-                    visible: true,
-                });
             }
         }
     });
@@ -1761,11 +1770,20 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(REMOVE_COLUMN_DEFINITION, (state, action: RemoveColumnDefinitionAction) => {
         const { index, value } = action.definition;
         const tableDefinition = state.tables.definitions[index];
+        const tableSort = state.tableSort[SPREADSHEET_SORT_STORE];
+        const tableFilter = state[SPREADSHEET_STORE_FIELD];
 
         if (tableDefinition) {
             tableDefinition.columns = tableDefinition.columns.filter((col) => col.id !== value);
-            // remove column from columnsStates
-            state.tables.columnsStates[index] = state.tables.columnsStates[index].filter((col) => col.colId !== value);
+        }
+        // remove sort and filter for the removed column
+        if (tableSort[tableDefinition.name]) {
+            tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter((sort) => sort.colId !== value);
+        }
+        if (tableFilter[tableDefinition.name]) {
+            tableFilter[tableDefinition.name] = tableFilter[tableDefinition.name].filter(
+                (filter) => filter.column !== value
+            );
         }
     });
 

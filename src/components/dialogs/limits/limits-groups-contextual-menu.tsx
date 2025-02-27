@@ -80,28 +80,31 @@ export function LimitsGroupsContextualMenu({
     };
 
     const handleDuplicateTab = () => {
+        let newName: string = '';
         if (indexSelectedLimitSet1 !== null) {
-            const duplicatedLimits1 = getValues(
+            const duplicatedLimits1: OperationalLimitsGroup = getValues(
                 `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`
             );
+            newName = duplicatedLimits1.id + '_COPY';
             const newLimitsGroup1: OperationalLimitsGroup = {
                 ...duplicatedLimits1,
-                [ID]: '',
+                [ID]: newName,
             };
             appendToLimitsGroups1(newLimitsGroup1);
         }
 
         if (indexSelectedLimitSet2 !== null) {
-            const duplicatedLimits2 = getValues(
+            const duplicatedLimits2: OperationalLimitsGroup = getValues(
                 `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`
             );
+            newName = duplicatedLimits2.id + '_COPY';
             const newLimitsGroup2: OperationalLimitsGroup = {
                 ...duplicatedLimits2,
-                [ID]: '',
+                [ID]: newName,
             };
             appendToLimitsGroups2(newLimitsGroup2);
         }
-        startEditingLimitsGroup(getValues(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`).length - 1, '');
+        startEditingLimitsGroup(getValues(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`).length - 1, newName);
     };
 
     return (

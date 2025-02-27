@@ -29,8 +29,9 @@ import {
     TextInput,
     UseStateBooleanReturn,
     AutocompleteInput,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm, UseFormSetError, useWatch } from 'react-hook-form';
 import {
     COLUMN_DEPENDENCIES,
     COLUMN_ID,
@@ -50,14 +51,16 @@ import { setUpdateColumnsDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { v4 as uuid4 } from 'uuid';
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
 import { AppState } from 'redux/reducer';
+import { createSpreadsheetColumn, updateSpreadsheetColumn } from 'services/study-config';
+import { UUID } from 'crypto';
+import { ColumnDefinition } from '../config/spreadsheet.type';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
-    colId?: string;
+    colUuid?: UUID;
     tabIndex: number;
     isCreate?: boolean;
 };
@@ -76,7 +79,7 @@ const styles = {
 
 export default function CustomColumnDialog({
     open,
-    colId,
+    colUuid,
     tabIndex,
     isCreate = true,
 }: Readonly<CustomColumnDialogProps>) {
@@ -88,14 +91,14 @@ export default function CustomColumnDialog({
     const { setError, control } = formMethods;
     const columnId = useWatch({ control, name: COLUMN_ID });
     const watchColumnType = useWatch({ control, name: COLUMN_TYPE });
-    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex].columns);
-    const tableName = useSelector((state: AppState) => state.tables.definitions[tabIndex].name);
-
+    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
+    const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
+    const tableName = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.name);
+    const { snackError } = useSnackMessage();
     const columnDefinition = useMemo(
-        () => columnsDefinitions.find((column) => column.id === colId),
-        [colId, columnsDefinitions]
+        () => columnsDefinitions?.find((column) => column?.uuid === colUuid),
+        [colUuid, columnsDefinitions]
     );
-    const hasColumnIdChanged = columnId !== columnDefinition?.[COLUMN_ID];
 
     const { handleSubmit, reset } = formMethods;
     const dispatch = useDispatch<AppDispatch>();
@@ -139,63 +142,114 @@ export default function CustomColumnDialog({
 
     const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, tableName);
 
+    const validateParams = (
+        columnsDefinitions: ColumnDefinition[],
+        newParams: CustomColumnForm,
+        colUuid: UUID,
+        setError: UseFormSetError<CustomColumnForm>
+    ) => {
+        const columnIdAlreadyExist = columnsDefinitions?.find(
+            (column) => column.id === newParams.id && column.uuid !== colUuid
+        );
+        const columnNameAlreadyExist = columnsDefinitions?.find(
+            (column) => column.name === newParams.name && column.uuid !== colUuid
+        );
+
+        if (columnNameAlreadyExist) {
+            setError(COLUMN_NAME, {
+                type: 'validate',
+                message: 'spreadsheet/custom_column/column_name_already_exist',
+            });
+            return false;
+        }
+
+        if (columnIdAlreadyExist) {
+            setError(COLUMN_ID, {
+                type: 'validate',
+                message: 'spreadsheet/custom_column/column_id_already_exist',
+            });
+            return false;
+        }
+
+        const newItems: Item[] = [...columnsDefinitions, newParams];
+        if (hasCyclicDependencies(newItems)) {
+            setError(COLUMN_DEPENDENCIES, {
+                type: 'validate',
+                message: 'spreadsheet/custom_column/creates_cyclic_dependency',
+            });
+            return false;
+        }
+
+        return true;
+    };
+
     const onSubmit = useCallback(
-        (newParams: CustomColumnForm) => {
-            const existingColumn = columnsDefinitions?.find((column) => column.id === newParams.id);
+        async (newParams: CustomColumnForm) => {
+            if (colUuid && !validateParams(columnsDefinitions, newParams, colUuid, setError)) {
+                return;
+            }
+
+            const existingColumn = columnsDefinitions?.find((column) => column.uuid === colUuid);
+            let isUpdate = false;
 
             if (existingColumn) {
-                if (isCreate || hasColumnIdChanged) {
-                    setError(COLUMN_ID, {
-                        type: 'validate',
-                        message: 'spreadsheet/custom_column/column_id_already_exist',
-                    });
-                    return;
-                }
-                // if we are editing an existing column, we need to remove the existing filter
-                const updatedFilters = filters.filter((filter) => filter.column !== existingColumn.id);
+                isUpdate = true;
+                const updatedFilters = filters?.filter((filter) => filter.column !== existingColumn.id);
                 dispatchFilters(updatedFilters);
             }
 
-            if (columnsDefinitions) {
-                const newItems: Item[] = [...columnsDefinitions, newParams];
-                if (hasCyclicDependencies(newItems)) {
-                    setError(COLUMN_DEPENDENCIES, {
-                        type: 'validate',
-                        message: 'spreadsheet/custom_column/creates_cyclic_dependency',
-                    });
-                    return;
-                }
-            }
+            const formattedParams = {
+                ...newParams,
+                dependencies: newParams.dependencies?.length ? JSON.stringify(newParams.dependencies) : undefined,
+            };
 
-            dispatch(
-                setUpdateColumnsDefinitions({
-                    index: tabIndex,
-                    value: {
-                        uuid: columnDefinition?.uuid || uuid4(),
-                        id: newParams.id,
-                        name: newParams.name,
-                        type: COLUMN_TYPES[newParams.type],
-                        precision: newParams.precision,
-                        formula: newParams.formula,
-                        dependencies: newParams.dependencies,
-                    },
+            const updateOrCreateColumn =
+                isUpdate && columnDefinition
+                    ? updateSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
+                    : createSpreadsheetColumn(spreadsheetConfigUuid, formattedParams);
+
+            updateOrCreateColumn
+                .then((uuid) => {
+                    dispatch(
+                        setUpdateColumnsDefinitions({
+                            index: tabIndex,
+                            value: {
+                                uuid: columnDefinition?.uuid ?? uuid,
+                                id: newParams.id,
+                                name: newParams.name,
+                                type: COLUMN_TYPES[newParams.type],
+                                precision: newParams.precision,
+                                formula: newParams.formula,
+                                dependencies: newParams.dependencies,
+                                visible: true,
+                                locked: existingColumn?.locked,
+                            },
+                        })
+                    );
+
+                    reset(initialCustomColumnForm);
+                    open.setFalse();
                 })
-            );
-            reset(initialCustomColumnForm);
-            open.setFalse();
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error,
+                        headerId: 'spreadsheet/custom_column/error_saving_or_updating_column',
+                    });
+                });
         },
         [
             columnsDefinitions,
-            dispatch,
-            tabIndex,
-            columnDefinition?.uuid,
-            reset,
-            open,
-            isCreate,
-            hasColumnIdChanged,
+            colUuid,
+            setError,
+            columnDefinition,
+            spreadsheetConfigUuid,
             filters,
             dispatchFilters,
-            setError,
+            dispatch,
+            tabIndex,
+            reset,
+            open,
+            snackError,
         ]
     );
 
@@ -208,7 +262,7 @@ export default function CustomColumnDialog({
                 [COLUMN_TYPE]: type,
                 [PRECISION]: precision,
                 [FORMULA]: formula,
-                [COLUMN_DEPENDENCIES]: dependencies,
+                [COLUMN_DEPENDENCIES]: dependencies ?? [],
             });
         } else {
             reset(initialCustomColumnForm);

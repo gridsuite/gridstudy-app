@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { suppressEventsToPreventEditMode } from '../commons/utils';
 
-export const LineTypesCatalogSelectorDialogTabs = {
+const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
     UNDERGROUND_TAB: 1,
 };
