@@ -13,6 +13,7 @@ import {
     Chip,
     FilterOptionsState,
     InputAdornment,
+    Paper,
     TextField,
     Theme,
 } from '@mui/material';
@@ -26,6 +27,8 @@ import { AppState } from '../../../redux/reducer';
 import { AppDispatch } from '../../../redux/store';
 import { cyan } from '@mui/material/colors';
 import { FilterType } from './utils';
+import IconButton from '@mui/material/IconButton';
+import FolderIcon from '@mui/icons-material/Folder';
 
 const styles = {
     autocomplete: (theme: Theme) => ({
@@ -57,6 +60,7 @@ const styles = {
         borderColor: theme.palette.divider,
     }),
     groupLabel: (theme: Theme) => ({
+        display: 'flex',
         color: theme.palette.text.secondary,
         fontSize: '0.9em',
         width: '100%',
@@ -306,6 +310,31 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                     }
 
                     return filteredOptions;
+                }}
+                // adds the filter pick up at the end
+                PaperComponent={({ children }) => {
+                    return (
+                        <Paper>
+                            {children}
+                            <Box sx={styles.filterTypeBox}>
+                                <Box sx={mergeSx(styles.groupLabel, { paddingLeft: 2, paddingTop: 1.5 })}>
+                                    <FormattedMessage id={'Filters'} />
+                                    <IconButton
+                                        color="primary"
+                                        sx={{
+                                            align: 'right',
+                                            marginLeft: 'auto',
+                                        }}
+                                        onMouseDown={() => {
+                                            console.log('!!! TODO : onMouseDown');
+                                        }}
+                                    >
+                                        <FolderIcon />
+                                    </IconButton>
+                                </Box>
+                            </Box>
+                        </Paper>
+                    );
                 }}
             />
         </Box>
