@@ -27,11 +27,15 @@ export function toNumber(value: unknown) {
     return NaN;
 }
 
+export function isNotBlankOrEmpty<T>(value: T): value is NonNullable<T> {
+    return !isBlankOrEmpty(value);
+}
+
 /*
  * Returns true if value is either undefined, null, empty or only contains whitespaces.
  * Otherwise, if value is a boolean or a number, returns false.
  */
-export function isBlankOrEmpty(value: unknown) {
+export function isBlankOrEmpty<T>(value: T) {
     if (value === undefined || value === null) {
         return true;
     }

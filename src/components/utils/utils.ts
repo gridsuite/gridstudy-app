@@ -6,8 +6,8 @@
  */
 
 import { getIn, SchemaDescription } from 'yup';
-import { isBlankOrEmpty, toNumber } from './validation-functions';
-import { OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
+import { isNotBlankOrEmpty, toNumber } from './validation-functions';
+import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { AttributeModification } from 'components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
 import { Option } from '@gridsuite/commons-ui';
@@ -133,18 +133,16 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]) =>
         };
     });
 
-export const formatCompleteCurrentLimit = (completeLimitsGroups: OperationalLimitsGroup[]) => {
+export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimits[]) => {
     const formattedCompleteLimitsGroups: OperationalLimitsGroup[] = [];
     if (completeLimitsGroups) {
         completeLimitsGroups.forEach((elt) => {
-            if (!isBlankOrEmpty(elt.id)) {
+            if (isNotBlankOrEmpty(elt.id)) {
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id,
                     [CURRENT_LIMITS]: {
-                        permanentLimit: elt.currentLimits.permanentLimit, //TODO: check change is ok ?
-                        temporaryLimits: addSelectedFieldToRows(
-                            formatTemporaryLimits(elt.currentLimits.temporaryLimits)
-                        ),
+                        permanentLimit: elt.permanentLimit,
+                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt.temporaryLimits)),
                     },
                 });
             }

@@ -36,17 +36,6 @@ export interface LimitsSidePaneProps {
     onlySelectedLimitsGroup: boolean;
 }
 
-export interface ILimitColumnDef {
-    label: string;
-    dataKey: string;
-    initialValue: string | null;
-    editable: boolean;
-    numeric: boolean;
-    width?: number;
-    maxWidth?: number;
-    showErrorMsg?: boolean;
-}
-
 export function LimitsSidePane({
     limitsGroupFormName,
     permanentCurrentLimitPreviousValue,
@@ -60,7 +49,7 @@ export function LimitsSidePane({
     const useFieldArrayOutputTemporaryLimits = useFieldArray({
         name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}`,
     });
-    const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: any })[] = useMemo(() => {
+    const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
             {
                 label: 'TemporaryLimitName',
