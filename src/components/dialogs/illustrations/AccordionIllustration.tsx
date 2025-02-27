@@ -17,7 +17,7 @@ type AccordionIllustrationProps = {
 
 const ILLUSTRATION_DARK_BG = '#272727ff';
 
-export const styles = {
+const styles = {
     accordion: {
         background: 'none',
     },
