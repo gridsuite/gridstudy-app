@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import {
     fetchBatteries,
     fetchBusbarSections,
@@ -24,8 +24,8 @@ import {
     fetchTwoWindingsTransformers,
     fetchVoltageLevels,
     fetchVscConverterStations,
-} from '../../../../services/study/network';
-import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
+} from '../../../services/study/network';
+import { EquipmentFetcher, SpreadsheetEquipmentType } from './spreadsheet.type';
 
 export const getFetcher = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher => {
     switch (equipmentType) {
@@ -65,9 +65,3 @@ export const getFetcher = (equipmentType: SpreadsheetEquipmentType): EquipmentFe
             return fetchBusbarSections;
     }
 };
-
-// TODO to remove when no more static conf
-export const typeAndFetchers = <TEquipType extends SpreadsheetEquipmentType>(equipmentType: TEquipType) =>
-    ({
-        type: equipmentType,
-    } as const);

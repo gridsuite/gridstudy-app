@@ -52,7 +52,6 @@ import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
     ColumnDefinition,
-    ColumnState,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet/config/spreadsheet.type';
@@ -96,8 +95,6 @@ export type AppActions =
     | ResetMapReloadedAction
     | MapEquipmentsInitializedAction
     | SetFullscreenDiagramAction
-    | ChangeDisplayedColumnsNamesAction
-    | ChangeLockedColumnsNamesAction
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
@@ -138,7 +135,8 @@ export type AppActions =
     | UpdateCustomColumnsNodesAliasesAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
-    | SaveSpreadSheetGsFilterAction;
+    | SaveSpreadSheetGsFilterAction
+    | RemoveTableDefinitionAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -543,11 +541,6 @@ export type StudyUpdatedAction = Readonly<Action<typeof STUDY_UPDATED>> & {
     eventData: StudyUpdatedEventData;
 };
 
-/*
-export type StudyUpdated = {
-    force: IntRange<0, 1>;
-} & (StudyUpdatedUndefined | StudyUpdatedStudy);
- */
 export function studyUpdated(eventData: StudyUpdatedEventData): StudyUpdatedAction {
     return { type: STUDY_UPDATED, eventData };
 }
@@ -613,32 +606,6 @@ export function setFullScreenDiagram(
             svgType: svgTypeParam!,
         };
     }
-}
-
-export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
-export type ChangeDisplayedColumnsNamesAction = Readonly<Action<typeof CHANGE_DISPLAYED_COLUMNS_NAMES>> & {
-    displayedColumnsNamesParams: TableValue<ColumnState[]>;
-};
-
-export function changeDisplayedColumns(
-    displayedColumnsParams: TableValue<ColumnState[]>
-): ChangeDisplayedColumnsNamesAction {
-    return {
-        type: CHANGE_DISPLAYED_COLUMNS_NAMES,
-        displayedColumnsNamesParams: displayedColumnsParams,
-    };
-}
-
-export const CHANGE_LOCKED_COLUMNS_NAMES = 'CHANGE_LOCKED_COLUMNS_NAMES';
-export type ChangeLockedColumnsNamesAction = Readonly<Action<typeof CHANGE_LOCKED_COLUMNS_NAMES>> & {
-    lockedColumnsNamesParams: TableValue<Set<string>>;
-};
-
-export function changeLockedColumns(lockedColumnsParams: TableValue<Set<string>>): ChangeLockedColumnsNamesAction {
-    return {
-        type: CHANGE_LOCKED_COLUMNS_NAMES,
-        lockedColumnsNamesParams: lockedColumnsParams,
-    };
 }
 
 export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
@@ -1236,6 +1203,18 @@ export function setRemoveColumnDefinition(definition: TableValue<string>): Remov
     };
 }
 
+export const REMOVE_TABLE_DEFINITION = 'REMOVE_TABLE_DEFINITION';
+export type RemoveTableDefinitionAction = Readonly<Action<typeof REMOVE_TABLE_DEFINITION>> & {
+    tabIndex: number;
+};
+
+export function removeTableDefinition(tabIndex: number): RemoveTableDefinitionAction {
+    return {
+        type: REMOVE_TABLE_DEFINITION,
+        tabIndex,
+    };
+}
+
 export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
 
 export type UpdateTableDefinitionAction = {
@@ -1246,6 +1225,23 @@ export type UpdateTableDefinitionAction = {
 export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefinition): UpdateTableDefinitionAction => ({
     type: UPDATE_TABLE_DEFINITION,
     newTableDefinition,
+});
+
+export const INIT_TABLE_DEFINITIONS = 'INIT_TABLE_DEFINITIONS';
+
+export type InitTableDefinitionsAction = {
+    type: typeof INIT_TABLE_DEFINITIONS;
+    collectionUuid: UUID;
+    tableDefinitions: SpreadsheetTabDefinition[];
+};
+
+export const initTableDefinitions = (
+    collectionUuid: UUID,
+    tableDefinitions: SpreadsheetTabDefinition[]
+): InitTableDefinitionsAction => ({
+    type: INIT_TABLE_DEFINITIONS,
+    collectionUuid,
+    tableDefinitions,
 });
 
 export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
