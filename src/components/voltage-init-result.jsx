@@ -297,6 +297,10 @@ const VoltageInitResult = ({ result, status }) => {
         );
     }
 
+    const formatValue = (value, precision, intl) => {
+        return isNaN(value) ? intl.formatMessage({ id: 'Undefined' }) : value.toFixed(precision);
+    };
+
     const busVoltagesColumnDefs = useMemo(() => {
         return [
             {
@@ -307,11 +311,13 @@ const VoltageInitResult = ({ result, status }) => {
                 headerName: intl.formatMessage({ id: 'BusVoltage' }),
                 field: 'v',
                 numeric: true,
+                valueFormatter: (params) => formatValue(params.value, 2, intl),
             },
             {
                 headerName: intl.formatMessage({ id: 'BusAngle' }),
                 field: 'angle',
                 numeric: true,
+                valueFormatter: (params) => formatValue(params.value, 2, intl),
             },
         ];
     }, [intl]);
