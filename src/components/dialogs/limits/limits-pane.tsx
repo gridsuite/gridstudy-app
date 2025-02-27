@@ -24,7 +24,7 @@ import { useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
-import { tabStyles } from '../../parameters-tabs';
+import { tabStyles } from 'components/utils/tab-utils';
 
 export interface LimitsPaneProps {
     id?: string;

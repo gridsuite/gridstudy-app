@@ -8,8 +8,9 @@
 import { Grid, MenuItem, Select } from '@mui/material';
 import { SelectInputProps } from '@mui/material/Select/SelectInput';
 import { FormattedMessage } from 'react-intl';
-import { UseParameterStateParamName, styles, useParameterState } from '../parameters';
 import { useMemo } from 'react';
+import { UseParameterStateParamName, useParameterState } from '../use-parameters-state';
+import { styles } from '../parameters-style';
 
 type DropDownParameterLineProps = {
     readonly paramNameId: UseParameterStateParamName;

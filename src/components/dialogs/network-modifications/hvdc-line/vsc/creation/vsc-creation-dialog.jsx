@@ -58,6 +58,7 @@ import {
     toModificationProperties,
 } from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
+import { VSC_CREATION_TABS } from '../vsc-utils';
 
 const formSchema = yup
     .object()
@@ -77,12 +78,6 @@ const emptyFormData = {
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2),
     ...emptyProperties,
-};
-
-export const VSC_CREATION_TABS = {
-    HVDC_LINE_TAB: 0,
-    CONVERTER_STATION_1: 1,
-    CONVERTER_STATION_2: 2,
 };
 
 const VscCreationDialog = ({

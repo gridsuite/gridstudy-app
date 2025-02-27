@@ -10,12 +10,12 @@ import { FunctionComponent } from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { Box, Grid } from '@mui/material';
-import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-dialog-tabs';
 import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { UUID } from 'crypto';
 import GridItem from '../../../commons/grid-item';
+import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 
 export interface StaticVarCompensatorCreationFormProps {
     studyUuid: UUID;

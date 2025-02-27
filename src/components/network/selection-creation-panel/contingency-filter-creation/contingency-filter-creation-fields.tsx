@@ -4,7 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CONTINGENCY_LIST_EQUIPMENTS, ElementType, FILTER_EQUIPMENTS, SelectInput } from '@gridsuite/commons-ui';
+import {
+    CONTINGENCY_LIST_EQUIPMENTS,
+    ElementType,
+    FILTER_EQUIPMENTS,
+    SelectInput,
+    UniqueNameInput,
+} from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, NAME } from 'components/utils/field-constants';
 import { FC, useMemo } from 'react';
@@ -12,7 +18,6 @@ import { SELECTION_TYPES } from '../selection-types';
 import { SelectionCreationPanelDirectorySelector } from './contingency-filter-creation-directory-selector';
 import { SelectionCreationPanelFormSchema } from '../selection-creation-schema';
 import { useWatch } from 'react-hook-form';
-import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 
 interface ContingencyFilterCreationListProps {
     pendingState: boolean;
@@ -63,7 +68,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
                     name={NAME}
                     label={'Name'}
                     elementType={selectionTypeToElementType(selectionType)}
-                    activeDirectory={destinationFolderWatcher?.folderId ?? null}
+                    activeDirectory={destinationFolderWatcher?.folderId}
                     autoFocus
                     formProps={{
                         variant: 'standard',
