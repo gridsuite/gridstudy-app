@@ -61,11 +61,9 @@ const RegulatingTerminalForm = ({
                 watchVoltageLevelId,
                 true
             ).then((values) => {
-                console.log('XXX equipment options', { watchVoltageLevelId, values });
                 setEquipmentsOptions(values);
             });
         } else {
-            console.log('XXX reset empty equipment options', { watchVoltageLevelId });
             setEquipmentsOptions([]);
         }
     }, [watchVoltageLevelId, voltageLevelOptions, id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
@@ -86,9 +84,9 @@ const RegulatingTerminalForm = ({
                         name={`${id}.${VOLTAGE_LEVEL}`}
                         label="VOLTAGE_LEVEL"
                         size="small"
-                        // particular outputTransform case for string type when a user clicks outside after editing whatever input
+                        // particular outputTransform case for string type when a user typing whatever in the input (onInputChange)
+                        // but not click on an option (onChange)
                         outputTransform={(value) => {
-                            console.log('XXX VL ID inputValue', { value });
                             return typeof value === 'string' ? { id: value, label: value } : value;
                         }}
                         forcePopupIcon
@@ -105,7 +103,6 @@ const RegulatingTerminalForm = ({
                             */
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
-                            console.log('XXX options', { options });
                             if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
                                 filtered.push({
                                     id: params.inputValue,
@@ -128,11 +125,15 @@ const RegulatingTerminalForm = ({
                     <AutocompleteInput
                         name={`${id}.${EQUIPMENT}`}
                         outputTransform={(value) => {
-                            return typeof value === 'string' ? { id: value, label: value } : value;
+                            return typeof value === 'string'
+                                ? value === ''
+                                    ? null
+                                    : { id: value, type: equipmentSectionTypeDefaultValue }
+                                : value;
                         }}
+                        inputTransform={(value) => (value === null ? '' : value)}
                         label="Equipment"
                         size="small"
-                        freeSolo
                         forcePopupIcon
                         autoHighlight
                         selectOnFocus
@@ -144,7 +145,12 @@ const RegulatingTerminalForm = ({
                             return equipment === '' ? '' : equipment?.[ID] || '';
                         }}
                         renderOption={(props, option) => {
-                            return <Box {...props}>{`${option?.[TYPE]} : ${option?.[ID]}`}</Box>;
+                            const { key, ...optionProps } = props;
+                            return (
+                                <Box key={key} component="li" {...optionProps}>
+                                    {option?.[TYPE] ? `${option?.[TYPE]} : ${option?.[ID]}` : option?.[ID]}
+                                </Box>
+                            );
                         }}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
