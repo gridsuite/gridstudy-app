@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteRenderInputParams,
+    AutocompleteValue,
     Box,
     Chip,
     FilterOptionsState,
@@ -29,6 +30,9 @@ import { cyan } from '@mui/material/colors';
 import { FilterType } from './utils';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
+import { DirectoryItemSelector, ElementType, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { UUID } from 'crypto';
 
 const styles = {
     autocomplete: (theme: Theme) => ({
@@ -131,12 +135,28 @@ export interface Filter {
 }
 
 export interface ResultsGlobalFilterProps {
-    onChange: (value: Filter[]) => void;
+    onChange: (filters: Filter[]) => void;
     filters: Filter[];
 }
 
 const emptyArray: Filter[] = [];
 const DEFAULT_NB_OPTIONS_DISPLAYED: number = 10;
+
+const getChipStyle = (filterType: string) => {
+    let chipStyle;
+    switch (filterType) {
+        case FilterType.COUNTRY:
+            chipStyle = styles.chipCountry;
+            break;
+        case FilterType.VOLTAGE_LEVEL:
+            chipStyle = styles.chipVoltageLevel;
+            break;
+        case FilterType.FILTER:
+            chipStyle = styles.chipFilter;
+            break;
+    }
+    return mergeSx(styles.chip, chipStyle);
+};
 
 const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onChange, filters = emptyArray }) => {
     const intl = useIntl();
@@ -152,30 +172,18 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
             [FilterType.FILTER, 0],
         ])
     );
+    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
+    const [selectedFiltersElements, setSelectedFiltersElements] = useState<UUID[]>([]);
+    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<Filter[]>([]);
 
     const getOptionLabel = useCallback(
         (option: Filter) => (option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label + ' kV'),
         [translate]
     );
 
-    const getChipStyle = useCallback((filterType: string) => {
-        let chipStyle;
-        switch (filterType) {
-            case FilterType.COUNTRY:
-                chipStyle = styles.chipCountry;
-                break;
-            case FilterType.VOLTAGE_LEVEL:
-                chipStyle = styles.chipVoltageLevel;
-                break;
-            case FilterType.FILTER:
-                chipStyle = styles.chipFilter;
-                break;
-        }
-        return mergeSx(styles.chip, chipStyle);
-    }, []);
-
     const handleChange = useCallback(
-        (_event: SyntheticEvent<Element, Event>, value: Filter[]): void => {
+        (value: Filter[]): void => {
+            setSelectedGlobalFilters(value);
             // Updates the "recent" filters
             dispatch(addToRecentGlobalFilters(value));
             onChange(value);
@@ -183,14 +191,52 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
         [dispatch, onChange]
     );
 
+    const addSelectedFilters = useCallback(
+        (values: TreeViewFinderNodeProps[] | undefined) => {
+            if (!values) {
+                return;
+            }
+            // if we select a chip and return a new values, we remove it to be replaced TODO ??
+            /*if (selected?.length > 0 && values?.length > 0) {
+                selected.forEach((chip) => {
+                    remove(getValues(name).findIndex((item: FieldValues) => item.id === chip));
+                });
+            }*/
+
+            const filters: Filter[] = [];
+
+            values.forEach((value) => {
+                filters.push({
+                    // TODO : should put the UUID somewhere ?? (=> c'est la donnée à envoyer en back)
+                    label: value.name,
+                    filterType: FilterType.FILTER,
+                    recent: true,
+                });
+
+                // Check if the element is already present  ==> TODO, attention doublons
+                /*if (getValues(name).find((v: FieldValues) => v?.id === otherElementAttributes.id) !== undefined) {
+                snackError({
+                    messageTxt: '',
+                    headerId: 'directory_items_input/ElementAlreadyUsed',
+                });*/
+            });
+            handleChange([...selectedGlobalFilters, ...filters]);
+
+            setDirectoryItemSelectorOpen(false);
+            setSelectedFiltersElements([]);
+        },
+        [handleChange, selectedGlobalFilters]
+    );
+
     return (
-        <Box>
+        <>
             <Autocomplete
+                value={selectedGlobalFilters as AutocompleteValue<Filter, false, false, false>}
                 sx={styles.autocomplete}
                 multiple
                 id="result-global-filter"
                 size="small"
-                limitTags={3}
+                limitTags={2}
                 disableCloseOnSelect
                 options={[
                     ...recentGlobalFilters.map((filter) => {
@@ -208,7 +254,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                             return 0;
                         }),
                 ]}
-                onChange={handleChange}
+                onChange={(_e, value) => handleChange(value as Filter[])}
                 groupBy={(option: Filter): string => (option.recent ? recentFilter : option.filterType)}
                 // renderInput : the inputfield that contains the chips, adornments and label
                 renderInput={(params: AutocompleteRenderInputParams) => (
@@ -325,9 +371,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                                             align: 'right',
                                             marginLeft: 'auto',
                                         }}
-                                        onMouseDown={() => {
-                                            console.log('!!! TODO : onMouseDown');
-                                        }}
+                                        onMouseDown={() => setDirectoryItemSelectorOpen(true)}
                                     >
                                         <FolderIcon />
                                     </IconButton>
@@ -337,7 +381,16 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                     );
                 }}
             />
-        </Box>
+            <DirectoryItemSelector
+                open={directoryItemSelectorOpen}
+                onClose={addSelectedFilters}
+                types={[ElementType.FILTER]}
+                equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]} // TODO : types doivent dependre de la page résultat choisie actuellement
+                title={intl.formatMessage({ id: 'Filters' })}
+                selected={selectedFiltersElements}
+                multiSelect
+            />
+        </>
     );
 };
 
