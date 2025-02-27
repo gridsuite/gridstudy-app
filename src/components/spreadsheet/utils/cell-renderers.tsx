@@ -17,7 +17,7 @@ import { CustomCellRendererProps } from 'ag-grid-react';
 const styles = {
     tableCell: (theme: Theme) => ({
         fontSize: 'small',
-        cursor: 'initial',
+        cursor: 'inherit',
         display: 'flex',
         '&:before': {
             content: '""',
