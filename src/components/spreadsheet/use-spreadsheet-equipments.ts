@@ -8,25 +8,21 @@
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { UUID } from 'crypto';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     deleteEquipments,
     EquipmentToDelete,
-    loadEquipments,
-    reloadNodesAliases,
     removeNodeData,
     resetEquipments,
     resetEquipmentsByTypes,
     updateEquipments,
 } from 'redux/actions';
-import { AppState, initialReloadNodesAliases } from 'redux/reducer';
-import { SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import { AppState } from 'redux/reducer';
+import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { getFetcher } from './config/common-config';
-import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
-import { formatFetchedEquipments } from './utils/equipment-table-utils';
-import { NodeType } from '../graph/tree-node.type';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { useLoadEquipment } from './use-load-equipment';
 
 export const useSpreadsheetEquipments = (type: SpreadsheetEquipmentType, highlightUpdatedEquipment: () => void) => {
     const dispatch = useDispatch();
@@ -41,82 +37,13 @@ export const useSpreadsheetEquipments = (type: SpreadsheetEquipmentType, highlig
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
-    const nodesAliasesToReload = useSelector((state: AppState) => state.reloadNodesAliases);
-    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
 
-    const builtNodesIds = useMemo(() => {
-        let set = new Set<string>();
-        if (nodesAliases.length > 0) {
-            const aliasNames = nodesAliases.map((alias) => {
-                return alias.id;
-            });
-            treeModel?.treeNodes.forEach((treeNode) => {
-                if (
-                    aliasNames.includes(treeNode.id) &&
-                    (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
-                ) {
-                    set.add(treeNode.id);
-                }
-            });
-        }
-        return set;
-    }, [nodesAliases, treeModel?.treeNodes]);
-
-    const nodesIdToFetch = useMemo(() => {
-        let nodeIds = new Set<string>();
-        if (!equipments) {
-            return nodeIds;
-        }
-        // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
-        const currentNodeId = currentNode?.id as string;
-        if (currentNodeId && equipments.nodesId.find((nodeId) => nodeId === currentNodeId) === undefined) {
-            nodeIds.add(currentNodeId);
-        }
-        // Then we do the same for the other built nodes we need the data of (the ones defined in aliases)
-        builtNodesIds.forEach((nodeAliasId) => {
-            if (equipments.nodesId.find((nodeId) => nodeId === nodeAliasId) === undefined) {
-                nodeIds.add(nodeAliasId);
-            }
-        });
-        return nodeIds;
-    }, [equipments, currentNode?.id, builtNodesIds]);
-
-    const formatEquipments = useCallback(
-        (fetchedEquipments: any) => {
-            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return formatFetchedEquipments(type, fetchedEquipments);
-        },
-        [type]
-    );
-
-    const loadEquipmentData = useCallback(
-        (nodeIds: Set<string>) => {
-            if (studyUuid && currentRootNetworkUuid) {
-                setErrorMessage(null);
-                setIsFetching(true);
-                let fetcherPromises: Promise<unknown>[] = [];
-                let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
-                    nodesId: [],
-                    equipmentsByNodeId: {},
-                };
-                nodeIds.forEach((nodeId) => {
-                    const promise = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
-                    fetcherPromises.push(promise);
-                    promise.then((results) => {
-                        let fetchedEquipments = results.flat();
-                        spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                        fetchedEquipments = formatEquipments(fetchedEquipments);
-                        spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
-                    });
-                });
-
-                Promise.all(fetcherPromises).then(() => {
-                    dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
-                    setIsFetching(false);
-                });
-            }
-        },
-        [currentRootNetworkUuid, dispatch, formatEquipments, studyUuid, type]
+    const { loadEquipmentData, nodesIdToFetch } = useLoadEquipment(
+        type,
+        studyUuid,
+        currentRootNetworkUuid,
+        currentNode?.id,
+        equipments
     );
 
     const {
@@ -234,23 +161,17 @@ export const useSpreadsheetEquipments = (type: SpreadsheetEquipmentType, highlig
             isNetworkModificationTreeModelUpToDate &&
             isNodeBuilt(currentNode)
         ) {
-            loadEquipmentData(nodesIdToFetch);
+            console.log('DBG DBR USE nodesIdToFetch=', nodesIdToFetch);
+            setErrorMessage(null);
+            setIsFetching(true);
+            const promises = loadEquipmentData(nodesIdToFetch);
+            console.log('DBG DBR USE promises=', promises);
+            Promise.all(promises).then(() => {
+                console.log('DBG DBR USE promises all done');
+                setIsFetching(false);
+            });
         }
     }, [currentNode, isNetworkModificationTreeModelUpToDate, loadEquipmentData, nodesIdToFetch]);
 
-    useEffect(() => {
-        if (nodesAliasesToReload.sheetType === type && nodesAliasesToReload.nodesId.length) {
-            let builtNodesToReload = new Set<string>();
-            nodesAliasesToReload.nodesId.forEach((nodeId) => {
-                if (builtNodesIds.has(nodeId)) {
-                    builtNodesToReload.add(nodeId);
-                }
-            });
-            loadEquipmentData(builtNodesToReload);
-            // reset reload action
-            dispatch(reloadNodesAliases(initialReloadNodesAliases));
-        }
-    }, [builtNodesIds, dispatch, loadEquipmentData, nodesAliasesToReload, type]);
-
-    return { equipments, errorMessage, isFetching };
+    return { equipments, errorMessage, isFetching }; // FIXME errorMessage is not set anymore
 };

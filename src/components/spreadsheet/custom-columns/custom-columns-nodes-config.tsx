@@ -12,12 +12,11 @@ import CustomColumnNodesDialog from './custom-columns-nodes-dialog';
 import BuildIcon from '@mui/icons-material/Build';
 import { spreadsheetStyles } from '../utils/style';
 import { MouseEvent, useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import Tooltip from '@mui/material/Tooltip';
-import { reloadNodesAliases } from '../../../redux/actions';
-import { SpreadsheetEquipmentsReloadNodes } from '../config/spreadsheet.type';
 import { ROOT_NODE_LABEL } from '../../../constants/node.constant';
+import { useLoadEquipment } from '../use-load-equipment';
 
 const styles = {
     icon: {
@@ -49,10 +48,24 @@ export default function CustomColumnsNodesConfig({ disabled, tabIndex }: Readonl
     const dialogOpen = useStateBoolean(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-    const dispatch = useDispatch();
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex].type);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+
+    const { loadEquipmentData } = useLoadEquipment(
+        tableType,
+        studyUuid,
+        currentRootNetworkUuid,
+        currentNode?.id,
+        undefined
+    );
+
+    const nodesToReload = useMemo(() => {
+        // Get all aliased nodes ids, except for Root and current node (both are always up-to-date)
+        return nodesAliases.filter((node) => node.id !== currentNode?.id && node.name !== ROOT_NODE_LABEL);
+    }, [currentNode?.id, nodesAliases]);
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -62,20 +75,18 @@ export default function CustomColumnsNodesConfig({ disabled, tabIndex }: Readonl
         setAnchorEl(null);
     }, []);
 
-    const nodesToReload = useMemo(() => {
-        // Get all aliased nodes ids, except for Root and current node (both are always up-to-date)
-        return nodesAliases.filter((node) => node.id !== currentNode?.id && node.name !== ROOT_NODE_LABEL);
-    }, [currentNode?.id, nodesAliases]);
-
-    const reloadOtherNodes = useCallback(() => {
+    const handleRefresh = useCallback(() => {
         if (nodesToReload?.length) {
-            const reloadData: SpreadsheetEquipmentsReloadNodes = {
-                sheetType: tableType,
-                nodesId: nodesToReload.map((node) => node.id),
-            };
-            dispatch(reloadNodesAliases(reloadData));
+            let nodeIds = new Set<string>();
+            nodesToReload.forEach((nodeAlias) => {
+                nodeIds.add(nodeAlias.id);
+            });
+            const promises = loadEquipmentData(nodeIds);
+            Promise.all(promises).then(() => {
+                console.debug(`Refresh done for ${promises.length} nodes among ${nodesToReload.length} aliased nodes`);
+            });
         }
-    }, [dispatch, nodesToReload, tableType]);
+    }, [loadEquipmentData, nodesToReload]);
 
     const nodesOptions = useMemo(
         () => ({
@@ -87,7 +98,7 @@ export default function CustomColumnsNodesConfig({ disabled, tabIndex }: Readonl
             [NodesOptionId.REFRESH]: {
                 id: NodesOptionId.REFRESH,
                 label: 'spreadsheet/custom_column/option/refresh',
-                action: () => reloadOtherNodes(),
+                action: () => handleRefresh(),
                 disabled: nodesToReload ? nodesToReload.length === 0 : true,
                 tooltipMsgId: 'spreadsheet/custom_column/option/refresh/tooltip',
                 tooltipMsgValues: {
@@ -95,7 +106,7 @@ export default function CustomColumnsNodesConfig({ disabled, tabIndex }: Readonl
                 },
             },
         }),
-        [dialogOpen.setTrue, nodesToReload, reloadOtherNodes]
+        [dialogOpen.setTrue, nodesToReload, handleRefresh]
     );
 
     const handleMenuItemClick = useCallback(

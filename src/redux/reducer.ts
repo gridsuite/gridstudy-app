@@ -102,8 +102,6 @@ import {
     OpenDiagramAction,
     OpenNadListAction,
     OpenStudyAction,
-    RELOAD_NODES_ALIASES,
-    ReloadNodesAliasesAction,
     REMOVE_COLUMN_DEFINITION,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
@@ -286,7 +284,6 @@ import {
     SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-    SpreadsheetEquipmentsReloadNodes,
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
@@ -501,7 +498,6 @@ export interface AppState extends CommonStoreState {
     spreadsheetNetwork: SpreadsheetNetworkState;
     gsFilterSpreadsheetState: GsFilterSpreadsheetState;
     customColumnsNodesAliases: NodeAlias[];
-    reloadNodesAliases: SpreadsheetEquipmentsReloadNodes;
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     [PARAM_THEME]: GsTheme;
@@ -600,10 +596,6 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
 };
 
 const initialCustomColumnsNodesAliases: NodeAlias[] = [];
-export const initialReloadNodesAliases: SpreadsheetEquipmentsReloadNodes = {
-    sheetType: undefined,
-    nodesId: [],
-};
 
 export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
@@ -660,7 +652,6 @@ const initialState: AppState = {
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
     customColumnsNodesAliases: initialCustomColumnsNodesAliases,
-    reloadNodesAliases: initialReloadNodesAliases,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1544,10 +1535,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_CUSTOM_COLUMNS_NODES_ALIASES, (state, action: UpdateCustomColumnsNodesAliasesAction) => {
         state.customColumnsNodesAliases = action.nodesAliases;
-    });
-
-    builder.addCase(RELOAD_NODES_ALIASES, (state, action: ReloadNodesAliasesAction) => {
-        state.reloadNodesAliases = action.nodesAliasesToReload;
     });
 
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {
