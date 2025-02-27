@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'crypto';
-import { EquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
@@ -208,7 +208,7 @@ export function fetchNetworkElementInfos(
     studyUuid: string | undefined | null,
     currentNodeUuid: UUID | undefined,
     currentRootNetworkUuid: string | undefined | null,
-    elementType: EquipmentType | EQUIPMENT_TYPES,
+    elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES,
     infoType: string,
     elementId: string,
     inUpstreamBuiltParentNode: boolean
