@@ -310,7 +310,7 @@ export interface OneBusShortCircuitAnalysisDiagram {
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
     parentNode: UUID;
-    rootNetworkUuid: UUID;
+    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
     rootNetworks: UUID[];
     timestamp: number;
     updateType?: string;
