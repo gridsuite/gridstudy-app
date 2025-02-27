@@ -54,8 +54,6 @@ export type SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: Record<string, Identifiable[]>;
 };
 
-export type ColumnState = { colId: string; name: string; visible: boolean };
-
 export type SpreadsheetEquipmentsReloadNodes = {
     sheetType?: SpreadsheetEquipmentType;
     nodesId: UUID[];

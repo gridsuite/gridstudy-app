@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Identifiable } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { UUID } from 'crypto';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
@@ -26,14 +25,10 @@ import { SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from './config
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/common-config';
 import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
+import { formatFetchedEquipments } from './utils/equipment-table-utils';
+import { NodeType } from '../graph/tree-node.type';
 
-type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
-
-export const useSpreadsheetEquipments = (
-    type: SpreadsheetEquipmentType,
-    formatFetchedEquipments: FormatFetchedEquipments,
-    highlightUpdatedEquipment: () => void
-) => {
+export const useSpreadsheetEquipments = (type: SpreadsheetEquipmentType, highlightUpdatedEquipment: () => void) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = useMemo(() => allEquipments[type], [allEquipments, type]);
@@ -49,13 +44,23 @@ export const useSpreadsheetEquipments = (
     const nodesAliasesToReload = useSelector((state: AppState) => state.reloadNodesAliases);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
 
-    const idsToBuildStatus = useMemo(() => {
-        let map = new Map();
-        treeModel?.treeNodes.forEach((treeNode) => {
-            map.set(treeNode.id, treeNode.data.globalBuildStatus);
-        });
-        return map;
-    }, [treeModel]);
+    const builtNodesIds = useMemo(() => {
+        let set = new Set<string>();
+        if (nodesAliases.length > 0) {
+            const aliasNames = nodesAliases.map((alias) => {
+                return alias.id;
+            });
+            treeModel?.treeNodes.forEach((treeNode) => {
+                if (
+                    aliasNames.includes(treeNode.id) &&
+                    (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
+                ) {
+                    set.add(treeNode.id);
+                }
+            });
+        }
+        return set;
+    }, [nodesAliases, treeModel?.treeNodes]);
 
     const nodesIdToFetch = useMemo(() => {
         let nodeIds = new Set<string>();
@@ -64,24 +69,25 @@ export const useSpreadsheetEquipments = (
         }
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
         const currentNodeId = currentNode?.id as string;
-        if (
-            currentNodeId &&
-            isStatusBuilt(idsToBuildStatus.get(currentNodeId)) &&
-            equipments.nodesId.find((nodeId) => nodeId === currentNode?.id) === undefined
-        ) {
+        if (currentNodeId && equipments.nodesId.find((nodeId) => nodeId === currentNodeId) === undefined) {
             nodeIds.add(currentNodeId);
         }
-        //Then we do the same for the other nodes we need the data of (the ones defined in aliases)
-        nodesAliases.forEach((nodeAlias) => {
-            if (
-                isStatusBuilt(idsToBuildStatus.get(nodeAlias.id)) &&
-                equipments.nodesId.find((nodeId) => nodeId === nodeAlias.id) === undefined
-            ) {
-                nodeIds.add(nodeAlias.id);
+        // Then we do the same for the other built nodes we need the data of (the ones defined in aliases)
+        builtNodesIds.forEach((nodeAliasId) => {
+            if (equipments.nodesId.find((nodeId) => nodeId === nodeAliasId) === undefined) {
+                nodeIds.add(nodeAliasId);
             }
         });
         return nodeIds;
-    }, [currentNode?.id, equipments, idsToBuildStatus, nodesAliases]);
+    }, [equipments, currentNode?.id, builtNodesIds]);
+
+    const formatEquipments = useCallback(
+        (fetchedEquipments: any) => {
+            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
+            return formatFetchedEquipments(type, fetchedEquipments);
+        },
+        [type]
+    );
 
     const loadEquipmentData = useCallback(
         (nodeIds: Set<string>) => {
@@ -99,10 +105,8 @@ export const useSpreadsheetEquipments = (
                     promise.then((results) => {
                         let fetchedEquipments = results.flat();
                         spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                        if (formatFetchedEquipments) {
-                            fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
-                            spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
-                        }
+                        fetchedEquipments = formatEquipments(fetchedEquipments);
+                        spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
                     });
                 });
 
@@ -112,7 +116,7 @@ export const useSpreadsheetEquipments = (
                 });
             }
         },
-        [currentRootNetworkUuid, dispatch, formatFetchedEquipments, studyUuid, type]
+        [currentRootNetworkUuid, dispatch, formatEquipments, studyUuid, type]
     );
 
     const {
@@ -236,17 +240,17 @@ export const useSpreadsheetEquipments = (
 
     useEffect(() => {
         if (nodesAliasesToReload.sheetType === type && nodesAliasesToReload.nodesId.length) {
-            let idsToRelaod = new Set<string>();
+            let builtNodesToReload = new Set<string>();
             nodesAliasesToReload.nodesId.forEach((nodeId) => {
-                if (isStatusBuilt(idsToBuildStatus.get(nodeId))) {
-                    idsToRelaod.add(nodeId);
+                if (builtNodesIds.has(nodeId)) {
+                    builtNodesToReload.add(nodeId);
                 }
             });
-            loadEquipmentData(idsToRelaod);
+            loadEquipmentData(builtNodesToReload);
             // reset reload action
             dispatch(reloadNodesAliases(initialReloadNodesAliases));
         }
-    }, [dispatch, idsToBuildStatus, loadEquipmentData, nodesAliasesToReload, type]);
+    }, [builtNodesIds, dispatch, loadEquipmentData, nodesAliasesToReload, type]);
 
     return { equipments, errorMessage, isFetching };
 };
