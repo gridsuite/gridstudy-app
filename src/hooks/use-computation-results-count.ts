@@ -8,8 +8,8 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import RunningStatus from 'components/utils/running-status';
-import { useParameterState } from '../components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 /**
  * Custom hook that calculates the number of computation notifications.

@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { NA_Value } from 'components/spreadsheet/utils/equipment-table-utils';
 import { IntlShape } from 'react-intl';
-import { NA_Value } from '../../spreadsheet/utils/cell-renderers';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -30,3 +30,8 @@ export const translateLimitNameFrontToBack = (limitName: string, intl: IntlShape
             return limitName;
     }
 };
+
+export enum FilterType {
+    COUNTRY = 'country',
+    VOLTAGE_LEVEL = 'voltageLevel',
+}

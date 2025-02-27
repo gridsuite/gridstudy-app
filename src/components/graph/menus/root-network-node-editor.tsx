@@ -32,7 +32,7 @@ import {
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks } from 'services/root-network';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
 import RootNetworkCreationDialog, { FormData } from 'components/dialogs/root-network/root-network-creation-dialog';
-import { isChecked, isPartial } from './network-modification-node-editor';
+import { isChecked, isPartial } from './network-modification-node-editor-utils';
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },

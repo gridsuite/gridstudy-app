@@ -31,8 +31,8 @@ import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import { useParameterState } from './dialogs/parameters/use-parameters-state';
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
