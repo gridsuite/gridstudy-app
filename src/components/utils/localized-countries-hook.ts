@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getComputedLanguage } from '../../utils/language';
 import localizedCountries from 'localized-countries';
 import countriesFr from 'localized-countries/data/fr.json';
 import countriesEn from 'localized-countries/data/en.json';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 export const useLocalizedCountries = () => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);

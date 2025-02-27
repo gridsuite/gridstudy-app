@@ -15,6 +15,7 @@ import { addToRecentGlobalFilters } from '../../../redux/actions';
 import { AppState } from '../../../redux/reducer';
 import { AppDispatch } from '../../../redux/store';
 import { mergeSx } from '@gridsuite/commons-ui';
+import { FilterType } from './utils';
 
 const styles = {
     autocomplete: (theme: Theme) => ({
@@ -95,11 +96,6 @@ const styles = {
         },
     }),
 };
-
-export enum FilterType {
-    COUNTRY = 'country',
-    VOLTAGE_LEVEL = 'voltageLevel',
-}
 
 const recentFilter: string = 'recent';
 

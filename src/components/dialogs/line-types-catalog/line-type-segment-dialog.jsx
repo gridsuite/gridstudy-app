@@ -24,15 +24,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
-
-export const emptyLineSegment = {
-    [SEGMENT_DISTANCE_VALUE]: null,
-    [SEGMENT_TYPE_VALUE]: '',
-    [SEGMENT_TYPE_ID]: '',
-    [SEGMENT_RESISTANCE]: 0.0,
-    [SEGMENT_REACTANCE]: 0.0,
-    [SEGMENT_SUSCEPTANCE]: 0.0,
-};
+import { emptyLineSegment } from './line-type-segment-utils';
 
 const emptyFormData = {
     [TOTAL_RESISTANCE]: 0,

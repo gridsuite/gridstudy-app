@@ -257,12 +257,14 @@ export interface OperationalLimitsGroup {
     currentLimits: CurrentLimits;
 }
 
-export interface TemporaryLimit {
-    value: number | null;
+export interface Limit {
+    name: string;
     acceptableDuration: number | null;
+    value: number | null;
+}
+export interface TemporaryLimit extends Limit {
     modificationType: string | null;
     selected?: boolean;
-    name: string;
 }
 
 export interface CurrentLimits {

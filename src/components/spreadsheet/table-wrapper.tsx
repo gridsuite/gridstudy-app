@@ -114,6 +114,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
 
     const [rowData, setRowData] = useState<Identifiable[]>([]);
+    const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
 
     const isLockedColumnNamesEmpty = useMemo(() => formattedLockedColumns.size === 0, [formattedLockedColumns.size]);
 
@@ -189,9 +190,28 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition.type]
     );
 
+    const highlightUpdatedEquipment = useCallback(() => {
+        if (!equipmentToUpdateId) {
+            return;
+        }
+
+        const api = gridRef.current?.api;
+        const rowNode = api?.getRowNode(equipmentToUpdateId);
+
+        if (rowNode && api) {
+            api.flashCells({
+                rowNodes: [rowNode],
+                flashDuration: 1000,
+            });
+        }
+
+        setEquipmentToUpdateId(null);
+    }, [equipmentToUpdateId]);
+
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         tableDefinition.type,
-        formatFetchedEquipmentsHandler
+        formatFetchedEquipmentsHandler,
+        highlightUpdatedEquipment
     );
 
     useEffect(() => {
@@ -313,6 +333,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const onRowClicked = useCallback(
         (event: RowClickedEvent) => {
             const equipmentId = event.data.id;
+            setEquipmentToUpdateId(equipmentId);
             handleOpenModificationDialog(equipmentId);
         },
         [handleOpenModificationDialog]

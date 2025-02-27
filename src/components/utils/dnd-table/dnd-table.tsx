@@ -47,11 +47,6 @@ const styles = {
         textTransform: 'none',
     },
 };
-export const addSelectedFieldToRows = (rows: any[]) => {
-    return rows?.map((row) => {
-        return { ...row, [SELECTED]: false };
-    });
-};
 
 interface MultiCheckboxProps extends Omit<CheckboxProps, 'checked' | 'indeterminate' | 'onChange'> {
     arrayFormName: string;
@@ -491,7 +486,7 @@ DndTable.propTypes = {
     arrayFormName: PropTypes.string.isRequired,
     useFieldArrayOutput: PropTypes.object.isRequired,
     columnsDefinition: PropTypes.array.isRequired,
-    tableHeight: PropTypes.number.isRequired,
+    tableHeight: PropTypes.number,
     allowedToAddRows: PropTypes.func,
     createRows: PropTypes.func.isRequired,
     handleUploadButton: PropTypes.func,

@@ -28,7 +28,6 @@ import WaitingLoader from './utils/waiting-loader';
 import { fetchDirectoryElementPath, useIntlRef, usePrevious, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
-import { RunningStatus } from './utils/running-status';
 import { computeFullPath, computePageTitle } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { BUILD_STATUS } from './network/constants';
@@ -46,116 +45,7 @@ import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
 import { HttpStatusCode } from 'utils/http-status-code';
 import { StudyIndexationStatus } from 'redux/reducer';
 import { NodeType } from './graph/tree-node.type';
-
-function isWorthUpdate(
-    studyUpdatedForce,
-    fetcher,
-    lastUpdateRef,
-    nodeUuidRef,
-    rootNetworkUuidRef,
-    nodeUuid,
-    rootNetworkUuid,
-    invalidations
-) {
-    const headers = studyUpdatedForce?.eventData?.headers;
-    const updateType = headers?.[UPDATE_TYPE_HEADER];
-    const node = headers?.['node'];
-    const nodes = headers?.['nodes'];
-    const rootNetworkFromNotif = headers?.['rootNetwork'];
-
-    if (rootNetworkFromNotif && rootNetworkFromNotif !== rootNetworkUuid) {
-        return false;
-    }
-    if (nodeUuidRef.current !== nodeUuid) {
-        return true;
-    }
-    if (rootNetworkUuidRef.current !== rootNetworkUuid) {
-        return true;
-    }
-    if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
-        return true;
-    }
-    if (studyUpdatedForce && lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce) {
-        return false;
-    }
-    if (!updateType) {
-        return false;
-    }
-    if (invalidations.indexOf(updateType) <= -1) {
-        return false;
-    }
-    if (node === undefined && nodes === undefined) {
-        return true;
-    }
-    if (node === nodeUuid || nodes?.indexOf(nodeUuid) !== -1) {
-        return true;
-    }
-
-    return false;
-}
-
-export function useNodeData(
-    studyUuid,
-    nodeUuid,
-    currentRootNetworkUuid,
-    fetcher,
-    invalidations,
-    defaultValue,
-    resultConversion
-) {
-    const [result, setResult] = useState(defaultValue);
-    const [isPending, setIsPending] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(undefined);
-    const nodeUuidRef = useRef();
-    const rootNetworkUuidRef = useRef();
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-    const lastUpdateRef = useRef();
-
-    const update = useCallback(() => {
-        nodeUuidRef.current = nodeUuid;
-        rootNetworkUuidRef.current = currentRootNetworkUuid;
-        setIsPending(true);
-        setErrorMessage(undefined);
-        fetcher(studyUuid, nodeUuid, currentRootNetworkUuid)
-            .then((res) => {
-                if (nodeUuidRef.current === nodeUuid && rootNetworkUuidRef.current === currentRootNetworkUuid) {
-                    setResult(resultConversion ? resultConversion(res) : res);
-                }
-            })
-            .catch((err) => {
-                setErrorMessage(err.message);
-                setResult(RunningStatus.FAILED);
-            })
-            .finally(() => setIsPending(false));
-    }, [nodeUuid, fetcher, currentRootNetworkUuid, studyUuid, resultConversion]);
-
-    /* initial fetch and update */
-    useEffect(() => {
-        if (!studyUuid || !nodeUuid || !currentRootNetworkUuid || !fetcher) {
-            return;
-        }
-        const isUpdateForUs = isWorthUpdate(
-            studyUpdatedForce,
-            fetcher,
-            lastUpdateRef,
-            nodeUuidRef,
-            rootNetworkUuidRef,
-            nodeUuid,
-            currentRootNetworkUuid,
-            invalidations
-        );
-        lastUpdateRef.current = { studyUpdatedForce, fetcher };
-        if (
-            nodeUuidRef.current !== nodeUuid ||
-            rootNetworkUuidRef.current !== currentRootNetworkUuid ||
-            isUpdateForUs
-        ) {
-            update();
-        }
-    }, [update, fetcher, nodeUuid, invalidations, currentRootNetworkUuid, studyUpdatedForce, studyUuid]);
-
-    return [result, isPending, setResult, errorMessage, update];
-}
+import { UPDATE_TYPE_HEADER } from './use-node-data';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -211,7 +101,6 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
-export const UPDATE_TYPE_HEADER = 'updateType';
 const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE = 'study_network_recreation_done';
 const UPDATE_TYPE_INDEXATION_STATUS = 'indexation_status_updated';
 const HEADER_INDEXATION_STATUS = 'indexation_status';

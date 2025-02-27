@@ -22,9 +22,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { ElementType } from '@gridsuite/commons-ui';
 import { VoltageAdornment } from '../../dialog-utils';
-import { styles } from '../parameters';
 import Alert from '@mui/material/Alert';
 import { DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
+import { styles } from '../parameters-style';
 
 const VoltageLimitsParameters = () => {
     const intl = useIntl();

@@ -59,13 +59,13 @@ interface CreateNodeMenuProps {
     disableRestoreNodes: boolean;
 }
 
-export const NodeActions = {
+const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
     REMOVE_SUBTREE: 'REMOVE_SUBTREE',
     NO_ACTION: 'NO_ACTION',
 };
 
-export const getNodeChildren = (
+const getNodeChildren = (
     treeModel: NetworkModificationTreeModel,
     sourceNodeIds: UUID[],
     allChildren: CurrentTreeNode[]
@@ -81,7 +81,7 @@ export const getNodeChildren = (
     }
 };
 
-export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel | null, id: UUID) => {
+const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel | null, id: UUID) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
         const activeNodeDirectChildren = treeModel.treeNodes.filter((item) => item.parentId === id);
