@@ -61,8 +61,6 @@ export type SpreadsheetEquipmentsReloadNodes = {
     nodesId: UUID[];
 };
 
-export type ColumnState = { colId: string; visible: boolean };
-
 export type SpreadsheetConfig = {
     name: string;
     sheetType: SpreadsheetEquipmentType;

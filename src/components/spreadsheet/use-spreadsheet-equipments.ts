@@ -60,7 +60,7 @@ export const useSpreadsheetEquipments = (
     const nodesIdToFetch = useMemo(() => {
         let nodeIds = new Set<string>();
         if (!equipments) {
-          return nodeIds;
+            return nodeIds;
         }
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
         const currentNodeId = currentNode?.id as string;

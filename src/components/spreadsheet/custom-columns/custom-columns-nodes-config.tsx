@@ -135,12 +135,7 @@ export default function CustomColumnsNodesConfig({ disabled, tabIndex }: Readonl
 
     return (
         <>
-            <Button
-                sx={spreadsheetStyles.spreadsheetButton}
-                size={'small'}
-                onClick={handleClick}
-                disabled={disabled}
-            >
+            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
                 <BuildIcon sx={styles.icon} />
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
             </Button>
