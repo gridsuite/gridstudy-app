@@ -36,6 +36,7 @@ import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggr
 import { useEquipmentModification } from './equipment-modification/use-equipment-modification';
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
 import { updateTableDefinition } from 'redux/actions';
+import { NodeType } from '../graph/tree-node.type';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -363,11 +364,13 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const onRowClicked = useCallback(
         (event: RowClickedEvent) => {
-            const equipmentId = event.data.id;
-            setEquipmentToUpdateId(equipmentId);
-            handleOpenModificationDialog(equipmentId);
+            if (currentNode?.type !== NodeType.ROOT) {
+                const equipmentId = event.data.id;
+                setEquipmentToUpdateId(equipmentId);
+                handleOpenModificationDialog(equipmentId);
+            }
         },
-        [handleOpenModificationDialog]
+        [currentNode?.type, handleOpenModificationDialog]
     );
 
     return (
