@@ -56,7 +56,6 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
     const { snackError, snackInfo } = useSnackMessage();
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
-    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [localTablesState, setLocalTablesState] = useState<TableState[]>([]);
@@ -115,11 +114,10 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
     const getReorderedColumns = useCallback(
         (tableIndex: number): ColumnDefinitionDto[] => {
             const table = tables[tableIndex];
-            const columnStates = columnsStates[tableIndex];
 
-            return columnStates
+            return table.columns
                 .map((state) => {
-                    const column = table.columns.find((col) => col.id === state.colId);
+                    const column = table.columns.find((col) => col.id === state.id);
                     if (!column) {
                         return null;
                     }
@@ -130,21 +128,22 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                         type: column.type,
                         precision: column.precision,
                         formula: column.formula || '',
-                        dependencies: JSON.stringify(column.dependencies || []),
+                        dependencies: column.dependencies?.length ? JSON.stringify(column.dependencies) : undefined,
                     };
                     return dto;
                 })
                 .filter((col): col is ColumnDefinitionDto => col !== null);
         },
-        [tables, columnsStates]
+        [tables]
     );
 
     const handleNext = useCallback(() => {
         const configs: SpreadsheetConfig[] = localTablesState
             .filter((table) => table.selected)
             .map((table) => ({
+                name: table.name,
                 sheetType: table.type,
-                customColumns: getReorderedColumns(table.index),
+                columns: getReorderedColumns(table.index),
             }));
 
         setSelectedConfigs(configs);
