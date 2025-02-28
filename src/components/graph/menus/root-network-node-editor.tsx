@@ -14,7 +14,19 @@ import {
     VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 
-import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography, Badge, IconButton } from '@mui/material';
+import {
+    Box,
+    Checkbox,
+    CircularProgress,
+    Theme,
+    Toolbar,
+    Tooltip,
+    Typography,
+    Badge,
+    IconButton,
+    Stack,
+    Chip,
+} from '@mui/material';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -222,7 +234,16 @@ const RootNetworkNodeEditor = () => {
                 onSelectionChange={setSelectedItems}
                 items={rootNetworks}
                 getItemId={(val) => val.rootNetworkUuid}
-                getItemLabel={(val) => val.name}
+                getItemLabel={(val) => {
+                    return (
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            {val.name}
+                            <Stack direction="row" spacing={1}>
+                                <Chip label={val.tag} color="primary" />
+                            </Stack>
+                        </Box>
+                    );
+                }}
                 secondaryAction={handleSecondaryAction}
             />
         );
@@ -274,7 +295,7 @@ const RootNetworkNodeEditor = () => {
         }, {} as Record<string, string>);
     }
 
-    const doCreateRootNetwork = ({ name, caseName, caseId }: FormData) => {
+    const doCreateRootNetwork = ({ name, tag, caseName, caseId }: FormData) => {
         if (!studyUuid) {
             return;
         }
@@ -289,6 +310,7 @@ const RootNetworkNodeEditor = () => {
                     caseId as UUID,
                     params.formatName,
                     name,
+                    tag,
                     studyUuid,
                     customizedCurrentParameters
                 );

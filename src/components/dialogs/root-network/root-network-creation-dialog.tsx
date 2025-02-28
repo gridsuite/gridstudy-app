@@ -8,19 +8,20 @@
 import { CustomFormProvider, isObjectEmpty, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { Grid } from '@mui/material';
-import { CASE_NAME, CASE_ID, NAME } from '../../utils/field-constants';
+import { CASE_NAME, CASE_ID, NAME, TAG } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../utils/yup-config';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import ModificationDialog from '../commons/modificationDialog';
-import { checkRootNetworkNameExistence } from 'services/root-network';
+import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 
 export interface FormData {
     [NAME]: string;
+    [TAG]: string;
     [CASE_NAME]: string;
     [CASE_ID]: string;
 }
@@ -37,6 +38,7 @@ const formSchema = yup
     .object()
     .shape({
         [NAME]: yup.string().trim().required(),
+        [TAG]: yup.string().trim().required(),
         [CASE_NAME]: yup.string().required(),
         [CASE_ID]: yup.string().required(),
     })
@@ -44,6 +46,7 @@ const formSchema = yup
 
 const emptyFormData: FormData = {
     [NAME]: '',
+    [TAG]: '',
     [CASE_NAME]: '',
     [CASE_ID]: '',
 };
@@ -120,6 +123,17 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
                             autoFocus
                             studyUuid={studyUuid}
                             elementExists={checkRootNetworkNameExistence}
+                            errorMessageKey="nameAlreadyUsed"
+                        />
+                    </Grid>
+                    <Grid item>
+                        <UniqueCheckNameInput
+                            name={TAG}
+                            label={'rootTag'}
+                            studyUuid={studyUuid}
+                            elementExists={checkRootNetworkTagExistence}
+                            inputProps={{ maxLength: 4 }}
+                            errorMessageKey="tagAlreadyUsed"
                         />
                     </Grid>
                     <RootNetworkCaseSelection onSelectCase={onSelectCase} />

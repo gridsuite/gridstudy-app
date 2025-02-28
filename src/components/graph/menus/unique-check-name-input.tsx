@@ -25,7 +25,9 @@ export interface UniqueCheckNameInputProps {
         TextFieldProps,
         'value' | 'onChange' | 'name' | 'label' | 'inputRef' | 'inputProps' | 'InputProps'
     >;
+    inputProps?: TextFieldProps['inputProps'];
     elementExists: (studyUuid: UUID, elementName: string) => Promise<boolean>;
+    errorMessageKey: string;
 }
 
 /**
@@ -39,7 +41,9 @@ export function UniqueCheckNameInput({
     autoFocus,
     onManualChangeCallback,
     formProps,
+    inputProps,
     elementExists,
+    errorMessageKey,
 }: Readonly<UniqueCheckNameInputProps>) {
     const {
         field: { onChange, onBlur, value, ref },
@@ -56,7 +60,7 @@ export function UniqueCheckNameInput({
     } = useFormContext();
 
     // This is a trick to share the custom validation state among the form : while this error is present, we can't validate the form
-    const isValidating = errors.root?.isValidating;
+    const isValidating = errors.root?.isValidating && errors.root?.isValidating.type === `validate ${name}`;
 
     const handleCheckName = useCallback(
         (nameValue: string) => {
@@ -66,7 +70,7 @@ export function UniqueCheckNameInput({
                         if (alreadyExist) {
                             setError(name, {
                                 type: 'validate',
-                                message: 'nameAlreadyUsed',
+                                message: errorMessageKey,
                             });
                         }
                     })
@@ -86,7 +90,7 @@ export function UniqueCheckNameInput({
                     });
             }
         },
-        [setError, clearErrors, name, elementExists, trigger, studyUuid]
+        [studyUuid, elementExists, setError, name, errorMessageKey, clearErrors, trigger]
     );
 
     const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
@@ -103,7 +107,7 @@ export function UniqueCheckNameInput({
         if (trimmedValue) {
             clearErrors(name);
             setError('root.isValidating', {
-                type: 'validate',
+                type: `validate ${name}`,
                 message: 'cantSubmitWhileValidating',
             });
             debouncedHandleCheckName(trimmedValue);
@@ -145,6 +149,7 @@ export function UniqueCheckNameInput({
             error={!!error}
             helperText={translatedError}
             InputProps={{ endAdornment }}
+            inputProps={inputProps}
             {...formProps}
         />
     );
