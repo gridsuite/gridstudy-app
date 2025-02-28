@@ -19,7 +19,6 @@ import {
     VOLTAGE_REGULATION_ON,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
 import { TABULAR_MODIFICATION_FIELDS, styles } from './tabular-modification-utils';
@@ -27,6 +26,7 @@ import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/spr
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
+import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 
 const TabularModificationForm = () => {
     const intl = useIntl();
@@ -102,7 +102,6 @@ const TabularModificationForm = () => {
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
         label: 'ImportModifications',
         header: csvColumns,
-        maxTapNumber: undefined,
         disabled: !csvColumns,
         resetTrigger: typeChangedTrigger,
     });

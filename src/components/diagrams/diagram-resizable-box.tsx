@@ -8,8 +8,8 @@
 import { ResizableBox } from 'react-resizable';
 import ResizeHandleIcon from '@mui/icons-material/ChevronRight';
 import { MIN_HEIGHT, MIN_WIDTH, LOADING_HEIGHT, LOADING_WIDTH } from './diagram-common';
-import { mergeSx } from '../utils/functions';
 import { styled, Theme } from '@mui/material';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 // TODO can we avoid to define a component just to add sx support ?
 const ResizableBoxSx = styled(ResizableBox)({});
@@ -79,8 +79,8 @@ const DiagramResizableBox: React.FC<DiagramResizableBoxProps> = ({
             resizeHandles={align === 'right' ? ['sw'] : undefined}
             sx={mergeSx(
                 styles.resizable,
-                !disableResize && align === 'right' && styles.leftHandle,
-                !disableResize && align === 'left' && styles.rightHandle
+                !disableResize && align === 'right' ? styles.leftHandle : undefined,
+                !disableResize && align === 'left' ? styles.rightHandle : undefined
             )}
         >
             <>

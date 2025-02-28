@@ -9,11 +9,11 @@ import React, { Dispatch, FunctionComponent, SetStateAction, useCallback, useEff
 import { Box, Grid } from '@mui/material';
 import { LabelledButton } from '../parameters';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { mergeSx } from '../../../utils/functions';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    mergeSx,
     MuiSelectInput,
     SubmitButton,
     TreeViewFinderNodeProps,

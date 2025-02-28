@@ -21,7 +21,13 @@ import { useCallback, useState } from 'react';
 import { useController, useFieldArray } from 'react-hook-form';
 import { isFieldRequired } from '../utils';
 
-const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
+interface ChipItemsInputProps {
+    label?: string;
+    name: string;
+    hideErrorMessage: boolean;
+}
+
+const ChipItemsInput = ({ label, name, hideErrorMessage }: ChipItemsInputProps) => {
     const [textEntered, setTextEntered] = useState('');
     const { snackError } = useSnackMessage();
 
@@ -42,9 +48,9 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
     });
 
     const addItem = useCallback(
-        (value) => {
+        (value: string) => {
             // check if element is already present
-            if (getValues(name).find((v) => v === value) !== undefined) {
+            if (getValues(name).find((v: string) => v === value) !== undefined) {
                 snackError({
                     messageTxt: '',
                     headerId: 'directory_items_input/ElementAlreadyUsed',
@@ -56,7 +62,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
         [append, getValues, snackError, name]
     );
 
-    const keyPress = (e) => {
+    const keyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.keyCode === 13 && textEntered.length > 0) {
             addItem(textEntered);
             setTextEntered('');
@@ -70,7 +76,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
         }
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setTextEntered(e.target.value);
     };
 
