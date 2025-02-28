@@ -9,8 +9,15 @@ import LoaderWithOverlay from './loader-with-overlay';
 import PageNotFound from '../page-not-found';
 import PropTypes from 'prop-types';
 import Paper from '@mui/material/Paper';
+import { PropsWithChildren } from 'react';
 
-const WaitingLoader = ({ loading, message, errMessage, children }) => {
+interface WaitingLoaderProps extends PropsWithChildren {
+    loading?: boolean;
+    message: string;
+    errMessage?: string;
+}
+
+const WaitingLoader = ({ loading, message, errMessage, children }: WaitingLoaderProps) => {
     if (errMessage !== undefined) {
         /* TODO errMessage -> error {status, message} to get 404, 403 and adapt Page*/
         return <PageNotFound message={errMessage} />;

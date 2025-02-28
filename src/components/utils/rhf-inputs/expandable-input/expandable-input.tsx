@@ -11,8 +11,7 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
 import { FunctionComponent } from 'react';
 import { styles } from '../../../dialogs/dialog-utils';
-import { ErrorInput, MidFormError } from '@gridsuite/commons-ui';
-import { mergeSx } from '../../functions';
+import { ErrorInput, mergeSx, MidFormError } from '@gridsuite/commons-ui';
 import { DeletableRow } from './deletable-row';
 
 export interface ExpandableInputProps {

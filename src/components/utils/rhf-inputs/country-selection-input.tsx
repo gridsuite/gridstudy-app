@@ -5,19 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, AutocompleteInputProps } from '@gridsuite/commons-ui';
 import { useLocalizedCountries } from '../localized-countries-hook';
 
-const CountrySelectionInput = ({ name, label, formProps, ...props }) => {
+interface CountrySelectionInputProps extends Omit<AutocompleteInputProps, 'options' | 'getOptionLabel'> {}
+
+const CountrySelectionInput = (props: CountrySelectionInputProps) => {
     const { translate, countryCodes } = useLocalizedCountries();
 
     return (
         <AutocompleteInput
-            name={name}
             options={countryCodes}
-            label={label}
-            formProps={formProps}
-            getOptionLabel={(countryCode) => translate(countryCode)}
+            // TODO: the way Option is managed in AutocompleteInput is confusing, maybe make AutocompleteInput more generic in the future
+            getOptionLabel={(countryCode) => translate(countryCode as string)}
             {...props}
         />
     );

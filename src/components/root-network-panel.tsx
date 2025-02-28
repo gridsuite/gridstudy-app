@@ -17,7 +17,7 @@ const styles = {
         top: 16,
         left: 16,
         width: '300px',
-        height: '300px',
+        minHeight: '300px',
         borderRadius: '8px',
         zIndex: 10,
         overflow: 'hidden',

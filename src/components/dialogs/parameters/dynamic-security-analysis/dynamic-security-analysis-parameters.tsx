@@ -20,8 +20,7 @@ import {
 } from '../../../../services/study/dynamic-security-analysis';
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
-import { mergeSx } from '../../../utils/functions';
-import { CustomFormProvider, isObjectEmpty, SubmitButton } from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, mergeSx, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';

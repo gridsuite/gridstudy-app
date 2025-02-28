@@ -8,10 +8,15 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 import { CancelButton } from '@gridsuite/commons-ui';
 
-function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
+interface DndTableAddRowsDialogProps {
+    open: boolean;
+    handleAddButton: (rowNumber: number) => void;
+    onClose: () => void;
+}
+
+function DndTableAddRowsDialog({ open, handleAddButton, onClose }: DndTableAddRowsDialogProps) {
     const [rowNumber, setRowNumber] = useState(1);
 
     function handleOnClose() {
@@ -50,11 +55,5 @@ function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
         </Dialog>
     );
 }
-
-DndTableAddRowsDialog.prototype = {
-    open: PropTypes.bool.isRequired,
-    handleAddRowsButton: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
-};
 
 export default DndTableAddRowsDialog;

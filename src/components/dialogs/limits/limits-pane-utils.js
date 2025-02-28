@@ -47,7 +47,18 @@ const temporaryLimitsValidationSchema = () => {
 };
 
 const currentLimitsValidationSchema = () => ({
-    [PERMANENT_LIMIT]: yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero'),
+    [PERMANENT_LIMIT]: yup
+        .number()
+        .nullable()
+        .positive('permanentCurrentLimitMustBeGreaterThanZero')
+        .when([TEMPORARY_LIMITS], {
+            is: (temporaryLimits) => temporaryLimits.length > 0,
+            then: () =>
+                yup
+                    .number()
+                    .required('permanentCurrentLimitMandatory')
+                    .positive('permanentCurrentLimitMustBeGreaterThanZero'),
+        }),
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(temporaryLimitsValidationSchema())

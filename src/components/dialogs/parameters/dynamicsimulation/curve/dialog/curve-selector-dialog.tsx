@@ -23,7 +23,7 @@ import CurvePreview, { Curve, CurveHandler } from './curve-preview';
 import Tooltip from '@mui/material/Tooltip';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
-import { mergeSx } from '../../../../../utils/functions';
+import { mergeSx } from '@gridsuite/commons-ui';
 import { styles } from 'components/dialogs/parameters/parameters-style';
 
 interface CurveSelectorDialogProps {

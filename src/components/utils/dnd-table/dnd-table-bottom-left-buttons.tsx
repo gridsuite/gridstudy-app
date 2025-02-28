@@ -13,6 +13,16 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
+interface DndTableBottomLeftButtonsProps {
+    handleUploadButton: () => void;
+    uploadButtonMessageId: string;
+    handleResetButton: () => void;
+    resetButtonMessageId: string;
+    withResetButton?: boolean;
+    disableUploadButton?: boolean;
+    disabled?: boolean;
+}
+
 const DndTableBottomLeftButtons = ({
     handleUploadButton,
     uploadButtonMessageId,
@@ -21,7 +31,7 @@ const DndTableBottomLeftButtons = ({
     withResetButton,
     disableUploadButton,
     disabled,
-}) => {
+}: DndTableBottomLeftButtonsProps) => {
     const intl = useIntl();
 
     return (

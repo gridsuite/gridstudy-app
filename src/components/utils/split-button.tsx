@@ -23,12 +23,14 @@ import DoneIcon from '@mui/icons-material/Done';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import RunningStatus from './running-status';
-import { mergeSx } from './functions';
 import { useSelector } from 'react-redux';
 import { useRef, useState } from 'react';
+import { AppState } from 'redux/reducer';
+import { Theme } from '@mui/material';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
-    expand: (theme) => ({
+    expand: (theme: Theme) => ({
         marginLeft: 'auto',
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,
@@ -37,7 +39,7 @@ const styles = {
     expandOpen: {
         transform: 'rotate(180deg)',
     },
-    listOptions: (theme) => ({
+    listOptions: (theme: Theme) => ({
         minWidth: '270px',
         marginRight: '43px',
         position: 'relative',
@@ -89,7 +91,7 @@ const styles = {
             color: '#fdfdfd',
         },
     },
-    running: (theme) => ({
+    running: (theme: Theme) => ({
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         border: '1px solid #808080',
@@ -105,7 +107,7 @@ const styles = {
             color: theme.palette.text.primary,
         },
     }),
-    idle: (theme) => ({
+    idle: (theme: Theme) => ({
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         borderColor: '#808080',
@@ -128,6 +130,19 @@ const styles = {
     },
 };
 
+interface SplitButtonProps {
+    runningStatus: RunningStatus;
+    buttonDisabled?: boolean;
+    selectionDisabled?: boolean;
+    computationStopped: boolean;
+    text: string;
+    options: string[];
+    selectedIndex: number;
+    onClick: () => void;
+    actionOnRunnable: () => void;
+    onSelectionChange: (index: number) => void;
+}
+
 const SplitButton = ({
     runningStatus,
     buttonDisabled = false,
@@ -139,11 +154,11 @@ const SplitButton = ({
     onClick,
     actionOnRunnable,
     onSelectionChange,
-}) => {
+}: SplitButtonProps) => {
     const [open, setOpen] = useState(false);
-    const computationStarting = useSelector((state) => state.computationStarting);
+    const computationStarting = useSelector((state: AppState) => state.computationStarting);
 
-    const anchorRef = useRef(null);
+    const anchorRef = useRef<HTMLDivElement | null>(null);
 
     const handleClick = () => {
         if (onClick) {
@@ -151,7 +166,7 @@ const SplitButton = ({
         }
     };
 
-    const handleMenuItemClick = (event, index) => {
+    const handleMenuItemClick = (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
         if (runningStatus === RunningStatus.RUNNING) {
             actionOnRunnable();
         } else {
@@ -164,14 +179,15 @@ const SplitButton = ({
         setOpen((prevOpen) => !prevOpen);
     };
 
-    const handleClose = (event) => {
-        if (anchorRef.current && anchorRef.current.contains(event.target)) {
+    const handleClose = (event: MouseEvent | TouchEvent) => {
+        // after doing some researches, casting event.target as HTMLElement seems to be the way to type this
+        if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
             return;
         }
         setOpen(false);
     };
 
-    const getRunningIcon = (status) => {
+    const getRunningIcon = (status: RunningStatus) => {
         switch (status) {
             case RunningStatus.RUNNING:
                 return <LoopIcon sx={styles.rotate} />;
@@ -185,7 +201,7 @@ const SplitButton = ({
         }
     };
 
-    const getStyle = (runningStatus) => {
+    const getStyle = (runningStatus: RunningStatus) => {
         switch (runningStatus) {
             case RunningStatus.SUCCEED:
                 return styles.succeed;
@@ -199,7 +215,7 @@ const SplitButton = ({
         }
     };
 
-    const breakText = (text) => {
+    const breakText = (text: string) => {
         return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
     };
 
@@ -226,7 +242,7 @@ const SplitButton = ({
                     sx={getStyle(runningStatus)}
                     disabled={selectionDisabled}
                 >
-                    <ArrowDropDownIcon sx={mergeSx(styles.expand, open && styles.expandOpen)} />
+                    <ArrowDropDownIcon sx={mergeSx(styles.expand, open ? styles.expandOpen : undefined)} />
                 </Button>
             </ButtonGroup>
             <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition sx={styles.runMenuButton}>

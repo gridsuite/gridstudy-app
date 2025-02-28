@@ -11,7 +11,6 @@ import {
     validateValueIsLessThanOrEqualTo,
     validateValueIsLessThan,
     validateField,
-    checkReactiveCapabilityCurve,
 } from './validation-functions';
 
 const { toNumber, isBlankOrEmpty } = exportedForTesting;
@@ -311,101 +310,6 @@ test('validation-functions.validateField.valueGreaterThan', () => {
         }).error
     ).toBe(false);
     expect(validateField(undefined, { valueGreaterThan: 2, isFieldRequired: true }).error).toBe(true);
-});
-
-test('validation-functions.checkReactiveCapabilityCurve', () => {
-    // Reactive capability curve default format : [{ p: '', minQ: '', maxQ: '' }, { p: '', minQ: '', maxQ: '' }]
-
-    // Correct reactive cabability curves
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '0', minQ: '0', maxQ: '0' },
-            { p: '10', minQ: '0', maxQ: '0' },
-        ]).length
-    ).toBe(0);
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
-    ).toBe(0);
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '0', minQ: '0', maxQ: '0' },
-            { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
-    ).toBe(0);
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '0', minQ: '0,8', maxQ: '1' },
-            { p: '-3', minQ: '-6.5', maxQ: '-2' },
-            { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
-    ).toBe(0);
-
-    // Not enough points
-    expect(checkReactiveCapabilityCurve([]).length).not.toBe(0);
-    expect(checkReactiveCapabilityCurve([{ p: '0', minQ: '0', maxQ: '0' }]).length).not.toBe(0);
-
-    // Not unique P values
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '10', minQ: '-5', maxQ: '-2' },
-            { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
-    ).not.toBe(0);
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '-0', minQ: '0', maxQ: '0' },
-            { p: '0', minQ: '1', maxQ: '56' },
-        ]).length
-    ).not.toBe(0);
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '-0', minQ: '0', maxQ: '0' },
-            { p: '0', minQ: '0', maxQ: '0' },
-        ]).length
-    ).not.toBe(0);
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '0', minQ: '0', maxQ: '0' },
-            { p: '0.0', minQ: '0', maxQ: '0' },
-        ]).length
-    ).not.toBe(0);
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: ',0', minQ: '0', maxQ: '0' },
-            { p: '0', minQ: '0', maxQ: '0' },
-        ]).length
-    ).not.toBe(0);
-
-    // Pmin and Pmax values are not in the begining and end of the array
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '0', minQ: '-5', maxQ: '-2' },
-            { p: '-10', minQ: '0', maxQ: '0' },
-            { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
-    ).not.toBe(0);
-
-    // P values between Pmin and Pmax are below Pmin or above Pmax
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '260', minQ: '0', maxQ: '0' },
-            { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
-    ).not.toBe(0);
-    expect(
-        checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '-20', minQ: '0', maxQ: '0' },
-            { p: '10', minQ: '1', maxQ: '56' },
-        ]).length
-    ).not.toBe(0);
 });
 
 test('validation-functions.validateField.forceValidation', () => {

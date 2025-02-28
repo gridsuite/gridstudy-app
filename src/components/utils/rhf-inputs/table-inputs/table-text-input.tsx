@@ -5,11 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextField } from '@mui/material';
+import { InputBaseComponentProps, TextField } from '@mui/material';
 import { useController } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 
-export const TableTextInput = ({ name, style, showErrorMsg, inputProps, ...props }) => {
+interface TableTextInputProps {
+    name: string;
+    showErrorMsg?: boolean;
+    inputProps?: InputBaseComponentProps;
+}
+
+export const TableTextInput = ({ name, showErrorMsg, inputProps, ...props }: TableTextInputProps) => {
     const {
         field: { onChange, value, ref },
         fieldState: { error },
@@ -17,11 +23,11 @@ export const TableTextInput = ({ name, style, showErrorMsg, inputProps, ...props
 
     const intl = useIntl();
 
-    const outputTransform = (value) => {
+    const outputTransform = (value: string) => {
         return value?.trim() === '' ? '' : value;
     };
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         onChange(outputTransform(e.target.value));
     };
 

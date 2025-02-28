@@ -8,7 +8,6 @@ import {
     CONTINGENCY_LIST_EQUIPMENTS,
     ElementType,
     FILTER_EQUIPMENTS,
-    FormEquipment,
     SelectInput,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
@@ -42,7 +41,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
     const equipmentTypesOptions = useMemo(() => {
         return Object.values(
             selectionType === SELECTION_TYPES.FILTER ? FILTER_EQUIPMENTS : CONTINGENCY_LIST_EQUIPMENTS
-        ).map((equipment: FormEquipment) => {
+        ).map((equipment: { id: string; label: string }) => {
             return {
                 id: equipment.id,
                 label: equipment.label,

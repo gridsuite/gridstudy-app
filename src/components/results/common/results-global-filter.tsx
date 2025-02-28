@@ -9,12 +9,12 @@ import { FunctionComponent, SyntheticEvent, useCallback, useState } from 'react'
 import { Autocomplete, Box, Chip, FilterOptionsState, InputAdornment, TextField, Theme } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
 import { AppState } from '../../../redux/reducer';
 import { AppDispatch } from '../../../redux/store';
+import { mergeSx } from '@gridsuite/commons-ui';
 import { FilterType } from './utils';
 
 const styles = {
@@ -210,7 +210,10 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                     const recent: boolean = group === recentFilter;
                     const numOfGroupOptions: number = numberOfOptions.get(group) ?? 0;
                     return (
-                        <Box key={'keyBoxGroup_' + group} sx={mergeSx(styles.chipBox, !recent && styles.filterTypeBox)}>
+                        <Box
+                            key={'keyBoxGroup_' + group}
+                            sx={mergeSx(styles.chipBox, !recent ? styles.filterTypeBox : undefined)}
+                        >
                             <Box sx={styles.groupLabel}>
                                 <FormattedMessage id={'results.globalFilter.' + group} />
                             </Box>

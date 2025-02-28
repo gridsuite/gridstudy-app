@@ -86,7 +86,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
-import { formatCompleteCurrentLimit } from '../../../../utils/utils.js';
+import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),

@@ -10,6 +10,7 @@ import { useIntl } from 'react-intl';
 import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import DndTable from 'components/utils/dnd-table/dnd-table';
+import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 const SubstationsGeneratorsOrderingPane = ({ id = SUBSTATIONS_GENERATORS_ORDERING }) => {
     const intl = useIntl();
@@ -21,8 +22,7 @@ const SubstationsGeneratorsOrderingPane = ({ id = SUBSTATIONS_GENERATORS_ORDERIN
                 dataKey: SUBSTATION_IDS,
                 initialValue: [],
                 editable: true,
-                numeric: false,
-                chipItems: true,
+                type: DndColumnType.CHIP_ITEMS,
             },
         ].map((column) => ({
             ...column,

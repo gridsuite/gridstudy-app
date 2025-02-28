@@ -24,10 +24,10 @@ import { SecurityAnalysisResultTab } from './results/securityanalysis/security-a
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import ComputingType from './computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { usePrevious } from './utils/utils';
 import { Box, Paper, Tab, Tabs } from '@mui/material';
 import { StateEstimationResultTab } from './results/stateestimation/state-estimation-result-tab';
 import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysis/dynamic-security-analysis-result-tab';
+import { usePrevious } from '@gridsuite/commons-ui';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 
 const styles = {

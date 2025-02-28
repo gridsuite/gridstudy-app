@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { mergeSx } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { mergeSx } from '../../utils/functions';
 
 const styles = {
     filler: (theme) => ({

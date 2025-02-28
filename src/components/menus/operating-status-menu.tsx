@@ -234,7 +234,7 @@ const withOperatingStatusMenu =
                     )}
                     <CustomMenuItem
                         sx={styles.menuItem}
-                        onClick={() => handleTrip()}
+                        onClick={handleTrip}
                         disabled={!isNodeEditable || equipmentInfos?.operatingStatus === OperatingStatus.FORCED_OUTAGE}
                     >
                         <ListItemIcon>
@@ -284,7 +284,7 @@ const withOperatingStatusMenu =
                                             {
                                                 substation: getNameOrId({
                                                     name: equipmentInfos?.voltageLevelName1,
-                                                    id: equipmentInfos?.voltageLevelId1,
+                                                    id: equipmentInfos?.voltageLevelId1 ?? '',
                                                 }),
                                             }
                                         )}
@@ -316,7 +316,7 @@ const withOperatingStatusMenu =
                                             {
                                                 substation: getNameOrId({
                                                     name: equipmentInfos?.voltageLevelName2,
-                                                    id: equipmentInfos?.voltageLevelId2,
+                                                    id: equipmentInfos?.voltageLevelId2 ?? '',
                                                 }),
                                             }
                                         )}
