@@ -54,6 +54,7 @@ const styles = {
         alignItems: 'flex-start',
         paddingRight: '16px',
         '& .MuiListItemSecondaryAction-root': {
+            paddingLeft: '4px',
             position: 'relative',
             top: 0,
             right: 0,
@@ -264,7 +265,7 @@ const RootNetworkNodeEditor = () => {
                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                             {val.name}
                             <Stack direction="row" spacing={1}>
-                                <Chip label={val.tag} color="primary" />
+                                <Chip size="small" label={val.tag} color="primary" />
                             </Stack>
                         </Box>
                     );
