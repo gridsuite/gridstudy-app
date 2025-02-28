@@ -6,30 +6,35 @@
  */
 
 import FormControl from '@mui/material/FormControl';
-import { Checkbox, FormControlLabel, FormHelperText } from '@mui/material';
+import { Checkbox, CheckboxProps, FormControlLabel, FormHelperText } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useController } from 'react-hook-form';
 import { useCallback } from 'react';
 
-const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }) => {
+interface CheckboxNullableInputProps {
+    name: string;
+    label: string;
+    id?: string;
+    formProps?: CheckboxProps;
+    previousValue?: string;
+}
+
+const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: CheckboxNullableInputProps) => {
     const {
         field: { onChange, value },
     } = useController({ name });
 
     const intl = useIntl();
 
-    const handleChangeValue = useCallback(
-        (event) => {
-            if (value) {
-                onChange(null);
-            } else if (value === null) {
-                onChange(false);
-            } else {
-                onChange(true);
-            }
-        },
-        [onChange, value]
-    );
+    const handleChangeValue = useCallback(() => {
+        if (value) {
+            onChange(null);
+        } else if (value === null) {
+            onChange(false);
+        } else {
+            onChange(true);
+        }
+    }, [onChange, value]);
 
     return (
         <FormControl fullWidth size="small">
@@ -39,7 +44,7 @@ const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }) =>
                     <Checkbox
                         checked={value === true}
                         indeterminate={value === null}
-                        onChange={(e) => handleChangeValue(e)}
+                        onChange={handleChangeValue}
                         value="checked"
                         inputProps={{
                             'aria-label': 'primary checkbox',
