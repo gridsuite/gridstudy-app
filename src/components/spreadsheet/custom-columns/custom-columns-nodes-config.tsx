@@ -77,11 +77,7 @@ export default function CustomColumnsNodesConfig({ disabled, tabIndex }: Readonl
 
     const handleRefresh = useCallback(() => {
         if (nodesToReload?.length) {
-            let nodeIds = new Set<string>();
-            nodesToReload.forEach((nodeAlias) => {
-                nodeIds.add(nodeAlias.id);
-            });
-            const promises = loadEquipmentData(nodeIds);
+            const promises = loadEquipmentData(nodesToReload.map((n) => n.id as string));
             Promise.all(promises).then(() => {
                 console.debug(`Refresh done for ${promises.length} nodes among ${nodesToReload.length} aliased nodes`);
             });

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { UUID } from 'crypto';
 import { formatFetchedEquipments } from './utils/equipment-table-utils';
@@ -27,6 +27,8 @@ export const useLoadEquipment = (
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
 
+    const [nodeIdsToFetch, setNodeIdsToFetch] = useState<string[]>([]);
+
     const formatEquipments = useCallback(
         (fetchedEquipments: any) => {
             //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
@@ -35,14 +37,9 @@ export const useLoadEquipment = (
         [type]
     );
 
-    const aliasedNodesIds = useMemo(() => {
-        return nodesAliases.map((alias) => {
-            return alias.id;
-        });
-    }, [nodesAliases]);
-
     const builtAliasedNodesIds = useMemo(() => {
         let set = new Set<string>();
+        const aliasedNodesIds = nodesAliases.map((alias) => alias.id);
         if (aliasedNodesIds.length > 0) {
             treeModel?.treeNodes.forEach((treeNode) => {
                 if (
@@ -54,13 +51,15 @@ export const useLoadEquipment = (
             });
         }
         return set;
-    }, [aliasedNodesIds, treeModel?.treeNodes]);
+    }, [nodesAliases, treeModel?.treeNodes]);
 
-    const nodesIdToFetch = useMemo(() => {
-        let nodeIds = new Set<string>();
+    useEffect(() => {
         if (!equipments) {
-            return nodeIds;
+            return;
         }
+        // We want to build a set with unique node uuids to be loaded
+        let nodeIds = new Set<string>();
+
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
         const currentNodeId = currentNodeUuid as string;
         if (currentNodeId && equipments.nodesId.find((nodeId) => nodeId === currentNodeId) === undefined) {
@@ -72,24 +71,30 @@ export const useLoadEquipment = (
                 nodeIds.add(nodeAliasId);
             }
         });
-        return nodeIds;
-    }, [equipments, currentNodeUuid, builtAliasedNodesIds]);
+        // Update the state only on values changes (to avoid multiple effects for the users of this hook)
+        setNodeIdsToFetch((prevState) => {
+            const currentNodeIds = prevState.sort();
+            const computedNodeIds = Array.from(nodeIds).sort();
+            if (JSON.stringify(currentNodeIds) !== JSON.stringify(computedNodeIds)) {
+                return computedNodeIds;
+            }
+            return prevState;
+        });
+    }, [builtAliasedNodesIds, currentNodeUuid, equipments]);
 
     const loadEquipmentData = useCallback(
-        (nodeIds: Set<string>) => {
+        (nodeIds: string[]) => {
             let fetcherPromises: Promise<unknown>[] = [];
             if (studyUuid && currentRootNetworkUuid) {
                 let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
                     nodesId: [],
                     equipmentsByNodeId: {},
                 };
-                console.log('DBG DBR LOAD');
                 nodeIds.forEach((nodeId) => {
                     if (currentNodeUuid === nodeId || builtAliasedNodesIds.has(nodeId)) {
                         const promise = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
                         fetcherPromises.push(promise);
                         promise.then((results) => {
-                            console.log('DBG DBR Load done', nodeId);
                             let fetchedEquipments = results.flat();
                             spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
                             fetchedEquipments = formatEquipments(fetchedEquipments);
@@ -97,10 +102,7 @@ export const useLoadEquipment = (
                         });
                     }
                 });
-
-                console.log('DBG DBR before all');
                 Promise.all(fetcherPromises).then(() => {
-                    console.log('DBG DBR all DONE');
                     dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
                 });
             }
@@ -110,5 +112,5 @@ export const useLoadEquipment = (
         [builtAliasedNodesIds, currentNodeUuid, currentRootNetworkUuid, dispatch, formatEquipments, studyUuid, type]
     );
 
-    return { loadEquipmentData, nodesIdToFetch };
+    return { loadEquipmentData, nodeIdsToFetch };
 };

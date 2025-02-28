@@ -38,7 +38,7 @@ export const useSpreadsheetEquipments = (type: SpreadsheetEquipmentType, highlig
     const [isFetching, setIsFetching] = useState(false);
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
 
-    const { loadEquipmentData, nodesIdToFetch } = useLoadEquipment(
+    const { loadEquipmentData, nodeIdsToFetch } = useLoadEquipment(
         type,
         studyUuid,
         currentRootNetworkUuid,
@@ -156,22 +156,19 @@ export const useSpreadsheetEquipments = (type: SpreadsheetEquipmentType, highlig
 
     useEffect(() => {
         if (
-            nodesIdToFetch.size > 0 &&
+            nodeIdsToFetch?.length &&
             currentNode?.id &&
             isNetworkModificationTreeModelUpToDate &&
             isNodeBuilt(currentNode)
         ) {
-            console.log('DBG DBR USE nodesIdToFetch=', nodesIdToFetch);
             setErrorMessage(null);
             setIsFetching(true);
-            const promises = loadEquipmentData(nodesIdToFetch);
-            console.log('DBG DBR USE promises=', promises);
+            const promises = loadEquipmentData(nodeIdsToFetch);
             Promise.all(promises).then(() => {
-                console.log('DBG DBR USE promises all done');
                 setIsFetching(false);
             });
         }
-    }, [currentNode, isNetworkModificationTreeModelUpToDate, loadEquipmentData, nodesIdToFetch]);
+    }, [currentNode, isNetworkModificationTreeModelUpToDate, loadEquipmentData, nodeIdsToFetch]);
 
     return { equipments, errorMessage, isFetching }; // FIXME errorMessage is not set anymore
 };
