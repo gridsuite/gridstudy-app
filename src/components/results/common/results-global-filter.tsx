@@ -231,7 +231,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
     return (
         <>
             <Autocomplete
-                value={selectedGlobalFilters as AutocompleteValue<Filter, false, false, false>}
+                value={selectedGlobalFilters as AutocompleteValue<Filter, true, false, false>}
                 sx={styles.autocomplete}
                 multiple
                 id="result-global-filter"
@@ -249,7 +249,9 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                         .sort((a: Filter, b: Filter) => {
                             // only the countries are sorted alphabetically
                             if (a.filterType === FilterType.COUNTRY && b.filterType === FilterType.COUNTRY) {
-                                return translate(a.label).localeCompare(translate(b.label));
+                                const bt: string = translate(b.label);
+                                const at: string = translate(a.label);
+                                return at.localeCompare(bt);
                             }
                             return 0;
                         }),
