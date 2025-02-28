@@ -7,13 +7,13 @@
 
 import { ChangeEvent, useCallback, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { InputAdornment, TextFieldProps } from '@mui/material';
+import { InputAdornment, TextFieldProps, Typography } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import { useController, useFormContext } from 'react-hook-form';
+import { useController, useFormContext, useWatch } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import { UUID } from 'crypto';
-import { useDebounce } from '@gridsuite/commons-ui';
+import { useCustomFormContext, useDebounce } from '@gridsuite/commons-ui';
 
 export interface UniqueCheckNameInputProps {
     name: string;
@@ -28,6 +28,7 @@ export interface UniqueCheckNameInputProps {
     inputProps?: TextFieldProps['inputProps'];
     elementExists: (studyUuid: UUID, elementName: string) => Promise<boolean>;
     errorMessageKey: string;
+    max_length?: number;
 }
 
 /**
@@ -44,12 +45,18 @@ export function UniqueCheckNameInput({
     inputProps,
     elementExists,
     errorMessageKey,
+    max_length,
 }: Readonly<UniqueCheckNameInputProps>) {
     const {
         field: { onChange, onBlur, value, ref },
         fieldState: { error, isDirty },
     } = useController({
         name,
+    });
+    const { control } = useCustomFormContext();
+    const inputWatch = useWatch({
+        name,
+        control,
     });
 
     const {
@@ -134,6 +141,8 @@ export function UniqueCheckNameInput({
         </InputAdornment>
     );
 
+    const helperText = max_length && `${inputWatch?.length}/${max_length}`;
+
     return (
         <TextField
             onChange={handleManualChange}
@@ -145,9 +154,8 @@ export function UniqueCheckNameInput({
             type="text"
             autoFocus={autoFocus}
             margin="dense"
-            fullWidth
             error={!!error}
-            helperText={translatedError}
+            helperText={translatedError || <Typography variant="caption">{helperText}</Typography>}
             InputProps={{ endAdornment }}
             inputProps={inputProps}
             {...formProps}

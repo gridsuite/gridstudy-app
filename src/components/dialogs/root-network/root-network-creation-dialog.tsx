@@ -51,6 +51,8 @@ const emptyFormData: FormData = {
     [CASE_ID]: '',
 };
 
+const MAX_TAG_LENGTH = 4;
+
 const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
     open,
     onSave,
@@ -124,19 +126,21 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
                             studyUuid={studyUuid}
                             elementExists={checkRootNetworkNameExistence}
                             errorMessageKey="nameAlreadyUsed"
+                            formProps={{ fullWidth: true }}
                         />
                     </Grid>
+                    <RootNetworkCaseSelection onSelectCase={onSelectCase} />
                     <Grid item>
                         <UniqueCheckNameInput
                             name={TAG}
                             label={'rootTag'}
                             studyUuid={studyUuid}
                             elementExists={checkRootNetworkTagExistence}
-                            inputProps={{ maxLength: 4 }}
+                            inputProps={{ maxLength: MAX_TAG_LENGTH }}
                             errorMessageKey="tagAlreadyUsed"
+                            max_length={MAX_TAG_LENGTH}
                         />
                     </Grid>
-                    <RootNetworkCaseSelection onSelectCase={onSelectCase} />
                 </Grid>
             </ModificationDialog>
         </CustomFormProvider>
