@@ -49,6 +49,31 @@ import { isChecked, isPartial } from './network-modification-node-editor-utils';
 const styles = {
     checkBoxLabel: { flexGrow: '1' },
     disabledRootNetwork: { opacity: 0.4 },
+    checkboxListItem: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        paddingRight: '16px',
+        '& .MuiListItemSecondaryAction-root': {
+            position: 'relative',
+            top: 0,
+            right: 0,
+            transform: 'translateX(0px)',
+        },
+    },
+    // TODO WHY it doesn't work with using the Theme here ?????
+    // checkboxListItem: (theme: Theme) => ({
+    //     display: 'flex',
+    //     alignItems: 'flex-start',
+    //     paddingRight: theme.spacing(4),
+    //     '& .MuiListItemSecondaryAction-root': {
+    //         position: 'relative',
+    //         top: 0,
+    //         right: 0,
+    //         transform: 'translateX(0px)',
+    //     },
+    // }),
+    checkbox: { paddingTop: '4px' },
+    // checkbox: (theme: Theme) => ({ paddingTop: theme.spacing(1) }),
     checkBoxIcon: { minWidth: 0, padding: 0, marginLeft: 2 },
     checkboxButton: {
         padding: 0.5,
@@ -193,25 +218,23 @@ const RootNetworkNodeEditor = () => {
             const isCurrentRootNetwork = rootNetwork.rootNetworkUuid === currentRootNetwork;
 
             return (
-                <Box sx={{ display: 'flex', alignItems: 'center', padding: '8px 0', marginRight: '8px' }}>
-                    <IconButton
-                        size="small"
-                        onClick={() => {
-                            if (rootNetwork.rootNetworkUuid !== currentRootNetwork) {
-                                dispatch(setCurrentRootNetwork(rootNetwork.rootNetworkUuid));
-                            }
-                        }}
-                        disabled={rootNetwork.isCreating}
-                    >
-                        {isCurrentRootNetwork ? (
-                            <Badge overlap="circular" color="primary" variant="dot">
-                                <RemoveRedEyeIcon />
-                            </Badge>
-                        ) : (
-                            <VisibilityOffIcon />
-                        )}
-                    </IconButton>
-                </Box>
+                <IconButton
+                    size="small"
+                    onClick={() => {
+                        if (rootNetwork.rootNetworkUuid !== currentRootNetwork) {
+                            dispatch(setCurrentRootNetwork(rootNetwork.rootNetworkUuid));
+                        }
+                    }}
+                    disabled={rootNetwork.isCreating}
+                >
+                    {isCurrentRootNetwork ? (
+                        <Badge overlap="circular" color="primary" variant="dot">
+                            <RemoveRedEyeIcon />
+                        </Badge>
+                    ) : (
+                        <VisibilityOffIcon />
+                    )}
+                </IconButton>
             );
         },
         [currentRootNetwork, dispatch]
@@ -226,6 +249,8 @@ const RootNetworkNodeEditor = () => {
                             ...(rootNetwork.isCreating && { ...styles.disabledRootNetwork }),
                             ...styles.checkBoxLabel,
                         },
+                        checkboxListItem: styles.checkboxListItem,
+                        checkbox: styles.checkbox,
                         checkBoxIcon: styles.checkBoxIcon,
                         checkboxButton: styles.checkboxButton,
                     }),
