@@ -73,8 +73,8 @@ export const useLoadEquipment = (
         });
         // Update the state only on values changes (to avoid multiple effects for the users of this hook)
         setNodeIdsToFetch((prevState) => {
-            const currentNodeIds = prevState.sort();
-            const computedNodeIds = Array.from(nodeIds).sort();
+            const currentNodeIds = prevState.toSorted((a, b) => a.localeCompare(b));
+            const computedNodeIds = Array.from(nodeIds).toSorted((a, b) => a.localeCompare(b));
             if (JSON.stringify(currentNodeIds) !== JSON.stringify(computedNodeIds)) {
                 return computedNodeIds;
             }
