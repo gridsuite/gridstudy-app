@@ -939,6 +939,7 @@
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
+    "permanentCurrentLimitMandatory": "Un IST doit être fourni si le limit set contient des limites d'intensité temporaires",
     "SelectedOperationalLimitGroup": "Set de limites actif",
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",

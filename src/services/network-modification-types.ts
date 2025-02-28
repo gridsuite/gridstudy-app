@@ -264,7 +264,7 @@ export interface Limit {
 }
 export interface TemporaryLimit extends Limit {
     modificationType: string | null;
-    selected: boolean;
+    selected?: boolean;
 }
 
 export interface CurrentLimits {

@@ -9,7 +9,12 @@ import { useController } from 'react-hook-form';
 import { TextField } from '@mui/material';
 import { genHelperError } from '@gridsuite/commons-ui';
 
-export function ReadOnlyInput({ name, isNumerical = false }) {
+interface ReadOnlyInputProps {
+    name: string;
+    isNumerical?: boolean;
+}
+
+export function ReadOnlyInput({ name, isNumerical = false }: ReadOnlyInputProps) {
     const {
         field: { value },
         fieldState: { error },
