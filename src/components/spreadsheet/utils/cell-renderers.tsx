@@ -17,7 +17,7 @@ import { mergeSx } from '@gridsuite/commons-ui';
 const styles = {
     tableCell: (theme: Theme) => ({
         fontSize: 'small',
-        cursor: 'initial',
+        cursor: 'inherit',
         display: 'flex',
         '&:before': {
             content: '""',
