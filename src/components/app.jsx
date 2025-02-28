@@ -40,6 +40,7 @@ import { fetchConfigParameter, fetchConfigParameters } from '../services/config'
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
+    initTableDefinitions,
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
@@ -51,7 +52,7 @@ import {
     setUpdateNetworkVisualizationParameters,
 } from '../redux/actions';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
-import { getNetworkVisualizationParameters } from '../services/study/study-config.ts';
+import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
 import { StudyView } from './utils/utils';
 
 const noUserManager = { instance: null, error: null };
@@ -209,6 +210,28 @@ const App = () => {
                 });
             });
 
+            const mapColumns = (columns) => {
+                return columns.map((column) => {
+                    return {
+                        ...column,
+                        dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
+                    };
+                });
+            };
+
+            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((config) => {
+                const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
+                    return {
+                        uuid: spreadsheetConfig.id,
+                        index: index,
+                        name: spreadsheetConfig.name,
+                        columns: mapColumns(spreadsheetConfig.columns),
+                        type: spreadsheetConfig.sheetType,
+                    };
+                });
+                dispatch(initTableDefinitions(config.id, tableDefinitions));
+            });
+
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
                     const retrieveOptionalServices = services.map((service) => {
@@ -251,6 +274,7 @@ const App = () => {
                 fetchCommonConfigPromise,
                 fetchAppConfigPromise,
                 fetchOptionalServices,
+                fetchSpreadsheetConfigPromise,
             ])
                 .then(() => {
                     dispatch(setParamsLoaded());

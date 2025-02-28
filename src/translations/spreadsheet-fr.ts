@@ -26,13 +26,17 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/delete_custom_column': 'Supprimer colonne',
     'spreadsheet/custom_column/delete_custom_column_confirmation':
         'Êtes-vous sûr de vouloir supprimer la colonne "{columnName}" ?',
+    'spreadsheet/custom_column/delete_column_error': 'Erreur lors de la suppression de la colonne',
     'spreadsheet/custom_column/column_id_already_exist': 'Id de colonne déjà existant',
+    'spreadsheet/custom_column/column_name_already_exist': 'Nom de colonne déjà existant',
     'spreadsheet/custom_column/dependencies': "La formule fait référence à d'autres colonnes",
     'spreadsheet/custom_column/nodes': 'Nœuds',
     'spreadsheet/custom_column/parameter_nodes': 'Parametrer les alias de nœuds',
     'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
     'spreadsheet/custom_column/creates_cyclic_dependency':
         'Les dépendances de la colonne créent un cycle de dépendances',
+    'spreadsheet/custom_column/error_saving_or_updating_column':
+        'Erreur lors de la sauvegarde ou de la mise à jour de la colonne',
     'spreadsheet/save/button': 'Enregistrer',
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/collection': 'Collection',
@@ -56,6 +60,7 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model':
         'Vous devez sélectionner un seul modèle de tableur',
     'spreadsheet/create_new_spreadsheet/error_loading_model': 'Erreur lors de la récupération du modèle de tableur',
+    'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': "Erreur lors de l'ajout du tableur",
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',
@@ -63,6 +68,8 @@ const spreadsheetFr = {
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'Aucun nœud avec ce nom',
     'spreadsheet/parameter_aliases/unique_aliases': 'Les alias doivent être unique',
     'spreadsheet/filter/config': 'Filtres Gridsuite',
+    'spreadsheet/remove_spreadsheet_confirmation': 'Êtes-vous sûr de vouloir supprimer le tableur {spreadsheetName} ?',
+    'spreadsheet/remove_spreadsheet_error': 'Erreur lors de la suppression du tableur',
 
     // Column types
     TEXT: 'Texte',
