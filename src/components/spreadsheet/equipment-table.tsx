@@ -23,7 +23,7 @@ import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 import { NodeType } from 'components/graph/tree-node.type';
 
 const DEFAULT_ROW_HEIGHT = 28;
-const MAX_CLICK_DURATION = 300;
+const MAX_CLICK_DURATION = 200;
 
 const getRowId = (params: GetRowIdParams<{ id: string }>) => params.data.id;
 
