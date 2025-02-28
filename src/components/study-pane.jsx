@@ -93,6 +93,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
                         disabled={disabled}
+                        onEquipmentScrolled={() => setTableEquipment({ id: null, type: null, changed: false })}
                     />
                 </Paper>
             </TabPanelLazy>
