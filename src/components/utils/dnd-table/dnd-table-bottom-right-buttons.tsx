@@ -14,8 +14,18 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
+
+export interface DndTableBottomRightButtonsProps {
+    arrayFormName: string;
+    handleAddButton: () => void;
+    handleDeleteButton: () => void;
+    handleMoveUpButton: () => void;
+    handleMoveDownButton: () => void;
+    disableAddingRows?: boolean;
+    showMoveArrow?: boolean;
+    disabled?: boolean;
+}
 
 const DndTableBottomRightButtons = ({
     arrayFormName,
@@ -26,10 +36,10 @@ const DndTableBottomRightButtons = ({
     disableAddingRows,
     showMoveArrow,
     disabled,
-}) => {
+}: DndTableBottomRightButtonsProps) => {
     const intl = useIntl();
 
-    const currentRows = useWatch({
+    const currentRows: ({ selected: boolean } & Record<string, any>)[] = useWatch({
         name: arrayFormName,
     });
 
@@ -117,16 +127,6 @@ const DndTableBottomRightButtons = ({
             )}
         </Grid>
     );
-};
-
-DndTableBottomRightButtons.prototype = {
-    arrayFormName: PropTypes.string.isRequired,
-    handleAddButton: PropTypes.func.isRequired,
-    handleDeleteButton: PropTypes.func.isRequired,
-    handleMoveUpButton: PropTypes.func.isRequired,
-    handleMoveDownButton: PropTypes.func.isRequired,
-    showMoveArrow: PropTypes.bool,
-    disabled: PropTypes.bool,
 };
 
 export default DndTableBottomRightButtons;

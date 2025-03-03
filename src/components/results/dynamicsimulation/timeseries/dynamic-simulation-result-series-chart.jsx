@@ -16,7 +16,7 @@ import TooltipIconButton from '../common/tooltip-icon-button';
 import { lighten } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 import { SeriesType } from '../plot/plot-types';
-import { mergeSx } from '../../../utils/functions';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
     plotScaleButton: (theme) => ({

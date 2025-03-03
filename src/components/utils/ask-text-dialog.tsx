@@ -9,11 +9,11 @@ import { useIntl } from 'react-intl';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import Button from '@mui/material/Button';
 import { FunctionComponent, useEffect, useState } from 'react';
-import { useValidNodeName } from './inputs/input-hooks';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
 import { CancelButton } from '@gridsuite/commons-ui';
 import { AppState } from '../../redux/reducer';
+import { useValidNodeName } from './inputs/input-hooks';
 
 interface AskTextDialogProps {
     title: string;
