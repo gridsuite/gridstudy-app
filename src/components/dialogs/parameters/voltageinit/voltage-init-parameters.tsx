@@ -12,12 +12,13 @@ import {
     useSnackMessage,
     CustomFormProvider,
     TreeViewFinderNodeProps,
+    mergeSx,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles, TabPanel } from '../parameters';
+import { TabPanel } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -31,7 +32,6 @@ import {
     fromVoltageInitParamsDataToFormValues,
 } from './voltage-init-utils';
 import { getVoltageInitParameters } from 'services/voltage-init';
-import { mergeSx } from 'components/utils/functions';
 import { GeneralParameters } from './general-parameters';
 import {
     DEFAULT_GENERAL_APPLY_MODIFICATIONS,
@@ -44,6 +44,7 @@ import {
 import { AppState } from '../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { useGetVoltageInitParameters } from './use-get-voltage-init-parameters';
+import { styles } from '../parameters-style';
 
 export const VoltageInitParameters = ({
     setHaveDirtyFields,

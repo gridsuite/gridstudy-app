@@ -10,11 +10,7 @@ import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import ScenarioParameters, {
-    emptyFormData as scenarioEmptyFormData,
-    formSchema as scenarioFormSchema,
-    SCENARIO_DURATION,
-} from './scenario-parameters';
+import ScenarioParameters, { SCENARIO_DURATION } from './scenario-parameters';
 import {
     fetchDefaultDynamicSecurityAnalysisProvider,
     fetchDynamicSecurityAnalysisParameters,
@@ -24,23 +20,48 @@ import {
 } from '../../../../services/study/dynamic-security-analysis';
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
-import { mergeSx } from '../../../utils/functions';
-import { CustomFormProvider, isObjectEmpty, SubmitButton } from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, mergeSx, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 import { User } from 'oidc-client';
 
-import { LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
-import ContingencyParameters, {
-    CONTINGENCIES_LIST_INFOS,
-    CONTINGENCIES_START_TIME,
-    emptyFormData as contingencyEmptyFormData,
-    formSchema as contingencyFormSchema,
-} from './contingency-parameters';
-import { PROVIDER } from '../../../utils/field-constants';
+import { LabelledButton, TabPanel } from '../parameters';
+import ContingencyParameters, { CONTINGENCIES_LIST_INFOS, CONTINGENCIES_START_TIME } from './contingency-parameters';
+import { ID, NAME, PROVIDER } from '../../../utils/field-constants';
 import ProviderParam from '../common/ProviderParam';
+import { styles } from '../parameters-style';
+import { useParametersBackend } from '../use-parameters-backend';
+
+const scenarioFormSchema = yup
+    .object()
+    .shape({
+        [SCENARIO_DURATION]: yup.number().required(),
+    })
+    .required();
+
+const scenarioEmptyFormData = {
+    [SCENARIO_DURATION]: 0,
+};
+
+const contingencyFormSchema = yup.object().shape({
+    [CONTINGENCIES_START_TIME]: yup.number().required(),
+    [CONTINGENCIES_LIST_INFOS]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [ID]: yup.string().required(),
+                [NAME]: yup.string().required(),
+            })
+        )
+        .required(),
+});
+
+const contingencyEmptyFormData = {
+    [CONTINGENCIES_START_TIME]: 0,
+    [CONTINGENCIES_LIST_INFOS]: [],
+};
 
 enum TAB_VALUES {
     SCENARIO = 'scenario',

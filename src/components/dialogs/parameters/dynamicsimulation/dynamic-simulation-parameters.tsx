@@ -10,34 +10,12 @@ import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
-import TimeDelayParameters, {
-    emptyFormData as timeDelayEmptyFormData,
-    formSchema as timeDelayFormSchema,
-    START_TIME,
-    STOP_TIME,
-} from './time-delay-parameters';
-import SolverParameters, {
-    emptyFormData as solverEmptyFormData,
-    formSchema as solverFormSchema,
-    SOLVER_ID,
-    SOLVERS,
-} from './solver-parameters';
-import MappingParameters, {
-    emptyFormData as mappingEmptyFormData,
-    formSchema as mappingFormSchema,
-    MAPPING,
-} from './mapping-parameters';
-import { LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
-import NetworkParameters, {
-    emptyFormData as networkEmptyFormData,
-    formSchema as networkFormSchema,
-    NETWORK,
-} from './network-parameters';
-import CurveParameters, {
-    CURVES,
-    emptyFormData as curveEmptyFormData,
-    formSchema as curveFormSchema,
-} from './curve-parameters';
+import TimeDelayParameters from './time-delay-parameters';
+import SolverParameters from './solver-parameters';
+import MappingParameters from './mapping-parameters';
+import { LabelledButton, TabPanel } from '../parameters';
+import NetworkParameters from './network-parameters';
+import CurveParameters from './curve-parameters';
 import { fetchDynamicSimulationProviders } from '../../../../services/dynamic-simulation';
 import {
     fetchDefaultDynamicSimulationProvider,
@@ -48,16 +26,34 @@ import {
 } from '../../../../services/study/dynamic-simulation';
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
-import { mergeSx } from '../../../utils/functions';
-import { CustomFormProvider, isObjectEmpty, SubmitButton } from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, mergeSx, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 import { User } from 'oidc-client';
-import { SolverInfos } from 'services/study/dynamic-simulation.type';
 import { PROVIDER } from '../../../utils/field-constants';
 import ProviderParam from '../common/ProviderParam';
+import { SolverInfos } from 'services/study/dynamic-simulation.type';
+import {
+    Curve,
+    MAPPING,
+    NETWORK,
+    Solver,
+    TimeDelay,
+    curveEmptyFormData,
+    curveFormSchema,
+    mappingEmptyFormData,
+    mappingFormSchema,
+    networkEmptyFormData,
+    networkFormSchema,
+    solverEmptyFormData,
+    solverFormSchema,
+    timeDelayEmptyFormData,
+    timeDelayFormSchema,
+} from './dynamic-simulation-utils';
+import { useParametersBackend } from '../use-parameters-backend';
+import { styles } from '../parameters-style';
 
 enum TAB_VALUES {
     TIME_DELAY = 'timeDelay',
@@ -176,9 +172,9 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
             updateParameters({
                 [PROVIDER]: newParams.provider,
                 ...newParams.timeDelay,
-                [SOLVER_ID]: newParams.solver.solverId,
+                [Solver.ID]: newParams.solver.solverId,
                 // merge only the current selected solver, others are ignored
-                [SOLVERS]: parameters?.solvers?.reduce(
+                [Solver.SOLVERS]: parameters?.solvers?.reduce(
                     (arr, curr, index) => [
                         ...arr,
                         newParams.solver.solvers?.[index].id === newParams.solver.solverId
@@ -200,12 +196,12 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
             reset({
                 [PROVIDER]: parameters.provider ?? provider,
                 [TAB_VALUES.TIME_DELAY]: {
-                    [START_TIME]: parameters.startTime,
-                    [STOP_TIME]: parameters.stopTime,
+                    [TimeDelay.START_TIME]: parameters.startTime,
+                    [TimeDelay.STOP_TIME]: parameters.stopTime,
                 },
                 [TAB_VALUES.SOLVER]: {
-                    [SOLVER_ID]: parameters.solverId,
-                    [SOLVERS]: parameters.solvers,
+                    [Solver.ID]: parameters.solverId,
+                    [Solver.SOLVERS]: parameters.solvers,
                 },
                 [TAB_VALUES.MAPPING]: {
                     [MAPPING]: parameters.mapping,
@@ -214,7 +210,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                     ...parameters.network,
                 },
                 [TAB_VALUES.CURVE]: {
-                    [CURVES]: parameters.curves,
+                    [Curve.CURVES]: parameters.curves,
                 },
             });
         }

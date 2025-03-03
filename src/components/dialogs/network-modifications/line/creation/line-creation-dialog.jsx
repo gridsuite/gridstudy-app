@@ -58,7 +58,12 @@ import {
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/line-characteristics-pane-utils';
-import { getHeaderEmptyFormData, getHeaderFormData, getHeaderValidationSchema } from './line-creation-dialog-utils';
+import {
+    getHeaderEmptyFormData,
+    getHeaderFormData,
+    getHeaderValidationSchema,
+    LineCreationDialogTab,
+} from './line-creation-dialog-utils';
 import { LimitsPane } from '../../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
@@ -81,18 +86,13 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
-import { formatCompleteCurrentLimit } from '../../../../utils/utils.js';
+import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(false),
     ...emptyProperties,
-};
-
-export const LineCreationDialogTab = {
-    CHARACTERISTICS_TAB: 0,
-    LIMITS_TAB: 1,
 };
 
 /**

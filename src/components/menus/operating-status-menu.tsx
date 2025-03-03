@@ -33,7 +33,6 @@ import {
     tripEquipment,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
@@ -43,6 +42,7 @@ import { BaseEquipmentMenuProps, MapEquipment } from './base-equipment-menu';
 import { CurrentTreeNode } from 'redux/reducer';
 import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
 import { UUID } from 'crypto';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 const styles = {
     menuItem: {
@@ -234,7 +234,7 @@ const withOperatingStatusMenu =
                     )}
                     <CustomMenuItem
                         sx={styles.menuItem}
-                        onClick={() => handleTrip()}
+                        onClick={handleTrip}
                         disabled={!isNodeEditable || equipmentInfos?.operatingStatus === OperatingStatus.FORCED_OUTAGE}
                     >
                         <ListItemIcon>
@@ -284,7 +284,7 @@ const withOperatingStatusMenu =
                                             {
                                                 substation: getNameOrId({
                                                     name: equipmentInfos?.voltageLevelName1,
-                                                    id: equipmentInfos?.voltageLevelId1,
+                                                    id: equipmentInfos?.voltageLevelId1 ?? '',
                                                 }),
                                             }
                                         )}
@@ -316,7 +316,7 @@ const withOperatingStatusMenu =
                                             {
                                                 substation: getNameOrId({
                                                     name: equipmentInfos?.voltageLevelName2,
-                                                    id: equipmentInfos?.voltageLevelId2,
+                                                    id: equipmentInfos?.voltageLevelId2 ?? '',
                                                 }),
                                             }
                                         )}

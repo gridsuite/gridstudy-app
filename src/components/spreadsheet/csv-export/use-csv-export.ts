@@ -8,27 +8,18 @@
 import { useCallback } from 'react';
 import { ProcessCellForExportParams } from 'ag-grid-community';
 import { useIntl } from 'react-intl';
-import { TABLES_NAMES } from '../config/config-tables';
-import { formatNAValue } from '../utils/cell-renderers';
 import { CsvDownloadProps } from './csv-export.type';
+import { formatNAValue } from '../utils/equipment-table-utils';
 
 export const useCsvExport = () => {
     const intl = useIntl();
 
-    const existsInTablesNames = function (name: string) {
-        return TABLES_NAMES.findIndex((n) => n === name) !== -1;
-    };
-
-    const getCSVFilename = useCallback(
-        (tableName: string) => {
-            const localisedTabName = existsInTablesNames(tableName) ? intl.formatMessage({ id: tableName }) : tableName;
-            return localisedTabName
-                .trim()
-                .replace(/[\\/:"*?<>|\s]/g, '-') // Removes the filesystem sensible characters
-                .substring(0, 27); // Best practice : limits the filename size to 31 characters (27+'.csv')
-        },
-        [intl]
-    );
+    const getCSVFilename = useCallback((tableName: string) => {
+        return tableName
+            .trim()
+            .replace(/[\\/:"*?<>|\s]/g, '-') // Removes the filesystem sensible characters
+            .substring(0, 27); // Best practice : limits the filename size to 31 characters (27+'.csv')
+    }, []);
 
     const downloadCSVData = useCallback(
         (props: CsvDownloadProps) => {
