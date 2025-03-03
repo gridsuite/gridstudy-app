@@ -1256,7 +1256,7 @@
     "AttachingAndSplittingLines": "Attaching and splitting lines",
     "GenerationAndLoad": "Generation and load",
     "InsertModificationFrom": "Insert from GridExplore",
-    "SaveModificationTo": "Save to GridExplore",
+    "SaveToGridexplore": "Save to GridExplore",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
     "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {directory}",

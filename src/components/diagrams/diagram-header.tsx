@@ -13,10 +13,12 @@ import IconButton from '@mui/material/IconButton';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
+import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import { stopDiagramBlink } from '../../redux/actions';
-import { Theme } from '@mui/material';
+import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
+import { FormattedMessage } from 'react-intl';
 
 const BLINK_LENGTH_MS = 1800;
 
@@ -73,6 +75,8 @@ interface DiagramHeaderProps {
     onClose?: () => void;
     diagramId?: string;
     svgType?: string;
+    showSaveControl?: boolean;
+    handleSave?: () => void;
 }
 
 const DiagramHeader: React.FC<DiagramHeaderProps> = ({
@@ -83,6 +87,8 @@ const DiagramHeader: React.FC<DiagramHeaderProps> = ({
     onTogglePin,
     pinned,
     showCloseControl = false,
+    showSaveControl = false,
+    handleSave,
     onClose,
     diagramId,
     svgType,
@@ -129,6 +135,13 @@ const DiagramHeader: React.FC<DiagramHeaderProps> = ({
                         flexDirection: 'row',
                     }}
                 >
+                    {showSaveControl && (
+                        <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
+                            <IconButton sx={styles.actionIcon} onClick={handleSave}>
+                                <SaveIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )}
                     {showMinimizeControl && (
                         <IconButton sx={styles.actionIcon} onClick={handleMinimize}>
                             <MinimizeIcon />
