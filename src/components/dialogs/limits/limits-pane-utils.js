@@ -52,7 +52,7 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         .nullable()
         .positive('permanentCurrentLimitMustBeGreaterThanZero')
         .when([TEMPORARY_LIMITS], {
-            is: (temporaryLimits) => temporaryLimits && temporaryLimits.length > 0 && !isModification,
+            is: (temporaryLimits) => temporaryLimits?.length > 0 && !isModification,
             then: () =>
                 yup
                     .number()
