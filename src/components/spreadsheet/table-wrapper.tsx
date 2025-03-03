@@ -12,11 +12,11 @@ import { FormattedMessage } from 'react-intl';
 import { Alert, Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EquipmentTable } from './equipment-table';
+import { useSpreadsheetEquipments } from './data-fetching/use-spreadsheet-equipments';
 import { Identifiable, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { EquipmentTabs } from './equipment-tabs';
-import { useSpreadsheetEquipments } from './use-spreadsheet-equipments';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
@@ -115,7 +115,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition?.columns]
     );
 
-    const shooldDisableButtons = useMemo(
+    const shouldDisableButtons = useMemo(
         () => disabled || tablesDefinitions.length === 0,
         [disabled, tablesDefinitions]
     );
@@ -373,17 +373,17 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     <Grid item>
                         <ColumnsConfig
                             tabIndex={tabIndex}
-                            disabled={shooldDisableButtons || tableDefinition?.columns.length === 0}
+                            disabled={shouldDisableButtons || tableDefinition?.columns.length === 0}
                         />
                     </Grid>
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsConfig tabIndex={tabIndex} disabled={shooldDisableButtons} />
+                            <CustomColumnsConfig tabIndex={tabIndex} disabled={shouldDisableButtons} />
                         </Grid>
                     )}
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsNodesConfig disabled={shooldDisableButtons} tabIndex={tabIndex} />
+                            <CustomColumnsNodesConfig disabled={shouldDisableButtons} tabIndex={tabIndex} />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
@@ -393,15 +393,15 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             gridRef={gridRef}
                             columns={reorderedColsDefs}
                             tableName={tableDefinition?.name}
-                            disabled={shooldDisableButtons}
+                            disabled={shouldDisableButtons}
                             dataSize={rowData.length}
                         />
                     </Grid>
                 </Grid>
             </Grid>
-            {disabled || shooldDisableButtons ? (
+            {disabled || shouldDisableButtons ? (
                 <Alert sx={styles.invalidNode} severity="warning">
-                    <FormattedMessage id={shooldDisableButtons ? 'NoSpreadsheets' : 'InvalidNode'} />
+                    <FormattedMessage id={shouldDisableButtons ? 'NoSpreadsheets' : 'InvalidNode'} />
                 </Alert>
             ) : (
                 <Box sx={mergeSx(styles.table)}>

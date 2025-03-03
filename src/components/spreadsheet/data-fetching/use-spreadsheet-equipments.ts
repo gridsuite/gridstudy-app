@@ -19,7 +19,7 @@ import {
     updateEquipments,
 } from 'redux/actions';
 import { AppState } from 'redux/reducer';
-import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { useLoadEquipment } from './use-load-equipment';

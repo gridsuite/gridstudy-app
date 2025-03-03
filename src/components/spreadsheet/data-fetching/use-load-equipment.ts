@@ -6,15 +6,15 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import { SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { UUID } from 'crypto';
-import { formatFetchedEquipments } from './utils/equipment-table-utils';
+import { formatFetchedEquipments } from '../utils/equipment-table-utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { NodeType } from '../graph/tree-node.type';
-import { isStatusBuilt } from '../graph/util/model-functions';
-import { AppState } from '../../redux/reducer';
-import { loadEquipments } from '../../redux/actions';
-import { getFetcher } from './config/common-config';
+import { NodeType } from '../../graph/tree-node.type';
+import { isStatusBuilt } from '../../graph/util/model-functions';
+import { AppState } from '../../../redux/reducer';
+import { loadEquipments } from '../../../redux/actions';
+import { getFetcher } from './fetchers';
 
 export const useLoadEquipment = (
     type: SpreadsheetEquipmentType,

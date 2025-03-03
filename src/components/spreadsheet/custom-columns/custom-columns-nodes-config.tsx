@@ -16,7 +16,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import Tooltip from '@mui/material/Tooltip';
 import { ROOT_NODE_LABEL } from '../../../constants/node.constant';
-import { useLoadEquipment } from '../use-load-equipment';
+import { useLoadEquipment } from '../data-fetching/use-load-equipment';
 
 const styles = {
     icon: {
