@@ -27,9 +27,9 @@ import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 
-const limitsGroupValidationSchema = () => ({
+const limitsGroupValidationSchema = (isModification) => ({
     [ID]: yup.string().nonNullable().required(),
-    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema()),
+    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
 });
 
 const temporaryLimitsValidationSchema = () => {
@@ -46,13 +46,13 @@ const temporaryLimitsValidationSchema = () => {
     });
 };
 
-const currentLimitsValidationSchema = () => ({
+const currentLimitsValidationSchema = (isModification = false) => ({
     [PERMANENT_LIMIT]: yup
         .number()
         .nullable()
         .positive('permanentCurrentLimitMustBeGreaterThanZero')
         .when([TEMPORARY_LIMITS], {
-            is: (temporaryLimits) => temporaryLimits.length > 0,
+            is: (temporaryLimits) => temporaryLimits && temporaryLimits.length > 0 && !isModification,
             then: () =>
                 yup
                     .number()
@@ -74,21 +74,21 @@ const currentLimitsValidationSchema = () => ({
         }),
 });
 
-const limitsValidationSchema = (id, onlySelectedLimits) => {
-    const currentLimitsSchema = {
-        [CURRENT_LIMITS_1]: yup.object().shape(currentLimitsValidationSchema()),
-        [CURRENT_LIMITS_2]: yup.object().shape(currentLimitsValidationSchema()),
+const limitsValidationSchema = (id, isModification = false) => {
+    const selectedCurrentLimitsSchema = {
+        [CURRENT_LIMITS_1]: yup.object().shape(currentLimitsValidationSchema(isModification)),
+        [CURRENT_LIMITS_2]: yup.object().shape(currentLimitsValidationSchema(isModification)),
     };
 
-    const limitsGroupSchema = {
+    const completeLimitsGroupSchema = {
         [OPERATIONAL_LIMITS_GROUPS_1]: yup
-            .array(yup.object().shape(limitsGroupValidationSchema()))
+            .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
             .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
                 const namesArray = array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
                 return areArrayElementsUnique(namesArray);
             }),
         [OPERATIONAL_LIMITS_GROUPS_2]: yup
-            .array(yup.object().shape(limitsGroupValidationSchema()))
+            .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
             .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
                 const namesArray = array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
                 return areArrayElementsUnique(namesArray);
@@ -96,11 +96,13 @@ const limitsValidationSchema = (id, onlySelectedLimits) => {
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
     };
-    return { [id]: yup.object().shape(onlySelectedLimits ? currentLimitsSchema : limitsGroupSchema) };
+    // for now modifications only use the selected limits set while the creations use complete limits sets
+    // => this is temporary and will be removed once the modification use complete limit sets
+    return { [id]: yup.object().shape(isModification ? selectedCurrentLimitsSchema : completeLimitsGroupSchema) };
 };
 
-export const getLimitsValidationSchema = (onlySelectedLimits = true, id = LIMITS) => {
-    return limitsValidationSchema(id, onlySelectedLimits);
+export const getLimitsValidationSchema = (isModification = false, id = LIMITS) => {
+    return limitsValidationSchema(id, isModification);
 };
 
 const limitsEmptyFormData = (id, onlySelectedLimits = true) => {
