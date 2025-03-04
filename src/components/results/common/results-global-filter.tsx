@@ -129,6 +129,7 @@ const styles = {
 const recentFilter: string = 'recent';
 
 export interface Filter {
+    uuid?: string; // only useful for generic filters
     label: string;
     filterType: string;
     recent?: boolean;
@@ -177,7 +178,16 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
     const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<Filter[]>([]);
 
     const getOptionLabel = useCallback(
-        (option: Filter) => (option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label + ' kV'),
+        (option: Filter) => {
+            switch (option.filterType) {
+                case FilterType.COUNTRY:
+                    return translate(option.label);
+                case FilterType.VOLTAGE_LEVEL:
+                    return option.label + ' kV';
+                case FilterType.FILTER:
+                    return option.label;
+            }
+        },
         [translate]
     );
 
@@ -207,13 +217,13 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
 
             values.forEach((value) => {
                 filters.push({
-                    // TODO : should put the UUID somewhere ?? (=> c'est la donnée à envoyer en back)
+                    uuid: value.id,
                     label: value.name,
                     filterType: FilterType.FILTER,
                     recent: true,
                 });
 
-                // Check if the element is already present  ==> TODO, attention doublons
+                // Check if the element is already present  ==> TODO, attention doublons d'uuid
                 /*if (getValues(name).find((v: FieldValues) => v?.id === otherElementAttributes.id) !== undefined) {
                 snackError({
                     messageTxt: '',
@@ -331,7 +341,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 }}
                 // Allows to find the corresponding chips without taking into account the recent status
                 isOptionEqualToValue={(option: Filter, value: Filter) =>
-                    option.label === value.label && option.filterType === value.filterType
+                    option.label === value.label && option.filterType === value.filterType && option.uuid === value.uuid
                 }
                 filterOptions={(options: Filter[], state: FilterOptionsState<Filter>) => {
                     const numByGroup: Map<string, number> = new Map();
@@ -387,7 +397,12 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 open={directoryItemSelectorOpen}
                 onClose={addSelectedFilters}
                 types={[ElementType.FILTER]}
-                equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]} // TODO : types doivent dependre de la page résultat choisie actuellement
+                // TODO when generalizing this component to all the computation: types should depend of the current computation
+                equipmentTypes={[
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+                    EQUIPMENT_TYPES.LINE,
+                    EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+                ]}
                 title={intl.formatMessage({ id: 'Filters' })}
                 selected={selectedFiltersElements}
                 multiSelect

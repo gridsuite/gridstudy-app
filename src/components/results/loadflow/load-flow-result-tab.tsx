@@ -66,7 +66,7 @@ const styles = {
 export interface GlobalFilter {
     nominalV?: string[];
     countryCode?: string[];
-    genericFilter?: string[];
+    genericFilter?: string[]; // UUIDs of the generic filters
     limitViolationsTypes?: LimitTypes[];
 }
 
@@ -262,7 +262,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             const genericFilters: Set<string> = new Set(
                 value
                     .filter((filter: Filter): boolean => filter.filterType === FilterType.FILTER)
-                    .map((filter: Filter) => filter.label)
+                    .map((filter: Filter) => filter.uuid ?? '')
+                    .filter((uuid: string): boolean => uuid !== '')
             );
             const countryCodes = new Set(
                 value

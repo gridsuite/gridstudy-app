@@ -1655,7 +1655,8 @@ export const reducer = createReducer(initialState, (builder) => {
         action.globalFilters.forEach((filter) => {
             if (
                 !newRecentGlobalFilters.some(
-                    (obj) => obj.label === filter.label && obj.filterType === filter.filterType
+                    (obj) =>
+                        obj.label === filter.label && obj.filterType === filter.filterType && obj.uuid === filter.uuid
                 )
             ) {
                 newRecentGlobalFilters.push(filter);
