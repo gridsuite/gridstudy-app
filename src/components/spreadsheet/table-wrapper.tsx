@@ -253,6 +253,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             gridRef.current.api.setGridOption('rowData', localRowData);
             updateSortConfig();
             updateFilters(gridRef.current?.api, filters);
+            updateLockedColumnsConfig();
         }
         setRowData(localRowData);
     }, [
@@ -264,6 +265,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         currentNode.id,
         updateSortConfig,
         filters,
+        updateLockedColumnsConfig,
     ]);
 
     const handleSwitchTab = useCallback(
