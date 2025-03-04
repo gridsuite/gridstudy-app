@@ -37,3 +37,16 @@ export function getSpreadsheetConfigCollection(studyUuid: UUID) {
     console.debug(url);
     return backendFetchJson(url);
 }
+
+export function updateStudySpreadsheetConfigCollection(studyUuid: UUID, collectionUuid: UUID) {
+    console.info('update study spreadsheet config collection');
+    const url = getStudyUrl(studyUuid) + `/spreadsheet-config-collection?collectionUuid=${collectionUuid}`;
+    console.debug(url);
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
