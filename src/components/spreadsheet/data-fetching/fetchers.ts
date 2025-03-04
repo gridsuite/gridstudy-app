@@ -25,7 +25,10 @@ import {
     fetchVoltageLevels,
     fetchVscConverterStations,
 } from '../../../services/study/network';
-import { EquipmentFetcher, SpreadsheetEquipmentType } from './spreadsheet.type';
+import { EquipmentFetcher, SpreadsheetEquipmentType } from '../config/spreadsheet.type';
+
+// Important: for spreadsheet data fetching, make sure we never use inUpstreamBuiltParentNode=true (otherwise
+// we can retrieve irrelevant data from a parent)
 
 export const getFetcher = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher => {
     switch (equipmentType) {

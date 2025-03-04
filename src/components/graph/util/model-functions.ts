@@ -9,6 +9,7 @@ import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from 'redux/reducer';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../tree-node.type';
+import { BUILD_STATUS } from '../../network/constants';
 
 export function getModificationNodeDataOrUndefined(node: NetworkModificationNodeData | RootNodeData) {
     if (isModificationNode(node)) {
@@ -116,6 +117,10 @@ export function isNodeReadOnly(node: CurrentTreeNode | null) {
     return node?.data?.readOnly ? true : false; // ternary operator because of potential undefined
 }
 
+export function isStatusBuilt(status: BUILD_STATUS | undefined) {
+    return status?.startsWith('BUILT');
+}
+
 export function isNodeBuilt(node: CurrentTreeNode | null) {
     if (!node) {
         return false;
@@ -123,7 +128,7 @@ export function isNodeBuilt(node: CurrentTreeNode | null) {
     if (node.type === NodeType.ROOT) {
         return true;
     }
-    return node.data?.globalBuildStatus?.startsWith('BUILT');
+    return isStatusBuilt(node.data?.globalBuildStatus);
 }
 
 export function isSameNode(node1: CurrentTreeNode | null, node2: CurrentTreeNode | null) {

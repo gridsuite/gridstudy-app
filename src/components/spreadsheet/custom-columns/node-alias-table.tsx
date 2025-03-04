@@ -48,7 +48,7 @@ const NodeAliasTable = () => {
                 initialValue: '',
                 editable: true,
                 type: DndColumnType.AUTOCOMPLETE,
-                options: nodeNames,
+                options: nodeNames, // note: 'Root' node is not translated here (unlike in app topbar)
                 width: '30%',
                 maxWidth: '30%',
             },
