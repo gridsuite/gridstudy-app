@@ -42,7 +42,10 @@ interface SpreadsheetCollectionDialogProps {
 /**
  * Dialog for importing a spreadsheet collection
  */
-export default function SpreadsheetCollectionDialog({ open, resetTabIndex }: SpreadsheetCollectionDialogProps) {
+export default function SpreadsheetCollectionDialog({
+    open,
+    resetTabIndex,
+}: Readonly<SpreadsheetCollectionDialogProps>) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();

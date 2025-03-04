@@ -41,7 +41,7 @@ interface SpreadsheetFromModelDialogProps {
 /**
  * Dialog for creating a spreadsheet from an existing model
  */
-export default function SpreadsheetFromModelDialog({ open }: SpreadsheetFromModelDialogProps) {
+export default function SpreadsheetFromModelDialog({ open }: Readonly<SpreadsheetFromModelDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 

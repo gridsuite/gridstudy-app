@@ -39,7 +39,7 @@ interface EmptySpreadsheetDialogProps {
 /**
  * Dialog for creating an empty spreadsheet
  */
-export default function EmptySpreadsheetDialog({ open }: EmptySpreadsheetDialogProps) {
+export default function EmptySpreadsheetDialog({ open }: Readonly<EmptySpreadsheetDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
