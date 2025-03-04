@@ -46,11 +46,13 @@ import {
     MEASUREMENT_Q2,
     PERMANENT_LIMIT,
     PHASE_TAP_CHANGER,
+    PHASE_TAP_CHANGER_STATUS,
     R,
     RATED_S,
     RATED_U1,
     RATED_U2,
     RATIO_TAP_CHANGER,
+    RATIO_TAP_CHANGER_STATUS,
     REGULATING,
     REGULATION_MODE,
     REGULATION_SIDE,
@@ -60,6 +62,7 @@ import {
     TARGET_DEADBAND,
     TARGET_V,
     TEMPORARY_LIMITS,
+    TO_BE_ESTIMATED,
     TYPE,
     VALIDITY,
     VALUE,
@@ -141,19 +144,20 @@ import {
     getCont1Cont2WithPositionEmptyFormData,
 } from '../../../connectivity/connectivity-form-utils';
 import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';
-import {
-    getBranchActiveReactivePowerEditData,
-    getBranchActiveReactivePowerEmptyFormData,
-    getBranchActiveReactivePowerValidationSchema,
-} from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
 import { TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
+import { ToBeEstimatedForm } from './to-be-estimated-form.tsx';
+import {
+    getStateEstimationEditData,
+    getStateEstimationEmptyFormData,
+    getStateEstimationValidationSchema,
+} from './state-estimation-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     ...getCont1Cont2WithPositionEmptyFormData(true),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(),
-    ...getBranchActiveReactivePowerEmptyFormData(BRANCH_MEASUREMENTS),
+    ...getStateEstimationEmptyFormData(BRANCH_MEASUREMENTS),
     ...getRatioTapChangerEmptyFormData(true),
     ...getPhaseTapChangerEmptyFormData(true),
     ...emptyProperties,
@@ -166,7 +170,7 @@ const formSchema = yup
         ...getCon1andCon2WithPositionValidationSchema(true),
         ...getCharacteristicsValidationSchema(true),
         ...getLimitsValidationSchema(),
-        ...getBranchActiveReactivePowerValidationSchema(BRANCH_MEASUREMENTS),
+        ...getStateEstimationValidationSchema(BRANCH_MEASUREMENTS),
         ...getRatioTapChangerModificationValidationSchema(),
         ...getPhaseTapChangerModificationValidationSchema(),
     })
@@ -225,6 +229,7 @@ const TwoWindingsTransformerModificationDialog = ({
             if (twtModification?.equipmentId) {
                 setSelectedId(twtModification.equipmentId);
             }
+            console.log('DBG DBR fromEdit', twtModification);
             reset({
                 [EQUIPMENT_NAME]: twtModification.equipmentName?.value,
                 [CONNECTIVITY]: {
@@ -240,7 +245,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     ratedU2: twtModification.ratedU2?.value,
                     ratedS: twtModification.ratedS?.value,
                 }),
-                ...getBranchActiveReactivePowerEditData(BRANCH_MEASUREMENTS, twtModification),
+                ...getStateEstimationEditData(BRANCH_MEASUREMENTS, twtModification),
                 ...getSelectedLimitsFormData({
                     permanentLimit1: twtModification.currentLimits1?.permanentLimit,
                     permanentLimit2: twtModification.currentLimits2?.permanentLimit,
@@ -519,6 +524,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 p2MeasurementValidity: measurements[MEASUREMENT_P2][VALIDITY],
                 q2MeasurementValue: measurements[MEASUREMENT_Q2][VALUE],
                 q2MeasurementValidity: measurements[MEASUREMENT_Q2][VALIDITY],
+                ratioTapChangerToBeEstimated: measurements[TO_BE_ESTIMATED][RATIO_TAP_CHANGER_STATUS],
+                phaseTapChangerToBeEstimated: measurements[TO_BE_ESTIMATED][PHASE_TAP_CHANGER_STATUS],
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -663,6 +670,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 )
                     .then((twt) => {
                         if (twt) {
+                            console.log('DBG DBR initID', twt, twt?.toBeEstimated);
                             setTwtToModify(twt);
                             setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, twt?.voltageLevelId1);
                             setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, twt?.voltageLevelId2);
@@ -843,7 +851,10 @@ const TwoWindingsTransformerModificationDialog = ({
                             />
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.MEASUREMENTS_TAB} p={1}>
-                            <BranchActiveReactivePowerMeasurementsForm equipmentToModify={twtToModify} />
+                            <Grid container spacing={2}>
+                                <BranchActiveReactivePowerMeasurementsForm equipmentToModify={twtToModify} />
+                                <ToBeEstimatedForm toBeEstimated={twtToModify?.toBeEstimated} />
+                            </Grid>
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB} p={1}>
                             <RatioTapChangerPane
@@ -876,6 +887,7 @@ const TwoWindingsTransformerModificationDialog = ({
 
 TwoWindingsTransformerModificationDialog.propTypes = {
     studyUuid: PropTypes.string,
+    defaultIdValue: PropTypes.string,
     currentNode: PropTypes.object,
     currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,

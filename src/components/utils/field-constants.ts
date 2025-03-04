@@ -439,7 +439,6 @@ export const THRESHOLD_ACT_TRANSIT = 'thresholdActTransit';
 export const THRESHOLD_REA_TRANSIT = 'thresholdReaTransit';
 
 /* Loadbounds */
-
 export const DEFAULT_BOUNDS = 'defaultBounds';
 export const DEFAULT_FIXED_BOUNDS = 'defaultFixedBounds';
 export const P_MIN = 'pmin';
@@ -447,9 +446,13 @@ export const P_MAX = 'pmax';
 export const Q_MIN = 'qmin';
 export const Q_MAX = 'qmax';
 
+/* State estimation extensions */
 export const BRANCH_MEASUREMENTS = 'branchMeasurements';
 export const MEASUREMENT_P1 = 'measurementP1';
 export const MEASUREMENT_P2 = 'measurementP2';
 export const MEASUREMENT_Q1 = 'measurementQ1';
 export const MEASUREMENT_Q2 = 'measurementQ2';
 export const VALIDITY = 'validity';
+export const TO_BE_ESTIMATED = 'toBeEstimated';
+export const RATIO_TAP_CHANGER_STATUS = 'ratioTapChangerStatus';
+export const PHASE_TAP_CHANGER_STATUS = 'phaseTapChangerStatus';
