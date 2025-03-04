@@ -310,4 +310,3 @@ export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
 };
 
 export const MAX_INT32: number = 2147483647;
-

@@ -17,8 +17,10 @@ import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import {
-    RESULT_TYPE, securityAnalysisTableNColumnsDefinition,
-    securityAnalysisTableNmKConstraintsColumnsDefinition, securityAnalysisTableNmKContingenciesColumnsDefinition,
+    RESULT_TYPE,
+    securityAnalysisTableNColumnsDefinition,
+    securityAnalysisTableNmKConstraintsColumnsDefinition,
+    securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-columns-definition';
 
 const styles = {
