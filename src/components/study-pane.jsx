@@ -63,6 +63,10 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
         }
     }
 
+    const unsetTableEquipment = () => {
+        setTableEquipment({ id: null, type: null, changed: false });
+    };
+
     return (
         <>
             {/*Rendering the map is slow, do it once and keep it display:none*/}
@@ -93,7 +97,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
                         disabled={disabled}
-                        onEquipmentScrolled={() => setTableEquipment({ id: null, type: null, changed: false })}
+                        onEquipmentScrolled={unsetTableEquipment}
                     />
                 </Paper>
             </TabPanelLazy>
