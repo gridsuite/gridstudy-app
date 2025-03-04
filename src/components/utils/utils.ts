@@ -9,9 +9,9 @@ import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
 import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
-import { AttributeModification } from 'components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
 import { Option } from '@gridsuite/commons-ui';
 import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
+import { AttributeModification } from '../dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
