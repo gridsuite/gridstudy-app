@@ -280,8 +280,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             if (selectedRow) {
                 gridRef.current?.api?.ensureNodeVisible(selectedRow, 'top');
                 selectedRow.setSelected(true, true);
+                onEquipmentScrolled();
             }
-            onEquipmentScrolled();
         }
     }, [equipmentId, equipmentType, manualTabSwitch, onEquipmentScrolled]);
 
