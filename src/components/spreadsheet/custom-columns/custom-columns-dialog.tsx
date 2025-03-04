@@ -224,6 +224,10 @@ export default function CustomColumnDialog({
                     ? updateSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
                     : createSpreadsheetColumn(spreadsheetConfigUuid, formattedParams);
 
+            // we reset and close the dialog to avoid multiple submissions
+            reset(initialCustomColumnForm);
+            open.setFalse();
+
             updateOrCreateColumn
                 .then((uuid) => {
                     dispatch(
@@ -242,9 +246,6 @@ export default function CustomColumnDialog({
                             },
                         })
                     );
-
-                    reset(initialCustomColumnForm);
-                    open.setFalse();
                 })
                 .catch((error) => {
                     snackError({
