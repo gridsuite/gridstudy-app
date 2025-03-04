@@ -49,17 +49,28 @@ const spreadsheetFr = {
     'spreadsheet/collection/save/success': 'Collection de tableurs créée dans {folderName}',
     'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Créer une feuille de calcul vide',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Appliquer un modèle de tableur',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection': 'Appliquer une collection de tableurs',
+    'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
+        "Vous êtes sur le point de remplacer le contenu actuel de l'onglet 'Tableur'. Ce contenu sera perdu si vous ne le sauvegardez pas d'abord dans GridExplore. Souhaitez-vous poursuivre sans sauvegarder le contenu actuel?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Ajouter feuille de calcul',
     'spreadsheet/create_new_spreadsheet/empty_spreadsheet_option': 'Ajouter une feuille',
     'spreadsheet/create_new_spreadsheet/apply_model_option': 'Choisir un modèle',
+    'spreadsheet/create_new_spreadsheet/apply_collection_option': 'Choisir une collection',
     'spreadsheet/create_new_spreadsheet/select_spreadsheet_model': 'Modèle de tableur',
+    'spreadsheet/create_new_spreadsheet/select_spreadsheet_collection': 'Collection de tableurs',
     'spreadsheet/create_new_spreadsheet/spreadsheet_name': 'Nom du tableur',
     'spreadsheet/create_new_spreadsheet/equipment_type': "Type d'équipement",
     'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists': 'Ce nom de tableur existe déjà',
     'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_model': 'Vous devez sélectionner un modèle de tableur',
+    'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_collection':
+        'Vous devez sélectionner une collection de tableurs',
     'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model':
         'Vous devez sélectionner un seul modèle de tableur',
+    'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_collection':
+        'Vous devez sélectionner une seule collection de tableurs',
     'spreadsheet/create_new_spreadsheet/error_loading_model': 'Erreur lors de la récupération du modèle de tableur',
+    'spreadsheet/create_new_spreadsheet/error_loading_collection':
+        'Erreur lors de la récupération de la collection de tableurs',
     'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': "Erreur lors de l'ajout du tableur",
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
