@@ -89,7 +89,6 @@ export default function SpreadsheetCollectionDialog({
                     dispatch(initTableDefinitions(collectionData.id, tableDefinitions || []));
                     resetTabIndex();
                     setConfirmationDialogOpen(false);
-                    open.setFalse();
                 })
                 .catch((error) => {
                     snackError({
@@ -98,6 +97,7 @@ export default function SpreadsheetCollectionDialog({
                     });
                     setConfirmationDialogOpen(false);
                 });
+            open.setFalse();
         },
         [studyUuid, dispatch, resetTabIndex, open, snackError]
     );

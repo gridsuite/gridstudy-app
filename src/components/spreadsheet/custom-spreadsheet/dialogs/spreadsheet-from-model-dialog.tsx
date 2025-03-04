@@ -102,8 +102,8 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
                         messageTxt: error,
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
                     });
-                    open.setFalse();
                 });
+            open.setFalse();
         },
         [tablesDefinitions.length, spreadsheetsCollectionUuid, dispatch, snackError, open]
     );
