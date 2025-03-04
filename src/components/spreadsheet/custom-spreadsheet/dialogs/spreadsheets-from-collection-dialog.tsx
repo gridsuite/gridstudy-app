@@ -88,15 +88,14 @@ export default function SpreadsheetCollectionDialog({
 
                     dispatch(initTableDefinitions(collectionData.id, tableDefinitions || []));
                     resetTabIndex();
-                    setConfirmationDialogOpen(false);
                 })
                 .catch((error) => {
                     snackError({
                         messageTxt: error,
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_collection',
                     });
-                    setConfirmationDialogOpen(false);
                 });
+            setConfirmationDialogOpen(false);
             open.setFalse();
         },
         [studyUuid, dispatch, resetTabIndex, open, snackError]
