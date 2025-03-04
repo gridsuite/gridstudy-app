@@ -472,6 +472,7 @@
     "showSelectDirectoryDialog": "Choose folder",
     "showSelectParameterDialog": "Choose parameters",
     "nameAlreadyUsed": "This name is already used",
+    "tagAlreadyUsed": "This tag is already used",
     "studyDirectoryFetchingError": "An error occurred while fetching study directory",
     "AddDescription": "Add a description (optional)",
 
@@ -1480,6 +1481,8 @@
     "chooseCase": "Select a case",
     "addNetwork": "Add network",
     "rootName": "Network name",
+    "rootTag": "Network tag",
+    "TagRequiredCondition": "Tag is required, should be unique in study and of length <= 4",
     "rootNetworksCount": "{count, plural, =1 {# network} other {# networks}}",
     "deletingRootNetwork": "Deleting root network ...",
     "creatingRootNetwork": "Creating root network ...",

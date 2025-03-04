@@ -473,6 +473,7 @@
     "showSelectDirectoryDialog": "Modifier dossier",
     "showSelectParameterDialog": "Choisir paramètres",
     "nameAlreadyUsed": "Ce nom est déjà utilisé",
+    "tagAlreadyUsed": "Cette balise est déjà utilisée",
     "studyDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier de l'étude",
     "AddDescription": "Ajouter une description (optionnel)",
 
@@ -1477,6 +1478,8 @@
     "chooseCase": "Choisir une situation",
     "addNetwork": "Ajouter un réseau",
     "rootName": "Nom du réseau",
+    "rootTag": "Balise du réseau",
+    "TagRequiredCondition": "La balise est obligatoire, unique dans l'étude et de taille <= 4",
     "rootNetworksCount": "{count, plural, =1 {# réseau} other {# réseaux}}",
     "deletingRootNetwork": "Suppression du réseau racine en cours ...",
     "creatingRootNetwork": "Création du réseau racine en cours ...",

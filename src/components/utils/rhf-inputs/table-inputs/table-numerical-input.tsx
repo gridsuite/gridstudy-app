@@ -5,11 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { IconButton, InputAdornment, TextField } from '@mui/material';
+import { IconButton, InputAdornment, InputBaseComponentProps, StandardTextFieldProps, TextField } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useMemo } from 'react';
 import { validateValueIsANumber } from 'components/utils/validation-functions';
+
+export interface TableNumericalInputProps extends StandardTextFieldProps {
+    name: string;
+    inputProps?: InputBaseComponentProps;
+    previousValue?: number;
+    valueModified: boolean;
+    adornment?: { text: string };
+    isClearable?: boolean;
+}
 
 export const TableNumericalInput = ({
     name,
@@ -20,18 +29,21 @@ export const TableNumericalInput = ({
     adornment,
     isClearable = true,
     ...props
-}) => {
+}: TableNumericalInputProps) => {
     const { trigger } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
 
-    const inputTransform = (value) => {
+    const inputTransform = (value: string | null) => {
+        if (value === null) {
+            return '';
+        }
         if (['-', '.'].includes(value)) {
             return value;
         }
-        return value === null || isNaN(value) ? '' : value.toString();
+        return isNaN(Number(value)) ? '' : value.toString();
     };
 
     const clearable = useMemo(
@@ -44,7 +56,7 @@ export const TableNumericalInput = ({
         [isClearable, previousValue, value]
     );
 
-    const outputTransform = (value) => {
+    const outputTransform = (value?: string | number) => {
         if (typeof value === 'string') {
             if (value === '-') {
                 return value;
@@ -62,7 +74,7 @@ export const TableNumericalInput = ({
         return value === Number.MAX_VALUE ? null : value;
     };
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         onChange(outputTransform(e.target.value));
         trigger(name);
     };
@@ -87,7 +99,7 @@ export const TableNumericalInput = ({
                     color:
                         previousValue !== undefined && previousValue === parseFloat(value) && !valueModified
                             ? 'grey'
-                            : null, // grey out the value if it is the same as the previous one
+                            : undefined, // grey out the value if it is the same as the previous one
                     textAlign: style?.textAlign ?? 'left',
                 },
                 inputMode: 'numeric',

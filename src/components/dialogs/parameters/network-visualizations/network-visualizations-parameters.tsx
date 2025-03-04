@@ -23,12 +23,12 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    mergeSx,
     SubmitButton,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { TabValue } from './network-visualizations-utils';
-import { mergeSx } from '../../../utils/functions';
 import { NetworkVisualizationParameters } from './network-visualizations.types';
 import {
     getNetworkVisualizationParameters,

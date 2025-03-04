@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, mergeSx, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { GENERAL } from '../voltageinit/voltage-init-parameters-form';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
-import { mergeSx } from '../../../utils/functions';
 import { styles } from '../parameters-style';
 import { TabPanel } from '../parameters';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';

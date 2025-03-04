@@ -12,7 +12,7 @@ import { FormattedMessage } from 'react-intl';
 import { Alert, Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EquipmentTable } from './equipment-table';
-import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
+import { Identifiable, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { EquipmentTabs } from './equipment-tabs';
@@ -24,7 +24,6 @@ import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
-import { mergeSx } from '../utils/functions';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
@@ -255,9 +254,21 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (gridRef.current?.api) {
             gridRef.current.api.setGridOption('rowData', localRowData);
             updateSortConfig();
+            updateFilters(gridRef.current?.api, filters);
+            updateLockedColumnsConfig();
         }
         setRowData(localRowData);
-    }, [tabIndex, disabled, equipments, tableDefinition?.type, nodesAliases, currentNode.id, updateSortConfig]);
+    }, [
+        tabIndex,
+        disabled,
+        equipments,
+        tableDefinition?.type,
+        nodesAliases,
+        currentNode.id,
+        updateSortConfig,
+        filters,
+        updateLockedColumnsConfig,
+    ]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
