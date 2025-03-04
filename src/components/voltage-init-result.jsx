@@ -190,13 +190,19 @@ const VoltageInitResult = ({ result, status }) => {
     const indicatorsColumnDefs = useMemo(() => {
         return [
             {
+                headerName: intl.formatMessage({ id: 'Key' }),
                 field: 'key',
+                colId: 'key',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'Key' }) },
             },
             {
+                headerName: intl.formatMessage({ id: 'Value' }),
                 field: 'value',
+                colId: 'value',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'Value' }) },
             },
         ];
-    }, []);
+    }, [intl]);
 
     function renderHeaderReactiveSlacks(result) {
         const calculateTotal = (reactiveSlacks, isPositive) => {
@@ -259,7 +265,7 @@ const VoltageInitResult = ({ result, status }) => {
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows}
                     onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
+                    skipColumnHeaders={false}
                 />
             </>
         );
@@ -270,10 +276,14 @@ const VoltageInitResult = ({ result, status }) => {
             {
                 headerName: intl.formatMessage({ id: 'BusId' }),
                 field: 'busId',
+                colId: 'busId',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusId' }) },
             },
             {
                 headerName: intl.formatMessage({ id: 'Slack' }),
                 field: 'slack',
+                colId: 'slack',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'Slack' }) },
                 numeric: true,
             },
         ];
@@ -291,7 +301,7 @@ const VoltageInitResult = ({ result, status }) => {
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
                     rows={result.reactiveSlacks}
                     onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
+                    skipColumnHeaders={false}
                 />
             </>
         );
@@ -302,15 +312,21 @@ const VoltageInitResult = ({ result, status }) => {
             {
                 headerName: intl.formatMessage({ id: 'BusId' }),
                 field: 'busId',
+                colId: 'busId',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusId' }) },
             },
             {
                 headerName: intl.formatMessage({ id: 'BusVoltage' }),
                 field: 'v',
+                colId: 'v',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusVoltage' }) },
                 numeric: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'BusAngle' }),
                 field: 'angle',
+                colId: 'angle',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusAngle' }) },
                 numeric: true,
             },
         ];
@@ -326,7 +342,7 @@ const VoltageInitResult = ({ result, status }) => {
                     tableName={intl.formatMessage({ id: 'BusVoltages' })}
                     rows={busVoltages}
                     onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
+                    skipColumnHeaders={false}
                 />
             </>
         );
