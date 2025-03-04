@@ -12,8 +12,8 @@ import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 're
 import { useIntl } from 'react-intl';
 import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
 import { downloadZipFile } from 'services/utils';
-import { RESULT_TYPE } from './security-analysis-result-utils';
 import { PERMANENT_LIMIT_NAME } from '../common/utils';
+import { RESULT_TYPE } from './security-analysis-columns-definition';
 
 interface SecurityAnalysisExportButtonProps {
     studyUuid: UUID;

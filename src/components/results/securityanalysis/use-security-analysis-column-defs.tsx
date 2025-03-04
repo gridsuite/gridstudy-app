@@ -13,15 +13,13 @@ import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/ne
 import { BranchSide } from 'components/utils/constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, Tooltip } from '@mui/material';
-import {
-    RESULT_TYPE,
-    securityAnalysisTableNColumnsDefinition,
-    securityAnalysisTableNmKConstraintsColumnsDefinition,
-    securityAnalysisTableNmKContingenciesColumnsDefinition,
-} from './security-analysis-result-utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import {
+    RESULT_TYPE, securityAnalysisTableNColumnsDefinition,
+    securityAnalysisTableNmKConstraintsColumnsDefinition, securityAnalysisTableNmKContingenciesColumnsDefinition,
+} from './security-analysis-columns-definition';
 
 const styles = {
     button: {

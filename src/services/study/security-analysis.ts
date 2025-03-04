@@ -8,7 +8,8 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
-import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-result-utils';
+
+import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-columns-definition';
 
 export function startSecurityAnalysis(
     studyUuid: UUID,
