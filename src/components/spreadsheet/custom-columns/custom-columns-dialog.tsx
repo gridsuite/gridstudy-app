@@ -77,7 +77,7 @@ const styles = {
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 } as const satisfies Record<string, SxProps<Theme>>;
 
-const COLUMN_NAME_REGEX = /[^a-zA-Z0-9_]/g;
+const COLUMN_NAME_REGEX = /\W/g;
 
 export default function CustomColumnDialog({
     open,
