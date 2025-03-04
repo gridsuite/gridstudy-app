@@ -14,7 +14,19 @@ import {
     VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 
-import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography, Badge, IconButton } from '@mui/material';
+import {
+    Box,
+    Checkbox,
+    CircularProgress,
+    Theme,
+    Toolbar,
+    Tooltip,
+    Typography,
+    Badge,
+    IconButton,
+    Stack,
+    Chip,
+} from '@mui/material';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -37,6 +49,32 @@ import { isChecked, isPartial } from './network-modification-node-editor-utils';
 const styles = {
     checkBoxLabel: { flexGrow: '1' },
     disabledRootNetwork: { opacity: 0.4 },
+    checkboxListItem: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        paddingRight: '16px',
+        '& .MuiListItemSecondaryAction-root': {
+            paddingLeft: '4px',
+            position: 'relative',
+            top: 0,
+            right: 0,
+            transform: 'translateX(0px)',
+        },
+    },
+    // TODO WHY it doesn't work with using the Theme here ?????
+    // checkboxListItem: (theme: Theme) => ({
+    //     display: 'flex',
+    //     alignItems: 'flex-start',
+    //     paddingRight: theme.spacing(4),
+    //     '& .MuiListItemSecondaryAction-root': {
+    //         position: 'relative',
+    //         top: 0,
+    //         right: 0,
+    //         transform: 'translateX(0px)',
+    //     },
+    // }),
+    checkbox: { paddingTop: '4px' },
+    // checkbox: (theme: Theme) => ({ paddingTop: theme.spacing(1) }),
     checkBoxIcon: { minWidth: 0, padding: 0, marginLeft: 2 },
     checkboxButton: {
         padding: 0.5,
@@ -186,25 +224,23 @@ const RootNetworkNodeEditor = () => {
             const isCurrentRootNetwork = rootNetwork.rootNetworkUuid === currentRootNetwork;
 
             return (
-                <Box sx={{ display: 'flex', alignItems: 'center', padding: '8px 0', marginRight: '8px' }}>
-                    <IconButton
-                        size="small"
-                        onClick={() => {
-                            if (rootNetwork.rootNetworkUuid !== currentRootNetwork) {
-                                dispatch(setCurrentRootNetwork(rootNetwork.rootNetworkUuid));
-                            }
-                        }}
-                        disabled={rootNetwork.isCreating}
-                    >
-                        {isCurrentRootNetwork ? (
-                            <Badge overlap="circular" color="primary" variant="dot">
-                                <RemoveRedEyeIcon />
-                            </Badge>
-                        ) : (
-                            <VisibilityOffIcon />
-                        )}
-                    </IconButton>
-                </Box>
+                <IconButton
+                    size="small"
+                    onClick={() => {
+                        if (rootNetwork.rootNetworkUuid !== currentRootNetwork) {
+                            dispatch(setCurrentRootNetwork(rootNetwork.rootNetworkUuid));
+                        }
+                    }}
+                    disabled={rootNetwork.isCreating}
+                >
+                    {isCurrentRootNetwork ? (
+                        <Badge overlap="circular" color="primary" variant="dot">
+                            <RemoveRedEyeIcon />
+                        </Badge>
+                    ) : (
+                        <VisibilityOffIcon />
+                    )}
+                </IconButton>
             );
         },
         [currentRootNetwork, dispatch]
@@ -219,6 +255,8 @@ const RootNetworkNodeEditor = () => {
                             ...(rootNetwork.isCreating && { ...styles.disabledRootNetwork }),
                             ...styles.checkBoxLabel,
                         },
+                        checkboxListItem: styles.checkboxListItem,
+                        checkbox: styles.checkbox,
                         checkBoxIcon: styles.checkBoxIcon,
                         checkboxButton: styles.checkboxButton,
                     }),
@@ -231,7 +269,16 @@ const RootNetworkNodeEditor = () => {
                 onSelectionChange={setSelectedItems}
                 items={rootNetworks}
                 getItemId={(val) => val.rootNetworkUuid}
-                getItemLabel={(val) => val.name}
+                getItemLabel={(val) => {
+                    return (
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                            {val.name}
+                            <Stack direction="row" spacing={1}>
+                                <Chip size="small" label={val.tag} color="primary" />
+                            </Stack>
+                        </Box>
+                    );
+                }}
                 secondaryAction={handleSecondaryAction}
             />
         );
@@ -294,7 +341,7 @@ const RootNetworkNodeEditor = () => {
         }, {} as Record<string, string>);
     }
 
-    const doCreateRootNetwork = ({ name, caseName, caseId }: FormData) => {
+    const doCreateRootNetwork = ({ name, tag, caseName, caseId }: FormData) => {
         if (!studyUuid) {
             return;
         }
@@ -309,6 +356,7 @@ const RootNetworkNodeEditor = () => {
                     caseId as UUID,
                     params.formatName,
                     name,
+                    tag,
                     studyUuid,
                     customizedCurrentParameters
                 );
