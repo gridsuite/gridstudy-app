@@ -145,7 +145,7 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';
 import { TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
-import { ToBeEstimatedForm } from './to-be-estimated-form.tsx';
+import { ToBeEstimatedForm } from './2wt-to-be-estimated/to-be-estimated-form.tsx';
 import {
     getStateEstimationEditData,
     getStateEstimationEmptyFormData,
@@ -229,7 +229,11 @@ const TwoWindingsTransformerModificationDialog = ({
             if (twtModification?.equipmentId) {
                 setSelectedId(twtModification.equipmentId);
             }
-            console.log('DBG DBR fromEdit', twtModification);
+            console.log(
+                'DBG DBR fromEdit',
+                twtModification,
+                getStateEstimationEditData(BRANCH_MEASUREMENTS, twtModification)
+            );
             reset({
                 [EQUIPMENT_NAME]: twtModification.equipmentName?.value,
                 [CONNECTIVITY]: {

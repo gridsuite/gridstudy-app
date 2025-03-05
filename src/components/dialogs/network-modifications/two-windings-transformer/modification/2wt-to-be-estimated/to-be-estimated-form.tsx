@@ -8,15 +8,15 @@
 import Grid from '@mui/material/Grid';
 import { FunctionComponent, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
-import GridItem from '../../../commons/grid-item';
+import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
+import GridSection from '../../../../commons/grid-section';
+import GridItem from '../../../../commons/grid-item';
 import {
     RATIO_TAP_CHANGER_STATUS,
     PHASE_TAP_CHANGER_STATUS,
     BRANCH_MEASUREMENTS,
     TO_BE_ESTIMATED,
-} from '../../../../utils/field-constants';
-import GridSection from '../../../commons/grid-section';
+} from '../../../../../utils/field-constants';
 import { ToBeEstimatedProps } from './to-be-estimated.type';
 
 export const ToBeEstimatedForm: FunctionComponent<ToBeEstimatedProps> = ({ toBeEstimated }) => {

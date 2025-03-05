@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../../utils/yup-config';
-import { RATIO_TAP_CHANGER_STATUS, PHASE_TAP_CHANGER_STATUS } from '../../../../utils/field-constants';
+import yup from '../../../../../utils/yup-config';
+import { RATIO_TAP_CHANGER_STATUS, PHASE_TAP_CHANGER_STATUS } from '../../../../../utils/field-constants';
 import { ToBeEstimatedInfo } from './to-be-estimated.type';
 
 export function getToBeEstimatedEmptyFormData(id: string) {
