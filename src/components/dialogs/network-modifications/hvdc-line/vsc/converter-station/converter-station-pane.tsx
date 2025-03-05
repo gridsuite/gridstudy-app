@@ -25,15 +25,13 @@ import { Grid } from '@mui/material';
 import ReactiveLimitsForm from '../../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { TextField } from '@mui/material';
-import {
-    ConverterStationElementModificationInfos,
-    UpdateReactiveCapabilityCurveTable,
-} from './converter-station-utils';
+import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
 import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
+import { ConverterStationElementModificationInfos } from './converter-station-type';
 
 interface VscConverterStationPaneProps {
     id: string;
