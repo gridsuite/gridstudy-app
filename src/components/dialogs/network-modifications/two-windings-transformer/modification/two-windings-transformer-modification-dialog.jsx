@@ -88,12 +88,12 @@ import {
 import { LimitsPane } from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
     getLimitsEmptyFormData,
-    getSelectedLimitsFormData,
     getLimitsValidationSchema,
+    getSelectedLimitsFormData,
     sanitizeLimitNames,
     updateTemporaryLimits,
-    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';

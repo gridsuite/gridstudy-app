@@ -171,7 +171,7 @@ export function getVscConverterStationSchema(id: string) {
                     then: (schema) => schema.required(),
                 }),
             ...getConnectivityWithPositionValidationSchema(),
-            ...getReactiveLimitsSchema(false, true),
+            [REACTIVE_LIMITS]: getReactiveLimitsSchema(false, true),
         }),
     };
 }
@@ -185,7 +185,7 @@ export function getVscConverterStationModificationSchema(id: string) {
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
             [REACTIVE_POWER]: yup.number().nullable(),
             [VOLTAGE]: yup.number().nullable(),
-            ...getReactiveLimitsSchema(true),
+            [REACTIVE_LIMITS]: getReactiveLimitsSchema(true),
         }),
     };
 }

@@ -24,22 +24,33 @@ import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constan
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { TextField, Grid } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 
-const GeneratorModificationForm = ({
+export interface GeneratorModificationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode | null;
+    currentRootNetworkUuid: UUID | null;
+    generatorToModify: any;
+    updatePreviousReactiveCapabilityCurveTable: any;
+    equipmentId: string;
+}
+
+export default function GeneratorModificationForm({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
     generatorToModify,
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
-}) => {
-    const currentNodeUuid = currentNode?.id;
+}: Readonly<GeneratorModificationFormProps>) {
+    const currentNodeUuid: UUID | null = currentNode?.id ?? null;
     const intl = useIntl();
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
@@ -78,7 +89,7 @@ const GeneratorModificationForm = ({
         <SelectInput
             name={ENERGY_SOURCE}
             label={'energySource'}
-            options={ENERGY_SOURCES}
+            options={Object.values(ENERGY_SOURCES)}
             fullWidth
             size={'small'}
             formProps={{ ...filledTextField }}
@@ -260,6 +271,4 @@ const GeneratorModificationForm = ({
             <PropertiesForm networkElementType={'generator'} isModification={true} />
         </>
     );
-};
-
-export default GeneratorModificationForm;
+}

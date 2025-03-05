@@ -47,10 +47,9 @@ export const getReactiveLimitsEmptyFormData = (id = REACTIVE_LIMITS) => ({
 
 export const getReactiveLimitsSchema = (
     isEquipmentModification = false,
-    positiveAndNegativePExist = false, // if true, we check that Reactive Capability table have at least one row with negative P and one with positive one
-    id = REACTIVE_LIMITS
-) => ({
-    [id]: yup.object().shape(
+    positiveAndNegativePExist = false // if true, we check that Reactive Capability table have at least one row with negative P and one with positive one
+) =>
+    yup.object().shape(
         {
             [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
             [MINIMUM_REACTIVE_POWER]: yup
@@ -67,8 +66,7 @@ export const getReactiveLimitsSchema = (
                     is: (minimumReactivePower) => !isEquipmentModification && minimumReactivePower != null,
                     then: (schema) => schema.required(),
                 }),
-            ...getReactiveCapabilityCurveValidationSchema(REACTIVE_CAPABILITY_CURVE_TABLE, positiveAndNegativePExist),
+            [REACTIVE_CAPABILITY_CURVE_TABLE]: getReactiveCapabilityCurveValidationSchema(positiveAndNegativePExist),
         },
         [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
-    ),
-});
+    );
