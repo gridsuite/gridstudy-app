@@ -44,21 +44,17 @@ import {
     STAGES_DEFINITION_INDEX,
     STAGES_SELECTION,
 } from '../../../utils/field-constants';
-import yup from '../../../utils/yup-config';
 import { setNonEvacuatedEnergyParameters } from '../../../../services/study/non-evacuated-energy';
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
 import {
-    UseGetNonEvacuatedEnergyParametersReturnProps,
-    getContingenciesFormSchema,
+    formSchema,
     getContingenciesParams,
-    getGenerationStagesDefinitionFormSchema,
     getGenerationStagesDefinitionParams,
-    getGenerationStagesSelectionFormSchema,
     getGenerationStagesSelectionParams,
-    getGeneratorsCappingsFormSchema,
     getGeneratorsCappingsParams,
-    getMonitoredBranchesFormSchema,
     getMonitoredBranchesParams,
+    NonEvacuatedEnergyParametersForm,
+    UseGetNonEvacuatedEnergyParametersReturnProps,
 } from './utils';
 import ComputingType from '../../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
@@ -66,20 +62,6 @@ import LineSeparator from '../../commons/line-separator';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { styles } from '../parameters-style';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [PROVIDER]: yup.string().required(),
-        ...getGenerationStagesDefinitionFormSchema(),
-        ...getGenerationStagesSelectionFormSchema(),
-        ...getGeneratorsCappingsFormSchema(),
-        ...getMonitoredBranchesFormSchema(),
-        ...getContingenciesFormSchema(),
-    })
-    .required();
-
-export type NonEvacuatedEnergyParametersForm = yup.InferType<typeof formSchema>;
 
 interface NonEvacuatedEnergyParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.NON_EVACUATED_ENERGY_ANALYSIS>;
