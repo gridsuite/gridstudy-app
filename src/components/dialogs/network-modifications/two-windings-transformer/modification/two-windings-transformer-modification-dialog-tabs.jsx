@@ -47,7 +47,10 @@ const TwoWindingsTransformerModificationDialogTabs = ({ tabIndex, tabIndexesWith
                 />
                 <Tab
                     label={<FormattedMessage id="StateEstimationTab" />}
-                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerModificationDialogTab.MEASUREMENTS_TAB)}
+                    sx={getTabStyle(
+                        tabIndexesWithError,
+                        TwoWindingsTransformerModificationDialogTab.STATE_ESTIMATION_TAB
+                    )}
                 />
                 <Tab
                     label={<FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />}
