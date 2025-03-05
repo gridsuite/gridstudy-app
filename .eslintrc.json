@@ -6,6 +6,20 @@
         "build",
         "coverage"
     ],
+    "settings": {
+        "import/parsers": {
+            "@typescript-eslint/parser": [
+                ".ts",
+                ".tsx"
+            ]
+        },
+        "import/resolver": {
+            "typescript": {
+                "alwaysTryTypes": true,
+                "project": "./tsconfig.json"
+            }
+        }
+    },
     "plugins": ["react-refresh"],
     "rules": {
         "prettier/prettier": "warn",
@@ -13,6 +27,14 @@
         "react-refresh/only-export-components": [
             "error",
             { "allowConstantExport": true }
-        ]
+        ],
+        "import/no-cycle": [
+            "error",
+            {
+                "maxDepth": "∞",
+                "ignoreExternal": true
+            }
+        ],
+        "import/no-self-import": "error"
     }
 }
