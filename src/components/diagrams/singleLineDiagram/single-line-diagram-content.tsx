@@ -28,7 +28,7 @@ import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
@@ -41,19 +41,18 @@ import ShuntCompensatorModificationDialog from 'components/dialogs/network-modif
 import { deleteEquipment, updateSwitchState } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
 import { ComputingType } from 'components/computing-status/computing-type';
-import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, convertToEquipmentType } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
-import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 type EquipmentMenuState = {
     position: [number, number];

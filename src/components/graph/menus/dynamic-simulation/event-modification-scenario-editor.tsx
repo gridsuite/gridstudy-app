@@ -20,7 +20,7 @@ import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types
 import { deleteDynamicSimulationEvents, fetchDynamicSimulationEvents } from '../../../../services/dynamic-simulation';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';
-import { isChecked, isPartial, styles } from '../network-modification-node-editor';
+import { isChecked, isPartial, styles } from '../network-modification-node-editor-utils';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { AppState, StudyUpdated } from '../../../../redux/reducer';

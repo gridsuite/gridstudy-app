@@ -85,7 +85,6 @@ import {
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
-import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import { LimitsPane } from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
@@ -99,6 +98,7 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
 import {
+    addSelectedFieldToRows,
     compareStepsWithPreviousValues,
     computeHighTapPosition,
     formatTemporaryLimits,
@@ -146,6 +146,7 @@ import {
     getBranchActiveReactivePowerEmptyFormData,
     getBranchActiveReactivePowerValidationSchema,
 } from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
+import { TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -164,22 +165,13 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string(),
         ...getCon1andCon2WithPositionValidationSchema(true),
         ...getCharacteristicsValidationSchema(true),
-        ...getLimitsValidationSchema(),
+        ...getLimitsValidationSchema(true),
         ...getBranchActiveReactivePowerValidationSchema(BRANCH_MEASUREMENTS),
         ...getRatioTapChangerModificationValidationSchema(),
         ...getPhaseTapChangerModificationValidationSchema(),
     })
     .concat(modificationPropertiesSchema)
     .required();
-
-export const TwoWindingsTransformerModificationDialogTab = {
-    CONNECTIVITY_TAB: 0,
-    CHARACTERISTICS_TAB: 1,
-    LIMITS_TAB: 2,
-    MEASUREMENTS_TAB: 3,
-    RATIO_TAP_TAB: 4,
-    PHASE_TAP_TAB: 5,
-};
 
 /**
  * Dialog to modify a two windings transformer in the network

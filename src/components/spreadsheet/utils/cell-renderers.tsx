@@ -9,16 +9,15 @@ import { Box, Checkbox, Tooltip } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
-import { mergeSx } from '../../utils/functions';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
-import { IntlShape } from 'react-intl';
 import { ICellRendererParams } from 'ag-grid-community';
 import { CustomCellRendererProps } from 'ag-grid-react';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
     tableCell: (theme: Theme) => ({
         fontSize: 'small',
-        cursor: 'initial',
+        cursor: 'inherit',
         display: 'flex',
         '&:before': {
             content: '""',
@@ -37,8 +36,6 @@ const styles = {
         marginLeft: 'inherit',
     },
 };
-
-export const NA_Value = 'N/A';
 
 export const BooleanCellRenderer = (props: any) => {
     const isChecked = props.value;
@@ -72,7 +69,7 @@ const formatNumericCell = (value: number, fractionDigits?: number) => {
     return { value: value.toFixed(fractionDigits ?? 2), tooltip: value?.toString() };
 };
 
-export const formatCell = (props: any) => {
+const formatCell = (props: any) => {
     let value = props?.valueFormatted || props.value;
     let tooltipValue = undefined;
     // we use valueGetter only if value is not defined
@@ -88,25 +85,6 @@ export const formatCell = (props: any) => {
         value = null;
     }
     return { value: value, tooltip: tooltipValue };
-};
-
-export const convertDuration = (duration: number) => {
-    if (!duration || isNaN(duration)) {
-        return '';
-    }
-
-    const minutes = Math.floor(duration / 60);
-    const seconds = duration % 60;
-
-    if (seconds === 0) {
-        return minutes + ' mn';
-    }
-
-    if (minutes === 0) {
-        return seconds + ' s';
-    }
-
-    return `${minutes}' ${seconds}"`;
 };
 
 export interface NumericCellRendererProps extends CustomCellRendererProps {
@@ -257,8 +235,4 @@ export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNo
             </Tooltip>
         </Box>
     );
-};
-
-export const formatNAValue = (value: string, intl: IntlShape): string => {
-    return value === NA_Value ? intl.formatMessage({ id: 'Undefined' }) : value;
 };

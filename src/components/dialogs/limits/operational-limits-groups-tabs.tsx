@@ -24,14 +24,14 @@ import {
 } from '../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { tabStyles } from '../../parameters-tabs';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import MenuIcon from '@mui/icons-material/Menu';
 import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
+import { tabStyles } from 'components/utils/tab-utils';
 
-export const limitsStyles = {
+const limitsStyles = {
     limitsBackground: {
         p: 1,
     },
@@ -306,7 +306,7 @@ export function OperationalLimitsGroupsTabs({
             const newIndex: number = limitsGroups1.length;
             appendEmptyOperationalLimitsGroup(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`, '');
             appendEmptyOperationalLimitsGroup(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}`, '');
-            startEditingLimitsGroup(newIndex, `LIMIT_SET`);
+            startEditingLimitsGroup(newIndex, `DEFAULT`);
         }
     }, [
         editingTabIndex,
@@ -356,10 +356,11 @@ export function OperationalLimitsGroupsTabs({
                                     {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (
                                         <IconButton
                                             size="small"
-                                            hidden
                                             onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
                                                 handleOpenMenu(e, index)
                                             }
+                                            // during the naming of a limit set no other limit set manipulation is allowed :
+                                            disabled={editingTabIndex !== -1}
                                         >
                                             <MenuIcon fontSize="small" />
                                         </IconButton>
@@ -371,27 +372,31 @@ export function OperationalLimitsGroupsTabs({
                     />
                 ))}
                 <Tab
+                    key="addLimitSet"
                     label={
                         editingTabIndex === -1 && (
                             <Box
                                 sx={{
                                     display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
                                     width: '100%',
-                                    flexGrow: 1,
                                 }}
                             >
                                 <IconButton
+                                    size="small"
                                     onClick={addNewLimitSet}
                                     sx={{
                                         align: 'right',
                                         marginLeft: 'auto',
                                     }}
                                 >
-                                    <AddCircleIcon />
+                                    <AddCircleIcon fontSize="small" />
                                 </IconButton>
                             </Box>
                         )
                     }
+                    sx={limitsStyles.limitsBackground}
                 />
             </Tabs>
             <LimitsGroupsContextualMenu

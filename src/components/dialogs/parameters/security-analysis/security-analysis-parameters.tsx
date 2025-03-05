@@ -7,13 +7,13 @@
 
 import React, { Dispatch, FunctionComponent, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Grid } from '@mui/material';
-import { LabelledButton, styles } from '../parameters';
+import { LabelledButton } from '../parameters';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { mergeSx } from '../../../utils/functions';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    mergeSx,
     MuiSelectInput,
     SubmitButton,
     TreeViewFinderNodeProps,
@@ -47,6 +47,7 @@ import {
 import LineSeparator from '../../commons/line-separator';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import ComputingType from 'components/computing-status/computing-type';
+import { styles } from '../parameters-style';
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SECURITY_ANALYSIS>;
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;

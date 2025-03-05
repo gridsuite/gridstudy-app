@@ -12,7 +12,7 @@ import { FormattedMessage } from 'react-intl';
 import { Alert, Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EquipmentTable } from './equipment-table';
-import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
+import { Identifiable, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { EquipmentTabs } from './equipment-tabs';
@@ -24,7 +24,6 @@ import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
-import { mergeSx } from '../utils/functions';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
@@ -35,7 +34,8 @@ import { FilterType } from '../../types/custom-aggrid-types';
 import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useEquipmentModification } from './equipment-modification/use-equipment-modification';
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
-import { changeDisplayedColumns } from '../../redux/actions';
+import { updateTableDefinition } from 'redux/actions';
+import { NodeType } from '../graph/tree-node.type';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -81,6 +81,7 @@ interface TableWrapperProps {
     equipmentType: SpreadsheetEquipmentType;
     equipmentChanged: boolean;
     disabled: boolean;
+    onEquipmentScrolled: () => void;
 }
 
 interface RecursiveIdentifiable extends Identifiable {
@@ -94,6 +95,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     equipmentType,
     equipmentChanged,
     disabled,
+    onEquipmentScrolled,
 }) => {
     const dispatch = useDispatch();
     const gridRef = useRef<AgGridReact>(null);
@@ -101,13 +103,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState<number>(0);
 
-    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates);
-    const formattedDisplayedColumnsNames = useMemo(() => columnsStates[tabIndex], [columnsStates, tabIndex]);
-    const lockedColumns = useSelector((state: AppState) => state.allLockedColumnsNames);
-    const formattedLockedColumns = useMemo(
-        () => new Set(lockedColumns[tabIndex] ? JSON.parse(lockedColumns[tabIndex]) : []),
-        [lockedColumns, tabIndex]
-    );
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
@@ -115,22 +110,34 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
 
     const [rowData, setRowData] = useState<Identifiable[]>([]);
-
-    const isLockedColumnNamesEmpty = useMemo(() => formattedLockedColumns.size === 0, [formattedLockedColumns.size]);
+    const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
 
     const tableDefinition = useMemo(() => tablesDefinitions[tabIndex], [tabIndex, tablesDefinitions]);
+    const isLockedColumnNamesEmpty = useMemo(
+        () => tableDefinition?.columns?.map((col) => col.locked).length === 0,
+        [tableDefinition?.columns]
+    );
+
+    const shooldDisableButtons = useMemo(
+        () => disabled || tablesDefinitions.length === 0,
+        [disabled, tablesDefinitions]
+    );
     const columnsDefinitions = useCustomColumn(tabIndex);
     const reorderedColsDefs = useMemo(() => {
-        const visibleColumnsIds = formattedDisplayedColumnsNames.filter((col) => col.visible).map((col) => col.colId);
-        const columns = columnsDefinitions.reduce((acc, item) => {
-            acc[item.colId] = item;
-            return acc;
-        }, {} as Record<string, CustomColDef>);
-        return visibleColumnsIds.map((id) => columns[id]);
-    }, [formattedDisplayedColumnsNames, columnsDefinitions]);
+        const columns = tableDefinition?.columns?.filter((column) => column.visible);
+        return columns?.map((column) => {
+            const colDef = columnsDefinitions.reduce((acc, curr) => {
+                if (curr.colId === column.id) {
+                    return curr;
+                }
+                return acc;
+            }, {} as CustomColDef);
+            return colDef;
+        });
+    }, [columnsDefinitions, tableDefinition?.columns]);
 
-    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition.name]);
-    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition.name);
+    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition?.name]);
+    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.name);
 
     const updateSortConfig = useCallback(() => {
         gridRef.current?.api?.applyColumnState({
@@ -140,11 +147,11 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [sortConfig]);
 
     const updateLockedColumnsConfig = useCallback(() => {
-        const lockedColumnsConfig = reorderedColsDefs
-            .filter((column) => formattedLockedColumns.has(column.colId))
-            .map((column) => {
+        const lockedColumnsConfig = tableDefinition?.columns
+            ?.filter((column) => column.visible && column.locked)
+            ?.map((column) => {
                 const s: ColumnState = {
-                    colId: column.colId ?? '',
+                    colId: column.id ?? '',
                     pinned: 'left',
                 };
                 return s;
@@ -153,7 +160,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             state: lockedColumnsConfig,
             defaultState: { pinned: null },
         });
-    }, [formattedLockedColumns, reorderedColsDefs]);
+    }, [tableDefinition]);
 
     useEffect(() => {
         gridRef.current?.api?.setGridOption('columnDefs', reorderedColsDefs);
@@ -180,19 +187,38 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         });
     }, []);
 
-    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition.type);
+    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.type);
 
     const formatFetchedEquipmentsHandler = useCallback(
         (fetchedEquipments: any) => {
             //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return formatFetchedEquipments(tableDefinition.type, fetchedEquipments);
+            return formatFetchedEquipments(tableDefinition?.type, fetchedEquipments);
         },
-        [tableDefinition.type]
+        [tableDefinition?.type]
     );
 
+    const highlightUpdatedEquipment = useCallback(() => {
+        if (!equipmentToUpdateId) {
+            return;
+        }
+
+        const api = gridRef.current?.api;
+        const rowNode = api?.getRowNode(equipmentToUpdateId);
+
+        if (rowNode && api) {
+            api.flashCells({
+                rowNodes: [rowNode],
+                flashDuration: 1000,
+            });
+        }
+
+        setEquipmentToUpdateId(null);
+    }, [equipmentToUpdateId]);
+
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
-        tableDefinition.type,
-        formatFetchedEquipmentsHandler
+        tableDefinition?.type,
+        formatFetchedEquipmentsHandler,
+        highlightUpdatedEquipment
     );
 
     useEffect(() => {
@@ -205,14 +231,14 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [errorMessage, snackError]);
 
     useEffect(() => {
-        if (disabled || equipments.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
+        if (disabled || equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
             return;
         }
         let localRowData: Identifiable[] = [];
-        if (tableDefinition.type) {
-            equipments.equipmentsByNodeId[currentNode.id].forEach((equipment) => {
+        if (tableDefinition?.type) {
+            equipments?.equipmentsByNodeId[currentNode.id].forEach((equipment) => {
                 let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
-                Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
+                Object.entries(equipments?.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
                     let matchingEquipment = equipments.find((eq) => eq.id === equipment.id);
                     let nodeAlias = nodesAliases.find((value) => value.id === nodeId);
                     if (nodeAlias !== undefined && matchingEquipment !== undefined) {
@@ -228,9 +254,21 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (gridRef.current?.api) {
             gridRef.current.api.setGridOption('rowData', localRowData);
             updateSortConfig();
+            updateFilters(gridRef.current?.api, filters);
+            updateLockedColumnsConfig();
         }
         setRowData(localRowData);
-    }, [tabIndex, disabled, equipments, tableDefinition.type, nodesAliases, currentNode.id, updateSortConfig]);
+    }, [
+        tabIndex,
+        disabled,
+        equipments,
+        tableDefinition?.type,
+        nodesAliases,
+        currentNode.id,
+        updateSortConfig,
+        filters,
+        updateLockedColumnsConfig,
+    ]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
@@ -253,9 +291,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             if (selectedRow) {
                 gridRef.current?.api?.ensureNodeVisible(selectedRow, 'top');
                 selectedRow.setSelected(true, true);
+                onEquipmentScrolled();
             }
         }
-    }, [manualTabSwitch, equipmentId, equipmentType]);
+    }, [equipmentId, equipmentType, manualTabSwitch, onEquipmentScrolled]);
 
     useEffect(() => {
         if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
@@ -292,31 +331,60 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }, 50);
     }, [scrollToEquipmentIndex, isFetching, rowData]);
 
+    // Create a map to store the original positions of all columns
+    const originalColumnPositions = useMemo(() => {
+        const positions = new Map<string, number>();
+        tableDefinition?.columns.forEach((col, index) => {
+            positions.set(col.id, index);
+        });
+        return positions;
+    }, [tableDefinition?.columns]);
+
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
             const colId = event.column?.getColId();
             if (colId && event.finished && event.toIndex !== undefined) {
-                let reorderedTableDefinitionIndexesTemp = [...formattedDisplayedColumnsNames];
-                const sourceIndex = reorderedTableDefinitionIndexesTemp.findIndex((col) => col.colId === colId);
+                let reorderedTableDefinitionIndexesTemp = [...tableDefinition.columns.filter((col) => col.visible)];
+                const sourceIndex = reorderedTableDefinitionIndexesTemp.findIndex((col) => col.id === colId);
                 const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(sourceIndex, 1);
                 reorderedTableDefinitionIndexesTemp.splice(event.toIndex, 0, reorderedItem);
-                dispatch(changeDisplayedColumns({ index: tabIndex, value: reorderedTableDefinitionIndexesTemp }));
+
+                // Reinsert invisible columns in their original positions
+                const updatedColumns = [...reorderedTableDefinitionIndexesTemp];
+                tableDefinition.columns.forEach((col) => {
+                    if (!col.visible) {
+                        const originalIndex = originalColumnPositions.get(col.id);
+                        if (originalIndex !== undefined) {
+                            updatedColumns.splice(originalIndex, 0, col);
+                        }
+                    }
+                });
+
+                dispatch(
+                    updateTableDefinition({
+                        ...tableDefinition,
+                        columns: updatedColumns,
+                    })
+                );
             }
         },
-        [dispatch, formattedDisplayedColumnsNames, tabIndex]
+        [dispatch, tableDefinition, originalColumnPositions]
     );
 
     const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({
         studyUuid,
-        equipmentType: tableDefinition.type,
+        equipmentType: tableDefinition?.type,
     });
 
     const onRowClicked = useCallback(
         (event: RowClickedEvent) => {
-            const equipmentId = event.data.id;
-            handleOpenModificationDialog(equipmentId);
+            if (currentNode?.type !== NodeType.ROOT) {
+                const equipmentId = event.data.id;
+                setEquipmentToUpdateId(equipmentId);
+                handleOpenModificationDialog(equipmentId);
+            }
         },
-        [handleOpenModificationDialog]
+        [currentNode?.type, handleOpenModificationDialog]
     );
 
     return (
@@ -325,22 +393,22 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 <EquipmentTabs disabled={disabled} tabIndex={tabIndex} handleSwitchTab={handleSwitchTab} />
                 <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.selectColumns}>
-                        <SpreadsheetGsFilter equipmentType={tableDefinition.type} />
+                        <SpreadsheetGsFilter equipmentType={tableDefinition?.type} />
                     </Grid>
                     <Grid item>
                         <ColumnsConfig
                             tabIndex={tabIndex}
-                            disabled={disabled || tableDefinition.columns.length === 0}
+                            disabled={shooldDisableButtons || tableDefinition?.columns.length === 0}
                         />
                     </Grid>
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsConfig tabIndex={tabIndex} />
+                            <CustomColumnsConfig tabIndex={tabIndex} disabled={shooldDisableButtons} />
                         </Grid>
                     )}
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsNodesConfig />
+                            <CustomColumnsNodesConfig disabled={shooldDisableButtons} />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
@@ -349,15 +417,16 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             tabIndex={tabIndex}
                             gridRef={gridRef}
                             columns={reorderedColsDefs}
-                            tableName={tableDefinition.name}
-                            disabled={disabled || rowData.length === 0}
+                            tableName={tableDefinition?.name}
+                            disabled={shooldDisableButtons}
+                            dataSize={rowData.length}
                         />
                     </Grid>
                 </Grid>
             </Grid>
-            {disabled ? (
+            {disabled || shooldDisableButtons ? (
                 <Alert sx={styles.invalidNode} severity="warning">
-                    <FormattedMessage id="InvalidNode" />
+                    <FormattedMessage id={shooldDisableButtons ? 'NoSpreadsheets' : 'InvalidNode'} />
                 </Alert>
             ) : (
                 <Box sx={mergeSx(styles.table)}>
@@ -368,7 +437,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         rowData={rowData}
                         columnData={reorderedColsDefs}
                         fetched={
-                            equipments.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined ||
+                            equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined ||
                             !!errorMessage
                         }
                         handleColumnDrag={handleColumnDrag}

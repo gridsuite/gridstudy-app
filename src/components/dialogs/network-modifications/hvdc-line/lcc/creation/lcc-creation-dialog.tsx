@@ -32,23 +32,9 @@ import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccCreationDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from './lcc-creation.type';
-import {
-    getLccHvdcLineEmptyFormData,
-    getLccHvdcLineFromEditData,
-    getLccHvdcLineFromSearchCopy,
-    getLccHvdcLineSchema,
-} from './lcc-hvdc-line';
-import {
-    getLccConverterStationCreationData,
-    getLccConverterStationEmptyFormData,
-    getLccConverterStationFromEditData,
-    getLccConverterStationFromSearchCopy,
-    getLccConverterStationSchema,
-} from './lcc-converter-station';
 import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../form-search-copy-hook';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import ModificationDialog from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import { useCallback, useEffect, useState } from 'react';
@@ -61,6 +47,17 @@ import LccCreationDialogHeader from './lcc-creation-dialog-header';
 import LccCreationDialogTabs from './lcc-creation-dialog-tabs';
 import LccCreationForm from './lcc-creation-form';
 import { Connectivity } from '../../../../connectivity/connectivity.type';
+import {
+    getLccConverterStationCreationData,
+    getLccConverterStationEmptyFormData,
+    getLccConverterStationFromEditData,
+    getLccConverterStationFromSearchCopy,
+    getLccConverterStationSchema,
+    getLccHvdcLineEmptyFormData,
+    getLccHvdcLineFromEditData,
+    getLccHvdcLineFromSearchCopy,
+    getLccHvdcLineSchema,
+} from './lcc-creation-utils';
 
 export type LccCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -166,7 +163,7 @@ export function LccCreationDialog({
         setFormValues: (data: LccCreationSchemaForm) => {
             reset(data, { keepDefaultValues: true });
         },
-        elementType: EQUIPMENT_TYPES.HVDC_LINE,
+        elementType: ExtendedEquipmentType.HVDC_LINE_LCC,
     });
 
     useEffect(() => {
@@ -280,7 +277,7 @@ export function LccCreationDialog({
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     onSelectionChange={searchCopy.handleSelectionChange}
-                    equipmentType={EquipmentType.HVDC_LINE}
+                    equipmentType={ExtendedEquipmentType.HVDC_LINE_LCC}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />

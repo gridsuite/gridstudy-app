@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { sanitizeString } from '../../../../dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -61,7 +61,7 @@ import {
     setCurrentReactiveCapabilityCurveTable,
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -91,7 +91,7 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-export const VSC_MODIFICATION_TABS = {
+const VSC_MODIFICATION_TABS = {
     HVDC_LINE_TAB: 0,
     CONVERTER_STATION_1: 1,
     CONVERTER_STATION_2: 2,
@@ -165,7 +165,7 @@ const VscModificationDialog: React.FC<any> = ({
                     studyUuid,
                     currentNode.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.HVDC_LINE,
+                    ExtendedEquipmentType.HVDC_LINE_VSC,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -355,7 +355,7 @@ const VscModificationDialog: React.FC<any> = ({
                         defaultValue={equipmentId}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         setSelectedId={setEquipmentId}
-                        equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
+                        equipmentType={ExtendedEquipmentType.HVDC_LINE_VSC}
                         fillerHeight={17}
                     />
                 )}

@@ -13,7 +13,7 @@ import { getTabStyle } from 'components/utils/tab-utils';
 import { PROVIDER } from 'components/utils/field-constants';
 import LineSeparator from 'components/dialogs/commons/line-separator';
 import { MuiSelectInput } from '@gridsuite/commons-ui';
-import { styles } from '../parameters';
+import { styles } from '../parameters-style';
 
 const LoadFlowParametersHeader = ({
     selectedTab,

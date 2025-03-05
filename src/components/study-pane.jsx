@@ -16,6 +16,7 @@ import { isNodeBuilt } from './graph/util/model-functions';
 import { TableWrapper } from './spreadsheet/table-wrapper';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
+import { StudyView } from './utils/utils';
 
 const styles = {
     map: {
@@ -43,14 +44,6 @@ const styles = {
     },
 };
 
-export const StudyView = {
-    MAP: 'Map',
-    SPREADSHEET: 'Spreadsheet',
-    RESULTS: 'Results',
-    LOGS: 'Logs',
-    PARAMETERS: 'Parameters',
-};
-
 const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
@@ -69,6 +62,10 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         }
     }
+
+    const unsetTableEquipment = () => {
+        setTableEquipment({ id: null, type: null, changed: false });
+    };
 
     return (
         <>
@@ -100,6 +97,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
                         disabled={disabled}
+                        onEquipmentScrolled={unsetTableEquipment}
                     />
                 </Paper>
             </TabPanelLazy>

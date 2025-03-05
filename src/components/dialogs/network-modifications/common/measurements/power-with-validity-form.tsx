@@ -42,8 +42,6 @@ export const PowerWithValidityForm: FunctionComponent<MeasurementProps> = ({ id,
             name={`${id}.${VALIDITY}`}
             label="ValidMeasurement"
             previousValue={previousValidityField}
-            id={undefined}
-            formProps={undefined}
         />
     );
 

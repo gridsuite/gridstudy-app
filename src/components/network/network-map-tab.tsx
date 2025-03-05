@@ -37,7 +37,6 @@ import { isNodeBuilt, isNodeRenamed, isSameNode, isSameNodeAndBuilt } from '../g
 import { resetMapEquipment, resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, LinearProgress, useTheme } from '@mui/material';
-import { UPDATE_TYPE_HEADER } from '../study-container';
 import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import VoltageLevelModificationDialog from '../dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -53,6 +52,7 @@ import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode } from 'redux/reducer';
+import { UPDATE_TYPE_HEADER } from 'components/use-node-data';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
