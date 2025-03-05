@@ -20,6 +20,13 @@ import { BranchActiveReactivePowerMeasurementsFormProps } from './measurement.ty
 import { PowerWithValidityForm } from './power-with-validity-form';
 import { FieldType } from '@gridsuite/commons-ui';
 
+const styles = {
+    h3: {
+        marginTop: 0,
+        marginBottom: 0,
+    },
+};
+
 const BranchActiveReactivePowerMeasurementsForm: FunctionComponent<BranchActiveReactivePowerMeasurementsFormProps> = ({
     equipmentToModify,
 }) => {
@@ -62,7 +69,7 @@ const BranchActiveReactivePowerMeasurementsForm: FunctionComponent<BranchActiveR
 
     return (
         <>
-            <GridSection title="MeasurementsSection" />
+            <GridSection title="MeasurementsSection" customStyle={styles.h3} />
             <GridSection title="Side1" heading={4} />
             <Grid container spacing={2}>
                 <GridItem size={12}>{activePower1Field}</GridItem>
