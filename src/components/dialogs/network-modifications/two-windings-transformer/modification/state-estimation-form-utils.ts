@@ -5,32 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    MEASUREMENT_P1,
-    MEASUREMENT_Q1,
-    MEASUREMENT_P2,
-    MEASUREMENT_Q2,
-    TO_BE_ESTIMATED,
-} from 'components/utils/field-constants';
-import {
-    getPowerWithValidityEditData,
-    getPowerWithValidityEmptyFormData,
-    getPowerWithValidityValidationSchema,
-} from '../../common/measurements/power-with-validity-utils';
+import { TO_BE_ESTIMATED } from 'components/utils/field-constants';
 import yup from '../../../../utils/yup-config';
+import {
+    getBranchActiveReactivePowerEditDataProperties,
+    getBranchActiveReactivePowerEmptyFormDataProperties,
+    getBranchActiveReactivePowerValidationSchemaProperties,
+} from '../../common/measurements/branch-active-reactive-power-form-utils';
 import {
     getToBeEstimatedEditData,
     getToBeEstimatedEmptyFormData,
     getToBeEstimatedValidationSchema,
 } from './2wt-to-be-estimated/to-be-estimated-form-utils';
 
+// We have utils functions to combine the common branch part (measurements) with the 2wt-specific part (toBeEstimated)
+
 export function getStateEstimationEmptyFormData(id: string) {
     return {
         [id]: {
-            ...getPowerWithValidityEmptyFormData(MEASUREMENT_P1),
-            ...getPowerWithValidityEmptyFormData(MEASUREMENT_Q1),
-            ...getPowerWithValidityEmptyFormData(MEASUREMENT_P2),
-            ...getPowerWithValidityEmptyFormData(MEASUREMENT_Q2),
+            ...getBranchActiveReactivePowerEmptyFormDataProperties(),
             ...getToBeEstimatedEmptyFormData(TO_BE_ESTIMATED),
         },
     };
@@ -38,10 +31,7 @@ export function getStateEstimationEmptyFormData(id: string) {
 
 export const getStateEstimationValidationSchema = (id: string) => ({
     [id]: yup.object().shape({
-        ...getPowerWithValidityValidationSchema(MEASUREMENT_P1),
-        ...getPowerWithValidityValidationSchema(MEASUREMENT_Q1),
-        ...getPowerWithValidityValidationSchema(MEASUREMENT_P2),
-        ...getPowerWithValidityValidationSchema(MEASUREMENT_Q2),
+        ...getBranchActiveReactivePowerValidationSchemaProperties(),
         ...getToBeEstimatedValidationSchema(TO_BE_ESTIMATED),
     }),
 });
@@ -49,22 +39,7 @@ export const getStateEstimationValidationSchema = (id: string) => ({
 export function getStateEstimationEditData(id: string, branchData: any) {
     return {
         [id]: {
-            ...getPowerWithValidityEditData(MEASUREMENT_P1, {
-                value: branchData?.p1MeasurementValue?.value,
-                validity: branchData?.p1MeasurementValidity?.value,
-            }),
-            ...getPowerWithValidityEditData(MEASUREMENT_Q1, {
-                value: branchData?.q1MeasurementValue?.value,
-                validity: branchData?.q1MeasurementValidity?.value,
-            }),
-            ...getPowerWithValidityEditData(MEASUREMENT_P2, {
-                value: branchData?.p2MeasurementValue?.value,
-                validity: branchData?.p2MeasurementValidity?.value,
-            }),
-            ...getPowerWithValidityEditData(MEASUREMENT_Q2, {
-                value: branchData?.q2MeasurementValue?.value,
-                validity: branchData?.q2MeasurementValidity?.value,
-            }),
+            ...getBranchActiveReactivePowerEditDataProperties(branchData),
             ...getToBeEstimatedEditData(TO_BE_ESTIMATED, {
                 ratioTapChangerStatus: branchData?.ratioTapChangerToBeEstimated?.value,
                 phaseTapChangerStatus: branchData?.phaseTapChangerToBeEstimated?.value,

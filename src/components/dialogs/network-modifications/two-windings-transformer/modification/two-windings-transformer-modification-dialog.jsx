@@ -17,7 +17,7 @@ import { Box, Grid } from '@mui/material';
 import {
     ADDITIONAL_PROPERTIES,
     B,
-    BRANCH_MEASUREMENTS,
+    STATE_ESTIMATION,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
     CONNECTED,
@@ -157,7 +157,7 @@ const emptyFormData = {
     ...getCont1Cont2WithPositionEmptyFormData(true),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(),
-    ...getStateEstimationEmptyFormData(BRANCH_MEASUREMENTS),
+    ...getStateEstimationEmptyFormData(STATE_ESTIMATION),
     ...getRatioTapChangerEmptyFormData(true),
     ...getPhaseTapChangerEmptyFormData(true),
     ...emptyProperties,
@@ -170,7 +170,7 @@ const formSchema = yup
         ...getCon1andCon2WithPositionValidationSchema(true),
         ...getCharacteristicsValidationSchema(true),
         ...getLimitsValidationSchema(),
-        ...getStateEstimationValidationSchema(BRANCH_MEASUREMENTS),
+        ...getStateEstimationValidationSchema(STATE_ESTIMATION),
         ...getRatioTapChangerModificationValidationSchema(),
         ...getPhaseTapChangerModificationValidationSchema(),
     })
@@ -229,11 +229,6 @@ const TwoWindingsTransformerModificationDialog = ({
             if (twtModification?.equipmentId) {
                 setSelectedId(twtModification.equipmentId);
             }
-            console.log(
-                'DBG DBR fromEdit',
-                twtModification,
-                getStateEstimationEditData(BRANCH_MEASUREMENTS, twtModification)
-            );
             reset({
                 [EQUIPMENT_NAME]: twtModification.equipmentName?.value,
                 [CONNECTIVITY]: {
@@ -249,7 +244,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     ratedU2: twtModification.ratedU2?.value,
                     ratedS: twtModification.ratedS?.value,
                 }),
-                ...getStateEstimationEditData(BRANCH_MEASUREMENTS, twtModification),
+                ...getStateEstimationEditData(STATE_ESTIMATION, twtModification),
                 ...getSelectedLimitsFormData({
                     permanentLimit1: twtModification.currentLimits1?.permanentLimit,
                     permanentLimit2: twtModification.currentLimits2?.permanentLimit,
@@ -390,7 +385,7 @@ const TwoWindingsTransformerModificationDialog = ({
             const connectivity2 = twt[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = twt[CHARACTERISTICS];
             const limits = twt[LIMITS];
-            const measurements = twt[BRANCH_MEASUREMENTS];
+            const stateEstimationData = twt[STATE_ESTIMATION];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
                 completeCurrentLimitsGroupsToOnlySelected(
@@ -520,16 +515,16 @@ const TwoWindingsTransformerModificationDialog = ({
                 connected1: connectivity1[CONNECTED],
                 connected2: connectivity2[CONNECTED],
                 properties: toModificationProperties(twt),
-                p1MeasurementValue: measurements[MEASUREMENT_P1][VALUE],
-                p1MeasurementValidity: measurements[MEASUREMENT_P1][VALIDITY],
-                q1MeasurementValue: measurements[MEASUREMENT_Q1][VALUE],
-                q1MeasurementValidity: measurements[MEASUREMENT_Q1][VALIDITY],
-                p2MeasurementValue: measurements[MEASUREMENT_P2][VALUE],
-                p2MeasurementValidity: measurements[MEASUREMENT_P2][VALIDITY],
-                q2MeasurementValue: measurements[MEASUREMENT_Q2][VALUE],
-                q2MeasurementValidity: measurements[MEASUREMENT_Q2][VALIDITY],
-                ratioTapChangerToBeEstimated: measurements[TO_BE_ESTIMATED][RATIO_TAP_CHANGER_STATUS],
-                phaseTapChangerToBeEstimated: measurements[TO_BE_ESTIMATED][PHASE_TAP_CHANGER_STATUS],
+                p1MeasurementValue: stateEstimationData[MEASUREMENT_P1][VALUE],
+                p1MeasurementValidity: stateEstimationData[MEASUREMENT_P1][VALIDITY],
+                q1MeasurementValue: stateEstimationData[MEASUREMENT_Q1][VALUE],
+                q1MeasurementValidity: stateEstimationData[MEASUREMENT_Q1][VALIDITY],
+                p2MeasurementValue: stateEstimationData[MEASUREMENT_P2][VALUE],
+                p2MeasurementValidity: stateEstimationData[MEASUREMENT_P2][VALIDITY],
+                q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][VALUE],
+                q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
+                ratioTapChangerToBeEstimated: stateEstimationData[TO_BE_ESTIMATED][RATIO_TAP_CHANGER_STATUS],
+                phaseTapChangerToBeEstimated: stateEstimationData[TO_BE_ESTIMATED][PHASE_TAP_CHANGER_STATUS],
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -561,8 +556,8 @@ const TwoWindingsTransformerModificationDialog = ({
         if (errors?.[LIMITS] !== undefined) {
             tabsInError.push(TwoWindingsTransformerModificationDialogTab.LIMITS_TAB);
         }
-        if (errors?.[BRANCH_MEASUREMENTS] !== undefined) {
-            tabsInError.push(TwoWindingsTransformerModificationDialogTab.MEASUREMENTS_TAB);
+        if (errors?.[STATE_ESTIMATION] !== undefined) {
+            tabsInError.push(TwoWindingsTransformerModificationDialogTab.STATE_ESTIMATION_TAB);
         }
         if (errors?.[RATIO_TAP_CHANGER] !== undefined) {
             tabsInError.push(TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB);
@@ -674,7 +669,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 )
                     .then((twt) => {
                         if (twt) {
-                            console.log('DBG DBR initID', twt, twt?.toBeEstimated);
                             setTwtToModify(twt);
                             setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, twt?.voltageLevelId1);
                             setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, twt?.voltageLevelId2);
@@ -854,7 +848,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                 onlySelectedLimitsGroup
                             />
                         </Box>
-                        <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.MEASUREMENTS_TAB} p={1}>
+                        <Box
+                            hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.STATE_ESTIMATION_TAB}
+                            p={1}
+                        >
                             <Grid container spacing={2}>
                                 <BranchActiveReactivePowerMeasurementsForm equipmentToModify={twtToModify} />
                                 <ToBeEstimatedForm toBeEstimated={twtToModify?.toBeEstimated} />

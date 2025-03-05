@@ -14,15 +14,15 @@ import GridItem from '../../../../commons/grid-item';
 import {
     RATIO_TAP_CHANGER_STATUS,
     PHASE_TAP_CHANGER_STATUS,
-    BRANCH_MEASUREMENTS,
+    STATE_ESTIMATION,
     TO_BE_ESTIMATED,
 } from '../../../../../utils/field-constants';
 import { ToBeEstimatedProps } from './to-be-estimated.type';
 
 export const ToBeEstimatedForm: FunctionComponent<ToBeEstimatedProps> = ({ toBeEstimated }) => {
     const intl = useIntl();
-    const ratioTapChangerStatusId = `${BRANCH_MEASUREMENTS}.${TO_BE_ESTIMATED}.${RATIO_TAP_CHANGER_STATUS}`;
-    const phaseTapChangerStatusId = `${BRANCH_MEASUREMENTS}.${TO_BE_ESTIMATED}.${PHASE_TAP_CHANGER_STATUS}`;
+    const ratioTapChangerStatusId = `${STATE_ESTIMATION}.${TO_BE_ESTIMATED}.${RATIO_TAP_CHANGER_STATUS}`;
+    const phaseTapChangerStatusId = `${STATE_ESTIMATION}.${TO_BE_ESTIMATED}.${PHASE_TAP_CHANGER_STATUS}`;
 
     const previousRatioStatusField = useMemo(() => {
         if (toBeEstimated?.ratioTapChangerStatus == null) {

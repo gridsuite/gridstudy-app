@@ -40,7 +40,7 @@ const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex, isModifica
                 {isModification && (
                     <Tab
                         label={<FormattedMessage id="StateEstimationTab" />}
-                        sx={getTabStyle(tabIndexesWithError, LineDialogTab.MEASUREMENTS_TAB)}
+                        sx={getTabStyle(tabIndexesWithError, LineDialogTab.STATE_ESTIMATION_TAB)}
                     />
                 )}
             </Tabs>

@@ -7,7 +7,7 @@
 
 import { Grid } from '@mui/material';
 import {
-    BRANCH_MEASUREMENTS,
+    STATE_ESTIMATION,
     MEASUREMENT_P1,
     MEASUREMENT_P2,
     MEASUREMENT_Q1,
@@ -23,10 +23,10 @@ import { FieldType } from '@gridsuite/commons-ui';
 const BranchActiveReactivePowerMeasurementsForm: FunctionComponent<BranchActiveReactivePowerMeasurementsFormProps> = ({
     equipmentToModify,
 }) => {
-    const activePower1 = `${BRANCH_MEASUREMENTS}.${MEASUREMENT_P1}`;
-    const reactivePower1 = `${BRANCH_MEASUREMENTS}.${MEASUREMENT_Q1}`;
-    const activePower2 = `${BRANCH_MEASUREMENTS}.${MEASUREMENT_P2}`;
-    const reactivePower2 = `${BRANCH_MEASUREMENTS}.${MEASUREMENT_Q2}`;
+    const activePower1 = `${STATE_ESTIMATION}.${MEASUREMENT_P1}`;
+    const reactivePower1 = `${STATE_ESTIMATION}.${MEASUREMENT_Q1}`;
+    const activePower2 = `${STATE_ESTIMATION}.${MEASUREMENT_P2}`;
+    const reactivePower2 = `${STATE_ESTIMATION}.${MEASUREMENT_Q2}`;
 
     const activePower1Field = (
         <PowerWithValidityForm
