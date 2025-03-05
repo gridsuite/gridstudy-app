@@ -9,7 +9,7 @@ import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/util
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../../connectivity/connectivity-form-utils.js';
+} from '../../../../connectivity/connectivity-form-utils';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsFormData,

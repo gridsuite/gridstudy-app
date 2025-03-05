@@ -6,21 +6,21 @@
  */
 
 import {
+    B1,
+    B2,
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    R,
     G1,
     G2,
-    B1,
-    B2,
+    R,
     X,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 
 const characteristicsValidationSchema = (id, displayConnectivity, modification) => ({
     [id]: yup.object().shape({

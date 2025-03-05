@@ -86,7 +86,7 @@ import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { GeneratorCreationInfos, GeneratorCreationSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
+import { GeneratorCreationInfos, GeneratorFormInfos, GeneratorModificationSchemaForm } from '../generator-dialog.type';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -199,9 +199,9 @@ export function GeneratorCreationDialog({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<DeepNullable<GeneratorCreationSchemaForm>>({
+    const formMethods = useForm<DeepNullable<GeneratorModificationSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<GeneratorCreationSchemaForm>>(formSchema),
+        resolver: yupResolver<DeepNullable<GeneratorModificationSchemaForm>>(formSchema),
     });
 
     const { reset } = formMethods;
@@ -268,7 +268,7 @@ export function GeneratorCreationDialog({
         currentNodeUuid,
         currentRootNetworkUuid,
         toFormValues: fromSearchCopyToFormValues,
-        setFormValues: (data: GeneratorCreationSchemaForm) => {
+        setFormValues: (data: GeneratorModificationSchemaForm) => {
             reset(data, { keepDefaultValues: true });
         },
         elementType: EquipmentType.GENERATOR,
@@ -336,7 +336,7 @@ export function GeneratorCreationDialog({
     }, [reset]);
 
     const onSubmit = useCallback(
-        (generator: GeneratorCreationSchemaForm) => {
+        (generator: GeneratorModificationSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
             const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation = generator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;

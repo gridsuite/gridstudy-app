@@ -88,12 +88,12 @@ import {
 import { LimitsPane } from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
     getLimitsEmptyFormData,
-    getSelectedLimitsFormData,
     getLimitsValidationSchema,
+    getSelectedLimitsFormData,
     sanitizeLimitNames,
     updateTemporaryLimits,
-    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -139,7 +139,7 @@ import {
     getCon1andCon2WithPositionValidationSchema,
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';
 import {
     getBranchActiveReactivePowerEditData,

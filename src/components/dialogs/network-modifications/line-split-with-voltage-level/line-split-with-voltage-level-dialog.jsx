@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { CustomFormProvider, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -30,7 +30,7 @@ import {
     getConnectivityWithoutPositionEmptyFormData,
     getConnectivityWithoutPositionValidationSchema,
     getNewVoltageLevelData,
-} from '../../connectivity/connectivity-form-utils.js';
+} from '../../connectivity/connectivity-form-utils';
 import LineSplitWithVoltageLevelForm from './line-split-with-voltage-level-form';
 import LineSplitWithVoltageLevelIllustration from './line-split-with-voltage-level-illustration';
 import {

@@ -45,8 +45,8 @@ import {
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
-    VALUE,
     VALIDITY,
+    VALUE,
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
@@ -57,12 +57,12 @@ import ModificationDialog from '../../../commons/modificationDialog';
 
 import {
     addModificationTypeToTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
     getLimitsEmptyFormData,
-    getSelectedLimitsFormData,
     getLimitsValidationSchema,
+    getSelectedLimitsFormData,
     sanitizeLimitNames,
     updateTemporaryLimits,
-    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -92,7 +92,7 @@ import {
     getCon1andCon2WithPositionValidationSchema,
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 import {
     getBranchActiveReactivePowerEditData,
     getBranchActiveReactivePowerEmptyFormData,

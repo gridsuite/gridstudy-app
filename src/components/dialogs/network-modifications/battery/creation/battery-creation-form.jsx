@@ -16,7 +16,7 @@ import {
 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
 import { Grid } from '@mui/material';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import PropertiesForm from '../../common/properties/properties-form';

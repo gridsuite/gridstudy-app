@@ -33,10 +33,10 @@ import {
     G,
     ID,
     LIMITS,
-    OPERATIONAL_LIMITS_GROUPS_1,
-    OPERATIONAL_LIMITS_GROUPS_2,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
+    OPERATIONAL_LIMITS_GROUPS_1,
+    OPERATIONAL_LIMITS_GROUPS_2,
     PHASE_TAP_CHANGER,
     R,
     RATED_S,
@@ -74,7 +74,7 @@ import {
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
-import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils.js';
+import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
@@ -93,8 +93,8 @@ import {
     getTwoWindingsTransformerValidationSchema,
 } from './characteristics-pane/two-windings-transformer-creation-characteristics-pane-utils';
 import {
-    getLimitsEmptyFormData,
     getAllLimitsFormData,
+    getLimitsEmptyFormData,
     getLimitsValidationSchema,
     sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';

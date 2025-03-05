@@ -424,9 +424,9 @@ export interface GeneratorCreationInfo {
     nodeUuid: UUID;
     id: string;
     name?: string | null;
-    energySource: string | null;
-    minP: number | null;
-    maxP: number | null;
+    energySource?: string | null;
+    minP?: number | null;
+    maxP?: number | null;
     ratedS?: number | null;
     targetP?: number | null;
     targetQ?: number | null;
