@@ -82,6 +82,7 @@ const spreadsheetFr = {
     'spreadsheet/filter/config': 'Filtres Gridsuite',
     'spreadsheet/remove_spreadsheet_confirmation': 'Êtes-vous sûr de vouloir supprimer le tableur {spreadsheetName} ?',
     'spreadsheet/remove_spreadsheet_error': 'Erreur lors de la suppression du tableur',
+    'spreadsheet/reorder_columns/error': 'Erreur lors du réordonnancement des colonnes',
 
     // Column types
     TEXT: 'Texte',

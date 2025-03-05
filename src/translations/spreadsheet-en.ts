@@ -79,6 +79,7 @@ const spreadsheetEn = {
     'spreadsheet/remove_spreadsheet_confirmation':
         'Are you sure you want to remove the spreadsheet "{spreadsheetName}"?',
     'spreadsheet/remove_spreadsheet_error': 'Error while removing spreadsheet',
+    'spreadsheet/reorder_columns/error': 'Error while reordering columns',
 
     // Column types
     TEXT: 'Text',
