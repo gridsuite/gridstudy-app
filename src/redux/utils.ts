@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { NodeType } from '../components/graph/tree-node.type';
+import { NodeType } from '../components/graph/tree-node.type';
 import type { CurrentTreeNode, RootNode } from './reducer';
 
 // type guard to check if the node is a Root
