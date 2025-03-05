@@ -36,12 +36,14 @@ export const TableNumericalInput = ({
         fieldState: { error },
     } = useController({ name });
 
-    const inputTransform = (value: string) => {
+    const inputTransform = (value: string | null) => {
+        if (value === null) {
+            return '';
+        }
         if (['-', '.'].includes(value)) {
             return value;
         }
-        const numericValue = Number(value);
-        return numericValue === null || isNaN(numericValue) ? '' : numericValue.toString();
+        return isNaN(Number(value)) ? '' : value.toString();
     };
 
     const clearable = useMemo(

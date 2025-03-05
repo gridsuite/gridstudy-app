@@ -148,7 +148,7 @@ const LineModificationDialog = ({
             [EQUIPMENT_NAME]: yup.string(),
             ...getCon1andCon2WithPositionValidationSchema(true),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
-            ...getLimitsValidationSchema(),
+            ...getLimitsValidationSchema(true),
             ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
         })
         .concat(modificationPropertiesSchema)

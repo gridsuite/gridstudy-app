@@ -10,6 +10,7 @@ import yup from '../../utils/yup-config';
 
 export const SPREADSHEET_NAME = 'spreadsheetName';
 export const SPREADSHEET_MODEL = 'spreadsheetModel';
+export const SPREADSHEET_COLLECTION = 'spreadsheetCollection';
 
 export const initialEmptySpreadsheetForm: EmptySpreadsheetForm = {
     [SPREADSHEET_NAME]: '',
@@ -19,6 +20,10 @@ export const initialEmptySpreadsheetForm: EmptySpreadsheetForm = {
 export const initialSpreadsheetFromModelForm: SpreadsheetFromModelForm = {
     [SPREADSHEET_NAME]: '',
     [SPREADSHEET_MODEL]: [],
+};
+
+export const initialSpreadsheetCollectionForm: SpreadsheetCollectionForm = {
+    [SPREADSHEET_COLLECTION]: [],
 };
 
 export const getEmptySpreadsheetFormSchema = (tablesNames: string[]) => {
@@ -55,6 +60,23 @@ export const getSpreadsheetFromModelFormSchema = (tablesNames: string[]) => {
     });
 };
 
+export const getSpreadsheetCollectionFormSchema = () => {
+    return yup.object().shape({
+        [SPREADSHEET_COLLECTION]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [ID]: yup.string().required(),
+                    [NAME]: yup.string().required(),
+                })
+            )
+            .required('spreadsheet/create_new_spreadsheet/must_select_spreadsheet_collection')
+            .min(1, 'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_collection')
+            .max(1, 'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_collection'),
+    });
+};
+
 export type SpreadsheetFromModelForm = yup.InferType<ReturnType<typeof getSpreadsheetFromModelFormSchema>>;
 
 export type EmptySpreadsheetForm = yup.InferType<ReturnType<typeof getEmptySpreadsheetFormSchema>>;
+export type SpreadsheetCollectionForm = yup.InferType<ReturnType<typeof getSpreadsheetCollectionFormSchema>>;

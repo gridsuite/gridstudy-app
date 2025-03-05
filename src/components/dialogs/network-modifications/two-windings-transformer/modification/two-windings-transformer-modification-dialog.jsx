@@ -169,7 +169,7 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string(),
         ...getCon1andCon2WithPositionValidationSchema(true),
         ...getCharacteristicsValidationSchema(true),
-        ...getLimitsValidationSchema(),
+        ...getLimitsValidationSchema(true),
         ...getStateEstimationValidationSchema(STATE_ESTIMATION),
         ...getRatioTapChangerModificationValidationSchema(),
         ...getPhaseTapChangerModificationValidationSchema(),
