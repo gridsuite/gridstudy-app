@@ -28,6 +28,7 @@ import { fetchVoltageLevelsListInfos } from 'services/study/network';
 import { getRegulatingTerminalFormData } from 'components/dialogs/regulating-terminal/regulating-terminal-form-utils';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
+import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
 
 const emptyFormData = {
     [VOLTAGE_LEVEL]: null,
@@ -134,7 +135,12 @@ const RegulatingTerminalModificationDialog = ({
     );
 
     return (
-        <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider
+            removeOptional={true}
+            validationSchema={formSchema}
+            {...formMethods}
+            nodeIsBuilt={isNodeBuilt(currentNode)}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}

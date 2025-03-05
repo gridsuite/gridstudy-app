@@ -42,6 +42,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -219,7 +220,12 @@ const VoltageLevelModificationDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+            nodeIsBuilt={isNodeBuilt(currentNode)}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
