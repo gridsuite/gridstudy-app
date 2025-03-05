@@ -23,10 +23,8 @@ import { QueryParamsType, SecurityAnalysisTabProps } from './security-analysis.t
 import {
     convertFilterValues,
     DEFAULT_PAGE_COUNT,
-    getStoreFields,
     mappingColumnToField,
     NMK_TYPE,
-    RESULT_TYPE,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -41,6 +39,7 @@ import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
+import { getStoreFields, RESULT_TYPE } from './security-analysis-columns-definition';
 
 const styles = {
     tabsAndToolboxContainer: {
