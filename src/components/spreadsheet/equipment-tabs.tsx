@@ -6,7 +6,7 @@
  */
 
 import { Grid, Tab, Tabs, IconButton, Box, Typography } from '@mui/material';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
@@ -107,7 +107,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
 
     useEffect(() => {
         if (tabIndex >= tablesDefinitions.length && tabIndex > 0) {
-            handleSwitchTab(tabIndex - 1);
+            handleSwitchTab(tablesDefinitions.length - 1);
         }
     }, [tabIndex, tablesDefinitions.length, handleSwitchTab]);
 
@@ -116,12 +116,16 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
         setConfirmationDialogOpen(true);
     };
 
+    const resetTabIndex = useCallback(() => {
+        handleSwitchTab(0);
+    }, [handleSwitchTab]);
+
     return (
         <>
             <Grid container direction="row" wrap="nowrap" item>
                 {developerMode && (
                     <Grid item padding={1}>
-                        <CustomSpreadsheetConfig disabled={disabled} />
+                        <CustomSpreadsheetConfig disabled={disabled} resetTabIndex={resetTabIndex} />
                     </Grid>
                 )}
                 <Grid item sx={{ overflow: 'hidden' }}>

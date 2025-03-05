@@ -137,6 +137,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     return (
         <CustomAGGrid
             ref={gridRef}
+            rowSelection={{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }}
             getRowId={getRowId}
             rowData={rowsToShow}
             debounceVerticalScrollbar={true}
