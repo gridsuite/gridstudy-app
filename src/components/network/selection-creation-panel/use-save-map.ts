@@ -27,7 +27,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [pendingState, setPendingState] = useState(false);
 

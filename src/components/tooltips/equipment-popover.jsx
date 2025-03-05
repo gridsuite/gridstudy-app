@@ -28,7 +28,7 @@ const styles = {
 
 const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, equipmentType, loadFlowStatus }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
     const [equipmentInfo, setEquipmentInfo] = useState(null);
     const intl = useIntl();
     const [localAnchorEl, setLocalAnchorEl] = useState(null);

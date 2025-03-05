@@ -56,7 +56,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         const studyUuid = useSelector((state: AppState) => state.studyUuid);
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-        const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
+        const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
         const intl = useIntl();
         const equipmentsRef = useRef<AgGridReact<IdentifiableAttributes>>(null);
@@ -88,11 +88,11 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         // fetching options in different criterias
         useEffect(() => {
-            if (!currentRootNetwork || !studyUuid || !currentNode?.id) {
+            if (!currentRootNetworkUuid || !studyUuid || !currentNode?.id) {
                 return;
             }
             // Load voltage level IDs
-            fetchVoltageLevelsMapInfos(studyUuid, currentNode.id, currentRootNetwork)
+            fetchVoltageLevelsMapInfos(studyUuid, currentNode.id, currentRootNetworkUuid)
                 .then((voltageLevels) => {
                     const vlMap = new Map<string, string | undefined>();
                     const nvSet = new Set<number>();
@@ -112,7 +112,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                 });
 
             // load countries
-            fetchAllCountries(studyUuid, currentNode.id, currentRootNetwork)
+            fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
                 .then((countryCodes) => setCountries(countryCodes))
                 .catch((error) => {
                     snackError({
@@ -120,11 +120,11 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                         headerId: 'FetchCountryError',
                     });
                 });
-        }, [studyUuid, currentNode?.id, snackError, currentRootNetwork]);
+        }, [studyUuid, currentNode?.id, snackError, currentRootNetworkUuid]);
 
         // build fetcher which filters equipments
         const filteringEquipmentsFetcher = useMemo(() => {
-            if (!studyUuid || !currentRootNetwork || !currentNode?.id) {
+            if (!studyUuid || !currentRootNetworkUuid || !currentNode?.id) {
                 return;
             }
             const expertFilter = buildExpertFilter(
@@ -135,11 +135,11 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
             );
 
             // the fetcher which evaluates a filter by filter-server
-            return evaluateJsonFilter(studyUuid, currentNode.id, currentRootNetwork, expertFilter);
+            return evaluateJsonFilter(studyUuid, currentNode.id, currentRootNetworkUuid, expertFilter);
         }, [
             studyUuid,
             currentNode?.id,
-            currentRootNetwork,
+            currentRootNetworkUuid,
             equipmentType,
             selectedVoltageLevelIds,
             selectedCountries,

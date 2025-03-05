@@ -28,7 +28,7 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
     const dispatch = useDispatch<AppDispatch>();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const networkAreaDiagramNbVoltageLevels = useSelector((state: AppState) => state.networkAreaDiagramNbVoltageLevels);
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
 
