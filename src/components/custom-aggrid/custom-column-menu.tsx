@@ -7,7 +7,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
-import { PopupConfirmationDialog, useStateBoolean } from '@gridsuite/commons-ui';
+import { PopupConfirmationDialog, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
 import { CUSTOM_COLUMNS_MENU_DEFINITION, DELETE, UPDATE } from '../spreadsheet/constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CustomColumnDialog from '../spreadsheet/custom-columns/custom-columns-dialog';
@@ -16,19 +16,23 @@ import { AppState } from 'redux/reducer';
 import { setRemoveColumnDefinition } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
 import { DialogMenuProps } from './custom-aggrid-menu';
+import { deleteSpreadsheetColumn } from 'services/study-config';
+import { UUID } from 'crypto';
 
 export interface CustomColumnConfigProps extends DialogMenuProps {
     tabIndex: number;
-    colId: string;
+    colUuid: UUID;
 }
 
-export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabIndex, colId, onClose, anchorEl }) => {
+export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabIndex, colUuid, onClose, anchorEl }) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
     const dialogOpen = useStateBoolean(false);
-    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex].columns);
+    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
+    const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
     const columnDefinition = useMemo(
-        () => columnsDefinitions.find((column) => column.id === colId),
-        [colId, columnsDefinitions]
+        () => columnsDefinitions?.find((column) => column?.uuid === colUuid),
+        [colUuid, columnsDefinitions]
     );
 
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
@@ -51,15 +55,24 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabI
 
     const handleValidate = useCallback(() => {
         if (columnDefinition?.id) {
-            setConfirmationDialogOpen(false);
-            dispatch(
-                setRemoveColumnDefinition({
-                    index: tabIndex,
-                    value: columnDefinition?.id,
+            deleteSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid)
+                .then(() => {
+                    setConfirmationDialogOpen(false);
+                    dispatch(
+                        setRemoveColumnDefinition({
+                            index: tabIndex,
+                            value: columnDefinition?.id,
+                        })
+                    );
                 })
-            );
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerTxt: 'spreadsheet/custom_column/delete_column_error',
+                    });
+                });
         }
-    }, [columnDefinition?.id, dispatch, tabIndex]);
+    }, [columnDefinition?.id, columnDefinition?.uuid, dispatch, snackError, spreadsheetConfigUuid, tabIndex]);
 
     return (
         <>
@@ -77,7 +90,7 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabI
             </Menu>
 
             {dialogOpen.value && (
-                <CustomColumnDialog open={dialogOpen} colId={colId} tabIndex={tabIndex} isCreate={false} />
+                <CustomColumnDialog open={dialogOpen} colUuid={colUuid} tabIndex={tabIndex} isCreate={false} />
             )}
             {confirmationDialogOpen && (
                 <PopupConfirmationDialog

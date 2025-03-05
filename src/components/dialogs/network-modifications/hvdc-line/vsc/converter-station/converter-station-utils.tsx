@@ -88,7 +88,7 @@ export interface ConverterStationInterfaceEditData {
 }
 
 export interface AttributeModification<T> {
-    value: T;
+    value?: T;
     op: string;
 }
 

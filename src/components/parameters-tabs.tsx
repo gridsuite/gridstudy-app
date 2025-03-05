@@ -333,11 +333,13 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 label={<FormattedMessage id="VoltageInit" />}
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
-                            <Tab
-                                disabled={stateEstimationAvailability !== OptionalServicesStatus.Up}
-                                label={<FormattedMessage id="StateEstimation" />}
-                                value={TAB_VALUES.stateEstimationTabValue}
-                            />
+                            {enableDeveloperMode ? (
+                                <Tab
+                                    disabled={stateEstimationAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="StateEstimation" />}
+                                    value={TAB_VALUES.stateEstimationTabValue}
+                                />
+                            ) : null}
                             {/*In order to insert a Divider under a Tabs collection it need to be nested in a dedicated Tab to prevent console warnings*/}
                             <Tab sx={tabStyles.dividerTab} label="" icon={<Divider sx={{ flexGrow: 1 }} />} disabled />
                             <Tab

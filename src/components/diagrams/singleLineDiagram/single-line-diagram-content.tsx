@@ -28,7 +28,7 @@ import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import { GeneratorModificationDialog } from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
@@ -46,7 +46,6 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, convertToEquipmentType } from '
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
-import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';

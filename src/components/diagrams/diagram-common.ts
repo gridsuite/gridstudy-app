@@ -297,21 +297,40 @@ export const useDiagram = () => {
     };
 };
 
-export interface Svg {
+export interface SldAdditionalMetadata {
+    id: string;
+    country: string;
+    substationId?: string;
+}
+
+export interface SldSvg {
     svg: string | null;
-    metadata: SLDMetadata | DiagramMetadata | null;
-    additionalMetadata:
-        | (SLDMetadata & {
-              country: string;
-              substationId?: string;
-              voltageLevels: { name: string; substationId: UUID }[];
-              nbVoltageLevels?: number;
-              scalingFactor?: number;
-          })
-        | null;
+    metadata: SLDMetadata | null;
+    additionalMetadata: SldAdditionalMetadata | null;
     error?: string | null;
     svgUrl?: string | null;
 }
+
+export interface DiagramAdditionalMetadata {
+    nbVoltageLevels: number;
+    scalingFactor: number;
+    voltageLevels: {
+        id: string;
+        substationId: UUID;
+        country: string;
+        name: string;
+    }[];
+}
+
+export interface DiagramSvg {
+    svg: string | null;
+    metadata: DiagramMetadata | null;
+    additionalMetadata: DiagramAdditionalMetadata | null;
+    error?: string | null;
+    svgUrl?: string | null;
+}
+
+export type Svg = DiagramSvg | SldSvg;
 
 export const NoSvg: Svg = {
     svg: null,

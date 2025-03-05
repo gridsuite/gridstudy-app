@@ -26,6 +26,7 @@ export type SpreadsheetEquipmentType = Exclude<
 >;
 
 export interface SpreadsheetTabDefinition {
+    uuid: UUID;
     index: number;
     name: string;
     type: SpreadsheetEquipmentType;
@@ -33,17 +34,19 @@ export interface SpreadsheetTabDefinition {
 }
 
 export type ColumnDefinition = {
-    uuid?: string;
+    uuid: UUID;
     id: string;
     name: string;
     type: COLUMN_TYPES;
     precision?: number;
     formula: string;
-    dependencies: string[];
+    dependencies?: string[];
+    visible?: boolean;
+    locked?: boolean;
 };
 
 export type ColumnDefinitionDto = Omit<ColumnDefinition, 'dependencies'> & {
-    dependencies: string;
+    dependencies?: string;
 };
 
 export type SpreadsheetEquipmentsByNodes = {
@@ -51,14 +54,25 @@ export type SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: Record<string, Identifiable[]>;
 };
 
-export type ColumnState = { colId: string; visible: boolean };
+export type ColumnState = { colId: string; name: string; visible: boolean };
 
 export type SpreadsheetConfig = {
+    name: string;
     sheetType: SpreadsheetEquipmentType;
-    customColumns: ColumnDefinitionDto[];
+    columns: ColumnDefinitionDto[];
+};
+
+export type SpreadsheetConfigDto = SpreadsheetConfig & {
+    id: UUID;
 };
 
 export type SpreadsheetCollection = {
     id?: string;
     spreadsheetConfigs: SpreadsheetConfig[];
+};
+
+export type SpreadsheetCollectionDto = {
+    id: UUID;
+    name: string;
+    spreadsheetConfigs: SpreadsheetConfigDto[];
 };

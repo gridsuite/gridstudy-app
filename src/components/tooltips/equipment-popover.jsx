@@ -15,8 +15,7 @@ import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { mergeSx } from '../utils/functions';
-import { convertInputValue, FieldType, useDebounce } from '@gridsuite/commons-ui';
+import { convertInputValue, FieldType, mergeSx, useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
     tableCells: {
