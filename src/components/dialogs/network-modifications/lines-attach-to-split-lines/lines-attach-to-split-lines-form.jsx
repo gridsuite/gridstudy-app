@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { AutocompleteInput, TextInput } from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,
@@ -17,7 +17,7 @@ import {
     REPLACING_LINE_2_NAME,
 } from 'components/utils/field-constants';
 import { useEffect, useState } from 'react';
-import { ConnectivityForm } from '../../connectivity/connectivity-form.jsx';
+import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useVoltageLevelsListInfos from '../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../commons/grid-section';
