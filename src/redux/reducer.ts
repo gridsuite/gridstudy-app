@@ -225,7 +225,6 @@ import {
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
-import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
@@ -288,6 +287,7 @@ import {
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
+import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 
 export enum NotificationType {
     STUDY = 'study',

@@ -9,7 +9,6 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setStudyDisplayMode } from '../redux/actions';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/network-viewer';
-import { DiagramType } from './diagrams/diagram-common';
 import { ReactFlowProvider } from '@xyflow/react';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
@@ -27,6 +26,7 @@ import { FormattedMessage } from 'react-intl';
 import BackHandOutlinedIcon from '@mui/icons-material/BackHandOutlined';
 import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlined';
 import { StudyView } from './utils/utils';
+import { DiagramType } from './diagrams/diagram.type.js';
 
 const styles = {
     map: {

@@ -34,7 +34,6 @@ import type {
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
-import { DiagramType } from '../components/diagrams/diagram-common';
 import { Filter } from '../components/results/common/results-global-filter';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
@@ -58,6 +57,7 @@ import {
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
+import { DiagramType } from '../components/diagrams/diagram.type';
 
 type MutableUnknownArray = unknown[];
 

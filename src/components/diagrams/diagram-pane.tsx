@@ -21,14 +21,11 @@ import {
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
     DiagramAdditionalMetadata,
     DiagramSvg,
-    DiagramType,
     MAP_BOTTOM_OFFSET,
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
     NoSvg,
     SldSvg,
     Svg,
-    useDiagram,
-    ViewState,
 } from './diagram-common';
 import { getEstimatedNbVoltageLevels, makeDiagramSorter } from './diagram-utils';
 import { isNodeBuilt, isNodeInNotificationList } from '../graph/util/model-functions';
@@ -48,6 +45,8 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
+import { DiagramType, ViewState } from './diagram.type';
+import { useDiagram } from './use-diagram';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRootNetworkUuid: UUID) => {
