@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { AppState } from 'redux/reducer';
+import { ModelVariable } from '../../dynamic-simulation.type';
 
 interface ModelVariableDefinitionInfos {
     name: string;
@@ -43,12 +44,6 @@ export interface GetSelectedVariablesHandle {
 interface ModelFilterProps {
     equipmentType: EQUIPMENT_TYPES;
 }
-export type ModelVariable = {
-    id: string;
-    name: string;
-    parentId?: string;
-    variableId?: string;
-};
 
 const modelsToVariablesTree = (models: DynamicSimulationModelBack[]) => {
     return models.reduce<Record<string, Record<string, string | Record<string, string>>>>(
