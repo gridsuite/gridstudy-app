@@ -779,7 +779,12 @@ const TwoWindingsTransformerModificationDialog = ({
     );
 
     return (
-        <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider
+            removeOptional={true}
+            validationSchema={formSchema}
+            {...formMethods}
+            nodeIsBuilt={isNodeBuilt(currentNode)}
+        >
             <ModificationDialog
                 fullWidth
                 maxWidth="xl"

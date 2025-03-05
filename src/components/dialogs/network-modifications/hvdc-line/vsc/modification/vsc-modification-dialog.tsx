@@ -327,7 +327,12 @@ const VscModificationDialog: React.FC<any> = ({
     };
 
     return (
-        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+            nodeIsBuilt={isNodeBuilt(currentNode)}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={setValuesAndEmptyOthers}

@@ -56,6 +56,7 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -263,7 +264,12 @@ const ShuntCompensatorModificationDialog = ({
     );
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods} removeOptional={true}>
+        <CustomFormProvider
+            validationSchema={formSchema}
+            {...formMethods}
+            removeOptional={true}
+            nodeIsBuilt={isNodeBuilt(currentNode)}
+        >
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
