@@ -473,6 +473,7 @@
     "showSelectDirectoryDialog": "Modifier dossier",
     "showSelectParameterDialog": "Choisir paramètres",
     "nameAlreadyUsed": "Ce nom est déjà utilisé",
+    "tagAlreadyUsed": "Cette balise est déjà utilisée",
     "studyDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier de l'étude",
     "AddDescription": "Ajouter une description (optionnel)",
 
@@ -939,6 +940,7 @@
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
+    "permanentCurrentLimitMandatory": "Un IST doit être fourni si le limit set contient des limites d'intensité temporaires",
     "SelectedOperationalLimitGroup": "Set de limites actif",
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
@@ -1094,6 +1096,7 @@
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
+    "NoSpreadsheets": "Vous n'avez pas de feuille de calcul, veuillez en créer une",
 
     "depth": "Profondeur : ",
 
@@ -1476,6 +1479,8 @@
     "chooseCase": "Choisir une situation",
     "addNetwork": "Ajouter un réseau",
     "rootName": "Nom du réseau",
+    "rootTag": "Balise du réseau",
+    "TagRequiredCondition": "La balise est obligatoire, unique dans l'étude et de taille <= 4",
     "rootNetworksCount": "{count, plural, =1 {# réseau} other {# réseaux}}",
     "deletingRootNetwork": "Suppression du réseau racine en cours ...",
     "creatingRootNetwork": "Création du réseau racine en cours ...",
@@ -1485,7 +1490,10 @@
     "rootNetworkDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier du réseau",
     "rootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
     "createRootNetworksError": "Une erreur est survenue lors de la création du réseau racine",
-    "createRootNetworksError": "An error occurred while creating the root network",
+
+    "unlimited": "Illimité",
+    "forbidden": "Interdit",
+
     "StateEstimationParametersGeneralTabLabel": "Général",
     "StateEstimationParametersWeightsTabLabel": "Pondération",
     "StateEstimationParametersQualityTabLabel": "Seuils",

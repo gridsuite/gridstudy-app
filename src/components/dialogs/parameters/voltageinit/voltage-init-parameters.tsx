@@ -12,6 +12,7 @@ import {
     useSnackMessage,
     CustomFormProvider,
     TreeViewFinderNodeProps,
+    mergeSx,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useState } from 'react';
@@ -31,7 +32,6 @@ import {
     fromVoltageInitParamsDataToFormValues,
 } from './voltage-init-utils';
 import { getVoltageInitParameters } from 'services/voltage-init';
-import { mergeSx } from 'components/utils/functions';
 import { GeneralParameters } from './general-parameters';
 import {
     DEFAULT_GENERAL_APPLY_MODIFICATIONS,

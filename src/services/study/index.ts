@@ -14,9 +14,10 @@ import {
 } from '../utils';
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfo } from '../../components/graph/menus/network-modification-menu.type';
 import { ComputingType } from '../../components/computing-status/computing-type';
+import { Svg } from 'components/diagrams/diagram-common';
 
 export function safeEncodeURIComponent(value: string | null | undefined): string {
     return value != null ? encodeURIComponent(value) : '';
@@ -167,7 +168,7 @@ export function fetchNodeSeverities(
     return backendFetchJson(url);
 }
 
-export function fetchSvg(svgUrl: string) {
+export function fetchSvg(svgUrl: string): Promise<Svg> {
     console.debug(svgUrl);
     return backendFetch(svgUrl).then((response) => (response.status === 204 ? null : response.json()));
 }
@@ -179,7 +180,7 @@ export function searchEquipmentsInfos(
     searchTerm: string,
     getUseNameParameterKey: () => 'name' | 'id',
     inUpstreamBuiltParentNode?: boolean,
-    equipmentType?: EquipmentType
+    equipmentType?: EquipmentType | ExtendedEquipmentType
 ) {
     console.info("Fetching equipments infos matching with '%s' term ... ", searchTerm);
     let urlSearchParams = new URLSearchParams();

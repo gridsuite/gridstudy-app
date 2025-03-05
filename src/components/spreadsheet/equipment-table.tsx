@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, Ref, useCallback, useMemo } from 'react';
+import { FunctionComponent, Ref, useCallback, useMemo, useRef } from 'react';
 import { useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -20,8 +20,10 @@ import {
 } from 'ag-grid-community';
 import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
+import { NodeType } from 'components/graph/tree-node.type';
 
 const DEFAULT_ROW_HEIGHT = 28;
+const MAX_CLICK_DURATION = 200;
 
 const getRowId = (params: GetRowIdParams<{ id: string }>) => params.data.id;
 
@@ -68,17 +70,25 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
 }) => {
     const theme = useTheme();
     const intl = useIntl();
+    const clickTimeRef = useRef<number | null>(null);
 
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {
+            const isRootNode = currentNode?.type === NodeType.ROOT;
+            const cursorStyle = isRootNode ? 'initial' : 'pointer';
+
             if (params.rowIndex === 0 && params.node.rowPinned === 'top') {
                 return {
                     borderTop: '1px solid ' + theme.palette.primary.main,
                     borderBottom: '1px solid ' + theme.palette.primary.main,
+                    cursor: cursorStyle,
                 };
             }
+            return {
+                cursor: cursorStyle,
+            };
         },
-        [theme.palette.primary.main]
+        [currentNode?.type, theme.palette.primary.main]
     );
 
     const gridContext = useMemo(
@@ -109,9 +119,25 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [intl]
     );
 
+    const handleCellMouseDown = useCallback(() => {
+        clickTimeRef.current = Date.now();
+    }, []);
+
+    const handleRowClicked = useCallback(
+        (event: RowClickedEvent) => {
+            const clickDuration = Date.now() - (clickTimeRef.current ?? 0);
+            if (clickDuration < MAX_CLICK_DURATION) {
+                onRowClicked?.(event);
+            }
+            clickTimeRef.current = null;
+        },
+        [onRowClicked]
+    );
+
     return (
         <CustomAGGrid
             ref={gridRef}
+            rowSelection={{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }}
             getRowId={getRowId}
             rowData={rowsToShow}
             debounceVerticalScrollbar={true}
@@ -123,8 +149,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             onColumnMoved={handleColumnDrag}
             suppressDragLeaveHidesColumns={true}
             suppressColumnVirtualisation={true}
-            singleClickEdit={true}
-            onRowClicked={(event) => onRowClicked?.(event)}
+            onCellMouseDown={handleCellMouseDown}
+            onRowClicked={handleRowClicked}
             context={gridContext}
             shouldHidePinnedHeaderRightBorder={shouldHidePinnedHeaderRightBorder}
             rowHeight={DEFAULT_ROW_HEIGHT}

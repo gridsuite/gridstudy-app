@@ -7,13 +7,13 @@
 
 import { ChangeEvent, useCallback, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { InputAdornment, TextFieldProps } from '@mui/material';
+import { InputAdornment, TextFieldProps, Typography } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import { useController, useFormContext } from 'react-hook-form';
+import { useController, useFormContext, useWatch } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import { UUID } from 'crypto';
-import { useDebounce } from '@gridsuite/commons-ui';
+import { useCustomFormContext, useDebounce } from '@gridsuite/commons-ui';
 
 export interface UniqueCheckNameInputProps {
     name: string;
@@ -25,7 +25,10 @@ export interface UniqueCheckNameInputProps {
         TextFieldProps,
         'value' | 'onChange' | 'name' | 'label' | 'inputRef' | 'inputProps' | 'InputProps'
     >;
+    inputProps?: TextFieldProps['inputProps'];
     elementExists: (studyUuid: UUID, elementName: string) => Promise<boolean>;
+    errorMessageKey: string;
+    max_length?: number;
 }
 
 /**
@@ -39,13 +42,21 @@ export function UniqueCheckNameInput({
     autoFocus,
     onManualChangeCallback,
     formProps,
+    inputProps,
     elementExists,
+    errorMessageKey,
+    max_length,
 }: Readonly<UniqueCheckNameInputProps>) {
     const {
         field: { onChange, onBlur, value, ref },
         fieldState: { error, isDirty },
     } = useController({
         name,
+    });
+    const { control } = useCustomFormContext();
+    const inputWatch = useWatch({
+        name,
+        control,
     });
 
     const {
@@ -56,7 +67,7 @@ export function UniqueCheckNameInput({
     } = useFormContext();
 
     // This is a trick to share the custom validation state among the form : while this error is present, we can't validate the form
-    const isValidating = errors.root?.isValidating;
+    const isValidating = errors.root?.isValidating && errors.root?.isValidating.type === `validate ${name}`;
 
     const handleCheckName = useCallback(
         (nameValue: string) => {
@@ -66,7 +77,7 @@ export function UniqueCheckNameInput({
                         if (alreadyExist) {
                             setError(name, {
                                 type: 'validate',
-                                message: 'nameAlreadyUsed',
+                                message: errorMessageKey,
                             });
                         }
                     })
@@ -86,7 +97,7 @@ export function UniqueCheckNameInput({
                     });
             }
         },
-        [setError, clearErrors, name, elementExists, trigger, studyUuid]
+        [studyUuid, elementExists, setError, name, errorMessageKey, clearErrors, trigger]
     );
 
     const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
@@ -103,7 +114,7 @@ export function UniqueCheckNameInput({
         if (trimmedValue) {
             clearErrors(name);
             setError('root.isValidating', {
-                type: 'validate',
+                type: `validate ${name}`,
                 message: 'cantSubmitWhileValidating',
             });
             debouncedHandleCheckName(trimmedValue);
@@ -130,6 +141,8 @@ export function UniqueCheckNameInput({
         </InputAdornment>
     );
 
+    const helperText = max_length && `${inputWatch?.length}/${max_length}`;
+
     return (
         <TextField
             onChange={handleManualChange}
@@ -141,10 +154,10 @@ export function UniqueCheckNameInput({
             type="text"
             autoFocus={autoFocus}
             margin="dense"
-            fullWidth
             error={!!error}
-            helperText={translatedError}
+            helperText={translatedError || <Typography variant="caption">{helperText}</Typography>}
             InputProps={{ endAdornment }}
+            inputProps={inputProps}
             {...formProps}
         />
     );
