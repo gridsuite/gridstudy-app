@@ -66,8 +66,8 @@ export function getStateEstimationEditData(id: string, branchData: any) {
                 validity: branchData?.q2MeasurementValidity?.value,
             }),
             ...getToBeEstimatedEditData(TO_BE_ESTIMATED, {
-                ratioTapChangerStatus: branchData?.toBeEstimated?.ratioTapChangerStatus,
-                phaseTapChangerStatus: branchData?.toBeEstimated?.phaseTapChangerStatus,
+                ratioTapChangerStatus: branchData?.ratioTapChangerToBeEstimated?.value,
+                phaseTapChangerStatus: branchData?.phaseTapChangerToBeEstimated?.value,
             }),
         },
     };
