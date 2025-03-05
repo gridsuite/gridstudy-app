@@ -8,14 +8,8 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { GlobalFilter } from '../../components/results/loadflow/load-flow-result-tab';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
-
-interface QueryParams {
-    sort?: SortConfig[];
-    filters: FilterConfig[] | null; // column filters
-    globalFilters?: GlobalFilter; // global filters, may contain generic filters applied to all the equipments
-}
+import { GlobalFilters, ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
 
 export function getDefaultLoadFlowProvider() {
     console.info('get default load flow provier');
@@ -100,7 +94,7 @@ export function fetchLoadFlowResult(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    queryParams: QueryParams
+    queryParams: ResultsQueryParams
 ) {
     console.info(
         `Fetching loadflow result on '${studyUuid}', node '${currentNodeUuid}' and current root network '${currentRootNetworkUuid}' ...`
@@ -125,7 +119,7 @@ export function fetchLimitViolations(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    queryParams: QueryParams
+    queryParams: ResultsQueryParams
 ) {
     console.info(`Fetching limit violations ...`);
     const { sort, filters, globalFilters } = queryParams || {};
