@@ -62,7 +62,17 @@ export type SpreadsheetConfig = {
     columns: ColumnDefinitionDto[];
 };
 
+export type SpreadsheetConfigDto = SpreadsheetConfig & {
+    id: UUID;
+};
+
 export type SpreadsheetCollection = {
     id?: string;
     spreadsheetConfigs: SpreadsheetConfig[];
+};
+
+export type SpreadsheetCollectionDto = {
+    id: UUID;
+    name: string;
+    spreadsheetConfigs: SpreadsheetConfigDto[];
 };

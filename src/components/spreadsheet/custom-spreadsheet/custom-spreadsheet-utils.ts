@@ -37,6 +37,13 @@ const createNewTableDefinition = (
     })),
 });
 
+export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
+    return columns.map((column) => ({
+        ...column,
+        [COLUMN_DEPENDENCIES]: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
+    }));
+};
+
 const createSpreadsheetConfig = (
     columns: ColumnDefinition[],
     sheetType: SpreadsheetEquipmentType,

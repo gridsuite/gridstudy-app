@@ -21,4 +21,8 @@ export const TABLES_TYPES = [
     EquipmentType.HVDC_LINE,
     EquipmentType.LCC_CONVERTER_STATION,
     EquipmentType.VSC_CONVERTER_STATION,
+    EquipmentType.TIE_LINE,
+    EquipmentType.DANGLING_LINE,
+    EquipmentType.BUS,
+    EquipmentType.BUSBAR_SECTION,
 ];
