@@ -12,6 +12,12 @@ export interface ConnectablePositionInfos {
     terminalConnected?: boolean | null;
 }
 
+export interface ConnectablePositionFormInfos {
+    connectionDirection: string | null;
+    connectionName?: string | null;
+    connectionPosition?: string | null;
+}
+
 export interface Connectivity {
     voltageLevel: { id?: string };
     busOrBusbarSection: { id?: string; name?: string };

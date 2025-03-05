@@ -86,7 +86,7 @@ import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { GeneratorCreationInfos, GeneratorCreationSchemaForm, GeneratorFormInfos } from './generator-creation.type';
+import { GeneratorCreationInfos, GeneratorCreationSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

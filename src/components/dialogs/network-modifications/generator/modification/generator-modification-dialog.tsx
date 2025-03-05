@@ -101,7 +101,7 @@ import {
     GeneratorFormInfos,
     GeneratorModificationInfos,
     GeneratorModificationSchemaForm,
-} from './generator-modification.type';
+} from '../generator-dialog.type';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
