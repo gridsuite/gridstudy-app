@@ -77,10 +77,18 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
     }, [tableDefinition?.columns, handleCloseColumnsSettingDialog]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
-        reorderSpreadsheetColumns(
-            tableDefinition.uuid,
-            localColumns.map((col) => col.uuid)
-        )
+        // check if column order has changed by comparing uuids
+        const hasOrderChanged = tableDefinition.columns.some((col, index) => col.uuid !== localColumns[index].uuid);
+
+        // create a Promise chain that conditionally includes the reorder request
+        const updatePromise = hasOrderChanged
+            ? reorderSpreadsheetColumns(
+                  tableDefinition.uuid,
+                  localColumns.map((col) => col.uuid)
+              )
+            : Promise.resolve();
+
+        updatePromise
             .then(() => {
                 dispatch(
                     updateTableDefinition({
@@ -95,6 +103,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                     headerId: 'spreadsheet/reorder_columns/error',
                 });
             });
+
         handleCloseColumnsSettingDialog();
     }, [tableDefinition, localColumns, handleCloseColumnsSettingDialog, dispatch, snackError]);
 
