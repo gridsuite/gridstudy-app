@@ -114,13 +114,12 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
         ]
     );
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
-        (voltageLevelsIds: UUID[], depth: number) =>
+        (depth: number) =>
             isNodeBuilt(currentNode)
                 ? getNetworkAreaDiagramUrl(
                       studyUuid,
                       currentNode?.id,
                       currentRootNetworkUuid,
-                      voltageLevelsIds,
                       depth,
                       networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData
                   )
@@ -134,14 +133,22 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
     );
 
     type FetchSvgDataFn = {
-        (svgUrl: string | null, svgType: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL): Promise<SldSvg>;
-        (svgUrl: string | null, svgType: DiagramType.NETWORK_AREA_DIAGRAM): Promise<DiagramSvg>;
+        (
+            svgUrl: string | null,
+            svgType: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL,
+            fetchOptions?: undefined
+        ): Promise<SldSvg>;
+        (
+            svgUrl: string | null,
+            svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+            fetchOptions: RequestInit
+        ): Promise<DiagramSvg>;
     };
     // this callback returns a promise
     const fetchSvgData = useCallback<FetchSvgDataFn>(
-        (svgUrl, svgType): any => {
+        (svgUrl, svgType, fetchOptions): any => {
             if (svgUrl) {
-                return fetchSvg(svgUrl)
+                return fetchSvg(svgUrl, fetchOptions)
                     .then((data: Svg | null) => {
                         if (data !== null) {
                             return {
@@ -228,8 +235,13 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             function createNetworkAreaDiagramView(ids: UUID[] | undefined, state: ViewState | undefined, depth = 0) {
                 console.log('debug', 'createNetworkAreaDiagramView', state);
                 if (ids?.length) {
-                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth);
-                    return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM).then((svg) => {
+                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(depth);
+                    const fetchOptions = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(ids),
+                    };
+                    return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM, fetchOptions).then((svg) => {
                         let nadTitle = '';
                         let substationsIds: UUID[] = [];
                         svg.additionalMetadata?.voltageLevels
