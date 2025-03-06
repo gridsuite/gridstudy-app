@@ -43,9 +43,10 @@ import {
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
 import { setCurrentRootNetwork } from 'redux/actions';
-import RootNetworkCreationDialog, { FormData } from 'components/dialogs/root-network/root-network-creation-dialog';
+import RootNetworkCreationDialog from 'components/dialogs/root-network/root-network-creation-dialog';
 import { isChecked, isPartial } from './network-modification-node-editor-utils';
 import RootNetworkModificationDialog from 'components/dialogs/root-network/root-network-modification-dialog';
+import { FormData } from 'components/dialogs/root-network/root-network-dialog';
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },
