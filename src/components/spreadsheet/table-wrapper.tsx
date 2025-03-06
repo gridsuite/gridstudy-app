@@ -80,6 +80,7 @@ interface TableWrapperProps {
     equipmentType: SpreadsheetEquipmentType;
     equipmentChanged: boolean;
     disabled: boolean;
+    onEquipmentScrolled: () => void;
 }
 
 interface RecursiveIdentifiable extends Identifiable {
@@ -93,6 +94,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     equipmentType,
     equipmentChanged,
     disabled,
+    onEquipmentScrolled,
 }) => {
     const dispatch = useDispatch();
     const gridRef = useRef<AgGridReact>(null);
@@ -242,9 +244,21 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (gridRef.current?.api) {
             gridRef.current.api.setGridOption('rowData', localRowData);
             updateSortConfig();
+            updateFilters(gridRef.current?.api, filters);
+            updateLockedColumnsConfig();
         }
         setRowData(localRowData);
-    }, [tabIndex, disabled, equipments, tableDefinition?.type, nodesAliases, currentNode.id, updateSortConfig]);
+    }, [
+        tabIndex,
+        disabled,
+        equipments,
+        tableDefinition?.type,
+        nodesAliases,
+        currentNode.id,
+        updateSortConfig,
+        filters,
+        updateLockedColumnsConfig,
+    ]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
@@ -267,9 +281,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             if (selectedRow) {
                 gridRef.current?.api?.ensureNodeVisible(selectedRow, 'top');
                 selectedRow.setSelected(true, true);
+                onEquipmentScrolled();
             }
         }
-    }, [manualTabSwitch, equipmentId, equipmentType]);
+    }, [equipmentId, equipmentType, manualTabSwitch, onEquipmentScrolled]);
 
     useEffect(() => {
         if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
