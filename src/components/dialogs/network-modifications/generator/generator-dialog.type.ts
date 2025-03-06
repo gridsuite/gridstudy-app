@@ -50,19 +50,16 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import { EquipmentType } from '@gridsuite/commons-ui';
 import { Property } from '../common/properties/property-utils';
 import { ConnectablePositionFormInfos } from '../../connectivity/connectivity.type';
 
-export type ValueWrapper<T> = { value: T };
-
 export type ReactiveCapabilityCurveTable = {
-    [P]: number | null;
-    [MAX_Q]: number | null;
-    [MIN_Q]: number | null;
+    [P]?: number | null;
+    [MAX_Q]?: number | null;
+    [MIN_Q]?: number | null;
 };
 
-export type GeneratorModificationSchemaForm = {
+export type GeneratorDialogSchemaForm = {
     [EQUIPMENT_ID]: string;
     [EQUIPMENT_NAME]?: string;
     [ENERGY_SOURCE]?: string | null;
@@ -116,84 +113,6 @@ export type GeneratorModificationSchemaForm = {
     // Properties
     [ADDITIONAL_PROPERTIES]?: Property[];
 };
-
-export interface GeneratorCreationInfos {
-    uuid: string;
-    equipmentType: EquipmentType;
-    equipmentId: string;
-    equipmentName: string;
-    energySource: string;
-    maxP: number;
-    minP: number;
-    ratedS: number;
-    targetP: number;
-    voltageRegulationOn: boolean;
-    targetV: number;
-    targetQ: number;
-    plannedActivePowerSetPoint: number;
-    marginalCost: number;
-    plannedOutageRate: number;
-    forcedOutageRate: number;
-    participate: boolean;
-    droop: number;
-    directTransX: number;
-    stepUpTransformerX: number;
-    qPercent: number;
-    reactiveCapabilityCurve: boolean;
-    minQ: number;
-    maxQ: number;
-    reactiveCapabilityCurvePoints: [];
-    regulatingTerminalId: string;
-    regulatingTerminalType: string;
-    regulatingTerminalVlId: string;
-    voltageLevelId: string;
-    busOrBusbarSectionId: string;
-    busbarSectionName?: string;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: string | null;
-    terminalConnected?: boolean | null;
-    properties?: Property[];
-}
-
-export interface GeneratorModificationInfos {
-    uuid: string;
-    equipmentType: EquipmentType;
-    equipmentId: string;
-    equipmentName: ValueWrapper<string>;
-    energySource: ValueWrapper<string>;
-    maxP: ValueWrapper<number>;
-    minP: ValueWrapper<number>;
-    ratedS: ValueWrapper<number>;
-    targetP: ValueWrapper<number>;
-    voltageRegulationOn: ValueWrapper<boolean>;
-    targetV: ValueWrapper<number>;
-    targetQ: ValueWrapper<number>;
-    plannedActivePowerSetPoint: ValueWrapper<number>;
-    marginalCost: ValueWrapper<number>;
-    plannedOutageRate: ValueWrapper<number>;
-    forcedOutageRate: ValueWrapper<number>;
-    participate: ValueWrapper<boolean>;
-    droop: ValueWrapper<number>;
-    directTransX: ValueWrapper<number>;
-    stepUpTransformerX: ValueWrapper<number>;
-    voltageRegulationType: ValueWrapper<string>;
-    qPercent: ValueWrapper<number>;
-    reactiveCapabilityCurve: ValueWrapper<boolean>;
-    minQ: ValueWrapper<number>;
-    maxQ: ValueWrapper<number>;
-    reactiveCapabilityCurvePoints: [];
-    regulatingTerminalId: ValueWrapper<string>;
-    regulatingTerminalType: ValueWrapper<string>;
-    regulatingTerminalVlId: ValueWrapper<string>;
-    voltageLevelId: ValueWrapper<string>;
-    busOrBusbarSectionId: ValueWrapper<string>;
-    connectionDirection: ValueWrapper<string>;
-    connectionName?: ValueWrapper<string>;
-    connectionPosition?: ValueWrapper<number>;
-    terminalConnected?: ValueWrapper<string>;
-    properties?: Property[];
-}
 
 export interface GeneratorFormInfos {
     id: string;

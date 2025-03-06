@@ -8,7 +8,7 @@
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -97,11 +97,9 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import {
-    GeneratorFormInfos,
-    GeneratorModificationInfos,
-    GeneratorModificationSchemaForm,
-} from '../generator-dialog.type';
+import { GeneratorFormInfos, GeneratorDialogSchemaForm } from '../generator-dialog.type';
+import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
+import { toModificationOperation, toModificationUnsetOperation } from '../../../../utils/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -202,9 +200,9 @@ export function GeneratorModificationDialog({
     const [generatorToModify, setGeneratorToModify] = useState<GeneratorFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const formMethods = useForm<DeepNullable<GeneratorModificationSchemaForm>>({
+    const formMethods = useForm<DeepNullable<GeneratorDialogSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<GeneratorModificationSchemaForm>>(formSchema),
+        resolver: yupResolver<DeepNullable<GeneratorDialogSchemaForm>>(formSchema),
     });
 
     const { reset, getValues, setValue } = formMethods;
@@ -372,7 +370,7 @@ export function GeneratorModificationDialog({
     }, [generatorToModify]);
 
     const onSubmit = useCallback(
-        (generator: GeneratorModificationSchemaForm) => {
+        (generator: GeneratorDialogSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
             const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation =
@@ -380,46 +378,59 @@ export function GeneratorModificationDialog({
                 (generator[VOLTAGE_REGULATION_TYPE] === null &&
                     getPreviousRegulationType() === REGULATION_TYPES.DISTANT.id);
 
-            modifyGenerator({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
-                generatorId: selectedId,
-                name: sanitizeString(generator[EQUIPMENT_NAME]),
-                energySource: generator[ENERGY_SOURCE],
-                minP: generator[MINIMUM_ACTIVE_POWER],
-                maxP: generator[MAXIMUM_ACTIVE_POWER],
-                ratedS: generator[RATED_NOMINAL_POWER],
-                targetP: generator[ACTIVE_POWER_SET_POINT],
-                targetQ: generator[REACTIVE_POWER_SET_POINT],
-                voltageRegulation: generator[VOLTAGE_REGULATION],
-                targetV: generator[VOLTAGE_SET_POINT],
-                voltageLevelId: generator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                busOrBusbarSectionId: generator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                connectionName: sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
-                connectionDirection: generator[CONNECTIVITY]?.[CONNECTION_DIRECTION],
-                connectionPosition: generator[CONNECTIVITY]?.[CONNECTION_POSITION],
-                terminalConnected: generator[CONNECTIVITY]?.[CONNECTED],
-                qPercent: generator[Q_PERCENT],
-                plannedActivePowerSetPoint: generator[PLANNED_ACTIVE_POWER_SET_POINT],
-                marginalCost: generator[MARGINAL_COST],
-                plannedOutageRate: generator[PLANNED_OUTAGE_RATE],
-                forcedOutageRate: generator[FORCED_OUTAGE_RATE],
-                directTransX: generator[TRANSIENT_REACTANCE],
-                stepUpTransformerX: generator[TRANSFORMER_REACTANCE],
-                voltageRegulationType: generator[VOLTAGE_REGULATION_TYPE],
-                regulatingTerminalId: isDistantRegulation ? generator[EQUIPMENT]?.id : null,
-                regulatingTerminalType: isDistantRegulation ? generator[EQUIPMENT]?.type : null,
-                regulatingTerminalVlId: isDistantRegulation ? generator[VOLTAGE_LEVEL]?.id : null,
-                isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
-                participate: generator[FREQUENCY_REGULATION],
-                droop: generator[DROOP],
-                maxQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER],
-                minQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER],
-                reactiveCapabilityCurve: isReactiveCapabilityCurveOn
+            const generatorModificationInfos = {
+                type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
+                equipmentId: selectedId,
+                equipmentName: toModificationOperation(sanitizeString(generator[EQUIPMENT_NAME])),
+                energySource: toModificationOperation(generator[ENERGY_SOURCE]),
+                minP: toModificationOperation(generator[MINIMUM_ACTIVE_POWER]),
+                maxP: toModificationOperation(generator[MAXIMUM_ACTIVE_POWER]),
+                ratedS: toModificationOperation(generator[RATED_NOMINAL_POWER]),
+                targetP: toModificationOperation(generator[ACTIVE_POWER_SET_POINT]),
+                targetQ: toModificationUnsetOperation(generator[REACTIVE_POWER_SET_POINT]),
+                voltageRegulation: toModificationOperation(generator[VOLTAGE_REGULATION]),
+                targetV: toModificationUnsetOperation(generator[VOLTAGE_SET_POINT]),
+                voltageLevelId: toModificationOperation(generator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
+                busOrBusbarSectionId: toModificationOperation(generator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
+                connectionName: toModificationOperation(sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME])),
+                connectionDirection: toModificationOperation(generator[CONNECTIVITY]?.[CONNECTION_DIRECTION]),
+                connectionPosition: toModificationOperation(generator[CONNECTIVITY]?.[CONNECTION_POSITION]),
+                terminalConnected: toModificationOperation(generator[CONNECTIVITY]?.[CONNECTED]),
+                qPercent: toModificationOperation(generator[Q_PERCENT]),
+                plannedActivePowerSetPoint: toModificationOperation(generator[PLANNED_ACTIVE_POWER_SET_POINT]),
+                marginalCost: toModificationOperation(generator[MARGINAL_COST]),
+                plannedOutageRate: toModificationOperation(generator[PLANNED_OUTAGE_RATE]),
+                forcedOutageRate: toModificationOperation(generator[FORCED_OUTAGE_RATE]),
+                directTransX: toModificationOperation(generator[TRANSIENT_REACTANCE]),
+                stepUpTransformerX: toModificationOperation(generator[TRANSFORMER_REACTANCE]),
+                voltageRegulationType: toModificationOperation(generator[VOLTAGE_REGULATION_TYPE]),
+                regulatingTerminalId: toModificationOperation(isDistantRegulation ? generator[EQUIPMENT]?.id : null),
+                regulatingTerminalType: toModificationOperation(
+                    isDistantRegulation ? generator[EQUIPMENT]?.type : null
+                ),
+                regulatingTerminalVlId: toModificationOperation(
+                    isDistantRegulation ? generator[VOLTAGE_LEVEL]?.id : null
+                ),
+                reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
+                participate: toModificationOperation(generator[FREQUENCY_REGULATION]),
+                droop: toModificationOperation(generator[DROOP]),
+                maxQ: toModificationOperation(
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER]
+                ),
+                minQ: toModificationOperation(
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER]
+                ),
+                reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
                     ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
                     : null,
                 properties: toModificationProperties(generator),
+            };
+
+            modifyGenerator({
+                generatorModificationInfos: generatorModificationInfos,
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
