@@ -31,6 +31,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
 import { emptyLineSegment } from './line-type-segment-utils';
+import { LineTypeInfo, SegmentInfo } from './line-catalog.type';
 
 const styles = {
     header: {
@@ -45,14 +46,14 @@ const styles = {
 
 export const LineTypeSegmentForm = () => {
     const { setValue, getValues, clearErrors } = useFormContext();
-    const [lineTypesCatalog, setLineTypesCatalog] = useState([]);
-    const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
+    const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
+    const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
     const { snackError } = useSnackMessage();
 
-    // Fetchs the lineTypes catalog on startup
+    // Fetches the lineTypes catalog on startup
     useEffect(() => {
         getLineTypesCatalog()
-            .then((values) => {
+            .then((values: LineTypeInfo[]) => {
                 setLineTypesCatalog(values);
             })
             .catch((error) =>
@@ -64,7 +65,7 @@ export const LineTypeSegmentForm = () => {
     }, [snackError]);
 
     const updateSegmentValues = useCallback(
-        (index) => {
+        (index: number) => {
             const distance = getValues(`${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`);
             const typeId = getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
 
@@ -88,10 +89,19 @@ export const LineTypeSegmentForm = () => {
     );
 
     const updateTotals = useCallback(() => {
-        const segments = getValues(SEGMENTS);
-        const totalResistance = segments.reduce((accum, item) => accum + (item[SEGMENT_RESISTANCE] ?? 0), 0);
-        const totalReactance = segments.reduce((accum, item) => accum + (item[SEGMENT_REACTANCE] ?? 0), 0);
-        const totalSusceptance = segments.reduce((accum, item) => accum + (item[SEGMENT_SUSCEPTANCE] ?? 0), 0);
+        const segments: SegmentInfo[] = getValues(SEGMENTS);
+        const totalResistance = segments.reduce(
+            (accum: number, item: SegmentInfo) => accum + (item[SEGMENT_RESISTANCE] ?? 0),
+            0
+        );
+        const totalReactance = segments.reduce(
+            (accum: number, item: SegmentInfo) => accum + (item[SEGMENT_REACTANCE] ?? 0),
+            0
+        );
+        const totalSusceptance = segments.reduce(
+            (accum: number, item: SegmentInfo) => accum + (item[SEGMENT_SUSCEPTANCE] ?? 0),
+            0
+        );
         setValue(TOTAL_RESISTANCE, roundToDefaultPrecision(totalResistance));
         setValue(TOTAL_REACTANCE, roundToDefaultPrecision(totalReactance));
         setValue(TOTAL_SUSCEPTANCE, roundToDefaultPrecision(totalSusceptance));
@@ -101,13 +111,13 @@ export const LineTypeSegmentForm = () => {
         setOpenCatalogDialogIndex(null);
     };
 
-    const openCatalogDialog = (index) => {
+    const openCatalogDialog = (index: number) => {
         setOpenCatalogDialogIndex(index);
     };
 
     const onSelectCatalogLine = useCallback(
-        (selectedLine) => {
-            if (selectedLine) {
+        (selectedLine: LineTypeInfo) => {
+            if (selectedLine && openCatalogDialogIndex !== null) {
                 const selectedType = selectedLine.type ?? '';
                 const selectedTypeId = selectedLine.id ?? '';
                 setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`, selectedType);
@@ -121,7 +131,7 @@ export const LineTypeSegmentForm = () => {
     );
 
     const handleSegmentDistantChange = useCallback(
-        (index) => {
+        (index: number) => {
             updateSegmentValues(index);
             updateTotals();
         },
@@ -129,7 +139,7 @@ export const LineTypeSegmentForm = () => {
     );
 
     const handleSegmentDelete = useCallback(
-        (index) => {
+        (index: number) => {
             // Forces the values to zero juste before deleting the row.
             // We have to do this because the line deletion is trigger after this
             // function's return.
@@ -143,7 +153,7 @@ export const LineTypeSegmentForm = () => {
     );
 
     const getPreselectedRowIdForCatalog = useCallback(
-        (index) => {
+        (index: number) => {
             return getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
         },
         [getValues]
@@ -193,8 +203,8 @@ export const LineTypeSegmentForm = () => {
                 name={SEGMENTS}
                 Field={LineTypeSegmentCreation}
                 fieldProps={{
-                    onSegmentDistanceChange: (index, newDistance) => handleSegmentDistantChange(index, newDistance),
-                    onEditButtonClick: (index) => openCatalogDialog(index),
+                    onSegmentDistanceChange: (index: number) => handleSegmentDistantChange(index),
+                    onEditButtonClick: (index: number) => openCatalogDialog(index),
                 }}
                 addButtonLabel={'AddSegment'}
                 initialValue={emptyLineSegment}
@@ -212,11 +222,9 @@ export const LineTypeSegmentForm = () => {
 
             {openCatalogDialogIndex !== null && (
                 <LineTypesCatalogSelectorDialog
-                    open={true}
                     onClose={onCatalogDialogClose}
                     rowData={lineTypesCatalog}
                     onSelectLine={onSelectCatalogLine}
-                    titleId={'SelectType'}
                     preselectedRowId={getPreselectedRowIdForCatalog(openCatalogDialogIndex)}
                 />
             )}
