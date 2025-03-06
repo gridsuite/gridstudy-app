@@ -225,6 +225,7 @@ const VoltageLevelModificationDialog = ({
             removeOptional={true}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
         >
             <ModificationDialog
                 fullWidth

@@ -140,6 +140,7 @@ const RegulatingTerminalModificationDialog = ({
             validationSchema={formSchema}
             {...formMethods}
             isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={!!previousData}
         >
             <ModificationDialog
                 fullWidth

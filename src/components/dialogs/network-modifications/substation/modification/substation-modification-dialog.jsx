@@ -171,6 +171,7 @@ const SubstationModificationDialog = ({
             {...formMethods}
             removeOptional={true}
             isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
         >
             <ModificationDialog
                 fullWidth

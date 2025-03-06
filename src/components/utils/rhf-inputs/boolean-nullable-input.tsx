@@ -6,10 +6,11 @@
  */
 
 import FormControl from '@mui/material/FormControl';
-import { Checkbox, CheckboxProps, FormControlLabel, FormHelperText } from '@mui/material';
+import { Checkbox, CheckboxProps, FormControlLabel } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useController } from 'react-hook-form';
 import { useCallback } from 'react';
+import { useCustomFormContext, HelperPreviousValue } from '@gridsuite/commons-ui';
 
 interface CheckboxNullableInputProps {
     name: string;
@@ -17,14 +18,17 @@ interface CheckboxNullableInputProps {
     id?: string;
     formProps?: CheckboxProps;
     previousValue?: string;
+    isNodeBuilt?: boolean;
+    isUpdate?: boolean;
 }
 
-const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: CheckboxNullableInputProps) => {
+const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Readonly<CheckboxNullableInputProps>) => {
     const {
         field: { onChange, value },
     } = useController({ name });
 
     const intl = useIntl();
+    const { isNodeBuilt, isUpdate } = useCustomFormContext();
 
     const handleChangeValue = useCallback(() => {
         if (value) {
@@ -56,7 +60,13 @@ const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Ch
                     id: label,
                 })}
             />
-            {previousValue && <FormHelperText>{previousValue}</FormHelperText>}
+            {previousValue && (
+                <HelperPreviousValue
+                    previousValue={previousValue}
+                    isNodeBuilt={isNodeBuilt}
+                    disabledTooltip={!isUpdate && isNodeBuilt}
+                />
+            )}
         </FormControl>
     );
 };
