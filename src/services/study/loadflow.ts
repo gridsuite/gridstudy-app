@@ -8,8 +8,7 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
-import { GlobalFilters, ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
+import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
 
 export function getDefaultLoadFlowProvider() {
     console.info('get default load flow provier');
