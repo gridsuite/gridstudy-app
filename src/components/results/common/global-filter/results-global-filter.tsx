@@ -38,13 +38,18 @@ const recentFilter: string = 'recent';
 
 export interface ResultsGlobalFilterProps {
     onChange: (filters: GlobalFilter[]) => void;
+    filtrableEquipmentTypes: EQUIPMENT_TYPES[];
     filters: GlobalFilter[];
 }
 
 const emptyArray: GlobalFilter[] = [];
 const DEFAULT_NB_OPTIONS_DISPLAYED: number = 10;
 
-const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onChange, filters = emptyArray }) => {
+const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
+    onChange,
+    filtrableEquipmentTypes,
+    filters = emptyArray,
+}) => {
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch<AppDispatch>();
@@ -293,12 +298,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                 open={directoryItemSelectorOpen}
                 onClose={addSelectedFilters}
                 types={[ElementType.FILTER]}
-                // TODO when generalizing this component to all the computation: types should depend of the current computation
-                equipmentTypes={[
-                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-                    EQUIPMENT_TYPES.LINE,
-                    EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
-                ]}
+                equipmentTypes={filtrableEquipmentTypes}
                 title={intl.formatMessage({ id: 'Filters' })}
                 selected={selectedFiltersElements}
                 multiSelect

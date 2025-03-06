@@ -45,6 +45,7 @@ import { loadflowResultInvalidations } from '../../computing-status/use-all-comp
 import { FilterType } from '../common/utils';
 import { useNodeData } from 'components/use-node-data';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 const styles = {
     flexWrapper: {
@@ -281,6 +282,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return loadflowResult;
     }, [tabIndex, loadflowResult, intl]);
 
+    const getFiltrableEquipmentTypes = useCallback(() => {
+        switch (tabIndex) {
+            case 0:
+                return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+            case 1:
+                return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+        }
+        return [];
+    }, [tabIndex]);
+
     return (
         <>
             <Box sx={styles.flexWrapper}>
@@ -294,6 +305,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     <ResultsGlobalFilter
                         onChange={handleGlobalFilterChange}
                         filters={[...voltageLevelsFilter, ...countriesFilter]}
+                        filtrableEquipmentTypes={getFiltrableEquipmentTypes()}
                     />
                 </Box>
                 <Box sx={styles.emptySpace}></Box>
