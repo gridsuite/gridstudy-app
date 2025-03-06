@@ -40,7 +40,7 @@ import {
 } from '../../../../reactive-limits/reactive-limits-utils';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { sanitizeString } from '../../../../dialog-utils';
-import { toModificationOperation } from '../../../../../utils/utils';
+import { toModificationOperation, AttributeModification } from '../../../../../utils/utils';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -50,7 +50,7 @@ export type UpdateReactiveCapabilityCurveTableConverterStation = (
     converterStationName: 'converterStation1' | 'converterStation2'
 ) => void;
 
-export interface ReactiveCapabilityCurvePointsData {
+export interface ReactiveCapabilityCurvePointsInfos {
     p?: number | null;
     maxQ?: number | null;
     minQ?: number | null;
@@ -81,15 +81,10 @@ export interface ConverterStationInterfaceEditData {
     connectionName?: string | null;
     connectionPosition?: string | null;
     terminalConnected?: boolean | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsInfos[];
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
-}
-
-export interface AttributeModification<T> {
-    value?: T;
-    op: string;
 }
 
 export interface ConverterStationModificationInterfaceEditData {
@@ -106,7 +101,7 @@ export interface ConverterStationModificationInterfaceEditData {
     connectionName?: AttributeModification<string> | null;
     connectionPosition?: AttributeModification<string> | null;
     terminalConnected?: AttributeModification<boolean> | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsInfos[];
     reactiveCapabilityCurve: AttributeModification<boolean> | null;
     minQ: AttributeModification<number> | null;
     maxQ: AttributeModification<number> | null;
@@ -125,7 +120,7 @@ export interface ConverterStationElementInfos {
     terminalConnected: boolean;
     p: number | null;
     q: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsInfos[];
     minMaxReactiveLimits: MinMaxReactiveLimitsData | null;
     connectablePositionInfos: ConnectablePositionInfos;
     reactivePower?: number;
@@ -147,7 +142,7 @@ export interface ReactiveCapabilityCurvePoint {
 export type ConverterStationElementModificationInfos = Omit<
     ConverterStationElementInfos,
     'reactiveCapabilityCurvePoints'
-> & { reactiveCapabilityCurveTable: ReactiveCapabilityCurvePointsData[] };
+> & { reactiveCapabilityCurveTable: ReactiveCapabilityCurvePointsInfos[] };
 
 export function getVscConverterStationSchema(id: string) {
     return {
@@ -171,7 +166,7 @@ export function getVscConverterStationSchema(id: string) {
                     then: (schema) => schema.required(),
                 }),
             ...getConnectivityWithPositionValidationSchema(),
-            ...getReactiveLimitsSchema(false, true),
+            [REACTIVE_LIMITS]: getReactiveLimitsSchema(false, true),
         }),
     };
 }
@@ -185,7 +180,7 @@ export function getVscConverterStationModificationSchema(id: string) {
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
             [REACTIVE_POWER]: yup.number().nullable(),
             [VOLTAGE]: yup.number().nullable(),
-            ...getReactiveLimitsSchema(true),
+            [REACTIVE_LIMITS]: getReactiveLimitsSchema(true),
         }),
     };
 }

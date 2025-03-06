@@ -48,7 +48,7 @@ import {
     getConverterStationModificationFormEditData,
     getVscConverterStationEmptyFormData,
     getVscConverterStationModificationSchema,
-    ReactiveCapabilityCurvePointsData,
+    ReactiveCapabilityCurvePointsInfos,
 } from '../converter-station/converter-station-utils';
 import { VscModificationForm } from './vsc-modification-from';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -294,7 +294,7 @@ const VscModificationDialog: React.FC<any> = ({
     };
 
     const updateConverterStationCapabilityCurveTable = (
-        newRccValues: ReactiveCapabilityCurvePointsData[] | undefined,
+        newRccValues: ReactiveCapabilityCurvePointsInfos[] | undefined,
         action: string,
         index: number,
         previousValue: VscModificationInfo | null

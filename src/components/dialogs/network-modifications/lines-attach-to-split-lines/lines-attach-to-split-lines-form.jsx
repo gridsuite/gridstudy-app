@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { AutocompleteInput, TextInput } from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,

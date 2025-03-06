@@ -23,7 +23,6 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,
@@ -151,7 +150,7 @@ export function LoadCreationDialog({
         setFormValues: (data: LoadCreationSchemaForm) => {
             reset(data, { keepDefaultValues: true });
         },
-        elementType: EQUIPMENT_TYPES.LOAD,
+        elementType: EquipmentType.LOAD,
     });
 
     useEffect(() => {

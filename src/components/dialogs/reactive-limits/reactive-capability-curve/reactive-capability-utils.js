@@ -7,13 +7,7 @@
 
 import { toNumber, validateValueIsANumber } from 'components/utils/validation-functions';
 import yup from 'components/utils/yup-config';
-import {
-    MAX_Q,
-    MIN_Q,
-    P,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-} from 'components/utils/field-constants';
+import { MAX_Q, MIN_Q, P, REACTIVE_CAPABILITY_CURVE_CHOICE } from 'components/utils/field-constants';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';
@@ -61,11 +55,8 @@ function checkAllPValuesBetweenMinMax(values) {
     return validActivePowerValues.every((p) => p >= minP && p <= maxP);
 }
 
-export const getReactiveCapabilityCurveValidationSchema = (
-    id = REACTIVE_CAPABILITY_CURVE_TABLE,
-    positiveAndNegativePExist = false
-) => ({
-    [id]: yup
+export const getReactiveCapabilityCurveValidationSchema = (positiveAndNegativePExist = false) =>
+    yup
         .array()
         .nullable()
         .when([REACTIVE_CAPABILITY_CURVE_CHOICE], {
@@ -95,8 +86,7 @@ export const getReactiveCapabilityCurveValidationSchema = (
                     .test('checkAllValuesBetweenMinMax', 'ReactiveCapabilityCurveCreationErrorPOutOfRange', (values) =>
                         checkAllPValuesBetweenMinMax(values)
                     ),
-        }),
-});
+        });
 
 export function setSelectedReactiveLimits(id, minMaxReactiveLimits, setValue) {
     setValue(id, minMaxReactiveLimits ? 'MINMAX' : 'CURVE');

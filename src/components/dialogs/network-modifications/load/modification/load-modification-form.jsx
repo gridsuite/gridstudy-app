@@ -10,7 +10,7 @@ import { EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-consta
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
 import { useIntl } from 'react-intl';
-import { TextField, Grid } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
