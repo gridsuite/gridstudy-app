@@ -45,6 +45,7 @@ import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNet
 import { setCurrentRootNetwork } from 'redux/actions';
 import RootNetworkCreationDialog, { FormData } from 'components/dialogs/root-network/root-network-creation-dialog';
 import { isChecked, isPartial } from './network-modification-node-editor-utils';
+import RootNetworkModificationDialog from 'components/dialogs/root-network/root-network-modification-dialog';
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },
@@ -138,7 +139,7 @@ const RootNetworkNodeEditor = () => {
 
     const [rootNetworkCreationDialogOpen, setRootNetworkCreationDialogOpen] = useState(false);
     const [rootNetworkUpdateDialogOpen, setRootNetworkUpdateDialogOpen] = useState(false);
-    const [edtitedRootNetwork, setEdtitedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
+    const [editedRootNetwork, setEdtitedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
 
@@ -311,8 +312,12 @@ const RootNetworkNodeEditor = () => {
     };
 
     const renderRootNetworkUpdateDialog = () => {
+        if (!editedRootNetwork) {
+            return null;
+        }
         return (
-            <RootNetworkCreationDialog
+            <RootNetworkModificationDialog
+                editableRootNetwork={editedRootNetwork}
                 open={rootNetworkUpdateDialogOpen}
                 onClose={() => setRootNetworkUpdateDialogOpen(false)}
                 onSave={doUpdateRootNetwork}
@@ -370,37 +375,44 @@ const RootNetworkNodeEditor = () => {
             });
     };
 
-    const doUpdateRootNetwork = ({ name, caseName, caseId }: FormData) => {
-        alert(name);
+    const doUpdateRootNetwork = async ({ name, tag, caseName, caseId }: FormData) => {
         if (!studyUuid) {
             return;
         }
-        if (!edtitedRootNetwork) {
+        if (!editedRootNetwork) {
             return;
         }
-
-        getCaseImportParameters(caseId as UUID)
-            .then((params: GetCaseImportParametersReturn) => {
-                // Format the parameters
+        try {
+            if (caseId) {
+                const params = await getCaseImportParameters(caseId as UUID);
                 const formattedParams = formatCaseImportParameters(params.parameters);
-                const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
-                // Call createRootNetwork with formatted parameters
-                return updateRootNetwork(
-                    edtitedRootNetwork?.rootNetworkUuid,
-                    name,
+                const customizedParams = customizeCurrentParameters(formattedParams as Parameter[]);
+
+                await updateRootNetwork(
+                    editedRootNetwork.rootNetworkUuid,
+                    name === editedRootNetwork.name ? '' : name,
+                    tag === editedRootNetwork.tag ? '' : tag,
                     caseId as UUID,
                     params.formatName,
                     studyUuid,
-                    customizedCurrentParameters
+                    customizedParams
                 );
-            })
-
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'updateRootNetworksError',
-                });
+            } else {
+                updateRootNetwork(
+                    editedRootNetwork.rootNetworkUuid,
+                    name === editedRootNetwork.name ? '' : name,
+                    tag === editedRootNetwork.tag ? '' : tag,
+                    caseId as UUID,
+                    '',
+                    studyUuid,
+                    {}
+                );
+            }
+        } catch (error) {
+            snackError({
+                headerId: 'updateRootNetworksError',
             });
+        }
     };
 
     return (

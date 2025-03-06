@@ -49,23 +49,30 @@ export const createRootNetwork = (
 export const updateRootNetwork = (
     rootNetworkUuid: UUID,
     name: string,
+    tag: string,
     caseUuid: UUID,
     caseFormat: string,
     studyUuid: UUID,
     importParameters: Record<string, any>
 ) => {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('caseUuid', caseUuid);
-    urlSearchParams.append('caseFormat', caseFormat);
-    urlSearchParams.append('name', name);
+    // Create an object of parameters to be appended to the URL
+    const params = { caseUuid, caseFormat, name, tag };
 
-    const createRootNetworkUrl =
+    // Initialize URLSearchParams with only the truthy values from params
+    const urlSearchParams = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+        if (value) {
+            urlSearchParams.append(key, value.toString());
+        }
+    });
+    const updateRootNetworkUrl =
         PREFIX_STUDY_QUERIES +
         `/v1/studies/${encodeURIComponent(studyUuid)}/root-networks/${encodeURIComponent(rootNetworkUuid)}?` +
         urlSearchParams.toString();
 
-    console.debug(createRootNetworkUrl);
-    return backendFetch(createRootNetworkUrl, {
+    console.debug(updateRootNetworkUrl);
+    return backendFetch(updateRootNetworkUrl, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
