@@ -133,11 +133,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
     );
 
     type FetchSvgDataFn = {
-        (
-            svgUrl: string | null,
-            svgType: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL,
-            fetchOptions?: undefined
-        ): Promise<SldSvg>;
+        (svgUrl: string | null, svgType: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL): Promise<SldSvg>;
         (
             svgUrl: string | null,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
@@ -146,7 +142,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
     };
     // this callback returns a promise
     const fetchSvgData = useCallback<FetchSvgDataFn>(
-        (svgUrl, svgType, fetchOptions): any => {
+        (svgUrl, svgType, fetchOptions?: RequestInit): any => {
             if (svgUrl) {
                 return fetchSvg(svgUrl, fetchOptions)
                     .then((data: Svg | null) => {
