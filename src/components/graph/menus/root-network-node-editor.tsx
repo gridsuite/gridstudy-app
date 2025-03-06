@@ -164,6 +164,19 @@ const RootNetworkNodeEditor = () => {
     }, [studyUuid, updateSelectedItems, snackError]);
 
     useEffect(() => {
+        if (studyUpdatedForce?.eventData?.headers) {
+            const eventType = studyUpdatedForce.eventData.headers?.['updateType'];
+            if (eventType === 'rootNetworksUpdateFailed') {
+                dofetchRootNetworks();
+                snackError({
+                    messageId: 'importCaseFailure',
+                    headerId: 'createRootNetworksError',
+                });
+            }
+        }
+    }, [studyUpdatedForce, snackError, dofetchRootNetworks]);
+
+    useEffect(() => {
         if (studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworksUpdated') {
             dofetchRootNetworks();
             setDeleteInProgress(false);
