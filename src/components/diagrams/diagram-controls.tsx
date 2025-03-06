@@ -5,31 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import {
-    ElementCreationDialog,
-    ElementType,
-    IElementCreationDialog,
-    mergeSx,
-    OverflowableText,
-} from '@gridsuite/commons-ui';
+import { ElementCreationDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
-import MinimizeIcon from '@mui/icons-material/Minimize';
-import PushPinIcon from '@mui/icons-material/PushPin';
-import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import CloseIcon from '@mui/icons-material/Close';
-import { stopDiagramBlink } from '../../redux/actions';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
-import { DiagramType } from './diagram-common';
-import { createDiagramConfig } from '../../services/explore';
-import { getNadIdentifier } from './diagram-utils';
 
 const styles = {
     actionIcon: (theme: Theme) => ({
@@ -52,15 +38,15 @@ const styles = {
 
 interface DiagramControlsProps {
     showSaveControl?: boolean;
-    handleSave?: () => void;
+    onSave?: (data: IElementCreationDialog) => void;
     showVisibilityControl?: boolean;
-    onVisibilityToggle?: () => void;
+    onVisibilityToggle?: (newVisibility: boolean) => void;
     defaultVisiblity?: boolean;
 }
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({
     showSaveControl = false,
-    handleSave,
+    onSave,
     showVisibilityControl = false,
     onVisibilityToggle,
     defaultVisiblity = true,
@@ -75,6 +61,12 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
 
     const handleClickSaveIcon = () => {
         setIsSaveDialogOpen(true);
+    };
+
+    const handleSave = (data: IElementCreationDialog) => {
+        if (onSave) {
+            onSave(data);
+        }
     };
 
     const handleVisibility = () => {

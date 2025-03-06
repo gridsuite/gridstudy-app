@@ -37,7 +37,6 @@ import { FEEDER_TYPES } from 'components/utils/feederType';
 import { IElementCreationDialog, mergeSx } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
-import { Theme } from '@mui/material';
 
 const overrideStyles = {
     hideLabels: {
@@ -268,8 +267,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
         // TODO rewrite this temporary spaghetti thing, maybe refactor the positions in NADs in general ?
         nodePositions.forEach((movement) => {
-            const adjustedX = adjustPositionToScaling(movement.x, movement.scalingFactor, props.svgScalingFactor);
-            const adjustedY = adjustPositionToScaling(movement.y, movement.scalingFactor, props.svgScalingFactor);
+            const adjustedX = adjustPositionToScaling(movement.x, movement.scalingFactor, props.svgScalingFactor ?? 1);
+            const adjustedY = adjustPositionToScaling(movement.y, movement.scalingFactor, props.svgScalingFactor ?? 1);
             if (positionsMap.has(movement.equipmentId)) {
                 let position = positionsMap.get(movement.equipmentId);
                 position.x = adjustedX;
@@ -286,14 +285,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 let position = positionsMap.get(element.equipmentId);
                 position.shiftX = element.shiftX;
                 position.shiftY = element.shiftY;
-                position.connectionShiftX = element.connectionShiftX;
-                position.connectionShiftY = element.connectionShiftY;
+                //position.connectionShiftX = element.connectionShiftX;
+                //position.connectionShiftY = element.connectionShiftY;
             } else {
                 positionsMap.set(element.equipmentId, {
                     shiftX: element.shiftX,
                     shiftY: element.shiftY,
-                    connectionShiftX: element.connectionShiftX,
-                    connectionShiftY: element.connectionShiftY,
+                    //connectionShiftX: element.connectionShiftX,
+                    //connectionShiftY: element.connectionShiftY,
                 });
             }
         });
@@ -303,8 +302,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             yposition: position.y,
             xlabelPosition: position.shiftX,
             ylabelPosition: position.shiftY,
-            connectionShiftX: position.connectionShiftX, // TODO use or not ?
-            connectionShiftY: position.connectionShiftY,
+            //connectionShiftX: position.connectionShiftX, // TODO use or not ?
+            //connectionShiftY: position.connectionShiftY,
         }));
 
         createDiagramConfig(
@@ -320,8 +319,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             directoryData.folderId
         );
     };
-
-    const setLabelsVisibility = (visibility: boolean) => {};
 
     /**
      * DIAGRAM CONTENT BUILDING
@@ -375,12 +372,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                         const adjustedX = adjustPositionToScaling(
                             movement.x,
                             movement.scalingFactor,
-                            props.svgScalingFactor
+                            props.svgScalingFactor ?? 1
                         );
                         const adjustedY = adjustPositionToScaling(
                             movement.y,
                             movement.scalingFactor,
-                            props.svgScalingFactor
+                            props.svgScalingFactor ?? 1
                         );
                         diagramViewer.moveNodeToCoordinates(movement.equipmentId, adjustedX, adjustedY);
                     }
@@ -448,7 +445,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             />
             <DiagramControls
                 showSaveControl
-                handleSave={handleSaveNadConfig}
+                onSave={handleSaveNadConfig}
                 showVisibilityControl
                 onVisibilityToggle={setShowLabels}
             />

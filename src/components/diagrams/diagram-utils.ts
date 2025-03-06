@@ -38,12 +38,8 @@ const sortByAlign = (a: { align: DiagramAlignment }, b: { align: DiagramAlignmen
  */
 const sortByIndex = (a: any, b: any, diagramStates: any[]) => {
     return (
-        diagramStates.findIndex(
-            (diagramState) => diagramState.id === a?.id && diagramState.diagramType === a?.diagramType
-        ) -
-        diagramStates.findIndex(
-            (diagramState) => diagramState.id === b?.id && diagramState.diagramType === b?.diagramType
-        )
+        diagramStates.findIndex((diagramState) => diagramState.id === a?.id && diagramState.svgType === a?.svgType) -
+        diagramStates.findIndex((diagramState) => diagramState.id === b?.id && diagramState.svgType === b?.svgType)
     );
 };
 

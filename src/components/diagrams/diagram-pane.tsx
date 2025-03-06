@@ -786,7 +786,7 @@ export function DiagramPane({
                                         loadingState: false,
                                     } as unknown as DiagramView;
                                     updatedViews[i] = data;
-                                    if (fromScratch && svg.diagramType === DiagramType.NETWORK_AREA_DIAGRAM) {
+                                    if (fromScratch && svg.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                                         dispatch(
                                             setNetworkAreaDiagramNbVoltageLevels(
                                                 svg.additionalMetadata?.nbVoltageLevels
