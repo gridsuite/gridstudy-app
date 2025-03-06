@@ -331,7 +331,7 @@ const VscModificationDialog: React.FC<any> = ({
             validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
-            nodeIsBuilt={isNodeBuilt(currentNode)}
+            isNodeBuilt={isNodeBuilt(currentNode)}
         >
             <ModificationDialog
                 fullWidth

@@ -139,7 +139,7 @@ const RegulatingTerminalModificationDialog = ({
             removeOptional={true}
             validationSchema={formSchema}
             {...formMethods}
-            nodeIsBuilt={isNodeBuilt(currentNode)}
+            isNodeBuilt={isNodeBuilt(currentNode)}
         >
             <ModificationDialog
                 fullWidth

@@ -170,7 +170,7 @@ const SubstationModificationDialog = ({
             validationSchema={formSchema}
             {...formMethods}
             removeOptional={true}
-            nodeIsBuilt={isNodeBuilt(currentNode)}
+            isNodeBuilt={isNodeBuilt(currentNode)}
         >
             <ModificationDialog
                 fullWidth

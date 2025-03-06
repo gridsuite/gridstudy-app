@@ -309,7 +309,7 @@ const BatteryModificationDialog = ({
             validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
-            nodeIsBuilt={isNodeBuilt(currentNode)}
+            isNodeBuilt={isNodeBuilt(currentNode)}
         >
             <ModificationDialog
                 fullWidth
