@@ -28,13 +28,35 @@ import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
-import { getNadIdentifier } from '../diagram-utils';
+import { adjustPositionToScaling, getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { IElementCreationDialog, mergeSx } from '@gridsuite/commons-ui';
+import DiagramControls from '../diagram-controls';
+import { createDiagramConfig } from '../../../services/explore';
+import { Theme } from '@mui/material';
+
+const overrideStyles = {
+    hideLabels: {
+        '.nad-label-box': {
+            visibility: 'hidden',
+        },
+        '.nad-text-edges': {
+            visibility: 'hidden',
+        },
+    },
+    showLabels: {
+        '.nad-label-box': {
+            visibility: 'visible',
+        },
+        '.nad-text-edges': {
+            visibility: 'visible',
+        },
+    },
+};
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -166,6 +188,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
+    const [showLabels, setShowLabels] = useState(true);
 
     const nadIdentifier = useMemo(() => {
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
@@ -232,6 +256,73 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
         [setShouldDisplayTooltip, setAnchorPosition]
     );
+
+    const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
+        const voltageLevelIds: Array<string> = diagramStates
+            .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
+            .map((diagram) => diagram.id);
+
+        const nodePositions = nadNodeMovements.filter((movement) => movement.nadIdentifier === nadIdentifier);
+        const textNodePositions = nadTextNodeMovements.filter((movement) => movement.nadIdentifier === nadIdentifier);
+        const positionsMap = new Map();
+
+        // TODO rewrite this temporary spaghetti thing, maybe refactor the positions in NADs in general ?
+        nodePositions.forEach((movement) => {
+            const adjustedX = adjustPositionToScaling(movement.x, movement.scalingFactor, props.svgScalingFactor);
+            const adjustedY = adjustPositionToScaling(movement.y, movement.scalingFactor, props.svgScalingFactor);
+            if (positionsMap.has(movement.equipmentId)) {
+                let position = positionsMap.get(movement.equipmentId);
+                position.x = adjustedX;
+                position.y = adjustedY;
+            } else {
+                positionsMap.set(movement.equipmentId, {
+                    x: adjustedX,
+                    y: adjustedY,
+                });
+            }
+        });
+        textNodePositions.forEach((element) => {
+            if (positionsMap.has(element.equipmentId)) {
+                let position = positionsMap.get(element.equipmentId);
+                position.shiftX = element.shiftX;
+                position.shiftY = element.shiftY;
+                position.connectionShiftX = element.connectionShiftX;
+                position.connectionShiftY = element.connectionShiftY;
+            } else {
+                positionsMap.set(element.equipmentId, {
+                    shiftX: element.shiftX,
+                    shiftY: element.shiftY,
+                    connectionShiftX: element.connectionShiftX,
+                    connectionShiftY: element.connectionShiftY,
+                });
+            }
+        });
+        const positions = Array.from(positionsMap, ([equipmentId, position]) => ({
+            voltageLevelId: equipmentId,
+            xposition: position.x,
+            yposition: position.y,
+            xlabelPosition: position.shiftX,
+            ylabelPosition: position.shiftY,
+            connectionShiftX: position.connectionShiftX, // TODO use or not ?
+            connectionShiftY: position.connectionShiftY,
+        }));
+
+        createDiagramConfig(
+            {
+                depth: networkAreaDiagramDepth,
+                scalingFactor: props.svgScalingFactor,
+                //radiusFactor: 9,
+                voltageLevelIds: voltageLevelIds,
+                positions: positions,
+            },
+            directoryData.name,
+            directoryData.description,
+            directoryData.folderId
+        );
+    };
+
+    const setLabelsVisibility = (visibility: boolean) => {};
+
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -281,8 +372,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 correspondingMovements.forEach((movement) => {
                     // It is possible to not have scalingFactors, so we only move the nodes if we have the needed value.
                     if (!!movement.scalingFactor && !!props.svgScalingFactor) {
-                        let adjustedX = (movement.x / movement.scalingFactor) * props.svgScalingFactor;
-                        let adjustedY = (movement.y / movement.scalingFactor) * props.svgScalingFactor;
+                        const adjustedX = adjustPositionToScaling(
+                            movement.x,
+                            movement.scalingFactor,
+                            props.svgScalingFactor
+                        );
+                        const adjustedY = adjustPositionToScaling(
+                            movement.y,
+                            movement.scalingFactor,
+                            props.svgScalingFactor
+                        );
                         diagramViewer.moveNodeToCoordinates(movement.equipmentId, adjustedX, adjustedY);
                     }
                 });
@@ -343,8 +442,15 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
+                    showLabels ? overrideStyles.showLabels : overrideStyles.hideLabels,
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
+            />
+            <DiagramControls
+                showSaveControl
+                handleSave={handleSaveNadConfig}
+                showVisibilityControl
+                onVisibilityToggle={setShowLabels}
             />
         </>
     );

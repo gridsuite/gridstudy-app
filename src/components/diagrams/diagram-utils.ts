@@ -38,8 +38,12 @@ const sortByAlign = (a: { align: DiagramAlignment }, b: { align: DiagramAlignmen
  */
 const sortByIndex = (a: any, b: any, diagramStates: any[]) => {
     return (
-        diagramStates.findIndex((diagramState) => diagramState.id === a?.id && diagramState.svgType === a?.svgType) -
-        diagramStates.findIndex((diagramState) => diagramState.id === b?.id && diagramState.svgType === b?.svgType)
+        diagramStates.findIndex(
+            (diagramState) => diagramState.id === a?.id && diagramState.diagramType === a?.diagramType
+        ) -
+        diagramStates.findIndex(
+            (diagramState) => diagramState.id === b?.id && diagramState.diagramType === b?.diagramType
+        )
     );
 };
 
@@ -97,4 +101,8 @@ export function getEstimatedNbVoltageLevels(
     // 8     : 138
     // 9     : 221
     return previousVoltagesNB * Math.pow(VL_DEPTH_GROWTH_RATE, requestedDepth - currentDepth);
+}
+
+export function adjustPositionToScaling(positionValue: number, originalScaling: number, newScaling: number): number {
+    return (positionValue / originalScaling) * newScaling;
 }

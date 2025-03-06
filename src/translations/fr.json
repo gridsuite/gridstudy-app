@@ -1460,6 +1460,8 @@
     "AddAutomaton": "Ajouter un automate",
     "BusBarCountMustBeGreaterThanOrEqualToOne": "Un nombre de barres doit être supérieur ou égal à 1",
     "SectionCountMustBeGreaterThanOrEqualToOne": "Un nombre de sections doit être supérieur ou égal à 1",
+    "showLabels": "Afficher étiquettes",
+    "hideLabels": "Cacher étiquettes",
 
     "StateEstimationQualityCriterionResults": "Qualité critères",
     "StateEstimationQualityPerRegionResults": "Qualité régions",

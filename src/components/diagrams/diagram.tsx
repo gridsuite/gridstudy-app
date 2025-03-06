@@ -29,9 +29,6 @@ import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
 import AlertCustomMessageNode from '../utils/alert-custom-message-node';
 import { AppState } from 'redux/reducer';
-import { ElementCreationDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
-import { createDiagramConfig } from 'services/explore';
-import { useState } from 'react';
 
 interface DiagramProps {
     align?: 'left' | 'right' | 'center';
@@ -67,7 +64,6 @@ const Diagram: React.FC<DiagramProps> = ({
 
     const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } = useDiagram();
 
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const fullScreenDiagram = useSelector((state: AppState) => state.fullScreenDiagram);
 
     const shouldBeHidden: boolean =
@@ -83,8 +79,6 @@ const Diagram: React.FC<DiagramProps> = ({
     const incrementCounterDisabled = loadingState || nbVoltageLevels > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS;
 
     const decrementCounterDisabled = loadingState || networkAreaDiagramDepth === 0;
-
-    const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
 
     /**
      * DIAGRAM CONTROL HANDLERS
@@ -123,128 +117,69 @@ const Diagram: React.FC<DiagramProps> = ({
         dispatch(decrementNetworkAreaDiagramDepth());
     };
 
-    const handleSaveConfig = (directoryData: IElementCreationDialog) => {
-        createDiagramConfig(
-            {
-                depth: 9,
-                scalingFactor: 9,
-                radiusFactor: 9,
-                voltageLevelIds: ['charly', 'charly4'],
-                positions: [
-                    {
-                        voltageLevelId: 'charly',
-                        xposition: 200,
-                        yposition: 300,
-                        xlabelPosition: 400,
-                        ylabelPosition: 500,
-                    },
-                    {
-                        voltageLevelId: 'charly2',
-                        xposition: 600,
-                        yposition: 700,
-                        xlabelPosition: 800,
-                        ylabelPosition: 900,
-                    },
-                    {
-                        voltageLevelId: 'charly3',
-                        xposition: 1000,
-                        yposition: 1100,
-                        xlabelPosition: 1200,
-                        ylabelPosition: 1300,
-                    },
-                ],
-            },
-            directoryData.name,
-            directoryData.description,
-            directoryData.folderId
-        );
-    };
-
-    const handleCloseDialog = () => {
-        setIsSaveDialogOpen(false);
-    };
-
-    const handleClickSave = () => {
-        setIsSaveDialogOpen(true);
-    };
-
     /**
      * RENDER
      */
 
     return (
-        <>
-            <DiagramResizableBox
-                align={align}
-                height={shouldBeFullscreen ? fullscreenHeight : height}
-                width={shouldBeFullscreen ? fullscreenWidth : width}
-                // We disable the resizeBox if a diagram is in fullscreen
-                disableResize={!!fullScreenDiagram?.id}
-                // We hide this diagram if another diagram is in fullscreen mode.
-                hide={shouldBeHidden}
+        <DiagramResizableBox
+            align={align}
+            height={shouldBeFullscreen ? fullscreenHeight : height}
+            width={shouldBeFullscreen ? fullscreenWidth : width}
+            // We disable the resizeBox if a diagram is in fullscreen
+            disableResize={!!fullScreenDiagram?.id}
+            // We hide this diagram if another diagram is in fullscreen mode.
+            hide={shouldBeHidden}
+        >
+            <Paper
+                elevation={4}
+                square={true}
+                sx={styles.paperBorders}
+                style={{
+                    pointerEvents: 'auto',
+                    width: '100%',
+                    minWidth: MIN_WIDTH,
+                    height: '100%',
+                    position: 'relative',
+                    overflow: 'hidden',
+                }}
             >
-                <Paper
-                    elevation={4}
-                    square={true}
-                    sx={styles.paperBorders}
-                    style={{
-                        pointerEvents: 'auto',
-                        width: '100%',
-                        minWidth: MIN_WIDTH,
-                        height: '100%',
-                        position: 'relative',
-                        overflow: 'hidden',
-                    }}
-                >
-                    <DiagramHeader
-                        diagramTitle={diagramTitle}
-                        svgType={svgType}
-                        diagramId={diagramId}
-                        showMinimizeControl
-                        onMinimize={onMinimizeHandler}
-                        showTogglePinControl={svgType !== DiagramType.NETWORK_AREA_DIAGRAM}
-                        showSaveControl={svgType === DiagramType.NETWORK_AREA_DIAGRAM}
-                        handleSave={svgType === DiagramType.NETWORK_AREA_DIAGRAM ? handleClickSave : undefined}
-                        onTogglePin={onTogglePinHandler}
-                        pinned={pinned}
-                        showCloseControl
-                        onClose={onCloseHandler}
-                    />
-                    <Box sx={{ position: 'relative', top: '2em', height: '100%' }}>
-                        {warningToDisplay ? (
-                            <AlertCustomMessageNode message={warningToDisplay} noMargin />
-                        ) : (
-                            <>{children}</>
-                        )}
-                    </Box>
-                    <DiagramFooter
-                        showCounterControls={svgType === DiagramType.NETWORK_AREA_DIAGRAM}
-                        counterText={intl.formatMessage({
-                            id: 'depth',
-                        })}
-                        counterValue={networkAreaDiagramDepth}
-                        onIncrementCounter={onIncrementDepthHandler}
-                        onDecrementCounter={onDecrementDepthHandler}
-                        showFullscreenControl
-                        fullScreenActive={shouldBeFullscreen}
-                        onStartFullScreen={onShowFullScreenHandler}
-                        onStopFullScreen={onHideFullScreenHandler}
-                        incrementCounterDisabled={incrementCounterDisabled}
-                        decrementCounterDisabled={decrementCounterDisabled}
-                    />
-                </Paper>
-            </DiagramResizableBox>
-            {studyUuid && (
-                <ElementCreationDialog
-                    studyUuid={studyUuid}
-                    onClose={handleCloseDialog}
-                    onSave={handleSaveConfig}
-                    open={isSaveDialogOpen}
-                    type={ElementType.DIAGRAM_CONFIG}
-                    titleId={'test'}
+                <DiagramHeader
+                    diagramTitle={diagramTitle}
+                    svgType={svgType}
+                    diagramId={diagramId}
+                    showMinimizeControl
+                    onMinimize={onMinimizeHandler}
+                    showTogglePinControl={svgType !== DiagramType.NETWORK_AREA_DIAGRAM}
+                    onTogglePin={onTogglePinHandler}
+                    pinned={pinned}
+                    showCloseControl
+                    onClose={onCloseHandler}
                 />
-            )}
-        </>
+                <Box sx={{ position: 'relative', top: '2em', height: '100%' }}>
+                    {warningToDisplay ? (
+                        <AlertCustomMessageNode message={warningToDisplay} noMargin />
+                    ) : (
+                        <>{children}</>
+                    )}
+                </Box>
+                <DiagramFooter
+                    showCounterControls={svgType === DiagramType.NETWORK_AREA_DIAGRAM}
+                    counterText={intl.formatMessage({
+                        id: 'depth',
+                    })}
+                    counterValue={networkAreaDiagramDepth}
+                    onIncrementCounter={onIncrementDepthHandler}
+                    onDecrementCounter={onDecrementDepthHandler}
+                    showFullscreenControl
+                    fullScreenActive={shouldBeFullscreen}
+                    onStartFullScreen={onShowFullScreenHandler}
+                    onStopFullScreen={onHideFullScreenHandler}
+                    incrementCounterDisabled={incrementCounterDisabled}
+                    decrementCounterDisabled={decrementCounterDisabled}
+                />
+            </Paper>
+        </DiagramResizableBox>
     );
 };
 
