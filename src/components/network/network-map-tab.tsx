@@ -34,7 +34,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { type Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNode, isSameNodeAndBuilt } from '../graph/util/model-functions';
-import { resetMapEquipment, resetMapReloaded, setMapDataLoading } from '../../redux/actions';
+import { resetMapEquipment, resetMapReloaded, setMapMissingDataLoading, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, LinearProgress, useTheme } from '@mui/material';
 import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
@@ -515,7 +515,7 @@ export const NetworkMapTab = ({
         const notFoundLineIds = lineFullPath
             ? getEquipmentsNotFoundIds(geoDataRef.current.linePositionsById, mapEquipments?.lines as GeoDataEquipment[])
             : [];
-
+        // The loader should be reset if there's no geo-data to fetch or once fetching is finished.
         if (notFoundSubstationIds.length > 0 || notFoundLineIds.length > 0) {
             console.info(
                 `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLineIds}'...`
@@ -575,7 +575,10 @@ export const NetworkMapTab = ({
                 })
                 .finally(() => {
                     dispatch(setMapDataLoading(false));
+                    dispatch(setMapMissingDataLoading(false));
                 });
+        } else {
+            dispatch(setMapMissingDataLoading(false));
         }
     }, [
         dispatch,
@@ -600,6 +603,7 @@ export const NetworkMapTab = ({
     const loadRootNodeGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         dispatch(setMapDataLoading(true));
+        dispatch(setMapMissingDataLoading(true));
         setGeoData(undefined);
         geoDataRef.current = null;
 
@@ -916,6 +920,8 @@ export const NetworkMapTab = ({
         // when root node geodata are loaded, we fetch current node missing geo-data
         // we check if equipments are done initializing because they are checked to fetch accurate missing geo data
         if (isRootNodeGeoDataLoaded && isMapEquipmentsInitialized && !isInitialized) {
+            //Used to display the loader during the fetching of missing geo-data.
+            dispatch(setMapMissingDataLoading(true));
             // when root networks are changed, mapEquipments are recreated. when they are done recreating, the map is zoomed around the new network
             if (mapEquipments) {
                 handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
@@ -930,6 +936,7 @@ export const NetworkMapTab = ({
         isMapEquipmentsInitialized,
         isInitialized,
         loadMissingGeoData,
+        dispatch,
     ]);
 
     // Reload geo data (if necessary) when we switch on full path

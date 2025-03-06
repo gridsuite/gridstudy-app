@@ -556,6 +556,17 @@ export function setMapDataLoading(mapDataLoading: boolean): MapDataLoadingAction
         mapDataLoading,
     };
 }
+export const MAP_MISSING_DATA_LOADED = 'MAP_MISSING_DATA_LOADED';
+export type MapMissingDataLoadingAction = Readonly<Action<typeof MAP_MISSING_DATA_LOADED>> & {
+    mapMissingDataLoading: boolean;
+};
+
+export function setMapMissingDataLoading(mapMissingDataLoading: boolean): MapMissingDataLoadingAction {
+    return {
+        type: MAP_MISSING_DATA_LOADED,
+        mapMissingDataLoading,
+    };
+}
 
 export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
 export type ResetMapReloadedAction = Readonly<Action<typeof RESET_MAP_RELOADED>>;
