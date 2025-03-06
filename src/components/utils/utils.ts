@@ -7,12 +7,7 @@
 
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
-import {
-    AttributeModification,
-    CurrentLimits,
-    OperationalLimitsGroup,
-    TemporaryLimit,
-} from 'services/network-modification-types';
+import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
 import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
@@ -116,15 +111,27 @@ export const buildNewBusbarSections = (equipmentId: string, sectionCount: number
     return newBusbarSections;
 };
 
+export enum OperationType {
+    SET = 'SET',
+    UNSET = 'UNSET',
+}
+
+export type AttributeModification<T> = {
+    value?: T;
+    op: OperationType;
+};
+
 export function toModificationOperation<T>(value: T): AttributeModification<T> | null {
-    return value === 0 || value === false || value ? { value: value, op: 'SET' } : null;
+    return value === 0 || value === false || value ? { value: value, op: OperationType.SET } : null;
 }
 
 export function toModificationUnsetOperation<T>(value: T): AttributeModification<T> | null {
     if (value === null) {
         return null;
     }
-    return value === 0 || value === false || value ? { value: value, op: 'SET' } : { op: 'UNSET' };
+    return value === 0 || value === false || value
+        ? { value: value, op: OperationType.SET }
+        : { op: OperationType.UNSET };
 }
 
 export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]) =>

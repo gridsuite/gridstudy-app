@@ -380,6 +380,7 @@ export function GeneratorModificationDialog({
 
             const generatorModificationInfos = {
                 type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
+                uuid: editData?.uuid,
                 equipmentId: selectedId,
                 equipmentName: toModificationOperation(sanitizeString(generator[EQUIPMENT_NAME])),
                 energySource: toModificationOperation(generator[ENERGY_SOURCE]),
@@ -430,7 +431,6 @@ export function GeneratorModificationDialog({
                 generatorModificationInfos: generatorModificationInfos,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,

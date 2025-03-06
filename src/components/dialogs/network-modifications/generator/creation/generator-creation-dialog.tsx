@@ -343,6 +343,7 @@ export function GeneratorCreationDialog({
             const isDistantRegulation = generator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;
             const generatorCreationInfos = {
                 type: MODIFICATION_TYPES.GENERATOR_CREATION.type,
+                uuid: editData?.uuid,
                 equipmentId: generator[EQUIPMENT_ID],
                 equipmentName: sanitizeString(generator[EQUIPMENT_NAME]),
                 energySource: generator[ENERGY_SOURCE],
@@ -384,8 +385,6 @@ export function GeneratorCreationDialog({
                 generatorCreationInfos: generatorCreationInfos,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                isUpdate: !!editData,
-                modificationUuid: editData.uuid,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,

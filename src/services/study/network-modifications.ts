@@ -518,28 +518,24 @@ export function modifyLoad({
     });
 }
 
-interface modifyGeneratorProps {
-    generatorModificationInfos: GeneratorModificationInfos;
-    studyUuid: UUID;
-    nodeUuid?: UUID;
-    modificationUuid?: string | null;
-}
-
 export function modifyGenerator({
     generatorModificationInfos,
     studyUuid,
     nodeUuid,
-    modificationUuid,
-}: modifyGeneratorProps) {
+}: {
+    generatorModificationInfos: GeneratorModificationInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+}) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
-        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+    if (generatorModificationInfos.uuid) {
+        modificationUrl += '/' + encodeURIComponent(generatorModificationInfos.uuid);
         console.info('Updating generator modification');
     } else {
         console.info('Creating generator modification');
     }
+    const isUpdate = !!generatorModificationInfos.uuid;
     return backendFetchText(modificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -550,30 +546,23 @@ export function modifyGenerator({
     });
 }
 
-interface createGeneratorProps {
-    generatorCreationInfos: GeneratorCreationInfos;
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    isUpdate: boolean;
-    modificationUuid: string;
-}
-
 export function createGenerator({
     generatorCreationInfos,
     studyUuid,
     nodeUuid,
-    isUpdate = false,
-    modificationUuid,
-}: createGeneratorProps) {
+}: {
+    generatorCreationInfos: GeneratorCreationInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+}) {
     let createGeneratorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (isUpdate) {
-        createGeneratorUrl += '/' + encodeURIComponent(modificationUuid);
+    if (generatorCreationInfos.uuid) {
+        createGeneratorUrl += '/' + encodeURIComponent(generatorCreationInfos.uuid);
         console.info('Updating generator creation');
     } else {
         console.info('Creating generator creation');
     }
-
+    const isUpdate = !!generatorCreationInfos.uuid;
     return backendFetchText(createGeneratorUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {

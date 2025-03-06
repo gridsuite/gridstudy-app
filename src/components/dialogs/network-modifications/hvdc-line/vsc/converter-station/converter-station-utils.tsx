@@ -40,8 +40,7 @@ import {
 } from '../../../../reactive-limits/reactive-limits-utils';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { sanitizeString } from '../../../../dialog-utils';
-import { toModificationOperation } from '../../../../../utils/utils';
-import { AttributeModification } from '../../../../../../services/network-modification-types';
+import { toModificationOperation, AttributeModification } from '../../../../../utils/utils';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
