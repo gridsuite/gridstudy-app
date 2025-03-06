@@ -14,7 +14,6 @@ import {
     Chip,
     FilterOptionsState,
     InputAdornment,
-    Paper,
     TextField,
 } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
@@ -24,15 +23,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../../redux/actions';
 import { AppState } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
-import { mergeSx } from '@gridsuite/commons-ui';
 import { FilterType } from '../utils';
-import IconButton from '@mui/material/IconButton';
-import FolderIcon from '@mui/icons-material/Folder';
-import { DirectoryItemSelector, ElementType, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
+import { ElementType, TreeViewFinderNodeProps, mergeSx, DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { UUID } from 'crypto';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
+import SelectableGlobalFilters from './selectable-global-filters';
 
 const recentFilter: string = 'recent';
 
@@ -265,34 +262,12 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
 
                     return filteredOptions;
                 }}
-                // adds the filter pick up at the end
-                PaperComponent={({ children }) => {
-                    return (
-                        <Paper>
-                            {children}
-                            <Box sx={resultsGlobalFilterStyles.filterTypeBox}>
-                                <Box
-                                    sx={mergeSx(resultsGlobalFilterStyles.groupLabel, {
-                                        paddingLeft: 2,
-                                        paddingTop: 1.5,
-                                    })}
-                                >
-                                    <FormattedMessage id={'Filters'} />
-                                    <IconButton
-                                        color="primary"
-                                        sx={{
-                                            align: 'right',
-                                            marginLeft: 'auto',
-                                        }}
-                                        onMouseDown={() => setDirectoryItemSelectorOpen(true)}
-                                    >
-                                        <FolderIcon />
-                                    </IconButton>
-                                </Box>
-                            </Box>
-                        </Paper>
-                    );
-                }}
+                PaperComponent={({ children }) => (
+                    <SelectableGlobalFilters
+                        children={children}
+                        onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
+                    />
+                )}
             />
             <DirectoryItemSelector
                 open={directoryItemSelectorOpen}
