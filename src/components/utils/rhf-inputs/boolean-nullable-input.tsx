@@ -18,8 +18,6 @@ interface CheckboxNullableInputProps {
     id?: string;
     formProps?: CheckboxProps;
     previousValue?: string;
-    isNodeBuilt?: boolean;
-    isUpdate?: boolean;
 }
 
 const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Readonly<CheckboxNullableInputProps>) => {
