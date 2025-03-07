@@ -1259,7 +1259,7 @@
     "AttachingAndSplittingLines": "Attaching and splitting lines",
     "GenerationAndLoad": "Generation and load",
     "InsertModificationFrom": "Insert from GridExplore",
-    "SaveModificationTo": "Save to GridExplore",
+    "SaveToGridexplore": "Save to GridExplore",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
     "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {directory}",
@@ -1466,6 +1466,8 @@
     "AddAutomaton": "Add an automaton",
     "BusBarCountMustBeGreaterThanOrEqualToOne": "Number of busbars must be greater than or equal to 1",
     "SectionCountMustBeGreaterThanOrEqualToOne": "Number of sections must be greater than or equal to 1",
+    "showLabels": "Show labels",
+    "hideLabels": "Hide labels",
 
     "StateEstimationQualityCriterionResults": "Criterion quality",
     "StateEstimationQualityPerRegionResults": "Quality per region",

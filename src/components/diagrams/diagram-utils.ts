@@ -99,3 +99,7 @@ export function getEstimatedNbVoltageLevels(
     // 9     : 221
     return previousVoltagesNB * Math.pow(VL_DEPTH_GROWTH_RATE, requestedDepth - currentDepth);
 }
+
+export function adjustPositionToScaling(positionValue: number, originalScaling: number, newScaling: number): number {
+    return (positionValue / originalScaling) * newScaling;
+}

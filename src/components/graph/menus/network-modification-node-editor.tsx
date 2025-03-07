@@ -968,7 +968,7 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <Tooltip title={<FormattedMessage id={'SaveModificationTo'} />}>
+                <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
                     <span>
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
