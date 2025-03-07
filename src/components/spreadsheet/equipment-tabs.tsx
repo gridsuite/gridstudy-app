@@ -187,7 +187,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
             return '';
         }
         const tab = tablesDefinitions.find((tab) => tab.uuid === tabToBeRemovedUuid);
-        return tab?.name || '';
+        return tab?.name ?? '';
     }, [tabToBeRemovedUuid, tablesDefinitions]);
 
     return (
