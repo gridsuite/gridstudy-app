@@ -10,7 +10,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
+import { GlobalFilter, LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
@@ -64,12 +64,6 @@ const styles = {
         flexGrow: 1,
     },
 };
-
-export interface GlobalFilter {
-    nominalV?: string[];
-    countryCode?: string[];
-    limitViolationsTypes?: LimitTypes[];
-}
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
