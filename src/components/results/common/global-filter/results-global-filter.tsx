@@ -102,14 +102,13 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                 return;
             }
 
-            fetchElementsInfos(values.map((value) => value.id)).then((elements: ElementAttributes[]) => {
+            fetchElementsInfos(values.map((value) => value.id as UUID)).then((elements: ElementAttributes[]) => {
                 const newlySelectedFilters: GlobalFilter[] = [];
 
                 elements.forEach((element: ElementAttributes) => {
                     // ignore already selected filters and non generic filters :
                     if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
                         // add the others
-
                         newlySelectedFilters.push({
                             uuid: element.elementUuid,
                             equipmentType: element.specificMetadata?.equipmentType,
@@ -139,7 +138,14 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
             .map((filter) => filter.label);
 
         if (inappropriateFilters.length > 0) {
-            // TODO plus de cas si plus de 1
+            if (inappropriateFilters.length > 1) {
+                return intl.formatMessage(
+                    {
+                        id: 'results.globalFilter.nonApplicableExtra',
+                    },
+                    { filterName: inappropriateFilters[0], extraFiltersNum: inappropriateFilters.length - 1 }
+                );
+            }
             return intl.formatMessage(
                 {
                     id: 'results.globalFilter.nonApplicable',
