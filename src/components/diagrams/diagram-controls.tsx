@@ -29,7 +29,7 @@ const styles = {
         display: 'block',
         position: 'absolute',
         top: theme.spacing(1),
-        right: theme.spacing(1),
+        left: theme.spacing(1),
     }),
     icon: {
         fontSize: 'medium',
@@ -87,21 +87,18 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                 <Box
                     sx={{
                         display: 'flex',
-                        flexDirection: 'column',
+                        flexDirection: 'row',
                     }}
                 >
                     {showSaveControl && (
-                        <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />} placement={'left'}>
+                        <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
                             <IconButton sx={styles.actionIcon} onClick={handleClickSaveIcon}>
                                 <SaveIcon sx={styles.icon} />
                             </IconButton>
                         </Tooltip>
                     )}
                     {showVisibilityControl && (
-                        <Tooltip
-                            title={<FormattedMessage id={visibility ? 'hideLabels' : 'showLabels'} />}
-                            placement={'left'}
-                        >
+                        <Tooltip title={<FormattedMessage id={visibility ? 'hideLabels' : 'showLabels'} />}>
                             <IconButton sx={styles.actionIcon} onClick={handleVisibility}>
                                 {visibility && <VisibilityOffIcon sx={styles.icon} />}
                                 {!visibility && <VisibilityIcon sx={styles.icon} />}
