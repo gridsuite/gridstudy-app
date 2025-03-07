@@ -4,13 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FILTER_DATA_TYPES } from '../../custom-aggrid-header.type';
 import { useCallback, useEffect, useState } from 'react';
 import { debounce } from '@mui/material';
 import { GridApi } from 'ag-grid-community';
 import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
+import { FILTER_DATA_TYPES } from '../custom-aggrid-filter.type';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
