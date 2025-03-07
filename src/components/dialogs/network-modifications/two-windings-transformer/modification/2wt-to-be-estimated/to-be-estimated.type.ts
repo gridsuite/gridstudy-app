@@ -6,10 +6,10 @@
  */
 
 export interface ToBeEstimatedInfo {
-    ratioTapChangerStatus: boolean;
-    phaseTapChangerStatus: boolean;
+    ratioTapChangerStatus?: boolean;
+    phaseTapChangerStatus?: boolean;
 }
 
 export interface ToBeEstimatedProps {
-    toBeEstimated: ToBeEstimatedInfo;
+    toBeEstimated?: ToBeEstimatedInfo;
 }
