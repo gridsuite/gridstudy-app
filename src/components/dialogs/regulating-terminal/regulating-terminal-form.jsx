@@ -48,7 +48,11 @@ const RegulatingTerminalForm = ({
     });
 
     useEffect(() => {
-        if (watchVoltageLevelId) {
+        if (
+            watchVoltageLevelId &&
+            /* avoid fetch non existing vl id */
+            voltageLevelOptions.find((vlOption) => vlOption.id === watchVoltageLevelId)
+        ) {
             fetchVoltageLevelEquipments(
                 studyUuid,
                 currentNodeUuid,
@@ -57,12 +61,14 @@ const RegulatingTerminalForm = ({
                 watchVoltageLevelId,
                 true
             ).then((values) => {
+                console.log('XXX equipment options', { watchVoltageLevelId, values });
                 setEquipmentsOptions(values);
             });
         } else {
+            console.log('XXX reset empty equipment options', { watchVoltageLevelId });
             setEquipmentsOptions([]);
         }
-    }, [watchVoltageLevelId, id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
+    }, [watchVoltageLevelId, voltageLevelOptions, id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const resetEquipment = useCallback(() => {
         setValue(`${id}.${EQUIPMENT}`, null);
@@ -81,14 +87,18 @@ const RegulatingTerminalForm = ({
                             name={`${id}.${VOLTAGE_LEVEL}`}
                             label="VOLTAGE_LEVEL"
                             size="small"
-                            freeSolo
+                            // particular outputTransform case for string type when a user clicks outside after editing whatever input
+                            outputTransform={(value) => {
+                                console.log('XXX VL ID inputValue', { value });
+                                return typeof value === 'string' ? { id: value, label: value } : value;
+                            }}
                             forcePopupIcon
                             autoHighlight
                             selectOnFocus
                             disabled={disabled}
                             id="voltage-level"
                             options={voltageLevelOptions}
-                            getOptionLabel={(vl) => (vl?.[ID] ? vl?.[ID] : '')}
+                            getOptionLabel={(vl) => (vl?.id ? vl?.id : '')}
                             onChangeCallback={resetEquipment}
                             previousValue={previousRegulatingTerminalValue}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
@@ -96,13 +106,11 @@ const RegulatingTerminalForm = ({
                             */
                             filterOptions={(options, params) => {
                                 const filtered = filter(options, params);
-                                if (
-                                    params.inputValue !== '' &&
-                                    !options.find((opt) => opt?.[ID] === params.inputValue)
-                                ) {
+                                console.log('XXX options', { options });
+                                if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
                                     filtered.push({
-                                        inputValue: params.inputValue,
-                                        [ID]: params.inputValue,
+                                        id: params.inputValue,
+                                        label: params.inputValue,
                                     });
                                 }
                                 return filtered;
@@ -157,6 +165,7 @@ const RegulatingTerminalForm = ({
                                 }
                                 return filtered;
                             }}
+                            allowNewValue
                             PopperComponent={FittingPopper}
                         />
                     }
