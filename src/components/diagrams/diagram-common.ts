@@ -9,7 +9,7 @@ import { INVALID_LOADFLOW_OPACITY, NAD_INVALID_LOADFLOW_OPACITY } from '../../ut
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
-import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
+import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { UUID } from 'crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
 

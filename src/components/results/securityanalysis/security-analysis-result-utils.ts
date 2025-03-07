@@ -29,7 +29,7 @@ import computingType, { ComputingType } from '../../computing-status/computing-t
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
-import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
+import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';

@@ -377,11 +377,6 @@ export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID }
 
 export type CurrentTreeNode = ModificationNode | RootNode;
 
-// type guard to check if the node is a Root
-export function isReactFlowRootNodeData(node: CurrentTreeNode): node is RootNode {
-    return node.type === NodeType.ROOT;
-}
-
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
