@@ -61,7 +61,7 @@ const prepareRequest = (init: RequestInit | undefined, token: string | undefined
 };
 
 const safeFetch = (url: string, initCopy: RequestInit) => {
-    return fetch(url, initCopy).then((response: Response) => (response.ok ? response : handleError(response)));
+    return fetch(url, initCopy).then((response: any) => (response.ok ? response : handleError(response)));
 };
 
 export const backendFetch = (url: string, init?: RequestInit, token?: string) => {
