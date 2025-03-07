@@ -26,7 +26,6 @@ import { useNodeAliases } from './use-node-aliases';
 import { NodeAlias } from './node-alias.type';
 
 export type CustomColumnNodesDialogProps = {
-    initialNodeAliases: NodeAlias[];
     open: UseStateBooleanReturn;
 };
 
