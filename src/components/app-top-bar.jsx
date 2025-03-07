@@ -71,7 +71,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const theme = useSelector((state) => state[PARAM_THEME]);
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [appsAndUrls, setAppsAndUrls] = useState([]);

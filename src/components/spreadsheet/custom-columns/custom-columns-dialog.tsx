@@ -161,7 +161,7 @@ export default function CustomColumnDialog({
     const validateParams = (
         columnsDefinitions: ColumnDefinition[],
         newParams: CustomColumnForm,
-        colUuid: UUID,
+        colUuid: UUID | undefined,
         setError: UseFormSetError<CustomColumnForm>
     ) => {
         const columnIdAlreadyExist = columnsDefinitions?.find(
@@ -201,7 +201,7 @@ export default function CustomColumnDialog({
 
     const onSubmit = useCallback(
         async (newParams: CustomColumnForm) => {
-            if (colUuid && !validateParams(columnsDefinitions, newParams, colUuid, setError)) {
+            if (!validateParams(columnsDefinitions, newParams, colUuid, setError)) {
                 return;
             }
 
