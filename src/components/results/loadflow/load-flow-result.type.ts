@@ -19,6 +19,7 @@ export interface ComponentResult {
     slackBusResults: SlackBusResult[];
     distributedActivePower: number;
 }
+
 export interface SlackBusResult {
     id: string;
     activePowerMismatch: number;
@@ -37,6 +38,7 @@ export enum LimitTypes {
     LOW_VOLTAGE = 'LOW_VOLTAGE',
     CURRENT = 'CURRENT',
 }
+
 export interface LoadFlowTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
@@ -48,6 +50,7 @@ export interface LoadflowResultTap {
     columnDefs: ColDef<any>[];
     tableName: string;
 }
+
 export interface LoadflowResultProps extends LoadflowResultTap {
     result: LoadFlowResult;
 }
@@ -68,6 +71,7 @@ export interface OverloadedEquipment {
     side: string | undefined;
     limitType: string;
 }
+
 export interface OverloadedEquipmentFromBack {
     subjectId: string;
     locationId: string;
@@ -79,4 +83,10 @@ export interface OverloadedEquipmentFromBack {
     value: number;
     side: BranchSide | '';
     limitType: LimitTypes;
+}
+
+export interface GlobalFilter {
+    nominalV?: string[];
+    countryCode?: string[];
+    limitViolationsTypes?: LimitTypes[];
 }

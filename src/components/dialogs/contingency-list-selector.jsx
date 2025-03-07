@@ -38,7 +38,7 @@ const ContingencyListSelector = (props) => {
     const favoriteContingencyListUuids = useSelector((state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const [contingencyList, setContingencyList] = useState([]);
 
