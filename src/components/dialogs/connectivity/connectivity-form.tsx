@@ -29,6 +29,7 @@ import {
     AutocompleteInput,
     Identifiable,
     IntegerInput,
+    Option,
     SelectInput,
     SwitchInput,
     TextInput,
@@ -66,7 +67,7 @@ export interface ConnectivityFormProps {
     direction?: GridDirection;
     withDirectionsInfos: boolean;
     withPosition: boolean;
-    voltageLevelOptions?: Identifiable[] | null;
+    voltageLevelOptions?: Option[];
     newBusOrBusbarSectionOptions?: [];
     studyUuid: UUID;
     currentRootNetworkUuid?: UUID | null;
@@ -109,7 +110,9 @@ export default function ConnectivityForm({
             return;
         }
         if (watchVoltageLevelId) {
-            const existingVoltageLevelOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
+            const existingVoltageLevelOption = voltageLevelOptions?.find(
+                (option) => option?.id === watchVoltageLevelId
+            );
             if (existingVoltageLevelOption) {
                 fetchBusesOrBusbarSectionsForVoltageLevel(
                     studyUuid,

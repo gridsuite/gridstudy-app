@@ -9,6 +9,7 @@ import { toNumber, validateValueIsANumber } from 'components/utils/validation-fu
 import yup from 'components/utils/yup-config';
 import { MAX_Q, MIN_Q, P, REACTIVE_CAPABILITY_CURVE_CHOICE } from 'components/utils/field-constants';
 import { ReactiveCapabilityCurveTable } from '../reactive-limits-utils';
+import { ValidationError } from 'yup';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';
@@ -30,30 +31,35 @@ export const getRowEmptyFormData = () => ({
     [MIN_Q]: null,
 });
 
-function getNotNullPFromArray(values: ReactiveCapabilityCurveTable[]) {
-    return values
-        .map((element) => {
-            const pValue = element[P];
+function getNotNullPFromArray(values?: ReactiveCapabilityCurveTable[] | null) {
+    return (
+        values &&
+        values
+            .map((element) => {
+                const pValue = element[P];
 
-            // Note : convertion toNumber is necessary here to prevent corner cases like if
-            // two values are "-0" and "0", which would be considered different by the Set below.
-            return validateValueIsANumber(pValue) ? toNumber(pValue) : null;
-        })
-        .filter((p) => p !== null);
+                // Note : convertion toNumber is necessary here to prevent corner cases like if
+                // two values are "-0" and "0", which would be considered different by the Set below.
+                return validateValueIsANumber(pValue) ? toNumber(pValue) : null;
+            })
+            .filter((p) => p !== null)
+    );
 }
 
-function checkAllPValuesAreUnique(values: ReactiveCapabilityCurveTable[]) {
+function checkAllPValuesAreUnique(values?: ReactiveCapabilityCurveTable[] | null) {
     const validActivePowerValues = getNotNullPFromArray(values);
     const setOfPs = [...new Set(validActivePowerValues)];
-    return setOfPs.length === validActivePowerValues.length;
+    return setOfPs.length === validActivePowerValues?.length;
 }
 
-function checkAllPValuesBetweenMinMax(values: ReactiveCapabilityCurveTable[]) {
+function checkAllPValuesBetweenMinMax(
+    values: any
+): boolean | void | ValidationError | Promise<boolean | ValidationError> {
     const validActivePowerValues = getNotNullPFromArray(values);
-    const minP = validActivePowerValues[0];
-    const maxP = validActivePowerValues[validActivePowerValues.length - 1];
+    const minP = validActivePowerValues && validActivePowerValues[0];
+    const maxP = validActivePowerValues && validActivePowerValues[validActivePowerValues.length - 1];
 
-    return validActivePowerValues.every((p: number) => p >= minP && p <= maxP);
+    return validActivePowerValues?.every((p: number) => minP && p >= minP && maxP && p <= maxP);
 }
 
 export const getReactiveCapabilityCurveValidationSchema = (positiveAndNegativePExist = false) =>
@@ -72,12 +78,12 @@ export const getReactiveCapabilityCurveValidationSchema = (positiveAndNegativePE
                                 .test(
                                     'checkATLeastThereIsOneNegativeP',
                                     'ReactiveCapabilityCurveCreationErrorMissingNegativeP',
-                                    (values) => values.some((value) => value.p < 0)
+                                    (values) => values?.some((value) => value.p < 0)
                                 )
                                 .test(
                                     'checkATLeastThereIsOnePositiveP',
                                     'ReactiveCapabilityCurveCreationErrorMissingPositiveP',
-                                    (values) => values.some((value) => value.p >= 0)
+                                    (values) => values?.some((value) => value.p >= 0)
                                 ),
                     })
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
@@ -89,16 +95,16 @@ export const getReactiveCapabilityCurveValidationSchema = (positiveAndNegativePE
                     ),
         });
 
-export function setSelectedReactiveLimits(id: string, minMaxReactiveLimits: number, setValue) {
+export function setSelectedReactiveLimits(id: string, minMaxReactiveLimits: number, setValue: any) {
     setValue(id, minMaxReactiveLimits ? 'MINMAX' : 'CURVE');
 }
 
 export function setCurrentReactiveCapabilityCurveTable(
-    previousReactiveCapabilityCurveTable,
-    fieldKey,
-    getValues,
-    setValue,
-    isNodeBuilt
+    previousReactiveCapabilityCurveTable: ReactiveCapabilityCurveTable,
+    fieldKey: string,
+    getValues: any,
+    setValue: any,
+    isNodeBuilt: any
 ) {
     const currentReactiveCapabilityCurveTable = getValues(fieldKey);
     if (isNodeBuilt || !currentReactiveCapabilityCurveTable) {
