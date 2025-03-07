@@ -155,7 +155,8 @@ export function LimitsSidePane({
         (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
-            return getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+            return getValues(arrayFormName) &&
+                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
                 ? false
                 : temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
                       column.dataKey !== TEMPORARY_LIMIT_VALUE;
@@ -180,7 +181,8 @@ export function LimitsSidePane({
 
     const isValueModified = useCallback(
         (rowIndex: number, arrayFormName: string) => {
-            const temporaryLimit = getValues(arrayFormName)[rowIndex];
+            const temporaryLimits = getValues(arrayFormName);
+            const temporaryLimit = temporaryLimits ? temporaryLimits[rowIndex] : null;
             if (
                 temporaryLimit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
                 !isNodeBuilt(currentNode ?? null)
