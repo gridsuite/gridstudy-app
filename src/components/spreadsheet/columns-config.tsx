@@ -20,6 +20,8 @@ import { AppState } from '../../redux/reducer';
 import { updateTableDefinition } from 'redux/actions';
 import { spreadsheetStyles } from './utils/style';
 import { UUID } from 'crypto';
+import { reorderSpreadsheetColumns } from 'services/study-config';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const MAX_LOCKS_PER_TAB = 5;
 
@@ -50,6 +52,7 @@ interface ColumnsConfigProps {
 export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex, disabled }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
 
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
 
@@ -74,14 +77,35 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
     }, [tableDefinition?.columns, handleCloseColumnsSettingDialog]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
-        dispatch(
-            updateTableDefinition({
-                ...tableDefinition,
-                columns: localColumns,
+        // check if column order has changed by comparing uuids
+        const hasOrderChanged = tableDefinition.columns.some((col, index) => col.uuid !== localColumns[index].uuid);
+
+        // create a Promise chain that conditionally includes the reorder request
+        const updatePromise = hasOrderChanged
+            ? reorderSpreadsheetColumns(
+                  tableDefinition.uuid,
+                  localColumns.map((col) => col.uuid)
+              )
+            : Promise.resolve();
+
+        updatePromise
+            .then(() => {
+                dispatch(
+                    updateTableDefinition({
+                        ...tableDefinition,
+                        columns: localColumns,
+                    })
+                );
             })
-        );
+            .catch((error) => {
+                snackError({
+                    messageTxt: error,
+                    headerId: 'spreadsheet/reorder_columns/error',
+                });
+            });
+
         handleCloseColumnsSettingDialog();
-    }, [dispatch, tableDefinition, localColumns, handleCloseColumnsSettingDialog]);
+    }, [tableDefinition, localColumns, handleCloseColumnsSettingDialog, dispatch, snackError]);
 
     const handleToggle = (value: UUID) => () => {
         const newLocalColumns = localColumns.map((col) => {

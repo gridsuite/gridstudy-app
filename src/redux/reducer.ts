@@ -46,9 +46,9 @@ import {
     CloseDiagramAction,
     CloseDiagramsAction,
     CloseStudyAction,
-    CURRENT_ROOT_NETWORK,
+    CURRENT_ROOT_NETWORK_UUID,
     CURRENT_TREE_NODE,
-    CurrentRootNetworkAction,
+    CurrentRootNetworkUuidAction,
     CurrentTreeNodeAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
@@ -225,7 +225,6 @@ import {
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
-import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
@@ -288,6 +287,7 @@ import {
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
+import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -310,7 +310,7 @@ export interface OneBusShortCircuitAnalysisDiagram {
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
     parentNode: UUID;
-    rootNetwork: UUID;
+    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
     rootNetworks: UUID[];
     timestamp: number;
     updateType?: string;
@@ -454,7 +454,7 @@ export interface AppState extends CommonStoreState {
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
-    currentRootNetwork: UUID | null;
+    currentRootNetworkUuid: UUID | null;
     computingStatus: ComputingStatus;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
@@ -608,7 +608,7 @@ const initialTablesState: TablesState = {
 const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
-    currentRootNetwork: null,
+    currentRootNetworkUuid: null,
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
@@ -1116,8 +1116,8 @@ export const reducer = createReducer(initialState, (builder) => {
         state.reloadMap = true;
     });
 
-    builder.addCase(CURRENT_ROOT_NETWORK, (state, action: CurrentRootNetworkAction) => {
-        state.currentRootNetwork = action.currentRootNetwork;
+    builder.addCase(CURRENT_ROOT_NETWORK_UUID, (state, action: CurrentRootNetworkUuidAction) => {
+        state.currentRootNetworkUuid = action.currentRootNetworkUuid;
         state.isNetworkModificationTreeModelUpToDate = false;
     });
 

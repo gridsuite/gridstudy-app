@@ -10,7 +10,6 @@ import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
@@ -26,6 +25,10 @@ import { MessageLogCellRenderer } from 'components/spreadsheet/utils/cell-render
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_TEXT_COMPARATORS,
+} from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
