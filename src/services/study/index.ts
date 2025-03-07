@@ -11,7 +11,7 @@ import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/repo
 import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfo } from '../../components/graph/menus/network-modification-menu.type';
 import { ComputingType } from '../../components/computing-status/computing-type';
-import { Svg } from 'components/diagrams/diagram-common';
+import type { Svg } from 'components/diagrams/diagram-common';
 
 export function safeEncodeURIComponent(value: string | null | undefined): string {
     return value != null ? encodeURIComponent(value) : '';
