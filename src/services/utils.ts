@@ -49,7 +49,7 @@ const handleError = (response: Response) => {
     });
 };
 
-const prepareRequest = (init: any, token: string | undefined) => {
+const prepareRequest = (init: RequestInit | undefined, token: string | undefined) => {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError('Argument 2 of backendFetch is not an object' + typeof init);
     }
@@ -60,26 +60,26 @@ const prepareRequest = (init: any, token: string | undefined) => {
     return initCopy;
 };
 
-const safeFetch = (url: string, initCopy: any) => {
-    return fetch(url, initCopy).then((response: any) => (response.ok ? response : handleError(response)));
+const safeFetch = (url: string, initCopy: RequestInit) => {
+    return fetch(url, initCopy).then((response: Response) => (response.ok ? response : handleError(response)));
 };
 
-export const backendFetch = (url: string, init?: any, token?: string) => {
+export const backendFetch = (url: string, init?: RequestInit, token?: string) => {
     const initCopy = prepareRequest(init, token);
     return safeFetch(url, initCopy);
 };
 
-export const backendFetchText = (url: string, init?: any, token?: string) => {
+export const backendFetchText = (url: string, init?: RequestInit, token?: string) => {
     const initCopy = prepareRequest(init, token);
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
 };
 
-export const backendFetchJson = (url: string, init?: any, token?: string) => {
+export const backendFetchJson = (url: string, init?: RequestInit, token?: string) => {
     const initCopy = prepareRequest(init, token);
     return safeFetch(url, initCopy).then((safeResponse) => (safeResponse.status === 204 ? null : safeResponse.json()));
 };
 
-export const backendFetchFile = (url: string, init: any, token?: string) => {
+export const backendFetchFile = (url: string, init: RequestInit, token?: string) => {
     const initCopy = prepareRequest(init, token);
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.blob());
 };
