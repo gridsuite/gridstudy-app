@@ -12,7 +12,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { alpha, Checkbox, SxProps, Theme, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { treeItemClasses, TreeView, TreeItem } from '@mui/x-tree-view';
-import { ModelVariable } from '../dialog/model-filter';
+
+import { ModelVariable } from '../../dynamic-simulation.type';
 
 enum CheckState {
     UNCHECKED = 'UNCHECKED',

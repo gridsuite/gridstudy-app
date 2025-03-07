@@ -42,7 +42,7 @@ import {
     getCaseImportParameters,
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks } from 'services/root-network';
-import { setCurrentRootNetwork } from 'redux/actions';
+import { setCurrentRootNetworkUuid } from 'redux/actions';
 import RootNetworkCreationDialog, { FormData } from 'components/dialogs/root-network/root-network-creation-dialog';
 import { isChecked, isPartial } from './network-modification-node-editor-utils';
 
@@ -132,7 +132,7 @@ const RootNetworkNodeEditor = () => {
     const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
 
@@ -190,7 +190,7 @@ const RootNetworkNodeEditor = () => {
                 (rootNetwork) => !deletingNodes.includes(rootNetwork.rootNetworkUuid)
             );
             if (newSelectedRootNetwork) {
-                dispatch(setCurrentRootNetwork(newSelectedRootNetwork.rootNetworkUuid));
+                dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
             }
             setDeleteInProgress(true);
         }
@@ -229,14 +229,14 @@ const RootNetworkNodeEditor = () => {
 
     const handleSecondaryAction = useCallback(
         (rootNetwork: RootNetworkMetadata) => {
-            const isCurrentRootNetwork = rootNetwork.rootNetworkUuid === currentRootNetwork;
+            const isCurrentRootNetwork = rootNetwork.rootNetworkUuid === currentRootNetworkUuid;
 
             return (
                 <IconButton
                     size="small"
                     onClick={() => {
-                        if (rootNetwork.rootNetworkUuid !== currentRootNetwork) {
-                            dispatch(setCurrentRootNetwork(rootNetwork.rootNetworkUuid));
+                        if (rootNetwork.rootNetworkUuid !== currentRootNetworkUuid) {
+                            dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
                         }
                     }}
                     disabled={rootNetwork.isCreating}
@@ -251,7 +251,7 @@ const RootNetworkNodeEditor = () => {
                 </IconButton>
             );
         },
-        [currentRootNetwork, dispatch]
+        [currentRootNetworkUuid, dispatch]
     );
 
     const renderRootNetworksList = () => {
