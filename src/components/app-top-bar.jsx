@@ -16,7 +16,6 @@ import { PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME, PARAM_DEVELOPER_MODE } fro
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
-import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { getServersInfos } from '../services/study';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
@@ -29,6 +28,8 @@ import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { StudyView } from './utils/utils';
+import { DiagramType } from './diagrams/diagram.type';
+import { useDiagram } from './diagrams/use-diagram';
 
 const styles = {
     currentNodeBox: {
