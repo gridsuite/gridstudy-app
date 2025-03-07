@@ -7,6 +7,7 @@
 
 import { LimitTypes } from '../../loadflow/load-flow-result.type';
 import { FilterConfig, SortConfig } from '../../../../types/custom-aggrid-types';
+import { UUID } from 'crypto';
 
 /**
  * globals filters are the filters applied to computation results
@@ -23,10 +24,11 @@ export interface GlobalFilters {
 
 // complete individual global filter
 export interface GlobalFilter {
-    uuid?: string; // only useful for generic filters
     label: string;
     filterType: string;
     recent?: boolean;
+    uuid?: UUID; // only useful for generic filters
+    equipmentType?: string; // only useful for generic filters
 }
 
 export interface ResultsQueryParams {

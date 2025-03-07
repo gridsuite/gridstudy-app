@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteRenderInputParams,
@@ -16,7 +16,7 @@ import {
     InputAdornment,
     TextField,
 } from '@mui/material';
-import { FilterAlt } from '@mui/icons-material';
+import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,12 +24,20 @@ import { addToRecentGlobalFilters } from '../../../../redux/actions';
 import { AppState } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 import { FilterType } from '../utils';
-import { ElementType, TreeViewFinderNodeProps, mergeSx, DirectoryItemSelector } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    TreeViewFinderNodeProps,
+    mergeSx,
+    DirectoryItemSelector,
+    fetchElementsInfos,
+    ElementAttributes,
+} from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { UUID } from 'crypto';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import SelectableGlobalFilters from './selectable-global-filters';
+import Tooltip from '@mui/material/Tooltip';
 
 const recentFilter: string = 'recent';
 
@@ -93,37 +101,63 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
             if (!values) {
                 return;
             }
-            // if we select a chip and return a new values, we remove it to be replaced TODO ??
-            /*if (selected?.length > 0 && values?.length > 0) {
-                selected.forEach((chip) => {
-                    remove(getValues(name).findIndex((item: FieldValues) => item.id === chip));
+
+            fetchElementsInfos(values.map((value) => value.id)).then((elements: ElementAttributes[]) => {
+                const newlySelectedFilters: GlobalFilter[] = [];
+
+                elements.forEach((element: ElementAttributes) => {
+                    // ignore already selected filters and non generic filters :
+                    if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
+                        // add the others
+
+                        newlySelectedFilters.push({
+                            uuid: element.elementUuid,
+                            equipmentType: element.specificMetadata?.equipmentType,
+                            label: element.elementName,
+                            filterType: FilterType.FILTER,
+                            recent: true,
+                        });
+                    }
                 });
-            }*/
+                handleChange([...selectedGlobalFilters, ...newlySelectedFilters]);
 
-            const filters: GlobalFilter[] = [];
-
-            values.forEach((value) => {
-                filters.push({
-                    uuid: value.id,
-                    label: value.name,
-                    filterType: FilterType.FILTER,
-                    recent: true,
-                });
-
-                // Check if the element is already present  ==> TODO, attention doublons d'uuid
-                /*if (getValues(name).find((v: FieldValues) => v?.id === otherElementAttributes.id) !== undefined) {
-                snackError({
-                    messageTxt: '',
-                    headerId: 'directory_items_input/ElementAlreadyUsed',
-                });*/
+                setDirectoryItemSelectorOpen(false);
+                setSelectedFiltersElements([]);
             });
-            handleChange([...selectedGlobalFilters, ...filters]);
-
-            setDirectoryItemSelectorOpen(false);
-            setSelectedFiltersElements([]);
         },
         [handleChange, selectedGlobalFilters]
     );
+
+    // checks the generic filter to see if they are appliable to the current tab
+    const warningEquipmentTypeMessage: string = useMemo(() => {
+        const inappropriateFilters: string[] = selectedGlobalFilters
+            .filter(
+                (filter) =>
+                    filter.equipmentType &&
+                    !filtrableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType)
+            )
+            .map((filter) => filter.label);
+
+        if (inappropriateFilters.length > 0) {
+            // TODO plus de cas si plus de 1
+            return intl.formatMessage(
+                {
+                    id: 'results.globalFilter.nonApplicable',
+                },
+                { filterName: inappropriateFilters[0] }
+            );
+        }
+        return '';
+    }, [intl, filtrableEquipmentTypes, selectedGlobalFilters]);
+
+    const getCustomPaper = useCallback((children) => {
+        return (
+            <SelectableGlobalFilters
+                children={children}
+                onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
+            />
+        );
+    }, []);
 
     return (
         <>
@@ -262,13 +296,28 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
 
                     return filteredOptions;
                 }}
-                PaperComponent={({ children }) => (
-                    <SelectableGlobalFilters
-                        children={children}
-                        onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
-                    />
-                )}
+                PaperComponent={({ children }) => getCustomPaper(children)}
             />
+            {warningEquipmentTypeMessage && (
+                <Tooltip
+                    title={warningEquipmentTypeMessage}
+                    placement="bottom-start"
+                    arrow
+                    PopperProps={{
+                        modifiers: [
+                            {
+                                name: 'offset',
+                                options: {
+                                    offset: [0, -10],
+                                },
+                            },
+                        ],
+                    }}
+                >
+                    <WarningAmberRounded color="warning" fontSize="large" />
+                </Tooltip>
+            )}
+
             <DirectoryItemSelector
                 open={directoryItemSelectorOpen}
                 onClose={addSelectedFilters}

@@ -514,6 +514,7 @@
     "results.globalFilter.filter": "Filters",
     "results.globalFilter.country": "Countries",
     "results.globalFilter.voltageLevel": "Voltage levels",
+    "results.globalFilter.nonApplicable": "Filtering {filterName} is not applicable for the current results table and is inactive",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
