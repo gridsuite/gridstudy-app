@@ -28,8 +28,8 @@ import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { StudyView } from './utils/utils';
-import { DiagramType } from './diagrams/diagram.type.js';
-import { useDiagram } from './diagrams/use-diagram.js';
+import { DiagramType } from './diagrams/diagram.type';
+import { useDiagram } from './diagrams/use-diagram';
 
 const styles = {
     currentNodeBox: {

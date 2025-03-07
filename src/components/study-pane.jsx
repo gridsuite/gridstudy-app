@@ -16,8 +16,8 @@ import { TableWrapper } from './spreadsheet/table-wrapper';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 import { StudyView } from './utils/utils';
-import { DiagramType } from './diagrams/diagram.type.js';
-import { useDiagram } from './diagrams/use-diagram.js';
+import { DiagramType } from './diagrams/diagram.type';
+import { useDiagram } from './diagrams/use-diagram';
 
 const styles = {
     map: {

@@ -26,7 +26,7 @@ import { FormattedMessage } from 'react-intl';
 import BackHandOutlinedIcon from '@mui/icons-material/BackHandOutlined';
 import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlined';
 import { StudyView } from './utils/utils';
-import { DiagramType } from './diagrams/diagram.type.js';
+import { DiagramType } from './diagrams/diagram.type';
 
 const styles = {
     map: {
