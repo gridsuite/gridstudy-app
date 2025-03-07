@@ -12,16 +12,23 @@ import { useFormContext } from 'react-hook-form';
 import { formatPercentageValue, isValidPercentage, sanitizePercentageValue } from './percentage-area-utils';
 import { FormattedMessage } from 'react-intl';
 import { SliderInput, TextInput } from '@gridsuite/commons-ui';
+import { FunctionComponent } from 'react';
 
 /**
  * Component to handle a 'percentage area' (slider , left and right percentage fields)
  * @param upperLeftText text to diplays on the top left of the slider
  * @param upperRightText text to diplays on the top right of the slider
  */
-export const PercentageArea = ({ upperLeftText, upperRightText }) => {
+
+export interface PercentageAreaProps {
+    upperLeftText: string;
+    upperRightText: string;
+}
+
+export const PercentageArea: FunctionComponent<PercentageAreaProps> = ({ upperLeftText, upperRightText }) => {
     const { setValue } = useFormContext();
 
-    const handleLeftPercentageValueChange = (value) => {
+    const handleLeftPercentageValueChange = (value: any) => {
         const leftPercentageValue = formatPercentageValue(value);
         const rightPercentageValue = sanitizePercentageValue(100 - leftPercentageValue);
         setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue));
@@ -34,10 +41,10 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
         return leftPercentageValue;
     };
 
-    const handleRightPercentageValueChange = (value) => {
+    const handleRightPercentageValueChange = (value: any) => {
         const rightPercentageValue = formatPercentageValue(value);
         const leftPercentageValue = sanitizePercentageValue(100 - rightPercentageValue);
-        setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue));
+        setValue(SLIDER_PERCENTAGE, leftPercentageValue);
         setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
             shouldValidate: true,
         });
@@ -47,7 +54,17 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
         return rightPercentageValue;
     };
 
-    const onSliderChange = (value) => {
+    const onSliderChange = (valueParam: number | number[]) => {
+        let value = 0;
+        if (Array.isArray(valueParam)) {
+            if (valueParam?.length) {
+                value = valueParam[0];
+            } else {
+                return value;
+            }
+        } else {
+            value = valueParam;
+        }
         const rightPercentageValue = sanitizePercentageValue(100 - value);
         setValue(LEFT_SIDE_PERCENTAGE, value, {
             shouldValidate: true,
@@ -81,37 +98,36 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
     const slider = (
         <SliderInput name={SLIDER_PERCENTAGE} min={0.0} max={100.0} step={0.1} onValueChanged={onSliderChange} />
     );
+
     return (
-        <>
+        <Grid container spacing={2}>
             <Grid container spacing={2}>
-                <Grid container spacing={2} item>
-                    {upperLeftText && (
-                        <Grid item xs={5} align={'start'}>
-                            <Typography>
-                                <FormattedMessage id={upperLeftText}></FormattedMessage>
-                            </Typography>
-                        </Grid>
-                    )}
-                    <Grid item xs={2}></Grid>
-                    {upperRightText && (
-                        <Grid item xs={5} align={'end'}>
-                            <Typography align="right">
-                                <FormattedMessage id={upperRightText}></FormattedMessage>
-                            </Typography>
-                        </Grid>
-                    )}
+                {upperLeftText && (
+                    <Grid item xs={5}>
+                        <Typography>
+                            <FormattedMessage id={upperLeftText}></FormattedMessage>
+                        </Typography>
+                    </Grid>
+                )}
+                <Grid item xs={2}></Grid>
+                {upperRightText && (
+                    <Grid item xs={5}>
+                        <Typography align="right">
+                            <FormattedMessage id={upperRightText}></FormattedMessage>
+                        </Typography>
+                    </Grid>
+                )}
+            </Grid>
+            {slider}
+            <Grid container spacing={2}>
+                <Grid item xs={3}>
+                    {leftSidePercentageField}
                 </Grid>
-                {slider}
-                <Grid container spacing={2} item>
-                    <Grid item xs={3} align={'start'}>
-                        {leftSidePercentageField}
-                    </Grid>
-                    <Grid item xs={6}></Grid>
-                    <Grid item xs={3} align={'end'}>
-                        {rightSidePercentageField}
-                    </Grid>
+                <Grid item xs={6}></Grid>
+                <Grid item xs={3}>
+                    {rightSidePercentageField}
                 </Grid>
             </Grid>
-        </>
+        </Grid>
     );
 };
