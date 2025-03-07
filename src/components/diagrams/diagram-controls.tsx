@@ -91,14 +91,17 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                     }}
                 >
                     {showSaveControl && (
-                        <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
+                        <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />} placement={'left'}>
                             <IconButton sx={styles.actionIcon} onClick={handleClickSaveIcon}>
                                 <SaveIcon sx={styles.icon} />
                             </IconButton>
                         </Tooltip>
                     )}
                     {showVisibilityControl && (
-                        <Tooltip title={<FormattedMessage id={visibility ? 'hideLabels' : 'showLabels'} />}>
+                        <Tooltip
+                            title={<FormattedMessage id={visibility ? 'hideLabels' : 'showLabels'} />}
+                            placement={'left'}
+                        >
                             <IconButton sx={styles.actionIcon} onClick={handleVisibility}>
                                 {visibility && <VisibilityOffIcon sx={styles.icon} />}
                                 {!visibility && <VisibilityIcon sx={styles.icon} />}
