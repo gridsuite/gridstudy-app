@@ -37,6 +37,7 @@ import { updateTableDefinition } from 'redux/actions';
 import { NodeType } from '../graph/tree-node.type';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { reorderSpreadsheetColumns } from 'services/study-config';
+import { UUID } from 'crypto';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -102,7 +103,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const gridRef = useRef<AgGridReact>(null);
     const timerRef = useRef<NodeJS.Timeout>();
     const { snackError } = useSnackMessage();
-    const [tabIndex, setTabIndex] = useState<number>(0);
+
+    const [activeTabUuid, setActiveTabUuid] = useState<UUID | null>(null);
 
     const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
@@ -113,7 +115,26 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [rowData, setRowData] = useState<Identifiable[]>([]);
     const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
 
-    const tableDefinition = useMemo(() => tablesDefinitions[tabIndex], [tabIndex, tablesDefinitions]);
+    // Initialize activeTabUuid with the first tab's UUID if not already set
+    useEffect(() => {
+        if (!activeTabUuid && tablesDefinitions.length > 0) {
+            setActiveTabUuid(tablesDefinitions[0].uuid);
+        }
+    }, [activeTabUuid, tablesDefinitions]);
+
+    // Calculate the visual index for compatibility with components that need numeric indices
+    const activeTabIndex = useMemo(() => {
+        if (!activeTabUuid) {
+            return 0;
+        }
+        const index = tablesDefinitions.findIndex((tab) => tab.uuid === activeTabUuid);
+        return index >= 0 ? index : 0;
+    }, [activeTabUuid, tablesDefinitions]);
+
+    const tableDefinition = useMemo(
+        () => tablesDefinitions.find((def) => def.uuid === activeTabUuid) || tablesDefinitions[0],
+        [activeTabUuid, tablesDefinitions]
+    );
     const isLockedColumnNamesEmpty = useMemo(
         () => tableDefinition?.columns?.map((col) => col.locked).length === 0,
         [tableDefinition?.columns]
@@ -123,7 +144,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         () => disabled || tablesDefinitions.length === 0,
         [disabled, tablesDefinitions]
     );
-    const columnsDefinitions = useCustomColumn(tabIndex);
+    const columnsDefinitions = useCustomColumn(activeTabIndex);
+
     const reorderedColsDefs = useMemo(() => {
         const columns = tableDefinition?.columns?.filter((column) => column.visible);
         return columns?.map((column) => {
@@ -137,7 +159,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         });
     }, [columnsDefinitions, tableDefinition?.columns]);
 
-    const sortConfig = useSelector((state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE][tableDefinition?.name]);
+    const sortConfig = useSelector(
+        (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.name]
+    );
     const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.name);
 
     const updateSortConfig = useCallback(() => {
@@ -180,12 +204,15 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [updateLockedColumnsConfig]);
 
     const cleanTableState = useCallback(() => {
-        gridRef?.current?.api.setFilterModel(null);
-        // reset aggrid column definitions
-        gridRef.current?.api.setGridOption('columnDefs', []);
-        gridRef?.current?.api.applyColumnState({
-            defaultState: { sort: null },
-        });
+        if (gridRef.current?.api) {
+            const api = gridRef.current.api;
+            api.setFilterModel(null);
+            // reset aggrid column definitions
+            api.setGridOption('columnDefs', []);
+            api.applyColumnState({
+                defaultState: { sort: null },
+            });
+        }
     }, []);
 
     const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.type);
@@ -260,7 +287,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }
         setRowData(localRowData);
     }, [
-        tabIndex,
+        activeTabUuid,
         disabled,
         equipments,
         tableDefinition?.type,
@@ -272,9 +299,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     ]);
 
     const handleSwitchTab = useCallback(
-        (value: number) => {
+        (tabUuid: UUID) => {
             setManualTabSwitch(true);
-            setTabIndex(value);
+            setActiveTabUuid(tabUuid);
             cleanTableState();
         },
         [cleanTableState]
@@ -299,14 +326,14 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     useEffect(() => {
         if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
-            const definition = tablesDefinitions.filter((def) => def.type === equipmentType)[0];
-            if (definition) {
-                if (tabIndex === definition.index) {
-                    // already in expected tab => explicit call to scroll to expected row
+            const matchingTab = tablesDefinitions.find((def) => def.type === equipmentType);
+            if (matchingTab) {
+                if (matchingTab.uuid === activeTabUuid) {
+                    // Already on the right tab, just scroll to equipment
                     scrollToEquipmentIndex();
                 } else {
-                    // select the right table type. This will trigger handleRowDataUpdated + scrollToEquipmentIndex
-                    setTabIndex(definition.index);
+                    // Need to switch to the tab with this equipment type
+                    setActiveTabUuid(matchingTab.uuid);
                 }
             }
         }
@@ -315,7 +342,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         equipmentType,
         equipmentChanged,
         manualTabSwitch,
-        tabIndex,
+        activeTabUuid,
         scrollToEquipmentIndex,
         tablesDefinitions,
     ]);
@@ -403,20 +430,20 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     return (
         <>
             <Grid container justifyContent={'space-between'}>
-                <EquipmentTabs disabled={disabled} tabIndex={tabIndex} handleSwitchTab={handleSwitchTab} />
+                <EquipmentTabs disabled={disabled} selectedTabUuid={activeTabUuid} handleSwitchTab={handleSwitchTab} />
                 <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.selectColumns}>
                         <SpreadsheetGsFilter equipmentType={tableDefinition?.type} />
                     </Grid>
                     <Grid item>
                         <ColumnsConfig
-                            tabIndex={tabIndex}
+                            tabIndex={activeTabIndex}
                             disabled={shooldDisableButtons || tableDefinition?.columns.length === 0}
                         />
                     </Grid>
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsConfig tabIndex={tabIndex} disabled={shooldDisableButtons} />
+                            <CustomColumnsConfig tabIndex={activeTabIndex} disabled={shooldDisableButtons} />
                         </Grid>
                     )}
                     {developerMode && (
@@ -427,7 +454,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item sx={styles.save}>
                         <SpreadsheetSave
-                            tabIndex={tabIndex}
+                            tabIndex={activeTabIndex}
                             gridRef={gridRef}
                             columns={reorderedColsDefs}
                             tableName={tableDefinition?.name}
