@@ -20,9 +20,9 @@ import {
     stopDiagramBlink,
     togglePinDiagram,
 } from './actions';
-import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { Reducer } from 'redux';
 import { UUID } from 'crypto';
+import { DiagramType, ViewState } from '../components/diagrams/diagram.type';
 
 const reducer = appReducer as Reducer<Partial<AppState>, Actions>;
 

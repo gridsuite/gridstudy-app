@@ -48,7 +48,6 @@ import {
     getConverterStationModificationFormEditData,
     getVscConverterStationEmptyFormData,
     getVscConverterStationModificationSchema,
-    ReactiveCapabilityCurvePointsData,
 } from '../converter-station/converter-station-utils';
 import { VscModificationForm } from './vsc-modification-from';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -70,6 +69,7 @@ import {
     toModificationProperties,
 } from '../../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
+import { ReactiveCapabilityCurvePointsData } from '../converter-station/converter-station-type';
 
 const formSchema = yup
     .object()
