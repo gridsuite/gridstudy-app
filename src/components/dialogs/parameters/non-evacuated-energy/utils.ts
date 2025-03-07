@@ -5,38 +5,38 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    CONTINGENCIES,
-    ID,
-    NAME,
+    ACTIVATED,
+    BRANCHES,
     CONTAINER_ID,
     CONTAINER_NAME,
-    ACTIVATED,
+    CONTINGENCIES,
     GENERATION_STAGES_KIND,
     GENERATION_STAGES_PERCENT_MAXP_1,
     GENERATION_STAGES_PERCENT_MAXP_2,
     GENERATION_STAGES_PERCENT_MAXP_3,
+    GENERATORS_CAPPINGS,
+    GENERATORS_CAPPINGS_FILTER,
+    GENERATORS_CAPPINGS_KIND,
+    ID,
+    MONITORED_BRANCHES,
+    MONITORED_BRANCHES_COEFF_N,
+    MONITORED_BRANCHES_COEFF_N_1,
     MONITORED_BRANCHES_IST_N,
     MONITORED_BRANCHES_IST_N_1,
     MONITORED_BRANCHES_LIMIT_NAME_N,
     MONITORED_BRANCHES_LIMIT_NAME_N_1,
-    MONITORED_BRANCHES_COEFF_N,
-    MONITORED_BRANCHES_COEFF_N_1,
-    GENERATORS_CAPPINGS,
-    GENERATORS_CAPPINGS_FILTER,
-    GENERATORS_CAPPINGS_KIND,
-    MONITORED_BRANCHES,
-    BRANCHES,
-    SENSITIVITY_THRESHOLD,
-    STAGES_DEFINITION_INDEX,
-    PMAX_PERCENTS_INDEX,
-    STAGES_SELECTION,
-    STAGES_DEFINITION,
+    NAME,
     PMAX_PERCENTS,
+    PMAX_PERCENTS_INDEX,
+    PROVIDER,
+    SENSITIVITY_THRESHOLD,
+    STAGES_DEFINITION,
     STAGES_DEFINITION_GENERATORS,
+    STAGES_DEFINITION_INDEX,
+    STAGES_SELECTION,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
-import { NonEvacuatedEnergyParametersForm } from './non-evacuated-energy-parameters';
-import { NonEvacuatedEnergyParametersInfos, EnergySource } from 'services/study/non-evacuated-energy.type';
+import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 
 export type UseGetNonEvacuatedEnergyParametersReturnProps = [
     NonEvacuatedEnergyParametersInfos | null,
@@ -270,3 +270,17 @@ export const getContingenciesParams = (params: NonEvacuatedEnergyParametersForm)
         }),
     };
 };
+
+export const formSchema = yup
+    .object()
+    .shape({
+        [PROVIDER]: yup.string().required(),
+        ...getGenerationStagesDefinitionFormSchema(),
+        ...getGenerationStagesSelectionFormSchema(),
+        ...getGeneratorsCappingsFormSchema(),
+        ...getMonitoredBranchesFormSchema(),
+        ...getContingenciesFormSchema(),
+    })
+    .required();
+
+export type NonEvacuatedEnergyParametersForm = yup.InferType<typeof formSchema>;
