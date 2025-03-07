@@ -15,9 +15,11 @@ import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const LoadModificationForm = ({ studyUuid, currentNode, currentRootNetworkUuid, loadToModify, equipmentId }) => {
     const intl = useIntl();
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const loadIdField = (
         <TextField
@@ -83,6 +85,7 @@ const LoadModificationForm = ({ studyUuid, currentNode, currentRootNetworkUuid, 
 
     const connectivityForm = (
         <ConnectivityForm
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
