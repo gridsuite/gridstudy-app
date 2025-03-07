@@ -52,7 +52,7 @@ export default function CustomColumnsNodesConfig({ disabled, tabIndex }: Readonl
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex].type);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const { loadEquipmentData } = useLoadEquipment(
         tableType,
