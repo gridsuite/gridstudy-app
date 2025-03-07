@@ -36,6 +36,7 @@ export interface LineTypesCatalogSelectorDialogProps {
     preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
+    dialogProps: any;
 }
 
 const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelectorDialogProps> = ({
@@ -43,6 +44,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
     preselectedRowId,
     rowData,
     onClose,
+    dialogProps,
 }) => {
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
@@ -307,6 +309,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
                 },
             }}
             titleId={'SelectType'}
+            {...dialogProps}
         >
             <div style={{ height: '100%' }}>{displayTable(tabIndex)}</div>
         </BasicModificationDialog>

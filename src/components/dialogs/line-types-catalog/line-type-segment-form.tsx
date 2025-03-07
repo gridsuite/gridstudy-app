@@ -31,7 +31,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
 import { emptyLineSegment } from './line-type-segment-utils';
-import { LineTypeInfo, SegmentInfo } from './line-catalog.type';
+import { LineTypeInfo, SegmentFormData } from './line-catalog.type';
 
 const styles = {
     header: {
@@ -89,17 +89,17 @@ export const LineTypeSegmentForm = () => {
     );
 
     const updateTotals = useCallback(() => {
-        const segments: SegmentInfo[] = getValues(SEGMENTS);
+        const segments: SegmentFormData[] = getValues(SEGMENTS);
         const totalResistance = segments.reduce(
-            (accum: number, item: SegmentInfo) => accum + (item[SEGMENT_RESISTANCE] ?? 0),
+            (accum: number, item: SegmentFormData) => accum + (item[SEGMENT_RESISTANCE] ?? 0),
             0
         );
         const totalReactance = segments.reduce(
-            (accum: number, item: SegmentInfo) => accum + (item[SEGMENT_REACTANCE] ?? 0),
+            (accum: number, item: SegmentFormData) => accum + (item[SEGMENT_REACTANCE] ?? 0),
             0
         );
         const totalSusceptance = segments.reduce(
-            (accum: number, item: SegmentInfo) => accum + (item[SEGMENT_SUSCEPTANCE] ?? 0),
+            (accum: number, item: SegmentFormData) => accum + (item[SEGMENT_SUSCEPTANCE] ?? 0),
             0
         );
         setValue(TOTAL_RESISTANCE, roundToDefaultPrecision(totalResistance));
@@ -226,6 +226,7 @@ export const LineTypeSegmentForm = () => {
                     rowData={lineTypesCatalog}
                     onSelectLine={onSelectCatalogLine}
                     preselectedRowId={getPreselectedRowIdForCatalog(openCatalogDialogIndex)}
+                    dialogProps={undefined}
                 />
             )}
         </>

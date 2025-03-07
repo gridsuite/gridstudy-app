@@ -13,9 +13,9 @@ import {
     SEGMENT_TYPE_ID,
     SEGMENT_TYPE_VALUE,
 } from 'components/utils/field-constants';
-import { SegmentInfo } from './line-catalog.type';
+import { SegmentFormData } from './line-catalog.type';
 
-export const emptyLineSegment: SegmentInfo = {
+export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_DISTANCE_VALUE]: 0.0,
     [SEGMENT_TYPE_VALUE]: '',
     [SEGMENT_TYPE_ID]: '',

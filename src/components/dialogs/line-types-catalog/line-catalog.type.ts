@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export type SegmentInfo = {
+export type SegmentFormData = {
     segmentDistanceValue: number;
     segmentTypeValue: string;
     segmentTypeId: string;
@@ -18,7 +18,7 @@ export type LineTypeSegmentFormData = {
     totalResistance: number;
     totalReactance: number;
     totalSusceptance: number;
-    segments: SegmentInfo[];
+    segments: SegmentFormData[];
 };
 
 // DTO from back-end

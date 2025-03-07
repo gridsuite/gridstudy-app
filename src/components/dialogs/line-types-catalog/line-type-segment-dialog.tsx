@@ -25,7 +25,7 @@ import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
 import { emptyLineSegment } from './line-type-segment-utils';
-import { LineTypeInfo, LineTypeSegmentFormData } from "./line-catalog.type";
+import { LineTypeInfo, LineTypeSegmentFormData } from './line-catalog.type';
 
 const emptyFormData: LineTypeSegmentFormData = {
     [TOTAL_RESISTANCE]: 0.0,
