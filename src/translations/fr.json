@@ -1536,5 +1536,7 @@
     "pmin": "P Min",
     "pmax": "P Max",
     "qmin": "Q Min",
-    "qmax": "Q Max"
+    "qmax": "Q Max",
+    "nodeAliasesRetrievingError": "Erreur lors de la récupération des alias de nœuds",
+    "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds"
 }
