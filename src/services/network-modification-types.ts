@@ -12,13 +12,13 @@ import {
     FieldValue,
 } from '../components/dialogs/network-modifications/by-filter/by-assignment/assignment/assignment.type';
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
+import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation.type';
 import {
     AttributeModification,
     ConverterStationElementModificationInfos,
     ReactiveCapabilityCurvePoint,
     ReactiveCapabilityCurvePointsData,
-} from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
-import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation.type';
+} from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
@@ -30,6 +30,7 @@ export interface HvdcOperatorActivePowerRange {
     oprFromCS1toCS2: number;
     oprFromCS2toCS1: number;
 }
+
 export interface VscModificationInfo {
     id: string;
     name: string;
@@ -76,6 +77,7 @@ export interface BatteryModificationInfo {
     isUpdate?: boolean;
     properties?: Property[];
 }
+
 export interface LoadCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
@@ -264,6 +266,7 @@ export interface Limit {
     acceptableDuration: number | null;
     value: number | null;
 }
+
 export interface TemporaryLimit extends Limit {
     modificationType: string | null;
     selected?: boolean;
@@ -308,6 +311,7 @@ export interface VoltageLeveCreationlInfo extends VoltageLeveInfo {
     ipMin: number | null;
     ipMax: number | null;
 }
+
 export interface VoltageLeveModificationInfo extends VoltageLeveInfo {
     lowShortCircuitCurrentLimit: number | null;
     highShortCircuitCurrentLimit: number | null;
@@ -326,11 +330,13 @@ export interface AttachmentLine {
     currentLimits1: CurrentLimits;
     currentLimits2: CurrentLimits;
 }
+
 type VariationFilter = {
     id: string;
     name: string;
     specificMetadata: { type: string };
 };
+
 export interface Variations {
     variationMode: string | null;
     variationValue: number | null;
@@ -395,6 +401,7 @@ export interface Assignment {
     editedField: string;
     propertyName?: string;
 }
+
 export interface BatteryCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
@@ -586,6 +593,7 @@ export interface TwoWindingsTransformerCreationInfo {
     connected2: boolean;
     properties?: Property[];
 }
+
 export interface SubstationCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;

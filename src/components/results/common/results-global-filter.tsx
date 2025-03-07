@@ -12,8 +12,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
-import { AppState } from '../../../redux/reducer';
-import { AppDispatch } from '../../../redux/store';
+import type { AppState } from '../../../redux/reducer';
+import type { AppDispatch } from '../../../redux/store';
 import { mergeSx } from '@gridsuite/commons-ui';
 import { FilterType } from './utils';
 

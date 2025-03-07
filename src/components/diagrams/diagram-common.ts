@@ -5,14 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { closeDiagram, closeDiagrams, minimizeDiagram, openDiagram, togglePinDiagram } from '../../redux/actions';
 import { INVALID_LOADFLOW_OPACITY, NAD_INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
-import { AppDispatch } from '../../redux/store';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { UUID } from 'crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
@@ -127,26 +123,6 @@ export const styles = {
     }),
 };
 
-export enum ViewState {
-    PINNED = 'pinned',
-    MINIMIZED = 'minimized',
-    OPENED = 'opened',
-}
-
-export enum SubstationLayout {
-    HORIZONTAL = 'horizontal',
-    VERTICAL = 'vertical',
-    SMART = 'smart',
-    SMARTHORIZONTALCOMPACTION = 'smartHorizontalCompaction',
-    SMARTVERTICALCOMPACTION = 'smartVerticalCompaction',
-}
-
-export enum DiagramType {
-    VOLTAGE_LEVEL = 'voltage-level',
-    SUBSTATION = 'substation',
-    NETWORK_AREA_DIAGRAM = 'network-area-diagram',
-}
-
 // be careful when using this method because there are treatments made on purpose
 export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): EQUIPMENT_TYPES | null {
     switch (feederType) {
@@ -249,53 +225,6 @@ export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentT
         }
     }
 }
-
-export const useDiagram = () => {
-    const dispatch = useDispatch<AppDispatch>();
-
-    const openDiagramView = useCallback(
-        (id: string, type: DiagramType) => {
-            dispatch(openDiagram(id, type));
-        },
-        [dispatch]
-    );
-
-    const togglePinDiagramView = useCallback(
-        (id: string, type: DiagramType) => {
-            dispatch(togglePinDiagram(id, type));
-        },
-        [dispatch]
-    );
-
-    const minimizeDiagramView = useCallback(
-        (id: string, type: DiagramType) => {
-            dispatch(minimizeDiagram(id, type));
-        },
-        [dispatch]
-    );
-
-    const closeDiagramView = useCallback(
-        (id: string, type: DiagramType) => {
-            dispatch(closeDiagram(id, type));
-        },
-        [dispatch]
-    );
-
-    const closeDiagramViews = useCallback(
-        (idsToRemove: string[]) => {
-            dispatch(closeDiagrams(idsToRemove));
-        },
-        [dispatch]
-    );
-
-    return {
-        openDiagramView,
-        minimizeDiagramView,
-        togglePinDiagramView,
-        closeDiagramView,
-        closeDiagramViews,
-    };
-};
 
 export interface SldAdditionalMetadata {
     id: string;
