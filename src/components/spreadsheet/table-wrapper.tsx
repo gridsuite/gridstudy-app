@@ -24,7 +24,6 @@ import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
-import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
@@ -36,6 +35,8 @@ import { useEquipmentModification } from './equipment-modification/use-equipment
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
 import { updateTableDefinition } from 'redux/actions';
 import { NodeType } from '../graph/tree-node.type';
+import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { reorderSpreadsheetColumns } from 'services/study-config';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -360,15 +361,27 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     }
                 });
 
-                dispatch(
-                    updateTableDefinition({
-                        ...tableDefinition,
-                        columns: updatedColumns,
+                reorderSpreadsheetColumns(
+                    tableDefinition.uuid,
+                    updatedColumns.map((col) => col.uuid)
+                )
+                    .then(() => {
+                        dispatch(
+                            updateTableDefinition({
+                                ...tableDefinition,
+                                columns: updatedColumns,
+                            })
+                        );
                     })
-                );
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error,
+                            headerId: 'spreadsheet/reorder_columns/error',
+                        });
+                    });
             }
         },
-        [dispatch, tableDefinition, originalColumnPositions]
+        [tableDefinition, originalColumnPositions, dispatch, snackError]
     );
 
     const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({
