@@ -19,6 +19,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
+import { VoltageLevel } from '../../utils/equipment-types';
 
 export const getConnectivityPropertiesValidationSchema = (isEquipmentModification = false) => {
     return {
@@ -106,7 +107,7 @@ export const getConnectivityWithoutPositionEmptyFormData = (id = CONNECTIVITY) =
     [id]: getConnectivityPropertiesEmptyFormData(),
 });
 
-export const getConnectivityVoltageLevelData = ({ voltageLevelId }) => {
+export const getConnectivityVoltageLevelData = ({ voltageLevelId }: { voltageLevelId: string }) => {
     if (!voltageLevelId) {
         return null;
     }
@@ -116,7 +117,13 @@ export const getConnectivityVoltageLevelData = ({ voltageLevelId }) => {
     };
 };
 
-export const getConnectivityBusBarSectionData = ({ busbarSectionId, busbarSectionName = '' }) => {
+export const getConnectivityBusBarSectionData = ({
+    busbarSectionId,
+    busbarSectionName = '',
+}: {
+    busbarSectionId: string;
+    busbarSectionName: string;
+}) => {
     if (!busbarSectionId) {
         return null;
     }
@@ -127,7 +134,15 @@ export const getConnectivityBusBarSectionData = ({ busbarSectionId, busbarSectio
     };
 };
 
-export const getConnectivityPropertiesData = ({ voltageLevelId, busbarSectionId, busbarSectionName }) => {
+export const getConnectivityPropertiesData = ({
+    voltageLevelId,
+    busbarSectionId,
+    busbarSectionName,
+}: {
+    voltageLevelId: string;
+    busbarSectionId: string;
+    busbarSectionName: string;
+}) => {
     return {
         [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
             voltageLevelId,
@@ -139,7 +154,7 @@ export const getConnectivityPropertiesData = ({ voltageLevelId, busbarSectionId,
     };
 };
 
-export const getNewVoltageLevelData = (newVoltageLevel) => ({
+export const getNewVoltageLevelData = (newVoltageLevel: VoltageLevel) => ({
     id: newVoltageLevel.equipmentId,
     name: newVoltageLevel.equipmentName ?? '',
     substationId: newVoltageLevel.substationId,

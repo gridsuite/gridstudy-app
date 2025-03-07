@@ -62,12 +62,9 @@ import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import { sanitizeString } from '../../../dialog-utils';
 import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { getActivePowerSetPointSchema, getReactivePowerSetPointSchema } from '../../../set-points/set-points-utils';
 import {
-    getActivePowerSetPointSchema,
-    getReactivePowerSetPointSchema,
-    getSetPointsEmptyFormData,
-} from '../../../set-points/set-points-utils';
-import {
+    getReactiveCapabilityCurvePoints,
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
@@ -102,7 +99,6 @@ const emptyFormData = {
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
-    ...getSetPointsEmptyFormData(),
     ...getReactiveLimitsEmptyFormData(),
     ...getConnectivityWithPositionEmptyFormData(),
     ...emptyProperties,
@@ -233,10 +229,14 @@ export function GeneratorCreationDialog({
                         : REGULATION_TYPES.LOCAL.id,
                 [Q_PERCENT]: isNaN(generator?.qPercent) ? null : generator?.qPercent,
                 ...getReactiveLimitsFormData({
+                    id: REACTIVE_LIMITS,
                     reactiveCapabilityCurveChoice: generator?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
                     minimumReactivePower: generator?.minMaxReactiveLimits?.minQ ?? null,
                     maximumReactivePower: generator?.minMaxReactiveLimits?.maxQ ?? null,
-                    reactiveCapabilityCurveTable: generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
+                }),
+                ...getReactiveCapabilityCurvePoints({
+                    id: REACTIVE_LIMITS,
+                    reactiveCapabilityCurvePoints: generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
                 }),
                 ...getRegulatingTerminalFormData({
                     voltageLevelId: generator.regulatingTerminalVlId,
@@ -301,10 +301,14 @@ export function GeneratorCreationDialog({
                     : REGULATION_TYPES.LOCAL.id,
                 [Q_PERCENT]: editData.qPercent,
                 ...getReactiveLimitsFormData({
+                    id: REACTIVE_LIMITS,
                     reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
                     minimumReactivePower: editData?.minQ,
                     maximumReactivePower: editData?.maxQ,
-                    reactiveCapabilityCurveTable: editData?.reactiveCapabilityCurve
+                }),
+                ...getReactiveCapabilityCurvePoints({
+                    id: REACTIVE_LIMITS,
+                    reactiveCapabilityCurvePoints: editData?.reactiveCapabilityCurve
                         ? editData?.reactiveCapabilityCurvePoints
                         : [{}, {}],
                 }),

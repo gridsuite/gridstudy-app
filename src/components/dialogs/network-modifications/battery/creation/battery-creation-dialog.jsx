@@ -40,7 +40,7 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils';
+} from '../../../connectivity/connectivity-form-utils.js';
 import BatteryCreationForm from './battery-creation-form';
 import { sanitizeString } from '../../../dialog-utils';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
@@ -49,7 +49,7 @@ import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
-} from '../../../reactive-limits/reactive-limits-utils';
+} from '../../../reactive-limits/reactive-limits-utils.js';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import PropTypes from 'prop-types';

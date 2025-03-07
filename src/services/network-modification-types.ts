@@ -15,11 +15,16 @@ import { Filter } from '../components/dialogs/network-modifications/by-filter/co
 import {
     ConverterStationElementModificationInfos,
     ReactiveCapabilityCurvePoint,
-    ReactiveCapabilityCurvePointsInfos,
 } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
 import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation.type';
 import { ModificationType } from '@gridsuite/commons-ui';
 import { AttributeModification } from '../components/utils/utils';
+
+export interface ReactiveCapabilityCurvePointsInfos {
+    p?: number | null;
+    maxQ?: number | null;
+    minQ?: number | null;
+}
 
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;

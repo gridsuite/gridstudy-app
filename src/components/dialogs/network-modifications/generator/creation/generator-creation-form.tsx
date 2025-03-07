@@ -7,6 +7,7 @@
 
 import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import {
+    CONNECTIVITY,
     ENERGY_SOURCE,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -17,6 +18,7 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
+    REACTIVE_LIMITS,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
 } from 'components/utils/field-constants';
@@ -29,7 +31,6 @@ import {
 } from '../../../dialog-utils';
 import { ENERGY_SOURCES } from 'components/network/constants';
 import { Grid } from '@mui/material';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
 import PropertiesForm from '../../common/properties/properties-form';
@@ -39,6 +40,7 @@ import GridSection from '../../../commons/grid-section';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { WritableDeep } from 'type-fest';
+import ConnectivityForm from '../../../connectivity/connectivity-form';
 
 export interface GeneratorCreationFormProps {
     studyUuid: UUID;
@@ -74,12 +76,15 @@ export default function GeneratorCreationForm({
 
     const connectivityForm = (
         <ConnectivityForm
+            id={CONNECTIVITY}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             previousValues={undefined}
+            isEquipmentModification={false}
+            withDirectionsInfos={false}
         />
     );
 
@@ -141,16 +146,14 @@ export default function GeneratorCreationForm({
 
             {/* Reactive limits part */}
             <GridSection title="ReactiveLimits" />
-            <ReactiveLimitsForm />
+            <ReactiveLimitsForm
+                id={REACTIVE_LIMITS}
+                previousMinMaxReactiveLimits={undefined}
+                updatePreviousReactiveCapabilityCurveTable={undefined}
+            />
 
             {/* Set points part */}
-            <SetPointsForm
-                studyUuid={studyUuid}
-                currentNodeUuid={currentNodeUuid}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                voltageLevelOptions={voltageLevelOptions}
-                previousValues={undefined}
-            />
+            <SetPointsForm previousValuesTargetP={undefined} previousValuesTargetQ={undefined} />
 
             {/* Short Circuit of start part */}
             <GridSection title="ShortCircuit" />

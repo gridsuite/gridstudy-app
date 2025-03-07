@@ -11,23 +11,32 @@ import { Grid, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { useFieldArray } from 'react-hook-form';
-import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
+import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form.js';
 import { MAX_Q, MIN_Q, P } from 'components/utils/field-constants';
 import { ErrorInput, MidFormError } from '@gridsuite/commons-ui';
 import { INSERT, REMOVE } from './reactive-capability-utils';
+import { ReactiveCapabilityCurveTable } from '../reactive-limits-utils';
 
 const MIN_LENGTH = 2;
-export const ReactiveCapabilityCurveTable = ({
+
+interface ReactiveCapabilityCurveTableFormProps {
+    id: string;
+    disabled: boolean;
+    previousValues?: ReactiveCapabilityCurveTable[];
+    updatePreviousReactiveCapabilityCurveTable?: (action: string, index: number) => void;
+}
+const headerIds = ['ActivePowerText', 'MinimumReactivePower', 'MaximumReactivePower'];
+
+export default function ReactiveCapabilityCurveTableForm({
     id,
-    tableHeadersIds,
     disabled = false,
     previousValues,
     updatePreviousReactiveCapabilityCurveTable,
-}) => {
+}: Readonly<ReactiveCapabilityCurveTableFormProps>) {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
 
     const insertRow = useCallback(
-        (index) => {
+        (index: number) => {
             if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
                 updatePreviousReactiveCapabilityCurveTable(INSERT, index);
             }
@@ -44,7 +53,7 @@ export const ReactiveCapabilityCurveTable = ({
         insertRow(rows.length - 1);
     };
 
-    const handleRemoveRow = (index) => {
+    const handleRemoveRow = (index: number) => {
         if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
             updatePreviousReactiveCapabilityCurveTable(REMOVE, index);
         }
@@ -65,7 +74,7 @@ export const ReactiveCapabilityCurveTable = ({
                 <ErrorInput name={id} InputField={MidFormError} />
             </Grid>
 
-            {tableHeadersIds.map((header) => (
+            {headerIds.map((header) => (
                 <Grid key={header} item xs={3}>
                     <FormattedMessage id={header} />
                 </Grid>
@@ -82,12 +91,7 @@ export const ReactiveCapabilityCurveTable = ({
                 }
                 return (
                     <Grid key={value.id} container spacing={3} item>
-                        <ReactiveCapabilityCurveRowForm
-                            id={id}
-                            fieldId={value.id}
-                            index={index}
-                            labelSuffix={labelSuffix}
-                        />
+                        <ReactiveCapabilityCurveRowForm id={id} index={index} labelSuffix={labelSuffix} />
                         <Grid item xs={1}>
                             <IconButton
                                 key={value.id}
@@ -114,4 +118,4 @@ export const ReactiveCapabilityCurveTable = ({
             })}
         </Grid>
     );
-};
+}

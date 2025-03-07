@@ -59,9 +59,9 @@ export function fetchVoltageLevelEquipments(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[],
+    substationsIds?: string[],
     voltageLevelId: string,
-    inUpstreamBuiltParentNode: boolean
+    inUpstreamBuiltParentNode?: boolean
 ) {
     console.info(
         `Fetching equipments of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}' with substations ids '${substationsIds}'...`

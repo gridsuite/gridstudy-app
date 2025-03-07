@@ -7,17 +7,17 @@
 
 import type { WritableDeep } from 'type-fest';
 import { Grid } from '@mui/material';
-import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
+import { CONNECTIVITY, EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
 import { LOAD_TYPES } from 'components/network/constants';
 import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import ConnectivityForm from '../../../connectivity/connectivity-form';
 
 export interface LoadCreationFormProps {
     studyUuid: UUID;
@@ -61,6 +61,9 @@ export default function LoadCreationForm({
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             previousValues={undefined}
+            id={CONNECTIVITY}
+            isEquipmentModification={false}
+            withDirectionsInfos={false}
         />
     );
 

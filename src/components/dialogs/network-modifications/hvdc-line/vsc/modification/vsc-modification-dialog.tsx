@@ -48,14 +48,13 @@ import {
     getConverterStationModificationFormEditData,
     getVscConverterStationEmptyFormData,
     getVscConverterStationModificationSchema,
-    ReactiveCapabilityCurvePointsInfos,
 } from '../converter-station/converter-station-utils';
 import { VscModificationForm } from './vsc-modification-from';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { modifyVsc } from 'services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
-import { VscModificationInfo } from 'services/network-modification-types';
+import { ReactiveCapabilityCurvePointsInfos, VscModificationInfo } from 'services/network-modification-types';
 import {
     REMOVE,
     setCurrentReactiveCapabilityCurveTable,

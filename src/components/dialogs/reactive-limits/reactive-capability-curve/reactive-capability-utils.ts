@@ -8,6 +8,7 @@
 import { toNumber, validateValueIsANumber } from 'components/utils/validation-functions';
 import yup from 'components/utils/yup-config';
 import { MAX_Q, MIN_Q, P, REACTIVE_CAPABILITY_CURVE_CHOICE } from 'components/utils/field-constants';
+import { ReactiveCapabilityCurveTable } from '../reactive-limits-utils';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';
@@ -29,7 +30,7 @@ export const getRowEmptyFormData = () => ({
     [MIN_Q]: null,
 });
 
-function getNotNullPFromArray(values) {
+function getNotNullPFromArray(values: ReactiveCapabilityCurveTable[]) {
     return values
         .map((element) => {
             const pValue = element[P];
@@ -41,18 +42,18 @@ function getNotNullPFromArray(values) {
         .filter((p) => p !== null);
 }
 
-function checkAllPValuesAreUnique(values) {
+function checkAllPValuesAreUnique(values: ReactiveCapabilityCurveTable[]) {
     const validActivePowerValues = getNotNullPFromArray(values);
     const setOfPs = [...new Set(validActivePowerValues)];
     return setOfPs.length === validActivePowerValues.length;
 }
 
-function checkAllPValuesBetweenMinMax(values) {
+function checkAllPValuesBetweenMinMax(values: ReactiveCapabilityCurveTable[]) {
     const validActivePowerValues = getNotNullPFromArray(values);
     const minP = validActivePowerValues[0];
     const maxP = validActivePowerValues[validActivePowerValues.length - 1];
 
-    return validActivePowerValues.every((p) => p >= minP && p <= maxP);
+    return validActivePowerValues.every((p: number) => p >= minP && p <= maxP);
 }
 
 export const getReactiveCapabilityCurveValidationSchema = (positiveAndNegativePExist = false) =>
@@ -88,7 +89,7 @@ export const getReactiveCapabilityCurveValidationSchema = (positiveAndNegativePE
                     ),
         });
 
-export function setSelectedReactiveLimits(id, minMaxReactiveLimits, setValue) {
+export function setSelectedReactiveLimits(id: string, minMaxReactiveLimits: number, setValue) {
     setValue(id, minMaxReactiveLimits ? 'MINMAX' : 'CURVE');
 }
 

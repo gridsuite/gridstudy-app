@@ -15,11 +15,11 @@ import {
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
 import { Grid, TextField } from '@mui/material';
 import { FloatInput, TextInput } from '@gridsuite/commons-ui';
-import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
-import FrequencyRegulation from '../../../set-points/frequency-regulation';
+import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form.js';
+import FrequencyRegulation from '../../../frequency-regulation/frequency-regulation.tsx';
 import { FormattedMessage } from 'react-intl';
 import PropertiesForm from '../../common/properties/properties-form';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form.js';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 

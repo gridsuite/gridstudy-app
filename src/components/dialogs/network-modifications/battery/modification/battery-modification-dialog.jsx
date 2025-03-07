@@ -43,11 +43,11 @@ import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
-} from '../../../reactive-limits/reactive-limits-utils';
+} from '../../../reactive-limits/reactive-limits-utils.js';
 import {
     REMOVE,
     setCurrentReactiveCapabilityCurveTable,
-} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils.js';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
@@ -69,7 +69,7 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils';
+} from '../../../connectivity/connectivity-form-utils.js';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 
 const emptyFormData = {

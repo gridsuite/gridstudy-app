@@ -59,12 +59,9 @@ import {
 import { sanitizeString } from '../../../dialog-utils';
 import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
+import { getActivePowerSetPointSchema, getReactivePowerSetPointSchema } from '../../../set-points/set-points-utils';
 import {
-    getActivePowerSetPointSchema,
-    getReactivePowerSetPointSchema,
-    getSetPointsEmptyFormData,
-} from '../../../set-points/set-points-utils';
-import {
+    getReactiveCapabilityCurvePoints,
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
@@ -97,7 +94,7 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { GeneratorFormInfos, GeneratorDialogSchemaForm } from '../generator-dialog.type';
+import { GeneratorDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
 import { toModificationOperation, toModificationUnsetOperation } from '../../../../utils/utils';
 
@@ -114,7 +111,6 @@ const emptyFormData = {
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
     ...getConnectivityWithPositionEmptyFormData(true),
-    ...getSetPointsEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
     ...emptyProperties,
 };
@@ -243,10 +239,14 @@ export function GeneratorModificationDialog({
                     isEquipmentModification: true,
                 }),
                 ...getReactiveLimitsFormData({
+                    id: REACTIVE_LIMITS,
                     reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve?.value ? 'CURVE' : 'MINMAX',
                     maximumReactivePower: editData?.maxQ?.value ?? null,
                     minimumReactivePower: editData?.minQ?.value ?? null,
-                    reactiveCapabilityCurveTable: editData?.reactiveCapabilityCurvePoints ?? null,
+                }),
+                ...getReactiveCapabilityCurvePoints({
+                    id: REACTIVE_LIMITS,
+                    reactiveCapabilityCurvePoints: editData?.reactiveCapabilityCurvePoints,
                 }),
                 ...getRegulatingTerminalFormData({
                     voltageLevelId: editData?.regulatingTerminalVlId?.value,

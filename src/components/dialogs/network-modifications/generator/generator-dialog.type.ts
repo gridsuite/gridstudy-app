@@ -23,15 +23,12 @@ import {
     FREQUENCY_REGULATION,
     ID,
     MARGINAL_COST,
-    MAX_Q,
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
-    MIN_Q,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
     NAME,
     NOMINAL_VOLTAGE,
-    P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     Q_PERCENT,
@@ -52,12 +49,11 @@ import {
 } from '../../../utils/field-constants';
 import { Property } from '../common/properties/property-utils';
 import { ConnectablePositionFormInfos } from '../../connectivity/connectivity.type';
-
-export type ReactiveCapabilityCurveTable = {
-    [P]?: number | null;
-    [MAX_Q]?: number | null;
-    [MIN_Q]?: number | null;
-};
+import { ActivePowerControlFormInfos } from '../../frequency-regulation/frequency-regulation-utils';
+import {
+    MinMaxReactiveLimitsFormInfos,
+    ReactiveCapabilityCurveTable,
+} from '../../reactive-limits/reactive-limits-utils';
 
 export type GeneratorDialogSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -135,7 +131,6 @@ export interface GeneratorFormInfos {
     regulatingTerminalConnectableType: string;
     qPercent: number;
     minMaxReactiveLimits: MinMaxReactiveLimitsFormInfos;
-    maxMaxReactiveLimits: number;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurveTable[];
     voltageLevelId: string;
     busOrBusbarSectionId: string;
@@ -154,17 +149,7 @@ interface GeneratorStartUpFormInfos {
     forcedOutageRate?: number | null;
 }
 
-interface ActivePowerControlFormInfos {
-    participate?: boolean | null;
-    droop?: number | null;
-}
-
 interface GeneratorShortCircuitFormInfos {
     directTransX?: number | null;
     stepUpTransformerX?: number | null;
-}
-
-interface MinMaxReactiveLimitsFormInfos {
-    minQ?: number | null;
-    maxQ?: number | null;
 }

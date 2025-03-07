@@ -7,6 +7,7 @@
 
 import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import {
+    CONNECTIVITY,
     ENERGY_SOURCE,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
@@ -16,6 +17,7 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
+    REACTIVE_LIMITS,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
 } from 'components/utils/field-constants';
@@ -24,21 +26,23 @@ import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constan
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, TextField } from '@mui/material';
+import { Box, Grid, TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
+import FrequencyRegulation from '../../../frequency-regulation/frequency-regulation';
+import { GeneratorFormInfos } from '../generator-dialog.type';
+import ConnectivityForm from '../../../connectivity/connectivity-form';
 
 export interface GeneratorModificationFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode | null;
     currentRootNetworkUuid: UUID | null;
-    generatorToModify: any;
-    updatePreviousReactiveCapabilityCurveTable: any;
+    generatorToModify: GeneratorFormInfos | null;
+    updatePreviousReactiveCapabilityCurveTable?: (action: string, index: number) => void;
     equipmentId: string;
 }
 
@@ -132,7 +136,7 @@ export default function GeneratorModificationForm({
             name={TRANSIENT_REACTANCE}
             label={'TransientReactanceForm'}
             adornment={OhmAdornment}
-            previousValue={generatorToModify?.generatorShortCircuit?.directTransX}
+            previousValue={generatorToModify?.generatorShortCircuit?.directTransX ?? undefined}
             clearable={true}
         />
     );
@@ -142,11 +146,7 @@ export default function GeneratorModificationForm({
             name={TRANSFORMER_REACTANCE}
             label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
-            previousValue={
-                isNaN(generatorToModify?.generatorShortCircuit?.stepUpTransformerX)
-                    ? null
-                    : generatorToModify?.generatorShortCircuit?.stepUpTransformerX
-            }
+            previousValue={generatorToModify?.generatorShortCircuit?.stepUpTransformerX ?? undefined}
             clearable={true}
         />
     );
@@ -156,7 +156,7 @@ export default function GeneratorModificationForm({
             name={PLANNED_ACTIVE_POWER_SET_POINT}
             label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
-            previousValue={generatorToModify?.generatorStartup?.plannedActivePowerSetPoint}
+            previousValue={generatorToModify?.generatorStartup?.plannedActivePowerSetPoint ?? undefined}
             clearable={true}
         />
     );
@@ -165,7 +165,7 @@ export default function GeneratorModificationForm({
         <FloatInput
             name={MARGINAL_COST}
             label={'MarginalCost'}
-            previousValue={generatorToModify?.generatorStartup?.marginalCost}
+            previousValue={generatorToModify?.generatorStartup?.marginalCost ?? undefined}
             clearable={true}
         />
     );
@@ -174,7 +174,7 @@ export default function GeneratorModificationForm({
         <FloatInput
             name={PLANNED_OUTAGE_RATE}
             label={'plannedOutageRate'}
-            previousValue={generatorToModify?.generatorStartup?.plannedOutageRate}
+            previousValue={generatorToModify?.generatorStartup?.plannedOutageRate ?? undefined}
             clearable={true}
         />
     );
@@ -183,19 +183,24 @@ export default function GeneratorModificationForm({
         <FloatInput
             name={FORCED_OUTAGE_RATE}
             label={'forcedOutageRate'}
-            previousValue={generatorToModify?.generatorStartup?.forcedOutageRate}
+            previousValue={generatorToModify?.generatorStartup?.forcedOutageRate ?? undefined}
             clearable={true}
         />
     );
 
     const connectivityForm = (
         <ConnectivityForm
+            id={CONNECTIVITY}
             withPosition={true}
+            withDirectionsInfos={false}
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
-            previousValues={generatorToModify}
+            previousValues={{
+                connectablePosition: generatorToModify?.connectablePosition,
+                terminalConnected: generatorToModify?.terminalConnected,
+            }}
         />
     );
 
@@ -237,18 +242,22 @@ export default function GeneratorModificationForm({
                 </Grid>
             </Grid>
             <ReactiveLimitsForm
-                equipmentToModify={generatorToModify}
+                id={REACTIVE_LIMITS}
+                previousMinMaxReactiveLimits={generatorToModify?.minMaxReactiveLimits}
+                previousReactiveCapabilityCurveTable={generatorToModify?.reactiveCapabilityCurvePoints}
                 updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
 
             {/* Set points part */}
             <SetPointsForm
-                studyUuid={studyUuid}
-                currentNodeUuid={currentNodeUuid}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                voltageLevelOptions={voltageLevelOptions}
+                previousValuesTargetP={generatorToModify?.targetP}
+                previousValuesTargetQ={generatorToModify?.targetQ}
+            />
+
+            <Box sx={{ width: '100%' }} />
+            <FrequencyRegulation
                 isEquipmentModification={true}
-                previousValues={generatorToModify}
+                previousValues={generatorToModify?.activePowerControl}
             />
 
             {/* Short Circuit of start part */}

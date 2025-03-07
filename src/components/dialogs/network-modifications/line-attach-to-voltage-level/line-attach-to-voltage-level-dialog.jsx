@@ -33,7 +33,7 @@ import {
     getConnectivityWithoutPositionEmptyFormData,
     getConnectivityWithoutPositionValidationSchema,
     getNewVoltageLevelData,
-} from '../../connectivity/connectivity-form-utils';
+} from '../../connectivity/connectivity-form-utils.js';
 import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
 import {
     getLineToAttachOrSplitEmptyFormData,

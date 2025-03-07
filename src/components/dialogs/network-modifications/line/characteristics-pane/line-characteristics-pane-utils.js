@@ -20,7 +20,7 @@ import yup from 'components/utils/yup-config';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils';
+} from '../../../connectivity/connectivity-form-utils.js';
 
 const characteristicsValidationSchema = (id, displayConnectivity, modification) => ({
     [id]: yup.object().shape({

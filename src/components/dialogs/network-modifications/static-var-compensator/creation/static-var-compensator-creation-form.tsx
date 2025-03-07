@@ -7,7 +7,6 @@
 
 import { FunctionComponent } from 'react';
 
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { Box, Grid } from '@mui/material';
 import { StandbyAutomatonForm } from './standby-automaton-form';
@@ -16,10 +15,13 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import { UUID } from 'crypto';
 import GridItem from '../../../commons/grid-item';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
+import ConnectivityForm from '../../../connectivity/connectivity-form';
+import { CONNECTIVITY } from '../../../../utils/field-constants';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 
 export interface StaticVarCompensatorCreationFormProps {
     studyUuid: UUID;
-    currentNode: { id: UUID };
+    currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     tabIndex: number;
 }
@@ -30,7 +32,7 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
     currentRootNetworkUuid,
     tabIndex,
 }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
     const connectivityForm = (
         <ConnectivityForm
             voltageLevelOptions={voltageLevelOptions}
@@ -38,7 +40,10 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
-            previousValues={null}
+            previousValues={undefined}
+            id={CONNECTIVITY}
+            isEquipmentModification={false}
+            withDirectionsInfos={false}
         />
     );
 

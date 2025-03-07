@@ -11,7 +11,7 @@ import { filledTextField } from '../../../dialog-utils';
 import { Grid, TextField } from '@mui/material';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import PropertiesForm from '../../common/properties/properties-form';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form.js';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 

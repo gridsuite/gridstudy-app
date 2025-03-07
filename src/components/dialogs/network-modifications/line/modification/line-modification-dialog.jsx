@@ -92,7 +92,7 @@ import {
     getCon1andCon2WithPositionValidationSchema,
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils';
+} from '../../../connectivity/connectivity-form-utils.js';
 import {
     getBranchActiveReactivePowerEditData,
     getBranchActiveReactivePowerEmptyFormData,

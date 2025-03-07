@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RadioInput } from '@gridsuite/commons-ui';
+import { FloatInput, RadioInput } from '@gridsuite/commons-ui';
 import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
@@ -14,22 +14,27 @@ import {
     REACTIVE_LIMITS,
 } from 'components/utils/field-constants';
 import { REACTIVE_LIMIT_TYPES } from 'components/network/constants';
-import { FloatInput } from '@gridsuite/commons-ui';
 import { ReactivePowerAdornment } from '../dialog-utils';
-import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import GridItem from '../commons/grid-item';
+import { MinMaxReactiveLimitsFormInfos, ReactiveCapabilityCurveTable } from './reactive-limits-utils';
+import ReactiveCapabilityCurveTableForm from './reactive-capability-curve/reactive-capability-curve-table-form';
+export interface ReactiveLimitsFormProps {
+    id: string;
+    previousMinMaxReactiveLimits?: MinMaxReactiveLimitsFormInfos | null;
+    previousReactiveCapabilityCurveTable?: ReactiveCapabilityCurveTable[];
+    updatePreviousReactiveCapabilityCurveTable?: (action: string, index: number) => void;
+}
 
-const headerIds = ['ActivePowerText', 'MinimumReactivePower', 'MaximumReactivePower'];
-
-const ReactiveLimitsForm = ({
+export default function ReactiveLimitsForm({
     id = REACTIVE_LIMITS,
-    equipmentToModify = null,
-    updatePreviousReactiveCapabilityCurveTable = undefined,
-}) => {
+    previousMinMaxReactiveLimits,
+    previousReactiveCapabilityCurveTable,
+    updatePreviousReactiveCapabilityCurveTable,
+}: Readonly<ReactiveLimitsFormProps>) {
     const reactiveCapabilityCurveChoice = useWatch({
-        name: `${id}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
+        name: `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
     });
 
     const isReactiveCapabilityCurveOn = reactiveCapabilityCurveChoice !== 'MINMAX';
@@ -37,9 +42,8 @@ const ReactiveLimitsForm = ({
     const reactiveCapabilityCurveChoiceRadioField = (
         <RadioInput
             name={`${id}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`}
-            defaultValue={'CURVE'}
-            options={REACTIVE_LIMIT_TYPES}
-            formProps={{ style: { marginTop: '-12px' } }}
+            options={Object.values(REACTIVE_LIMIT_TYPES)}
+            formProps={{ defaultValue: 'CURVE', style: { marginTop: '-12px' } }}
         />
     );
 
@@ -48,7 +52,7 @@ const ReactiveLimitsForm = ({
             name={`${id}.${MINIMUM_REACTIVE_POWER}`}
             label={'MinimumReactivePower'}
             adornment={ReactivePowerAdornment}
-            previousValue={equipmentToModify?.minMaxReactiveLimits?.minQ}
+            previousValue={previousMinMaxReactiveLimits?.minQ ?? undefined}
             clearable={true}
         />
     );
@@ -58,17 +62,16 @@ const ReactiveLimitsForm = ({
             name={`${id}.${MAXIMUM_REACTIVE_POWER}`}
             label={'MaximumReactivePower'}
             adornment={ReactivePowerAdornment}
-            previousValue={equipmentToModify?.minMaxReactiveLimits?.maxQ}
+            previousValue={previousMinMaxReactiveLimits?.maxQ ?? undefined}
             clearable={true}
         />
     );
 
     const reactiveCapabilityCurveTableField = (
-        <ReactiveCapabilityCurveTable
+        <ReactiveCapabilityCurveTableForm
             id={`${id}.${REACTIVE_CAPABILITY_CURVE_TABLE}`}
-            tableHeadersIds={headerIds}
-            isReactiveCapabilityCurveOn={isReactiveCapabilityCurveOn}
-            previousValues={equipmentToModify?.reactiveCapabilityCurvePoints}
+            disabled={isReactiveCapabilityCurveOn}
+            previousValues={previousReactiveCapabilityCurveTable}
             updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
         />
     );
@@ -82,6 +85,4 @@ const ReactiveLimitsForm = ({
             {isReactiveCapabilityCurveOn && <GridItem size={12}>{reactiveCapabilityCurveTableField}</GridItem>}
         </Grid>
     );
-};
-
-export default ReactiveLimitsForm;
+}
