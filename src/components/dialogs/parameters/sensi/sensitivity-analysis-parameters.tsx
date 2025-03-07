@@ -48,7 +48,6 @@ import {
     SENSITIVITY_TYPE,
     SUPERVISED_VOLTAGE_LEVELS,
 } from '../../../utils/field-constants';
-import yup from '../../../utils/yup-config';
 import {
     fetchSensitivityAnalysisParameters,
     getSensitivityAnalysisFactorsCount,
@@ -57,18 +56,15 @@ import {
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
 import {
+    formSchema,
     getGenericRowNewParams,
     getSensiHvdcformatNewParams,
-    getSensiHVDCsFormSchema,
     getSensiInjectionsformatNewParams,
-    getSensiInjectionsFormSchema,
     getSensiInjectionsSetformatNewParams,
-    getSensiInjectionsSetFormSchema,
     getSensiNodesformatNewParams,
-    getSensiNodesFormSchema,
     getSensiPstformatNewParams,
-    getSensiPSTsFormSchema,
     IRowNewParams,
+    SensitivityAnalysisParametersFormSchema,
 } from './utils';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import LineSeparator from '../../commons/line-separator';
@@ -82,23 +78,6 @@ interface SensitivityAnalysisParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;
     setHaveDirtyFields: any;
 }
-
-const formSchema = yup
-    .object()
-    .shape({
-        [PROVIDER]: yup.string().required(),
-        [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
-        [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
-        [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
-        ...getSensiInjectionsSetFormSchema(),
-        ...getSensiInjectionsFormSchema(),
-        ...getSensiHVDCsFormSchema(),
-        ...getSensiPSTsFormSchema(),
-        ...getSensiNodesFormSchema(),
-    })
-    .required();
-
-export type SensitivityAnalysisParametersFormSchema = yup.InferType<typeof formSchema>;
 
 const numberMax = 500000;
 
@@ -143,7 +122,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
     const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] = useState(params);
 
     const resetSensitivityAnalysisParameters = useCallback(() => {

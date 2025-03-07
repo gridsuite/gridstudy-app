@@ -14,7 +14,6 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
-    DiagramType,
 } from '../diagram-common';
 import {
     CSS_RULE,
@@ -37,6 +36,7 @@ import { FEEDER_TYPES } from 'components/utils/feederType';
 import { IElementCreationDialog, mergeSx } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
+import { DiagramType } from '../diagram.type';
 
 const overrideStyles = {
     hideLabels: {

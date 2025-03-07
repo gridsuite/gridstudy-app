@@ -9,10 +9,10 @@ import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import yup from '../../../../../utils/yup-config';
 import {
     BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
-    CONNECTED,
     CONNECTIVITY,
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
@@ -41,6 +41,12 @@ import {
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { sanitizeString } from '../../../../dialog-utils';
 import { toModificationOperation } from '../../../../../utils/utils';
+import {
+    AttributeModification,
+    ConverterStationElementInfos,
+    ConverterStationElementModificationInfos,
+    ReactiveCapabilityCurvePointsData,
+} from './converter-station-type';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -49,23 +55,6 @@ export type UpdateReactiveCapabilityCurveTableConverterStation = (
     index: number,
     converterStationName: 'converterStation1' | 'converterStation2'
 ) => void;
-
-export interface ReactiveCapabilityCurvePointsData {
-    p?: number | null;
-    maxQ?: number | null;
-    minQ?: number | null;
-}
-
-interface MinMaxReactiveLimitsData {
-    minQ: number | null;
-    maxQ: number | null;
-}
-
-interface ConnectablePositionInfos {
-    connectionName: string | null;
-    connectionDirection: string | null;
-    connectionPosition: number | null;
-}
 
 export interface ConverterStationInterfaceEditData {
     equipmentId: string;
@@ -87,11 +76,6 @@ export interface ConverterStationInterfaceEditData {
     maxQ: number | null;
 }
 
-export interface AttributeModification<T> {
-    value?: T;
-    op: string;
-}
-
 export interface ConverterStationModificationInterfaceEditData {
     equipmentId: string;
     equipmentName: AttributeModification<string> | null;
@@ -111,43 +95,6 @@ export interface ConverterStationModificationInterfaceEditData {
     minQ: AttributeModification<number> | null;
     maxQ: AttributeModification<number> | null;
 }
-
-export interface ConverterStationElementInfos {
-    id: string;
-    name: string | null;
-    lossFactor: number;
-    voltageSetpoint: number | null;
-    reactivePowerSetpoint: number | null;
-    voltageRegulatorOn: boolean;
-    voltageLevelId: string;
-    busOrBusbarSectionId: string;
-    nominalV: number;
-    terminalConnected: boolean;
-    p: number | null;
-    q: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
-    minMaxReactiveLimits: MinMaxReactiveLimitsData | null;
-    connectablePositionInfos: ConnectablePositionInfos;
-    reactivePower?: number;
-    voltageRegulationOn?: boolean;
-    voltage?: number;
-}
-export interface ReactiveCapabilityCurvePoint {
-    p: number | null;
-    oldP: number | null;
-    minQ: number | null;
-    oldMinQ: number | null;
-    maxQ: number | null;
-    oldMaxQ: number | null;
-}
-
-// the backend return a converterStationElementInfo.reactiveCapabilityCurvePoints
-// but the form define rename is to reactiveCapabilityCurveTable
-// may be we should refactor the forms in Battery , generator and converter station to use the same name
-export type ConverterStationElementModificationInfos = Omit<
-    ConverterStationElementInfos,
-    'reactiveCapabilityCurvePoints'
-> & { reactiveCapabilityCurveTable: ReactiveCapabilityCurvePointsData[] };
 
 export function getVscConverterStationSchema(id: string) {
     return {
