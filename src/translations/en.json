@@ -823,6 +823,9 @@
     "MeasurementsSection": "Measurements",
     "ValidMeasurement": "Valid",
     "InvalidMeasurement": "Invalid",
+    "EstimateTapPositionSection": "Estimate tap position",
+    "RatioTapChangerEstimateTapPosition": "Ratio tap changer",
+    "PhaseTapChangerEstimateTapPosition": "Phase tap changer",
 
     "shuntCompensatorId": "Shunt compensator ID",
     "shuntCompensatorName": "Shunt compensator name",

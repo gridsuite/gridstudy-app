@@ -6,21 +6,21 @@
  */
 
 import {
-    FILTERS,
     FILTER_ID,
     FILTER_NAME,
+    FILTERS,
     GENERATORS_SELECTION_TYPE,
-    VARIABLE_Q_GENERATORS,
     HIGH_VOLTAGE_LIMIT,
     ID,
     LOW_VOLTAGE_LIMIT,
     NAME,
     PRIORITY,
     SELECTED,
-    UPDATE_BUS_VOLTAGE,
     SHUNT_COMPENSATORS_SELECTION_TYPE,
-    VARIABLE_SHUNT_COMPENSATORS,
     TRANSFORMERS_SELECTION_TYPE,
+    UPDATE_BUS_VOLTAGE,
+    VARIABLE_Q_GENERATORS,
+    VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
     VOLTAGE_LIMITS_DEFAULT,
     VOLTAGE_LIMITS_MODIFICATION,
@@ -37,6 +37,7 @@ import {
     VoltageInitParametersForm,
 } from './voltage-init-parameters-form';
 import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
+import { EquipmentsSelectionType } from './voltage-init.type';
 
 type FilterIdentifier = {
     [FILTER_ID]: UUID;
@@ -48,11 +49,6 @@ type VoltageLimitParam = {
     [LOW_VOLTAGE_LIMIT]: number;
     [HIGH_VOLTAGE_LIMIT]: number;
 };
-
-export enum EquipmentsSelectionType {
-    ALL_EXCEPT = 'ALL_EXCEPT',
-    NONE_EXCEPT = 'NONE_EXCEPT',
-}
 
 export type VoltageInitParam = {
     applyModifications: boolean;

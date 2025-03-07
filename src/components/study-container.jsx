@@ -17,9 +17,9 @@ import {
     openStudy,
     resetEquipments,
     resetEquipmentsPostLoadflow,
+    setCurrentRootNetworkUuid,
     setCurrentTreeNode,
     setStudyIndexationStatus,
-    setCurrentRootNetwork,
     studyUpdated,
 } from '../redux/actions';
 import { fetchRootNetworks } from 'services/root-network';
@@ -63,8 +63,8 @@ function useStudy(studyUuidRequest) {
                 fetchRootNetworks(studyUuidRequest)
                     .then((rootNetworks) => {
                         if (rootNetworks && rootNetworks.length > 0) {
-                            // Validate that currentRootNetwork is set
-                            dispatch(setCurrentRootNetwork(rootNetworks[0].rootNetworkUuid));
+                            // Validate that currentRootNetworkUuid is set
+                            dispatch(setCurrentRootNetworkUuid(rootNetworks[0].rootNetworkUuid));
                         } else {
                             // Handle case where no root networks are available
                             setErrMessage(
@@ -143,10 +143,10 @@ export function StudyContainer({ view, onChangeTab }) {
     const dispatch = useDispatch();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const currentNodeRef = useRef();
-    const currentRootNetworkRef = useRef();
+    const currentRootNetworkUuidRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
@@ -162,13 +162,13 @@ export function StudyContainer({ view, onChangeTab }) {
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
-            const currentRootNetwork = eventData.headers['rootNetwork'];
+            const rootNetworkUuidFromNotif = eventData.headers['rootNetwork'];
 
             const userId = eventData.headers[USER_HEADER];
             if (userId != null && userId !== userName) {
                 return;
             }
-            if (currentRootNetwork !== currentRootNetworkRef.current) {
+            if (rootNetworkUuidFromNotif !== currentRootNetworkUuidRef.current) {
                 return;
             }
 
@@ -247,8 +247,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const sendAlert = useCallback(
         (eventData) => {
             const userId = eventData.headers[USER_HEADER];
-            const currentRootNetwork = eventData.headers['rootNetwork'];
-            if (currentRootNetworkRef.current !== currentRootNetwork && currentRootNetwork) {
+            const rootNetworkUuidFromNotif = eventData.headers['rootNetwork'];
+            if (currentRootNetworkUuidRef.current !== rootNetworkUuidFromNotif && rootNetworkUuidFromNotif) {
                 return;
             }
             if (userId !== userName) {
@@ -568,7 +568,7 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         if (
             !isFirstStudyNetworkFound ||
-            (currentRootNetworkRef.current && currentRootNetworkRef.current !== currentRootNetworkUuid)
+            (currentRootNetworkUuidRef.current && currentRootNetworkUuidRef.current !== currentRootNetworkUuid)
         ) {
             checkNetworkExistenceAndRecreateIfNotFound();
         }
@@ -602,10 +602,10 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            const currentRootNetwork = studyUpdatedForce.eventData.headers['rootNetwork'];
+            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers['rootNetwork'];
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
-                currentRootNetwork === currentRootNetworkRef.current
+                rootNetworkUuidFromNotif === currentRootNetworkUuidRef.current
             ) {
                 dispatch(resetEquipmentsPostLoadflow());
             }
@@ -619,10 +619,10 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
-        let previousCurrentRootNetwork = currentRootNetworkRef.current;
-        // this is the last effect to compare currentRootNetworkUuid and currentRootNetworkRef.current
-        // then we can update the currentRootNetworkRef.current
-        currentRootNetworkRef.current = currentRootNetworkUuid;
+        let previousCurrentRootNetworkUuid = currentRootNetworkUuidRef.current;
+        // this is the last effect to compare currentRootNetworkUuid and currentRootNetworkUuidRef.current
+        // then we can update the currentRootNetworkUuidRef.current
+        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
             return;
@@ -633,7 +633,7 @@ export function StudyContainer({ view, onChangeTab }) {
         // A modification has been added to the currentNode and this one has been built incrementally.
         // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
         if (
-            previousCurrentRootNetwork === currentRootNetworkUuid &&
+            previousCurrentRootNetworkUuid === currentRootNetworkUuid &&
             isSameNode(previousCurrentNode, currentNode) &&
             isNodeBuilt(previousCurrentNode)
         ) {

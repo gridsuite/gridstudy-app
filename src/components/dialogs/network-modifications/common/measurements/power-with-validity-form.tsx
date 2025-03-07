@@ -46,11 +46,9 @@ export const PowerWithValidityForm: FunctionComponent<MeasurementProps> = ({ id,
     );
 
     return (
-        <>
-            <Grid container spacing={2}>
-                <GridItem size={6}>{valueField}</GridItem>
-                <GridItem size={6}>{validityField}</GridItem>
-            </Grid>
-        </>
+        <Grid container spacing={2}>
+            <GridItem size={6}>{valueField}</GridItem>
+            <GridItem size={6}>{validityField}</GridItem>
+        </Grid>
     );
 };

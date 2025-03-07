@@ -7,12 +7,12 @@
 
 import React, { ComponentType, useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
-import { CustomAggridFilterParams } from './custom-aggrid-header.type';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort';
 import { SortParams, useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
 import { CustomMenu, CustomMenuProps } from './custom-aggrid-menu';
 import { CustomHeaderProps } from 'ag-grid-react';
+import { CustomAggridFilterParams } from './custom-aggrid-filters/custom-aggrid-filter.type';
 
 const styles = {
     displayName: {

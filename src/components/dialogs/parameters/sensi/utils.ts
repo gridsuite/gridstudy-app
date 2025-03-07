@@ -7,29 +7,32 @@
 
 import { DistributionType, SensitivityType } from 'services/study/sensitivity-analysis.type';
 import {
-    CONTINGENCIES,
-    HVDC_LINES,
-    ID,
-    NAME,
-    PARAMETER_SENSI_HVDC,
-    SENSITIVITY_TYPE,
-    MONITORED_BRANCHES,
+    ACTIVATED,
+    ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD,
     CONTAINER_ID,
     CONTAINER_NAME,
-    PARAMETER_SENSI_INJECTIONS_SET,
-    DISTRIBUTION_TYPE,
-    PARAMETER_SENSI_NODES,
-    SUPERVISED_VOLTAGE_LEVELS,
-    EQUIPMENTS_IN_VOLTAGE_REGULATION,
-    PARAMETER_SENSI_PST,
-    PSTS,
-    INJECTIONS,
-    PARAMETER_SENSI_INJECTION,
-    ACTIVATED,
+    CONTINGENCIES,
     COUNT,
+    DISTRIBUTION_TYPE,
+    EQUIPMENTS_IN_VOLTAGE_REGULATION,
+    FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD,
+    FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
+    HVDC_LINES,
+    ID,
+    INJECTIONS,
+    MONITORED_BRANCHES,
+    NAME,
+    PARAMETER_SENSI_HVDC,
+    PARAMETER_SENSI_INJECTION,
+    PARAMETER_SENSI_INJECTIONS_SET,
+    PARAMETER_SENSI_NODES,
+    PARAMETER_SENSI_PST,
+    PROVIDER,
+    PSTS,
+    SENSITIVITY_TYPE,
+    SUPERVISED_VOLTAGE_LEVELS,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
-import { SensitivityAnalysisParametersFormSchema } from './sensitivity-analysis-parameters';
 
 export const getSensiHVDCsFormSchema = () => ({
     [PARAMETER_SENSI_HVDC]: yup.array().of(
@@ -224,6 +227,7 @@ export const getSensiInjectionsSetFormSchema = () => ({
         })
     ),
 });
+
 export interface IRowNewParams {
     [MONITORED_BRANCHES]: Array<{
         [ID]: string;
@@ -419,3 +423,19 @@ export const getSensiPstformatNewParams = (newParams: SensitivityAnalysisParamet
         }),
     };
 };
+
+export const formSchema = yup
+    .object()
+    .shape({
+        [PROVIDER]: yup.string().required(),
+        [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
+        [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
+        [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
+        ...getSensiInjectionsSetFormSchema(),
+        ...getSensiInjectionsFormSchema(),
+        ...getSensiHVDCsFormSchema(),
+        ...getSensiPSTsFormSchema(),
+        ...getSensiNodesFormSchema(),
+    })
+    .required();
+export type SensitivityAnalysisParametersFormSchema = yup.InferType<typeof formSchema>;

@@ -14,7 +14,6 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
-    DiagramType,
 } from '../diagram-common';
 import {
     CSS_RULE,
@@ -35,6 +34,7 @@ import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
 import { mergeSx } from '@gridsuite/commons-ui';
+import { DiagramType } from '../diagram.type';
 
 const dynamicCssRules: CSS_RULE[] = [
     {

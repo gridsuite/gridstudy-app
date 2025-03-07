@@ -6,7 +6,8 @@
  */
 
 import { DiagramState } from '../../redux/reducer';
-import { DiagramType } from './diagram-common';
+
+import { DiagramType } from './diagram.type';
 
 /**
  * SORTING FUNCTIONS

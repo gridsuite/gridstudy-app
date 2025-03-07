@@ -34,8 +34,7 @@ import type {
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
-import { DiagramType } from '../components/diagrams/diagram-common';
-import { Filter } from '../components/results/common/results-global-filter';
+import type { Filter } from '../components/results/common/results-global-filter';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
@@ -48,7 +47,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
-import GSMapEquipments from 'components/network/gs-map-equipments';
+import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
     ColumnDefinition,
@@ -58,6 +57,7 @@ import {
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
+import type { DiagramType } from '../components/diagrams/diagram.type';
 
 type MutableUnknownArray = unknown[];
 
@@ -634,15 +634,15 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     };
 }
 
-export const CURRENT_ROOT_NETWORK = 'CURRENT_ROOT_NETWORK';
-export type CurrentRootNetworkAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK>> & {
-    currentRootNetwork: UUID;
+export const CURRENT_ROOT_NETWORK_UUID = 'CURRENT_ROOT_NETWORK_UUID';
+export type CurrentRootNetworkUuidAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK_UUID>> & {
+    currentRootNetworkUuid: UUID;
 };
 
-export function setCurrentRootNetwork(currentRootNetwork: UUID): CurrentRootNetworkAction {
+export function setCurrentRootNetworkUuid(currentRootNetworkUuid: UUID): CurrentRootNetworkUuidAction {
     return {
-        type: CURRENT_ROOT_NETWORK,
-        currentRootNetwork: currentRootNetwork,
+        type: CURRENT_ROOT_NETWORK_UUID,
+        currentRootNetworkUuid: currentRootNetworkUuid,
     };
 }
 

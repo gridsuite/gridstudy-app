@@ -7,7 +7,7 @@
 
 import type { UUID } from 'crypto';
 import type { GeoDataLine, GeoDataSubstation } from '@powsybl/network-viewer';
-import { backendFetchJson, getQueryParamsList } from '../utils';
+import { backendFetchJson } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 
 export function fetchSubstationPositions(
@@ -20,15 +20,15 @@ export function fetchSubstationPositions(
         `Fetching substation positions of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
 
-    const paramsList =
-        substationsIds && substationsIds.length > 0 ? '?' + getQueryParamsList(substationsIds, 'substationId') : '';
-
     const fetchSubstationPositionsUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/geo-data/substations' +
-        paramsList;
+        '/geo-data/substations';
     console.debug(fetchSubstationPositionsUrl);
-    return backendFetchJson(fetchSubstationPositionsUrl);
+    return backendFetchJson(fetchSubstationPositionsUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(substationsIds),
+    });
 }
 
 export function fetchLinePositions(
@@ -41,13 +41,13 @@ export function fetchLinePositions(
         `Fetching line positions of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
     );
 
-    const paramsList = linesIds && linesIds.length > 0 ? '?' + getQueryParamsList(linesIds, 'lineId') : '';
-
     const fetchLinePositionsUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/geo-data/lines' +
-        paramsList;
-
+        '/geo-data/lines';
     console.debug(fetchLinePositionsUrl);
-    return backendFetchJson(fetchLinePositionsUrl);
+    return backendFetchJson(fetchLinePositionsUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(linesIds),
+    });
 }

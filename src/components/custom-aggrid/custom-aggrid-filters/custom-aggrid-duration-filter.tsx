@@ -8,10 +8,10 @@ import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from
 import { Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
-import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
 import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
+import { CustomAggridFilterParams } from './custom-aggrid-filter.type';
 
 const styles = {
     containerStyle: {

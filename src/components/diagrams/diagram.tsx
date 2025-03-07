@@ -16,8 +16,6 @@ import {
 } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import {
-    DiagramType,
-    useDiagram,
     styles,
     MIN_WIDTH,
     LOADING_WIDTH,
@@ -29,6 +27,8 @@ import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
 import AlertCustomMessageNode from '../utils/alert-custom-message-node';
 import { AppState } from 'redux/reducer';
+import { DiagramType } from './diagram.type';
+import { useDiagram } from './use-diagram';
 
 interface DiagramProps {
     align?: 'left' | 'right' | 'center';

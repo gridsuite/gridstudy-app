@@ -21,14 +21,11 @@ import {
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
     DiagramAdditionalMetadata,
     DiagramSvg,
-    DiagramType,
     MAP_BOTTOM_OFFSET,
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
     NoSvg,
     SldSvg,
     Svg,
-    useDiagram,
-    ViewState,
 } from './diagram-common';
 import { getEstimatedNbVoltageLevels, makeDiagramSorter } from './diagram-utils';
 import { isNodeBuilt, isNodeInNotificationList } from '../graph/util/model-functions';
@@ -48,6 +45,8 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
+import { DiagramType, ViewState } from './diagram.type';
+import { useDiagram } from './use-diagram';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRootNetworkUuid: UUID) => {
@@ -114,13 +113,12 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
         ]
     );
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
-        (voltageLevelsIds: UUID[], depth: number) =>
+        (depth: number) =>
             isNodeBuilt(currentNode)
                 ? getNetworkAreaDiagramUrl(
                       studyUuid,
                       currentNode?.id,
                       currentRootNetworkUuid,
-                      voltageLevelsIds,
                       depth,
                       networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData
                   )
@@ -135,13 +133,17 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
 
     type FetchSvgDataFn = {
         (svgUrl: string | null, svgType: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL): Promise<SldSvg>;
-        (svgUrl: string | null, svgType: DiagramType.NETWORK_AREA_DIAGRAM): Promise<DiagramSvg>;
+        (
+            svgUrl: string | null,
+            svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+            fetchOptions: RequestInit
+        ): Promise<DiagramSvg>;
     };
     // this callback returns a promise
     const fetchSvgData = useCallback<FetchSvgDataFn>(
-        (svgUrl, svgType): any => {
+        (svgUrl, svgType, fetchOptions?: RequestInit): any => {
             if (svgUrl) {
-                return fetchSvg(svgUrl)
+                return fetchSvg(svgUrl, fetchOptions)
                     .then((data: Svg | null) => {
                         if (data !== null) {
                             return {
@@ -228,8 +230,13 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             function createNetworkAreaDiagramView(ids: UUID[] | undefined, state: ViewState | undefined, depth = 0) {
                 console.log('debug', 'createNetworkAreaDiagramView', state);
                 if (ids?.length) {
-                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth);
-                    return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM).then((svg) => {
+                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(depth);
+                    const fetchOptions = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(ids),
+                    };
+                    return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM, fetchOptions).then((svg) => {
                         let nadTitle = '';
                         let substationsIds: UUID[] = [];
                         svg.additionalMetadata?.voltageLevels
@@ -336,7 +343,7 @@ type DiagramView = {
     depth?: number;
     error?: string;
     nodeId?: UUID;
-    rootNetworkId?: UUID;
+    rootNetworkUuid?: UUID; // is it used ?
     additionalMetadata?: any;
     fetchSvg?: () => Promise<Partial<DiagramView>>;
 };
@@ -375,8 +382,8 @@ export function DiagramPane({
     const { openDiagramView, closeDiagramView, closeDiagramViews } = useDiagram();
     const currentNodeRef = useRef<CurrentTreeNode>();
     currentNodeRef.current = currentNode;
-    const currentRootNetworkRef = useRef<UUID>();
-    currentRootNetworkRef.current = currentRootNetworkUuid;
+    const currentRootNetworkUuidRef = useRef<UUID>();
+    currentRootNetworkUuidRef.current = currentRootNetworkUuid;
     const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;
     /**
@@ -834,7 +841,7 @@ export function DiagramPane({
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers['rootNetwork'] !== currentRootNetworkRef.current) {
+            if (studyUpdatedForce.eventData.headers['rootNetwork'] !== currentRootNetworkUuidRef.current) {
                 return;
             }
             if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult') {

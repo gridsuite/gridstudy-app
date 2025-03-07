@@ -54,7 +54,7 @@ export const useEquipmentModification = ({ studyUuid, equipmentType }: UseEquipm
     const [modificationDialog, setModificationDialog] = useState<React.ReactElement | null>(null);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const createDialogWithProps = useCallback(
         (Dialog: React.FC<any>, equipmentId: string) => {

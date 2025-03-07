@@ -9,5 +9,5 @@ export const LineModificationDialogTab = {
     CONNECTIVITY_TAB: 0,
     CHARACTERISTICS_TAB: 1,
     LIMITS_TAB: 2,
-    MEASUREMENTS_TAB: 3,
+    STATE_ESTIMATION_TAB: 3,
 };

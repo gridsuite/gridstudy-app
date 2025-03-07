@@ -9,12 +9,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { equipmentStyles, TagRenderer, TagRendererProps } from '@gridsuite/commons-ui';
 import { IconButton } from '@mui/material';
 import { GpsFixed as GpsFixedIcon, Timeline as TimelineIcon } from '@mui/icons-material';
-import { DiagramType, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from '../diagrams/diagram-common';
+import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from '../diagrams/diagram-common';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { centerOnSubstation, openDiagram } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
 import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
+import { DiagramType } from '../diagrams/diagram.type';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
@@ -28,7 +29,7 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
     const dispatch = useDispatch<AppDispatch>();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const networkAreaDiagramNbVoltageLevels = useSelector((state: AppState) => state.networkAreaDiagramNbVoltageLevels);
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
 
