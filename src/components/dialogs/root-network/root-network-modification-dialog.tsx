@@ -7,7 +7,14 @@
 
 import RootNetworkDialog from './root-network-dialog';
 
-const RootNetworkCreationDialog: React.FC<any> = ({ open, onSave, onClose, titleId, dialogProps }) => {
+const RootNetworkModificationDialog: React.FC<any> = ({
+    open,
+    onSave,
+    onClose,
+    titleId,
+    editableRootNetwork,
+    dialogProps,
+}) => {
     return (
         <RootNetworkDialog
             open={open}
@@ -15,9 +22,10 @@ const RootNetworkCreationDialog: React.FC<any> = ({ open, onSave, onClose, title
             onClose={onClose}
             titleId={titleId}
             dialogProps={dialogProps}
-            isCreationMode={true}
+            editableRootNetwork={editableRootNetwork}
+            isCreationMode={false}
         />
     );
 };
 
-export default RootNetworkCreationDialog;
+export default RootNetworkModificationDialog;
