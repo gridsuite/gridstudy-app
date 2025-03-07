@@ -26,7 +26,7 @@ export interface HvdcAngleDroopActivePowerControlInfo {
     p0: number;
 }
 
-export interface hvdcOperatorActivePowerRange {
+export interface HvdcOperatorActivePowerRange {
     oprFromCS1toCS2: number;
     oprFromCS2toCS1: number;
 }
@@ -37,7 +37,7 @@ export interface VscModificationInfo {
     nominalV: number;
     r: number;
     maxP: number;
-    hvdcOperatorActivePowerRange: hvdcOperatorActivePowerRange;
+    hvdcOperatorActivePowerRange: HvdcOperatorActivePowerRange;
     convertersMode: string;
     activePowerSetpoint: number;
     hvdcAngleDroopActivePowerControl: HvdcAngleDroopActivePowerControlInfo;
@@ -252,6 +252,8 @@ export interface TwoWindingsTransformerModificationInfo {
     p2MeasurementValidity: boolean | null;
     q2MeasurementValue: number | null;
     q2MeasurementValidity: boolean | null;
+    ratioTapChangerToBeEstimated: boolean | null;
+    phaseTapChangerToBeEstimated: boolean | null;
 }
 
 export interface OperationalLimitsGroup {
