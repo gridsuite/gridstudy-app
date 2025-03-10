@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, ReactNode, useCallback, useMemo, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteRenderInputParams,
@@ -155,7 +155,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
         return '';
     }, [intl, filterableEquipmentTypes, selectedGlobalFilters]);
 
-    const getCustomPaper = useCallback((children) => {
+    const getCustomPaper = useCallback((children: ReactNode) => {
         return (
             <SelectableGlobalFilters
                 children={children}
