@@ -13,7 +13,7 @@ function getNodeAliasUrl(studyUuid: UUID, nodeUuid: UUID) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/node-aliases';
 }
 
-export function updateNodeAliases(studyUuid: UUID, nodeUuid: UUID, nodeAliases: NodeAlias[]) {
+export function updateNodeAliases(studyUuid: UUID, nodeUuid: UUID, nodeAliases: NodeAlias[]): Promise<void> {
     console.info(`Update node aliases from node ${nodeUuid} of study ${studyUuid}`);
     const changeUrl = getNodeAliasUrl(studyUuid, nodeUuid);
     console.debug(changeUrl);
