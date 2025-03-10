@@ -69,7 +69,7 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
         onClose();
         const completeData: NodeAlias[] = data.nodesAliases.map((nodeAlias) => {
             const id = nodes.find((node) => node.name === nodeAlias.name)?.id as UUID;
-            return { id: id, name: nodeAlias.name, alias: nodeAlias.alias, referencedId: id };
+            return { id: id, name: nodeAlias.name, alias: nodeAlias.alias };
         });
         setNodeAliases(completeData);
     };
