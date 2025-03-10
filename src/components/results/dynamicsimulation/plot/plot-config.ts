@@ -6,9 +6,10 @@
  */
 
 import { blue, cyan, green, orange, pink, purple, red } from '@mui/material/colors';
+import { Layout } from 'plotly.js';
 
 export const baseColors = [red, orange, blue, green, purple, pink, cyan];
-export const defaultLayout = {
+export const defaultLayout: Partial<Layout> = {
     autosize: true,
     plot_bgcolor: 'rgba(0,0,0,0.05)',
     paper_bgcolor: 'rgba(0,0,0,0.02)',
@@ -22,7 +23,7 @@ export const defaultLayout = {
     xaxis: {
         gridcolor: 'rgba(255,255,255,0.2)',
         griddash: 'dot',
-        ntick: 20,
+        nticks: 20,
         tick0: 0,
         tickprefix: 'X = ',
         ticksuffix: 's',
@@ -31,14 +32,14 @@ export const defaultLayout = {
     yaxis: {
         gridcolor: 'rgba(255,255,255,0.2)',
         griddash: 'dot',
-        ntick: 20,
+        nticks: 20,
         tick0: 0,
         automargin: true,
     },
     yaxis2: {
         gridcolor: 'rgba(255,255,255,0.2)',
         griddash: 'dot',
-        ntick: 20,
+        nticks: 20,
         tick0: 0,
         automargin: true,
         side: 'right',
