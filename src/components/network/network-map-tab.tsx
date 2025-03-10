@@ -333,13 +333,16 @@ export const NetworkMapTab = ({
         setEquipmentMenu({ display: false });
     }
 
-    function handleViewInSpreadsheet(equipmentType: EquipmentType, equipmentId: string) {
-        showInSpreadsheet({
-            equipmentType: equipmentType,
-            equipmentId: equipmentId,
-        });
-        closeEquipmentMenu();
-    }
+    const handleViewInSpreadsheet = useCallback(
+        (equipmentType: EquipmentType, equipmentId: string) => {
+            showInSpreadsheet({
+                equipmentType: equipmentType,
+                equipmentId: equipmentId,
+            });
+            closeEquipmentMenu();
+        },
+        [showInSpreadsheet]
+    );
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType | null, equipmentId: string) => {
