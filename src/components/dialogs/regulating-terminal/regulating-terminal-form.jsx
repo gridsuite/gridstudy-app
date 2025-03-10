@@ -61,11 +61,9 @@ const RegulatingTerminalForm = ({
                 watchVoltageLevelId,
                 true
             ).then((values) => {
-                console.log('XXX equipment options', { watchVoltageLevelId, values });
                 setEquipmentsOptions(values);
             });
         } else {
-            console.log('XXX reset empty equipment options', { watchVoltageLevelId });
             setEquipmentsOptions([]);
         }
     }, [watchVoltageLevelId, voltageLevelOptions, id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
@@ -88,7 +86,6 @@ const RegulatingTerminalForm = ({
                         size="small"
                         // particular outputTransform case for string type when a user clicks outside after editing whatever input
                         outputTransform={(value) => {
-                            console.log('XXX VL ID inputValue', { value });
                             return typeof value === 'string' ? { id: value, label: value } : value;
                         }}
                         forcePopupIcon
@@ -105,7 +102,6 @@ const RegulatingTerminalForm = ({
                             */
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
-                            console.log('XXX options', { options });
                             if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
                                 filtered.push({
                                     id: params.inputValue,
