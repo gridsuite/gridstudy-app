@@ -46,6 +46,7 @@ import { sanitizeString } from '../../../../dialog-utils';
 import { AttributeModification, toModificationOperation } from '../../../../../utils/utils';
 import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 import { ReactiveCapabilityCurvePointsInfos } from '../../../../../../services/network-modification-types';
+import { ConverterStationElementInfos, ConverterStationElementModificationInfos } from './converter-station-type';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 

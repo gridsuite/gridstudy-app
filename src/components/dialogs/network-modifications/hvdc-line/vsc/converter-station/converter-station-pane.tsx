@@ -23,15 +23,13 @@ import { UUID } from 'crypto';
 import { Grid, TextField } from '@mui/material';
 import ReactiveLimitsForm from '../../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
-import {
-    ConverterStationElementModificationInfos,
-    UpdateReactiveCapabilityCurveTable,
-} from './converter-station-utils';
+import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
 import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
+import { ConverterStationElementModificationInfos } from './converter-station-type';
 import ConnectivityForm from '../../../../connectivity/connectivity-form';
 
 interface VscConverterStationPaneProps {
