@@ -820,8 +820,18 @@ export const NetworkMapTab = ({
                     })
                 );
             }
+
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'rootNetworkModified' &&
+                studyUpdatedForce.eventData.headers['rootNetwork'] === currentRootNetworkUuid
+            ) {
+                setInitialized(false);
+                setIsRootNodeGeoDataLoaded(false);
+                dispatch(resetMapEquipment());
+                return;
+            }
         }
-    }, [isInitialized, studyUpdatedForce, currentRootNetworkUuid, reloadMapEquipments, snackError]);
+    }, [isInitialized, studyUpdatedForce, dispatch, currentRootNetworkUuid, reloadMapEquipments, snackError]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
@@ -853,6 +863,7 @@ export const NetworkMapTab = ({
             dispatch(resetMapEquipment());
             return;
         }
+
         if (disabled) {
             return;
         }
@@ -901,6 +912,7 @@ export const NetworkMapTab = ({
         studyUuid,
         currentNode,
         currentRootNetworkUuid,
+        studyUpdatedForce.eventData.headers,
         loadMapEquipments,
         dispatch,
         updateMapEquipmentsAndGeoData,
