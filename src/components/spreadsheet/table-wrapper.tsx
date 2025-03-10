@@ -37,7 +37,6 @@ import { updateTableDefinition } from 'redux/actions';
 import { NodeType } from '../graph/tree-node.type';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { reorderSpreadsheetColumns } from 'services/study-config';
-import { useNodeAliases } from './custom-columns/use-node-aliases';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -105,7 +104,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState<number>(0);
 
-    const { nodeAliases } = useNodeAliases();
+    const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
 
@@ -242,7 +241,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
                 Object.entries(equipments?.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
                     let matchingEquipment = equipments.find((eq) => eq.id === equipment.id);
-                    let nodeAlias = nodeAliases.find((value) => value.id === nodeId);
+                    let nodeAlias = nodesAliases.find((value) => value.id === nodeId);
                     if (nodeAlias !== undefined && matchingEquipment !== undefined) {
                         equipmentToAdd[nodeAlias.alias] = matchingEquipment;
                     }
@@ -265,7 +264,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         disabled,
         equipments,
         tableDefinition?.type,
-        nodeAliases,
+        nodesAliases,
         currentNode.id,
         updateSortConfig,
         filters,

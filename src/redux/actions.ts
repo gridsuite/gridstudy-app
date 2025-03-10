@@ -57,6 +57,7 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
+import type { NodeAlias } from '../components/spreadsheet/custom-columns/node-alias.type';
 
 type MutableUnknownArray = unknown[];
 
@@ -131,6 +132,7 @@ export type AppActions =
     | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
+    | UpdateCustomColumnsNodesAliasesAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction
@@ -187,6 +189,18 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
     return {
         type: REMOVE_NODE_DATA,
         nodesIdToRemove,
+    };
+}
+
+export const UPDATE_CUSTOM_COLUMNS_NODES_ALIASES = 'UPDATE_CUSTOM_COLUMNS_NODES_ALIASES';
+export type UpdateCustomColumnsNodesAliasesAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_NODES_ALIASES>> & {
+    nodesAliases: NodeAlias[];
+};
+
+export function updateCustomColumnsNodesAliases(nodesAliases: NodeAlias[]): UpdateCustomColumnsNodesAliasesAction {
+    return {
+        type: UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
+        nodesAliases: nodesAliases,
     };
 }
 
