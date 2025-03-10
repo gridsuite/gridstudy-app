@@ -57,7 +57,6 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
-import type { NodeAlias } from '../components/spreadsheet/custom-columns/node-alias.type';
 
 type MutableUnknownArray = unknown[];
 

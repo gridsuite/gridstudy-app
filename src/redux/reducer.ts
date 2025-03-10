@@ -286,7 +286,6 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
-import type { NodeAlias } from '../components/spreadsheet/custom-columns/node-alias.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -581,8 +580,6 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUS]: emptySpreadsheetEquipmentsByNodes,
     [EQUIPMENT_TYPES.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
 };
-
-const initialCustomColumnsNodesAliases: NodeAlias[] = [];
 
 export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
