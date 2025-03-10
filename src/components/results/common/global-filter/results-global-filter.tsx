@@ -38,6 +38,7 @@ import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import SelectableGlobalFilters from './selectable-global-filters';
 import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 
 const recentFilter: string = 'recent';
 
@@ -307,7 +308,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
             {warningEquipmentTypeMessage && (
                 <Tooltip
                     title={warningEquipmentTypeMessage}
-                    placement="bottom-start"
+                    placement="right"
                     arrow
                     PopperProps={{
                         modifiers: [
@@ -320,10 +321,11 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                         ],
                     }}
                 >
-                    <WarningAmberRounded color="warning" fontSize="large" />
+                    <IconButton>
+                        <WarningAmberRounded color="warning" fontSize="large" />
+                    </IconButton>
                 </Tooltip>
             )}
-
             <DirectoryItemSelector
                 open={directoryItemSelectorOpen}
                 onClose={addSelectedFilters}
