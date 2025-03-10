@@ -19,12 +19,12 @@ export const useNodeAliases = () => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const nodeAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
 
-    const { snackError } = useSnackMessage();
     const dispatch = useDispatch<AppDispatch>();
+    const { snackError } = useSnackMessage();
 
     useEffect(() => {
-        if (currentNode?.id) {
-            getNodeAliases(studyUuid, currentNode?.id)
+        if (!!studyUuid && !!currentNode?.id) {
+            getNodeAliases(studyUuid, currentNode.id)
                 .then((_nodeAliases) => dispatch(updateCustomColumnsNodesAliases(_nodeAliases)))
                 .catch((error) => {
                     dispatch(updateCustomColumnsNodesAliases([]));
@@ -33,13 +33,15 @@ export const useNodeAliases = () => {
                         headerId: 'nodeAliasesRetrievingError',
                     });
                 });
+        } else {
+            dispatch(updateCustomColumnsNodesAliases([]));
         }
     }, [currentNode?.id, dispatch, snackError, studyUuid]);
 
     const setNodeAliases = useCallback(
         (newNodeAliases: NodeAlias[]) => {
-            if (currentNode?.id) {
-                updateNodeAliases(studyUuid, currentNode?.id, newNodeAliases)
+            if (!!studyUuid && !!currentNode?.id) {
+                updateNodeAliases(studyUuid, currentNode.id, newNodeAliases)
                     .then((r) => dispatch(updateCustomColumnsNodesAliases(newNodeAliases)))
                     .catch((error) =>
                         snackError({

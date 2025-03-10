@@ -9,11 +9,11 @@ import { backendFetch, backendFetchJson } from '../utils';
 import { getStudyUrlWithNodeUuid } from './index';
 import { NodeAlias } from '../../components/spreadsheet/custom-columns/node-alias.type';
 
-function getNodeAliasUrl(studyUuid: UUID | null | undefined, nodeUuid: string | undefined) {
+function getNodeAliasUrl(studyUuid: UUID, nodeUuid: UUID) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/node-aliases';
 }
 
-export function updateNodeAliases(studyUuid: UUID | null, nodeUuid: UUID, nodeAliases: NodeAlias[]) {
+export function updateNodeAliases(studyUuid: UUID, nodeUuid: UUID, nodeAliases: NodeAlias[]) {
     console.info(`Update node aliases from node ${nodeUuid} of study ${studyUuid}`);
     const changeUrl = getNodeAliasUrl(studyUuid, nodeUuid);
     console.debug(changeUrl);
@@ -24,7 +24,7 @@ export function updateNodeAliases(studyUuid: UUID | null, nodeUuid: UUID, nodeAl
     });
 }
 
-export async function getNodeAliases(studyUuid: UUID | null, nodeUuid: UUID): Promise<NodeAlias[]> {
+export async function getNodeAliases(studyUuid: UUID, nodeUuid: UUID): Promise<NodeAlias[]> {
     console.info(`Get nodes aliases from node ${nodeUuid} of study ${studyUuid}`);
     const url = `${getNodeAliasUrl(studyUuid, nodeUuid)}`;
     console.debug(url);
