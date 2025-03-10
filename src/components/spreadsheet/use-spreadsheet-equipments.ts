@@ -26,7 +26,6 @@ import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
-import { useNodeAliases } from './custom-columns/use-node-aliases';
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 

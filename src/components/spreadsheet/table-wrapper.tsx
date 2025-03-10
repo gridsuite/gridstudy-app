@@ -37,7 +37,6 @@ import { updateTableDefinition } from 'redux/actions';
 import { NodeType } from '../graph/tree-node.type';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { reorderSpreadsheetColumns } from 'services/study-config';
-import { useNodeAliases } from './custom-columns/use-node-aliases';
 
 const styles = {
     table: (theme: Theme) => ({
