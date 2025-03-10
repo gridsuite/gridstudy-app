@@ -73,6 +73,7 @@ import {
     LOGS_FILTER,
     LogsFilterAction,
     MAP_DATA_LOADING,
+    MAP_MISSING_DATA_LOADED,
     MAP_EQUIPMENTS_CREATED,
     MAP_EQUIPMENTS_INITIALIZED,
     MapDataLoadingAction,
@@ -190,6 +191,7 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    MapMissingDataLoadingAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -476,6 +478,7 @@ export interface AppState extends CommonStoreState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
+    mapMissingDataLoading: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
@@ -629,6 +632,7 @@ const initialState: AppState = {
     // @ts-expect-error TODO can't have empty eventData here
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
+    mapMissingDataLoading: false,
     fullScreenDiagram: null,
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
@@ -1031,6 +1035,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(MAP_DATA_LOADING, (state, action: MapDataLoadingAction) => {
         state.mapDataLoading = action.mapDataLoading;
+    });
+
+    builder.addCase(MAP_MISSING_DATA_LOADED, (state, action: MapMissingDataLoadingAction) => {
+        state.mapMissingDataLoading = action.mapMissingDataLoading;
     });
 
     builder.addCase(SELECT_THEME, (state, action: SelectThemeAction) => {

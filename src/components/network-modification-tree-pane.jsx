@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
@@ -44,6 +44,8 @@ import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/ind
 import RestoreNodesDialog from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 import { StudyDisplayMode, CopyType, UpdateType } from './network-modification.type';
+import WaitingLoader from './utils/waiting-loader';
+import { isNodeBuilt } from './graph/util/model-functions';
 
 const styles = {
     container: {
@@ -150,7 +152,13 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
     const width = useStore((state) => state.width);
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
+    const reloadMap = useSelector((state) => state.reloadMap);
+    const mapMissingDataLoading = useSelector((state) => state.mapMissingDataLoading);
 
+    const isMissingDataloading = useMemo(
+        () => mapMissingDataLoading || reloadMap & !isNodeBuilt(currentNode),
+        [mapMissingDataLoading, reloadMap, currentNode]
+    );
     const updateNodes = useCallback(
         (updatedNodesIds) => {
             Promise.all(
@@ -553,6 +561,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     );
     return (
         <>
+            <WaitingLoader message={'LoadingRemoteData'} loading={isMissingDataloading} />
             <Box sx={styles.container}>
                 <NetworkModificationTree
                     onNodeContextMenu={onNodeContextMenu}
