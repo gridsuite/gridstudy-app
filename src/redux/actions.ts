@@ -1045,7 +1045,7 @@ export function setLoadflowResultFilter(
     filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD],
     loadflowResultFilter: FilterConfig[]
 ): LoadflowResultFilterAction {
-    return filtrableEquipmentTypes{
+    return {
         type: LOADFLOW_RESULT_FILTER,
         filterTab: filterTab,
         [LOADFLOW_RESULT_STORE_FIELD]: loadflowResultFilter,

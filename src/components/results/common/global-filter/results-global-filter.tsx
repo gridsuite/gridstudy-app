@@ -70,7 +70,6 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
         ])
     );
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
-    const [selectedFiltersElements, setSelectedFiltersElements] = useState<UUID[]>([]);
     const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>([]);
 
     const getOptionLabel = useCallback(
@@ -122,7 +121,6 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                 handleChange([...selectedGlobalFilters, ...newlySelectedFilters]);
 
                 setDirectoryItemSelectorOpen(false);
-                setSelectedFiltersElements([]);
             });
         },
         [handleChange, selectedGlobalFilters]
@@ -348,9 +346,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                 open={directoryItemSelectorOpen}
                 onClose={addSelectedFilters}
                 types={[ElementType.FILTER]}
-                equipmentTypes={filterableEquipmentTypes}
                 title={intl.formatMessage({ id: 'Filters' })}
-                selected={selectedFiltersElements}
                 multiSelect
             />
         </>
