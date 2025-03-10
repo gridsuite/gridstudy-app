@@ -6,14 +6,13 @@
  */
 
 import { Grid } from '@mui/material';
-import { ConnectivityForm } from './connectivity-form';
 import { CONNECTIVITY, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
-import { FunctionComponent } from 'react';
 import useVoltageLevelsListInfos from '../../../hooks/use-voltage-levels-list-infos';
 import { CurrentTreeNode } from '../../../redux/reducer';
 import { UUID } from 'crypto';
 import GridSection from '../commons/grid-section';
 import GridItem from '../commons/grid-item';
+import ConnectivityForm from './connectivity-form';
 
 interface BranchConnectivityFormProps {
     currentNode: CurrentTreeNode;
@@ -23,13 +22,13 @@ interface BranchConnectivityFormProps {
     previousValues?: any;
 }
 
-const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = ({
+export default function BranchConnectivityForm({
     currentNode,
     studyUuid,
     currentRootNetworkUuid,
     isModification = false,
     previousValues,
-}) => {
+}: Readonly<BranchConnectivityFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
     const id1 = `${CONNECTIVITY}.${CONNECTIVITY_1}`;
     const id2 = `${CONNECTIVITY}.${CONNECTIVITY_2}`;
@@ -42,7 +41,10 @@ const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = (
             currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
+            withDirectionsInfos={false}
             isEquipmentModification={isModification}
+            onVoltageLevelChangeCallback={undefined}
+            voltageLevelSelectLabel={undefined}
             previousValues={{
                 connectablePosition: previousValues?.connectablePosition1,
                 terminalConnected: previousValues?.terminal1Connected,
@@ -58,11 +60,15 @@ const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = (
             currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
+            withDirectionsInfos={false}
             isEquipmentModification={isModification}
+            onVoltageLevelChangeCallback={undefined}
+            voltageLevelSelectLabel={undefined}
             previousValues={{
                 connectablePosition: previousValues?.connectablePosition2,
                 terminalConnected: previousValues?.terminal2Connected,
             }}
+            newBusOrBusbarSectionOptions={undefined}
         />
     );
 
@@ -78,6 +84,4 @@ const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = (
             </Grid>
         </>
     );
-};
-
-export default BranchConnectivityForm;
+}

@@ -54,7 +54,7 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { modifyVsc } from 'services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
-import { VscModificationInfo } from 'services/network-modification-types';
+import { ReactiveCapabilityCurvePointsInfos, VscModificationInfo } from 'services/network-modification-types';
 import {
     REMOVE,
     setCurrentReactiveCapabilityCurveTable,
@@ -69,7 +69,6 @@ import {
     toModificationProperties,
 } from '../../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
-import { ReactiveCapabilityCurvePointsData } from '../converter-station/converter-station-type';
 
 const formSchema = yup
     .object()
@@ -294,7 +293,7 @@ const VscModificationDialog: React.FC<any> = ({
     };
 
     const updateConverterStationCapabilityCurveTable = (
-        newRccValues: ReactiveCapabilityCurvePointsData[] | undefined,
+        newRccValues: ReactiveCapabilityCurvePointsInfos[] | undefined,
         action: string,
         index: number,
         previousValue: VscModificationInfo | null

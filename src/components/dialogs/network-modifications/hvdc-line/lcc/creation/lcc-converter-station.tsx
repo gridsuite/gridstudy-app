@@ -16,13 +16,13 @@ import {
 import { percentageTextField } from '../../../../dialog-utils';
 import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { UUID } from 'crypto';
-import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 
 import FiltersShuntCompensatorTable from './filters-shunt-compensator-table';
+import ConnectivityForm from '../../../../connectivity/connectivity-form';
 
 interface LccConverterStationProps {
     id: string;
@@ -53,7 +53,9 @@ export default function LccConverterStation({
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
+            isEquipmentModification={false}
             previousValues={undefined}
+            withDirectionsInfos={false}
         />
     );
 

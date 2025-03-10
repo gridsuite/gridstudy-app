@@ -8,7 +8,7 @@
 import { Grid } from '@mui/material';
 import { MicroSusceptanceAdornment, OhmAdornment } from '../../../dialog-utils';
 import { convertInputValue, FieldType, FloatInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form.js';
 import {
     B1,
     B2,

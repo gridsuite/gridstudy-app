@@ -5,21 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Popper } from '@mui/material';
+import { FilterOptionsState, Grid, Popper } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { EQUIPMENT, ID, TYPE, VOLTAGE_LEVEL } from 'components/utils/field-constants';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, Identifiable } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';
+import { UUID } from 'crypto';
+import { GridDirection } from '@mui/material/Grid/Grid';
+import { Option } from '@gridsuite/commons-ui/dist/utils/types/types';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
 const filter = createFilterOptions();
-
-export const REGULATING_VOLTAGE_LEVEL = 'regulating-voltage-level';
-export const REGULATING_EQUIPMENT = 'regulating-equipment';
 
 // Specific Popper component to be used with Autocomplete
 // This allows the popper to fit its content, which is not the case by default
@@ -28,18 +27,31 @@ const FittingPopper = (props) => {
     return <Popper {...otherProps} placement="bottom-start" />;
 };
 
-const RegulatingTerminalForm = ({
+interface RegulatingTerminalFormProps {
+    id: string;
+    direction?: GridDirection;
+    disabled: boolean;
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    voltageLevelOptions: Option[];
+    equipmentSectionTypeDefaultValue?: string | null;
+    previousRegulatingTerminalValue?: string | null;
+    previousEquipmentSectionTypeValue?: string | null;
+}
+
+export default function RegulatingTerminalForm({
     id, // id that has to be defined to determine it's parent object within the form
     direction,
     disabled = false,
     studyUuid,
     currentNodeUuid,
     currentRootNetworkUuid,
-    voltageLevelOptions = [],
+    voltageLevelOptions,
     equipmentSectionTypeDefaultValue,
     previousRegulatingTerminalValue,
     previousEquipmentSectionTypeValue,
-}) => {
+}: Readonly<RegulatingTerminalFormProps>) {
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
     const { setValue } = useFormContext();
 
@@ -88,9 +100,9 @@ const RegulatingTerminalForm = ({
                             disabled={disabled}
                             id="voltage-level"
                             options={voltageLevelOptions}
-                            getOptionLabel={(vl) => (vl?.[ID] ? vl?.[ID] : '')}
+                            getOptionLabel={(vl) => vl?.id ?? ''}
                             onChangeCallback={resetEquipment}
-                            previousValue={previousRegulatingTerminalValue}
+                            previousValue={previousRegulatingTerminalValue ?? undefined}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                             */
@@ -98,7 +110,7 @@ const RegulatingTerminalForm = ({
                                 const filtered = filter(options, params);
                                 if (
                                     params.inputValue !== '' &&
-                                    !options.find((opt) => opt?.[ID] === params.inputValue)
+                                    !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
                                 ) {
                                     filtered.push({
                                         inputValue: params.inputValue,
@@ -135,7 +147,7 @@ const RegulatingTerminalForm = ({
                             selectOnFocus
                             id="equipment"
                             disabled={!watchVoltageLevelId || disabled}
-                            previousValue={previousEquipmentSectionTypeValue}
+                            previousValue={previousEquipmentSectionTypeValue ?? undefined}
                             options={equipmentsOptions}
                             getOptionLabel={(equipment) => {
                                 return equipment === ''
@@ -164,14 +176,4 @@ const RegulatingTerminalForm = ({
             </Grid>
         </>
     );
-};
-
-RegulatingTerminalForm.propTypes = {
-    id: PropTypes.string.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    currentRootNetworkUuid: PropTypes.string.isRequired,
-    direction: PropTypes.string,
-    disabled: PropTypes.bool,
-};
-
-export default RegulatingTerminalForm;
+}

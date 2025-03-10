@@ -25,11 +25,23 @@ import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
-import { AutocompleteInput, IntegerInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    Identifiable,
+    IntegerInput,
+    Option,
+    SelectInput,
+    SwitchInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from 'services/study/network';
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input';
 import { areIdsEqual, getObjectId } from '../../utils/utils';
 import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } from './connectivity-form-utils';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../redux/reducer';
+import { ConnectablePositionFormInfos } from './connectivity.type';
+import { GridDirection } from '@mui/material/Grid/Grid';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -48,7 +60,24 @@ import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } fro
  * @param previousValues previous values of connectivity form's fields
  * @returns JSX.Element
  */
-export const ConnectivityForm = ({
+
+export interface ConnectivityFormProps {
+    id: string;
+    voltageLevelSelectLabel?: string;
+    direction?: GridDirection;
+    withDirectionsInfos: boolean;
+    withPosition: boolean;
+    voltageLevelOptions?: Option[];
+    newBusOrBusbarSectionOptions?: [];
+    studyUuid: UUID;
+    currentRootNetworkUuid?: UUID | null;
+    currentNode?: CurrentTreeNode | null;
+    onVoltageLevelChangeCallback?: () => void;
+    isEquipmentModification: boolean;
+    previousValues?: { connectablePosition?: ConnectablePositionFormInfos; terminalConnected?: boolean | null };
+}
+
+export default function ConnectivityForm({
     id = CONNECTIVITY,
     voltageLevelSelectLabel = 'VOLTAGE_LEVEL',
     direction = 'row',
@@ -62,7 +91,7 @@ export const ConnectivityForm = ({
     onVoltageLevelChangeCallback = undefined,
     isEquipmentModification = false,
     previousValues,
-}) => {
+}: Readonly<ConnectivityFormProps>) {
     const currentNodeUuid = currentNode?.id;
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
 
@@ -81,7 +110,9 @@ export const ConnectivityForm = ({
             return;
         }
         if (watchVoltageLevelId) {
-            const existingVoltageLevelOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
+            const existingVoltageLevelOption = voltageLevelOptions?.find(
+                (option) => option?.id === watchVoltageLevelId
+            );
             if (existingVoltageLevelOption) {
                 fetchBusesOrBusbarSectionsForVoltageLevel(
                     studyUuid,
@@ -134,7 +165,7 @@ export const ConnectivityForm = ({
         <AutocompleteInput
             name={`${id}.${VOLTAGE_LEVEL}.${ID}`}
             label={voltageLevelSelectLabel}
-            options={voltageLevelOptions}
+            options={voltageLevelOptions ?? []}
             disabled={isEquipmentModification}
             size={'small'}
         />
@@ -206,7 +237,7 @@ export const ConnectivityForm = ({
         <TextInput
             name={`${id}.${CONNECTION_NAME}`}
             label="ConnectionName"
-            previousValue={isEquipmentModification ? previousValues?.connectablePosition?.connectionName : null}
+            previousValue={isEquipmentModification ? previousValues?.connectablePosition?.connectionName : undefined}
         />
     );
 
@@ -317,4 +348,4 @@ export const ConnectivityForm = ({
             />
         </>
     );
-};
+}

@@ -34,7 +34,7 @@ import {
     getConnectivityData,
     getConnectivityWithoutPositionEmptyFormData,
     getConnectivityWithoutPositionValidationSchema,
-} from '../../connectivity/connectivity-form-utils';
+} from '../../connectivity/connectivity-form-utils.js';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { linesAttachToSplitLines } from '../../../../services/study/network-modifications';

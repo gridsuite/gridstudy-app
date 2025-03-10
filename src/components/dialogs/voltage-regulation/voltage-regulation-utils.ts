@@ -13,7 +13,7 @@ export const getReactivePowerSetPointSchema = (isEquipmentModification = false) 
         .number()
         .nullable()
         .when([VOLTAGE_REGULATION], {
-            is: (value) => !isEquipmentModification && !value,
+            is: (value: number) => !isEquipmentModification && !value,
             then: (schema) => schema.required(),
         });
 

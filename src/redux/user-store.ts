@@ -16,7 +16,7 @@
     at src/components/utils/inputs/input-hooks.jsx:41:1
     at src/components/dialogs/commons/modification-dialog-content.jsx:19:1
     at src/components/dialogs/commons/modificationDialog.jsx:12:1
-    at src/components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog.jsx:23:1
+    at src/components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog.tsx:23:1
     at src/components/spreadsheet/utils/equipment-table-editors.jsx:25:1
     at src/components/spreadsheet/utils/config-tables.js:11:1
     at src/redux/reducer.ts:192:1

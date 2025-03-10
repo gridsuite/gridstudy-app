@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
-import { toModificationOperation, toModificationUnsetOperation } from '../../components/utils/utils';
+import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { toModificationOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
@@ -20,8 +20,8 @@ import {
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
-    GeneratorCreationInfo,
-    GeneratorModificationInfo,
+    GeneratorCreationInfos,
+    GeneratorModificationInfos,
     LCCCreationInfo,
     LineCreationInfo,
     LineModificationInfo,
@@ -42,6 +42,7 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
+
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
@@ -518,149 +519,50 @@ export function modifyLoad({
 }
 
 export function modifyGenerator({
+    generatorModificationInfos,
     studyUuid,
     nodeUuid,
-    modificationUuid = undefined,
-    generatorId,
-    name,
-    energySource,
-    minP,
-    maxP,
-    ratedS = undefined,
-    targetP,
-    targetQ,
-    voltageRegulation,
-    targetV,
-    voltageLevelId = undefined,
-    busOrBusbarSectionId = undefined,
-    connectionName = undefined,
-    connectionDirection = undefined,
-    connectionPosition = undefined,
-    terminalConnected = undefined,
-    qPercent,
-    plannedActivePowerSetPoint,
-    marginalCost,
-    plannedOutageRate,
-    forcedOutageRate,
-    directTransX,
-    stepUpTransformerX,
-    voltageRegulationType,
-    regulatingTerminalId,
-    regulatingTerminalType,
-    regulatingTerminalVlId,
-    isReactiveCapabilityCurveOn = undefined,
-    participate,
-    droop,
-    maxQ = undefined,
-    minQ = undefined,
-    reactiveCapabilityCurve = undefined,
-    properties,
-}: GeneratorModificationInfo) {
+}: {
+    generatorModificationInfos: GeneratorModificationInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+}) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
-        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+    if (generatorModificationInfos.uuid) {
+        modificationUrl += '/' + encodeURIComponent(generatorModificationInfos.uuid);
         console.info('Updating generator modification');
     } else {
         console.info('Creating generator modification');
     }
-
-    const generatorModification = {
-        type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
-        equipmentId: generatorId,
-        equipmentName: toModificationOperation(name),
-        energySource: toModificationOperation(energySource),
-        minP: toModificationOperation(minP),
-        maxP: toModificationOperation(maxP),
-        ratedS: toModificationOperation(ratedS),
-        targetP: toModificationOperation(targetP),
-        targetQ: toModificationUnsetOperation(targetQ),
-        voltageRegulationOn: toModificationOperation(voltageRegulation),
-        targetV: toModificationUnsetOperation(targetV),
-        voltageLevelId: toModificationOperation(voltageLevelId),
-        busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
-        connectionName: toModificationOperation(connectionName),
-        connectionDirection: toModificationOperation(connectionDirection),
-        connectionPosition: toModificationOperation(connectionPosition),
-        terminalConnected: toModificationOperation(terminalConnected),
-        qPercent: toModificationOperation(qPercent),
-        plannedActivePowerSetPoint: toModificationOperation(plannedActivePowerSetPoint),
-        marginalCost: toModificationOperation(marginalCost),
-        plannedOutageRate: toModificationOperation(plannedOutageRate),
-        forcedOutageRate: toModificationOperation(forcedOutageRate),
-        directTransX: toModificationOperation(directTransX),
-        stepUpTransformerX: toModificationOperation(stepUpTransformerX),
-        voltageRegulationType: toModificationOperation(voltageRegulationType),
-        regulatingTerminalId: toModificationOperation(regulatingTerminalId),
-        regulatingTerminalType: toModificationOperation(regulatingTerminalType),
-        regulatingTerminalVlId: toModificationOperation(regulatingTerminalVlId),
-        reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
-        participate: toModificationOperation(participate),
-        droop: toModificationOperation(droop),
-        maxQ: toModificationOperation(maxQ),
-        minQ: toModificationOperation(minQ),
-        reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
-        properties,
-    };
+    const isUpdate = !!generatorModificationInfos.uuid;
     return backendFetchText(modificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorModification),
+        body: JSON.stringify(generatorModificationInfos),
     });
 }
 
 export function createGenerator({
+    generatorCreationInfos,
     studyUuid,
     nodeUuid,
-    id,
-    name,
-    energySource,
-    minP,
-    maxP,
-    ratedS,
-    targetP,
-    targetQ,
-    voltageRegulationOn,
-    targetV,
-    qPercent,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    isUpdate = false,
-    modificationUuid,
-    plannedActivePowerSetPoint,
-    marginalCost,
-    plannedOutageRate,
-    forcedOutageRate,
-    directTransX,
-    stepUpTransformerX,
-    regulatingTerminalId,
-    regulatingTerminalType,
-    regulatingTerminalVlId,
-    isReactiveCapabilityCurveOn,
-    participate,
-    droop,
-    maxQ,
-    minQ,
-    reactiveCapabilityCurve,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties,
-}: GeneratorCreationInfo) {
+}: {
+    generatorCreationInfos: GeneratorCreationInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+}) {
     let createGeneratorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (isUpdate) {
-        createGeneratorUrl += '/' + encodeURIComponent(modificationUuid);
+    if (generatorCreationInfos.uuid) {
+        createGeneratorUrl += '/' + encodeURIComponent(generatorCreationInfos.uuid);
         console.info('Updating generator creation');
     } else {
         console.info('Creating generator creation');
     }
-
+    const isUpdate = !!generatorCreationInfos.uuid;
     return backendFetchText(createGeneratorUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -668,40 +570,7 @@ export function createGenerator({
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPES.GENERATOR_CREATION.type,
-            equipmentId: id,
-            equipmentName: name,
-            energySource: energySource,
-            minP: minP,
-            maxP: maxP,
-            ratedS: ratedS,
-            targetP: targetP,
-            targetQ: targetQ,
-            voltageRegulationOn: voltageRegulationOn,
-            targetV: targetV,
-            qPercent: qPercent,
-            voltageLevelId: voltageLevelId,
-            busOrBusbarSectionId: busOrBusbarSectionId,
-            plannedActivePowerSetPoint: plannedActivePowerSetPoint,
-            marginalCost: marginalCost,
-            plannedOutageRate: plannedOutageRate,
-            forcedOutageRate: forcedOutageRate,
-            directTransX: directTransX,
-            stepUpTransformerX: stepUpTransformerX,
-            regulatingTerminalId: regulatingTerminalId,
-            regulatingTerminalType: regulatingTerminalType,
-            regulatingTerminalVlId: regulatingTerminalVlId,
-            reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-            participate: participate,
-            droop: droop,
-            maxQ: maxQ,
-            minQ: minQ,
-            connectionDirection: connectionDirection,
-            connectionName: connectionName,
-            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
-            connectionPosition: connectionPosition,
-            terminalConnected: terminalConnected,
-            properties,
+            generatorCreationInfos,
         }),
     });
 }
