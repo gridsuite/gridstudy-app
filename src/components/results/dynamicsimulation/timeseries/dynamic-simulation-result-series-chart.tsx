@@ -5,33 +5,32 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import PlotlySeriesChart from '../plot/plotly-series-chart';
-import { Card, CardContent, CardHeader, ToggleButton, Tooltip, Typography } from '@mui/material';
+import { Card, CardContent, CardHeader, Theme, ToggleButton, Tooltip, Typography } from '@mui/material';
 import { memo, useCallback, useState } from 'react';
 import TooltipIconButton from '../common/tooltip-icon-button';
 import { lighten } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
-import { SeriesType } from '../plot/plot-types';
+import { Series } from '../plot/plot-types';
 import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
-    plotScaleButton: (theme) => ({
+    plotScaleButton: (theme: Theme) => ({
         marginRight: theme.spacing(2),
         border: 'none',
         borderRadius: '50%',
     }),
-    cardActive: (theme) => ({
+    cardActive: (theme: Theme) => ({
         border: 'solid',
         borderColor: lighten(theme.palette.primary.main, 0.2),
     }),
     card: {
         height: '100%',
     },
-    cardHeader: (theme) => ({
+    cardHeader: (theme: Theme) => ({
         backgroundColor: lighten(theme.palette.background.paper, 0.2),
         '&:hover': {
             background: lighten(theme.palette.background.paper, 0.3),
@@ -45,7 +44,20 @@ const styles = {
     },
 };
 
-const DynamicSimulationResultSeriesChart = ({
+export type DynamicSimulationResultSeriesChartProps = {
+    id: string;
+    groupId: string;
+    index: number;
+    selected: boolean;
+    leftSeries: Series[];
+    rightSeries: Series[];
+    onClose: (index: number) => void;
+    onSelect: (index: number) => void;
+    sync: boolean;
+    onPlotScale: (plotId: string, plotScale: boolean) => void;
+};
+
+function DynamicSimulationResultSeriesChart({
     id,
     groupId,
     index,
@@ -56,14 +68,14 @@ const DynamicSimulationResultSeriesChart = ({
     onSelect,
     sync,
     onPlotScale = () => {},
-}) => {
+}: Readonly<DynamicSimulationResultSeriesChartProps>) {
     const intl = useIntl();
 
     // button options switch scale plot / restore plot
-    const [plotScale, setPlotScale] = useState(false);
+    const [plotScale, setPlotScale] = useState<boolean>(false);
 
     const handlePlotScale = useCallback(
-        (plotId) => {
+        (plotId: string) => {
             setPlotScale((prev) => {
                 return !prev;
             });
@@ -75,7 +87,7 @@ const DynamicSimulationResultSeriesChart = ({
     );
 
     return (
-        <Card sx={mergeSx(selected && styles.cardActive, styles.card)} onClick={() => onSelect(index)}>
+        <Card sx={mergeSx(selected ? styles.cardActive : undefined, styles.card)} onClick={() => onSelect(index)}>
             <CardHeader
                 sx={styles.cardHeader}
                 avatar={
@@ -114,7 +126,7 @@ const DynamicSimulationResultSeriesChart = ({
                         </ToggleButton>
                         {!plotScale && (
                             <TooltipIconButton
-                                toolTip={intl.formatMessage({
+                                tooltip={intl.formatMessage({
                                     id: 'DynamicSimulationCloseGraph',
                                 })}
                                 onClick={() => onClose(index)}
@@ -135,7 +147,6 @@ const DynamicSimulationResultSeriesChart = ({
                 <PlotlySeriesChart
                     id={id}
                     groupId={groupId}
-                    index={index}
                     leftSeries={leftSeries}
                     rightSeries={rightSeries}
                     sync={sync}
@@ -143,18 +154,6 @@ const DynamicSimulationResultSeriesChart = ({
             </CardContent>
         </Card>
     );
-};
-
-DynamicSimulationResultSeriesChart.propTypes = {
-    id: PropTypes.string.isRequired,
-    groupId: PropTypes.string.isRequired,
-    index: PropTypes.number.isRequired,
-    selected: PropTypes.bool.isRequired,
-    leftSeries: SeriesType,
-    rightSeries: SeriesType,
-    onClose: PropTypes.func.isRequired,
-    onSelect: PropTypes.func.isRequired,
-    sync: PropTypes.bool,
-};
+}
 
 export default memo(DynamicSimulationResultSeriesChart);
