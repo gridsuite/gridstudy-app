@@ -53,7 +53,7 @@ export default function CustomColumnNodesDialog({
     const intl = useIntl();
 
     const formMethods = useForm<CustomColumnNodesForm>({
-        defaultValues: toCustomColumnNodesDialogFormValues(nodeAliases),
+        defaultValues: initialCustomColumnNodesForm,
         resolver: yupResolver(customColumnNodesFormSchema),
     });
 
@@ -92,8 +92,6 @@ export default function CustomColumnNodesDialog({
                     })
                 )
             );
-        } else {
-            reset(initialCustomColumnNodesForm);
         }
     }, [open, nodeAliases, reset]);
 
