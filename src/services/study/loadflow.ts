@@ -8,8 +8,8 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { GlobalFilter } from '../../components/results/loadflow/load-flow-result-tab';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
+import { GlobalFilter } from '../../components/results/loadflow/load-flow-result.type';
 
 interface QueryParams {
     sort?: SortConfig[];

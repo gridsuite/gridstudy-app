@@ -29,6 +29,7 @@ import { StateEstimationResultTab } from './results/stateestimation/state-estima
 import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysis/dynamic-security-analysis-result-tab';
 import { usePrevious } from '@gridsuite/commons-ui';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import { IService } from './result-view-tab.type';
 
 const styles = {
     table: {
@@ -51,13 +52,6 @@ interface IResultViewTabProps {
     openVoltageLevelDiagram: (voltageLevelId: string) => void;
     disabled: boolean;
     view: string;
-}
-
-export interface IService {
-    id: string;
-    computingType: ComputingType[];
-    displayed: boolean;
-    renderResult: React.ReactNode;
 }
 
 /**
