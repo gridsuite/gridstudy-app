@@ -159,7 +159,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             formProps={{ fullWidth: true }}
                         />
                     </Grid>
-                    <RootNetworkCaseSelection onSelectCase={onSelectCase} />
+                    <RootNetworkCaseSelection isModification={!!editableRootNetwork} onSelectCase={onSelectCase} />
                     <Grid item>
                         <UniqueCheckNameInput
                             name={TAG}

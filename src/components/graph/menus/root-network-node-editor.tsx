@@ -137,7 +137,7 @@ const RootNetworkNodeEditor = () => {
     const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
 
     const [rootNetworkCreationDialogOpen, setRootNetworkCreationDialogOpen] = useState(false);
-    const [rootNetworkUpdateDialogOpen, setRootNetworkUpdateDialogOpen] = useState(false);
+    const [rootNetworkModificationDialogOpen, setRootNetworkModificationDialogOpen] = useState(false);
     const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
@@ -262,7 +262,7 @@ const RootNetworkNodeEditor = () => {
                     }),
                 }}
                 onItemClick={(rootNetwork) => {
-                    setRootNetworkUpdateDialogOpen(true); // Open the dialog
+                    setRootNetworkModificationDialogOpen(true);
                     setEditedRootNetwork(rootNetwork);
                 }}
                 selectedItems={selectedItems}
@@ -317,12 +317,10 @@ const RootNetworkNodeEditor = () => {
         return (
             <RootNetworkDialog
                 editableRootNetwork={editedRootNetwork}
-                open={rootNetworkUpdateDialogOpen}
-                onClose={() => setRootNetworkUpdateDialogOpen(false)}
+                open={rootNetworkModificationDialogOpen}
+                onClose={() => setRootNetworkModificationDialogOpen(false)}
                 onSave={doUpdateRootNetwork}
                 titleId={'updateNetwork'}
-
-                
             />
         );
     };
@@ -375,7 +373,6 @@ const RootNetworkNodeEditor = () => {
                 });
             });
     };
-    
 
     const doUpdateRootNetwork = async ({ name, tag, caseName, caseId }: FormData) => {
         if (!studyUuid) {
@@ -402,7 +399,6 @@ const RootNetworkNodeEditor = () => {
             );
         } catch (error) {
             snackError({
-                
                 headerId: 'updateRootNetworksError',
             });
         }
@@ -454,7 +450,7 @@ const RootNetworkNodeEditor = () => {
                 )}
             </Toolbar>
             {rootNetworkCreationDialogOpen && renderRootNetworkCreationDialog()}
-            {rootNetworkUpdateDialogOpen && renderRootNetworkModificationDialog()}
+            {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
             {renderRootNetworksListTitle()}
 
             {renderRootNetworksList()}
