@@ -389,7 +389,7 @@ export function GeneratorModificationDialog({
                 ratedS: toModificationOperation(generator[RATED_NOMINAL_POWER]),
                 targetP: toModificationOperation(generator[ACTIVE_POWER_SET_POINT]),
                 targetQ: toModificationUnsetOperation(generator[REACTIVE_POWER_SET_POINT]),
-                voltageRegulation: toModificationOperation(generator[VOLTAGE_REGULATION]),
+                voltageRegulationOn: toModificationOperation(generator[VOLTAGE_REGULATION]), // should be VOLTAGE_REGULATION_ON
                 targetV: toModificationUnsetOperation(generator[VOLTAGE_SET_POINT]),
                 voltageLevelId: toModificationOperation(generator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
                 busOrBusbarSectionId: toModificationOperation(generator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
@@ -425,7 +425,7 @@ export function GeneratorModificationDialog({
                     ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
                     : null,
                 properties: toModificationProperties(generator),
-            };
+            } satisfies Required<GeneratorModificationInfos>;
 
             modifyGenerator({
                 generatorModificationInfos: generatorModificationInfos,

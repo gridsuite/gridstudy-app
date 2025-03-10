@@ -121,16 +121,20 @@ export type AttributeModification<T> = {
     op: OperationType;
 };
 
-export function toModificationOperation<T>(value: T): AttributeModification<T> | null {
-    return value === 0 || value === false || value ? { value: value, op: OperationType.SET } : null;
+export function toModificationOperation<T>(
+    value: T
+): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
+    return value === 0 || value === false || value
+        ? { value: value as Exclude<Exclude<T, null>, undefined>, op: OperationType.SET }
+        : null;
 }
 
-export function toModificationUnsetOperation<T>(value: T): AttributeModification<T> | null {
+export function toModificationUnsetOperation<T>(value: T): AttributeModification<Exclude<T, null>> | null {
     if (value === null) {
         return null;
     }
     return value === 0 || value === false || value
-        ? { value: value, op: OperationType.SET }
+        ? { value: value as Exclude<T, null>, op: OperationType.SET }
         : { op: OperationType.UNSET };
 }
 

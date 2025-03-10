@@ -54,61 +54,62 @@ import {
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurveTable,
 } from '../../reactive-limits/reactive-limits-utils';
+import { OptionalNullableUndefined } from '../../../utils/ts-utils';
 
-export type GeneratorDialogSchemaForm = {
+export type GeneratorDialogSchemaForm = OptionalNullableUndefined<{
     [EQUIPMENT_ID]: string;
-    [EQUIPMENT_NAME]?: string;
-    [ENERGY_SOURCE]?: string | null;
-    [MAXIMUM_ACTIVE_POWER]?: number | null;
-    [MINIMUM_ACTIVE_POWER]?: number | null;
-    [RATED_NOMINAL_POWER]?: number;
-    [TRANSFORMER_REACTANCE]?: number;
-    [TRANSIENT_REACTANCE]?: number | null;
-    [PLANNED_ACTIVE_POWER_SET_POINT]?: number | null;
-    [MARGINAL_COST]?: number | null;
-    [PLANNED_OUTAGE_RATE]?: number | null;
-    [FORCED_OUTAGE_RATE]?: number | null;
+    [EQUIPMENT_NAME]: string;
+    [ENERGY_SOURCE]: string;
+    [MAXIMUM_ACTIVE_POWER]: number;
+    [MINIMUM_ACTIVE_POWER]: number;
+    [RATED_NOMINAL_POWER]: number;
+    [TRANSFORMER_REACTANCE]: number;
+    [TRANSIENT_REACTANCE]: number;
+    [PLANNED_ACTIVE_POWER_SET_POINT]: number;
+    [MARGINAL_COST]: number;
+    [PLANNED_OUTAGE_RATE]: number;
+    [FORCED_OUTAGE_RATE]: number;
 
     [CONNECTIVITY]: {
-        [VOLTAGE_LEVEL]: { [ID]?: string };
-        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
-        [CONNECTION_DIRECTION]?: string;
-        [CONNECTION_NAME]?: string;
-        [CONNECTION_POSITION]?: number;
-        [CONNECTED]?: boolean;
+        [VOLTAGE_LEVEL]: { [ID]: string };
+        [BUS_OR_BUSBAR_SECTION]: { [ID]: string; [NAME]: string };
+        [CONNECTION_DIRECTION]: string;
+        [CONNECTION_NAME]: string;
+        [CONNECTION_POSITION]: number;
+        [CONNECTED]: boolean;
     };
 
-    [VOLTAGE_REGULATION]?: boolean | null;
-    [ACTIVE_POWER_SET_POINT]?: number;
-    [REACTIVE_POWER_SET_POINT]?: number | null;
-    [VOLTAGE_REGULATION_TYPE]?: string | null;
-    [VOLTAGE_SET_POINT]?: number | null;
-    [Q_PERCENT]?: number | null;
+    [VOLTAGE_REGULATION]: boolean;
+    [ACTIVE_POWER_SET_POINT]: number;
+    [REACTIVE_POWER_SET_POINT]: number;
+    [VOLTAGE_REGULATION_TYPE]: string;
+    [VOLTAGE_SET_POINT]: number;
+    [Q_PERCENT]: number;
 
-    [VOLTAGE_LEVEL]?: {
-        [ID]?: string;
-        [NAME]?: string;
-        [SUBSTATION_ID]?: string;
-        [NOMINAL_VOLTAGE]?: string;
-        [TOPOLOGY_KIND]?: string | null;
+    [VOLTAGE_LEVEL]: {
+        [ID]: string;
+        [NAME]: string;
+        [SUBSTATION_ID]: string;
+        [NOMINAL_VOLTAGE]: string;
+        [TOPOLOGY_KIND]: string;
     };
 
-    [EQUIPMENT]?: {
-        [ID]?: string;
-        [NAME]?: string | null;
-        [TYPE]?: string;
+    [EQUIPMENT]: {
+        [ID]: string;
+        [NAME]: string;
+        [TYPE]: string;
     };
-    [FREQUENCY_REGULATION]?: boolean | null;
-    [DROOP]?: number | null;
+    [FREQUENCY_REGULATION]: boolean;
+    [DROOP]: number;
     [REACTIVE_LIMITS]: {
-        [MINIMUM_REACTIVE_POWER]?: number | null;
-        [MAXIMUM_REACTIVE_POWER]?: number | null;
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
-        [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurveTable[];
+        [MINIMUM_REACTIVE_POWER]: number;
+        [MAXIMUM_REACTIVE_POWER]: number;
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]: string;
+        [REACTIVE_CAPABILITY_CURVE_TABLE]: ReactiveCapabilityCurveTable[];
     };
     // Properties
-    [ADDITIONAL_PROPERTIES]?: Property[];
-};
+    [ADDITIONAL_PROPERTIES]: Property[];
+}>;
 
 export interface GeneratorFormInfos {
     id: string;
@@ -134,7 +135,6 @@ export interface GeneratorFormInfos {
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurveTable[];
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    busbarSectionName?: string;
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
@@ -144,9 +144,9 @@ export interface GeneratorFormInfos {
 
 interface GeneratorStartUpFormInfos {
     plannedActivePowerSetPoint: number | null;
-    marginalCost?: number | null;
-    plannedOutageRate?: number | null;
-    forcedOutageRate?: number | null;
+    marginalCost: number | null;
+    plannedOutageRate: number | null;
+    forcedOutageRate: number | null;
 }
 
 interface GeneratorShortCircuitFormInfos {

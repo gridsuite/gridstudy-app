@@ -15,6 +15,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
+    BUS_OR_BUSBAR_SECTION,
     CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
@@ -82,7 +83,6 @@ import {
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
-import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
 
@@ -196,9 +196,9 @@ export function GeneratorCreationDialog({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<DeepNullable<GeneratorDialogSchemaForm>>({
+    const formMethods = useForm<GeneratorDialogSchemaForm>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<GeneratorDialogSchemaForm>>(formSchema),
+        resolver: yupResolver<GeneratorDialogSchemaForm>(formSchema),
     });
 
     const { reset } = formMethods;
@@ -343,47 +343,47 @@ export function GeneratorCreationDialog({
     const onSubmit = useCallback(
         (generator: GeneratorDialogSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn = reactiveLimits?.[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation = generator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;
             const generatorCreationInfos = {
                 type: MODIFICATION_TYPES.GENERATOR_CREATION.type,
-                uuid: editData?.uuid,
-                equipmentId: generator[EQUIPMENT_ID],
-                equipmentName: sanitizeString(generator[EQUIPMENT_NAME]),
-                energySource: generator[ENERGY_SOURCE],
-                minP: generator[MINIMUM_ACTIVE_POWER],
-                maxP: generator[MAXIMUM_ACTIVE_POWER],
-                ratedS: generator[RATED_NOMINAL_POWER],
-                targetP: generator[ACTIVE_POWER_SET_POINT],
-                targetQ: generator[REACTIVE_POWER_SET_POINT],
-                voltageRegulationOn: generator[VOLTAGE_REGULATION],
-                targetV: generator[VOLTAGE_SET_POINT],
-                qPercent: generator[Q_PERCENT],
-                voltageLevelId: generator.connectivity.voltageLevel.id,
-                busOrBusbarSectionId: generator.connectivity.busOrBusbarSection.id,
-                plannedActivePowerSetPoint: generator[PLANNED_ACTIVE_POWER_SET_POINT],
-                marginalCost: generator[MARGINAL_COST],
-                plannedOutageRate: generator[PLANNED_OUTAGE_RATE],
-                forcedOutageRate: generator[FORCED_OUTAGE_RATE],
-                directTransX: generator[TRANSIENT_REACTANCE],
-                stepUpTransformerX: generator[TRANSFORMER_REACTANCE],
-                regulatingTerminalId: isDistantRegulation ? generator[EQUIPMENT]?.id : null,
-                regulatingTerminalType: isDistantRegulation ? generator[EQUIPMENT]?.type : null,
-                regulatingTerminalVlId: isDistantRegulation ? generator[VOLTAGE_LEVEL]?.id : null,
+                uuid: editData?.uuid ?? null,
+                equipmentId: generator[EQUIPMENT_ID]!,
+                equipmentName: generator[EQUIPMENT_NAME] ? sanitizeString(generator[EQUIPMENT_NAME]) ?? null : null,
+                energySource: generator[ENERGY_SOURCE]!,
+                minP: generator[MINIMUM_ACTIVE_POWER]!,
+                maxP: generator[MAXIMUM_ACTIVE_POWER]!,
+                ratedS: generator[RATED_NOMINAL_POWER] ?? null,
+                targetP: generator[ACTIVE_POWER_SET_POINT]!,
+                targetQ: generator[REACTIVE_POWER_SET_POINT]!,
+                voltageRegulationOn: generator[VOLTAGE_REGULATION]!,
+                targetV: generator[VOLTAGE_SET_POINT] ?? null,
+                qPercent: generator[Q_PERCENT] ?? null,
+                voltageLevelId: generator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]!,
+                busOrBusbarSectionId: generator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]!,
+                plannedActivePowerSetPoint: generator[PLANNED_ACTIVE_POWER_SET_POINT] ?? null,
+                marginalCost: generator[MARGINAL_COST] ?? null,
+                plannedOutageRate: generator[PLANNED_OUTAGE_RATE] ?? null,
+                forcedOutageRate: generator[FORCED_OUTAGE_RATE] ?? null,
+                directTransX: generator[TRANSIENT_REACTANCE] ?? null,
+                stepUpTransformerX: generator[TRANSFORMER_REACTANCE] ?? null,
+                regulatingTerminalId: isDistantRegulation ? generator[EQUIPMENT]?.id ?? null : null,
+                regulatingTerminalType: isDistantRegulation ? generator[EQUIPMENT]?.type ?? null : null,
+                regulatingTerminalVlId: isDistantRegulation ? generator[VOLTAGE_LEVEL]?.id ?? null : null,
                 reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-                participate: generator[FREQUENCY_REGULATION],
+                participate: generator[FREQUENCY_REGULATION]!,
                 droop: generator[DROOP] ?? null,
-                maxQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER],
-                minQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER],
+                maxQ: isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MAXIMUM_REACTIVE_POWER] ?? null,
+                minQ: isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MINIMUM_REACTIVE_POWER] ?? null,
                 connectionDirection: generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-                connectionName: sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
+                connectionName: sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME] ?? undefined) ?? null,
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
+                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null
                     : null,
-                connectionPosition: generator[CONNECTIVITY]?.[CONNECTION_POSITION],
-                terminalConnected: generator[CONNECTIVITY]?.[CONNECTED],
-                properties: toModificationProperties(generator),
-            };
+                connectionPosition: generator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null,
+                terminalConnected: generator[CONNECTIVITY]?.[CONNECTED]!,
+                properties: toModificationProperties(generator) ?? null,
+            } satisfies Required<GeneratorCreationInfos>;
 
             createGenerator({
                 generatorCreationInfos: generatorCreationInfos,
