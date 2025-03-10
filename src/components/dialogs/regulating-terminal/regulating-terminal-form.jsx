@@ -123,8 +123,13 @@ const RegulatingTerminalForm = ({
                 {
                     <AutocompleteInput
                         name={`${id}.${EQUIPMENT}`}
+                        inputTransform={(value) => (value === null ? '' : value)}
                         outputTransform={(value) => {
-                            return typeof value === 'string' ? { id: value, label: value } : value;
+                            return typeof value === 'string'
+                                ? value === ''
+                                    ? null
+                                    : { id: value, type: equipmentSectionTypeDefaultValue }
+                                : value;
                         }}
                         label="Equipment"
                         size="small"
@@ -140,7 +145,12 @@ const RegulatingTerminalForm = ({
                             return equipment === '' ? '' : equipment?.[ID] || '';
                         }}
                         renderOption={(props, option) => {
-                            return <Box {...props}>{`${option?.[TYPE]} : ${option?.[ID]}`}</Box>;
+                            const { key, ...optionProps } = props;
+                            return (
+                                <Box key={key} component="li" {...optionProps}>
+                                    {option?.[TYPE] ? `${option?.[TYPE]} : ${option?.[ID]}` : option?.[ID]}
+                                </Box>
+                            );
                         }}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
