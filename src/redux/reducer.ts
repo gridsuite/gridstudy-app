@@ -266,7 +266,7 @@ import {
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
-import { Filter } from '../components/results/common/results-global-filter';
+import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     EQUIPMENT_TYPES as NetworkViewerEquipmentType,
     LineFlowColorMode,
@@ -462,7 +462,7 @@ export interface AppState extends CommonStoreState {
     oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
     notificationIdList: UUID[];
     nonEvacuatedEnergyNotif: boolean;
-    recentGlobalFilters: Filter[];
+    recentGlobalFilters: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
@@ -1663,7 +1663,8 @@ export const reducer = createReducer(initialState, (builder) => {
         action.globalFilters.forEach((filter) => {
             if (
                 !newRecentGlobalFilters.some(
-                    (obj) => obj.label === filter.label && obj.filterType === filter.filterType
+                    (obj) =>
+                        obj.label === filter.label && obj.filterType === filter.filterType && obj.uuid === filter.uuid
                 )
             ) {
                 newRecentGlobalFilters.push(filter);
