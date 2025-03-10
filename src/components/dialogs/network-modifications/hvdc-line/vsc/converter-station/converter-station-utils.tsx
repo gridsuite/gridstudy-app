@@ -34,9 +34,8 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../../connectivity/connectivity-form-utils';
 import {
-    getReactiveCapabilityCurvePoints,
     getReactiveLimitsEmptyFormData,
-    getReactiveLimitsFormData,
+    getReactiveLimitsFormInfos,
     getReactiveLimitsSchema,
     MinMaxReactiveLimitsFormInfos,
     ReactiveCapabilityCurveTable,
@@ -46,6 +45,7 @@ import { sanitizeString } from '../../../../dialog-utils';
 import { AttributeModification, toModificationOperation } from '../../../../../utils/utils';
 import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 import { ReactiveCapabilityCurvePointsInfos } from '../../../../../../services/network-modification-types';
+import { getRowEmptyFormData } from '../../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -290,15 +290,19 @@ export function getConverterStationModificationFormEditData(
 }
 function getConverterStationReactiveLimits(converterStation: ConverterStationInterfaceEditData) {
     return converterStation.reactiveCapabilityCurve
-        ? getReactiveLimitsFormData({
+        ? getReactiveLimitsFormInfos({
               id: REACTIVE_LIMITS,
               reactiveCapabilityCurveChoice: 'CURVE',
               minimumReactivePower: null,
               maximumReactivePower: null,
+              reactiveCapabilityCurvePoints: converterStation.reactiveCapabilityCurvePoints,
           })
-        : getReactiveCapabilityCurvePoints({
+        : getReactiveLimitsFormInfos({
               id: REACTIVE_LIMITS,
-              reactiveCapabilityCurvePoints: converterStation?.reactiveCapabilityCurvePoints ?? null,
+              reactiveCapabilityCurveChoice: 'MINMAX',
+              minimumReactivePower: converterStation.minQ,
+              maximumReactivePower: converterStation.maxQ,
+              reactiveCapabilityCurvePoints: [getRowEmptyFormData(), getRowEmptyFormData()],
           });
 }
 
@@ -306,20 +310,18 @@ function getConverterStationModificationReactiveLimits(
     converterStationEditData: ConverterStationModificationInterfaceEditData
 ) {
     return {
-        ...getReactiveLimitsFormData({
+        ...getReactiveLimitsFormInfos({
             id: REACTIVE_LIMITS,
             reactiveCapabilityCurveChoice: converterStationEditData?.reactiveCapabilityCurve?.value
                 ? 'CURVE'
                 : 'MINMAX',
             maximumReactivePower: converterStationEditData?.maxQ?.value ?? null,
             minimumReactivePower: converterStationEditData?.minQ?.value ?? null,
-        }),
-        ...getReactiveCapabilityCurvePoints({
-            id: REACTIVE_LIMITS,
             reactiveCapabilityCurvePoints: converterStationEditData?.reactiveCapabilityCurvePoints ?? null,
         }),
     };
 }
+
 export function getConverterStationFromSearchCopy(id: string, converterStation: ConverterStationElementInfos) {
     return {
         [id]: {
@@ -338,14 +340,11 @@ export function getConverterStationFromSearchCopy(id: string, converterStation: 
                 busbarSectionName: null,
                 terminalConnected: true,
             }),
-            ...getReactiveLimitsFormData({
+            ...getReactiveLimitsFormInfos({
                 id: REACTIVE_LIMITS,
                 reactiveCapabilityCurveChoice: converterStation?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
                 minimumReactivePower: converterStation?.minMaxReactiveLimits?.minQ,
                 maximumReactivePower: converterStation?.minMaxReactiveLimits?.maxQ,
-            }),
-            ...getReactiveCapabilityCurvePoints({
-                id: REACTIVE_LIMITS,
                 reactiveCapabilityCurvePoints: converterStation.reactiveCapabilityCurvePoints ?? null,
             }),
         },

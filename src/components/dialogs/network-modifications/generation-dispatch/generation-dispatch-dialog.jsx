@@ -26,7 +26,7 @@ import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import yup from 'components/utils/yup-config';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import ModificationDialog from '../../commons/modificationDialog';
+import ModificationDialog from '../../commons/modification-dialog.jsx';
 import GenerationDispatchForm from './generation-dispatch-form';
 import { generationDispatch } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';

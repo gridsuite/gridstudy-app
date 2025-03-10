@@ -33,7 +33,7 @@ import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import ModificationDialog from '../../../commons/modification-dialog.jsx';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,

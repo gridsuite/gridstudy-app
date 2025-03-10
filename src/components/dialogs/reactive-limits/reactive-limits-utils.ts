@@ -33,33 +33,48 @@ export interface MinMaxReactiveLimitsFormInfos {
     maxQ?: number | null;
 }
 
-export const getReactiveLimitsFormData = ({
+export const getReactiveLimitsFormInfos = ({
     id = REACTIVE_LIMITS,
     reactiveCapabilityCurveChoice = 'CURVE',
     minimumReactivePower,
     maximumReactivePower,
+    reactiveCapabilityCurvePoints,
 }: {
     id: string;
     reactiveCapabilityCurveChoice: string;
     minimumReactivePower?: number | null;
     maximumReactivePower?: number | null;
+    reactiveCapabilityCurvePoints?: ReactiveCapabilityCurvePointsInfos[] | null;
 }) => ({
     [id]: {
         [REACTIVE_CAPABILITY_CURVE_CHOICE]: reactiveCapabilityCurveChoice,
         [MINIMUM_REACTIVE_POWER]: minimumReactivePower ?? null,
         [MAXIMUM_REACTIVE_POWER]: maximumReactivePower ?? null,
+        [REACTIVE_CAPABILITY_CURVE_TABLE]: reactiveCapabilityCurvePoints ?? [
+            getRowEmptyFormData(),
+            getRowEmptyFormData(),
+        ],
     },
 });
 
-export const getReactiveCapabilityCurvePoints = ({
+export const getReactiveLimitsFormData = ({
     id = REACTIVE_LIMITS,
-    reactiveCapabilityCurvePoints,
+    reactiveCapabilityCurveChoice = 'CURVE',
+    minimumReactivePower,
+    maximumReactivePower,
+    reactiveCapabilityCurveTable,
 }: {
     id: string;
-    reactiveCapabilityCurvePoints?: ReactiveCapabilityCurvePointsInfos[] | null;
+    reactiveCapabilityCurveChoice: string;
+    minimumReactivePower?: number | null;
+    maximumReactivePower?: number | null;
+    reactiveCapabilityCurveTable?: ReactiveCapabilityCurveTable[] | null;
 }) => ({
     [id]: {
-        [REACTIVE_CAPABILITY_CURVE_TABLE]: reactiveCapabilityCurvePoints ?? [
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]: reactiveCapabilityCurveChoice,
+        [MINIMUM_REACTIVE_POWER]: minimumReactivePower ?? null,
+        [MAXIMUM_REACTIVE_POWER]: maximumReactivePower ?? null,
+        [REACTIVE_CAPABILITY_CURVE_TABLE]: reactiveCapabilityCurveTable ?? [
             getRowEmptyFormData(),
             getRowEmptyFormData(),
         ],
@@ -81,19 +96,24 @@ export const getReactiveLimitsSchema = (
 ) =>
     yup.object().shape({
         [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
-        [MINIMUM_REACTIVE_POWER]: yup
-            .number()
-            .nullable()
-            .when([MAXIMUM_REACTIVE_POWER], {
-                is: (maximumReactivePower: number) => !isEquipmentModification && maximumReactivePower != null,
-                then: (schema) => schema.required(),
-            }),
-        [MAXIMUM_REACTIVE_POWER]: yup
-            .number()
-            .nullable()
-            .when([MINIMUM_REACTIVE_POWER], {
-                is: (minimumReactivePower: number) => !isEquipmentModification && minimumReactivePower != null,
-                then: (schema) => schema.required(),
-            }),
+        [MINIMUM_REACTIVE_POWER]: yup.number().nullable(),
+        [MAXIMUM_REACTIVE_POWER]: yup.number().nullable(),
+
+        // Custom validation to prevent cyclic dependency
+        validateReactivePower: yup
+            .mixed()
+            .test(
+                'reactive-power-check',
+                'Both minimum and maximum reactive power are required if one is provided',
+                function () {
+                    const minPower = this.parent[MINIMUM_REACTIVE_POWER];
+                    const maxPower = this.parent[MAXIMUM_REACTIVE_POWER];
+
+                    if (!isEquipmentModification && (minPower != null || maxPower != null)) {
+                        return minPower != null && maxPower != null;
+                    }
+                    return true;
+                }
+            ),
         [REACTIVE_CAPABILITY_CURVE_TABLE]: getReactiveCapabilityCurveValidationSchema(positiveAndNegativePExist),
     });

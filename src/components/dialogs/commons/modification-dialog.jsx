@@ -9,7 +9,7 @@ import { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
-import ModificationDialogContent from './modification-dialog-content';
+import ModificationDialogContent from './modification-dialog-content.jsx';
 
 /**
  * Generic Modification Dialog which manage basic common behaviors with react

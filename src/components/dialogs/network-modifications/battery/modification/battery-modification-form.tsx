@@ -7,9 +7,11 @@
 
 import {
     ACTIVE_POWER_SET_POINT,
+    CONNECTIVITY,
     EQUIPMENT_NAME,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
+    REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
@@ -22,15 +24,27 @@ import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { BatteryFormInfos } from '../battery-dialog.type';
 
-const BatteryModificationForm = ({
+export interface BatteryModificationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    batteryToModify: BatteryFormInfos | null;
+    updatePreviousReactiveCapabilityCurveTable?: (action: string, index: number) => void;
+    equipmentId: string;
+}
+
+export default function BatteryModificationForm({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
     batteryToModify,
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
-}) => {
+}: Readonly<BatteryModificationFormProps>) {
     const batteryIdField = (
         <TextField
             size="small"
@@ -97,12 +111,17 @@ const BatteryModificationForm = ({
 
     const connectivityForm = (
         <ConnectivityForm
+            id={CONNECTIVITY}
             withPosition={true}
+            withDirectionsInfos={false}
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
-            previousValues={batteryToModify}
+            previousValues={{
+                connectablePosition: batteryToModify?.connectablePosition,
+                terminalConnected: batteryToModify?.terminalConnected,
+            }}
         />
     );
 
@@ -142,7 +161,9 @@ const BatteryModificationForm = ({
                 </Grid>
             </Grid>
             <ReactiveLimitsForm
-                equipmentToModify={batteryToModify}
+                id={REACTIVE_LIMITS}
+                previousMinMaxReactiveLimits={batteryToModify?.minMaxReactiveLimits}
+                previousReactiveCapabilityCurveTable={batteryToModify?.reactiveCapabilityCurvePoints}
                 updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
             {/* Set points part */}
@@ -152,11 +173,12 @@ const BatteryModificationForm = ({
                 <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <FrequencyRegulation isEquipmentModification={true} previousValues={batteryToModify} />
+                <FrequencyRegulation
+                    isEquipmentModification={true}
+                    previousValues={batteryToModify?.activePowerControl}
+                />
             </Grid>
             <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>
     );
-};
-
-export default BatteryModificationForm;
+}

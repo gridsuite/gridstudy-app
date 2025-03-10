@@ -53,7 +53,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import ModificationDialog from '../../../commons/modification-dialog.jsx';
 
 import {
     addModificationTypeToTemporaryLimits,

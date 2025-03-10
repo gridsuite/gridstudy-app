@@ -19,7 +19,7 @@ import {
     TOTAL_SUSCEPTANCE,
 } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
-import ModificationDialog from '../commons/modificationDialog';
+import ModificationDialog from '../commons/modification-dialog.jsx';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LineTypeSegmentForm } from './line-type-segment-form';

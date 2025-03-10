@@ -8,23 +8,37 @@
 import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import {
     ACTIVE_POWER_SET_POINT,
+    CONNECTIVITY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
+    REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
 import { Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
-import FrequencyRegulation from '../../../frequency-regulation/frequency-regulation.tsx';
+import FrequencyRegulation from '../../../frequency-regulation/frequency-regulation';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 
-const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
+export interface BatteryCreationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+}
+
+export function BatteryCreationForm({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+}: Readonly<BatteryCreationFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
 
     const batteryIdField = (
@@ -35,11 +49,15 @@ const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid })
 
     const connectivityForm = (
         <ConnectivityForm
+            id={CONNECTIVITY}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
+            previousValues={undefined}
+            isEquipmentModification={false}
+            withDirectionsInfos={false}
         />
     );
 
@@ -90,7 +108,11 @@ const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid })
 
             {/* Reactive limits part */}
             <GridSection title="ReactiveLimits" />
-            <ReactiveLimitsForm />
+            <ReactiveLimitsForm
+                id={REACTIVE_LIMITS}
+                previousMinMaxReactiveLimits={undefined}
+                updatePreviousReactiveCapabilityCurveTable={undefined}
+            />
 
             {/* Set points part */}
             <GridSection title="Setpoints" />
@@ -99,11 +121,9 @@ const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid })
                 <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <FrequencyRegulation />
+                <FrequencyRegulation isEquipmentModification={false} previousValues={undefined} />
             </Grid>
             <PropertiesForm networkElementType={'battery'} />
         </>
     );
-};
-
-export default BatteryCreationForm;
+}

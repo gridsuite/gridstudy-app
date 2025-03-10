@@ -14,7 +14,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../utils/yup-config';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import ModificationDialog from '../commons/modificationDialog';
+import ModificationDialog from '../commons/modification-dialog';
 import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';

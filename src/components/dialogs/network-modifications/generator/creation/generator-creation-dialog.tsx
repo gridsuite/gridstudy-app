@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import ModificationDialog from '../../../commons/modification-dialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
@@ -64,9 +64,9 @@ import { sanitizeString } from '../../../dialog-utils';
 import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import { getActivePowerSetPointSchema, getReactivePowerSetPointSchema } from '../../../set-points/set-points-utils';
 import {
-    getReactiveCapabilityCurvePoints,
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
+    getReactiveLimitsFormInfos,
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -233,10 +233,7 @@ export function GeneratorCreationDialog({
                     reactiveCapabilityCurveChoice: generator?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
                     minimumReactivePower: generator?.minMaxReactiveLimits?.minQ ?? null,
                     maximumReactivePower: generator?.minMaxReactiveLimits?.maxQ ?? null,
-                }),
-                ...getReactiveCapabilityCurvePoints({
-                    id: REACTIVE_LIMITS,
-                    reactiveCapabilityCurvePoints: generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
+                    reactiveCapabilityCurveTable: generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
                 }),
                 ...getRegulatingTerminalFormData({
                     voltageLevelId: generator.regulatingTerminalVlId,
@@ -299,14 +296,11 @@ export function GeneratorCreationDialog({
                     ? REGULATION_TYPES.DISTANT.id
                     : REGULATION_TYPES.LOCAL.id,
                 [Q_PERCENT]: editData.qPercent,
-                ...getReactiveLimitsFormData({
+                ...getReactiveLimitsFormInfos({
                     id: REACTIVE_LIMITS,
                     reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
                     minimumReactivePower: editData?.minQ,
                     maximumReactivePower: editData?.maxQ,
-                }),
-                ...getReactiveCapabilityCurvePoints({
-                    id: REACTIVE_LIMITS,
                     reactiveCapabilityCurvePoints: editData?.reactiveCapabilityCurve
                         ? editData?.reactiveCapabilityCurvePoints
                         : [{}, {}],

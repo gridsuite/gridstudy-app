@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import ModificationDialog from '../../../commons/modification-dialog';
 import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -35,8 +35,6 @@ import {
     MIN_Q,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
-    NAME,
-    NOMINAL_VOLTAGE,
     P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
@@ -46,11 +44,8 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
-    SUBSTATION_ID,
-    TOPOLOGY_KIND,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
-    TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
@@ -61,12 +56,14 @@ import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import { getActivePowerSetPointSchema, getReactivePowerSetPointSchema } from '../../../set-points/set-points-utils';
 import {
-    getReactiveCapabilityCurvePoints,
     getReactiveLimitsEmptyFormData,
-    getReactiveLimitsFormData,
+    getReactiveLimitsFormInfos,
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
-import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
+import {
+    getRegulatingTerminalFormData,
+    regulatingTerminalValidationSchema,
+} from '../../../regulating-terminal/regulating-terminal-form-utils';
 import {
     REMOVE,
     setCurrentReactiveCapabilityCurveTable,
@@ -97,6 +94,7 @@ import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
 import { toModificationOperation, toModificationUnsetOperation } from '../../../../utils/utils';
+import { getFrequencyRegulationSchema } from '../../../frequency-regulation/frequency-regulation-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -135,7 +133,6 @@ const formSchema = yup
         [TRANSFORMER_REACTANCE]: yup.number().nullable(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [MARGINAL_COST]: yup.number().nullable(),
-
         [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
@@ -145,27 +142,9 @@ const formSchema = yup
         [VOLTAGE_REGULATION_TYPE]: yup.string().nullable(),
         [VOLTAGE_SET_POINT]: yup.number().nullable(),
         [Q_PERCENT]: yup.number().nullable().max(100, 'NormalizedPercentage').min(0, 'NormalizedPercentage'),
-        [VOLTAGE_LEVEL]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string(),
-                [SUBSTATION_ID]: yup.string(),
-                [NOMINAL_VOLTAGE]: yup.string(),
-                [TOPOLOGY_KIND]: yup.string().nullable(),
-            }),
-        [EQUIPMENT]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string().nullable(),
-                [TYPE]: yup.string(),
-            }),
-        [FREQUENCY_REGULATION]: yup.bool().nullable(),
-        [DROOP]: yup.number().nullable(),
+        ...regulatingTerminalValidationSchema(),
         [REACTIVE_LIMITS]: getReactiveLimitsSchema(true),
+        ...getFrequencyRegulationSchema(true),
     })
     .concat(modificationPropertiesSchema)
     .required();
@@ -237,14 +216,11 @@ export function GeneratorModificationDialog({
                     connectionPosition: editData?.connectionPosition?.value ?? null,
                     terminalConnected: editData?.terminalConnected?.value ?? null,
                 }),
-                ...getReactiveLimitsFormData({
+                ...getReactiveLimitsFormInfos({
                     id: REACTIVE_LIMITS,
                     reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve?.value ? 'CURVE' : 'MINMAX',
                     maximumReactivePower: editData?.maxQ?.value ?? null,
                     minimumReactivePower: editData?.minQ?.value ?? null,
-                }),
-                ...getReactiveCapabilityCurvePoints({
-                    id: REACTIVE_LIMITS,
                     reactiveCapabilityCurvePoints: editData?.reactiveCapabilityCurvePoints,
                 }),
                 ...getRegulatingTerminalFormData({

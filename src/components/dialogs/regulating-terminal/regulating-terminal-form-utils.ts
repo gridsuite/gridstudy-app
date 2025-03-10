@@ -17,7 +17,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
 
-const regulatingTerminalValidationSchema = () => ({
+export const regulatingTerminalValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
         .object()
         .nullable()

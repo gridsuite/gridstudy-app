@@ -35,7 +35,7 @@ import { LccCreationDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorF
 import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../form-search-copy-hook';
 import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
-import ModificationDialog from '../../../../commons/modificationDialog';
+import ModificationDialog from '../../../../commons/modification-dialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import { useCallback, useEffect, useState } from 'react';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
