@@ -11,7 +11,7 @@ import { useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import { TextInput } from '@gridsuite/commons-ui';
-import { ConnectivityForm } from '../../connectivity/connectivity-form.js';
+import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';

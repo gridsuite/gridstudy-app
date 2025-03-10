@@ -19,7 +19,6 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
-import { VoltageLevel } from '../../utils/equipment-types';
 
 export const getConnectivityPropertiesValidationSchema = (isEquipmentModification = false) => {
     return {
@@ -107,7 +106,7 @@ export const getConnectivityWithoutPositionEmptyFormData = (id = CONNECTIVITY) =
     [id]: getConnectivityPropertiesEmptyFormData(),
 });
 
-export const getConnectivityVoltageLevelData = ({ voltageLevelId }: { voltageLevelId: string }) => {
+export const getConnectivityVoltageLevelData = ({ voltageLevelId }: { voltageLevelId?: string | null }) => {
     if (!voltageLevelId) {
         return null;
     }
@@ -121,8 +120,8 @@ export const getConnectivityBusBarSectionData = ({
     busbarSectionId,
     busbarSectionName = '',
 }: {
-    busbarSectionId: string;
-    busbarSectionName: string;
+    busbarSectionId?: string | null;
+    busbarSectionName?: string | null;
 }) => {
     if (!busbarSectionId) {
         return null;
@@ -139,9 +138,9 @@ export const getConnectivityPropertiesData = ({
     busbarSectionId,
     busbarSectionName,
 }: {
-    voltageLevelId: string;
-    busbarSectionId: string;
-    busbarSectionName: string;
+    voltageLevelId?: string | null;
+    busbarSectionId?: string | null;
+    busbarSectionName?: string | null;
 }) => {
     return {
         [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
@@ -154,14 +153,31 @@ export const getConnectivityPropertiesData = ({
     };
 };
 
-export const getNewVoltageLevelData = (newVoltageLevel: VoltageLevel) => ({
+export interface VoltageLeveFormInfo {
+    equipmentId: string;
+    equipmentName: string | null;
+    substationId?: string | null;
+    topologyKind?: [];
+}
+
+export const getNewVoltageLevelData = (newVoltageLevel: VoltageLeveFormInfo) => ({
     id: newVoltageLevel.equipmentId,
     name: newVoltageLevel.equipmentName ?? '',
     substationId: newVoltageLevel.substationId,
     topologyKind: newVoltageLevel.topologyKind,
 });
 
-export const getConnectivityData = ({ voltageLevelId, busbarSectionId, busbarSectionName }, id = CONNECTIVITY) => {
+export const getConnectivityData = ({
+    id = CONNECTIVITY,
+    voltageLevelId,
+    busbarSectionId,
+    busbarSectionName,
+}: {
+    id: string;
+    voltageLevelId: string;
+    busbarSectionId: string;
+    busbarSectionName: string;
+}) => {
     return {
         [id]: getConnectivityPropertiesData({
             voltageLevelId,
@@ -171,21 +187,25 @@ export const getConnectivityData = ({ voltageLevelId, busbarSectionId, busbarSec
     };
 };
 
-export const getConnectivityFormData = (
-    {
-        voltageLevelId,
-        busbarSectionId,
-        busbarSectionName,
-        connectionDirection,
-        connectionName,
-        connectionPosition,
-        terminalConnected,
-        isEquipmentModification = false,
-    },
-    id = CONNECTIVITY
-) => {
+export const getConnectivityFormData = ({
+    voltageLevelId,
+    busbarSectionId,
+    busbarSectionName,
+    connectionDirection,
+    connectionName,
+    connectionPosition,
+    terminalConnected,
+}: {
+    voltageLevelId?: string | null;
+    busbarSectionId?: string | null;
+    busbarSectionName?: string | null;
+    connectionDirection: string | null;
+    connectionName?: string | null;
+    connectionPosition?: number | null;
+    terminalConnected?: boolean | null;
+}) => {
     return {
-        [id]: {
+        [CONNECTIVITY]: {
             ...getConnectivityPropertiesData({
                 voltageLevelId,
                 busbarSectionId,
@@ -199,7 +219,7 @@ export const getConnectivityFormData = (
     };
 };
 
-export const createConnectivityData = (equipmentToModify, index) => ({
+export const createConnectivityData = (equipmentToModify: any, index: number) => ({
     busbarSectionId: equipmentToModify?.[`busOrBusbarSectionId${index}`]?.value ?? null,
     connectionDirection: equipmentToModify?.[`connectionDirection${index}`]?.value ?? null,
     connectionName: equipmentToModify?.[`connectionName${index}`]?.value ?? '',

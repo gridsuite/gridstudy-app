@@ -22,7 +22,7 @@ import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 
 import FiltersShuntCompensatorTable from './filters-shunt-compensator-table';
-import ConnectivityForm from '../../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 
 interface LccConverterStationProps {
     id: string;

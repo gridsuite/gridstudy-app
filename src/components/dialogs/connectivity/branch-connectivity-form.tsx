@@ -12,7 +12,7 @@ import { CurrentTreeNode } from '../../../redux/reducer';
 import { UUID } from 'crypto';
 import GridSection from '../commons/grid-section';
 import GridItem from '../commons/grid-item';
-import ConnectivityForm from './connectivity-form';
+import { ConnectivityForm } from './connectivity-form';
 
 interface BranchConnectivityFormProps {
     currentNode: CurrentTreeNode;

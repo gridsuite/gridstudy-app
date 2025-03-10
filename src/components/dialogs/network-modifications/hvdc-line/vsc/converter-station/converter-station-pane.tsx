@@ -32,7 +32,7 @@ import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
-import ConnectivityForm from '../../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 
 interface VscConverterStationPaneProps {
     id: string;

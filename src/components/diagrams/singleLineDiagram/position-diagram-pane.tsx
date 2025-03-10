@@ -21,8 +21,8 @@ interface PositionDiagramPaneProps {
     open: boolean;
     onClose: () => void;
     voltageLevelId?: { id: UUID };
-    currentNodeUuid?: UUID | null;
-    currentRootNetworkUuid?: UUID | null;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     studyUuid: UUID;
 }
 

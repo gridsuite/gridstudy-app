@@ -40,7 +40,7 @@ import GridSection from '../../../commons/grid-section';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { WritableDeep } from 'type-fest';
-import ConnectivityForm from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 
 export interface GeneratorCreationFormProps {
     studyUuid: UUID;

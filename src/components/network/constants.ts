@@ -84,7 +84,7 @@ export function getEnergySourceLabel(energySourceId: string | undefined) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
 
-export function getConnectionDirectionLabel(connectionDirectionId: string) {
+export function getConnectionDirectionLabel(connectionDirectionId: string | null | undefined) {
     if (connectionDirectionId === UNDEFINED_CONNECTION_DIRECTION) {
         return 'Undefined';
     }

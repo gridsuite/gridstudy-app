@@ -40,16 +40,16 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 import BatteryCreationForm from './battery-creation-form';
 import { sanitizeString } from '../../../dialog-utils';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
-import { getActivePowerSetPointSchema, getFrequencyRegulationSchema } from '../../../set-points/set-points-utils';
+import { getActivePowerSetPointSchema } from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
-} from '../../../reactive-limits/reactive-limits-utils.js';
+} from '../../../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import PropTypes from 'prop-types';
@@ -62,6 +62,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { getFrequencyRegulationSchema } from '../../../frequency-regulation/frequency-regulation-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

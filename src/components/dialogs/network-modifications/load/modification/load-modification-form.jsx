@@ -12,7 +12,7 @@ import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
 import { useIntl } from 'react-intl';
 import { Grid, TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form.js';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 

@@ -34,7 +34,7 @@ import {
     getConnectivityData,
     getConnectivityWithoutPositionEmptyFormData,
     getConnectivityWithoutPositionValidationSchema,
-} from '../../connectivity/connectivity-form-utils.js';
+} from '../../connectivity/connectivity-form-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { linesAttachToSplitLines } from '../../../../services/study/network-modifications';
@@ -108,6 +108,7 @@ const LinesAttachToSplitLinesDialog = ({
                 ...getConnectivityData({
                     voltageLevelId: editData[VOLTAGE_LEVEL_ID],
                     busbarSectionId: editData[BUS_BAR_SECTION_ID],
+                    busbarSectionName: undefined,
                 }),
             });
         }

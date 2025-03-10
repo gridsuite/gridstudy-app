@@ -29,7 +29,6 @@ import {
     AutocompleteInput,
     Identifiable,
     IntegerInput,
-    Option,
     SelectInput,
     SwitchInput,
     TextInput,
@@ -67,7 +66,7 @@ export interface ConnectivityFormProps {
     direction?: GridDirection;
     withDirectionsInfos: boolean;
     withPosition: boolean;
-    voltageLevelOptions?: Option[];
+    voltageLevelOptions?: Identifiable[];
     newBusOrBusbarSectionOptions?: [];
     studyUuid: UUID;
     currentRootNetworkUuid?: UUID | null;
@@ -77,7 +76,7 @@ export interface ConnectivityFormProps {
     previousValues?: { connectablePosition?: ConnectablePositionFormInfos; terminalConnected?: boolean | null };
 }
 
-export default function ConnectivityForm({
+export function ConnectivityForm({
     id = CONNECTIVITY,
     voltageLevelSelectLabel = 'VOLTAGE_LEVEL',
     direction = 'row',
@@ -111,9 +110,9 @@ export default function ConnectivityForm({
         }
         if (watchVoltageLevelId) {
             const existingVoltageLevelOption = voltageLevelOptions?.find(
-                (option) => option?.id === watchVoltageLevelId
+                (option: Identifiable) => option?.id === watchVoltageLevelId
             );
-            if (existingVoltageLevelOption) {
+            if (existingVoltageLevelOption && currentNodeUuid && currentRootNetworkUuid) {
                 fetchBusesOrBusbarSectionsForVoltageLevel(
                     studyUuid,
                     currentNodeUuid,
@@ -165,23 +164,33 @@ export default function ConnectivityForm({
         <AutocompleteInput
             name={`${id}.${VOLTAGE_LEVEL}.${ID}`}
             label={voltageLevelSelectLabel}
-            options={voltageLevelOptions ?? []}
+            options={voltageLevelOptions.map((item) => ({
+                id: item.id,
+                label: item?.name ?? '',
+            }))}
             disabled={isEquipmentModification}
             size={'small'}
         />
     ) : (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
-            outputTransform={(value) =>
-                typeof value === 'string' ? getConnectivityVoltageLevelData({ voltageLevelId: value }) : value
-            }
+            outputTransform={(value) => {
+                if (typeof value === 'string') {
+                    const data = getConnectivityVoltageLevelData({ voltageLevelId: value });
+                    return { id: data?.id ?? '', label: '' };
+                }
+                return value;
+            }}
             onChangeCallback={handleChange}
             allowNewValue
             forcePopupIcon
             selectOnFocus
             name={`${id}.${VOLTAGE_LEVEL}`}
             label={voltageLevelSelectLabel}
-            options={voltageLevelOptions}
+            options={voltageLevelOptions.map((item) => ({
+                id: item.id,
+                label: item?.name ?? '',
+            }))}
             getOptionLabel={getObjectId}
             size={'small'}
         />
@@ -197,7 +206,11 @@ export default function ConnectivityForm({
     }, [intl, previousValues, isEquipmentModification]);
 
     const connectedField = isEquipmentModification ? (
-        <CheckboxNullableInput name={`${id}.${CONNECTED}`} label="connected" previousValue={previousConnectedField} />
+        <CheckboxNullableInput
+            name={`${id}.${CONNECTED}`}
+            label="connected"
+            previousValue={previousConnectedField ?? undefined}
+        />
     ) : (
         <SwitchInput name={`${id}.${CONNECTED}`} label="connected" />
     );
@@ -222,13 +235,13 @@ export default function ConnectivityForm({
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
             inputTransform={(value) => (value === null ? '' : value)}
-            outputTransform={(value) =>
-                typeof value === 'string'
-                    ? getConnectivityBusBarSectionData({
-                          busbarSectionId: value,
-                      })
-                    : value
-            }
+            outputTransform={(value) => {
+                if (typeof value === 'string') {
+                    const data = getConnectivityBusBarSectionData({ busbarSectionId: value });
+                    return { id: data?.id ?? '', label: '' };
+                }
+                return value;
+            }}
             size={'small'}
         />
     );
@@ -237,7 +250,9 @@ export default function ConnectivityForm({
         <TextInput
             name={`${id}.${CONNECTION_NAME}`}
             label="ConnectionName"
-            previousValue={isEquipmentModification ? previousValues?.connectablePosition?.connectionName : undefined}
+            previousValue={
+                isEquipmentModification ? previousValues?.connectablePosition?.connectionName ?? undefined : undefined
+            }
         />
     );
 
@@ -249,12 +264,13 @@ export default function ConnectivityForm({
         <SelectInput
             name={`${id}.${CONNECTION_DIRECTION}`}
             label="ConnectionDirection"
-            options={CONNECTION_DIRECTIONS}
+            options={Object.values(CONNECTION_DIRECTIONS)}
             previousValue={
-                previousConnectionDirectionLabel &&
-                intl.formatMessage({
-                    id: previousConnectionDirectionLabel,
-                })
+                (previousConnectionDirectionLabel &&
+                    intl.formatMessage({
+                        id: previousConnectionDirectionLabel,
+                    })) ??
+                undefined
             }
             fullWidth
             size={'small'}
@@ -273,27 +289,34 @@ export default function ConnectivityForm({
         <IntegerInput
             name={`${id}.${CONNECTION_POSITION}`}
             label="ConnectionPosition"
-            previousValue={isEquipmentModification ? previousValues?.connectablePosition?.connectionPosition : null}
+            previousValue={
+                isEquipmentModification
+                    ? previousValues?.connectablePosition?.connectionPosition ?? undefined
+                    : undefined
+            }
             clearable={true}
         />
     );
 
     const newPositionIconField = (
         <IconButton
-            {...(isNodeBuilt(currentNode) && watchVoltageLevelId && { onClick: handleClickOpenDiagramPane })}
-            disableRipple={!isNodeBuilt(currentNode) || !watchVoltageLevelId}
+            {...(currentNode &&
+                isNodeBuilt(currentNode) &&
+                watchVoltageLevelId && { onClick: handleClickOpenDiagramPane })}
+            disableRipple={(currentNode && !isNodeBuilt(currentNode)) || !watchVoltageLevelId}
             edge="start"
         >
             <Tooltip
                 title={intl.formatMessage({
-                    id: !isNodeBuilt(currentNode)
-                        ? 'NodeNotBuildPositionMessage'
-                        : watchVoltageLevelId
-                        ? 'DisplayTakenPositions'
-                        : 'NoVoltageLevelPositionMessage',
+                    id:
+                        currentNode && !isNodeBuilt(currentNode)
+                            ? 'NodeNotBuildPositionMessage'
+                            : watchVoltageLevelId
+                            ? 'DisplayTakenPositions'
+                            : 'NoVoltageLevelPositionMessage',
                 })}
             >
-                {isNodeBuilt(currentNode) && watchVoltageLevelId ? (
+                {currentNode && isNodeBuilt(currentNode) && watchVoltageLevelId ? (
                     <ExploreOutlinedIcon color="action" />
                 ) : (
                     <ExploreOffOutlinedIcon color="action" />
@@ -307,30 +330,30 @@ export default function ConnectivityForm({
     return (
         <>
             <Grid container direction={direction || 'row'} spacing={2} columns={24}>
-                <Grid item xs={conditionalSize} align="start">
+                <Grid item xs={conditionalSize} sx={{ align: 'start' }}>
                     {newVoltageLevelField}
                 </Grid>
-                <Grid item xs={conditionalSize} align="start">
+                <Grid item xs={conditionalSize} sx={{ align: 'start' }}>
                     {newBusOrBusbarSectionField}
                 </Grid>
 
                 {withDirectionsInfos && (
                     <>
-                        <Grid item xs={conditionalSize} align="start">
+                        <Grid item xs={conditionalSize} sx={{ align: 'start' }}>
                             {connectedField}
                         </Grid>
-                        <Grid item xs={conditionalSize} align="start">
+                        <Grid item xs={conditionalSize} sx={{ align: 'start' }}>
                             {newConnectionNameField}
                         </Grid>
-                        <Grid item xs={conditionalSize} align="start">
+                        <Grid item xs={conditionalSize} sx={{ align: 'start' }}>
                             {newConnectionDirectionField}
                         </Grid>
                         {withPosition && (
                             <>
-                                <Grid xs={conditionalSize - 1} item align="start">
+                                <Grid xs={conditionalSize - 1} item sx={{ align: 'start' }}>
                                     {newConnectionPositionField}
                                 </Grid>
-                                <Grid xs={1} item align="start">
+                                <Grid xs={1} item sx={{ align: 'start' }}>
                                     {newPositionIconField}
                                 </Grid>
                             </>
@@ -338,14 +361,16 @@ export default function ConnectivityForm({
                     </>
                 )}
             </Grid>
-            <PositionDiagramPane
-                studyUuid={studyUuid}
-                open={isDiagramPaneOpen}
-                onClose={handleCloseDiagramPane}
-                voltageLevelId={{ id: watchVoltageLevelId }}
-                currentNodeUuid={currentNodeUuid}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-            />
+            {currentNodeUuid && currentRootNetworkUuid && (
+                <PositionDiagramPane
+                    studyUuid={studyUuid}
+                    open={isDiagramPaneOpen}
+                    onClose={handleCloseDiagramPane}
+                    voltageLevelId={{ id: watchVoltageLevelId }}
+                    currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
+            )}
         </>
     );
 }

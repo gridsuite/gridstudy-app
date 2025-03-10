@@ -139,7 +139,7 @@ import {
     getCon1andCon2WithPositionValidationSchema,
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';
 import {
     getBranchActiveReactivePowerEditData,

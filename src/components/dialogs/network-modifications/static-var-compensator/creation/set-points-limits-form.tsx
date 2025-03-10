@@ -20,7 +20,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
+import { FloatInput, Identifiable, SelectInput } from '@gridsuite/commons-ui';
 import { ReactivePowerAdornment, SusceptanceAdornment, VoltageAdornment } from '../../../dialog-utils';
 import { useWatch } from 'react-hook-form';
 import { FunctionComponent } from 'react';
@@ -31,12 +31,13 @@ import { FormattedMessage } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 
 export interface SetPointsLimitsFormProps {
     studyUuid: UUID;
-    currentNode: { id: UUID };
+    currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    voltageLevelOptions: any;
+    voltageLevelOptions: Identifiable[];
 }
 export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = ({
     studyUuid,

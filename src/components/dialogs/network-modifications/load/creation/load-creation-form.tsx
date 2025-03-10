@@ -17,7 +17,7 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
-import ConnectivityForm from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 
 export interface LoadCreationFormProps {
     studyUuid: UUID;

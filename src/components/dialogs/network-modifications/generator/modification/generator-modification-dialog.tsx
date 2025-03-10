@@ -236,7 +236,6 @@ export function GeneratorModificationDialog({
                     connectionDirection: editData?.connectionDirection?.value ?? null,
                     connectionPosition: editData?.connectionPosition?.value ?? null,
                     terminalConnected: editData?.terminalConnected?.value ?? null,
-                    isEquipmentModification: true,
                 }),
                 ...getReactiveLimitsFormData({
                     id: REACTIVE_LIMITS,
@@ -478,7 +477,7 @@ export function GeneratorModificationDialog({
                         fillerHeight={17}
                     />
                 )}
-                {selectedId != null && (
+                {selectedId != null && currentNode && currentRootNetworkUuid && (
                     <GeneratorModificationForm
                         studyUuid={studyUuid}
                         currentNode={currentNode}

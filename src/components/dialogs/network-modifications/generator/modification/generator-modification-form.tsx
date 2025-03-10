@@ -20,6 +20,7 @@ import {
     REACTIVE_LIMITS,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
+    VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, MVAPowerAdornment, OhmAdornment } from '../../../dialog-utils';
 import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constants';
@@ -35,12 +36,15 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import FrequencyRegulation from '../../../frequency-regulation/frequency-regulation';
 import { GeneratorFormInfos } from '../generator-dialog.type';
-import ConnectivityForm from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import VoltageRegulationForm from '../../../voltage-regulation/voltage-regulation';
+import { useWatch } from 'react-hook-form';
+import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 
 export interface GeneratorModificationFormProps {
     studyUuid: UUID;
-    currentNode: CurrentTreeNode | null;
-    currentRootNetworkUuid: UUID | null;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
     generatorToModify: GeneratorFormInfos | null;
     updatePreviousReactiveCapabilityCurveTable?: (action: string, index: number) => void;
     equipmentId: string;
@@ -56,6 +60,9 @@ export default function GeneratorModificationForm({
 }: Readonly<GeneratorModificationFormProps>) {
     const currentNodeUuid: UUID | null = currentNode?.id ?? null;
     const intl = useIntl();
+    const watchVoltageRegulation = useWatch({
+        name: VOLTAGE_REGULATION,
+    });
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const energySourceLabelId = getEnergySourceLabel(generatorToModify?.energySource);
@@ -64,6 +71,16 @@ export default function GeneratorModificationForm({
               id: energySourceLabelId,
           })
         : undefined;
+
+    const previousRegulation = () => {
+        if (generatorToModify?.voltageRegulatorOn) {
+            return intl.formatMessage({ id: 'On' });
+        }
+        if (generatorToModify?.voltageRegulatorOn === false) {
+            return intl.formatMessage({ id: 'Off' });
+        }
+        return null;
+    };
 
     const generatorIdField = (
         <TextField
@@ -204,6 +221,31 @@ export default function GeneratorModificationForm({
         />
     );
 
+    const voltageRegulationField = (
+        <Box>
+            <CheckboxNullableInput
+                name={VOLTAGE_REGULATION}
+                label={'VoltageRegulationText'}
+                previousValue={previousRegulation() ?? undefined}
+            />
+        </Box>
+    );
+
+    const voltageRegulationFields = (
+        <VoltageRegulationForm
+            studyUuid={studyUuid}
+            currentNodeUuid={currentNodeUuid}
+            currentRootNetworkUuid={currentRootNetworkUuid}
+            voltageLevelOptions={voltageLevelOptions}
+            previousTargetV={generatorToModify?.targetP}
+            previousQPercent={generatorToModify?.qPercent}
+            previousRegulatingTerminalVlId={generatorToModify?.regulatingTerminalVlId}
+            previousRegulatingTerminalConnectableId={generatorToModify?.regulatingTerminalConnectableId}
+            previousRegulatingTerminalConnectableType={generatorToModify?.regulatingTerminalConnectableType}
+            isEquipmentModification={true}
+        />
+    );
+
     return (
         <>
             <Grid container spacing={2}>
@@ -254,11 +296,21 @@ export default function GeneratorModificationForm({
                 previousValuesTargetQ={generatorToModify?.targetQ}
             />
 
-            <Box sx={{ width: '100%' }} />
-            <FrequencyRegulation
-                isEquipmentModification={true}
-                previousValues={generatorToModify?.activePowerControl}
-            />
+            <Grid container spacing={2} paddingTop={2}>
+                <Box sx={{ width: '100%' }} />
+                <GridItem
+                    tooltip={watchVoltageRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />}
+                    size={4}
+                >
+                    {voltageRegulationField}
+                </GridItem>
+                {voltageRegulationFields}
+                <Box sx={{ width: '100%' }} />
+                <FrequencyRegulation
+                    isEquipmentModification={true}
+                    previousValues={generatorToModify?.activePowerControl}
+                />
+            </Grid>
 
             {/* Short Circuit of start part */}
             <GridSection title="ShortCircuit" />

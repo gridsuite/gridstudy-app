@@ -8,7 +8,7 @@
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
-import { EquipmentInfos, EquipmentType, createFilter, NewFilterType } from '@gridsuite/commons-ui';
+import { createFilter, EquipmentInfos, EquipmentType, NewFilterType } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
@@ -59,8 +59,8 @@ export function fetchVoltageLevelEquipments(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds?: string[],
     voltageLevelId: string,
+    substationsIds?: string[],
     inUpstreamBuiltParentNode?: boolean
 ) {
     console.info(

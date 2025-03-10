@@ -256,7 +256,6 @@ export function GeneratorCreationDialog({
                     connectionName: generator.connectablePosition.connectionName,
                     connectionPosition: undefined,
                     terminalConnected: undefined,
-                    isEquipmentModification: false,
                 }),
                 ...copyEquipmentPropertiesForCreation({ properties: generator.properties }),
             },

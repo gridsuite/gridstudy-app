@@ -24,9 +24,9 @@ interface VoltageRegulationFormProps {
     voltageLevelOptions: Identifiable[];
     previousTargetV?: number;
     previousQPercent?: number;
-    previousRegulatingTerminalVlId: string | null;
-    previousRegulatingTerminalConnectableId: string | null;
-    previousRegulatingTerminalConnectableType: string | null;
+    previousRegulatingTerminalVlId?: string | null;
+    previousRegulatingTerminalConnectableId?: string | null;
+    previousRegulatingTerminalConnectableType?: string | null;
     isEquipmentModification: boolean;
 }
 

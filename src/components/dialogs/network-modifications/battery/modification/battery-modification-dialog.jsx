@@ -8,7 +8,7 @@
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -43,18 +43,14 @@ import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
-} from '../../../reactive-limits/reactive-limits-utils.js';
+} from '../../../reactive-limits/reactive-limits-utils';
 import {
     REMOVE,
     setCurrentReactiveCapabilityCurveTable,
-} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils.js';
+} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import {
-    getFrequencyRegulationEmptyFormData,
-    getFrequencyRegulationSchema,
-} from '../../../set-points/set-points-utils';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
@@ -69,8 +65,12 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import {
+    getFrequencyRegulationEmptyFormData,
+    getFrequencyRegulationSchema,
+} from '../../../frequency-regulation/frequency-regulation-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -201,7 +201,7 @@ const BatteryModificationDialog = ({
                     studyUuid,
                     currentNode.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.BATTERY,
+                    EquipmentType.BATTERY,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -328,7 +328,7 @@ const BatteryModificationDialog = ({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.BATTERY}
+                        equipmentType={EquipmentType.BATTERY}
                         fillerHeight={17}
                     />
                 )}

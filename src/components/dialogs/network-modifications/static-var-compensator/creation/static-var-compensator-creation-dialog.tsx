@@ -193,7 +193,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                         connectionName: staticCompensator.connectablePosition.connectionName ?? null,
                         connectionPosition: undefined,
                         terminalConnected: undefined,
-                        isEquipmentModification: false,
                     }),
                     ...getReactiveFormData({
                         maxSusceptance: staticCompensator.maxSusceptance ?? null,
@@ -246,7 +245,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     connectionName: staticCompensator.connectionName,
                     connectionPosition: staticCompensator.connectionPosition,
                     terminalConnected: staticCompensator.terminalConnected,
-                    isEquipmentModification: false,
                 }),
                 ...getReactiveFormData({
                     maxSusceptance: staticCompensator.maxSusceptance ?? null,

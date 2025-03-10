@@ -15,7 +15,7 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import { UUID } from 'crypto';
 import GridItem from '../../../commons/grid-item';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
-import ConnectivityForm from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { CONNECTIVITY } from '../../../../utils/field-constants';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 

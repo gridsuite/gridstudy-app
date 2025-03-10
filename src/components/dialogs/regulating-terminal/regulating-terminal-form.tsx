@@ -5,24 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FilterOptionsState, Grid, Popper } from '@mui/material';
+import { FilterOptionsState, Grid, Popper, PopperProps } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import { EQUIPMENT, ID, TYPE, VOLTAGE_LEVEL } from 'components/utils/field-constants';
+import { EQUIPMENT, ID, VOLTAGE_LEVEL } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, Identifiable } from '@gridsuite/commons-ui';
+import { AutocompleteInput, Equipment, Identifiable, Option } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';
 import { UUID } from 'crypto';
 import { GridDirection } from '@mui/material/Grid/Grid';
-import { Option } from '@gridsuite/commons-ui/dist/utils/types/types';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
-const filter = createFilterOptions();
-
+const filter = createFilterOptions() as (options: Option[], params: FilterOptionsState<Option>) => Option[];
 // Specific Popper component to be used with Autocomplete
 // This allows the popper to fit its content, which is not the case by default
-const FittingPopper = (props) => {
+const FittingPopper = (props: PopperProps) => {
     const { style, ...otherProps } = props; // We filter out the "style" props to remove the width provided by the autocomplete input field.
     return <Popper {...otherProps} placement="bottom-start" />;
 };
@@ -34,7 +32,7 @@ interface RegulatingTerminalFormProps {
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    voltageLevelOptions: Option[];
+    voltageLevelOptions: Identifiable[];
     equipmentSectionTypeDefaultValue?: string | null;
     previousRegulatingTerminalValue?: string | null;
     previousEquipmentSectionTypeValue?: string | null;
@@ -52,7 +50,7 @@ export default function RegulatingTerminalForm({
     previousRegulatingTerminalValue,
     previousEquipmentSectionTypeValue,
 }: Readonly<RegulatingTerminalFormProps>) {
-    const [equipmentsOptions, setEquipmentsOptions] = useState([]);
+    const [equipmentsOptions, setEquipmentsOptions] = useState<Equipment[]>([]);
     const { setValue } = useFormContext();
 
     const watchVoltageLevelId = useWatch({
@@ -65,8 +63,8 @@ export default function RegulatingTerminalForm({
                 studyUuid,
                 currentNodeUuid,
                 currentRootNetworkUuid,
-                undefined,
                 watchVoltageLevelId,
+                undefined,
                 true
             ).then((values) => {
                 setEquipmentsOptions(values);
@@ -86,7 +84,7 @@ export default function RegulatingTerminalForm({
                 <Grid
                     item
                     xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
-                    align="start"
+                    sx={{ align: 'start' }}
                 >
                     {
                         <AutocompleteInput
@@ -99,8 +97,11 @@ export default function RegulatingTerminalForm({
                             selectOnFocus
                             disabled={disabled}
                             id="voltage-level"
-                            options={voltageLevelOptions}
-                            getOptionLabel={(vl) => vl?.id ?? ''}
+                            options={voltageLevelOptions.map((item) => ({
+                                id: item.id,
+                                label: item?.name ?? '',
+                            }))}
+                            getOptionLabel={(vl) => (typeof vl !== 'string' ? vl?.id ?? '' : '')}
                             onChangeCallback={resetEquipment}
                             previousValue={previousRegulatingTerminalValue ?? undefined}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
@@ -113,8 +114,8 @@ export default function RegulatingTerminalForm({
                                     !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
                                 ) {
                                     filtered.push({
-                                        inputValue: params.inputValue,
-                                        [ID]: params.inputValue,
+                                        id: params.inputValue,
+                                        label: params.inputValue,
                                     });
                                 }
                                 return filtered;
@@ -126,7 +127,7 @@ export default function RegulatingTerminalForm({
                 <Grid
                     item
                     xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
-                    align="start"
+                    sx={{ align: 'start' }}
                 >
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                              it clears the field when blur event is raised, which actually forces the user to validate free input
@@ -148,23 +149,35 @@ export default function RegulatingTerminalForm({
                             id="equipment"
                             disabled={!watchVoltageLevelId || disabled}
                             previousValue={previousEquipmentSectionTypeValue ?? undefined}
-                            options={equipmentsOptions}
+                            options={equipmentsOptions.map((item) => ({
+                                id: item.id,
+                                label: item?.type ?? '',
+                            }))}
                             getOptionLabel={(equipment) => {
-                                return equipment === ''
-                                    ? '' // to clear field
-                                    : (equipment?.[TYPE] ?? equipmentSectionTypeDefaultValue) +
-                                          ' : ' +
-                                          equipment?.[ID] || '';
+                                if (equipment === '') {
+                                    return '';
+                                }
+                                if (typeof equipment === 'string') {
+                                    return equipment;
+                                }
+
+                                const id = equipment?.id || '';
+                                const type = equipment?.label ?? equipmentSectionTypeDefaultValue;
+
+                                return type + ' : ' + id;
                             }}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                          */
                             filterOptions={(options, params) => {
                                 const filtered = filter(options, params);
-                                if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
+                                if (
+                                    params.inputValue !== '' &&
+                                    !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
+                                ) {
                                     filtered.push({
-                                        [TYPE]: equipmentSectionTypeDefaultValue,
-                                        [ID]: params.inputValue,
+                                        label: equipmentSectionTypeDefaultValue ?? '',
+                                        id: params.inputValue,
                                     });
                                 }
                                 return filtered;

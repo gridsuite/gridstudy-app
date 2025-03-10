@@ -113,7 +113,6 @@ export function LoadCreationDialog({
             connectionName: load.connectablePosition.connectionName,
             connectionPosition: undefined,
             terminalConnected: undefined,
-            isEquipmentModification: false,
             // terminalConnected is not copied on purpose: we use the default value (true) in all cases
         }),
         ...copyEquipmentPropertiesForCreation({ properties: load.properties }),
