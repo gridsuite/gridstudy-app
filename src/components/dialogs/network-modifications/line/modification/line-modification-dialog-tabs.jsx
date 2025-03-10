@@ -46,7 +46,7 @@ const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetwork
                 />
             </Box>
 
-            <Box hidden={tabIndex !== LineModificationDialogTab.MEASUREMENTS_TAB} p={1}>
+            <Box hidden={tabIndex !== LineModificationDialogTab.STATE_ESTIMATION_TAB} p={1}>
                 <BranchActiveReactivePowerMeasurementsForm equipmentToModify={lineToModify} />
             </Box>
         </>
