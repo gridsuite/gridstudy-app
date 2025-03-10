@@ -220,7 +220,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         tableDefinition?.type,
         formatFetchedEquipmentsHandler,
-        highlightUpdatedEquipment
+        highlightUpdatedEquipment,
+        nodeAliases
     );
 
     useEffect(() => {

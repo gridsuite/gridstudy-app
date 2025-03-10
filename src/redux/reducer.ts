@@ -179,12 +179,10 @@ import {
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
     UPDATE_COLUMNS_DEFINITION,
-    UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UPDATE_TABLE_DEFINITION,
     UpdateColumnsDefinitionsAction,
-    UpdateCustomColumnsNodesAliasesAction,
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
     UpdateTableDefinitionAction,
@@ -487,7 +485,6 @@ export interface AppState extends CommonStoreState {
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     gsFilterSpreadsheetState: GsFilterSpreadsheetState;
-    customColumnsNodesAliases: NodeAlias[];
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     [PARAM_THEME]: GsTheme;
@@ -641,7 +638,6 @@ const initialState: AppState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
-    customColumnsNodesAliases: initialCustomColumnsNodesAliases,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1521,10 +1517,6 @@ export const reducer = createReducer(initialState, (builder) => {
             },
             {} as Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>
         );
-    });
-
-    builder.addCase(UPDATE_CUSTOM_COLUMNS_NODES_ALIASES, (state, action: UpdateCustomColumnsNodesAliasesAction) => {
-        state.customColumnsNodesAliases = action.nodesAliases;
     });
 
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {

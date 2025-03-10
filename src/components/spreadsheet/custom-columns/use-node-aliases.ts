@@ -6,23 +6,17 @@
  */
 
 import type { AppState } from '../../../redux/reducer';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases } from '../../../services/study/node-alias';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from './node-alias.type';
-import { updateCustomColumnsNodesAliases } from '../../../redux/actions';
 import { AppDispatch } from '../../../redux/store';
 
-export interface UseNodeAliasProps {
-    nodeAliases: NodeAlias[];
-    setNodeAliases: (newNodeAliases: NodeAlias[]) => void;
-}
-
-export const useNodeAliases = (): UseNodeAliasProps => {
+export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const nodeAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
+    const [nodeAliases, _setNodeAliases] = useState<NodeAlias[]>([]);
 
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
@@ -30,16 +24,16 @@ export const useNodeAliases = (): UseNodeAliasProps => {
     useEffect(() => {
         if (!!studyUuid && !!currentNode?.id) {
             getNodeAliases(studyUuid, currentNode.id)
-                .then((_nodeAliases) => dispatch(updateCustomColumnsNodesAliases(_nodeAliases)))
+                .then((_nodeAliases) => _setNodeAliases(_nodeAliases))
                 .catch((error) => {
-                    dispatch(updateCustomColumnsNodesAliases([]));
+                    _setNodeAliases([]);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'nodeAliasesRetrievingError',
                     });
                 });
         } else {
-            dispatch(updateCustomColumnsNodesAliases([]));
+            _setNodeAliases([]);
         }
     }, [currentNode?.id, dispatch, snackError, studyUuid]);
 
@@ -47,7 +41,7 @@ export const useNodeAliases = (): UseNodeAliasProps => {
         (newNodeAliases: NodeAlias[]) => {
             if (!!studyUuid && !!currentNode?.id) {
                 updateNodeAliases(studyUuid, currentNode.id, newNodeAliases)
-                    .then((r) => dispatch(updateCustomColumnsNodesAliases(newNodeAliases)))
+                    .then((r) => _setNodeAliases(newNodeAliases))
                     .catch((error) =>
                         snackError({
                             messageTxt: error.message,
