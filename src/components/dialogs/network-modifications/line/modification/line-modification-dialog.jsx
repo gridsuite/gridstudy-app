@@ -99,6 +99,7 @@ import {
     getBranchActiveReactivePowerValidationSchema,
 } from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
 import { LineModificationDialogTab } from '../line-utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
 
 /**
  * Dialog to modify a line in the network
@@ -442,7 +443,13 @@ const LineModificationDialog = ({
     );
 
     return (
-        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
