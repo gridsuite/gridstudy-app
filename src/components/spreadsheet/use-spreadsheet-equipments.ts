@@ -26,6 +26,7 @@ import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
+import { useNodeAliases } from './custom-columns/use-node-aliases';
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 
@@ -45,7 +46,7 @@ export const useSpreadsheetEquipments = (
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
-    const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
+    const { nodeAliases } = useNodeAliases();
 
     const nodesIdToFetch = useMemo(() => {
         let nodesIdToFetch = new Set<string>();
@@ -57,13 +58,13 @@ export const useSpreadsheetEquipments = (
             nodesIdToFetch.add(currentNode?.id as string);
         }
         //Then we do the same for the other nodes we need the data of (the ones defined in aliases)
-        nodesAliases.forEach((nodeAlias) => {
+        nodeAliases.forEach((nodeAlias) => {
             if (equipments.nodesId.find((nodeId) => nodeId === nodeAlias.id) === undefined) {
                 nodesIdToFetch.add(nodeAlias.id);
             }
         });
         return nodesIdToFetch;
-    }, [currentNode?.id, equipments, nodesAliases]);
+    }, [currentNode?.id, equipments, nodeAliases]);
 
     const shouldFetchEquipments = useMemo(() => nodesIdToFetch.size > 0, [nodesIdToFetch]);
 
@@ -83,13 +84,13 @@ export const useSpreadsheetEquipments = (
         Object.values(allEquipments).forEach((value) => {
             unwantedFetchedNodes = new Set([...unwantedFetchedNodes, ...value.nodesId]);
         });
-        const usedNodesId = new Set(nodesAliases.map((nodesAlias) => nodesAlias.id));
+        const usedNodesId = new Set(nodeAliases.map((nodeAlias) => nodeAlias.id));
         usedNodesId.add(currentNodeId);
         usedNodesId.forEach((nodeId) => unwantedFetchedNodes.delete(nodeId));
         if (unwantedFetchedNodes.size !== 0) {
             dispatch(removeNodeData(Array.from(unwantedFetchedNodes)));
         }
-    }, [dispatch, nodesAliases, currentNode, allEquipments]);
+    }, [dispatch, nodeAliases, currentNode, allEquipments]);
 
     useEffect(() => {
         if (!type) {

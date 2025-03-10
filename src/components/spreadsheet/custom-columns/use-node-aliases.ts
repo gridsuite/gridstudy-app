@@ -6,7 +6,7 @@
  */
 
 import type { AppState } from '../../../redux/reducer';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases } from '../../../services/study/node-alias';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -17,34 +17,30 @@ import { AppDispatch } from '../../../redux/store';
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const [nodeAliases, _setNodeAliases] = useState<NodeAlias[]>([]);
+    const nodeAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
 
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch<AppDispatch>();
 
-    console.log(nodeAliases);
     useEffect(() => {
         if (currentNode?.id) {
             getNodeAliases(studyUuid, currentNode?.id)
-                .then((_nodeAliases) => _setNodeAliases(_nodeAliases))
+                .then((_nodeAliases) => dispatch(updateCustomColumnsNodesAliases(_nodeAliases)))
                 .catch((error) => {
-                    _setNodeAliases([]);
+                    dispatch(updateCustomColumnsNodesAliases([]));
                     snackError({
                         messageTxt: error.message,
                         headerId: 'nodeAliasesRetrievingError',
                     });
                 });
         }
-    }, [currentNode?.id, snackError, studyUuid]);
+    }, [currentNode?.id, dispatch, snackError, studyUuid]);
 
     const setNodeAliases = useCallback(
         (newNodeAliases: NodeAlias[]) => {
             if (currentNode?.id) {
                 updateNodeAliases(studyUuid, currentNode?.id, newNodeAliases)
-                    .then((r) => {
-                        _setNodeAliases(newNodeAliases);
-                        dispatch(updateCustomColumnsNodesAliases(newNodeAliases));
-                    })
+                    .then((r) => dispatch(updateCustomColumnsNodesAliases(newNodeAliases)))
                     .catch((error) =>
                         snackError({
                             messageTxt: error.message,
