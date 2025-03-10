@@ -50,10 +50,10 @@ export const updateRootNetwork = (
     rootNetworkUuid: UUID,
     name: string,
     tag: string,
-    caseUuid: UUID,
-    caseFormat: string,
+    caseUuid: UUID | null,
+    caseFormat: string | null,
     studyUuid: UUID,
-    importParameters: Record<string, any>
+    importParameters: Record<string, any> | null
 ) => {
     // Create an object of parameters to be appended to the URL
     const params = { caseUuid, caseFormat, name, tag };

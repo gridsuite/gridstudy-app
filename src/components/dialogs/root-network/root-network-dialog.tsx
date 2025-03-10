@@ -18,6 +18,7 @@ import ModificationDialog from '../commons/modificationDialog';
 import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
+import { RootNetworkMetadata } from 'components/graph/menus/network-modification-menu.type';
 
 export interface FormData {
     [NAME]: string;
@@ -32,8 +33,7 @@ interface RootNetworkDialogProps {
     onClose: () => void;
     titleId: string;
     dialogProps?: any;
-    editableRootNetwork?: any; // Optional: for modification
-    isCreationMode: boolean; // Flag to indicate whether it's for creation or modification
+    editableRootNetwork?: RootNetworkMetadata; // Optional: for modification
 }
 const creationFormSchema = yup
     .object()
@@ -48,10 +48,10 @@ const creationFormSchema = yup
 const modificationFormSchema = yup
     .object()
     .shape({
-        [NAME]: yup.string().trim().optional(),
-        [TAG]: yup.string().trim().optional(),
-        [CASE_NAME]: yup.string().optional(),
-        [CASE_ID]: yup.string().optional(),
+        [NAME]: yup.string().trim().required(),
+        [TAG]: yup.string().trim().required(),
+        [CASE_NAME]: yup.string(),
+        [CASE_ID]: yup.string(),
     })
     .required();
 
@@ -71,13 +71,12 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     titleId,
     dialogProps,
     editableRootNetwork,
-    isCreationMode,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(isCreationMode ? creationFormSchema : modificationFormSchema),
+        resolver: yupResolver(editableRootNetwork ? modificationFormSchema : creationFormSchema),
     });
 
     const {
@@ -88,15 +87,13 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
 
     // Reset the form values when editableRootNetwork is available (for modification mode)
     useEffect(() => {
-        if (open && editableRootNetwork && !isCreationMode) {
+        if (open && editableRootNetwork) {
             reset({
-                [NAME]: editableRootNetwork.name || '',
-                [TAG]: editableRootNetwork.tag || '',
-                [CASE_NAME]: editableRootNetwork.caseName || '',
-                [CASE_ID]: editableRootNetwork.caseId || '',
+                [NAME]: editableRootNetwork?.name,
+                [TAG]: editableRootNetwork?.tag,
             });
         }
-    }, [editableRootNetwork, open, reset, isCreationMode]);
+    }, [editableRootNetwork, open, reset]);
 
     // Clear form and reset selected case
     const clear = useCallback(() => {
@@ -105,7 +102,12 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
 
     // Set selected case when a case is selected
     const onSelectCase = (selectedCase: TreeViewFinderNodeProps) => {
-        if (!formMethods.getValues(NAME)) {
+        if (!formMethods.getValues(NAME) && !editableRootNetwork) {
+            setValue(NAME, selectedCase.name, {
+                shouldDirty: true,
+            }); // Set the name from the selected case
+        }
+        if (editableRootNetwork) {
             setValue(NAME, selectedCase.name, {
                 shouldDirty: true,
             }); // Set the name from the selected case
@@ -130,7 +132,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
 
     return (
         <CustomFormProvider
-            validationSchema={isCreationMode ? creationFormSchema : modificationFormSchema}
+            validationSchema={editableRootNetwork ? modificationFormSchema : creationFormSchema}
             {...formMethods}
         >
             <ModificationDialog

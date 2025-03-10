@@ -4,12 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    COLUMN_TYPES,
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-header.type';
+import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '../utils/cell-renderers';
 import { ColDef } from 'ag-grid-community';
@@ -22,6 +17,11 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
 export const textColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {

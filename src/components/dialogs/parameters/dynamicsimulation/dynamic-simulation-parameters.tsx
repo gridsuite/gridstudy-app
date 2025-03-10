@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../utils/yup-config';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
@@ -37,45 +36,24 @@ import ProviderParam from '../common/ProviderParam';
 import { SolverInfos } from 'services/study/dynamic-simulation.type';
 import {
     Curve,
-    MAPPING,
-    NETWORK,
-    Solver,
-    TimeDelay,
     curveEmptyFormData,
-    curveFormSchema,
+    MAPPING,
     mappingEmptyFormData,
-    mappingFormSchema,
+    NETWORK,
     networkEmptyFormData,
-    networkFormSchema,
+    Solver,
     solverEmptyFormData,
-    solverFormSchema,
+    TimeDelay,
     timeDelayEmptyFormData,
-    timeDelayFormSchema,
 } from './dynamic-simulation-utils';
 import { useParametersBackend } from '../use-parameters-backend';
 import { styles } from '../parameters-style';
-
-enum TAB_VALUES {
-    TIME_DELAY = 'timeDelay',
-    SOLVER = 'solver',
-    MAPPING = 'mapping',
-    NETWORK = 'network',
-    CURVE = 'curve',
-}
+import { DynamicSimulationForm, formSchema, TAB_VALUES } from './dynamic-simulation.type';
 
 interface DynamicSimulationParametersProps {
     user: User | null;
     setHaveDirtyFields: (haveDirtyFields: boolean) => void;
 }
-
-const formSchema = yup.object().shape({
-    [PROVIDER]: yup.string().required(),
-    [TAB_VALUES.TIME_DELAY]: timeDelayFormSchema,
-    [TAB_VALUES.SOLVER]: solverFormSchema,
-    [TAB_VALUES.MAPPING]: mappingFormSchema,
-    [TAB_VALUES.NETWORK]: networkFormSchema,
-    [TAB_VALUES.CURVE]: curveFormSchema,
-});
 
 const emptyFormData = {
     [PROVIDER]: '',
@@ -85,8 +63,6 @@ const emptyFormData = {
     [TAB_VALUES.NETWORK]: { ...networkEmptyFormData },
     [TAB_VALUES.CURVE]: { ...curveEmptyFormData },
 };
-
-export type DynamicSimulationForm = yup.InferType<typeof formSchema>;
 
 const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParametersProps> = ({
     user,
