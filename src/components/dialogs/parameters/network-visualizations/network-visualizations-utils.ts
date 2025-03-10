@@ -6,7 +6,8 @@
  */
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import { MAP_BASEMAP_CARTO, MAP_BASEMAP_CARTO_NOLABEL, MAP_BASEMAP_MAPBOX } from '../../../../utils/config-params';
-import { SubstationLayout } from '../../../diagrams/diagram-common';
+
+import { SubstationLayout } from '../../../diagrams/diagram.type';
 
 export enum TabValue {
     MAP = 'mapParameters',

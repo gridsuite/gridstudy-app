@@ -6,10 +6,10 @@
  */
 import React, { ComponentType, MouseEvent, useMemo, useState } from 'react';
 import { Popover } from '@mui/material';
-import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
 import { CustomFilterIcon } from './custom-filter-icon';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { CustomAggridAutocompleteFilterParams } from './custom-aggrid-autocomplete-filter';
+import { CustomAggridFilterParams } from './custom-aggrid-filter.type';
 
 const styles = {
     input: {

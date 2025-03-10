@@ -824,6 +824,9 @@
     "MeasurementsSection": "Télémesures",
     "ValidMeasurement": "Valide",
     "InvalidMeasurement": "Invalide",
+    "EstimateTapPositionSection": "Estimer prise",
+    "RatioTapChangerEstimateTapPosition": "Régleur",
+    "PhaseTapChangerEstimateTapPosition": "Déphaseur",
 
     "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Sections identiques",

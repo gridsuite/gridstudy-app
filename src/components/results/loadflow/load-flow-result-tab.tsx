@@ -10,7 +10,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
+import { GlobalFilter, LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
@@ -29,7 +29,6 @@ import {
     mappingTabs,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
-import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
 import ResultsGlobalFilter from '../common/global-filter/results-global-filter';
@@ -44,6 +43,10 @@ import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { FilterType } from '../common/utils';
 import { useNodeData } from 'components/use-node-data';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_TEXT_COMPARATORS,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
