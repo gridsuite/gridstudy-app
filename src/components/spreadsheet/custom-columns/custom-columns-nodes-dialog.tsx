@@ -22,11 +22,12 @@ import {
 } from './custom-columns-nodes-form-utils';
 import NodeAliasTable from './node-alias-table';
 import { UUID } from 'crypto';
-import { useNodeAliases } from './use-node-aliases';
 import { NodeAlias } from './node-alias.type';
 
 export type CustomColumnNodesDialogProps = {
     open: UseStateBooleanReturn;
+    nodeAliases: NodeAlias[];
+    setNodeAliases: (newNodeAliases: NodeAlias[]) => void;
 };
 
 const styles = {
@@ -44,9 +45,11 @@ const toCustomColumnNodesDialogFormValues = (nodeAliases: NodeAlias[]) => {
     return { [NODES_ALIASES]: nodeAliases };
 };
 
-export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnNodesDialogProps>) {
-    const { nodeAliases, setNodeAliases } = useNodeAliases();
-
+export default function CustomColumnNodesDialog({
+    open,
+    nodeAliases,
+    setNodeAliases,
+}: Readonly<CustomColumnNodesDialogProps>) {
     const intl = useIntl();
 
     const formMethods = useForm<CustomColumnNodesForm>({
@@ -89,6 +92,8 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
                     })
                 )
             );
+        } else {
+            reset(initialCustomColumnNodesForm);
         }
     }, [open, nodeAliases, reset]);
 

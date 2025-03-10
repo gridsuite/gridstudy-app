@@ -14,7 +14,12 @@ import { NodeAlias } from './node-alias.type';
 import { updateCustomColumnsNodesAliases } from '../../../redux/actions';
 import { AppDispatch } from '../../../redux/store';
 
-export const useNodeAliases = () => {
+export interface UseNodeAliasProps {
+    nodeAliases: NodeAlias[];
+    setNodeAliases: (newNodeAliases: NodeAlias[]) => void;
+}
+
+export const useNodeAliases = (): UseNodeAliasProps => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const nodeAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
