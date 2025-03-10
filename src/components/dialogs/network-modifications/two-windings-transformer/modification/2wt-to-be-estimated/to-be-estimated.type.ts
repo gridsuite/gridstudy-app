@@ -5,9 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const LineModificationDialogTab = {
-    CONNECTIVITY_TAB: 0,
-    CHARACTERISTICS_TAB: 1,
-    LIMITS_TAB: 2,
-    STATE_ESTIMATION_TAB: 3,
-};
+export interface ToBeEstimatedInfo {
+    ratioTapChangerStatus?: boolean;
+    phaseTapChangerStatus?: boolean;
+}
+
+export interface ToBeEstimatedProps {
+    toBeEstimated?: ToBeEstimatedInfo;
+}
