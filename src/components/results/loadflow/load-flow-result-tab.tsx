@@ -10,7 +10,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { GlobalFilter, LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
+import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
@@ -46,7 +46,7 @@ import {
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { GlobalFilter, GlobalFilters } from '../common/global-filter/global-filter-types';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 const styles = {
