@@ -173,28 +173,22 @@ const RootNetworkNodeEditor = () => {
                     headerId: 'createRootNetworksError',
                 });
             }
-        }
-    }, [studyUpdatedForce, snackError, dofetchRootNetworks]);
-
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworksUpdated') {
-            dofetchRootNetworks();
-            setDeleteInProgress(false);
-        } else if (
-            rootNetworksRef.current &&
-            studyUpdatedForce.eventData.headers?.['updateType'] === 'rootNetworkDeletionStarted'
-        ) {
-            // when node are being deleted, we select 1st node that won't be deleted
-            const deletingNodes = studyUpdatedForce.eventData.headers.rootNetworks;
-            const newSelectedRootNetwork = rootNetworksRef.current.find(
-                (rootNetwork) => !deletingNodes.includes(rootNetwork.rootNetworkUuid)
-            );
-            if (newSelectedRootNetwork) {
-                dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
+            if (eventType === 'rootNetworksUpdated') {
+                dofetchRootNetworks();
+                setDeleteInProgress(false);
+            } else if (rootNetworksRef.current && eventType === 'rootNetworkDeletionStarted') {
+                // when node are being deleted, we select 1st node that won't be deleted
+                const deletingNodes = studyUpdatedForce.eventData.headers.rootNetworks;
+                const newSelectedRootNetwork = rootNetworksRef.current.find(
+                    (rootNetwork) => !deletingNodes.includes(rootNetwork.rootNetworkUuid)
+                );
+                if (newSelectedRootNetwork) {
+                    dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
+                }
+                setDeleteInProgress(true);
             }
-            setDeleteInProgress(true);
         }
-    }, [studyUpdatedForce, dofetchRootNetworks, dispatch]);
+    }, [studyUpdatedForce, dofetchRootNetworks, dispatch, snackError]);
 
     useEffect(() => {
         dofetchRootNetworks();
