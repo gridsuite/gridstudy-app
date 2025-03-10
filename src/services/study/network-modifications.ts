@@ -1185,6 +1185,8 @@ export function modifyTwoWindingsTransformer({
     p2MeasurementValidity,
     q2MeasurementValue,
     q2MeasurementValidity,
+    ratioTapChangerToBeEstimated,
+    phaseTapChangerToBeEstimated,
 }: TwoWindingsTransformerModificationInfo) {
     let modifyTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1238,6 +1240,8 @@ export function modifyTwoWindingsTransformer({
             p2MeasurementValidity: toModificationOperation(p2MeasurementValidity),
             q2MeasurementValue: toModificationOperation(q2MeasurementValue),
             q2MeasurementValidity: toModificationOperation(q2MeasurementValidity),
+            ratioTapChangerToBeEstimated: toModificationOperation(ratioTapChangerToBeEstimated),
+            phaseTapChangerToBeEstimated: toModificationOperation(phaseTapChangerToBeEstimated),
         }),
     });
 }
