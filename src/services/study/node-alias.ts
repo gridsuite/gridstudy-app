@@ -14,7 +14,7 @@ function getNodeAliasUrl(studyUuid: UUID | null | undefined, nodeUuid: string | 
 }
 
 export function updateNodeAliases(studyUuid: UUID | null, nodeUuid: UUID, nodeAliases: NodeAlias[]) {
-    console.info('Creating groovy script (request network change)');
+    console.info(`Update node aliases from node ${nodeUuid} of study ${studyUuid}`);
     const changeUrl = getNodeAliasUrl(studyUuid, nodeUuid);
     console.debug(changeUrl);
     return backendFetch(changeUrl, {
@@ -25,7 +25,7 @@ export function updateNodeAliases(studyUuid: UUID | null, nodeUuid: UUID, nodeAl
 }
 
 export async function getNodeAliases(studyUuid: UUID | null, nodeUuid: UUID): Promise<NodeAlias[]> {
-    console.info(`get nodes aliases from node ${nodeUuid}`);
+    console.info(`Get nodes aliases from node ${nodeUuid} of study ${studyUuid}`);
     const url = `${getNodeAliasUrl(studyUuid, nodeUuid)}`;
     console.debug(url);
     return backendFetchJson(url);
