@@ -44,7 +44,7 @@ const recentFilter: string = 'recent';
 
 export interface ResultsGlobalFilterProps {
     onChange: (filters: GlobalFilter[]) => void;
-    filtrableEquipmentTypes: EQUIPMENT_TYPES[];
+    filterableEquipmentTypes: EQUIPMENT_TYPES[];
     filters: GlobalFilter[];
 }
 
@@ -53,7 +53,7 @@ const DEFAULT_NB_OPTIONS_DISPLAYED: number = 10;
 
 const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
     onChange,
-    filtrableEquipmentTypes,
+    filterableEquipmentTypes,
     filters = emptyArray,
 }) => {
     const intl = useIntl();
@@ -128,13 +128,13 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
         [handleChange, selectedGlobalFilters]
     );
 
-    // checks the generic filter to see if they are appliable to the current tab
+    // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
         const inappropriateFilters: string[] = selectedGlobalFilters
             .filter(
                 (filter) =>
                     filter.equipmentType &&
-                    !filtrableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType)
+                    !filterableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType)
             )
             .map((filter) => filter.label);
 
@@ -155,7 +155,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
             );
         }
         return '';
-    }, [intl, filtrableEquipmentTypes, selectedGlobalFilters]);
+    }, [intl, filterableEquipmentTypes, selectedGlobalFilters]);
 
     const getCustomPaper = useCallback((children) => {
         return (
@@ -165,6 +165,90 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
             />
         );
     }, []);
+
+    // renderInput : the inputfield that contains the chips, adornments and label
+    const getRenderInput = useCallback(
+        (params: AutocompleteRenderInputParams) => {
+            return (
+                <TextField
+                    id={params.id}
+                    size={params.size}
+                    fullWidth={params.fullWidth}
+                    inputProps={params.inputProps}
+                    disabled={params.disabled}
+                    label={intl.formatMessage({
+                        id: 'results.globalFilter.fillerText',
+                    })}
+                    InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                            <>
+                                <InputAdornment position="start">
+                                    <FilterAlt />
+                                </InputAdornment>
+                                {params.InputProps.startAdornment}
+                            </>
+                        ),
+                    }}
+                />
+            );
+        },
+        [intl]
+    );
+
+    const filterOptions = useCallback(
+        (options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
+            const numByGroup: Map<string, number> = new Map();
+            const filteredOptions: GlobalFilter[] = options
+                // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
+                .filter((option: GlobalFilter) => {
+                    const labelToMatch: string =
+                        option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
+                    return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
+                })
+                // display only a part of the options if there are too many (unless required by the user)
+                .filter((option: GlobalFilter) => {
+                    if (option.recent || numberOfOptions.get(option.filterType) === -1) {
+                        return true;
+                    }
+                    const num = numByGroup.get(option.filterType) ?? 0;
+                    numByGroup.set(option.filterType, num + 1);
+                    return num < DEFAULT_NB_OPTIONS_DISPLAYED;
+                });
+
+            // if the numberOfOptions has not been set yet :
+            if (Array.from(numberOfOptions.values()).find((number) => number !== 0) === undefined) {
+                setNumberOfOptions(numByGroup);
+            }
+
+            return filteredOptions;
+        },
+        [numberOfOptions, translate]
+    );
+
+    const warningTooltip = useCallback(() => {
+        return (
+            <Tooltip
+                title={warningEquipmentTypeMessage}
+                placement="right"
+                arrow
+                PopperProps={{
+                    modifiers: [
+                        {
+                            name: 'offset',
+                            options: {
+                                offset: [0, -15],
+                            },
+                        },
+                    ],
+                }}
+            >
+                <IconButton size="small" sx={{ cursor: 'default' }}>
+                    <WarningAmberRounded color="warning" fontSize="medium" />
+                </IconButton>
+            </Tooltip>
+        );
+    }, [warningEquipmentTypeMessage]);
 
     return (
         <>
@@ -196,30 +280,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                 ]}
                 onChange={(_e, value) => handleChange(value as GlobalFilter[])}
                 groupBy={(option: GlobalFilter): string => (option.recent ? recentFilter : option.filterType)}
-                // renderInput : the inputfield that contains the chips, adornments and label
-                renderInput={(params: AutocompleteRenderInputParams) => (
-                    <TextField
-                        id={params.id}
-                        size={params.size}
-                        fullWidth={params.fullWidth}
-                        inputProps={params.inputProps}
-                        disabled={params.disabled}
-                        label={intl.formatMessage({
-                            id: 'results.globalFilter.fillerText',
-                        })}
-                        InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                                <>
-                                    <InputAdornment position="start">
-                                        <FilterAlt />
-                                    </InputAdornment>
-                                    {params.InputProps.startAdornment}
-                                </>
-                            ),
-                        }}
-                    />
-                )}
+                renderInput={(params: AutocompleteRenderInputParams) => getRenderInput(params)}
                 // renderTags : the chips in the inputField
                 renderTags={(filters: GlobalFilter[], getTagsProps) =>
                     filters.map((element: GlobalFilter, index: number) => (
@@ -277,60 +338,17 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                 isOptionEqualToValue={(option: GlobalFilter, value: GlobalFilter) =>
                     option.label === value.label && option.filterType === value.filterType && option.uuid === value.uuid
                 }
-                filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
-                    const numByGroup: Map<string, number> = new Map();
-                    const filteredOptions: GlobalFilter[] = options
-                        // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
-                        .filter((option: GlobalFilter) => {
-                            const labelToMatch: string =
-                                option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
-                            return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
-                        })
-                        // display only a part of the options if there are too many (unless required by the user)
-                        .filter((option: GlobalFilter) => {
-                            if (option.recent || numberOfOptions.get(option.filterType) === -1) {
-                                return true;
-                            }
-                            const num = numByGroup.get(option.filterType) ?? 0;
-                            numByGroup.set(option.filterType, num + 1);
-                            return num < DEFAULT_NB_OPTIONS_DISPLAYED;
-                        });
-
-                    // if the numberOfOptions has not been set yet :
-                    if (Array.from(numberOfOptions.values()).find((number) => number !== 0) === undefined) {
-                        setNumberOfOptions(numByGroup);
-                    }
-
-                    return filteredOptions;
-                }}
+                filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
+                    filterOptions(options, state)
+                }
                 PaperComponent={({ children }) => getCustomPaper(children)}
             />
-            {warningEquipmentTypeMessage && (
-                <Tooltip
-                    title={warningEquipmentTypeMessage}
-                    placement="right"
-                    arrow
-                    PopperProps={{
-                        modifiers: [
-                            {
-                                name: 'offset',
-                                options: {
-                                    offset: [0, -10],
-                                },
-                            },
-                        ],
-                    }}
-                >
-                    <IconButton>
-                        <WarningAmberRounded color="warning" fontSize="large" />
-                    </IconButton>
-                </Tooltip>
-            )}
+            {warningEquipmentTypeMessage && warningTooltip()}
             <DirectoryItemSelector
                 open={directoryItemSelectorOpen}
                 onClose={addSelectedFilters}
                 types={[ElementType.FILTER]}
-                equipmentTypes={filtrableEquipmentTypes}
+                equipmentTypes={filterableEquipmentTypes}
                 title={intl.formatMessage({ id: 'Filters' })}
                 selected={selectedFiltersElements}
                 multiSelect

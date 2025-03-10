@@ -32,7 +32,6 @@ import {
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
 import ResultsGlobalFilter from '../common/global-filter/results-global-filter';
-import { GlobalFilter } from '../common/global-filter/global-filter-types';
 import { mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -308,7 +307,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     <ResultsGlobalFilter
                         onChange={handleGlobalFilterChange}
                         filters={[...voltageLevelsFilter, ...countriesFilter]}
-                        filtrableEquipmentTypes={getFiltrableEquipmentTypes()}
+                        filterableEquipmentTypes={getFiltrableEquipmentTypes()}
                     />
                 </Box>
                 <Box sx={styles.emptySpace}></Box>

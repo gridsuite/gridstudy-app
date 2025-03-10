@@ -34,7 +34,6 @@ import type {
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
-import type { Filter } from '../components/results/common/results-global-filter';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
@@ -1046,7 +1045,7 @@ export function setLoadflowResultFilter(
     filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD],
     loadflowResultFilter: FilterConfig[]
 ): LoadflowResultFilterAction {
-    return {
+    return filtrableEquipmentTypes{
         type: LOADFLOW_RESULT_FILTER,
         filterTab: filterTab,
         [LOADFLOW_RESULT_STORE_FIELD]: loadflowResultFilter,
