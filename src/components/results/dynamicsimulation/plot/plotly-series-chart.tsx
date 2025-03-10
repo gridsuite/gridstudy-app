@@ -5,23 +5,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Plotly from 'plotly.js-basic-dist-min';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import { baseColors, defaultLayout } from './plot-config';
 import { eventCenter, PlotEvents } from './plot-events';
-import { SeriesType } from './plot-types';
+import { Series } from './plot-types';
 import { useDebounce } from '@gridsuite/commons-ui';
+import { Figure, PlotParams } from 'react-plotly.js';
+import { Layout, PlotData, PlotMarker } from 'plotly.js';
 
 // create own Plot by using Plotly in basic dist for the reason of big size in standard dist plotly.js
-const Plot = createPlotlyComponent(Plotly);
+const Plot = createPlotlyComponent(Plotly) as FunctionComponent<
+    PlotParams & { ref: any } /* hack to bypass ref which is not in PlotParams */
+>;
 
-const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
+export type PlotlySeriesChartProps = {
+    id: string;
+    groupId: string;
+    leftSeries: Series[];
+    rightSeries: Series[];
+    sync: boolean;
+};
+
+function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Readonly<PlotlySeriesChartProps>) {
     // these states used for responsible
-    const plotRef = useRef(null);
+    const plotRef = useRef<any>();
     const debouncedResizeHandler = useDebounce((entries) => {
-        plotRef.current.resizeHandler();
+        console.log('XXX plotRef.current', plotRef.current);
+        plotRef.current && Plotly.Plots.resize(plotRef.current);
     }, 500);
     const resizeObserverRef = useRef(new ResizeObserver(debouncedResizeHandler));
 
@@ -32,34 +44,39 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
     // force refresh Plot in mutable layout but not work???
     //const [revision, setRevision] = useState(0);
 
-    const makeGetMarker = useCallback((opts) => {
-        return (s) => ({
+    const makeGetMarker = useCallback((defaults?: Partial<PlotMarker>) => {
+        return (s: Series): Partial<PlotMarker> => ({
+            ...defaults,
             color: 'rgba(255,255,255,0.5)',
             line: {
                 color: baseColors[s.index % baseColors.length][
-                    `${300 + (Math.floor(s.index / baseColors.length) % 7) * 100}` // compute from 300 to 900 with step = 100
+                    `${300 + (Math.floor(s.index / baseColors.length) % 7) * 100}` as keyof (typeof baseColors)[number] // compute from 300 to 900 with step = 100
                 ],
                 width: 1,
             },
-            ...opts,
         });
     }, []);
 
     const data = useMemo(() => {
-        function seriesToData(getMarker, opts) {
-            return (s) => ({
+        function seriesToData(
+            getMarker: (s: Series) => Partial<PlotMarker>,
+            defaults?: Partial<PlotData>
+        ): (s: Series) => Partial<PlotData> {
+            return (s: Series) => ({
+                ...defaults,
                 name: s.name,
                 type: 'scatter',
                 mode: 'lines+markers',
                 marker: getMarker(s),
                 line: {
                     color: baseColors[s.index % baseColors.length][
-                        `${300 + (Math.floor(s.index / baseColors.length) % 7) * 100}` // compute from 300 to 900 with step = 100
+                        `${
+                            300 + (Math.floor(s.index / baseColors.length) % 7) * 100
+                        }` as keyof (typeof baseColors)[number] // compute from 300 to 900 with step = 100
                     ],
                 },
                 x: s.data.x ? s.data.x.map((value) => value / 1000) : [], // ms => s
                 y: s.data.y ? s.data.y : [],
-                ...opts,
             });
         }
 
@@ -79,7 +96,7 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
     }, [leftSeries, rightSeries, makeGetMarker]);
 
     const handleOnRelayout = useCallback(
-        (eventData) => {
+        (eventData: Readonly<Plotly.PlotRelayoutEvent>) => {
             // propagate data to parent
             if (sync) {
                 eventCenter.emit(PlotEvents.ON_RELAYOUT, groupId, id, eventData);
@@ -89,7 +106,7 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
     );
 
     const syncOnRelayout = useCallback(
-        (channelId, senderId, eventData) => {
+        (channelId: string, senderId: string, eventData: Readonly<Plotly.PlotRelayoutEvent>) => {
             if (channelId === groupId && senderId !== id && eventData) {
                 // exit when no change on x
                 if (
@@ -102,12 +119,12 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
 
                 // mutable layout => constrained from react-plotly.js
                 // https://github.com/plotly/plotly.js/issues/2389
-                setLayout((prev) => {
+                setLayout((prev: Layout) => {
                     const newLayout = {
                         ...prev,
                         xaxis: {
                             ...prev.xaxis,
-                            range: [...prev.xaxis.range],
+                            range: [...(prev.xaxis.range ?? [])],
                         },
                     };
 
@@ -137,13 +154,13 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
         };
     }, [sync, syncOnRelayout]);
 
-    const handleOnInitialized = (figure, graphDiv) => {
+    const handleOnInitialized = (figure: Readonly<Figure>, graphDiv: Readonly<HTMLElement>) => {
         setLayout(figure.layout);
         // make inside plot responsible to parent div's resize event
         resizeObserverRef.current.observe(graphDiv);
     };
 
-    const handleOnPurge = (figure, graphDiv) => {
+    const handleOnPurge = (figure: Readonly<Figure>, graphDiv: Readonly<HTMLElement>) => {
         // unsubscribe resize event
         resizeObserverRef.current.unobserve(graphDiv);
     };
@@ -165,14 +182,6 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
             //revision={revision}
         />
     );
-};
-
-PlotlySeriesChart.propTypes = {
-    id: PropTypes.string.isRequired,
-    groupId: PropTypes.string.isRequired,
-    leftSeries: SeriesType,
-    rightSerie: SeriesType,
-    sync: PropTypes.bool,
-};
+}
 
 export default memo(PlotlySeriesChart);
