@@ -7,18 +7,16 @@
 
 import type { AppState } from '../../../redux/reducer';
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases } from '../../../services/study/node-alias';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from './node-alias.type';
-import { AppDispatch } from '../../../redux/store';
 
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [nodeAliases, _setNodeAliases] = useState<NodeAlias[]>([]);
 
-    const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
     useEffect(() => {
@@ -35,7 +33,7 @@ export const useNodeAliases = () => {
         } else {
             _setNodeAliases([]);
         }
-    }, [currentNode?.id, dispatch, snackError, studyUuid]);
+    }, [currentNode?.id, snackError, studyUuid]);
 
     const setNodeAliases = useCallback(
         (newNodeAliases: NodeAlias[]) => {
@@ -50,7 +48,7 @@ export const useNodeAliases = () => {
                     );
             }
         },
-        [currentNode?.id, dispatch, snackError, studyUuid]
+        [currentNode?.id, snackError, studyUuid]
     );
 
     return { nodeAliases, setNodeAliases };
