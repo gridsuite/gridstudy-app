@@ -75,7 +75,3 @@ export const makeComponent = (defParam: DefParam, path: string, key: string) => 
         </>
     );
 };
-
-export const inputAdornment = (content: ReactElement) => ({
-    endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
-});
