@@ -5,27 +5,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Popper } from '@mui/material';
+import { FilterOptionsState, Grid, GridDirection, Popper, PopperProps } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import { EQUIPMENT, ID, TYPE, VOLTAGE_LEVEL } from 'components/utils/field-constants';
-import PropTypes from 'prop-types';
+import { EQUIPMENT, ID, VOLTAGE_LEVEL } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, Equipment, Identifiable, Option } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';
+import { UUID } from 'crypto';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
-const filter = createFilterOptions();
+const filter = createFilterOptions() as (options: Option[], params: FilterOptionsState<Option>) => Option[];
 
 // Specific Popper component to be used with Autocomplete
 // This allows the popper to fit its content, which is not the case by default
-const FittingPopper = (props) => {
+const FittingPopper = (props: PopperProps) => {
     const { style, ...otherProps } = props; // We filter out the "style" props to remove the width provided by the autocomplete input field.
     return <Popper {...otherProps} placement="bottom-start" />;
 };
 
-const RegulatingTerminalForm = ({
+interface RegulatingTerminalFormProps {
+    id: string;
+    direction?: GridDirection;
+    disabled: boolean;
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    voltageLevelOptions: Identifiable[];
+    equipmentSectionTypeDefaultValue?: string;
+    previousRegulatingTerminalValue?: string;
+    previousEquipmentSectionTypeValue?: string;
+}
+
+export function RegulatingTerminalForm({
     id, // id that has to be defined to determine it's parent object within the form
     direction,
     disabled = false,
@@ -36,8 +49,8 @@ const RegulatingTerminalForm = ({
     equipmentSectionTypeDefaultValue,
     previousRegulatingTerminalValue,
     previousEquipmentSectionTypeValue,
-}) => {
-    const [equipmentsOptions, setEquipmentsOptions] = useState([]);
+}: Readonly<RegulatingTerminalFormProps>) {
+    const [equipmentsOptions, setEquipmentsOptions] = useState<Equipment[]>([]);
     const { setValue } = useFormContext();
 
     const watchVoltageLevelId = useWatch({
@@ -50,8 +63,8 @@ const RegulatingTerminalForm = ({
                 studyUuid,
                 currentNodeUuid,
                 currentRootNetworkUuid,
-                undefined,
                 watchVoltageLevelId,
+                undefined,
                 true
             ).then((values) => {
                 setEquipmentsOptions(values);
@@ -71,7 +84,7 @@ const RegulatingTerminalForm = ({
                 <Grid
                     item
                     xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
-                    align="start"
+                    sx={{ align: 'start' }}
                 >
                     {
                         <AutocompleteInput
@@ -84,10 +97,13 @@ const RegulatingTerminalForm = ({
                             selectOnFocus
                             disabled={disabled}
                             id="voltage-level"
-                            options={voltageLevelOptions}
-                            getOptionLabel={(vl) => (vl?.[ID] ? vl?.[ID] : '')}
+                            options={voltageLevelOptions.map((item) => ({
+                                id: item.id,
+                                label: item?.name ?? '',
+                            }))}
+                            getOptionLabel={(vl) => (typeof vl !== 'string' ? vl?.id ?? '' : '')}
                             onChangeCallback={resetEquipment}
-                            previousValue={previousRegulatingTerminalValue}
+                            previousValue={previousRegulatingTerminalValue ?? undefined}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                             */
@@ -95,11 +111,11 @@ const RegulatingTerminalForm = ({
                                 const filtered = filter(options, params);
                                 if (
                                     params.inputValue !== '' &&
-                                    !options.find((opt) => opt?.[ID] === params.inputValue)
+                                    !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
                                 ) {
                                     filtered.push({
-                                        inputValue: params.inputValue,
-                                        [ID]: params.inputValue,
+                                        id: params.inputValue,
+                                        label: params.inputValue,
                                     });
                                 }
                                 return filtered;
@@ -111,7 +127,7 @@ const RegulatingTerminalForm = ({
                 <Grid
                     item
                     xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
-                    align="start"
+                    sx={{ align: 'start' }}
                 >
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                              it clears the field when blur event is raised, which actually forces the user to validate free input
@@ -133,23 +149,35 @@ const RegulatingTerminalForm = ({
                             id="equipment"
                             disabled={!watchVoltageLevelId || disabled}
                             previousValue={previousEquipmentSectionTypeValue}
-                            options={equipmentsOptions}
+                            options={equipmentsOptions.map((item) => ({
+                                id: item.id,
+                                label: item?.type ?? '',
+                            }))}
                             getOptionLabel={(equipment) => {
-                                return equipment === ''
-                                    ? '' // to clear field
-                                    : (equipment?.[TYPE] ?? equipmentSectionTypeDefaultValue) +
-                                          ' : ' +
-                                          equipment?.[ID] || '';
+                                if (equipment === '') {
+                                    return '';
+                                }
+                                if (typeof equipment === 'string') {
+                                    return equipment;
+                                }
+
+                                const id = equipment?.id || '';
+                                const type = equipment?.label ?? equipmentSectionTypeDefaultValue;
+
+                                return type + ' : ' + id;
                             }}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                          */
                             filterOptions={(options, params) => {
                                 const filtered = filter(options, params);
-                                if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
+                                if (
+                                    params.inputValue !== '' &&
+                                    !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
+                                ) {
                                     filtered.push({
-                                        [TYPE]: equipmentSectionTypeDefaultValue,
-                                        [ID]: params.inputValue,
+                                        label: equipmentSectionTypeDefaultValue ?? '',
+                                        id: params.inputValue,
                                     });
                                 }
                                 return filtered;
@@ -161,14 +189,4 @@ const RegulatingTerminalForm = ({
             </Grid>
         </>
     );
-};
-
-RegulatingTerminalForm.propTypes = {
-    id: PropTypes.string.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    currentRootNetworkUuid: PropTypes.string.isRequired,
-    direction: PropTypes.string,
-    disabled: PropTypes.bool,
-};
-
-export default RegulatingTerminalForm;
+}
