@@ -27,7 +27,7 @@ export const getPercentageAreaEmptyFormData = () => {
     return percentageAreaEmptyFormData();
 };
 
-export const getPercentageAreaData = ({ percent }) => {
+export const getPercentageAreaData = ({ percent }: { percent: number }) => {
     return {
         [SLIDER_PERCENTAGE]: percent,
         [LEFT_SIDE_PERCENTAGE]: percent,
@@ -35,16 +35,16 @@ export const getPercentageAreaData = ({ percent }) => {
     };
 };
 
-export const isValidPercentage = (val) => {
+export const isValidPercentage = (val: any) => {
     return /^\d*[.,]?\d?$/.test(val);
 };
 
 //used to format substaction of two percentages (avoid having more than one decimal)
-export function sanitizePercentageValue(value) {
+export function sanitizePercentageValue(value: number) {
     return Math.round(value * 10) / 10;
 }
 
-export function formatPercentageValue(value) {
+export function formatPercentageValue(value: any) {
     if (!value || value < 0) {
         return 0;
     }
