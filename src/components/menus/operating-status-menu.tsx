@@ -20,7 +20,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import PropTypes from 'prop-types';
 import { EquipmentInfos, EquipmentType, OperatingStatus, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
@@ -394,21 +393,5 @@ const withOperatingStatusMenu =
             )
         );
     };
-
-withOperatingStatusMenu.propTypes = {
-    id: PropTypes.string.isRequired,
-    equipmentType: PropTypes.string.isRequired,
-    position: PropTypes.arrayOf(PropTypes.number).isRequired,
-    handleClose: PropTypes.func.isRequired,
-    handleViewInSpreadsheet: PropTypes.func.isRequired,
-    handleDeleteEquipment: PropTypes.func.isRequired,
-    handleOpenModificationDialog: PropTypes.func.isRequired,
-    onOpenDynamicSimulationEventDialog: PropTypes.func.isRequired,
-    currentNode: PropTypes.object,
-    studyUuid: PropTypes.string.isRequired,
-    currentRootNetworkUuid: PropTypes.string.isRequired,
-    modificationInProgress: PropTypes.func,
-    setModificationInProgress: PropTypes.func,
-};
 
 export default withOperatingStatusMenu;

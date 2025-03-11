@@ -10,14 +10,6 @@ import { FormattedMessage } from 'react-intl';
 import { Box, Button, ButtonProps, Grid, Switch, Typography, TypographyProps } from '@mui/material';
 import { styles } from './parameters-style';
 
-interface CloseButtonProps extends ButtonProps {
-    hideParameters: React.MouseEventHandler<HTMLButtonElement>;
-}
-
-export const CloseButton: FunctionComponent<CloseButtonProps> = ({ hideParameters, ...props }) => {
-    return <LabelledButton callback={hideParameters} label={'close'} {...props} />;
-};
-
 interface LabelledButtonProps extends ButtonProps {
     callback: React.MouseEventHandler<HTMLButtonElement>;
     label: string;
