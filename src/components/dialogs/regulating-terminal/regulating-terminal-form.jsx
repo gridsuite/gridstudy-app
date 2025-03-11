@@ -123,6 +123,7 @@ const RegulatingTerminalForm = ({
                 {
                     <AutocompleteInput
                         name={`${id}.${EQUIPMENT}`}
+                       //setting null programmatically when allowNewValue is enable (i.e. freeSolo enabled) wont empty the field => need to convert null to empty and vice versa
                         inputTransform={(value) => (value === null ? '' : value)}
                         outputTransform={(value) => {
                             return typeof value === 'string'
