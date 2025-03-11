@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import { CASE_ID, CASE_NAME } from 'components/utils/field-constants';
 import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -55,16 +55,15 @@ export const RootNetworkCaseSelection = ({ onSelectCase }: RootNetworkCaseSelect
 
     return (
         <>
-            <Grid container item>
-                <Typography m={1} component="span">
-                    <Box fontWeight="fontWeightBold" display="flex" justifyContent="center" alignItems="center">
-                        <FolderOutlined />
-                        <span>
-                            &nbsp;
-                            {directoryName} &nbsp;
-                        </span>
-                    </Box>
-                </Typography>
+            <Grid container alignItems="center" item>
+                <Grid item display="flex" marginLeft={1}>
+                    <FolderOutlined />
+                </Grid>
+                <Grid item>
+                    <Typography m={1} fontWeight="fontWeightBold">
+                        {directoryName}
+                    </Typography>
+                </Grid>
                 <Grid item>
                     <Button
                         variant={caseNameWatch ? 'contained' : undefined}
