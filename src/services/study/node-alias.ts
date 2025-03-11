@@ -24,7 +24,7 @@ export function updateNodeAliases(studyUuid: UUID, nodeUuid: UUID, nodeAliases: 
     });
 }
 
-export async function getNodeAliases(studyUuid: UUID, nodeUuid: UUID): Promise<NodeAlias[]> {
+export function getNodeAliases(studyUuid: UUID, nodeUuid: UUID): Promise<NodeAlias[]> {
     console.info(`Get nodes aliases from node ${nodeUuid} of study ${studyUuid}`);
     const url = `${getNodeAliasUrl(studyUuid, nodeUuid)}`;
     console.debug(url);
