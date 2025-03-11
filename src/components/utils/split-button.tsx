@@ -14,7 +14,6 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import PropTypes from 'prop-types';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import StopIcon from '@mui/icons-material/Stop';
 import ListItemText from '@mui/material/ListItemText';
@@ -279,19 +278,6 @@ const SplitButton = ({
             </Popper>
         </>
     );
-};
-
-SplitButton.propTypes = {
-    runningStatus: PropTypes.string,
-    options: PropTypes.array.isRequired,
-    selectedIndex: PropTypes.number.isRequired,
-    onSelectionChange: PropTypes.func,
-    onClick: PropTypes.func,
-    buttonDisabled: PropTypes.bool,
-    selectionDisabled: PropTypes.bool,
-    text: PropTypes.string,
-    actionOnRunnable: PropTypes.func.isRequired,
-    computationStopped: PropTypes.bool,
 };
 
 export default SplitButton;

@@ -87,7 +87,6 @@ export type AppActions =
     | SetParamsLoadedAction
     | OpenStudyAction
     | CloseStudyAction
-    | RemoveSelectedCaseAction
     | UseNameAction
     | EnableDeveloperModeAction
     | StudyUpdatedAction
@@ -153,31 +152,6 @@ export function loadEquipments(
         type: LOAD_EQUIPMENTS,
         equipmentType: equipmentType,
         spreadsheetEquipmentByNodes: spreadsheetEquipmentByNodes,
-    };
-}
-
-export type AdditionalNodeData = {
-    alias: string;
-    identifiables: Identifiable[];
-};
-
-export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS =
-    'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
-export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<
-    Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>
-> & {
-    equipmentType: SpreadsheetEquipmentType;
-    data: AdditionalNodeData[];
-};
-
-export function addAdditionalEquipmentsByNodesForCustomColumns(
-    type: SpreadsheetEquipmentType,
-    data: AdditionalNodeData[]
-): AddEquipmentsByNodesForCustomColumnsAction {
-    return {
-        type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
-        equipmentType: type,
-        data,
     };
 }
 
@@ -491,13 +465,6 @@ export type CloseStudyAction = Readonly<Action<typeof CLOSE_STUDY>>;
 
 export function closeStudy(): CloseStudyAction {
     return { type: CLOSE_STUDY };
-}
-
-export const REMOVE_SELECTED_CASE = 'REMOVE_SELECTED_CASE';
-export type RemoveSelectedCaseAction = Readonly<Action<typeof REMOVE_SELECTED_CASE>>;
-
-export function removeSelectedCase(): RemoveSelectedCaseAction {
-    return { type: REMOVE_SELECTED_CASE };
 }
 
 export const USE_NAME = 'USE_NAME';

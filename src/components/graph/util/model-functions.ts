@@ -78,10 +78,6 @@ export function getFirstNodeOfType(
     );
 }
 
-export function isNetworkModificationNode(n: NetworkModificationNodeData | RootNodeData): boolean {
-    return 'nodeBuildStatus' in n;
-}
-
 // Recursive search of a node of type and buildStatus specified
 export function recursiveSearchFirstNodeOfType(
     element: NetworkModificationNodeData | RootNodeData,
