@@ -133,7 +133,6 @@ const RegulatingTerminalForm = ({
                         }}
                         label="Equipment"
                         size="small"
-                        freeSolo
                         forcePopupIcon
                         autoHighlight
                         selectOnFocus
