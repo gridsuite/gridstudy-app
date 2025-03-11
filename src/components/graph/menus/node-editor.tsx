@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import { lighten, darken } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -63,10 +62,6 @@ const NodeEditor = () => {
             <NetworkModificationNodeEditor />
         </Box>
     );
-};
-
-NodeEditor.propTypes = {
-    className: PropTypes.string,
 };
 
 export default NodeEditor;

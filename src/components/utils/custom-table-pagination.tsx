@@ -6,7 +6,6 @@
  */
 
 import { useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import { LabelDisplayedRowsArgs, TablePagination, TablePaginationProps } from '@mui/material';
 
 type CustomTablePaginationProps = TablePaginationProps & {
@@ -67,24 +66,6 @@ const CustomTablePagination = (props: CustomTablePaginationProps) => {
             {...otherProps}
         />
     );
-};
-
-CustomTablePagination.propTypes = {
-    rowsPerPageOptions: PropTypes.arrayOf(
-        PropTypes.oneOfType([
-            PropTypes.number,
-            PropTypes.shape({
-                label: PropTypes.string.isRequired,
-                value: PropTypes.number.isRequired,
-            }),
-        ])
-    ),
-    count: PropTypes.number,
-    rowsPerPage: PropTypes.number,
-    page: PropTypes.number,
-    onPageChange: PropTypes.func,
-    onRowsPerPageChange: PropTypes.func,
-    labelRowsPerPageId: PropTypes.string,
 };
 
 export default CustomTablePagination;
