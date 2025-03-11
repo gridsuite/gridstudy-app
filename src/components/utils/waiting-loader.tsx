@@ -7,7 +7,6 @@
 
 import LoaderWithOverlay from './loader-with-overlay';
 import PageNotFound from '../page-not-found';
-import PropTypes from 'prop-types';
 import Paper from '@mui/material/Paper';
 import { PropsWithChildren } from 'react';
 
@@ -32,10 +31,3 @@ const WaitingLoader = ({ loading, message, errMessage, children }: WaitingLoader
 };
 
 export default WaitingLoader;
-
-WaitingLoader.propTypes = {
-    children: PropTypes.node,
-    errMessage: PropTypes.string,
-    loading: PropTypes.bool.isRequired,
-    message: PropTypes.string,
-};
