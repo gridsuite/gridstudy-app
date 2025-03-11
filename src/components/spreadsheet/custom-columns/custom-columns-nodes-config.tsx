@@ -45,7 +45,11 @@ export default function CustomColumnsNodesConfig({
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
             </Button>
 
-            <CustomColumnNodesDialog open={dialogOpen} nodeAliases={nodeAliases} updateNodeAliases={updateNodeAliases} />
+            <CustomColumnNodesDialog
+                open={dialogOpen}
+                nodeAliases={nodeAliases}
+                updateNodeAliases={updateNodeAliases}
+            />
         </>
     );
 }
