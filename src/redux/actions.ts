@@ -154,11 +154,6 @@ export function loadEquipments(
     };
 }
 
-export type AdditionalNodeData = {
-    alias: string;
-    identifiables: Identifiable[];
-};
-
 export const REMOVE_NODE_DATA = 'REMOVE_NODE_DATA';
 export type RemoveNodeDataAction = Readonly<Action<typeof REMOVE_NODE_DATA>> & {
     nodesIdToRemove: string[];
