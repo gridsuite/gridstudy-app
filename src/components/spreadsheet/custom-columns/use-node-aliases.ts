@@ -14,14 +14,13 @@ import { NodeAlias } from './node-alias.type';
 
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [nodeAliases, _setNodeAliases] = useState<NodeAlias[]>([]);
 
     const { snackError } = useSnackMessage();
 
     useEffect(() => {
-        if (!!studyUuid && !!currentNode?.id) {
-            getNodeAliases(studyUuid, currentNode.id)
+        if (!!studyUuid) {
+            getNodeAliases(studyUuid)
                 .then((_nodeAliases) => _setNodeAliases(_nodeAliases))
                 .catch((error) => {
                     _setNodeAliases([]);
@@ -33,12 +32,12 @@ export const useNodeAliases = () => {
         } else {
             _setNodeAliases([]);
         }
-    }, [currentNode?.id, snackError, studyUuid]);
+    }, [snackError, studyUuid]);
 
     const setNodeAliases = useCallback(
         (newNodeAliases: NodeAlias[]) => {
-            if (!!studyUuid && !!currentNode?.id) {
-                updateNodeAliases(studyUuid, currentNode.id, newNodeAliases)
+            if (!!studyUuid) {
+                updateNodeAliases(studyUuid, newNodeAliases)
                     .then((r) => _setNodeAliases(newNodeAliases))
                     .catch((error) =>
                         snackError({
@@ -48,7 +47,7 @@ export const useNodeAliases = () => {
                     );
             }
         },
-        [currentNode?.id, snackError, studyUuid]
+        [snackError, studyUuid]
     );
 
     return { nodeAliases, setNodeAliases };
