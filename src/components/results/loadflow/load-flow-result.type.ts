@@ -8,7 +8,6 @@
 import { ColDef } from 'ag-grid-community';
 import { UUID } from 'crypto';
 import { BranchSide } from '../../utils/constants';
-import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 
 export interface ComponentResult {
     componentResultUuid: UUID;
@@ -30,8 +29,6 @@ export interface LoadFlowResult {
     writeTimeStamp: Date;
     componentResults: ComponentResult[];
 }
-
-export type QueryParamsType = Record<string, string | number | SortConfig | FilterConfig[]>;
 
 export enum LimitTypes {
     HIGH_VOLTAGE = 'HIGH_VOLTAGE',

@@ -6,10 +6,8 @@
  */
 
 import { useController } from 'react-hook-form';
-import { InputAdornment, TextField } from '@mui/material';
+import { InputAdornment, TextField, useTheme } from '@mui/material';
 import { genHelperError } from '@gridsuite/commons-ui';
-import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material';
 import { PropsWithChildren } from 'react';
 
 interface ButtonReadOnlyInputProps extends PropsWithChildren {
@@ -60,7 +58,3 @@ export function ButtonReadOnlyInput({ name, isNumerical = false, children }: But
         />
     );
 }
-
-ButtonReadOnlyInput.propTypes = {
-    children: PropTypes.node,
-};
