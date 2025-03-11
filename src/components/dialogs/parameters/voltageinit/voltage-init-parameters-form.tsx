@@ -25,7 +25,8 @@ import {
 } from '../../../utils/field-constants';
 import { isBlankOrEmpty } from '../../../utils/validation-functions';
 import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
-import { EquipmentsSelectionType } from './voltage-init-utils';
+
+import { EquipmentsSelectionType } from './voltage-init.type';
 
 export const GENERAL = 'GENERAL';
 export const GENERAL_APPLY_MODIFICATIONS = 'GENERAL_APPLY_MODIFICATIONS';
