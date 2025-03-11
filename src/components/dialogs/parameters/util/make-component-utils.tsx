@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, InputAdornment } from '@mui/material';
+import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { FloatInput, IntegerInput, Option, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import LineSeparator from '../../commons/line-separator';
@@ -75,7 +75,3 @@ export const makeComponent = (defParam: DefParam, path: string, key: string) => 
         </>
     );
 };
-
-export const inputAdornment = (content: ReactElement) => ({
-    endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
-});

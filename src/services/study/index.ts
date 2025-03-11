@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-    getQueryParamsList,
-    getRequestParamFromList,
-} from '../utils';
+import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
@@ -48,13 +42,6 @@ export const getStudyUrlWithRootNetworkUuid = (
 export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: string | undefined) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
-export const fetchStudy = (studyUuid: UUID) => {
-    console.info(`Fetching study '${studyUuid}' ...`);
-    const fetchStudiesUrl = getStudyUrl(studyUuid);
-    console.debug(fetchStudiesUrl);
-    return backendFetchJson(fetchStudiesUrl);
-};
-
 export const fetchStudyExists = (studyUuid: UUID) => {
     console.info(`Fetching study '${studyUuid}' existence ...`);
     const fetchStudiesUrl = getStudyUrl(studyUuid);
@@ -66,7 +53,6 @@ export function getNetworkAreaDiagramUrl(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    voltageLevelsIds: UUID[],
     depth: number,
     withGeoData: boolean
 ) {
@@ -79,9 +65,7 @@ export function getNetworkAreaDiagramUrl(
         new URLSearchParams({
             depth: depth.toString(),
             withGeoData: withGeoData.toString(),
-        }) +
-        '&' +
-        getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds').toString()
+        })
     );
 }
 
@@ -168,9 +152,9 @@ export function fetchNodeSeverities(
     return backendFetchJson(url);
 }
 
-export function fetchSvg(svgUrl: string): Promise<Svg> {
+export function fetchSvg(svgUrl: string, fetchOptions?: RequestInit): Promise<Svg> {
     console.debug(svgUrl);
-    return backendFetch(svgUrl).then((response) => (response.status === 204 ? null : response.json()));
+    return backendFetch(svgUrl, fetchOptions).then((response) => (response.status === 204 ? null : response.json()));
 }
 
 export function searchEquipmentsInfos(

@@ -5,4 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const dynamicSecurityAnalysisResultInvalidations = ['dynamicSecurityAnalysisResult'];
+export interface ToBeEstimatedInfo {
+    ratioTapChangerStatus?: boolean;
+    phaseTapChangerStatus?: boolean;
+}
+
+export interface ToBeEstimatedProps {
+    toBeEstimated?: ToBeEstimatedInfo;
+}
