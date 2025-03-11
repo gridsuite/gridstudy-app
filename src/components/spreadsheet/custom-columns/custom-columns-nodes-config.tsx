@@ -23,13 +23,13 @@ const styles = {
 type CustomColumnsNodesConfigProps = {
     disabled?: boolean;
     nodeAliases: NodeAlias[];
-    setNodeAliases: (newNodeAliases: NodeAlias[]) => void;
+    updateNodeAliases: (newNodeAliases: NodeAlias[]) => void;
 };
 
 export default function CustomColumnsNodesConfig({
     disabled,
     nodeAliases,
-    setNodeAliases,
+    updateNodeAliases,
 }: Readonly<CustomColumnsNodesConfigProps>) {
     const dialogOpen = useStateBoolean(false);
 
@@ -45,7 +45,7 @@ export default function CustomColumnsNodesConfig({
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
             </Button>
 
-            <CustomColumnNodesDialog open={dialogOpen} nodeAliases={nodeAliases} setNodeAliases={setNodeAliases} />
+            <CustomColumnNodesDialog open={dialogOpen} nodeAliases={nodeAliases} updateNodeAliases={updateNodeAliases} />
         </>
     );
 }

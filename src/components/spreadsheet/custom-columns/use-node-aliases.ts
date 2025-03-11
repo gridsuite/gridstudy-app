@@ -8,37 +8,37 @@
 import type { AppState } from '../../../redux/reducer';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { getNodeAliases, updateNodeAliases } from '../../../services/study/node-alias';
+import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../services/study/node-alias';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from './node-alias.type';
 
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const [nodeAliases, _setNodeAliases] = useState<NodeAlias[]>([]);
+    const [nodeAliases, setNodeAliases] = useState<NodeAlias[]>([]);
 
     const { snackError } = useSnackMessage();
 
     useEffect(() => {
-        if (!!studyUuid) {
+        if (studyUuid) {
             getNodeAliases(studyUuid)
-                .then((_nodeAliases) => _setNodeAliases(_nodeAliases))
+                .then((_nodeAliases) => setNodeAliases(_nodeAliases))
                 .catch((error) => {
-                    _setNodeAliases([]);
+                    setNodeAliases([]);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'nodeAliasesRetrievingError',
                     });
                 });
         } else {
-            _setNodeAliases([]);
+            setNodeAliases([]);
         }
     }, [snackError, studyUuid]);
 
-    const setNodeAliases = useCallback(
+    const updateNodeAliases = useCallback(
         (newNodeAliases: NodeAlias[]) => {
-            if (!!studyUuid) {
-                updateNodeAliases(studyUuid, newNodeAliases)
-                    .then((r) => _setNodeAliases(newNodeAliases))
+            if (studyUuid) {
+                _updateNodeAlias(studyUuid, newNodeAliases)
+                    .then((r) => setNodeAliases(newNodeAliases))
                     .catch((error) =>
                         snackError({
                             messageTxt: error.message,
@@ -50,5 +50,5 @@ export const useNodeAliases = () => {
         [snackError, studyUuid]
     );
 
-    return { nodeAliases, setNodeAliases };
+    return { nodeAliases, updateNodeAliases };
 };

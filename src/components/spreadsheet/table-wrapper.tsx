@@ -105,7 +105,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState<number>(0);
 
-    const { nodeAliases, setNodeAliases } = useNodeAliases();
+    const { nodeAliases, updateNodeAliases } = useNodeAliases();
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
 
@@ -426,7 +426,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             <CustomColumnsNodesConfig
                                 disabled={shooldDisableButtons}
                                 nodeAliases={nodeAliases}
-                                setNodeAliases={setNodeAliases}
+                                updateNodeAliases={updateNodeAliases}
                             />
                         </Grid>
                     )}

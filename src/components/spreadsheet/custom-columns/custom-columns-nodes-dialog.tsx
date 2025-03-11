@@ -27,7 +27,7 @@ import { NodeAlias } from './node-alias.type';
 export type CustomColumnNodesDialogProps = {
     open: UseStateBooleanReturn;
     nodeAliases: NodeAlias[];
-    setNodeAliases: (newNodeAliases: NodeAlias[]) => void;
+    updateNodeAliases: (newNodeAliases: NodeAlias[]) => void;
 };
 
 const styles = {
@@ -48,7 +48,7 @@ const toCustomColumnNodesDialogFormValues = (nodeAliases: NodeAlias[]) => {
 export default function CustomColumnNodesDialog({
     open,
     nodeAliases,
-    setNodeAliases,
+    updateNodeAliases,
 }: Readonly<CustomColumnNodesDialogProps>) {
     const intl = useIntl();
 
@@ -74,7 +74,7 @@ export default function CustomColumnNodesDialog({
             const id = nodes.find((node) => node.name === nodeAlias.name)?.id as UUID;
             return { id: id, name: nodeAlias.name, alias: nodeAlias.alias };
         });
-        setNodeAliases(completeData);
+        updateNodeAliases(completeData);
     };
 
     const onClose = () => {
