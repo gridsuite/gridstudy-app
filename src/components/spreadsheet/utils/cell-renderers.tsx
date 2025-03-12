@@ -208,19 +208,6 @@ export const MessageLogCellRenderer = ({
     );
 };
 
-export const PropertiesCellRenderer = (props: any) => {
-    const cellValue = formatCell(props);
-    // different properties are seperated with |
-    // tooltip message contains properties in seperated lines
-    return (
-        <Box sx={mergeSx(styles.tableCell)}>
-            <Tooltip title={<div style={{ whiteSpace: 'pre-line' }}>{cellValue.value?.replaceAll(' | ', '\n')}</div>}>
-                <Box sx={styles.overflow}>{cellValue.value}</Box>
-            </Tooltip>
-        </Box>
-    );
-};
-
 export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNode; tooltipValue: ReactNode } }) => {
     const { cellValue, tooltipValue } = value ?? {};
 

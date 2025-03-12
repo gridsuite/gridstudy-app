@@ -911,12 +911,6 @@ export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
 
-export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
-    return index === 0 || (index === 1 && nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS)
-        ? 'subjectId'
-        : 'contingencyId';
-};
-
 export const MAX_INT32: number = 2147483647;
 
 export const getStoreFields = (index: number): string => {

@@ -11,7 +11,6 @@ import IconButton from '@mui/material/IconButton';
 import UploadIcon from '@mui/icons-material/Upload';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 
 interface DndTableBottomLeftButtonsProps {
     handleUploadButton: () => void;
@@ -72,12 +71,6 @@ const DndTableBottomLeftButtons = ({
             )}
         </Grid>
     );
-};
-
-DndTableBottomLeftButtons.prototype = {
-    handleUploadButton: PropTypes.func.isRequired,
-    uploadButtonMessageId: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
 };
 
 export default DndTableBottomLeftButtons;
