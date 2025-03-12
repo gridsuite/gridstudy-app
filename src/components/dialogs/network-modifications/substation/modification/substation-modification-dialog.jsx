@@ -28,6 +28,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -165,7 +166,13 @@ const SubstationModificationDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods} removeOptional={true}>
+        <CustomFormProvider
+            validationSchema={formSchema}
+            {...formMethods}
+            removeOptional={true}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
