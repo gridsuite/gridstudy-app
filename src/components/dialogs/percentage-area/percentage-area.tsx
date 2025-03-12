@@ -12,7 +12,6 @@ import { useFormContext } from 'react-hook-form';
 import { formatPercentageValue, isValidPercentage, sanitizePercentageValue } from './percentage-area-utils';
 import { FormattedMessage } from 'react-intl';
 import { Input, SliderInput, TextInput } from '@gridsuite/commons-ui';
-import { isNumber } from 'mathjs';
 
 /**
  * Component to handle a 'percentage area' (slider , left and right percentage fields)
@@ -56,13 +55,11 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
     const onSliderChange = (value: number | number[]) => {
         if (typeof value === 'number') {
             const rightPercentageValue = sanitizePercentageValue(100 - value);
-            setValue(LEFT_SIDE_PERCENTAGE, value, {
-                shouldValidate: true,
-            });
             setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
                 shouldValidate: true,
             });
         }
+        setValue(LEFT_SIDE_PERCENTAGE, value, { shouldValidate: true });
     };
 
     const leftSidePercentageField = (
