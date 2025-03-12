@@ -38,6 +38,7 @@ import { NodeType } from '../graph/tree-node.type';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { reorderSpreadsheetColumns } from 'services/study-config';
 import { UUID } from 'crypto';
+import { useNodeAliases } from './custom-columns/use-node-aliases';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -106,7 +107,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const [activeTabUuid, setActiveTabUuid] = useState<UUID | null>(null);
 
-    const nodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
+    const { nodeAliases, updateNodeAliases } = useNodeAliases();
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
 
@@ -246,7 +247,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         tableDefinition?.type,
         formatFetchedEquipmentsHandler,
-        highlightUpdatedEquipment
+        highlightUpdatedEquipment,
+        nodeAliases
     );
 
     useEffect(() => {
@@ -268,7 +270,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
                 Object.entries(equipments?.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
                     let matchingEquipment = equipments.find((eq) => eq.id === equipment.id);
-                    let nodeAlias = nodesAliases.find((value) => value.id === nodeId);
+                    let nodeAlias = nodeAliases.find((value) => value.id === nodeId);
                     if (nodeAlias !== undefined && matchingEquipment !== undefined) {
                         equipmentToAdd[nodeAlias.alias] = matchingEquipment;
                     }
@@ -291,7 +293,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         disabled,
         equipments,
         tableDefinition?.type,
-        nodesAliases,
+        nodeAliases,
         currentNode.id,
         updateSortConfig,
         filters,
@@ -448,7 +450,11 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     )}
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsNodesConfig disabled={shooldDisableButtons} />
+                            <CustomColumnsNodesConfig
+                                disabled={shooldDisableButtons}
+                                nodeAliases={nodeAliases}
+                                updateNodeAliases={updateNodeAliases}
+                            />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
