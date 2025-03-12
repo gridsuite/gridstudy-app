@@ -379,10 +379,7 @@ const RootNetworkNodeEditor = () => {
     };
 
     const doUpdateRootNetwork = async ({ name, tag, caseName, caseId }: FormData) => {
-        if (!studyUuid) {
-            return;
-        }
-        if (!editedRootNetwork) {
+        if (!studyUuid || !editedRootNetwork) {
             return;
         }
         try {
