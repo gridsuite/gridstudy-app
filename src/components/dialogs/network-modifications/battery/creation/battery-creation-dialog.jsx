@@ -44,7 +44,7 @@ import {
 import BatteryCreationForm from './battery-creation-form';
 import { sanitizeString } from '../../../dialog-utils';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
-import { getActivePowerSetPointSchema, getFrequencyRegulationSchema } from '../../../set-points/set-points-utils';
+import { getActivePowerSetPointSchema } from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
@@ -88,7 +88,7 @@ const formSchema = yup
         ...getActivePowerSetPointSchema(false),
         ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
-        ...getFrequencyRegulationSchema(),
+        ...getActivePowerSetPointSchema(),
     })
     .concat(creationPropertiesSchema)
     .required();
