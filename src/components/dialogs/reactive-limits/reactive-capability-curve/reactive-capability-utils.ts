@@ -14,6 +14,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from 'components/utils/field-constants';
+import { ReactiveCapabilityCurve, ReactiveCapabilityCurvePoints } from '../reactive-limits.type';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';
@@ -35,30 +36,34 @@ export const getRowEmptyFormData = () => ({
     [MIN_Q]: null,
 });
 
-function getNotNullPFromArray(values) {
-    return values
-        .map((element) => {
-            const pValue = element[P];
+function getNotNullPFromArray(values: ReactiveCapabilityCurve) {
+    return (
+        values &&
+        values
+            .map((element) => {
+                const pValue = element[P];
 
-            // Note : convertion toNumber is necessary here to prevent corner cases like if
-            // two values are "-0" and "0", which would be considered different by the Set below.
-            return validateValueIsANumber(pValue) ? toNumber(pValue) : null;
-        })
-        .filter((p) => p !== null);
+                // Note : convertion toNumber is necessary here to prevent corner cases like if
+                // two values are "-0" and "0", which would be considered different by the Set below.
+                return validateValueIsANumber(pValue) ? toNumber(pValue) : null;
+            })
+            .filter((p) => p !== null)
+    );
 }
 
-function checkAllPValuesAreUnique(values) {
+function checkAllPValuesAreUnique(values: ReactiveCapabilityCurve) {
     const validActivePowerValues = getNotNullPFromArray(values);
     const setOfPs = [...new Set(validActivePowerValues)];
-    return setOfPs.length === validActivePowerValues.length;
+    return setOfPs.length === validActivePowerValues?.length;
 }
 
-function checkAllPValuesBetweenMinMax(values) {
+function checkAllPValuesBetweenMinMax(values: ReactiveCapabilityCurve) {
     const validActivePowerValues = getNotNullPFromArray(values);
-    const minP = validActivePowerValues[0];
-    const maxP = validActivePowerValues[validActivePowerValues.length - 1];
-
-    return validActivePowerValues.every((p) => p >= minP && p <= maxP);
+    if (validActivePowerValues) {
+        const minP = validActivePowerValues[0];
+        const maxP = validActivePowerValues[validActivePowerValues.length - 1];
+        return validActivePowerValues.every((p: number) => p >= minP && p <= maxP);
+    }
 }
 
 export const getReactiveCapabilityCurveValidationSchema = (
@@ -80,12 +85,12 @@ export const getReactiveCapabilityCurveValidationSchema = (
                                 .test(
                                     'checkATLeastThereIsOneNegativeP',
                                     'ReactiveCapabilityCurveCreationErrorMissingNegativeP',
-                                    (values) => values.some((value) => value.p < 0)
+                                    (values) => values?.some((value) => value.p < 0)
                                 )
                                 .test(
                                     'checkATLeastThereIsOnePositiveP',
                                     'ReactiveCapabilityCurveCreationErrorMissingPositiveP',
-                                    (values) => values.some((value) => value.p >= 0)
+                                    (values) => values?.some((value) => value.p >= 0)
                                 ),
                     })
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
@@ -98,16 +103,16 @@ export const getReactiveCapabilityCurveValidationSchema = (
         }),
 });
 
-export function setSelectedReactiveLimits(id, minMaxReactiveLimits, setValue) {
+export function setSelectedReactiveLimits(id: string, minMaxReactiveLimits: number, setValue: any) {
     setValue(id, minMaxReactiveLimits ? 'MINMAX' : 'CURVE');
 }
 
 export function setCurrentReactiveCapabilityCurveTable(
-    previousReactiveCapabilityCurveTable,
-    fieldKey,
-    getValues,
-    setValue,
-    isNodeBuilt
+    previousReactiveCapabilityCurveTable: ReactiveCapabilityCurvePoints,
+    fieldKey: string,
+    getValues: any,
+    setValue: any,
+    isNodeBuilt: any
 ) {
     const currentReactiveCapabilityCurveTable = getValues(fieldKey);
     if (isNodeBuilt || !currentReactiveCapabilityCurveTable) {

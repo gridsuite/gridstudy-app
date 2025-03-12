@@ -45,8 +45,8 @@ import {
     AttributeModification,
     ConverterStationElementInfos,
     ConverterStationElementModificationInfos,
-    ReactiveCapabilityCurvePointsData,
 } from './converter-station-type';
+import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -70,7 +70,7 @@ export interface ConverterStationInterfaceEditData {
     connectionName?: string | null;
     connectionPosition?: string | null;
     terminalConnected?: boolean | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
@@ -90,7 +90,7 @@ export interface ConverterStationModificationInterfaceEditData {
     connectionName?: AttributeModification<string> | null;
     connectionPosition?: AttributeModification<string> | null;
     terminalConnected?: AttributeModification<boolean> | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: AttributeModification<boolean> | null;
     minQ: AttributeModification<number> | null;
     maxQ: AttributeModification<number> | null;

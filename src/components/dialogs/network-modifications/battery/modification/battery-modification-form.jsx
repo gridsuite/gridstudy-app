@@ -13,10 +13,9 @@ import {
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
-import { Grid } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import { FloatInput, TextInput } from '@gridsuite/commons-ui';
-import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
-import { TextField } from '@mui/material';
+import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import { FormattedMessage } from 'react-intl';
 import PropertiesForm from '../../common/properties/properties-form';

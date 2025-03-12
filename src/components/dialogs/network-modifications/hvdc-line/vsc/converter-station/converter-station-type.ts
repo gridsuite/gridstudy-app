@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 
 export interface AttributeModification<T> {
     value?: T;
@@ -21,12 +22,6 @@ interface ConnectablePositionInfos {
     connectionPosition: number | null;
 }
 
-export interface ReactiveCapabilityCurvePointsData {
-    p?: number | null;
-    maxQ?: number | null;
-    minQ?: number | null;
-}
-
 export interface ConverterStationElementInfos {
     id: string;
     name: string | null;
@@ -40,7 +35,7 @@ export interface ConverterStationElementInfos {
     terminalConnected: boolean;
     p: number | null;
     q: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     minMaxReactiveLimits: MinMaxReactiveLimitsData | null;
     connectablePositionInfos: ConnectablePositionInfos;
     reactivePower?: number;
@@ -54,13 +49,4 @@ export interface ConverterStationElementInfos {
 export type ConverterStationElementModificationInfos = Omit<
     ConverterStationElementInfos,
     'reactiveCapabilityCurvePoints'
-> & { reactiveCapabilityCurveTable: ReactiveCapabilityCurvePointsData[] };
-
-export interface ReactiveCapabilityCurvePoint {
-    p: number | null;
-    oldP: number | null;
-    minQ: number | null;
-    oldMinQ: number | null;
-    maxQ: number | null;
-    oldMaxQ: number | null;
-}
+> & { reactiveCapabilityCurveTable: ReactiveCapabilityCurvePoints[] };

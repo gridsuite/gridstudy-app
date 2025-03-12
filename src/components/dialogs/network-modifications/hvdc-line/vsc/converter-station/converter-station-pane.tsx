@@ -22,7 +22,7 @@ import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
-import ReactiveLimitsForm from '../../../../reactive-limits/reactive-limits-form';
+import { ReactiveLimitsForm } from '../../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { TextField } from '@mui/material';
 import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';

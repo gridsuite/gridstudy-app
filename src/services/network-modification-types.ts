@@ -16,9 +16,8 @@ import { ShuntCompensatorInfos } from '../components/dialogs/network-modificatio
 import {
     AttributeModification,
     ConverterStationElementModificationInfos,
-    ReactiveCapabilityCurvePoint,
-    ReactiveCapabilityCurvePointsData,
 } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
+import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
@@ -69,7 +68,7 @@ export interface BatteryModificationInfo {
     isReactiveCapabilityCurveOn?: boolean;
     minQ?: number | null;
     maxQ?: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePointsData;
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints;
     targetP: number;
     targetQ: number;
     participate: boolean;
@@ -171,7 +170,7 @@ export interface GeneratorModificationInfo {
     droop: number | null;
     maxQ?: number | null;
     minQ?: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints[];
     connectionDirection?: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
@@ -360,7 +359,7 @@ export interface VSCCreationConverterStation {
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
 }
 
 export interface LCCCreationConverterStation {
@@ -386,7 +385,7 @@ export interface VSCModificationConverterStation {
     type: string;
     minQ: AttributeModification<number> | null;
     equipmentId: string;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoint[] | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
     voltageLevelId: AttributeModification<string> | null;
     reactivePowerSetpoint: AttributeModification<number> | null;
     equipmentName: AttributeModification<string> | null;
@@ -418,7 +417,7 @@ export interface BatteryCreationInfo {
     isReactiveCapabilityCurveOn: boolean;
     minQ: number | null;
     maxQ: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePointsData;
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints;
     targetP: number;
     targetQ: number;
     participate: boolean;
@@ -460,7 +459,7 @@ export interface GeneratorCreationInfo {
     droop: number | null;
     maxQ: number | null;
     minQ: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints[];
     connectionDirection: string | null;
     connectionName: string | null;
     connectionPosition: string | null;
