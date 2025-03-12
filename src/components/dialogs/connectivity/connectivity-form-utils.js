@@ -25,7 +25,10 @@ export const getConnectivityPropertiesValidationSchema = (isEquipmentModificatio
         [VOLTAGE_LEVEL]: yup
             .object()
             .nullable()
-            .required()
+            .when([], {
+                is: () => !isEquipmentModification,
+                then: (schema) => schema.required(),
+            })
             .shape({
                 [ID]: yup.string().when([], {
                     is: () => isEquipmentModification,
@@ -35,7 +38,10 @@ export const getConnectivityPropertiesValidationSchema = (isEquipmentModificatio
         [BUS_OR_BUSBAR_SECTION]: yup
             .object()
             .nullable()
-            .required()
+            .when([], {
+                is: () => !isEquipmentModification,
+                then: (schema) => schema.required(),
+            })
             .shape({
                 [ID]: yup.string().when([], {
                     is: () => isEquipmentModification,

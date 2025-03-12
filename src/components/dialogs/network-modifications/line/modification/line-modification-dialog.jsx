@@ -33,7 +33,6 @@ import {
     EQUIPMENT_NAME,
     G1,
     G2,
-    ID,
     LIMITS,
     MEASUREMENT_P1,
     MEASUREMENT_P2,
@@ -57,12 +56,12 @@ import ModificationDialog from '../../../commons/modificationDialog';
 
 import {
     addModificationTypeToTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
     getLimitsEmptyFormData,
-    getSelectedLimitsFormData,
     getLimitsValidationSchema,
+    getSelectedLimitsFormData,
     sanitizeLimitNames,
     updateTemporaryLimits,
-    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -299,13 +298,6 @@ const LineModificationDialog = ({
         reset(emptyFormData);
     }, [emptyFormData, reset]);
 
-    const setConnectivityValue = useCallback(
-        (index, field, value) => {
-            setValue(`${CONNECTIVITY}.${index}.${field}.${ID}`, value);
-        },
-        [setValue]
-    );
-
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -322,10 +314,6 @@ const LineModificationDialog = ({
                     .then((line) => {
                         if (line) {
                             setLineToModify(line);
-                            setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, line?.voltageLevelId1);
-                            setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, line?.voltageLevelId2);
-                            setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
-                            setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
                             const selectedCurrentLimits1 = completeCurrentLimitsGroupsToOnlySelected(
                                 line?.currentLimits1,
                                 line?.selectedOperationalLimitsGroup1
@@ -367,16 +355,7 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            currentRootNetworkUuid,
-            setConnectivityValue,
-            getValues,
-            reset,
-            editData?.equipmentId,
-            emptyFormData,
-        ]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, getValues, reset, editData?.equipmentId, emptyFormData]
     );
 
     useEffect(() => {
