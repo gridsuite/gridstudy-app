@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import ChildMenuItem from './create-child-menu-item';
@@ -75,14 +74,6 @@ const NetworkModificationsMenu = ({
             <div>{renderMenuItems(menuDefinition)}</div>
         </Menu>
     );
-};
-
-NetworkModificationsMenu.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onItemClick: PropTypes.func.isRequired,
-    menuDefinition: PropTypes.array,
-    anchorEl: PropTypes.object,
 };
 
 export default NetworkModificationsMenu;

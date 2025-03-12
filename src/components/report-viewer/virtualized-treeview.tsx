@@ -9,10 +9,9 @@ import { FixedSizeList } from 'react-window';
 import { ReportItem, TreeviewItem } from './treeview-item';
 import { ReportTree } from '../../utils/report/report.type';
 import Label from '@mui/icons-material/Label';
-import { Theme } from '@mui/system';
 import { useTreeViewScroll } from './use-treeview-scroll';
 import { QuickSearch } from './QuickSearch';
-import { Box } from '@mui/material';
+import { Box, Theme } from '@mui/material';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 const styles = {
