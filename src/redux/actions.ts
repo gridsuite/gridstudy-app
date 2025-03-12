@@ -24,7 +24,6 @@ import type {
     AppState,
     CurrentTreeNode,
     EquipmentUpdateType,
-    NodeAlias,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     StudyIndexationStatus,
@@ -87,7 +86,6 @@ export type AppActions =
     | SetParamsLoadedAction
     | OpenStudyAction
     | CloseStudyAction
-    | RemoveSelectedCaseAction
     | UseNameAction
     | EnableDeveloperModeAction
     | StudyUpdatedAction
@@ -132,11 +130,11 @@ export type AppActions =
     | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
-    | UpdateCustomColumnsNodesAliasesAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction
-    | RemoveTableDefinitionAction;
+    | RemoveTableDefinitionAction
+    | ReorderTableDefinitionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -155,31 +153,6 @@ export function loadEquipments(
     };
 }
 
-export type AdditionalNodeData = {
-    alias: string;
-    identifiables: Identifiable[];
-};
-
-export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS =
-    'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
-export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<
-    Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>
-> & {
-    equipmentType: SpreadsheetEquipmentType;
-    data: AdditionalNodeData[];
-};
-
-export function addAdditionalEquipmentsByNodesForCustomColumns(
-    type: SpreadsheetEquipmentType,
-    data: AdditionalNodeData[]
-): AddEquipmentsByNodesForCustomColumnsAction {
-    return {
-        type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
-        equipmentType: type,
-        data,
-    };
-}
-
 export const REMOVE_NODE_DATA = 'REMOVE_NODE_DATA';
 export type RemoveNodeDataAction = Readonly<Action<typeof REMOVE_NODE_DATA>> & {
     nodesIdToRemove: string[];
@@ -189,18 +162,6 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
     return {
         type: REMOVE_NODE_DATA,
         nodesIdToRemove,
-    };
-}
-
-export const UPDATE_CUSTOM_COLUMNS_NODES_ALIASES = 'UPDATE_CUSTOM_COLUMNS_NODES_ALIASES';
-export type UpdateCustomColumnsNodesAliasesAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_NODES_ALIASES>> & {
-    nodesAliases: NodeAlias[];
-};
-
-export function updateCustomColumnsNodesAliases(nodesAliases: NodeAlias[]): UpdateCustomColumnsNodesAliasesAction {
-    return {
-        type: UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
-        nodesAliases: nodesAliases,
     };
 }
 
@@ -490,13 +451,6 @@ export type CloseStudyAction = Readonly<Action<typeof CLOSE_STUDY>>;
 
 export function closeStudy(): CloseStudyAction {
     return { type: CLOSE_STUDY };
-}
-
-export const REMOVE_SELECTED_CASE = 'REMOVE_SELECTED_CASE';
-export type RemoveSelectedCaseAction = Readonly<Action<typeof REMOVE_SELECTED_CASE>>;
-
-export function removeSelectedCase(): RemoveSelectedCaseAction {
-    return { type: REMOVE_SELECTED_CASE };
 }
 
 export const USE_NAME = 'USE_NAME';
@@ -1242,6 +1196,17 @@ export const initTableDefinitions = (
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
+});
+
+export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
+export type ReorderTableDefinitionsAction = {
+    type: typeof REORDER_TABLE_DEFINITIONS;
+    definitions: SpreadsheetTabDefinition[];
+};
+
+export const reorderTableDefinitions = (definitions: SpreadsheetTabDefinition[]): ReorderTableDefinitionsAction => ({
+    type: REORDER_TABLE_DEFINITIONS,
+    definitions,
 });
 
 export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';

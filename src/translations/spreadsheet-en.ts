@@ -80,6 +80,7 @@ const spreadsheetEn = {
         'Are you sure you want to remove the spreadsheet "{spreadsheetName}"?',
     'spreadsheet/remove_spreadsheet_error': 'Error while removing spreadsheet',
     'spreadsheet/reorder_columns/error': 'Error while reordering columns',
+    'spreadsheet/reorder_tabs_error': 'Error while reordering tabs',
 
     // Column types
     TEXT: 'Text',
