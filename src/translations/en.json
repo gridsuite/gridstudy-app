@@ -1545,5 +1545,7 @@
     "pmin": "Min P",
     "pmax": "Max P",
     "qmin": "Min Q",
-    "qmax": "Max Q"
+    "qmax": "Max Q",
+    "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
+    "nodeAliasesUpdateError": "An error occured while updating node aliases"
 }
