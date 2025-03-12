@@ -81,6 +81,16 @@ const spreadsheetEn = {
     'spreadsheet/remove_spreadsheet_error': 'Error while removing spreadsheet',
     'spreadsheet/reorder_columns/error': 'Error while reordering columns',
 
+    // calculation
+    'spreadsheet/calculation/sum': 'Sum',
+    'spreadsheet/calculation/average': 'Average',
+    'spreadsheet/calculation/min': 'Minimum',
+    'spreadsheet/calculation/max': 'Maximum',
+    'spreadsheet/calculation/sum_abbrev': 'Sum',
+    'spreadsheet/calculation/average_abbrev': 'Avg',
+    'spreadsheet/calculation/min_abbrev': 'Min',
+    'spreadsheet/calculation/max_abbrev': 'Max',
+
     // Column types
     TEXT: 'Text',
     NUMBER: 'Number',

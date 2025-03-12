@@ -135,7 +135,8 @@ export type AppActions =
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction
-    | RemoveTableDefinitionAction;
+    | RemoveTableDefinitionAction
+    | SetCalculationSelectionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -1275,5 +1276,19 @@ export function saveSpreadsheetGsFilters(
         type: SAVE_SPREADSHEET_GS_FILTER,
         equipmentType: equipmentType,
         filters: filters,
+    };
+}
+
+export const SET_CALCULATION_SELECTIONS = 'SET_CALCULATION_SELECTIONS';
+export type SetCalculationSelectionsAction = Readonly<Action<typeof SET_CALCULATION_SELECTIONS>> & {
+    tabUuid: UUID;
+    selections: string[];
+};
+
+export function setCalculationSelections(tabUuid: UUID, selections: string[]): SetCalculationSelectionsAction {
+    return {
+        type: SET_CALCULATION_SELECTIONS,
+        tabUuid,
+        selections,
     };
 }

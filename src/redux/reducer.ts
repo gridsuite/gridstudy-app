@@ -190,6 +190,8 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    SET_CALCULATION_SELECTIONS,
+    SetCalculationSelectionsAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -288,6 +290,7 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
+import { CalculationType } from 'components/spreadsheet/utils/calculation-utils';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -547,6 +550,8 @@ export interface AppState extends CommonStoreState {
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
+
+    calculationSelections: Record<UUID, CalculationType[]>;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -795,6 +800,7 @@ const initialState: AppState = {
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
+    calculationSelections: {},
 };
 
 export const reducer = createReducer(initialState, (builder) => {
@@ -1771,6 +1777,13 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
         state.gsFilterSpreadsheetState[action.equipmentType] = action.filters;
+    });
+
+    builder.addCase(SET_CALCULATION_SELECTIONS, (state, action: SetCalculationSelectionsAction) => {
+        state.calculationSelections = {
+            ...state.calculationSelections,
+            [action.tabUuid]: action.selections,
+        };
     });
 });
 

@@ -6,7 +6,12 @@
  */
 import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
-import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '../utils/cell-renderers';
+import {
+    BooleanCellRenderer,
+    DefaultCellRenderer,
+    NumericCellRenderer,
+    RowIndexCellRenderer,
+} from '../utils/cell-renderers';
 import { ColDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
@@ -166,6 +171,44 @@ export const booleanColumnDefinition = (displayName: string, tab: string): ColDe
         cellRenderer: BooleanCellRenderer,
         context: {
             columnType: COLUMN_TYPES.BOOLEAN,
+        },
+    };
+};
+
+export const rowIndexColumnDefinition = (tabUuid: string): ColDef => {
+    return {
+        colId: 'rowIndex',
+        headerName: '',
+        cellRenderer: (params: any) => {
+            // For pinned rows, use the RowIndexCellRenderer which handles the calculate icon
+            if (params.node.rowPinned) {
+                return RowIndexCellRenderer(params);
+            }
+
+            // For normal rows, calculate the index based on the displayed row index
+            // This is more reliable than using valueGetter
+            if (!params.node) {
+                return null;
+            }
+
+            // Get the actual displayed row index
+            const displayedRowIndex = params.api.getDisplayedRowCount() > 0 ? params.node.rowIndex : null;
+
+            // Add 1 to convert from 0-based to 1-based indexing
+            return displayedRowIndex !== null ? displayedRowIndex + 1 : null;
+        },
+        width: 65,
+        pinned: 'left',
+        suppressMovable: true,
+        lockPosition: true,
+        sortable: false,
+        filter: false,
+        resizable: true,
+        cellStyle: { textAlign: 'center' },
+        editable: false,
+        suppressAutoSize: false,
+        context: {
+            tabUuid: tabUuid,
         },
     };
 };

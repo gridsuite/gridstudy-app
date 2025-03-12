@@ -84,6 +84,16 @@ const spreadsheetFr = {
     'spreadsheet/remove_spreadsheet_error': 'Erreur lors de la suppression du tableur',
     'spreadsheet/reorder_columns/error': 'Erreur lors du réordonnancement des colonnes',
 
+    // calculations
+    'spreadsheet/calculation/sum': 'Somme',
+    'spreadsheet/calculation/average': 'Moyenne',
+    'spreadsheet/calculation/min': 'Minimum',
+    'spreadsheet/calculation/max': 'Maximum',
+    'spreadsheet/calculation/sum_abbrev': 'Som',
+    'spreadsheet/calculation/average_abbrev': 'Moy',
+    'spreadsheet/calculation/min_abbrev': 'Min',
+    'spreadsheet/calculation/max_abbrev': 'Max',
+
     // Column types
     TEXT: 'Texte',
     NUMBER: 'Nombre',
