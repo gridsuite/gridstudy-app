@@ -9,25 +9,11 @@ import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
 import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
-import { AttributeModification } from 'components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
 import { Option } from '@gridsuite/commons-ui';
 import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
+import { AttributeModification } from '../dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
-
-/**
- * Get the label of an enum value from its id
- * @param {Array} enumValues - The enum values {id: string, label: string} []
- * @param {string} id - The id of the enum value
- * @returns {string | undefined} - The label of the enum value
- */
-export const getEnumLabelById = (enumValues: { id: string; label: string }[], id: string) => {
-    if (!enumValues || !id) {
-        return undefined;
-    }
-    const enumValue = enumValues.find((enumValue) => enumValue.id === id);
-    return enumValue?.label;
-};
 
 export const isFieldRequired = (fieldName: string, schema: any, values: unknown) => {
     const { schema: fieldSchema, parent: parentValues } = getIn(schema, fieldName, values) || {};
@@ -89,10 +75,6 @@ export const areIdsEqual = (val1: Option, val2: Option) => {
     } else {
         return val1 === val2;
     }
-};
-
-export const areUuidsEqual = (val1: { uuid: string }, val2: { uuid: string }) => {
-    return val1.uuid === val2.uuid;
 };
 
 export const getObjectId = (object: string | { id: string }) => {

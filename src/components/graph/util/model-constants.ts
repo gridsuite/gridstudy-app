@@ -14,11 +14,6 @@ export const nodeTypes = {
     NETWORK_MODIFICATION: NetworkModificationNode,
 };
 
-export const nodeWidth = 180;
-export const nodeHeight = 60;
-export const rootNodeWidth = 40;
-export const rootNodeHeight = 40;
-
 // used to generate translation combined keys with a prefix/suffix for each equipment type
 // for example `${EventType.DISCONNECT}${EQUIPMENT_TYPE_LABEL_KEYS[EQUIPMENT_TYPES.BUS]}` => 'DisconnectBus'
 export const EQUIPMENT_TYPE_LABEL_KEYS = {

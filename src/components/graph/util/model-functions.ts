@@ -6,8 +6,8 @@
  */
 
 import { UUID } from 'crypto';
-import NetworkModificationTreeModel from '../network-modification-tree-model';
-import { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from 'redux/reducer';
+import type NetworkModificationTreeModel from '../network-modification-tree-model';
+import type { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from 'redux/reducer';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../tree-node.type';
 
 export function getModificationNodeDataOrUndefined(node: NetworkModificationNodeData | RootNodeData) {
@@ -76,10 +76,6 @@ export function getFirstNodeOfType(
         undefined, // first is Root node without parent node
         buildStatusList
     );
-}
-
-export function isNetworkModificationNode(n: NetworkModificationNodeData | RootNodeData): boolean {
-    return 'nodeBuildStatus' in n;
 }
 
 // Recursive search of a node of type and buildStatus specified

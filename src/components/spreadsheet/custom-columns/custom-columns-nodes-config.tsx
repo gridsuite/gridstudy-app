@@ -11,6 +11,7 @@ import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnNodesDialog from './custom-columns-nodes-dialog';
 import BuildIcon from '@mui/icons-material/Build';
 import { spreadsheetStyles } from '../utils/style';
+import { NodeAlias } from './node-alias.type';
 
 const styles = {
     icon: {
@@ -21,9 +22,15 @@ const styles = {
 
 type CustomColumnsNodesConfigProps = {
     disabled?: boolean;
+    nodeAliases: NodeAlias[];
+    updateNodeAliases: (newNodeAliases: NodeAlias[]) => void;
 };
 
-export default function CustomColumnsNodesConfig({ disabled }: Readonly<CustomColumnsNodesConfigProps>) {
+export default function CustomColumnsNodesConfig({
+    disabled,
+    nodeAliases,
+    updateNodeAliases,
+}: Readonly<CustomColumnsNodesConfigProps>) {
     const dialogOpen = useStateBoolean(false);
 
     return (
@@ -38,7 +45,11 @@ export default function CustomColumnsNodesConfig({ disabled }: Readonly<CustomCo
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
             </Button>
 
-            <CustomColumnNodesDialog open={dialogOpen} />
+            <CustomColumnNodesDialog
+                open={dialogOpen}
+                nodeAliases={nodeAliases}
+                updateNodeAliases={updateNodeAliases}
+            />
         </>
     );
 }

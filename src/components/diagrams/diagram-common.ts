@@ -5,14 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { closeDiagram, closeDiagrams, minimizeDiagram, openDiagram, togglePinDiagram } from '../../redux/actions';
 import { INVALID_LOADFLOW_OPACITY, NAD_INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
-import { AppDispatch } from '../../redux/store';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { UUID } from 'crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
@@ -127,26 +123,6 @@ export const styles = {
     }),
 };
 
-export enum ViewState {
-    PINNED = 'pinned',
-    MINIMIZED = 'minimized',
-    OPENED = 'opened',
-}
-
-export enum SubstationLayout {
-    HORIZONTAL = 'horizontal',
-    VERTICAL = 'vertical',
-    SMART = 'smart',
-    SMARTHORIZONTALCOMPACTION = 'smartHorizontalCompaction',
-    SMARTVERTICALCOMPACTION = 'smartVerticalCompaction',
-}
-
-export enum DiagramType {
-    VOLTAGE_LEVEL = 'voltage-level',
-    SUBSTATION = 'substation',
-    NETWORK_AREA_DIAGRAM = 'network-area-diagram',
-}
-
 // be careful when using this method because there are treatments made on purpose
 export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): EQUIPMENT_TYPES | null {
     switch (feederType) {
@@ -185,44 +161,6 @@ export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): 
     }
 }
 
-export function getFeederTypeFromEquipmentType(equipmentType: EQUIPMENT_TYPES) {
-    switch (equipmentType) {
-        case EQUIPMENT_TYPES.SUBSTATION:
-            return FEEDER_TYPES.SUBSTATION;
-        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
-            return FEEDER_TYPES.VOLTAGE_LEVEL;
-        case EQUIPMENT_TYPES.LINE:
-            return FEEDER_TYPES.LINE;
-        case EQUIPMENT_TYPES.LOAD:
-            return FEEDER_TYPES.LOAD;
-        case EQUIPMENT_TYPES.BATTERY:
-            return FEEDER_TYPES.BATTERY;
-        case FEEDER_TYPES.TIE_LINE:
-            return EQUIPMENT_TYPES.TIE_LINE;
-        case EQUIPMENT_TYPES.DANGLING_LINE:
-            return FEEDER_TYPES.DANGLING_LINE;
-        case EQUIPMENT_TYPES.GENERATOR:
-            return FEEDER_TYPES.GENERATOR;
-        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
-        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
-            return FEEDER_TYPES.HVDC_CONVERTER_STATION;
-        case EQUIPMENT_TYPES.HVDC_LINE:
-            return FEEDER_TYPES.HVDC_LINE;
-        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-            return FEEDER_TYPES.SHUNT_COMPENSATOR;
-        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
-            return FEEDER_TYPES.STATIC_VAR_COMPENSATOR;
-        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-            return FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER;
-        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
-            return FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER;
-        default: {
-            console.info('Unrecognized equipment type encountered ', equipmentType);
-            return null;
-        }
-    }
-}
-
 export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentType | null {
     switch (equipmentType) {
         case EquipmentType.SUBSTATION:
@@ -249,53 +187,6 @@ export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentT
         }
     }
 }
-
-export const useDiagram = () => {
-    const dispatch = useDispatch<AppDispatch>();
-
-    const openDiagramView = useCallback(
-        (id: string, type: DiagramType) => {
-            dispatch(openDiagram(id, type));
-        },
-        [dispatch]
-    );
-
-    const togglePinDiagramView = useCallback(
-        (id: string, type: DiagramType) => {
-            dispatch(togglePinDiagram(id, type));
-        },
-        [dispatch]
-    );
-
-    const minimizeDiagramView = useCallback(
-        (id: string, type: DiagramType) => {
-            dispatch(minimizeDiagram(id, type));
-        },
-        [dispatch]
-    );
-
-    const closeDiagramView = useCallback(
-        (id: string, type: DiagramType) => {
-            dispatch(closeDiagram(id, type));
-        },
-        [dispatch]
-    );
-
-    const closeDiagramViews = useCallback(
-        (idsToRemove: string[]) => {
-            dispatch(closeDiagrams(idsToRemove));
-        },
-        [dispatch]
-    );
-
-    return {
-        openDiagramView,
-        minimizeDiagramView,
-        togglePinDiagramView,
-        closeDiagramView,
-        closeDiagramViews,
-    };
-};
 
 export interface SldAdditionalMetadata {
     id: string;
