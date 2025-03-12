@@ -54,13 +54,15 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
     };
 
     const onSliderChange = (value: number | number[]) => {
-        const rightPercentageValue = isNumber(value) && sanitizePercentageValue(100 - value);
-        setValue(LEFT_SIDE_PERCENTAGE, value, {
-            shouldValidate: true,
-        });
-        setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
-            shouldValidate: true,
-        });
+        if (typeof value === 'number') {
+            const rightPercentageValue = sanitizePercentageValue(100 - value);
+            setValue(LEFT_SIDE_PERCENTAGE, value, {
+                shouldValidate: true,
+            });
+            setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
+                shouldValidate: true,
+            });
+        }
     };
 
     const leftSidePercentageField = (
