@@ -1492,6 +1492,7 @@
     "rootNetworkDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier du réseau",
     "rootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
     "createRootNetworksError": "Une erreur est survenue lors de la création du réseau racine",
+    "importCaseFailure": "Impossible d'importer la situation",
 
     "unlimited": "Illimité",
     "forbidden": "Interdit",
@@ -1539,5 +1540,7 @@
     "pmin": "P Min",
     "pmax": "P Max",
     "qmin": "Q Min",
-    "qmax": "Q Max"
+    "qmax": "Q Max",
+    "nodeAliasesRetrievingError": "Erreur lors de la récupération des alias de nœuds",
+    "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds"
 }
