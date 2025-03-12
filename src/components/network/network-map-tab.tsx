@@ -863,7 +863,6 @@ export const NetworkMapTab = ({
             dispatch(resetMapEquipment());
             return;
         }
-
         if (disabled) {
             return;
         }
@@ -912,7 +911,6 @@ export const NetworkMapTab = ({
         studyUuid,
         currentNode,
         currentRootNetworkUuid,
-        studyUpdatedForce.eventData.headers,
         loadMapEquipments,
         dispatch,
         updateMapEquipmentsAndGeoData,

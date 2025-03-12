@@ -1,12 +1,5 @@
-/**
- * Copyright (c) 2025, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 import { CustomFormProvider, isObjectEmpty, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Grid } from '@mui/material';
 import { CASE_NAME, CASE_ID, NAME, TAG } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
@@ -33,27 +26,28 @@ interface RootNetworkDialogProps {
     onClose: () => void;
     titleId: string;
     dialogProps?: any;
-    editableRootNetwork?: RootNetworkMetadata; // Optional: for modification
+    editableRootNetwork?: RootNetworkMetadata;
 }
-const creationFormSchema = yup
-    .object()
-    .shape({
-        [NAME]: yup.string().trim().required(),
-        [TAG]: yup.string().trim().required(),
-        [CASE_NAME]: yup.string().required(),
-        [CASE_ID]: yup.string().required(),
-    })
-    .required();
 
-const modificationFormSchema = yup
-    .object()
-    .shape({
-        [NAME]: yup.string().trim().required(),
-        [TAG]: yup.string().trim().required(),
-        [CASE_NAME]: yup.string(),
-        [CASE_ID]: yup.string(),
-    })
-    .required();
+const getSchema = (isModification = false) => {
+    return yup
+        .object()
+        .shape({
+            [NAME]: yup.string().trim().required(),
+            [TAG]: yup.string().trim().required(),
+            [CASE_NAME]: yup.string().when([], {
+                is: isModification,
+                then: (schema) => schema.optional(),
+                otherwise: (schema) => schema.required(),
+            }),
+            [CASE_ID]: yup.string().when([], {
+                is: isModification,
+                then: (schema) => schema.optional(),
+                otherwise: (schema) => schema.required(),
+            }),
+        })
+        .required();
+};
 
 const emptyFormData: FormData = {
     [NAME]: '',
@@ -73,10 +67,14 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     editableRootNetwork,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const [modifiedByUser, setModifiedByUser] = useState(false);
+
+    // Determine if it's in modification mode to get the appropriate schema
+    const isModification = !!editableRootNetwork;
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(editableRootNetwork ? modificationFormSchema : creationFormSchema),
+        resolver: yupResolver(getSchema(isModification)),
     });
 
     const {
@@ -100,17 +98,11 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
         reset(emptyFormData);
     }, [reset]);
 
-    // Set selected case when a case is selected
     const onSelectCase = (selectedCase: TreeViewFinderNodeProps) => {
-        if (!formMethods.getValues(NAME) && !editableRootNetwork) {
+        if (!modifiedByUser && !isModification) {
             setValue(NAME, selectedCase.name, {
                 shouldDirty: true,
-            }); // Set the name from the selected case
-        }
-        if (editableRootNetwork) {
-            setValue(NAME, selectedCase.name, {
-                shouldDirty: true,
-            }); // Set the name from the selected case
+            });
         }
         setValue(CASE_NAME, selectedCase.name, {
             shouldDirty: true,
@@ -131,10 +123,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     const isFormValid = isObjectEmpty(errors);
 
     return (
-        <CustomFormProvider
-            validationSchema={editableRootNetwork ? modificationFormSchema : creationFormSchema}
-            {...formMethods}
-        >
+        <CustomFormProvider validationSchema={getSchema(isModification)} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'md'}
@@ -157,9 +146,10 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             elementExists={checkRootNetworkNameExistence}
                             errorMessageKey="nameAlreadyUsed"
                             formProps={{ fullWidth: true }}
+                            onManualChangeCallback={() => setModifiedByUser(true)}
                         />
                     </Grid>
-                    <RootNetworkCaseSelection isModification={!!editableRootNetwork} onSelectCase={onSelectCase} />
+                    <RootNetworkCaseSelection isModification={isModification} onSelectCase={onSelectCase} />
                     <Grid item>
                         <UniqueCheckNameInput
                             name={TAG}

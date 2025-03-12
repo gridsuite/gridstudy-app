@@ -400,6 +400,7 @@ const RootNetworkNodeEditor = () => {
         } catch (error) {
             snackError({
                 headerId: 'updateRootNetworksError',
+                messageTxt: error instanceof Error ? error.message : String(error),
             });
         }
     };
