@@ -189,6 +189,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
     const [showLabels, setShowLabels] = useState(true);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const nadIdentifier = useMemo(() => {
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
@@ -309,14 +311,18 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         createDiagramConfig(
             {
                 depth: networkAreaDiagramDepth,
+                withGeoData: networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
                 scalingFactor: props.svgScalingFactor,
-                //radiusFactor: 9,
+                //radiusFactor: 300.0, // At the moment, we only use the default value in the backend
                 voltageLevelIds: voltageLevelIds,
                 positions: positions,
             },
             directoryData.name,
             directoryData.description,
-            directoryData.folderId
+            directoryData.folderId,
+            studyUuid,
+            currentRootNetworkUuid,
+            currentNode?.id
         );
     };
 

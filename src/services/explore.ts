@@ -139,7 +139,9 @@ interface DiagramConfigPosition {
 }
 
 interface DiagramConfig {
+    // TODO Also add the NadConfigId for update ?
     depth?: number;
+    withGeoData?: boolean,
     scalingFactor?: number;
     radiusFactor?: number;
     voltageLevelIds: string[];
@@ -150,13 +152,19 @@ export function createDiagramConfig(
     newDiagramConfig: DiagramConfig,
     diagramConfigName: string,
     description: string,
-    parentDirectoryUuid: string
+    parentDirectoryUuid: string,
+    studyUuid: string,
+    rootNetworkUuid: string,
+    nodeUuid: string
 ) {
     console.info('Creating a new diagram config...');
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', diagramConfigName);
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    urlSearchParams.append('studyUuid', studyUuid);
+    urlSearchParams.append('rootNetworkUuid', rootNetworkUuid);
+    urlSearchParams.append('nodeUuid', nodeUuid);
 
     const createDiagramConfigUrl =
         PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/diagram-config?' + urlSearchParams.toString();
