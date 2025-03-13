@@ -293,6 +293,8 @@ export enum NotificationType {
     STUDY = 'study',
     COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
     NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
+    LOADFLOW_RESULT = 'loadflowResult',
+    ROOT_NETWORK_MODIFIED = 'rootNetworkModified',
 }
 
 export enum StudyIndexationStatus {
@@ -321,6 +323,18 @@ export interface StudyUpdatedEventDataHeader {
     computationType?: ComputingType;
 }
 
+interface LoadflowResultEventDataHeaders {
+    studyUuid: UUID;
+    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
+    updateType?: string;
+}
+
+interface RootNetworkModifiedEventDataHeaders {
+    studyUuid: UUID;
+    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
+    updateType?: string;
+}
+
 // Payloads
 export interface DeletedEquipment {
     equipmentId: string;
@@ -344,6 +358,16 @@ interface StudyUpdatedEventDataUnknown {
     payload: string;
 }
 
+export interface LoadflowResultEventData {
+    headers: LoadflowResultEventDataHeaders;
+    payload: undefined;
+}
+
+export interface RootNetworkModifiedEventData {
+    headers: RootNetworkModifiedEventDataHeaders;
+    payload: undefined;
+}
+
 // Notification types
 type StudyUpdatedStudy = {
     type: NotificationType.STUDY;
@@ -355,10 +379,20 @@ type StudyUpdatedUndefined = {
     eventData: StudyUpdatedEventDataUnknown;
 };
 
+type LoadflowResultNotification = {
+    type: NotificationType.LOADFLOW_RESULT;
+    eventData: LoadflowResultEventData;
+};
+
+type RootNetworkModifiedNotification = {
+    type: NotificationType.ROOT_NETWORK_MODIFIED;
+    eventData: LoadflowResultEventData;
+};
+
 // Redux state
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
-} & (StudyUpdatedUndefined | StudyUpdatedStudy);
+} & (StudyUpdatedUndefined | StudyUpdatedStudy | LoadflowResultNotification | RootNetworkModifiedNotification);
 
 type NodeCommonData = {
     label: string;
