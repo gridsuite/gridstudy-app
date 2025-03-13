@@ -114,7 +114,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                                 .catch(() => {
                                     if (fetchedGlobalFilter.uuid) {
                                         // remove those missing filters from recent global filters
-                                        dispatch(removeFromRecentGlobalFilters(fetchedGlobalFilter.uuid.toString()));
+                                        dispatch(removeFromRecentGlobalFilters(fetchedGlobalFilter.uuid));
                                         globalFiltersToAddToRecents = [
                                             ...globalFiltersToAddToRecents.filter(
                                                 (globalFilter) => globalFilter.uuid !== fetchedGlobalFilter.uuid

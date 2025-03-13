@@ -120,6 +120,7 @@ export type AppActions =
     | SetOptionalServicesAction
     | SetOneBusShortcircuitAnalysisDiagramAction
     | AddToRecentGlobalFiltersAction
+    | RemoveFromRecentGlobalFiltersAction
     | SetLastCompletedComputationAction
     | LoadflowResultFilterAction
     | SecurityAnalysisResultFilterAction
@@ -977,10 +978,10 @@ export function addToRecentGlobalFilters(globalFilters: GlobalFilter[]): AddToRe
 
 export const REMOVE_FROM_RECENT_GLOBAL_FILTERS = 'REMOVE_FROM_RECENT_GLOBAL_FILTERS';
 export type RemoveFromRecentGlobalFiltersAction = Readonly<Action<typeof REMOVE_FROM_RECENT_GLOBAL_FILTERS>> & {
-    uuid: string;
+    uuid: UUID;
 };
 
-export function removeFromRecentGlobalFilters(uuid: string): RemoveFromRecentGlobalFiltersAction {
+export function removeFromRecentGlobalFilters(uuid: UUID): RemoveFromRecentGlobalFiltersAction {
     return {
         type: REMOVE_FROM_RECENT_GLOBAL_FILTERS,
         uuid: uuid,

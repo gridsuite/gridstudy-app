@@ -1669,11 +1669,9 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(REMOVE_FROM_RECENT_GLOBAL_FILTERS, (state, action: RemoveFromRecentGlobalFiltersAction) => {
-        let newRecentGlobalFilters = [...state.recentGlobalFilters];
-
-        state.recentGlobalFilters = newRecentGlobalFilters.filter(
-            (recentGlobalFilter) => recentGlobalFilter.uuid !== action.uuid
-        );
+        state.recentGlobalFilters = [
+            ...state.recentGlobalFilters.filter((recentGlobalFilter) => recentGlobalFilter.uuid !== action.uuid),
+        ];
     });
 
     builder.addCase(SET_LAST_COMPLETED_COMPUTATION, (state, action: SetLastCompletedComputationAction) => {
