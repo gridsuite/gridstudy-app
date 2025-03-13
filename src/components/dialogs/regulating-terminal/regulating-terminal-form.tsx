@@ -39,7 +39,7 @@ interface RegulatingTerminalFormProps {
 }
 
 export function RegulatingTerminalForm({
-    id, // id that has to be defined to determine it's parent object within the form
+    id, // id that has to be defined to determine it is parent object within the form
     direction,
     disabled = false,
     studyUuid,
@@ -94,6 +94,20 @@ export function RegulatingTerminalForm({
                         name={`${id}.${VOLTAGE_LEVEL}`}
                         label="VOLTAGE_LEVEL"
                         size="small"
+                        //setting null programmatically when allowNewValue is enabling (i.e. freeSolo enabled) wont empty the field => need to convert null to empty and vice versa
+                        inputTransform={(value) => value ?? ''}
+                        outputTransform={(value) => {
+                            if (typeof value === 'string') {
+                                return value === ''
+                                    ? null
+                                    : {
+                                          id: value,
+                                          label: value,
+                                          type: equipmentSectionTypeDefaultValue,
+                                      };
+                            }
+                            return value;
+                        }}
                         forcePopupIcon
                         autoHighlight
                         selectOnFocus
@@ -135,10 +149,20 @@ export function RegulatingTerminalForm({
                 {
                     <AutocompleteInput
                         name={`${id}.${EQUIPMENT}`}
-                        //hack to work with freesolo autocomplete
-                        //setting null programatically when freesolo is enable wont empty the field
+                        //setting null programmatically when allowNewValue is enabling (i.e. freeSolo enabled) wont empty the field => need to convert null to empty and vice versa
                         inputTransform={(value) => value ?? ''}
-                        outputTransform={(value) => (value === '' ? null : value)}
+                        outputTransform={(value) => {
+                            if (typeof value === 'string') {
+                                return value === ''
+                                    ? null
+                                    : {
+                                          id: value,
+                                          label: value,
+                                          type: equipmentSectionTypeDefaultValue,
+                                      };
+                            }
+                            return value;
+                        }}
                         label="Equipment"
                         size="small"
                         forcePopupIcon
