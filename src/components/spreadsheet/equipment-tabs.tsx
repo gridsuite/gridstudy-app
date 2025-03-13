@@ -21,6 +21,7 @@ import { DropResult } from 'react-beautiful-dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
 import { UUID } from 'crypto';
+import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 
 interface EquipmentTabsProps {
     selectedTabUuid: UUID | null;
@@ -113,10 +114,11 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
                 // If we're removing the currently selected tab or a tab before it,
                 // we need to update the selection
                 if (tabToBeRemovedUuid === selectedTabUuid) {
+                    const remainingTabs = tablesDefinitions.filter((tab) => tab.uuid !== tabToBeRemovedUuid);
                     // Select the next tab, or the previous if this is the last tab
-                    const newIndex = Math.min(selectedTabIndex, tablesDefinitions.length - 2);
+                    const newIndex = Math.min(selectedTabIndex, remainingTabs.length - 1);
                     if (newIndex >= 0) {
-                        handleSwitchTab(tablesDefinitions[newIndex].uuid);
+                        handleSwitchTab(remainingTabs[newIndex].uuid);
                     }
                 }
                 dispatch(removeTableDefinition(tabToBeRemovedIndex));
@@ -135,11 +137,14 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
         setConfirmationDialogOpen(true);
     };
 
-    const resetTabSelection = useCallback(() => {
-        if (tablesDefinitions.length > 0) {
-            handleSwitchTab(tablesDefinitions[0].uuid);
-        }
-    }, [handleSwitchTab, tablesDefinitions]);
+    const resetTabSelection = useCallback(
+        (newTablesDefinitions: SpreadsheetTabDefinition[]) => {
+            if (newTablesDefinitions.length > 0) {
+                handleSwitchTab(newTablesDefinitions[0].uuid);
+            }
+        },
+        [handleSwitchTab]
+    );
 
     const handleDragEnd = useCallback(
         (result: DropResult) => {
