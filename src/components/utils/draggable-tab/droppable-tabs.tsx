@@ -5,12 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, OnDragEndResponder } from 'react-beautiful-dnd';
 import { Tabs } from '@mui/material';
 
-const DroppableTabs = (props) => {
+interface DroppableTabsProps {
+    id: string;
+    value: number;
+    onChange: (event: React.SyntheticEvent, newValue: number) => void;
+    tabsRender: () => React.ReactNode;
+    onDragEnd: OnDragEndResponder;
+}
+const DroppableTabs = (props: DroppableTabsProps) => {
     const { id, value, onChange, tabsRender, onDragEnd } = props;
+
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId={`dnd-tabs-${id}`} direction={'horizontal'}>
@@ -31,14 +38,6 @@ const DroppableTabs = (props) => {
             </Droppable>
         </DragDropContext>
     );
-};
-
-DroppableTabs.propTypes = {
-    id: PropTypes.string.isRequired,
-    value: PropTypes.number.isRequired,
-    onChange: PropTypes.func,
-    tabsRender: PropTypes.func.isRequired,
-    onDragEnd: PropTypes.func,
 };
 
 export default DroppableTabs;

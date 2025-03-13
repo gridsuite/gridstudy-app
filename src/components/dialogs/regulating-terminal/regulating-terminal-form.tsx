@@ -58,7 +58,11 @@ export function RegulatingTerminalForm({
     });
 
     useEffect(() => {
-        if (watchVoltageLevelId) {
+        if (
+            watchVoltageLevelId &&
+            /* avoid fetch non existing vl id */
+            voltageLevelOptions.find((vlOption) => vlOption.id === watchVoltageLevelId)
+        ) {
             fetchVoltageLevelEquipments(
                 studyUuid,
                 currentNodeUuid,
@@ -72,7 +76,7 @@ export function RegulatingTerminalForm({
         } else {
             setEquipmentsOptions([]);
         }
-    }, [watchVoltageLevelId, id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
+    }, [watchVoltageLevelId, voltageLevelOptions, id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const resetEquipment = useCallback(() => {
         setValue(`${id}.${EQUIPMENT}`, null);

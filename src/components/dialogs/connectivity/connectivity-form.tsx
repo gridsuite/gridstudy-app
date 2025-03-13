@@ -201,6 +201,16 @@ export function ConnectivityForm({
             : intl.formatMessage({ id: 'disconnected' });
     }, [intl, previousValues, isEquipmentModification]);
 
+    const getTooltipMessageId = useMemo(() => {
+        if (!isNodeBuilt(currentNode)) {
+            return 'NodeNotBuildPositionMessage';
+        } else if (watchVoltageLevelId) {
+            return 'DisplayTakenPositions';
+        } else {
+            return 'NoVoltageLevelPositionMessage';
+        }
+    }, [currentNode, watchVoltageLevelId]);
+
     const connectedField = isEquipmentModification ? (
         <CheckboxNullableInput
             name={`${id}.${CONNECTED}`}
@@ -302,11 +312,7 @@ export function ConnectivityForm({
         >
             <Tooltip
                 title={intl.formatMessage({
-                    id: !isNodeBuilt(currentNode)
-                        ? 'NodeNotBuildPositionMessage'
-                        : watchVoltageLevelId
-                        ? 'DisplayTakenPositions'
-                        : 'NoVoltageLevelPositionMessage',
+                    id: getTooltipMessageId,
                 })}
             >
                 {isNodeBuilt(currentNode) && watchVoltageLevelId ? (

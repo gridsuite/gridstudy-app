@@ -19,7 +19,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
-import { VoltageLeveFormInfo } from '../network-modifications/voltage-level/voltage-level.type';
+import { VoltageLevelFormInfos } from '../network-modifications/voltage-level/voltage-level.type';
 
 export const getConnectivityPropertiesValidationSchema = (isEquipmentModification = false) => {
     return {
@@ -154,7 +154,7 @@ export const getConnectivityPropertiesData = ({
     };
 };
 
-export const getNewVoltageLevelData = (newVoltageLevel: VoltageLeveFormInfo) => ({
+export const getNewVoltageLevelData = (newVoltageLevel: VoltageLevelFormInfos) => ({
     id: newVoltageLevel.equipmentId,
     name: newVoltageLevel.equipmentName ?? '',
     substationId: newVoltageLevel.substationId,

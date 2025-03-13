@@ -7,6 +7,7 @@
 
 import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
+import { Input } from '@gridsuite/commons-ui';
 
 const percentageAreaValidationSchema = () => ({
     [SLIDER_PERCENTAGE]: yup.number(),
@@ -35,7 +36,7 @@ export const getPercentageAreaData = ({ percent }: { percent: number }) => {
     };
 };
 
-export const isValidPercentage = (val: any) => {
+export const isValidPercentage = (val: string) => {
     return /^\d*[.,]?\d?$/.test(val);
 };
 
@@ -44,19 +45,18 @@ export function sanitizePercentageValue(value: number) {
     return Math.round(value * 10) / 10;
 }
 
-export function formatPercentageValue(value: any) {
+export function formatPercentageValue(value: string): Input {
+    // @ts-ignore
     if (!value || value < 0) {
         return 0;
     }
+    // @ts-ignore
     if (value > 100) {
         return 100;
     }
-    if (typeof value === 'string') {
-        const tmp = value?.replace(',', '.');
-        if (tmp.endsWith('.')) {
-            return tmp;
-        }
-        return parseFloat(value);
+    const tmp = value?.replace(',', '.');
+    if (tmp.endsWith('.')) {
+        return tmp;
     }
-    return value;
+    return parseFloat(value);
 }

@@ -5,22 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Tab, Tabs, IconButton, Box, Typography } from '@mui/material';
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { Grid, IconButton, Box, Typography } from '@mui/material';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import CloseIcon from '@mui/icons-material/Close';
 import { AppDispatch } from 'redux/store';
-import { removeTableDefinition } from 'redux/actions';
-import { removeSpreadsheetConfigFromCollection } from 'services/study-config';
+import { removeTableDefinition, reorderTableDefinitions } from 'redux/actions';
+import { removeSpreadsheetConfigFromCollection, reorderSpreadsheetConfigs } from 'services/study-config';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
+import { DropResult } from 'react-beautiful-dnd';
+import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
+import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
+import { UUID } from 'crypto';
+import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 
 interface EquipmentTabsProps {
-    tabIndex: number;
-    handleSwitchTab: (value: number) => void;
+    selectedTabUuid: UUID | null;
+    handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
 }
 
@@ -75,7 +80,11 @@ const TabLabel: React.FC<{ name: string; onRemove: () => void; disabled: boolean
     </Box>
 );
 
-export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex, handleSwitchTab, disabled }) => {
+export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
+    selectedTabUuid,
+    handleSwitchTab,
+    disabled,
+}) => {
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
@@ -83,16 +92,34 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch<AppDispatch>();
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-    const [tabToBeRemovedIndex, setTabToBeRemovedIndex] = useState<number>(tabIndex);
+    const [tabToBeRemovedUuid, setTabToBeRemovedUuid] = useState<UUID | null>(null);
+
+    const selectedTabIndex = useMemo(() => {
+        if (!selectedTabUuid) {
+            return 0;
+        }
+        const index = tablesDefinitions.findIndex((tab) => tab.uuid === selectedTabUuid);
+        return index >= 0 ? index : 0;
+    }, [selectedTabUuid, tablesDefinitions]);
+
     const handleRemoveTab = () => {
-        const tableUuid = tablesDefinitions.find((def) => def.index === tabToBeRemovedIndex)?.uuid;
-        if (!tableUuid || !spreadsheetsCollectionUuid) {
+        if (!tabToBeRemovedUuid || !spreadsheetsCollectionUuid) {
             return;
         }
-        removeSpreadsheetConfigFromCollection(spreadsheetsCollectionUuid, tableUuid)
+
+        const tabToBeRemovedIndex = tablesDefinitions.findIndex((def) => def.uuid === tabToBeRemovedUuid);
+
+        removeSpreadsheetConfigFromCollection(spreadsheetsCollectionUuid, tabToBeRemovedUuid)
             .then(() => {
-                if (tabToBeRemovedIndex < tabIndex) {
-                    handleSwitchTab(tabIndex - 1);
+                // If we're removing the currently selected tab or a tab before it,
+                // we need to update the selection
+                if (tabToBeRemovedUuid === selectedTabUuid) {
+                    const remainingTabs = tablesDefinitions.filter((tab) => tab.uuid !== tabToBeRemovedUuid);
+                    // Select the next tab, or the previous if this is the last tab
+                    const newIndex = Math.min(selectedTabIndex, remainingTabs.length - 1);
+                    if (newIndex >= 0) {
+                        handleSwitchTab(remainingTabs[newIndex].uuid);
+                    }
                 }
                 dispatch(removeTableDefinition(tabToBeRemovedIndex));
                 setConfirmationDialogOpen(false);
@@ -105,52 +132,90 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
             });
     };
 
-    useEffect(() => {
-        if (tabIndex >= tablesDefinitions.length && tabIndex > 0) {
-            handleSwitchTab(tablesDefinitions.length - 1);
-        }
-    }, [tabIndex, tablesDefinitions.length, handleSwitchTab]);
-
-    const handleRemoveTabClick = (tabIndex: number) => {
-        setTabToBeRemovedIndex(tabIndex);
+    const handleRemoveTabClick = (tabUuid: UUID) => {
+        setTabToBeRemovedUuid(tabUuid);
         setConfirmationDialogOpen(true);
     };
 
-    const resetTabIndex = useCallback(() => {
-        handleSwitchTab(0);
-    }, [handleSwitchTab]);
+    const resetTabSelection = useCallback(
+        (newTablesDefinitions: SpreadsheetTabDefinition[]) => {
+            if (newTablesDefinitions.length > 0) {
+                handleSwitchTab(newTablesDefinitions[0].uuid);
+            }
+        },
+        [handleSwitchTab]
+    );
+
+    const handleDragEnd = useCallback(
+        (result: DropResult) => {
+            if (!result.destination || result.destination.index === result.source.index) {
+                return;
+            }
+
+            const sourceIndex = result.source.index;
+            const destinationIndex = result.destination.index;
+
+            // Create a new array with the tabs in the new order
+            const reorderedTabs = [...tablesDefinitions];
+            const [movedTab] = reorderedTabs.splice(sourceIndex, 1);
+            reorderedTabs.splice(destinationIndex, 0, movedTab);
+
+            dispatch(reorderTableDefinitions(reorderedTabs));
+
+            if (spreadsheetsCollectionUuid) {
+                const newOrder = reorderedTabs.map((tab) => tab.uuid);
+                reorderSpreadsheetConfigs(spreadsheetsCollectionUuid, newOrder).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'spreadsheet/reorder_tabs_error',
+                    });
+                });
+            }
+        },
+        [tablesDefinitions, dispatch, spreadsheetsCollectionUuid, snackError]
+    );
+
+    const renderTabs = useCallback(() => {
+        return tablesDefinitions.map((def, index) => (
+            <DraggableTab
+                key={def.uuid}
+                id={def.uuid}
+                index={index}
+                value={index}
+                label={<TabLabel name={def.name} onRemove={() => handleRemoveTabClick(def.uuid)} disabled={disabled} />}
+            />
+        ));
+    }, [tablesDefinitions, disabled]);
+
+    const tabToBeRemovedName = useMemo(() => {
+        if (!tabToBeRemovedUuid) {
+            return '';
+        }
+        const tab = tablesDefinitions.find((tab) => tab.uuid === tabToBeRemovedUuid);
+        return tab?.name ?? '';
+    }, [tabToBeRemovedUuid, tablesDefinitions]);
 
     return (
         <>
             <Grid container direction="row" wrap="nowrap" item>
                 {developerMode && (
                     <Grid item padding={1}>
-                        <CustomSpreadsheetConfig disabled={disabled} resetTabIndex={resetTabIndex} />
+                        <CustomSpreadsheetConfig disabled={disabled} resetTabIndex={resetTabSelection} />
                     </Grid>
                 )}
                 <Grid item sx={{ overflow: 'hidden' }}>
-                    <Tabs
-                        value={tabIndex}
-                        variant="scrollable"
+                    <DroppableTabs
+                        id="equipment-tabs"
+                        value={selectedTabIndex}
                         onChange={(_event, value) => {
-                            handleSwitchTab(value);
+                            const tabUuid = tablesDefinitions[value]?.uuid;
+                            if (tabUuid) {
+                                handleSwitchTab(tabUuid);
+                            }
                         }}
-                        aria-label="tables"
-                    >
-                        {tablesDefinitions.map((def) => (
-                            <Tab
-                                key={def.name}
-                                label={
-                                    <TabLabel
-                                        name={def.name}
-                                        onRemove={() => handleRemoveTabClick(def.index)}
-                                        disabled={disabled}
-                                    />
-                                }
-                                disabled={disabled}
-                            />
-                        ))}
-                    </Tabs>
+                        tabsRender={renderTabs}
+                        onDragEnd={handleDragEnd}
+                    />
                 </Grid>
             </Grid>
             {confirmationDialogOpen && (
@@ -159,7 +224,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
                         {
                             id: 'spreadsheet/remove_spreadsheet_confirmation',
                         },
-                        { spreadsheetName: tablesDefinitions[tabToBeRemovedIndex]?.name }
+                        { spreadsheetName: tabToBeRemovedName }
                     )}
                     openConfirmationPopup={confirmationDialogOpen}
                     setOpenConfirmationPopup={setConfirmationDialogOpen}
