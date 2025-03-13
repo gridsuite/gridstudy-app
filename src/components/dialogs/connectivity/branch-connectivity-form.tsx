@@ -29,11 +29,7 @@ export function BranchConnectivityForm({
     isModification = false,
     previousValues,
 }: Readonly<BranchConnectivityFormProps>) {
-    const voltageLevelOptions = useVoltageLevelsListInfos({
-        studyUuid: studyUuid,
-        currentNodeUuid: currentNode?.id,
-        currentRootNetworkUuid: currentRootNetworkUuid,
-    });
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
     const id1 = `${CONNECTIVITY}.${CONNECTIVITY_1}`;
     const id2 = `${CONNECTIVITY}.${CONNECTIVITY_2}`;
 

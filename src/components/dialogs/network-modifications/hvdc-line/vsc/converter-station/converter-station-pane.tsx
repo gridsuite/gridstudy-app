@@ -68,11 +68,8 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         }
     });
 
-    const voltageLevelOptions = useVoltageLevelsListInfos({
-        studyUuid: studyUuid,
-        currentNodeUuid: currentNode?.id,
-        currentRootNetworkUuid: currentRootNetworkUuid,
-    });
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
+
     const generatorIdField = isModification ? (
         <TextField
             size="small"
