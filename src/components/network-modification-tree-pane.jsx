@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
@@ -152,12 +152,12 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
     const width = useStore((state) => state.width);
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
-    const reloadMap = useSelector((state) => state.reloadMap);
+    const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
     const mapMissingDataLoading = useSelector((state) => state.mapMissingDataLoading);
 
-    const isMissingDataloading = useMemo(
-        () => mapMissingDataLoading || reloadMap & !isNodeBuilt(currentNode),
-        [mapMissingDataLoading, reloadMap, currentNode]
+    const isMissingDataLoading = useMemo(
+        () => mapMissingDataLoading || isNetworkModificationTreeModelUpToDate & !isNodeBuilt(currentNode),
+        [mapMissingDataLoading, isNetworkModificationTreeModelUpToDate, currentNode]
     );
     const updateNodes = useCallback(
         (updatedNodesIds) => {
@@ -561,7 +561,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     );
     return (
         <>
-            <WaitingLoader message={'LoadingRemoteData'} loading={isMissingDataloading} />
+            <WaitingLoader message={'LoadingRemoteData'} loading={isMissingDataLoading} />
             <Box sx={styles.container}>
                 <NetworkModificationTree
                     onNodeContextMenu={onNodeContextMenu}
