@@ -86,36 +86,34 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
         <SliderInput name={SLIDER_PERCENTAGE} min={0.0} max={100.0} step={0.1} onValueChanged={onSliderChange} />
     );
     return (
-        <>
-            <Grid container spacing={2}>
-                <Grid container spacing={2} item>
-                    {upperLeftText && (
-                        <Grid item xs={5} sx={{ align: 'start' }}>
-                            <Typography>
-                                <FormattedMessage id={upperLeftText}></FormattedMessage>
-                            </Typography>
-                        </Grid>
-                    )}
-                    <Grid item xs={2}></Grid>
-                    {upperRightText && (
-                        <Grid item xs={5} sx={{ align: 'end' }}>
-                            <Typography sx={{ align: 'right' }}>
-                                <FormattedMessage id={upperRightText}></FormattedMessage>
-                            </Typography>
-                        </Grid>
-                    )}
+        <Grid container spacing={2}>
+            <Grid container spacing={2} item>
+                {upperLeftText && (
+                    <Grid item xs={5} sx={{ align: 'start' }}>
+                        <Typography>
+                            <FormattedMessage id={upperLeftText}></FormattedMessage>
+                        </Typography>
+                    </Grid>
+                )}
+                <Grid item xs={2}></Grid>
+                {upperRightText && (
+                    <Grid item xs={5} sx={{ align: 'end' }}>
+                        <Typography sx={{ align: 'right' }}>
+                            <FormattedMessage id={upperRightText}></FormattedMessage>
+                        </Typography>
+                    </Grid>
+                )}
+            </Grid>
+            {slider}
+            <Grid container spacing={2} item>
+                <Grid item xs={3} sx={{ align: 'start' }}>
+                    {leftSidePercentageField}
                 </Grid>
-                {slider}
-                <Grid container spacing={2} item>
-                    <Grid item xs={3} sx={{ align: 'start' }}>
-                        {leftSidePercentageField}
-                    </Grid>
-                    <Grid item xs={6}></Grid>
-                    <Grid item xs={3} sx={{ align: 'end' }}>
-                        {rightSidePercentageField}
-                    </Grid>
+                <Grid item xs={6}></Grid>
+                <Grid item xs={3} sx={{ align: 'end' }}>
+                    {rightSidePercentageField}
                 </Grid>
             </Grid>
-        </>
+        </Grid>
     );
 }
