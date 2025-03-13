@@ -39,7 +39,7 @@ export interface LccConverterStationCreationInfos {
     terminalConnected: boolean;
     connectionDirection: string | null;
     connectionName: string | null;
-    connectionPosition: string | null;
+    connectionPosition: number | null;
     shuntCompensatorsOnSide: ShuntCompensatorInfos[];
 }
 
