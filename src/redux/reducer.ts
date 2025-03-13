@@ -33,6 +33,7 @@ import {
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
+    REMOVE_FROM_RECENT_GLOBAL_FILTERS,
     AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
     AddSortForNewSpreadsheetAction,
@@ -190,6 +191,7 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    RemoveFromRecentGlobalFiltersAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -1671,6 +1673,14 @@ export const reducer = createReducer(initialState, (builder) => {
             }
         });
         state.recentGlobalFilters = newRecentGlobalFilters;
+    });
+
+    builder.addCase(REMOVE_FROM_RECENT_GLOBAL_FILTERS, (state, action: RemoveFromRecentGlobalFiltersAction) => {
+        let newRecentGlobalFilters = [...state.recentGlobalFilters];
+
+        state.recentGlobalFilters = newRecentGlobalFilters.filter(
+            (recentGlobalFilter) => recentGlobalFilter.uuid !== action.uuid
+        );
     });
 
     builder.addCase(SET_LAST_COMPLETED_COMPUTATION, (state, action: SetLastCompletedComputationAction) => {

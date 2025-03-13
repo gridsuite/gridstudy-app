@@ -1267,6 +1267,7 @@
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
     "partialCopyShuntCompensator": "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
     "SensitivityAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de sensibilité",
+    "ComputationFilterResultsError": "Filtre introuvable :",
     "muiTablePaginationLabelRowsPerPage": "Lignes par page : ",
     "muiTablePaginationLabelRowsPerPageAllBusesSCA": "Défauts par page : ",
     "muiTablePaginationLabelRowsPerPageOneBusSCA": "Départs par page : ",

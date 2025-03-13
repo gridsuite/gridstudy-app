@@ -11,7 +11,7 @@ import { UUID } from 'crypto';
 
 /**
  * globals filters are the filters applied to computation results
- * they may contein generic filters
+ * they may contain generic filters
  */
 
 // data sent to the back
@@ -29,6 +29,7 @@ export interface GlobalFilter {
     recent?: boolean;
     uuid?: UUID; // only useful for generic filters
     equipmentType?: string; // only useful for generic filters
+    path?: string; // only useful for generic filters
 }
 
 export interface ResultsQueryParams {

@@ -20,7 +20,7 @@ import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToRecentGlobalFilters } from '../../../../redux/actions';
+import { addToRecentGlobalFilters, removeFromRecentGlobalFilters } from '../../../../redux/actions';
 import { AppState } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 import { FilterType } from '../utils';
@@ -31,6 +31,8 @@ import {
     DirectoryItemSelector,
     fetchElementsInfos,
     ElementAttributes,
+    fetchDirectoryElementPath,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { UUID } from 'crypto';
@@ -39,6 +41,7 @@ import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './g
 import SelectableGlobalFilters from './selectable-global-filters';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
+import { computeFullPath } from '../../../../utils/compute-title';
 
 const recentFilter: string = 'recent';
 
@@ -57,6 +60,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
     filters = emptyArray,
 }) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch<AppDispatch>();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
@@ -87,13 +91,49 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
     );
 
     const handleChange = useCallback(
-        (value: GlobalFilter[]): void => {
-            setSelectedGlobalFilters(value);
-            // Updates the "recent" filters
-            dispatch(addToRecentGlobalFilters(value));
-            onChange(value);
+        (globalFilters: GlobalFilter[]): void => {
+            let globalFiltersToAddToRecents: GlobalFilter[] = globalFilters;
+            Promise.all(
+                // checks if the generic filters still exist, and sets their path value
+                globalFilters
+                    .filter((globalFilter: GlobalFilter) => globalFilter.filterType === FilterType.FILTER)
+                    .filter((globalFilter: GlobalFilter) => globalFilter.uuid)
+                    .map((fetchedGlobalFilter: GlobalFilter) =>
+                        fetchDirectoryElementPath(fetchedGlobalFilter.uuid)
+                            .then((response: ElementAttributes[]) => {
+                                const parentDirectoriesNames = response.map((parent) => parent.elementName);
+                                const path = computeFullPath(parentDirectoriesNames);
+                                let fetchedFilter: GlobalFilter = globalFilters.find(
+                                    (globalFilter) => globalFilter.uuid === fetchedGlobalFilter.uuid
+                                );
+                                if (fetchedFilter && !fetchedFilter.path) {
+                                    fetchedFilter.path = path;
+                                }
+                            })
+                            .catch(() => {
+                                if (fetchedGlobalFilter.uuid) {
+                                    // remove those missing filters from recent global filters
+                                    dispatch(removeFromRecentGlobalFilters(fetchedGlobalFilter.uuid));
+                                    globalFiltersToAddToRecents = [
+                                        ...globalFiltersToAddToRecents.filter(
+                                            (globalFilter) => globalFilter.uuid !== fetchedGlobalFilter.uuid
+                                        ),
+                                    ];
+                                }
+                                snackError({
+                                    messageTxt: fetchedGlobalFilter.path,
+                                    headerId: 'ComputationFilterResultsError',
+                                });
+                            })
+                    )
+            ).then(() => {
+                setSelectedGlobalFilters(globalFilters);
+                // Updates the "recent" filters unless they have not been found
+                dispatch(addToRecentGlobalFilters(globalFiltersToAddToRecents));
+                onChange(globalFilters);
+            });
         },
-        [dispatch, onChange]
+        [dispatch, onChange, snackError]
     );
 
     const addSelectedFilters = useCallback(

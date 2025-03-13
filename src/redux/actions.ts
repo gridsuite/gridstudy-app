@@ -988,6 +988,18 @@ export function addToRecentGlobalFilters(globalFilters: GlobalFilter[]): AddToRe
     };
 }
 
+export const REMOVE_FROM_RECENT_GLOBAL_FILTERS = 'REMOVE_FROM_RECENT_GLOBAL_FILTERS';
+export type RemoveFromRecentGlobalFiltersAction = Readonly<Action<typeof REMOVE_FROM_RECENT_GLOBAL_FILTERS>> & {
+    uuid: string;
+};
+
+export function removeFromRecentGlobalFilters(uuid: string): RemoveFromRecentGlobalFiltersAction {
+    return {
+        type: REMOVE_FROM_RECENT_GLOBAL_FILTERS,
+        uuid: uuid,
+    };
+}
+
 export const SET_LAST_COMPLETED_COMPUTATION = 'SET_LAST_COMPLETED_COMPUTATION';
 export type SetLastCompletedComputationAction = Readonly<Action<typeof SET_LAST_COMPLETED_COMPUTATION>> & {
     lastCompletedComputation: ComputingType | null;
