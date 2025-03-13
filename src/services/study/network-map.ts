@@ -55,14 +55,21 @@ export function fetchAllEquipments(
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
-export function fetchVoltageLevelEquipments(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    voltageLevelId: string,
-    substationsIds?: string[],
-    inUpstreamBuiltParentNode?: boolean
-) {
+export function fetchVoltageLevelEquipments({
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+    voltageLevelId,
+    substationsIds = undefined,
+    inUpstreamBuiltParentNode = true,
+}: {
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    voltageLevelId: string;
+    substationsIds?: string[];
+    inUpstreamBuiltParentNode?: boolean;
+}) {
     console.info(
         `Fetching equipments of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}' with substations ids '${substationsIds}'...`
     );

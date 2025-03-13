@@ -63,14 +63,14 @@ export function RegulatingTerminalForm({
             /* avoid fetch non existing vl id */
             voltageLevelOptions.find((vlOption) => vlOption.id === watchVoltageLevelId)
         ) {
-            fetchVoltageLevelEquipments(
-                studyUuid,
-                currentNodeUuid,
-                currentRootNetworkUuid,
-                watchVoltageLevelId,
-                undefined,
-                true
-            ).then((values) => {
+            fetchVoltageLevelEquipments({
+                studyUuid: studyUuid,
+                currentNodeUuid: currentNodeUuid,
+                currentRootNetworkUuid: currentRootNetworkUuid,
+                voltageLevelId: watchVoltageLevelId,
+                substationsIds: undefined,
+                inUpstreamBuiltParentNode: true,
+            }).then((values) => {
                 setEquipmentsOptions(values);
             });
         } else {

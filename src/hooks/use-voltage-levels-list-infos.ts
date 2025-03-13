@@ -10,14 +10,24 @@ import { useEffect, useState } from 'react';
 import { type Identifiable } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelsListInfos } from '../services/study/network';
 
-export default function useVoltageLevelsListInfos(studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export default function useVoltageLevelsListInfos({
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+}: {
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+}) {
     const [voltageLevelsListInfos, setVoltageLevelsListInfos] = useState<Identifiable[]>([]);
     useEffect(() => {
-        if (studyUuid && nodeUuid && currentRootNetworkUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, nodeUuid, currentRootNetworkUuid).then((values) =>
-                setVoltageLevelsListInfos(values.sort((a, b) => a.id.localeCompare(b.id)))
-            );
+        if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
+            fetchVoltageLevelsListInfos({
+                studyUuid: studyUuid,
+                currentNodeUuid: currentNodeUuid,
+                currentRootNetworkUuid: currentRootNetworkUuid,
+            }).then((values) => setVoltageLevelsListInfos(values.sort((a, b) => a.id.localeCompare(b.id))));
         }
-    }, [studyUuid, nodeUuid, currentRootNetworkUuid]);
+    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
     return voltageLevelsListInfos;
 }
