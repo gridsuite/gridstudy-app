@@ -10,7 +10,7 @@ import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { EQUIPMENT, ID, VOLTAGE_LEVEL } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, Equipment, Identifiable, Option } from '@gridsuite/commons-ui';
+import { AutocompleteInput, EquipmentType, Identifiable, Option } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';
 import { UUID } from 'crypto';
 
@@ -50,7 +50,7 @@ export function RegulatingTerminalForm({
     previousRegulatingTerminalValue,
     previousEquipmentSectionTypeValue,
 }: Readonly<RegulatingTerminalFormProps>) {
-    const [equipmentsOptions, setEquipmentsOptions] = useState<Equipment[]>([]);
+    const [equipmentsOptions, setEquipmentsOptions] = useState<(Identifiable & { type: EquipmentType })[]>([]);
     const { setValue } = useFormContext();
 
     const watchVoltageLevelId = useWatch({
@@ -96,16 +96,7 @@ export function RegulatingTerminalForm({
                         size="small"
                         // particular outputTransform case for string type when a user clicks outside after editing whatever input
                         outputTransform={(value) => {
-                            if (typeof value === 'string') {
-                                return value === ''
-                                    ? null
-                                    : {
-                                          id: value,
-                                          label: value,
-                                          type: equipmentSectionTypeDefaultValue,
-                                      };
-                            }
-                            return value;
+                            return typeof value === 'string' ? { id: value, label: value } : value;
                         }}
                         forcePopupIcon
                         autoHighlight
@@ -154,11 +145,7 @@ export function RegulatingTerminalForm({
                             if (typeof value === 'string') {
                                 return value === ''
                                     ? null
-                                    : {
-                                          id: value,
-                                          label: value,
-                                          type: equipmentSectionTypeDefaultValue,
-                                      };
+                                    : { id: value, label: value, type: equipmentSectionTypeDefaultValue };
                             }
                             return value;
                         }}
