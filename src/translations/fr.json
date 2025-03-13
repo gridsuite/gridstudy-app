@@ -1480,6 +1480,7 @@
 
     "chooseCase": "Choisir une situation",
     "addNetwork": "Ajouter un réseau",
+    "updateNetwork": "Modifier un réseau",
     "rootName": "Nom du réseau",
     "rootTag": "Balise du réseau",
     "TagRequiredCondition": "La balise est obligatoire, unique dans l'étude et de taille <= 4",
@@ -1492,6 +1493,7 @@
     "rootNetworkDirectoryFetchingError": "Une erreur est survenue lors de la lecture du dossier du réseau",
     "rootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
     "createRootNetworksError": "Une erreur est survenue lors de la création du réseau racine",
+    "updateRootNetworksError": "Une erreur est survenue lors de la modification du réseau racine",
     "importCaseFailure": "Impossible d'importer la situation",
 
     "unlimited": "Illimité",

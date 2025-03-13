@@ -41,10 +41,10 @@ import {
     GetCaseImportParametersReturn,
     getCaseImportParameters,
 } from 'services/network-conversion';
-import { createRootNetwork, deleteRootNetworks, fetchRootNetworks } from 'services/root-network';
+import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
-import RootNetworkCreationDialog, { FormData } from 'components/dialogs/root-network/root-network-creation-dialog';
 import { isChecked, isPartial } from './network-modification-node-editor-utils';
+import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },
@@ -137,6 +137,8 @@ const RootNetworkNodeEditor = () => {
     const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
 
     const [rootNetworkCreationDialogOpen, setRootNetworkCreationDialogOpen] = useState(false);
+    const [rootNetworkModificationDialogOpen, setRootNetworkModificationDialogOpen] = useState(false);
+    const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
 
@@ -173,7 +175,7 @@ const RootNetworkNodeEditor = () => {
                     headerId: 'createRootNetworksError',
                 });
             }
-            if (eventType === 'rootNetworksUpdated') {
+            if (eventType === 'rootNetworksUpdated' || eventType === 'rootNetworkModified') {
                 dofetchRootNetworks();
                 setDeleteInProgress(false);
             } else if (rootNetworksRef.current && eventType === 'rootNetworkDeletionStarted') {
@@ -263,6 +265,10 @@ const RootNetworkNodeEditor = () => {
                         checkboxButton: styles.checkboxButton,
                     }),
                 }}
+                onItemClick={(rootNetwork) => {
+                    setRootNetworkModificationDialogOpen(true);
+                    setEditedRootNetwork(rootNetwork);
+                }}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
                 items={rootNetworks}
@@ -299,11 +305,26 @@ const RootNetworkNodeEditor = () => {
 
     const renderRootNetworkCreationDialog = () => {
         return (
-            <RootNetworkCreationDialog
+            <RootNetworkDialog
                 open={rootNetworkCreationDialogOpen}
                 onClose={() => setRootNetworkCreationDialogOpen(false)}
                 onSave={doCreateRootNetwork}
                 titleId={'addNetwork'}
+            />
+        );
+    };
+
+    const renderRootNetworkModificationDialog = () => {
+        if (!editedRootNetwork) {
+            return null;
+        }
+        return (
+            <RootNetworkDialog
+                editableRootNetwork={editedRootNetwork}
+                open={rootNetworkModificationDialogOpen}
+                onClose={() => setRootNetworkModificationDialogOpen(false)}
+                onSave={doUpdateRootNetwork}
+                titleId={'updateNetwork'}
             />
         );
     };
@@ -357,6 +378,34 @@ const RootNetworkNodeEditor = () => {
             });
     };
 
+    const doUpdateRootNetwork = async ({ name, tag, caseName, caseId }: FormData) => {
+        if (!studyUuid || !editedRootNetwork) {
+            return;
+        }
+        try {
+            const params = caseId ? await getCaseImportParameters(caseId as UUID) : null;
+            const formattedParams = params ? formatCaseImportParameters(params.parameters) : null;
+            const customizedParams = formattedParams
+                ? customizeCurrentParameters(formattedParams as Parameter[])
+                : null;
+
+            updateRootNetwork(
+                editedRootNetwork.rootNetworkUuid,
+                name,
+                tag,
+                caseId as UUID | null,
+                caseId && params ? params.formatName : null,
+                studyUuid,
+                caseId ? customizedParams : null
+            );
+        } catch (error) {
+            snackError({
+                headerId: 'updateRootNetworksError',
+                messageTxt: error instanceof Error ? error.message : String(error),
+            });
+        }
+    };
+
     return (
         <>
             <Toolbar sx={styles.toolbar}>
@@ -403,6 +452,7 @@ const RootNetworkNodeEditor = () => {
                 )}
             </Toolbar>
             {rootNetworkCreationDialogOpen && renderRootNetworkCreationDialog()}
+            {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
             {renderRootNetworksListTitle()}
 
             {renderRootNetworksList()}
