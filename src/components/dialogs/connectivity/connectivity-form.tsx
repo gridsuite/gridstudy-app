@@ -240,7 +240,7 @@ export function ConnectivityForm({
             options={busOrBusbarSectionOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
-            inputTransform={(value) => (value === null ? '' : value)}
+            inputTransform={(value) => value ?? ''}
             outputTransform={(value) => {
                 if (typeof value === 'string') {
                     const data = getConnectivityBusBarSectionData({ busbarSectionId: value });
