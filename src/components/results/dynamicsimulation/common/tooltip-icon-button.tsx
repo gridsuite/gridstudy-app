@@ -7,9 +7,9 @@
 
 import { IconButton, IconButtonProps, Tooltip } from '@mui/material';
 
-export type TooltipIconButtonProps = {
+export type TooltipIconButtonProps = IconButtonProps & {
     tooltip: string;
-} & IconButtonProps;
+};
 
 function TooltipIconButton({ tooltip, ...otherProps }: Readonly<TooltipIconButtonProps>) {
     return (

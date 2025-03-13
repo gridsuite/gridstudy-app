@@ -23,8 +23,8 @@ const Plot = createPlotlyComponent(Plotly) as FunctionComponent<
 export type PlotlySeriesChartProps = {
     id: string;
     groupId: string;
-    leftSeries: Series[];
-    rightSeries: Series[];
+    leftSeries: Series[] | undefined;
+    rightSeries: Series[] | undefined;
     sync: boolean;
 };
 
@@ -81,17 +81,18 @@ function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Reado
         }
 
         return [
-            ...leftSeries.map(seriesToData(makeGetMarker({}))),
-            ...rightSeries.map(
-                seriesToData(
-                    makeGetMarker({
-                        symbol: 'square',
-                    }),
-                    {
-                        yaxis: 'y2',
-                    }
-                )
-            ),
+            ...(leftSeries ?? [].map(seriesToData(makeGetMarker({})))),
+            ...(rightSeries ??
+                [].map(
+                    seriesToData(
+                        makeGetMarker({
+                            symbol: 'square',
+                        }),
+                        {
+                            yaxis: 'y2',
+                        }
+                    )
+                )),
         ];
     }, [leftSeries, rightSeries, makeGetMarker]);
 

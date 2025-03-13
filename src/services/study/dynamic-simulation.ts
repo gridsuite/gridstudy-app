@@ -9,6 +9,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QU
 
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
+import { Timeseries } from '../../components/results/dynamicsimulation/types/dynamic-simulation-result.type';
 
 export function getDynamicMappings(studyUuid: UUID) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
@@ -73,7 +74,7 @@ export function fetchDynamicSimulationResultTimeSeries(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     timeSeriesNames: string[]
-) {
+): Promise<Timeseries[]> {
     console.info(
         `Fetching dynamic simulation time series result on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );

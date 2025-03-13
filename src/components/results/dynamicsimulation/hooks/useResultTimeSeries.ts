@@ -9,7 +9,7 @@ import { fetchDynamicSimulationResultTimeSeries } from '../../../../services/stu
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { UUID } from 'crypto';
-import { TimeSeriesMetadata } from '../types/dynamic-simulation-result.type';
+import { SimpleTimeSeriesMetadata } from '../types/dynamic-simulation-result.type';
 import { fetchDynamicSimulationTimeSeriesMetadata } from '../../../../services/dynamic-simulation';
 import { dynamicSimulationResultInvalidations } from '../../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
@@ -22,7 +22,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID, currentRootNetwork
         fetchDynamicSimulationTimeSeriesMetadata,
         dynamicSimulationResultInvalidations,
         null,
-        (timeseriesMetadatas: TimeSeriesMetadata[] | null) => ({
+        (timeseriesMetadatas: SimpleTimeSeriesMetadata[] | null) => ({
             timeseries: timeseriesMetadatas ? Array(timeseriesMetadatas.length) : undefined,
             timeseriesMetadatas: timeseriesMetadatas,
         })
@@ -62,7 +62,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID, currentRootNetwork
                         for (const newSeries of newlyLoadedTimeSeries) {
                             result.timeseries.splice(
                                 result.timeseriesMetadatas.findIndex(
-                                    (elem: TimeSeriesMetadata) => elem.name === newSeries.metadata.name
+                                    (elem: SimpleTimeSeriesMetadata) => elem.name === newSeries.metadata.name
                                 ),
                                 1,
                                 newSeries
