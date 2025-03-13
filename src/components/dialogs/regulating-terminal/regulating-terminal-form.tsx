@@ -95,7 +95,6 @@ export function RegulatingTerminalForm({
                         label="VOLTAGE_LEVEL"
                         size="small"
                         // particular outputTransform case for string type when a user clicks outside after editing whatever input
-                        inputTransform={(value) => value ?? ''}
                         outputTransform={(value) => {
                             if (typeof value === 'string') {
                                 return value === ''
