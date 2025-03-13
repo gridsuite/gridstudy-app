@@ -133,7 +133,8 @@ export type AppActions =
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction
-    | RemoveTableDefinitionAction;
+    | RemoveTableDefinitionAction
+    | ReorderTableDefinitionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -1195,6 +1196,17 @@ export const initTableDefinitions = (
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
+});
+
+export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
+export type ReorderTableDefinitionsAction = {
+    type: typeof REORDER_TABLE_DEFINITIONS;
+    definitions: SpreadsheetTabDefinition[];
+};
+
+export const reorderTableDefinitions = (definitions: SpreadsheetTabDefinition[]): ReorderTableDefinitionsAction => ({
+    type: REORDER_TABLE_DEFINITIONS,
+    definitions,
 });
 
 export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
