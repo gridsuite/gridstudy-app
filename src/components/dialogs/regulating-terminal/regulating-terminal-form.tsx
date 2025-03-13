@@ -179,13 +179,19 @@ export function RegulatingTerminalForm({
                         }}
                         renderOption={(props, option) => {
                             const { key, ...optionProps } = props;
+
+                            let displayText = '';
+                            if (typeof option !== 'string') {
+                                if (option?.label) {
+                                    displayText = `${option?.label} : ${option?.id}`;
+                                } else {
+                                    displayText = option?.id || '';
+                                }
+                            }
+
                             return (
                                 <Box key={key} component="li" {...optionProps}>
-                                    {typeof option !== 'string' && option?.label
-                                        ? `${option?.label} : ${option?.id}`
-                                        : typeof option !== 'string'
-                                        ? option?.id
-                                        : ''}
+                                    {displayText}
                                 </Box>
                             );
                         }}
