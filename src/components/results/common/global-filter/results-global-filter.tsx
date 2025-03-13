@@ -104,7 +104,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                                 .then((response: ElementAttributes[]) => {
                                     const parentDirectoriesNames = response.map((parent) => parent.elementName);
                                     const path = computeFullPath(parentDirectoriesNames);
-                                    let fetchedFilter: GlobalFilter = globalFilters.find(
+                                    let fetchedFilter: GlobalFilter | undefined = globalFilters.find(
                                         (globalFilter) => globalFilter.uuid === fetchedGlobalFilter.uuid
                                     );
                                     if (fetchedFilter && !fetchedFilter.path) {
@@ -114,7 +114,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                                 .catch(() => {
                                     if (fetchedGlobalFilter.uuid) {
                                         // remove those missing filters from recent global filters
-                                        dispatch(removeFromRecentGlobalFilters(fetchedGlobalFilter.uuid));
+                                        dispatch(removeFromRecentGlobalFilters(fetchedGlobalFilter.uuid.toString()));
                                         globalFiltersToAddToRecents = [
                                             ...globalFiltersToAddToRecents.filter(
                                                 (globalFilter) => globalFilter.uuid !== fetchedGlobalFilter.uuid
