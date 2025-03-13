@@ -17,7 +17,6 @@ import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from './use-spreadsheet-equipments';
-import { formatFetchedEquipments } from './utils/equipment-table-utils';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
@@ -141,7 +140,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition?.columns]
     );
 
-    const shooldDisableButtons = useMemo(
+    const shouldDisableButtons = useMemo(
         () => disabled || tablesDefinitions.length === 0,
         [disabled, tablesDefinitions]
     );
@@ -218,14 +217,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.type);
 
-    const formatFetchedEquipmentsHandler = useCallback(
-        (fetchedEquipments: any) => {
-            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return formatFetchedEquipments(tableDefinition?.type, fetchedEquipments);
-        },
-        [tableDefinition?.type]
-    );
-
     const highlightUpdatedEquipment = useCallback(() => {
         if (!equipmentToUpdateId) {
             return;
@@ -246,7 +237,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         tableDefinition?.type,
-        formatFetchedEquipmentsHandler,
         highlightUpdatedEquipment,
         nodeAliases
     );
@@ -440,18 +430,18 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     <Grid item>
                         <ColumnsConfig
                             tabIndex={activeTabIndex}
-                            disabled={shooldDisableButtons || tableDefinition?.columns.length === 0}
+                            disabled={shouldDisableButtons || tableDefinition?.columns.length === 0}
                         />
                     </Grid>
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsConfig tabIndex={activeTabIndex} disabled={shooldDisableButtons} />
+                            <CustomColumnsConfig tabIndex={activeTabIndex} disabled={shouldDisableButtons} />
                         </Grid>
                     )}
                     {developerMode && (
                         <Grid item>
                             <CustomColumnsNodesConfig
-                                disabled={shooldDisableButtons}
+                                disabled={shouldDisableButtons}
                                 tabIndex={activeTabIndex}
                                 nodeAliases={nodeAliases}
                                 updateNodeAliases={updateNodeAliases}
@@ -465,15 +455,15 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             gridRef={gridRef}
                             columns={reorderedColsDefs}
                             tableName={tableDefinition?.name}
-                            disabled={shooldDisableButtons}
+                            disabled={shouldDisableButtons}
                             dataSize={rowData.length}
                         />
                     </Grid>
                 </Grid>
             </Grid>
-            {disabled || shooldDisableButtons ? (
+            {disabled || shouldDisableButtons ? (
                 <Alert sx={styles.invalidNode} severity="warning">
-                    <FormattedMessage id={shooldDisableButtons ? 'NoSpreadsheets' : 'InvalidNode'} />
+                    <FormattedMessage id={shouldDisableButtons ? 'NoSpreadsheets' : 'InvalidNode'} />
                 </Alert>
             ) : (
                 <Box sx={mergeSx(styles.table)}>

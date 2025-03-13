@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Identifiable } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { UUID } from 'crypto';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
@@ -26,14 +25,12 @@ import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { formatFetchedEquipments } from './utils/equipment-table-utils';
 import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
 import { NodeAlias } from './custom-columns/node-alias.type';
 
-type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
-
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
-    formatFetchedEquipments: FormatFetchedEquipments,
     highlightUpdatedEquipment: () => void,
     nodeAliases: NodeAlias[]
 ) => {
@@ -50,6 +47,14 @@ export const useSpreadsheetEquipments = (
 
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
+
+    const formatEquipments = useCallback(
+        (fetchedEquipments: any) => {
+            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
+            return formatFetchedEquipments(type, fetchedEquipments);
+        },
+        [type]
+    );
 
     const nodesIdToFetch = useMemo(() => {
         let nodesIdToFetch = new Set<string>();
@@ -197,10 +202,8 @@ export const useSpreadsheetEquipments = (
                         .then((results) => {
                             let fetchedEquipments = results.flat();
                             spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                            if (formatFetchedEquipments) {
-                                fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
-                                spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
-                            }
+                            fetchedEquipments = formatEquipments(fetchedEquipments);
+                            spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
                         })
                         .catch((err) => {
                             console.error(`${type.toString()} fetching error on node ${nodeId} (${err.message})`);
@@ -221,7 +224,7 @@ export const useSpreadsheetEquipments = (
                     });
             }
         },
-        [currentNode, currentRootNetworkUuid, dispatch, formatFetchedEquipments, studyUuid, type]
+        [currentNode?.id, currentRootNetworkUuid, dispatch, formatEquipments, studyUuid, type]
     );
 
     useEffect(() => {
