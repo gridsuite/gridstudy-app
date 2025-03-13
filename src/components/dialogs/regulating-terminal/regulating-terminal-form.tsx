@@ -83,114 +83,108 @@ export function RegulatingTerminalForm({
     }, [id, setValue]);
 
     return (
-        <>
-            <Grid container direction={direction || 'row'} spacing={2}>
-                <Grid
-                    item
-                    xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
-                    sx={{ align: 'start' }}
-                >
-                    {
-                        <AutocompleteInput
-                            name={`${id}.${VOLTAGE_LEVEL}`}
-                            label="VOLTAGE_LEVEL"
-                            size="small"
-                            freeSolo
-                            forcePopupIcon
-                            autoHighlight
-                            selectOnFocus
-                            disabled={disabled}
-                            id="voltage-level"
-                            options={voltageLevelOptions.map((item) => ({
-                                id: item.id,
-                                label: item?.name ?? '',
-                            }))}
-                            getOptionLabel={(vl) => (typeof vl !== 'string' ? vl?.id ?? '' : '')}
-                            onChangeCallback={resetEquipment}
-                            previousValue={previousRegulatingTerminalValue ?? undefined}
-                            /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+        <Grid container direction={direction ?? 'row'} spacing={2}>
+            <Grid
+                item
+                xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
+                sx={{ align: 'start' }}
+            >
+                {
+                    <AutocompleteInput
+                        name={`${id}.${VOLTAGE_LEVEL}`}
+                        label="VOLTAGE_LEVEL"
+                        size="small"
+                        freeSolo
+                        forcePopupIcon
+                        autoHighlight
+                        selectOnFocus
+                        disabled={disabled}
+                        id="voltage-level"
+                        options={voltageLevelOptions.map((item) => ({
+                            id: item.id,
+                            label: item?.name ?? '',
+                        }))}
+                        getOptionLabel={(vl) => (typeof vl !== 'string' ? vl?.id ?? '' : '')}
+                        onChangeCallback={resetEquipment}
+                        previousValue={previousRegulatingTerminalValue ?? undefined}
+                        /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                             */
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
-                                if (
-                                    params.inputValue !== '' &&
-                                    !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
-                                ) {
-                                    filtered.push({
-                                        id: params.inputValue,
-                                        label: params.inputValue,
-                                    });
-                                }
-                                return filtered;
-                            }}
-                            PopperComponent={FittingPopper}
-                        />
-                    }
-                </Grid>
-                <Grid
-                    item
-                    xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
-                    sx={{ align: 'start' }}
-                >
-                    {/* TODO: autoComplete prop is not working properly with material-ui v4,
-                             it clears the field when blur event is raised, which actually forces the user to validate free input
-                             with enter key for it to be validated.
-                             check if autoComplete prop is fixed in v5 */}
-                    {
-                        <AutocompleteInput
-                            name={`${id}.${EQUIPMENT}`}
-                            //hack to work with freesolo autocomplete
-                            //setting null programatically when freesolo is enable wont empty the field
-                            inputTransform={(value) => value ?? ''}
-                            outputTransform={(value) => (value === '' ? null : value)}
-                            label="Equipment"
-                            size="small"
-                            freeSolo
-                            forcePopupIcon
-                            autoHighlight
-                            selectOnFocus
-                            id="equipment"
-                            disabled={!watchVoltageLevelId || disabled}
-                            previousValue={previousEquipmentSectionTypeValue}
-                            options={equipmentsOptions.map((item) => ({
-                                id: item.id,
-                                label: item?.type ?? '',
-                            }))}
-                            getOptionLabel={(equipment) => {
-                                if (equipment === '') {
-                                    return '';
-                                }
-                                if (typeof equipment === 'string') {
-                                    return equipment;
-                                }
+                        filterOptions={(options, params) => {
+                            const filtered = filter(options, params);
+                            if (
+                                params.inputValue !== '' &&
+                                !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
+                            ) {
+                                filtered.push({
+                                    id: params.inputValue,
+                                    label: params.inputValue,
+                                });
+                            }
+                            return filtered;
+                        }}
+                        PopperComponent={FittingPopper}
+                    />
+                }
+            </Grid>
+            <Grid
+                item
+                xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
+                sx={{ align: 'start' }}
+            >
+                {
+                    <AutocompleteInput
+                        name={`${id}.${EQUIPMENT}`}
+                        //hack to work with freesolo autocomplete
+                        //setting null programatically when freesolo is enable wont empty the field
+                        inputTransform={(value) => value ?? ''}
+                        outputTransform={(value) => (value === '' ? null : value)}
+                        label="Equipment"
+                        size="small"
+                        freeSolo
+                        forcePopupIcon
+                        autoHighlight
+                        selectOnFocus
+                        id="equipment"
+                        disabled={!watchVoltageLevelId || disabled}
+                        previousValue={previousEquipmentSectionTypeValue}
+                        options={equipmentsOptions.map((item) => ({
+                            id: item.id,
+                            label: item?.type ?? '',
+                        }))}
+                        getOptionLabel={(equipment) => {
+                            if (equipment === '') {
+                                return '';
+                            }
+                            if (typeof equipment === 'string') {
+                                return equipment;
+                            }
 
-                                const id = equipment?.id || '';
-                                const type = equipment?.label ?? equipmentSectionTypeDefaultValue;
+                            const id = equipment?.id || '';
+                            const type = equipment?.label ?? equipmentSectionTypeDefaultValue;
 
-                                return type + ' : ' + id;
-                            }}
-                            /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+                            return type + ' : ' + id;
+                        }}
+                        /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                          */
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
-                                if (
-                                    params.inputValue !== '' &&
-                                    !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
-                                ) {
-                                    filtered.push({
-                                        label: equipmentSectionTypeDefaultValue ?? '',
-                                        id: params.inputValue,
-                                    });
-                                }
-                                return filtered;
-                            }}
-                            PopperComponent={FittingPopper}
-                        />
-                    }
-                </Grid>
+                        filterOptions={(options, params) => {
+                            const filtered = filter(options, params);
+                            if (
+                                params.inputValue !== '' &&
+                                !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
+                            ) {
+                                filtered.push({
+                                    label: equipmentSectionTypeDefaultValue ?? '',
+                                    id: params.inputValue,
+                                });
+                            }
+                            return filtered;
+                        }}
+                        PopperComponent={FittingPopper}
+                    />
+                }
             </Grid>
-        </>
+        </Grid>
     );
 }
