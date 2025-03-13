@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 
 export interface AttributeModification<T> {
     value?: T;
@@ -13,12 +14,6 @@ export interface AttributeModification<T> {
 interface MinMaxReactiveLimitsData {
     minQ: number | null;
     maxQ: number | null;
-}
-
-interface ConnectablePositionInfos {
-    connectionName: string | null;
-    connectionDirection: string | null;
-    connectionPosition: number | null;
 }
 
 export interface ReactiveCapabilityCurvePointsData {
@@ -42,7 +37,7 @@ export interface ConverterStationElementInfos {
     q: number | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
     minMaxReactiveLimits: MinMaxReactiveLimitsData | null;
-    connectablePositionInfos: ConnectablePositionInfos;
+    connectablePosition: ConnectablePositionInfos;
     reactivePower?: number;
     voltageRegulationOn?: boolean;
     voltage?: number;

@@ -46,6 +46,41 @@ export const createRootNetwork = (
     });
 };
 
+export const updateRootNetwork = (
+    rootNetworkUuid: UUID,
+    name: string,
+    tag: string,
+    caseUuid: UUID | null,
+    caseFormat: string | null,
+    studyUuid: UUID,
+    importParameters: Record<string, any> | null
+) => {
+    // Create an object of parameters to be appended to the URL
+    const params = { caseUuid, caseFormat, name, tag };
+
+    // Initialize URLSearchParams with only the truthy values from params
+    const urlSearchParams = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+        if (value) {
+            urlSearchParams.append(key, value.toString());
+        }
+    });
+    const updateRootNetworkUrl =
+        PREFIX_STUDY_QUERIES +
+        `/v1/studies/${encodeURIComponent(studyUuid)}/root-networks/${encodeURIComponent(rootNetworkUuid)}?` +
+        urlSearchParams.toString();
+
+    console.debug(updateRootNetworkUrl);
+    return backendFetch(updateRootNetworkUrl, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: importParameters ? JSON.stringify(importParameters) : '',
+    });
+};
+
 export function deleteRootNetworks(studyUuid: UUID, rootNetworkUuids: UUID[]) {
     const rootNetworkDeleteUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/root-networks`;
 

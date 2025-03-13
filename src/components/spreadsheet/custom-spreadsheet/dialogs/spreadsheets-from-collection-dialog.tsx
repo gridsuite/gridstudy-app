@@ -31,12 +31,12 @@ import { updateStudySpreadsheetConfigCollection } from 'services/study/study-con
 import { initTableDefinitions } from 'redux/actions';
 import { UUID } from 'crypto';
 import { dialogStyles } from './styles';
-import { SpreadsheetCollectionDto } from 'components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetCollectionDto, SpreadsheetTabDefinition } from 'components/spreadsheet/config/spreadsheet.type';
 import { mapColumnsDto } from '../custom-spreadsheet-utils';
 
 interface SpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
-    resetTabIndex: VoidFunction;
+    resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
 }
 
 /**
@@ -87,7 +87,7 @@ export default function SpreadsheetCollectionDialog({
                     }));
 
                     dispatch(initTableDefinitions(collectionData.id, tableDefinitions || []));
-                    resetTabIndex();
+                    resetTabIndex(tableDefinitions);
                 })
                 .catch((error) => {
                     snackError({
