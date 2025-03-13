@@ -8,9 +8,9 @@
 import { Box, FilterOptionsState, Grid, GridDirection, Popper, PopperProps } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { EQUIPMENT, ID, VOLTAGE_LEVEL } from 'components/utils/field-constants';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, EquipmentType, Identifiable, Option } from '@gridsuite/commons-ui';
+import { AutocompleteInput, Identifiable, Option } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';
 import { UUID } from 'crypto';
 
@@ -50,12 +50,21 @@ export function RegulatingTerminalForm({
     previousRegulatingTerminalValue,
     previousEquipmentSectionTypeValue,
 }: Readonly<RegulatingTerminalFormProps>) {
-    const [equipmentsOptions, setEquipmentsOptions] = useState<(Identifiable & { type: EquipmentType })[]>([]);
+    const [equipmentsOptions, setEquipmentsOptions] = useState<Option[]>([]);
     const { setValue } = useFormContext();
 
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
+
+    const vlOptions = useMemo(
+        () =>
+            voltageLevelOptions.map((item) => ({
+                id: item.id,
+                label: item.name ?? '',
+            })),
+        [voltageLevelOptions]
+    );
 
     useEffect(() => {
         if (
@@ -63,17 +72,23 @@ export function RegulatingTerminalForm({
             /* avoid fetch non existing vl id */
             voltageLevelOptions.find((vlOption) => vlOption.id === watchVoltageLevelId)
         ) {
-            fetchVoltageLevelEquipments({
-                studyUuid: studyUuid,
-                currentNodeUuid: currentNodeUuid,
-                currentRootNetworkUuid: currentRootNetworkUuid,
-                voltageLevelId: watchVoltageLevelId,
-                substationsIds: undefined,
-                inUpstreamBuiltParentNode: true,
-            }).then((values) => {
-                setEquipmentsOptions(values);
-            });
         } else {
+            fetchVoltageLevelEquipments(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                watchVoltageLevelId,
+                undefined,
+                true
+            ).then((equipments) => {
+                setEquipmentsOptions(
+                    equipments.map((equipment) => ({
+                        id: equipment.id,
+                        label: equipment.type, // hack Option : use label to store equipment type to use in renderOption
+                        type: equipment.type,
+                    }))
+                );
+            });
             setEquipmentsOptions([]);
         }
     }, [watchVoltageLevelId, voltageLevelOptions, id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
@@ -103,10 +118,7 @@ export function RegulatingTerminalForm({
                         selectOnFocus
                         disabled={disabled}
                         id="voltage-level"
-                        options={voltageLevelOptions.map((item) => ({
-                            id: item.id,
-                            label: item?.name ?? '',
-                        }))}
+                        options={vlOptions}
                         getOptionLabel={(vl) => (typeof vl !== 'string' ? vl?.id ?? '' : '')}
                         onChangeCallback={resetEquipment}
                         previousValue={previousRegulatingTerminalValue ?? undefined}
@@ -117,7 +129,7 @@ export function RegulatingTerminalForm({
                             const filtered = filter(options, params);
                             if (
                                 params.inputValue !== '' &&
-                                !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
+                                !options.find((opt) => typeof opt !== 'string' && opt.id === params.inputValue)
                             ) {
                                 filtered.push({
                                     id: params.inputValue,
@@ -157,10 +169,7 @@ export function RegulatingTerminalForm({
                         id="equipment"
                         disabled={!watchVoltageLevelId || disabled}
                         previousValue={previousEquipmentSectionTypeValue}
-                        options={equipmentsOptions.map((item) => ({
-                            id: item.id,
-                            label: item?.type ?? '',
-                        }))}
+                        options={equipmentsOptions}
                         getOptionLabel={(equipment) => {
                             return typeof equipment !== 'string' ? equipment?.id ?? '' : '';
                         }}
@@ -169,10 +178,11 @@ export function RegulatingTerminalForm({
 
                             let displayText = '';
                             if (typeof option !== 'string') {
-                                if (option?.label) {
-                                    displayText = `${option?.label} : ${option?.id}`;
+                                if (option.label) {
+                                    // in fact, label stores equipment type
+                                    displayText = `${option.label} : ${option.id}`;
                                 } else {
-                                    displayText = option?.id || '';
+                                    displayText = option.id || '';
                                 }
                             }
 

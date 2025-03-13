@@ -109,12 +109,12 @@ export function ConnectivityForm({
         if (watchVoltageLevelId) {
             const existingVoltageLevelOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
             if (existingVoltageLevelOption) {
-                fetchBusesOrBusbarSectionsForVoltageLevel({
-                    studyUuid: studyUuid,
-                    currentNodeUuid: currentNodeUuid,
-                    currentRootNetworkUuid: currentRootNetworkUuid,
-                    voltageLevelId: watchVoltageLevelId,
-                }).then((busesOrbusbarSections) => {
+                fetchBusesOrBusbarSectionsForVoltageLevel(
+                    studyUuid,
+                    currentNodeUuid,
+                    currentRootNetworkUuid,
+                    watchVoltageLevelId
+                ).then((busesOrbusbarSections) => {
                     setBusOrBusbarSectionOptions(busesOrbusbarSections || []);
                 });
             } else {

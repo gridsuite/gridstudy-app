@@ -30,11 +30,7 @@ export default function LoadCreationForm({
     currentNode,
     currentRootNetworkUuid,
 }: Readonly<LoadCreationFormProps>) {
-    const voltageLevelOptions = useVoltageLevelsListInfos({
-        studyUuid: studyUuid,
-        currentNodeUuid: currentNode?.id,
-        currentRootNetworkUuid: currentRootNetworkUuid,
-    });
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const loadIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
