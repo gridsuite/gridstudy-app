@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export interface VoltageLeveFormInfo {
+export interface VoltageLevelFormInfos {
     equipmentId: string;
     equipmentName: string | null;
     substationId?: string | null;
-    topologyKind?: [];
+    topologyKind?: string | null;
 }

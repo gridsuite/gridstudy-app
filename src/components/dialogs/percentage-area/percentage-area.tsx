@@ -26,10 +26,10 @@ interface PercentageAreaProps {
 export function PercentageArea({ upperLeftText, upperRightText }: Readonly<PercentageAreaProps>) {
     const { setValue } = useFormContext();
 
-    const handleLeftPercentageValueChange = (value: Input): string => {
+    const handleLeftPercentageValueChange = (value: string): Input => {
         const leftPercentageValue = formatPercentageValue(value);
-        const rightPercentageValue = sanitizePercentageValue(100 - leftPercentageValue);
-        setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue));
+        const rightPercentageValue = sanitizePercentageValue(100 - +leftPercentageValue);
+        setValue(SLIDER_PERCENTAGE, +leftPercentageValue);
         setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
             shouldValidate: true,
         });
@@ -39,10 +39,10 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
         return leftPercentageValue;
     };
 
-    const handleRightPercentageValueChange = (value: Input): string => {
+    const handleRightPercentageValueChange = (value: string): Input => {
         const rightPercentageValue = formatPercentageValue(value);
-        const leftPercentageValue = sanitizePercentageValue(100 - rightPercentageValue);
-        setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue?.toString()));
+        const leftPercentageValue = sanitizePercentageValue(100 - +rightPercentageValue);
+        setValue(SLIDER_PERCENTAGE, leftPercentageValue);
         setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
             shouldValidate: true,
         });
@@ -58,8 +58,8 @@ export function PercentageArea({ upperLeftText, upperRightText }: Readonly<Perce
             setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
                 shouldValidate: true,
             });
+            setValue(LEFT_SIDE_PERCENTAGE, value, { shouldValidate: true });
         }
-        setValue(LEFT_SIDE_PERCENTAGE, value, { shouldValidate: true });
     };
 
     const leftSidePercentageField = (
