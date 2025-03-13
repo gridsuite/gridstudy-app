@@ -48,6 +48,7 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -208,10 +209,6 @@ const LoadModificationDialog = ({
         [selectedId, editData, studyUuid, currentNodeUuid, snackError]
     );
 
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [reset]);
-
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
@@ -219,8 +216,19 @@ const LoadModificationDialog = ({
                 (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
+
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset]);
+
     return (
-        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
