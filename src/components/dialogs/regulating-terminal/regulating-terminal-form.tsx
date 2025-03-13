@@ -149,6 +149,7 @@ export function RegulatingTerminalForm({
                 {
                     <AutocompleteInput
                         name={`${id}.${EQUIPMENT}`}
+                        // particular outputTransform case for string type when a user clicks outside after editing whatever input
                         //setting null programmatically when allowNewValue is enabling (i.e. freeSolo enabled) wont empty the field => need to convert null to empty and vice versa
                         inputTransform={(value) => value ?? ''}
                         outputTransform={(value) => {
