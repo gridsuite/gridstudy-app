@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FilledTextFieldProps, Theme } from '@mui/material';
+import { FilledTextFieldProps, StandardTextFieldProps, Theme } from '@mui/material';
 import {
     AMPERE,
     KILO_AMPERE,
@@ -114,7 +114,7 @@ export const filledTextField: FilledTextFieldProps = {
     variant: 'filled',
 };
 
-export const standardTextField = {
+export const standardTextField: StandardTextFieldProps = {
     variant: 'standard',
 };
 
