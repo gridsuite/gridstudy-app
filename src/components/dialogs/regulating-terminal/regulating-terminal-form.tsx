@@ -94,7 +94,6 @@ export function RegulatingTerminalForm({
                         name={`${id}.${VOLTAGE_LEVEL}`}
                         label="VOLTAGE_LEVEL"
                         size="small"
-                        freeSolo
                         forcePopupIcon
                         autoHighlight
                         selectOnFocus
@@ -124,6 +123,7 @@ export function RegulatingTerminalForm({
                             return filtered;
                         }}
                         PopperComponent={FittingPopper}
+                        allowNewValue
                     />
                 }
             </Grid>
@@ -141,7 +141,6 @@ export function RegulatingTerminalForm({
                         outputTransform={(value) => (value === '' ? null : value)}
                         label="Equipment"
                         size="small"
-                        freeSolo
                         forcePopupIcon
                         autoHighlight
                         selectOnFocus
@@ -159,10 +158,8 @@ export function RegulatingTerminalForm({
                             if (typeof equipment === 'string') {
                                 return equipment;
                             }
-
                             const id = equipment?.id || '';
                             const type = equipment?.label ?? equipmentSectionTypeDefaultValue;
-
                             return type + ' : ' + id;
                         }}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
@@ -181,6 +178,7 @@ export function RegulatingTerminalForm({
                             }
                             return filtered;
                         }}
+                        allowNewValue
                         PopperComponent={FittingPopper}
                     />
                 }
