@@ -6,6 +6,8 @@
  */
 export enum NOTIFICATIONS_URL_KEYS {
     CONFIG = 'CONFIG',
+    STUDY = 'STUDY',
 }
 
 export const PREFIX_CONFIG_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/config-notification';
+export const PREFIX_STUDY_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/study-notification';

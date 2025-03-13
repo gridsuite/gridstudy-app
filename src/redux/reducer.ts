@@ -111,6 +111,8 @@ import {
     RemoveNodeDataAction,
     RemoveNotificationByNodeAction,
     RemoveTableDefinitionAction,
+    REORDER_TABLE_DEFINITIONS,
+    ReorderTableDefinitionsAction,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
@@ -180,12 +182,10 @@ import {
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
     UPDATE_COLUMNS_DEFINITION,
-    UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UPDATE_TABLE_DEFINITION,
     UpdateColumnsDefinitionsAction,
-    UpdateCustomColumnsNodesAliasesAction,
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
     UpdateTableDefinitionAction,
@@ -440,12 +440,6 @@ export type NodeSelectionForCopy = {
     allChildrenIds: string[] | null;
 };
 
-export type NodeAlias = {
-    id: UUID;
-    name: string;
-    alias: string;
-};
-
 export type Actions = AppActions | AuthenticationActions;
 
 export interface AppState extends CommonStoreState {
@@ -494,7 +488,6 @@ export interface AppState extends CommonStoreState {
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     gsFilterSpreadsheetState: GsFilterSpreadsheetState;
-    customColumnsNodesAliases: NodeAlias[];
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     [PARAM_THEME]: GsTheme;
@@ -592,8 +585,6 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
 };
 
-const initialCustomColumnsNodesAliases: NodeAlias[] = [];
-
 export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
@@ -648,7 +639,6 @@ const initialState: AppState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
-    customColumnsNodesAliases: initialCustomColumnsNodesAliases,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -873,6 +863,13 @@ export const reducer = createReducer(initialState, (builder) => {
                 ];
                 return acc;
             }, {} as TableSortConfig);
+    });
+
+    builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {
+        state.tables.definitions = action.definitions.map((def, idx) => ({
+            ...def,
+            index: idx,
+        }));
     });
 
     builder.addCase(REMOVE_TABLE_DEFINITION, (state, action: RemoveTableDefinitionAction) => {
@@ -1528,10 +1525,6 @@ export const reducer = createReducer(initialState, (builder) => {
             },
             {} as Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>
         );
-    });
-
-    builder.addCase(UPDATE_CUSTOM_COLUMNS_NODES_ALIASES, (state, action: UpdateCustomColumnsNodesAliasesAction) => {
-        state.customColumnsNodesAliases = action.nodesAliases;
     });
 
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {

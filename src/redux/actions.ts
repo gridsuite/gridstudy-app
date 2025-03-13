@@ -24,7 +24,6 @@ import type {
     AppState,
     CurrentTreeNode,
     EquipmentUpdateType,
-    NodeAlias,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     StudyIndexationStatus,
@@ -131,11 +130,11 @@ export type AppActions =
     | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
-    | UpdateCustomColumnsNodesAliasesAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction
-    | RemoveTableDefinitionAction;
+    | RemoveTableDefinitionAction
+    | ReorderTableDefinitionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -163,18 +162,6 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
     return {
         type: REMOVE_NODE_DATA,
         nodesIdToRemove,
-    };
-}
-
-export const UPDATE_CUSTOM_COLUMNS_NODES_ALIASES = 'UPDATE_CUSTOM_COLUMNS_NODES_ALIASES';
-export type UpdateCustomColumnsNodesAliasesAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_NODES_ALIASES>> & {
-    nodesAliases: NodeAlias[];
-};
-
-export function updateCustomColumnsNodesAliases(nodesAliases: NodeAlias[]): UpdateCustomColumnsNodesAliasesAction {
-    return {
-        type: UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
-        nodesAliases: nodesAliases,
     };
 }
 
@@ -1221,6 +1208,17 @@ export const initTableDefinitions = (
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
+});
+
+export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
+export type ReorderTableDefinitionsAction = {
+    type: typeof REORDER_TABLE_DEFINITIONS;
+    definitions: SpreadsheetTabDefinition[];
+};
+
+export const reorderTableDefinitions = (definitions: SpreadsheetTabDefinition[]): ReorderTableDefinitionsAction => ({
+    type: REORDER_TABLE_DEFINITIONS,
+    definitions,
 });
 
 export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
