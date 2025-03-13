@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FilterOptionsState, Grid, GridDirection, Popper, PopperProps } from '@mui/material';
+import { Box, FilterOptionsState, Grid, GridDirection, Popper, PopperProps } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { EQUIPMENT, ID, VOLTAGE_LEVEL } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
@@ -175,15 +175,19 @@ export function RegulatingTerminalForm({
                             label: item?.type ?? '',
                         }))}
                         getOptionLabel={(equipment) => {
-                            if (equipment === '') {
-                                return '';
-                            }
-                            if (typeof equipment === 'string') {
-                                return equipment;
-                            }
-                            const id = equipment?.id || '';
-                            const type = equipment?.label ?? equipmentSectionTypeDefaultValue;
-                            return type + ' : ' + id;
+                            return typeof equipment !== 'string' ? equipment?.id ?? '' : '';
+                        }}
+                        renderOption={(props, option) => {
+                            const { key, ...optionProps } = props;
+                            return (
+                                <Box key={key} component="li" {...optionProps}>
+                                    {typeof option !== 'string' && option?.label
+                                        ? `${option?.label} : ${option?.id}`
+                                        : typeof option !== 'string'
+                                        ? option?.id
+                                        : ''}
+                                </Box>
+                            );
                         }}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
