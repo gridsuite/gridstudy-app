@@ -4,7 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { NOTIFICATIONS_URL_KEYS, PREFIX_CONFIG_NOTIFICATION_WS } from 'components/utils/notificationsProvider-utils';
+import {
+    NOTIFICATIONS_URL_KEYS,
+    PREFIX_CONFIG_NOTIFICATION_WS,
+    PREFIX_STUDY_NOTIFICATION_WS,
+} from 'components/utils/notificationsProvider-utils';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { type AppState } from 'redux/reducer';
@@ -15,6 +19,7 @@ const useNotificationsUrlGenerator = (): Record<NOTIFICATIONS_URL_KEYS, string |
     // The websocket API doesn't allow relative urls
     const wsBase = getWsBase();
     const tokenId = useSelector((state: AppState) => state.user?.id_token);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     // return a mapper with NOTIFICATIONS_URL_KEYS and undefined value if URL is not yet buildable (tokenId)
     // it will be used to register listeners as soon as possible.
@@ -27,8 +32,14 @@ const useNotificationsUrlGenerator = (): Record<NOTIFICATIONS_URL_KEYS, string |
                       })}`
                   )
                 : undefined,
+            [NOTIFICATIONS_URL_KEYS.STUDY]:
+                tokenId && studyUuid
+                    ? getUrlWithToken(
+                          `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(studyUuid)}`
+                      )
+                    : undefined,
         }),
-        [wsBase, tokenId]
+        [tokenId, wsBase, studyUuid]
     );
 };
 
