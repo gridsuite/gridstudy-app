@@ -54,6 +54,11 @@ export type SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: Record<string, Identifiable[]>;
 };
 
+export type SpreadsheetEquipmentsReloadNodes = {
+    sheetType?: SpreadsheetEquipmentType;
+    nodesId: UUID[];
+};
+
 export type SpreadsheetConfig = {
     name: string;
     sheetType: SpreadsheetEquipmentType;
