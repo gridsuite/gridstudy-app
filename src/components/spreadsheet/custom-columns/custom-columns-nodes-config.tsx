@@ -45,7 +45,7 @@ interface NodesOption {
 type CustomColumnsNodesConfigProps = {
     disabled?: boolean;
     tabIndex: number;
-    nodeAliases: NodeAlias[];
+    nodeAliases: NodeAlias[] | undefined;
     updateNodeAliases: (newNodeAliases: NodeAlias[]) => void;
 };
 
@@ -63,7 +63,7 @@ export default function CustomColumnsNodesConfig({
 
     const nodesToReload = useMemo(() => {
         // Get all aliased nodes ids, except for Root and current node (both are always up-to-date)
-        return nodeAliases.filter((node) => node.id !== currentNode?.id && node.name !== ROOT_NODE_LABEL);
+        return nodeAliases?.filter((node) => node.id !== currentNode?.id && node.name !== ROOT_NODE_LABEL);
     }, [currentNode?.id, nodeAliases]);
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {

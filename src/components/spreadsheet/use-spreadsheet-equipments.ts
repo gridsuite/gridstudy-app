@@ -25,14 +25,16 @@ import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { getFetcher } from './config/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { isStatusBuilt } from '../graph/util/model-functions';
 import { formatFetchedEquipments } from './utils/equipment-table-utils';
 import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
 import { NodeAlias } from './custom-columns/node-alias.type';
+import { NodeType } from '../graph/tree-node.type';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
     highlightUpdatedEquipment: () => void,
-    nodeAliases: NodeAlias[]
+    nodeAliases: NodeAlias[] | undefined
 ) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
@@ -44,6 +46,7 @@ export const useSpreadsheetEquipments = (
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const nodesAliasesToReload = useSelector((state: AppState) => state.reloadNodesAliases);
+    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
 
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
@@ -56,9 +59,18 @@ export const useSpreadsheetEquipments = (
         [type]
     );
 
+    const isBuilt = useCallback(
+        (nodeId: string) =>
+            treeNodes?.find(
+                (node) =>
+                    node.id === nodeId && (node.type === NodeType.ROOT || isStatusBuilt(node.data?.globalBuildStatus))
+            ) !== undefined,
+        [treeNodes]
+    );
+
     const nodesIdToFetch = useMemo(() => {
         let nodesIdToFetch = new Set<string>();
-        if (!equipments) {
+        if (!equipments || !nodeAliases) {
             return nodesIdToFetch;
         }
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
@@ -86,6 +98,9 @@ export const useSpreadsheetEquipments = (
     } = useGetStudyImpacts();
 
     useEffect(() => {
+        if (!nodeAliases) {
+            return;
+        }
         const currentNodeId = currentNode?.id as UUID;
 
         let unwantedFetchedNodes = new Set<string>();
@@ -196,24 +211,34 @@ export const useSpreadsheetEquipments = (
                 };
 
                 nodeIds.forEach((nodeId) => {
-                    const promise = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
-                    fetcherPromises.push(promise);
-                    promise
-                        .then((results) => {
-                            let fetchedEquipments = results.flat();
-                            spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                            fetchedEquipments = formatEquipments(fetchedEquipments);
-                            spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
-                        })
-                        .catch((err) => {
-                            console.error(`${type.toString()} fetching error on node ${nodeId} (${err.message})`);
-                        });
+                    if (currentNode?.id === nodeId || isBuilt(nodeId)) {
+                        const promise = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
+                        fetcherPromises.push(promise);
+                        promise
+                            .then((results) => {
+                                let fetchedEquipments = results.flat();
+                                spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
+                                fetchedEquipments = formatEquipments(fetchedEquipments);
+                                spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
+                            })
+                            .catch((err) => {
+                                console.error(
+                                    `Fetching error for type ${type.toString()} on node ${nodeId} (${err.message})`
+                                );
+                            });
+                    } else {
+                        // mark unbuilt node as processed with empty entry/result
+                        spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
+                        spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = [];
+                    }
                 });
 
                 Promise.all(fetcherPromises)
                     .then(() => {
                         dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
-                        console.debug(`Equipment data fetching and dispatch done for ${nodeIds.size} nodes`);
+                        console.debug(
+                            `Equipment data fetching and dispatch done for ${fetcherPromises.length} built nodes among ${nodeIds.size}`
+                        );
                     })
                     .catch((err) => {
                         console.debug('Equipment data fetching and dispatch NOT done');
@@ -224,18 +249,16 @@ export const useSpreadsheetEquipments = (
                     });
             }
         },
-        [currentNode?.id, currentRootNetworkUuid, dispatch, formatEquipments, studyUuid, type]
+        [currentNode?.id, currentRootNetworkUuid, dispatch, formatEquipments, isBuilt, studyUuid, type]
     );
 
     useEffect(() => {
         if (shouldFetchEquipments && isNetworkModificationTreeModelUpToDate && isNodeBuilt(currentNode)) {
-            console.log('DBG DBR CLASSIC', nodesIdToFetch);
             loadEquipmentData(nodesIdToFetch);
         }
     }, [shouldFetchEquipments, isNetworkModificationTreeModelUpToDate, nodesIdToFetch, loadEquipmentData, currentNode]);
 
     useEffect(() => {
-        console.log('DBG DBR RELOAD', nodesAliasesToReload);
         if (nodesAliasesToReload.sheetType === type && nodesAliasesToReload?.nodesId.length) {
             loadEquipmentData(new Set<string>(nodesAliasesToReload.nodesId));
             // reset reload action

@@ -251,7 +251,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [errorMessage, snackError]);
 
     useEffect(() => {
-        if (disabled || equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
+        if (disabled || equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined || !nodeAliases) {
             return;
         }
         let localRowData: Identifiable[] = [];

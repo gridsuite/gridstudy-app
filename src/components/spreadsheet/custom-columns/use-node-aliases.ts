@@ -14,7 +14,8 @@ import { NodeAlias } from './node-alias.type';
 
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const [nodeAliases, setNodeAliases] = useState<NodeAlias[]>([]);
+    // init value is undefined until we have successfully made a fetch
+    const [nodeAliases, setNodeAliases] = useState<NodeAlias[] | undefined>(undefined);
 
     const { snackError } = useSnackMessage();
 
@@ -23,14 +24,14 @@ export const useNodeAliases = () => {
             getNodeAliases(studyUuid)
                 .then((_nodeAliases) => setNodeAliases(_nodeAliases))
                 .catch((error) => {
-                    setNodeAliases([]);
+                    setNodeAliases(undefined);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'nodeAliasesRetrievingError',
                     });
                 });
         } else {
-            setNodeAliases([]);
+            setNodeAliases(undefined);
         }
     }, [snackError, studyUuid]);
 
