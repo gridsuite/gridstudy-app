@@ -14,10 +14,12 @@ import { spreadsheetStyles } from '../utils/style';
 import { ROOT_NODE_LABEL } from '../../../constants/node.constant';
 import { NodeAlias } from './node-alias.type';
 import { MouseEvent, useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { reloadNodesAliases } from '../../../redux/actions';
 import { AppState } from '../../../redux/reducer';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { SpreadsheetEquipmentsReloadNodes } from '../config/spreadsheet.type';
 
 const styles = {
     icon: {
@@ -42,18 +44,22 @@ interface NodesOption {
 
 type CustomColumnsNodesConfigProps = {
     disabled?: boolean;
+    tabIndex: number;
     nodeAliases: NodeAlias[];
     updateNodeAliases: (newNodeAliases: NodeAlias[]) => void;
 };
 
 export default function CustomColumnsNodesConfig({
     disabled,
+    tabIndex,
     nodeAliases,
     updateNodeAliases,
 }: Readonly<CustomColumnsNodesConfigProps>) {
     const dialogOpen = useStateBoolean(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const dispatch = useDispatch();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex].type);
 
     const nodesToReload = useMemo(() => {
         // Get all aliased nodes ids, except for Root and current node (both are always up-to-date)
@@ -70,9 +76,14 @@ export default function CustomColumnsNodesConfig({
 
     const handleRefresh = useCallback(() => {
         if (nodesToReload?.length) {
-            console.debug(`Refresh done for ${nodesToReload.length} aliased nodes`);
+            const reloadData: SpreadsheetEquipmentsReloadNodes = {
+                sheetType: tableType,
+                nodesId: nodesToReload.map((node) => node.id),
+            };
+            dispatch(reloadNodesAliases(reloadData));
+            console.debug(`Refresh requested for ${nodesToReload.length} aliased nodes`);
         }
-    }, [nodesToReload]);
+    }, [dispatch, nodesToReload, tableType]);
 
     const nodesOptions = useMemo(
         () => ({
