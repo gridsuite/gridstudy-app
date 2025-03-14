@@ -155,7 +155,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
     const mapMissingDataLoading = useSelector((state) => state.mapMissingDataLoading);
 
-    const isMissingDataLoading = useMemo(
+    const isGeoDataOrTreeLoading = useMemo(
         () => mapMissingDataLoading || isNetworkModificationTreeModelUpToDate & !isNodeBuilt(currentNode),
         [mapMissingDataLoading, isNetworkModificationTreeModelUpToDate, currentNode]
     );
@@ -561,7 +561,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     );
     return (
         <>
-            <WaitingLoader message={'LoadingRemoteData'} loading={isMissingDataLoading} />
+            <WaitingLoader message={'LoadingRemoteData'} loading={isGeoDataOrTreeLoading} />
             <Box sx={styles.container}>
                 <NetworkModificationTree
                     onNodeContextMenu={onNodeContextMenu}
