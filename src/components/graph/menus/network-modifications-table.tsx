@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, ReactNode, ReactElement } from 'react';
 import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui'; // Assuming this is the type
-import { CellClickedEvent } from 'ag-grid-community';
+import { CellClickedEvent, RowClassParams, RowStyle } from 'ag-grid-community';
 import { useIntl } from 'react-intl';
 import { ChipCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import CellRendererSwitch from 'components/spreadsheet/utils/cell-renderer-switch';
@@ -17,6 +17,7 @@ interface NetworkModificationsTableProps {
     isRowDragEnabled?: boolean; // New prop to enable/disable drag
     onRowDragStart?: (event: any) => void;
     onRowDragEnd?: (event: any) => void;
+    onRowSelected: (event: any) => void;
 }
 const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     modifications,
@@ -29,6 +30,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     isRowDragEnabled,
     onRowDragStart,
     onRowDragEnd,
+    onRowSelected,
 }) => {
     const defaultColumnDefinition = {
         sortable: false,
@@ -36,7 +38,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         suppressMovable: true,
     };
 
-    const gridRef = useRef<any>(null); // Assuming this is the type for CustomAGGrid
+    const gridRef = useRef<any>(null);
     const [columnDefs] = useState([
         {
             headerName: 'Modification Name',
@@ -44,7 +46,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             valueGetter: (params: any) => params?.data.messageValues,
             minWidth: 300,
             flex: 1,
-            cellStyle: { cursor: 'pointer' }, // Apply cursor style only for this column
+            cellStyle: { cursor: 'pointer' },
         },
         {
             headerName: 'Switch',
@@ -72,10 +74,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         console.log('Cell context menu:', event);
     }, []);
 
-    const handleRowSelected = useCallback((event: any) => {
-        console.log('Row selected:', event);
-    }, []);
-
     const recomputeOverFlowableCells = useCallback((event: any) => {
         console.log('Grid size changed, recomputing overflowable cells...');
     }, []);
@@ -83,11 +81,18 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     const getRowId = (params: any) => {
         return params?.data?.uuid; // Assuming 'uuid' is unique for each row
     };
-    // Adding rowDrag to the column definitions if you want the row to be draggable
+    const getRowStyle = useCallback((cellData: RowClassParams<NetworkModificationMetadata, unknown>) => {
+        const style: RowStyle = {};
+        if (!cellData?.data?.activated) {
+            style.opacity = 0.4;
+        }
+        return style;
+    }, []);
+
+    // Modify column definitions to include row drag for 'modificationName' column
     const modifiedColumnDefs = columnDefs.map((col) => ({
         ...col,
-        // Enable dragging only for a specific column, or apply it globally
-        rowDrag: col.field === 'modificationName', // Adjust condition based on your needs
+        rowDrag: col.field === 'modificationName', // Enable dragging only for 'modificationName' column
     }));
     return (
         <CustomAGGrid
@@ -104,17 +109,18 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             onGridReady={onGridReady}
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
-            onRowSelected={handleRowSelected}
+            onRowSelected={onRowSelected}
             onGridSizeChanged={recomputeOverFlowableCells}
             animateRows
             // gridOptions={{
             //     headerHeight: 0,  // Hide header row by setting its height to 0
             //   }}
             columnDefs={modifiedColumnDefs}
+            getRowStyle={getRowStyle}
             rowClass="custom-row-class"
-            onRowDragEnter={onRowDragStart} // Trigger on drag start
-            onRowDragEnd={onRowDragEnd} // Add row drag end handler
-            rowDragManaged={isRowDragEnabled} // Enables row drag behavior
+            onRowDragEnter={onRowDragStart}
+            onRowDragEnd={onRowDragEnd}
+            rowDragManaged={isRowDragEnabled}
         />
     );
 };
