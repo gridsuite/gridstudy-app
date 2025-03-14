@@ -13,7 +13,7 @@ import ModificationDialog from '../commons/modificationDialog';
 import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
-import { LineTypeInfo } from './line-catalog.type';
+import { ComputedLineCharacteristics } from './line-catalog.type';
 import { emptyLineSegment, SegmentSchema } from './segment-utils';
 
 const LineTypeSegmentSchema = yup
@@ -38,7 +38,7 @@ const emptyFormData: LineTypeSegmentFormData = {
 export interface LineTypeSegmentDialogProps {
     open: boolean;
     onClose: () => void;
-    onSave: (data: LineTypeInfo) => void;
+    onSave: (data: ComputedLineCharacteristics) => void;
 }
 
 const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ open, onSave, onClose }) => {

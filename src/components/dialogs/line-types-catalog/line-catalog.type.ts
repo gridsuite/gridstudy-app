@@ -17,3 +17,10 @@ export type LineTypeInfo = {
     linearReactance: number;
     linearCapacity: number;
 };
+
+// Interface with Line creation/modification
+export type ComputedLineCharacteristics = {
+    totalResistance: number;
+    totalReactance: number;
+    totalSusceptance: number;
+};
