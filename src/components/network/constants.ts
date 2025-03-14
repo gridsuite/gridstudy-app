@@ -5,9 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const SUBSTATION_RADIUS = 500;
-export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
-export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
 export const FORM_LOADING_DELAY = 200;
 export const RESULTS_LOADING_DELAY = 500;
 
@@ -84,7 +81,7 @@ export function getEnergySourceLabel(energySourceId: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
 
-export function getConnectionDirectionLabel(connectionDirectionId: string) {
+export function getConnectionDirectionLabel(connectionDirectionId: string | null | undefined) {
     if (connectionDirectionId === UNDEFINED_CONNECTION_DIRECTION) {
         return 'Undefined';
     }

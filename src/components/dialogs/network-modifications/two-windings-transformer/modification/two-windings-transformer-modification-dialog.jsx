@@ -136,7 +136,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form';
+import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
 import {
     createConnectivityData,
     getCon1andCon2WithPositionValidationSchema,
@@ -785,7 +785,13 @@ const TwoWindingsTransformerModificationDialog = ({
     );
 
     return (
-        <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider
+            removeOptional={true}
+            validationSchema={formSchema}
+            {...formMethods}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
+        >
             <ModificationDialog
                 fullWidth
                 maxWidth="xl"

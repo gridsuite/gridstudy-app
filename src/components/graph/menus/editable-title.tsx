@@ -6,14 +6,13 @@
  */
 
 import { FunctionComponent, useState } from 'react';
-import { IconButton } from '@mui/material';
+import { IconButton, Box, Theme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import AskTextDialog from '../../utils/ask-text-dialog';
 import { lighten, darken } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { Box, Theme } from '@mui/system';
 
 const styles = {
     header: (theme: Theme) => ({

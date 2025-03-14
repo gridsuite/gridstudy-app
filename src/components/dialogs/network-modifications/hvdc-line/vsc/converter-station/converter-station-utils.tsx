@@ -68,7 +68,7 @@ export interface ConverterStationInterfaceEditData {
     busbarSectionName?: string;
     connectionDirection: string | null;
     connectionName?: string | null;
-    connectionPosition?: string | null;
+    connectionPosition?: number | null;
     terminalConnected?: boolean | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
     reactiveCapabilityCurve: boolean;
@@ -88,7 +88,7 @@ export interface ConverterStationModificationInterfaceEditData {
     busbarSectionName?: AttributeModification<string> | null;
     connectionDirection: AttributeModification<string> | null;
     connectionName?: AttributeModification<string> | null;
-    connectionPosition?: AttributeModification<string> | null;
+    connectionPosition?: AttributeModification<number> | null;
     terminalConnected?: AttributeModification<boolean> | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
     reactiveCapabilityCurve: AttributeModification<boolean> | null;
@@ -294,8 +294,8 @@ export function getConverterStationFromSearchCopy(id: string, converterStation: 
             ...getConnectivityFormData({
                 voltageLevelId: converterStation?.voltageLevelId,
                 busbarSectionId: converterStation?.busOrBusbarSectionId,
-                connectionDirection: converterStation?.connectablePositionInfos?.connectionDirection,
-                connectionName: converterStation?.connectablePositionInfos?.connectionName,
+                connectionDirection: converterStation?.connectablePosition?.connectionDirection,
+                connectionName: converterStation?.connectablePosition?.connectionName,
                 connectionPosition: null,
                 busbarSectionName: null,
                 terminalConnected: true,

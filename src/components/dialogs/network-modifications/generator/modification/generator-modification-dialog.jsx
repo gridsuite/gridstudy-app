@@ -373,7 +373,13 @@ const GeneratorModificationDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={setValuesAndEmptyOthers}

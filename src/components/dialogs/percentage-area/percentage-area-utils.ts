@@ -7,12 +7,7 @@
 
 import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
-
-export type PercentageArea = {
-    sliderPercentage: number;
-    leftSidePercentage: number;
-    rightSidePercentage: number;
-};
+import { Input } from '@gridsuite/commons-ui';
 
 const percentageAreaValidationSchema = () => ({
     [SLIDER_PERCENTAGE]: yup.number(),
@@ -23,7 +18,7 @@ export const getPercentageAreaValidationSchema = () => {
     return percentageAreaValidationSchema();
 };
 
-const percentageAreaEmptyFormData = (): PercentageArea => ({
+const percentageAreaEmptyFormData = () => ({
     [SLIDER_PERCENTAGE]: 50,
     [LEFT_SIDE_PERCENTAGE]: 50,
     [RIGHT_SIDE_PERCENTAGE]: 50,
@@ -33,7 +28,7 @@ export const getPercentageAreaEmptyFormData = () => {
     return percentageAreaEmptyFormData();
 };
 
-export const getPercentageAreaData = (percent: number): PercentageArea => {
+export const getPercentageAreaData = ({ percent }: { percent: number }) => {
     return {
         [SLIDER_PERCENTAGE]: percent,
         [LEFT_SIDE_PERCENTAGE]: percent,
@@ -45,24 +40,23 @@ export const isValidPercentage = (val: string) => {
     return /^\d*[.,]?\d?$/.test(val);
 };
 
-//used to format subtraction of two percentages (avoid having more than one decimal)
+//used to format substaction of two percentages (avoid having more than one decimal)
 export function sanitizePercentageValue(value: number) {
     return Math.round(value * 10) / 10;
 }
 
-export function formatPercentageValue(value: any) {
+export function formatPercentageValue(value: string): Input {
+    // @ts-ignore
     if (!value || value < 0) {
         return 0;
     }
+    // @ts-ignore
     if (value > 100) {
         return 100;
     }
-    if (typeof value === 'string') {
-        const tmp = value?.replace(',', '.');
-        if (tmp.endsWith('.')) {
-            return tmp;
-        }
-        return parseFloat(value);
+    const tmp = value?.replace(',', '.');
+    if (tmp.endsWith('.')) {
+        return tmp;
     }
-    return value;
+    return parseFloat(value);
 }

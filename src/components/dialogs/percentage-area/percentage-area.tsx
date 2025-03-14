@@ -11,8 +11,7 @@ import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from '
 import { useFormContext } from 'react-hook-form';
 import { formatPercentageValue, isValidPercentage, sanitizePercentageValue } from './percentage-area-utils';
 import { FormattedMessage } from 'react-intl';
-import { SliderInput, TextInput } from '@gridsuite/commons-ui';
-import { FunctionComponent } from 'react';
+import { Input, SliderInput, TextInput } from '@gridsuite/commons-ui';
 
 /**
  * Component to handle a 'percentage area' (slider , left and right percentage fields)
@@ -20,18 +19,17 @@ import { FunctionComponent } from 'react';
  * @param upperRightText text to diplays on the top right of the slider
  */
 
-export interface PercentageAreaProps {
+interface PercentageAreaProps {
     upperLeftText: string;
     upperRightText: string;
 }
-
-export const PercentageArea: FunctionComponent<PercentageAreaProps> = ({ upperLeftText, upperRightText }) => {
+export function PercentageArea({ upperLeftText, upperRightText }: Readonly<PercentageAreaProps>) {
     const { setValue } = useFormContext();
 
-    const handleLeftPercentageValueChange = (value: any) => {
+    const handleLeftPercentageValueChange = (value: string): Input => {
         const leftPercentageValue = formatPercentageValue(value);
-        const rightPercentageValue = sanitizePercentageValue(100 - leftPercentageValue);
-        setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue));
+        const rightPercentageValue = sanitizePercentageValue(100 - +leftPercentageValue);
+        setValue(SLIDER_PERCENTAGE, +leftPercentageValue);
         setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
             shouldValidate: true,
         });
@@ -41,9 +39,9 @@ export const PercentageArea: FunctionComponent<PercentageAreaProps> = ({ upperLe
         return leftPercentageValue;
     };
 
-    const handleRightPercentageValueChange = (value: any) => {
+    const handleRightPercentageValueChange = (value: string): Input => {
         const rightPercentageValue = formatPercentageValue(value);
-        const leftPercentageValue = sanitizePercentageValue(100 - rightPercentageValue);
+        const leftPercentageValue = sanitizePercentageValue(100 - +rightPercentageValue);
         setValue(SLIDER_PERCENTAGE, leftPercentageValue);
         setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
             shouldValidate: true,
@@ -54,25 +52,14 @@ export const PercentageArea: FunctionComponent<PercentageAreaProps> = ({ upperLe
         return rightPercentageValue;
     };
 
-    const onSliderChange = (valueParam: number | number[]) => {
-        let value = 0;
-        if (Array.isArray(valueParam)) {
-            if (valueParam?.length) {
-                value = valueParam[0];
-            } else {
-                return value;
-            }
-        } else {
-            value = valueParam;
+    const onSliderChange = (value: number | number[]) => {
+        if (typeof value === 'number') {
+            const rightPercentageValue = sanitizePercentageValue(100 - value);
+            setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
+                shouldValidate: true,
+            });
+            setValue(LEFT_SIDE_PERCENTAGE, value, { shouldValidate: true });
         }
-        const rightPercentageValue = sanitizePercentageValue(100 - value);
-        setValue(LEFT_SIDE_PERCENTAGE, value, {
-            shouldValidate: true,
-        });
-        setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
-            shouldValidate: true,
-        });
-        return value;
     };
 
     const leftSidePercentageField = (
@@ -98,12 +85,11 @@ export const PercentageArea: FunctionComponent<PercentageAreaProps> = ({ upperLe
     const slider = (
         <SliderInput name={SLIDER_PERCENTAGE} min={0.0} max={100.0} step={0.1} onValueChanged={onSliderChange} />
     );
-
     return (
         <Grid container spacing={2}>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} item>
                 {upperLeftText && (
-                    <Grid item xs={5}>
+                    <Grid item xs={5} sx={{ align: 'start' }}>
                         <Typography>
                             <FormattedMessage id={upperLeftText}></FormattedMessage>
                         </Typography>
@@ -111,23 +97,23 @@ export const PercentageArea: FunctionComponent<PercentageAreaProps> = ({ upperLe
                 )}
                 <Grid item xs={2}></Grid>
                 {upperRightText && (
-                    <Grid item xs={5}>
-                        <Typography align="right">
+                    <Grid item xs={5} sx={{ align: 'end' }}>
+                        <Typography sx={{ align: 'right' }}>
                             <FormattedMessage id={upperRightText}></FormattedMessage>
                         </Typography>
                     </Grid>
                 )}
             </Grid>
             {slider}
-            <Grid container spacing={2}>
-                <Grid item xs={3}>
+            <Grid container spacing={2} item>
+                <Grid item xs={3} sx={{ align: 'start' }}>
                     {leftSidePercentageField}
                 </Grid>
                 <Grid item xs={6}></Grid>
-                <Grid item xs={3}>
+                <Grid item xs={3} sx={{ align: 'end' }}>
                     {rightSidePercentageField}
                 </Grid>
             </Grid>
         </Grid>
     );
-};
+}
