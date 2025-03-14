@@ -369,10 +369,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
-            <DiagramControls
-                showSaveControl
-                onSave={handleSaveNadConfig}
-            />
+            <DiagramControls showSaveControl onSave={handleSaveNadConfig} />
         </>
     );
 }

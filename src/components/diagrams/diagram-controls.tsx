@@ -39,10 +39,7 @@ interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
 }
 
-const DiagramControls: React.FC<DiagramControlsProps> = ({
-    showSaveControl = false,
-    onSave,
-}) => {
+const DiagramControls: React.FC<DiagramControlsProps> = ({ showSaveControl = false, onSave }) => {
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 

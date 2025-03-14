@@ -7,7 +7,7 @@
 
 import { DiagramState } from '../../redux/reducer';
 import { DiagramType } from './diagram.type';
-import { DiagramMetadata } from "@powsybl/network-viewer";
+import { DiagramMetadata } from '@powsybl/network-viewer';
 
 /**
  * SORTING FUNCTIONS
@@ -108,11 +108,17 @@ export function getEstimatedNbVoltageLevels(
 export function buildPositionsFromNadMetadata(metadata: DiagramMetadata): DiagramConfigPosition[] {
     const positionsMap = new Map<string, DiagramConfigPosition>();
     // Initialize the map with nodes
-    metadata.nodes.forEach(node => {
-        positionsMap.set(node.equipmentId, { voltageLevelId: node.equipmentId, xposition: node.x, yposition: node.y, xlabelPosition: 0, ylabelPosition: 0 });
+    metadata.nodes.forEach((node) => {
+        positionsMap.set(node.equipmentId, {
+            voltageLevelId: node.equipmentId,
+            xposition: node.x,
+            yposition: node.y,
+            xlabelPosition: 0,
+            ylabelPosition: 0,
+        });
     });
     // Update the map with text node positions
-    metadata.textNodes.forEach(textNode => {
+    metadata.textNodes.forEach((textNode) => {
         if (positionsMap.has(textNode.equipmentId)) {
             positionsMap.get(textNode.equipmentId)!.xlabelPosition = textNode.shiftX;
             positionsMap.get(textNode.equipmentId)!.ylabelPosition = textNode.shiftY;

@@ -150,7 +150,7 @@ export function createDiagramConfig(
     newDiagramConfig: DiagramConfig,
     diagramConfigName: string,
     description: string,
-    parentDirectoryUuid: string,
+    parentDirectoryUuid: string
 ) {
     console.info('Creating a new diagram config...');
     let urlSearchParams = new URLSearchParams();
