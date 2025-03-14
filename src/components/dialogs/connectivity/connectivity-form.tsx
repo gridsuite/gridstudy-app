@@ -29,6 +29,7 @@ import {
     AutocompleteInput,
     Identifiable,
     IntegerInput,
+    Option,
     SelectInput,
     SwitchInput,
     TextInput,
@@ -90,7 +91,7 @@ export function ConnectivityForm({
     previousValues,
 }: Readonly<ConnectivityFormProps>) {
     const currentNodeUuid = currentNode?.id;
-    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
+    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState<Option[]>([]);
 
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
 
@@ -102,6 +103,15 @@ export function ConnectivityForm({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
 
+    const vlOptions = useMemo(
+        () =>
+            voltageLevelOptions.map((item) => ({
+                id: item.id,
+                label: item.name ?? '',
+            })),
+        [voltageLevelOptions]
+    );
+
     useEffect(() => {
         if (isEquipmentModification) {
             return;
@@ -109,13 +119,18 @@ export function ConnectivityForm({
         if (watchVoltageLevelId) {
             const existingVoltageLevelOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
             if (existingVoltageLevelOption) {
-                fetchBusesOrBusbarSectionsForVoltageLevel({
-                    studyUuid: studyUuid,
-                    currentNodeUuid: currentNodeUuid,
-                    currentRootNetworkUuid: currentRootNetworkUuid,
-                    voltageLevelId: watchVoltageLevelId,
-                }).then((busesOrbusbarSections) => {
-                    setBusOrBusbarSectionOptions(busesOrbusbarSections || []);
+                fetchBusesOrBusbarSectionsForVoltageLevel(
+                    studyUuid,
+                    currentNodeUuid,
+                    currentRootNetworkUuid,
+                    watchVoltageLevelId
+                ).then((busesOrbusbarSections) => {
+                    setBusOrBusbarSectionOptions(
+                        busesOrbusbarSections?.map((busesOrbusbarSection) => ({
+                            id: busesOrbusbarSection.id,
+                            label: busesOrbusbarSection?.name ?? '',
+                        })) || []
+                    );
                 });
             } else {
                 setBusOrBusbarSectionOptions([]);
@@ -160,10 +175,7 @@ export function ConnectivityForm({
         <AutocompleteInput
             name={`${id}.${VOLTAGE_LEVEL}.${ID}`}
             label={voltageLevelSelectLabel}
-            options={voltageLevelOptions.map((voltageLevel) => ({
-                id: voltageLevel.id,
-                label: voltageLevel?.name ?? '',
-            }))}
+            options={vlOptions}
             disabled={isEquipmentModification}
             size={'small'}
         />
