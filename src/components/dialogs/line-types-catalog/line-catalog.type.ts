@@ -5,27 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export type SegmentFormData = {
-    segmentDistanceValue: number;
-    segmentTypeValue: string;
-    segmentTypeId: string;
-    segmentResistance: number;
-    segmentReactance: number;
-    segmentSusceptance: number;
-};
-
-export type LineTypeSegmentFormData = {
-    totalResistance: number;
-    totalReactance: number;
-    totalSusceptance: number;
-    segments: SegmentFormData[];
-};
-
 // DTO from back-end
 export type LineTypeInfo = {
     id: string;
     type: string;
-    category: string;
+    category: 'AERIAL' | 'UNDERGROUND';
     voltage: number;
     conductorType: string;
     section: number;

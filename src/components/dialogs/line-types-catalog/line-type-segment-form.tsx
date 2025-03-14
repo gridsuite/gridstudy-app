@@ -30,8 +30,8 @@ import { calculateReactance, calculateResistance, calculateSusceptance } from '.
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
-import { emptyLineSegment } from './line-type-segment-utils';
-import { LineTypeInfo, SegmentFormData } from './line-catalog.type';
+import { LineTypeInfo } from './line-catalog.type';
+import { emptyLineSegment, SegmentFormData } from './segment-utils';
 
 const styles = {
     header: {
