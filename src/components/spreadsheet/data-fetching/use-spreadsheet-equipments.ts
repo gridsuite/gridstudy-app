@@ -9,26 +9,15 @@ import { useNotificationsListener } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    deleteEquipments,
-    EquipmentToDelete,
-    loadEquipments,
-    removeNodeData,
-    updateEquipments,
-    reloadNodesAliases,
-} from 'redux/actions';
-import { AppState, initialReloadNodesAliases, NotificationType } from 'redux/reducer';
-import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments } from 'redux/actions';
+import { AppState, NotificationType } from 'redux/reducer';
+import type { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { getFetcher } from './config/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
-import { isStatusBuilt } from '../graph/util/model-functions';
-import { formatFetchedEquipments } from './utils/equipment-table-utils';
-import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
-import { NOTIFICATIONS_URL_KEYS } from '../utils/notificationsProvider-utils';
-import { UPDATE_TYPE_HEADER } from '../use-node-data';
-import { NodeAlias } from './custom-columns/node-alias.type';
-import { NodeType } from '../graph/tree-node.type';
+import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
+import { UPDATE_TYPE_HEADER } from '../../use-node-data';
+import { NodeAlias } from '../custom-columns/node-alias.type';
+import { FetchingInfo, useFetchEquipment } from './use-fetch-equipment';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -44,28 +33,11 @@ export const useSpreadsheetEquipments = (
     );
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const nodesAliasesToReload = useSelector((state: AppState) => state.reloadNodesAliases);
-    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
 
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
 
-    const formatEquipments = useCallback(
-        (fetchedEquipments: any) => {
-            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return formatFetchedEquipments(type, fetchedEquipments);
-        },
-        [type]
-    );
-
-    const isBuilt = useCallback(
-        (nodeId: string) =>
-            treeNodes?.find(
-                (node) =>
-                    node.id === nodeId && (node.type === NodeType.ROOT || isStatusBuilt(node.data?.globalBuildStatus))
-            ) !== undefined,
-        [treeNodes]
-    );
+    const { fetchNodesEquipementData } = useFetchEquipment(type);
 
     const nodesIdToFetch = useMemo(() => {
         let nodesIdToFetch = new Set<string>();
@@ -169,72 +141,24 @@ export const useSpreadsheetEquipments = (
         },
     });
 
-    const loadEquipmentData = useCallback(
-        (nodeIds: Set<string>) => {
-            if (studyUuid && currentRootNetworkUuid && currentNode?.id) {
-                setErrorMessage(null);
-                setIsFetching(true);
-                let fetcherPromises: Promise<unknown>[] = [];
-                let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
-                    nodesId: [],
-                    equipmentsByNodeId: {},
-                };
-
-                nodeIds.forEach((nodeId) => {
-                    if (currentNode?.id === nodeId || isBuilt(nodeId)) {
-                        const promise = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
-                        fetcherPromises.push(promise);
-                        promise
-                            .then((results) => {
-                                let fetchedEquipments = results.flat();
-                                spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                                fetchedEquipments = formatEquipments(fetchedEquipments);
-                                spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
-                            })
-                            .catch((err) => {
-                                console.error(
-                                    `Fetching error for type ${type.toString()} on node ${nodeId} (${err.message})`
-                                );
-                            });
-                    } else {
-                        // mark unbuilt node as processed with empty entry/result
-                        spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                        spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = [];
-                    }
-                });
-
-                Promise.all(fetcherPromises)
-                    .then(() => {
-                        dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
-                        console.debug(
-                            `Equipment data fetching and dispatch done for ${fetcherPromises.length} built nodes among ${nodeIds.size}`
-                        );
-                    })
-                    .catch((err) => {
-                        console.debug('Equipment data fetching and dispatch NOT done');
-                        setErrorMessage(err.message);
-                    })
-                    .finally(() => {
-                        setIsFetching(false);
-                    });
-            }
-        },
-        [currentNode?.id, currentRootNetworkUuid, dispatch, formatEquipments, isBuilt, studyUuid, type]
-    );
+    const onFetchingDone = (info: FetchingInfo) => {
+        setErrorMessage(info.errorMessage);
+        setIsFetching(false);
+    };
 
     useEffect(() => {
         if (shouldFetchEquipments && isNetworkModificationTreeModelUpToDate && isNodeBuilt(currentNode)) {
-            loadEquipmentData(nodesIdToFetch);
+            setErrorMessage(null);
+            setIsFetching(true);
+            fetchNodesEquipementData(nodesIdToFetch, onFetchingDone);
         }
-    }, [shouldFetchEquipments, isNetworkModificationTreeModelUpToDate, nodesIdToFetch, loadEquipmentData, currentNode]);
-
-    useEffect(() => {
-        if (nodesAliasesToReload.sheetType === type && nodesAliasesToReload?.nodesId.length) {
-            loadEquipmentData(new Set<string>(nodesAliasesToReload.nodesId));
-            // reset reload action
-            dispatch(reloadNodesAliases(initialReloadNodesAliases));
-        }
-    }, [dispatch, loadEquipmentData, nodesAliasesToReload, type]);
+    }, [
+        shouldFetchEquipments,
+        isNetworkModificationTreeModelUpToDate,
+        nodesIdToFetch,
+        fetchNodesEquipementData,
+        currentNode,
+    ]);
 
     return { equipments, errorMessage, isFetching };
 };

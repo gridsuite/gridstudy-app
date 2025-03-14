@@ -14,12 +14,11 @@ import { spreadsheetStyles } from '../utils/style';
 import { ROOT_NODE_LABEL } from '../../../constants/node.constant';
 import { NodeAlias } from './node-alias.type';
 import { MouseEvent, useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { reloadNodesAliases } from '../../../redux/actions';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import { SpreadsheetEquipmentsReloadNodes } from '../config/spreadsheet.type';
+import { useFetchEquipment } from '../data-fetching/use-fetch-equipment';
 
 const styles = {
     icon: {
@@ -57,9 +56,10 @@ export default function CustomColumnsNodesConfig({
 }: Readonly<CustomColumnsNodesConfigProps>) {
     const dialogOpen = useStateBoolean(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const dispatch = useDispatch();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex].type);
+
+    const { fetchNodesEquipementData } = useFetchEquipment(tableType);
 
     const nodesToReload = useMemo(() => {
         // Get all aliased nodes ids, except for Root and current node (both are always up-to-date)
@@ -76,14 +76,10 @@ export default function CustomColumnsNodesConfig({
 
     const handleRefresh = useCallback(() => {
         if (nodesToReload?.length) {
-            const reloadData: SpreadsheetEquipmentsReloadNodes = {
-                sheetType: tableType,
-                nodesId: nodesToReload.map((node) => node.id),
-            };
-            dispatch(reloadNodesAliases(reloadData));
-            console.debug(`Refresh requested for ${nodesToReload.length} aliased nodes`);
+            const nodesIdsToReload = new Set<string>(nodesToReload.map((n) => n.id as string));
+            fetchNodesEquipementData(nodesIdsToReload, undefined);
         }
-    }, [dispatch, nodesToReload, tableType]);
+    }, [fetchNodesEquipementData, nodesToReload]);
 
     const nodesOptions = useMemo(
         () => ({

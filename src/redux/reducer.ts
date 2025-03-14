@@ -102,8 +102,6 @@ import {
     OpenDiagramAction,
     OpenNadListAction,
     OpenStudyAction,
-    RELOAD_NODES_ALIASES,
-    ReloadNodesAliasesAction,
     REMOVE_COLUMN_DEFINITION,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
@@ -285,7 +283,6 @@ import {
     SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-    SpreadsheetEquipmentsReloadNodes,
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
@@ -490,7 +487,6 @@ export interface AppState extends CommonStoreState {
     spreadsheetNetwork: SpreadsheetNetworkState;
     gsFilterSpreadsheetState: GsFilterSpreadsheetState;
     networkVisualizationsParameters: NetworkVisualizationParameters;
-    reloadNodesAliases: SpreadsheetEquipmentsReloadNodes;
 
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
@@ -590,11 +586,6 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
 export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
-export const initialReloadNodesAliases: SpreadsheetEquipmentsReloadNodes = {
-    sheetType: undefined,
-    nodesId: [],
-};
-
 interface TablesState {
     uuid: UUID | null;
     definitions: SpreadsheetTabDefinition[];
@@ -646,7 +637,6 @@ const initialState: AppState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
-    reloadNodesAliases: initialReloadNodesAliases,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1533,10 +1523,6 @@ export const reducer = createReducer(initialState, (builder) => {
             },
             {} as Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>
         );
-    });
-
-    builder.addCase(RELOAD_NODES_ALIASES, (state, action: ReloadNodesAliasesAction) => {
-        state.reloadNodesAliases = action.nodesAliasesToReload;
     });
 
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {

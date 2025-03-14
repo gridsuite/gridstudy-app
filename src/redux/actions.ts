@@ -52,7 +52,6 @@ import {
     ColumnDefinition,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-    SpreadsheetEquipmentsReloadNodes,
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
@@ -163,18 +162,6 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
     return {
         type: REMOVE_NODE_DATA,
         nodesIdToRemove,
-    };
-}
-
-export const RELOAD_NODES_ALIASES = 'RELOAD_NODES_ALIASES';
-export type ReloadNodesAliasesAction = Readonly<Action<typeof RELOAD_NODES_ALIASES>> & {
-    nodesAliasesToReload: SpreadsheetEquipmentsReloadNodes;
-};
-
-export function reloadNodesAliases(nodesAliases: SpreadsheetEquipmentsReloadNodes): ReloadNodesAliasesAction {
-    return {
-        type: RELOAD_NODES_ALIASES,
-        nodesAliasesToReload: nodesAliases,
     };
 }
 

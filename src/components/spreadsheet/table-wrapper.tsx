@@ -16,7 +16,7 @@ import { Identifiable, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { EquipmentTabs } from './equipment-tabs';
-import { useSpreadsheetEquipments } from './use-spreadsheet-equipments';
+import { useSpreadsheetEquipments } from './data-fetching/use-spreadsheet-equipments';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
