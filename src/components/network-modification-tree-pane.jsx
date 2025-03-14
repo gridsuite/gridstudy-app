@@ -156,7 +156,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     const mapMissingDataLoading = useSelector((state) => state.mapMissingDataLoading);
 
     const isGeoDataOrTreeLoading = useMemo(
-        () => mapMissingDataLoading || isNetworkModificationTreeModelUpToDate & !isNodeBuilt(currentNode),
+        () => mapMissingDataLoading || (!isNetworkModificationTreeModelUpToDate && !isNodeBuilt(currentNode)),
         [mapMissingDataLoading, isNetworkModificationTreeModelUpToDate, currentNode]
     );
     const updateNodes = useCallback(
