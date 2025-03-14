@@ -100,10 +100,6 @@ export function getEstimatedNbVoltageLevels(
     return previousVoltagesNB * Math.pow(VL_DEPTH_GROWTH_RATE, requestedDepth - currentDepth);
 }
 
-export function adjustPositionToScaling(positionValue: number, originalScaling: number, newScaling: number): number {
-    return (positionValue / originalScaling) * newScaling;
-}
-
 /**
  * Get the nodes and textNodes positions from the NAD's metadata and transform them in an array
  * of DiagramConfigPosition, to be saved in the backend.

@@ -11,8 +11,6 @@ import Box from '@mui/material/Box';
 import { ElementCreationDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import SaveIcon from '@mui/icons-material/Save';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
@@ -39,20 +37,13 @@ const styles = {
 interface DiagramControlsProps {
     showSaveControl?: boolean;
     onSave?: (data: IElementCreationDialog) => void;
-    showVisibilityControl?: boolean;
-    onVisibilityToggle?: (newVisibility: boolean) => void;
-    defaultVisiblity?: boolean;
 }
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({
     showSaveControl = false,
     onSave,
-    showVisibilityControl = false,
-    onVisibilityToggle,
-    defaultVisiblity = true,
 }) => {
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
-    const [visibility, setVisiblity] = useState(defaultVisiblity);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const handleCloseDialog = () => {
@@ -66,14 +57,6 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     const handleSave = (data: IElementCreationDialog) => {
         if (onSave) {
             onSave(data);
-        }
-    };
-
-    const handleVisibility = () => {
-        const newVisiblity = !visibility;
-        setVisiblity(newVisiblity);
-        if (onVisibilityToggle) {
-            onVisibilityToggle(newVisiblity);
         }
     };
 
@@ -94,14 +77,6 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
                             <IconButton sx={styles.actionIcon} onClick={handleClickSaveIcon}>
                                 <SaveIcon sx={styles.icon} />
-                            </IconButton>
-                        </Tooltip>
-                    )}
-                    {showVisibilityControl && (
-                        <Tooltip title={<FormattedMessage id={visibility ? 'hideLabels' : 'showLabels'} />}>
-                            <IconButton sx={styles.actionIcon} onClick={handleVisibility}>
-                                {visibility && <VisibilityOffIcon sx={styles.icon} />}
-                                {!visibility && <VisibilityIcon sx={styles.icon} />}
                             </IconButton>
                         </Tooltip>
                     )}

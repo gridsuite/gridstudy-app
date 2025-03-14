@@ -27,7 +27,7 @@ import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
-import { adjustPositionToScaling, buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
+import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
@@ -37,25 +37,6 @@ import { IElementCreationDialog, mergeSx } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
-
-const overrideStyles = {
-    hideLabels: {
-        '.nad-label-box': {
-            visibility: 'hidden',
-        },
-        '.nad-text-edges': {
-            visibility: 'hidden',
-        },
-    },
-    showLabels: {
-        '.nad-label-box': {
-            visibility: 'visible',
-        },
-        '.nad-text-edges': {
-            visibility: 'visible',
-        },
-    },
-};
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -188,9 +169,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
-    const [showLabels, setShowLabels] = useState(true);
-    const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const nadIdentifier = useMemo(() => {
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
@@ -262,24 +240,18 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         const voltageLevelIds: Array<string> = diagramStates
             .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
             .map((diagram) => diagram.id);
-
-        const positions = buildPositionsFromNadMetadata(props.svgMetadata);
-
         createDiagramConfig(
             {
                 depth: networkAreaDiagramDepth,
                 withGeoData: networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
                 scalingFactor: props.svgScalingFactor,
-                radiusFactor: 300.0, // At the moment, we only use the default value in the backend
+                radiusFactor: 300.0, // At the moment, we only use the default value
                 voltageLevelIds: voltageLevelIds,
-                positions: positions,
+                positions: buildPositionsFromNadMetadata(props.svgMetadata),
             },
             directoryData.name,
             directoryData.description,
-            directoryData.folderId,
-            studyUuid,
-            currentRootNetworkUuid,
-            currentNode?.id
+            directoryData.folderId
         );
     };
 
@@ -332,16 +304,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 correspondingMovements.forEach((movement) => {
                     // It is possible to not have scalingFactors, so we only move the nodes if we have the needed value.
                     if (!!movement.scalingFactor && !!props.svgScalingFactor) {
-                        const adjustedX = adjustPositionToScaling(
-                            movement.x,
-                            movement.scalingFactor,
-                            props.svgScalingFactor ?? 1
-                        );
-                        const adjustedY = adjustPositionToScaling(
-                            movement.y,
-                            movement.scalingFactor,
-                            props.svgScalingFactor ?? 1
-                        );
+                        let adjustedX = (movement.x / movement.scalingFactor) * props.svgScalingFactor;
+                        let adjustedY = (movement.y / movement.scalingFactor) * props.svgScalingFactor;
                         diagramViewer.moveNodeToCoordinates(movement.equipmentId, adjustedX, adjustedY);
                     }
                 });
@@ -402,15 +366,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
-                    showLabels ? overrideStyles.showLabels : overrideStyles.hideLabels,
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
             <DiagramControls
                 showSaveControl
                 onSave={handleSaveNadConfig}
-                showVisibilityControl
-                onVisibilityToggle={setShowLabels}
             />
         </>
     );

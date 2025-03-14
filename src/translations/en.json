@@ -1466,8 +1466,6 @@
     "AddAutomaton": "Add an automaton",
     "BusBarCountMustBeGreaterThanOrEqualToOne": "Number of busbars must be greater than or equal to 1",
     "SectionCountMustBeGreaterThanOrEqualToOne": "Number of sections must be greater than or equal to 1",
-    "showLabels": "Show labels",
-    "hideLabels": "Hide labels",
 
     "StateEstimationQualityCriterionResults": "Criterion quality",
     "StateEstimationQualityPerRegionResults": "Quality per region",
