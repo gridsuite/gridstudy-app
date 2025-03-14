@@ -27,7 +27,7 @@ import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
-import { adjustPositionToScaling, getNadIdentifier } from '../diagram-utils';
+import { adjustPositionToScaling, buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
@@ -263,57 +263,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
             .map((diagram) => diagram.id);
 
-        const nodePositions = nadNodeMovements.filter((movement) => movement.nadIdentifier === nadIdentifier);
-        const textNodePositions = nadTextNodeMovements.filter((movement) => movement.nadIdentifier === nadIdentifier);
-        const positionsMap = new Map();
-
-        // TODO rewrite this temporary spaghetti thing, maybe refactor the positions in NADs in general ?
-        nodePositions.forEach((movement) => {
-            const adjustedX = adjustPositionToScaling(movement.x, movement.scalingFactor, props.svgScalingFactor ?? 1);
-            const adjustedY = adjustPositionToScaling(movement.y, movement.scalingFactor, props.svgScalingFactor ?? 1);
-            if (positionsMap.has(movement.equipmentId)) {
-                let position = positionsMap.get(movement.equipmentId);
-                position.x = adjustedX;
-                position.y = adjustedY;
-            } else {
-                positionsMap.set(movement.equipmentId, {
-                    x: adjustedX,
-                    y: adjustedY,
-                });
-            }
-        });
-        textNodePositions.forEach((element) => {
-            if (positionsMap.has(element.equipmentId)) {
-                let position = positionsMap.get(element.equipmentId);
-                position.shiftX = element.shiftX;
-                position.shiftY = element.shiftY;
-                //position.connectionShiftX = element.connectionShiftX;
-                //position.connectionShiftY = element.connectionShiftY;
-            } else {
-                positionsMap.set(element.equipmentId, {
-                    shiftX: element.shiftX,
-                    shiftY: element.shiftY,
-                    //connectionShiftX: element.connectionShiftX,
-                    //connectionShiftY: element.connectionShiftY,
-                });
-            }
-        });
-        const positions = Array.from(positionsMap, ([equipmentId, position]) => ({
-            voltageLevelId: equipmentId,
-            xposition: position.x,
-            yposition: position.y,
-            xlabelPosition: position.shiftX,
-            ylabelPosition: position.shiftY,
-            //connectionShiftX: position.connectionShiftX, // TODO use or not ?
-            //connectionShiftY: position.connectionShiftY,
-        }));
+        const positions = buildPositionsFromNadMetadata(props.svgMetadata);
 
         createDiagramConfig(
             {
                 depth: networkAreaDiagramDepth,
                 withGeoData: networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
                 scalingFactor: props.svgScalingFactor,
-                //radiusFactor: 300.0, // At the moment, we only use the default value in the backend
+                radiusFactor: 300.0, // At the moment, we only use the default value in the backend
                 voltageLevelIds: voltageLevelIds,
                 positions: positions,
             },
