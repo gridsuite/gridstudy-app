@@ -868,8 +868,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(REMOVE_TABLE_DEFINITION, (state, action: RemoveTableDefinitionAction) => {
-        const removedTableName = state.tables.definitions[action.tabIndex].name;
-
+        const removedTable = state.tables.definitions[action.tabIndex]
         state.tables.definitions.splice(action.tabIndex, 1);
 
         // Update indexes of remaining table definitions
@@ -878,12 +877,14 @@ export const reducer = createReducer(initialState, (builder) => {
         });
 
         if (state[SPREADSHEET_STORE_FIELD]) {
-            delete state[SPREADSHEET_STORE_FIELD][removedTableName];
+            delete state[SPREADSHEET_STORE_FIELD][removedTable.name];
         }
 
         if (state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE]) {
-            delete state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE][removedTableName];
+            delete state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE][removedTable.name];
         }
+
+        delete state.calculationSelections[removedTable.uuid];
     });
 
     builder.addCase(

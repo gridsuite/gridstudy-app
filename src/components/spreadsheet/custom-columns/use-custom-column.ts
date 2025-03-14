@@ -28,6 +28,10 @@ export function useCustomColumn(tabIndex: number) {
         (colDef: ColumnDefinition) =>
             (params: ValueGetterParams): boolean | string | number | undefined => {
                 try {
+                    // Skip formula processing for pinned rows and use raw value
+                    if (params.node?.rowPinned) {
+                        return params.data[colDef.id];
+                    }
                     const scope = { ...params.data };
                     const colDependencies = colDef.dependencies ?? [];
                     colDependencies.forEach((dep) => {
