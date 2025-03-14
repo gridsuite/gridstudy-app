@@ -16,9 +16,10 @@ import { FolderOutlined } from '@mui/icons-material';
 
 interface RootNetworkCaseSelectionProps {
     onSelectCase: (selectedCase: TreeViewFinderNodeProps) => void;
+    isModification: boolean;
 }
 
-export const RootNetworkCaseSelection = ({ onSelectCase }: RootNetworkCaseSelectionProps) => {
+export const RootNetworkCaseSelection = ({ onSelectCase, isModification }: RootNetworkCaseSelectionProps) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const caseNameWatch = useWatch({ name: CASE_NAME });
     const caseIdWatch = useWatch({ name: CASE_ID });
@@ -70,7 +71,7 @@ export const RootNetworkCaseSelection = ({ onSelectCase }: RootNetworkCaseSelect
                         size={caseNameWatch ? 'small' : 'medium'}
                         onClick={() => setIsDialogOpen(true)}
                     >
-                        {caseNameWatch ? (
+                        {caseNameWatch || isModification ? (
                             <FormattedMessage id={'ModifyFromMenu'} />
                         ) : (
                             <FormattedMessage id={'chooseCase'} />

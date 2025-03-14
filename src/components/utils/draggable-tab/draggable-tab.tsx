@@ -5,11 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import { Draggable } from 'react-beautiful-dnd';
-import Tab from '@mui/material/Tab';
+import Tab, { TabProps } from '@mui/material/Tab';
 
-const DraggableTab = (props) => {
+interface DraggableTabOwnProps {
+    id: string;
+    index: number;
+    value: number;
+}
+
+type DraggableTabProps = DraggableTabOwnProps & Omit<TabProps, keyof DraggableTabOwnProps>;
+
+const DraggableTab = (props: DraggableTabProps) => {
     const { id, index, value, label, ...others } = props;
     return (
         <Draggable draggableId={id} index={index} disableInteractiveElementBlocking>
@@ -20,13 +27,6 @@ const DraggableTab = (props) => {
             )}
         </Draggable>
     );
-};
-
-DraggableTab.propTypes = {
-    id: PropTypes.string.isRequired,
-    index: PropTypes.number.isRequired,
-    value: PropTypes.number.isRequired,
-    label: PropTypes.node,
 };
 
 export default DraggableTab;

@@ -12,9 +12,8 @@ import { CancelButton, CustomFormProvider, SubmitButton, UseStateBooleanReturn }
 import { useForm } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from 'redux/store';
-import { AppState, CurrentTreeNode, NodeAlias } from 'redux/reducer';
+import { useSelector } from 'react-redux';
+import { AppState, CurrentTreeNode } from 'redux/reducer';
 import {
     CustomColumnNodesForm,
     customColumnNodesFormSchema,
@@ -22,11 +21,13 @@ import {
     NODES_ALIASES,
 } from './custom-columns-nodes-form-utils';
 import NodeAliasTable from './node-alias-table';
-import { updateCustomColumnsNodesAliases } from '../../../redux/actions';
 import { UUID } from 'crypto';
+import { NodeAlias } from './node-alias.type';
 
 export type CustomColumnNodesDialogProps = {
     open: UseStateBooleanReturn;
+    nodeAliases: NodeAlias[];
+    updateNodeAliases: (newNodeAliases: NodeAlias[]) => void;
 };
 
 const styles = {
@@ -40,12 +41,16 @@ const styles = {
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 };
 
-export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnNodesDialogProps>) {
-    const dispatch = useDispatch<AppDispatch>();
+const toCustomColumnNodesDialogFormValues = (nodeAliases: NodeAlias[]) => {
+    return { [NODES_ALIASES]: nodeAliases };
+};
 
+export default function CustomColumnNodesDialog({
+    open,
+    nodeAliases,
+    updateNodeAliases,
+}: Readonly<CustomColumnNodesDialogProps>) {
     const intl = useIntl();
-
-    const customColumnsNodesAliases = useSelector((state: AppState) => state.customColumnsNodesAliases);
 
     const formMethods = useForm<CustomColumnNodesForm>({
         defaultValues: initialCustomColumnNodesForm,
@@ -69,7 +74,7 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
             const id = nodes.find((node) => node.name === nodeAlias.name)?.id as UUID;
             return { id: id, name: nodeAlias.name, alias: nodeAlias.alias };
         });
-        dispatch(updateCustomColumnsNodesAliases(completeData));
+        updateNodeAliases(completeData);
     };
 
     const onClose = () => {
@@ -78,15 +83,17 @@ export default function CustomColumnNodesDialog({ open }: Readonly<CustomColumnN
     };
 
     useEffect(() => {
-        if (open.value && customColumnsNodesAliases && customColumnsNodesAliases.length > 0) {
+        if (open.value && nodeAliases && nodeAliases.length > 0) {
             let selected = { selected: false };
-            reset({
-                [NODES_ALIASES]: customColumnsNodesAliases.map((value) => {
-                    return { ...value, ...selected };
-                }),
-            });
+            reset(
+                toCustomColumnNodesDialogFormValues(
+                    nodeAliases.map((value) => {
+                        return { ...value, ...selected };
+                    })
+                )
+            );
         }
-    }, [open, customColumnsNodesAliases, reset]);
+    }, [open, nodeAliases, reset]);
 
     return (
         <CustomFormProvider validationSchema={customColumnNodesFormSchema} {...formMethods}>
