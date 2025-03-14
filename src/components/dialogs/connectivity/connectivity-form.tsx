@@ -195,10 +195,7 @@ export function ConnectivityForm({
             selectOnFocus
             name={`${id}.${VOLTAGE_LEVEL}`}
             label={voltageLevelSelectLabel}
-            options={voltageLevelOptions.map((voltageLevel) => ({
-                id: voltageLevel.id,
-                label: voltageLevel?.name ?? '',
-            }))}
+            options={vlOptions}
             getOptionLabel={getObjectId}
             size={'small'}
         />
