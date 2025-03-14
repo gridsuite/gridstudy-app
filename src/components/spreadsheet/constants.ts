@@ -10,11 +10,15 @@ import { FC } from 'react';
 import EmptySpreadsheetDialog from './custom-spreadsheet/dialogs/empty-spreadsheet-dialog';
 import SpreadsheetFromModelDialog from './custom-spreadsheet/dialogs/spreadsheet-from-model-dialog';
 import SpreadsheetCollectionDialog from './custom-spreadsheet/dialogs/spreadsheets-from-collection-dialog';
+import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 
 export const UPDATE = 'UPDATE';
 export const DELETE = 'DELETE';
 
-type DialogComponent = FC<{ open: UseStateBooleanReturn; resetTabIndex: VoidFunction }>;
+type DialogComponent = FC<{
+    open: UseStateBooleanReturn;
+    resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
+}>;
 
 export interface SpreadsheetOption {
     id: string;
