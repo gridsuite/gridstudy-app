@@ -110,6 +110,8 @@ import {
     RemoveNodeDataAction,
     RemoveNotificationByNodeAction,
     RemoveTableDefinitionAction,
+    REORDER_TABLE_DEFINITIONS,
+    ReorderTableDefinitionsAction,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
@@ -867,8 +869,15 @@ export const reducer = createReducer(initialState, (builder) => {
             }, {} as TableSortConfig);
     });
 
+    builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {
+        state.tables.definitions = action.definitions.map((def, idx) => ({
+            ...def,
+            index: idx,
+        }));
+    });
+
     builder.addCase(REMOVE_TABLE_DEFINITION, (state, action: RemoveTableDefinitionAction) => {
-        const removedTable = state.tables.definitions[action.tabIndex]
+        const removedTable = state.tables.definitions[action.tabIndex];
         state.tables.definitions.splice(action.tabIndex, 1);
 
         // Update indexes of remaining table definitions
