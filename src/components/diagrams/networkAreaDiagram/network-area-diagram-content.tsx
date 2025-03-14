@@ -243,11 +243,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         createDiagramConfig(
             {
                 depth: networkAreaDiagramDepth,
-                withGeoData: networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
                 scalingFactor: props.svgScalingFactor,
                 radiusFactor: 300.0, // At the moment, we only use the default value
                 voltageLevelIds: voltageLevelIds,
-                positions: buildPositionsFromNadMetadata(props.svgMetadata),
+                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
             },
             directoryData.name,
             directoryData.description,

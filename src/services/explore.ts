@@ -130,7 +130,7 @@ export function createContingencyList(
     });
 }
 
-interface DiagramConfigPosition {
+export interface DiagramConfigPosition {
     voltageLevelId: string;
     xposition?: number;
     yposition?: number;
@@ -138,7 +138,7 @@ interface DiagramConfigPosition {
     ylabelPosition?: number;
 }
 
-interface DiagramConfig {
+export interface DiagramConfig {
     depth?: number;
     scalingFactor?: number;
     radiusFactor?: number;

@@ -8,6 +8,7 @@
 import { DiagramState } from '../../redux/reducer';
 import { DiagramType } from './diagram.type';
 import { DiagramMetadata } from '@powsybl/network-viewer';
+import { DiagramConfigPosition } from '../../services/explore';
 
 /**
  * SORTING FUNCTIONS
