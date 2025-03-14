@@ -100,17 +100,12 @@ export function fetchSubstationIdForVoltageLevel(
     return backendFetchText(fetchSubstationIdUrl);
 }
 
-export function fetchBusesOrBusbarSectionsForVoltageLevel({
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    voltageLevelId,
-}: {
-    studyUuid: UUID;
-    currentNodeUuid: UUID;
-    currentRootNetworkUuid: UUID;
-    voltageLevelId: UUID;
-}) {
+export function fetchBusesOrBusbarSectionsForVoltageLevel(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    voltageLevelId: UUID
+): Promise<Identifiable[]> {
     console.info(
         `Fetching buses or busbar sections of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
@@ -363,17 +358,12 @@ export function fetchVoltageLevels(
     );
 }
 
-export function fetchVoltageLevelsListInfos({
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    substationsIds,
-}: {
-    studyUuid: UUID;
-    currentNodeUuid: UUID;
-    currentRootNetworkUuid: UUID;
-    substationsIds?: string[];
-}) {
+export function fetchVoltageLevelsListInfos(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
