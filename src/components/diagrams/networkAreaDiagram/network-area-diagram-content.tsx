@@ -33,7 +33,7 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { IElementCreationDialog, mergeSx } from '@gridsuite/commons-ui';
+import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
@@ -152,7 +152,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
-
+    const { snackError } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
@@ -251,6 +251,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             directoryData.name,
             directoryData.description,
             directoryData.folderId
+        ).catch((error) =>
+            snackError({
+                messageTxt: error.message,
+                headerId: 'SaveToGridexploreError',
+            })
         );
     };
 
