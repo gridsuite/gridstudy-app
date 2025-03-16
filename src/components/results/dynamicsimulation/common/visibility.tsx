@@ -20,11 +20,11 @@ const getStyle = (hidden: boolean) => {
     };
 };
 
-export type VisibilityProps = {
+export type VisibilityProps = BoxProps & {
     value: number;
     index: number;
-    visible: boolean;
-} & BoxProps;
+    visible?: boolean;
+};
 
 function Visibility({ children, value, index, visible = true, ...otherProps }: Readonly<VisibilityProps>) {
     return (

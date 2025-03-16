@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { Layout } from 'react-grid-layout';
 
 export type Series = {
     index: number;
@@ -12,4 +13,15 @@ export type Series = {
         x?: number[];
         y?: number[];
     };
+};
+
+export type Plot = {
+    id: string;
+    leftSelectedSeries: Series[] | undefined;
+    rightSelectedSeries: Series[] | undefined;
+};
+
+export type GridLayout = {
+    items: Layout[];
+    cols: number;
 };

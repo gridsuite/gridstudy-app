@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, memo, Ref, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Plotly from 'plotly.js-basic-dist-min';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import { baseColors, defaultLayout } from './plot-config';
@@ -15,25 +15,27 @@ import { useDebounce } from '@gridsuite/commons-ui';
 import { Figure, PlotParams } from 'react-plotly.js';
 import { Layout, PlotData, PlotMarker } from 'plotly.js';
 
+type CustomPlotParams = PlotParams & {
+    ref: Ref<CustomPlotParams> /* hack to pass ref which is not in PlotParams type */;
+    resizeHandler?: () => void /* hack to expose resizeHandler as an api method */;
+};
+
 // create own Plot by using Plotly in basic dist for the reason of big size in standard dist plotly.js
-const Plot = createPlotlyComponent(Plotly) as FunctionComponent<
-    PlotParams & { ref: any } /* hack to bypass ref which is not in PlotParams */
->;
+const Plot = createPlotlyComponent(Plotly) as FunctionComponent<CustomPlotParams>;
 
 export type PlotlySeriesChartProps = {
     id: string;
     groupId: string;
-    leftSeries: Series[];
-    rightSeries: Series[];
+    leftSeries: Series[] | undefined;
+    rightSeries: Series[] | undefined;
     sync: boolean;
 };
 
 function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Readonly<PlotlySeriesChartProps>) {
     // these states used for responsible
-    const plotRef = useRef<any>();
+    const plotRef = useRef<CustomPlotParams>(null);
     const debouncedResizeHandler = useDebounce((entries) => {
-        console.log('XXX plotRef.current', plotRef.current);
-        plotRef.current && Plotly.Plots.resize(plotRef.current);
+        plotRef.current?.resizeHandler?.();
     }, 500);
     const resizeObserverRef = useRef(new ResizeObserver(debouncedResizeHandler));
 
@@ -81,8 +83,8 @@ function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Reado
         }
 
         return [
-            ...leftSeries.map(seriesToData(makeGetMarker({}))),
-            ...rightSeries.map(
+            ...(leftSeries ?? []).map(seriesToData(makeGetMarker({}))),
+            ...(rightSeries ?? []).map(
                 seriesToData(
                     makeGetMarker({
                         symbol: 'square',
@@ -171,7 +173,7 @@ function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Reado
             data={data}
             layout={layout}
             config={{ displaylogo: false }}
-            useResizeHandler={true}
+            useResizeHandler={true} // need to set true, react-plotly will config resizeHandler() method
             style={{
                 width: '100%',
                 height: '95%',
