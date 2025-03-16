@@ -134,7 +134,53 @@ export type AppActions =
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction
     | RemoveTableDefinitionAction
-    | ReorderTableDefinitionsAction;
+    | ReorderTableDefinitionsAction
+    | SetAppTabIndexAction
+    | AttemptLeaveParametersTabAction
+    | ConfirmLeaveParametersTabAction
+    | CancelLeaveParametersTabAction;
+
+export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
+export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
+    tabIndex: number;
+};
+
+export function setAppTabIndex(tabIndex: number): SetAppTabIndexAction {
+    return {
+        type: SET_APP_TAB_INDEX,
+        tabIndex,
+    };
+}
+
+export const ATTEMPT_LEAVE_PARAMETERS_TAB = 'ATTEMPT_LEAVE_PARAMETERS_TAB';
+export type AttemptLeaveParametersTabAction = Readonly<Action<typeof ATTEMPT_LEAVE_PARAMETERS_TAB>> & {
+    targetTabIndex: number;
+};
+
+export function attemptLeaveParametersTab(targetTabIndex: number): AttemptLeaveParametersTabAction {
+    return {
+        type: ATTEMPT_LEAVE_PARAMETERS_TAB,
+        targetTabIndex,
+    };
+}
+
+export const CONFIRM_LEAVE_PARAMETERS_TAB = 'CONFIRM_LEAVE_PARAMETERS_TAB';
+export type ConfirmLeaveParametersTabAction = Readonly<Action<typeof CONFIRM_LEAVE_PARAMETERS_TAB>>;
+
+export function confirmLeaveParametersTab(): ConfirmLeaveParametersTabAction {
+    return {
+        type: CONFIRM_LEAVE_PARAMETERS_TAB,
+    };
+}
+
+export const CANCEL_LEAVE_PARAMETERS_TAB = 'CANCEL_LEAVE_PARAMETERS_TAB';
+export type CancelLeaveParametersTabAction = Readonly<Action<typeof CANCEL_LEAVE_PARAMETERS_TAB>>;
+
+export function cancelLeaveParametersTab(): CancelLeaveParametersTabAction {
+    return {
+        type: CANCEL_LEAVE_PARAMETERS_TAB,
+    };
+}
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {

@@ -62,6 +62,8 @@ import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParametersBackend } from './dialogs/parameters/use-parameters-backend';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
+import { useDispatch } from 'react-redux';
+import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -81,7 +83,10 @@ type OwnProps = {
 };
 
 const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
+    const dispatch = useDispatch();
+    const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
+
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
@@ -167,6 +172,16 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const useStateEstimationParameters = useGetStateEstimationParameters();
 
+    useEffect(() => {
+        if (attemptedLeaveParametersTabIndex !== null) {
+            if (haveDirtyFields) {
+                setIsPopupOpen(true);
+            } else {
+                dispatch(confirmLeaveParametersTab());
+            }
+        }
+    }, [attemptedLeaveParametersTabIndex, haveDirtyFields, dispatch]);
+
     const handleChangeTab = (newValue: string) => {
         if (haveDirtyFields) {
             setNextTabValue(newValue);
@@ -179,10 +194,22 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const handlePopupChangeTab = useCallback(() => {
         if (nextTabValue) {
             setTabValue(nextTabValue);
+            setNextTabValue(undefined);
+        } else if (attemptedLeaveParametersTabIndex !== null) {
+            dispatch(confirmLeaveParametersTab());
         }
         setHaveDirtyFields(false);
         setIsPopupOpen(false);
-    }, [nextTabValue]);
+    }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
+
+    const handlePopupClose = useCallback(() => {
+        setIsPopupOpen(false);
+        setNextTabValue(undefined);
+
+        if (attemptedLeaveParametersTabIndex !== null) {
+            dispatch(cancelLeaveParametersTab());
+        }
+    }, [dispatch, attemptedLeaveParametersTabIndex]);
 
     useEffect(() => {
         setTabValue((oldValue) => {
@@ -358,7 +385,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             <SelectOptionsDialog
                 title={''}
                 open={isPopupOpen}
-                onClose={() => setIsPopupOpen(false)}
+                onClose={handlePopupClose}
                 onClick={handlePopupChangeTab}
                 child={
                     <DialogContentText>

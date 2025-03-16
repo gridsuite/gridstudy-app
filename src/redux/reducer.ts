@@ -38,6 +38,9 @@ import {
     AddSortForNewSpreadsheetAction,
     AddToRecentGlobalFiltersAction,
     AppActions,
+    ATTEMPT_LEAVE_PARAMETERS_TAB,
+    AttemptLeaveParametersTabAction,
+    CANCEL_LEAVE_PARAMETERS_TAB,
     CENTER_ON_SUBSTATION,
     CenterOnSubstationAction,
     CLOSE_DIAGRAM,
@@ -46,6 +49,7 @@ import {
     CloseDiagramAction,
     CloseDiagramsAction,
     CloseStudyAction,
+    CONFIRM_LEAVE_PARAMETERS_TAB,
     CURRENT_ROOT_NETWORK_UUID,
     CURRENT_TREE_NODE,
     CurrentRootNetworkUuidAction,
@@ -138,6 +142,7 @@ import {
     SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SensitivityAnalysisResultFilterAction,
+    SET_APP_TAB_INDEX,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
@@ -150,6 +155,7 @@ import {
     SET_PARAMS_LOADED,
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
+    SetAppTabIndexAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
     SetEventScenarioDrawerOpenAction,
@@ -445,6 +451,9 @@ export interface AppState extends CommonStoreState {
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
 
+    appTabIndex: number;
+    attemptedLeaveParametersTabIndex: number | null;
+
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
@@ -597,6 +606,8 @@ const initialTablesState: TablesState = {
 };
 
 const initialState: AppState = {
+    appTabIndex: 0,
+    attemptedLeaveParametersTabIndex: null,
     studyUuid: null,
     currentTreeNode: null,
     currentRootNetworkUuid: null,
@@ -788,6 +799,24 @@ const initialState: AppState = {
 };
 
 export const reducer = createReducer(initialState, (builder) => {
+    builder.addCase(SET_APP_TAB_INDEX, (state, action: SetAppTabIndexAction) => {
+        state.appTabIndex = action.tabIndex;
+    });
+
+    builder.addCase(ATTEMPT_LEAVE_PARAMETERS_TAB, (state, action: AttemptLeaveParametersTabAction) => {
+        state.attemptedLeaveParametersTabIndex = action.targetTabIndex;
+    });
+
+    builder.addCase(CONFIRM_LEAVE_PARAMETERS_TAB, (state) => {
+        if (state.attemptedLeaveParametersTabIndex !== null) {
+            state.appTabIndex = state.attemptedLeaveParametersTabIndex;
+            state.attemptedLeaveParametersTabIndex = null;
+        }
+    });
+
+    builder.addCase(CANCEL_LEAVE_PARAMETERS_TAB, (state) => {
+        state.attemptedLeaveParametersTabIndex = null;
+    });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
 
