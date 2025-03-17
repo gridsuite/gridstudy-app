@@ -235,20 +235,11 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setEquipmentToUpdateId(null);
     }, [equipmentToUpdateId]);
 
-    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
+    const { equipments, isFetching } = useSpreadsheetEquipments(
         tableDefinition?.type,
         highlightUpdatedEquipment,
         nodeAliases
     );
-
-    useEffect(() => {
-        if (errorMessage) {
-            snackError({
-                messageTxt: errorMessage,
-                headerId: 'SpreadsheetFetchError',
-            });
-        }
-    }, [errorMessage, snackError]);
 
     useEffect(() => {
         if (disabled || equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined || !nodeAliases) {
@@ -473,10 +464,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         currentNode={currentNode}
                         rowData={rowData}
                         columnData={reorderedColsDefs}
-                        fetched={
-                            equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined ||
-                            !!errorMessage
-                        }
+                        fetched={equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined}
                         handleColumnDrag={handleColumnDrag}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}

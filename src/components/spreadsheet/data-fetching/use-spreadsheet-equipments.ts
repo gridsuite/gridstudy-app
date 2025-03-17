@@ -17,7 +17,7 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
 import { UPDATE_TYPE_HEADER } from '../../use-node-data';
 import { NodeAlias } from '../custom-columns/node-alias.type';
-import { FetchingInfo, useFetchEquipment } from './use-fetch-equipment';
+import { useFetchEquipment } from './use-fetch-equipment';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -34,7 +34,6 @@ export const useSpreadsheetEquipments = (
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
 
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
@@ -141,14 +140,12 @@ export const useSpreadsheetEquipments = (
         },
     });
 
-    const onFetchingDone = (info: FetchingInfo) => {
-        setErrorMessage(info.errorMessage);
+    const onFetchingDone = () => {
         setIsFetching(false);
     };
 
     useEffect(() => {
         if (shouldFetchEquipments && isNetworkModificationTreeModelUpToDate && isNodeBuilt(currentNode)) {
-            setErrorMessage(null);
             setIsFetching(true);
             fetchNodesEquipmentData(nodesIdToFetch, onFetchingDone);
         }
@@ -160,5 +157,5 @@ export const useSpreadsheetEquipments = (
         currentNode,
     ]);
 
-    return { equipments, errorMessage, isFetching };
+    return { equipments, isFetching };
 };

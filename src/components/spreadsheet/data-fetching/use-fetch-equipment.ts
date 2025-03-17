@@ -15,13 +15,11 @@ import { isStatusBuilt } from '../../graph/util/model-functions';
 import { AppState } from '../../../redux/reducer';
 import { loadEquipments } from '../../../redux/actions';
 import { getFetcher } from './fetchers';
-
-export type FetchingInfo = {
-    errorMessage: string | null;
-};
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
     const dispatch = useDispatch();
+    const { snackError } = useSnackMessage();
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
@@ -45,14 +43,13 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
     );
 
     const fetchNodesEquipmentData = useCallback(
-        (nodeIds: Set<string>, onFetchingDone: undefined | ((info: FetchingInfo) => void)) => {
+        (nodeIds: Set<string>, onFetchingDone: undefined | (() => void)) => {
             if (studyUuid && currentRootNetworkUuid && currentNodeUuid) {
                 let fetcherPromises: Promise<unknown>[] = [];
                 let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
                     nodesId: [],
                     equipmentsByNodeId: {},
                 };
-                let errorMessage: string | null = null;
 
                 nodeIds.forEach((nodeId) => {
                     if (currentNodeUuid === nodeId || isBuilt(nodeId)) {
@@ -71,7 +68,7 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
                                 );
                             });
                     } else {
-                        // mark unbuilt node as processed with empty entry/result
+                        // mark un-built node as processed with empty entry/result
                         spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
                         spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = [];
                     }
@@ -86,18 +83,17 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
                     })
                     .catch((err) => {
                         console.debug('Equipment data fetching and dispatch NOT done');
-                        errorMessage = err.message;
+                        snackError({
+                            messageTxt: err.message,
+                            headerId: 'SpreadsheetFetchError',
+                        });
                     })
                     .finally(() => {
-                        if (onFetchingDone) {
-                            onFetchingDone({
-                                errorMessage: errorMessage,
-                            });
-                        }
+                        onFetchingDone && onFetchingDone();
                     });
             }
         },
-        [currentNodeUuid, currentRootNetworkUuid, dispatch, formatEquipments, isBuilt, studyUuid, type]
+        [currentNodeUuid, currentRootNetworkUuid, dispatch, formatEquipments, isBuilt, snackError, studyUuid, type]
     );
 
     return { fetchNodesEquipmentData };
