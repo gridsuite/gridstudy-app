@@ -23,7 +23,7 @@ import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
-import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
+import { ColumnMovedEvent, ColumnState, RowClickedEvent, RowNode } from 'ag-grid-community';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
@@ -40,6 +40,7 @@ import { reorderSpreadsheetColumns } from 'services/study-config';
 import { UUID } from 'crypto';
 import { useNodeAliases } from './custom-columns/use-node-aliases';
 import { rowIndexColumnDefinition } from './config/common-column-definitions';
+import { CalculationRowType, generateCalculationRows } from './utils/calculation-utils';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -459,6 +460,53 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [currentNode?.type, handleOpenModificationDialog]
     );
 
+    const [filteredRows, setFilteredRows] = useState<RowNode[]>([]);
+
+    // Handler for external filter (GS filter) change
+    const onFilterChanged = useCallback(() => {
+        if (gridRef?.current?.api) {
+            const filteredRows: RowNode[] = [];
+            gridRef.current.api.forEachNodeAfterFilter((node: any) => {
+                filteredRows.push(node);
+            });
+            setFilteredRows(filteredRows);
+        }
+    }, [gridRef]);
+
+    const calculationSelections = useSelector((state: AppState) =>
+        activeTabUuid ? state.calculationSelections?.[activeTabUuid] || [] : []
+    );
+
+    // Create pinned bottom rows with calculations
+    const calculationRows = useMemo(() => {
+        // Default fallback row - calculation button only
+        const defaultRow = [{ rowType: CalculationRowType.CALCULATION_BUTTON }];
+
+        // Early return if no calculations needed or no data to process
+        if (!calculationSelections.length || !rowData.length) {
+            return defaultRow;
+        }
+
+        const api = gridRef?.current?.api;
+        if (!api) {
+            return defaultRow;
+        }
+
+        // Use filtered rows if available, otherwise get all displayed nodes
+        const nodesToUse =
+            filteredRows.length > 0
+                ? filteredRows
+                : (() => {
+                      const displayedNodes: RowNode[] = [];
+                      api.forEachNodeAfterFilter((node: any) => {
+                          displayedNodes.push(node);
+                      });
+                      return displayedNodes;
+                  })();
+
+        return generateCalculationRows(calculationSelections, reorderedColsDefs, api, nodesToUse);
+    }, [calculationSelections, rowData.length, filteredRows, reorderedColsDefs]);
+
     return (
         <>
             <Grid container justifyContent={'space-between'}>
@@ -522,6 +570,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         onRowClicked={onRowClicked}
                         isExternalFilterPresent={isExternalFilterPresent}
                         doesExternalFilterPass={doesFormulaFilteringPass}
+                        calculationRows={calculationRows}
+                        onFilterChanged={onFilterChanged}
                     />
                 </Box>
             )}

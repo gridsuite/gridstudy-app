@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, RefObject, useCallback, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, RefObject, useCallback, useMemo, useRef } from 'react';
 import { useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -19,11 +19,10 @@ import {
     RowStyle,
     RowNode,
 } from 'ag-grid-community';
-import { CurrentTreeNode, AppState } from '../../redux/reducer';
+import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 import { NodeType } from 'components/graph/tree-node.type';
-import { useSelector } from 'react-redux';
-import { generateCalculationRows, CalculationRowType } from './utils/calculation-utils';
+import { CalculationRowType } from './utils/calculation-utils';
 
 const DEFAULT_ROW_HEIGHT = 28;
 const MAX_CLICK_DURATION = 200;
@@ -67,6 +66,8 @@ interface EquipmentTableProps {
     onRowClicked?: (event: RowClickedEvent) => void;
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
+    calculationRows: RowNode[];
+    onFilterChanged: GridOptions['onFilterChanged'];
 }
 
 const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
@@ -84,16 +85,12 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     onRowClicked,
     isExternalFilterPresent,
     doesExternalFilterPass,
+    calculationRows,
+    onFilterChanged,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
     const clickTimeRef = useRef<number | null>(null);
-    const [filteredRows, setFilteredRows] = useState<RowNode[]>([]);
-
-    // Get the current table UUID from columnData context
-    const tableUuid = useMemo(() => columnData[0]?.context?.tabUuid || '', [columnData]);
-
-    const calculationSelections = useSelector((state: AppState) => state.calculationSelections?.[tableUuid] || []);
 
     // Styling for rows based on their type and position
     const getRowStyle = useCallback(
@@ -179,47 +176,6 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         },
         [onRowClicked]
     );
-
-    // Handler for external filter (GS filter) change
-    const onFilterChanged = useCallback(() => {
-        if (gridRef?.current?.api) {
-            const filteredRows: RowNode[] = [];
-            gridRef.current.api.forEachNodeAfterFilter((node: RowNode) => {
-                filteredRows.push(node);
-            });
-            setFilteredRows(filteredRows);
-        }
-    }, [gridRef]);
-
-    // Create pinned bottom rows with calculations
-    const calculationRows = useMemo(() => {
-        // Default fallback row - calculation button only
-        const defaultRow = [{ rowType: CalculationRowType.CALCULATION_BUTTON }];
-
-        // Early return if no calculations needed
-        if (!calculationSelections.length || !fetched || !rowData.length) {
-            return defaultRow;
-        }
-
-        const api = gridRef?.current?.api;
-        if (!api) {
-            return defaultRow;
-        }
-
-        // Use filtered rows if available, otherwise get all displayed nodes
-        const nodesToUse =
-            filteredRows.length > 0
-                ? filteredRows
-                : (() => {
-                      const displayedNodes: RowNode[] = [];
-                      api.forEachNodeAfterFilter((node: RowNode) => {
-                          displayedNodes.push(node);
-                      });
-                      return displayedNodes;
-                  })();
-
-        return generateCalculationRows(calculationSelections, columnData, api, nodesToUse);
-    }, [calculationSelections, fetched, rowData.length, gridRef, filteredRows, columnData]);
 
     return (
         <CustomAGGrid

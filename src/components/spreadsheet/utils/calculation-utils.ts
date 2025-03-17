@@ -28,17 +28,33 @@ export interface CalculationRowData {
 }
 
 export const extractNumericValues = (gridApi: any, rowNodes: RowNode[], colId: string): number[] => {
+    const columnDef = gridApi.getColumnDef(colId);
+    if (!columnDef) {
+        return [];
+    }
+
     return rowNodes
         .map((rowNode: RowNode) => {
-            const value = gridApi.getCellValue({
-                rowNode: rowNode,
-                colKey: colId,
-            });
+            try {
+                const params = {
+                    data: rowNode.data || {},
+                    node: rowNode,
+                    colDef: columnDef,
+                    api: gridApi,
+                    getValue: (field: string) => {
+                        try {
+                            return gridApi.getValue(field, rowNode);
+                        } catch (e) {
+                            return rowNode.data?.[field];
+                        }
+                    },
+                };
 
-            if (!isNaN(value)) {
-                return value;
+                const value = columnDef.valueGetter ? columnDef.valueGetter(params) : rowNode.data?.[colId];
+                return !isNaN(value) ? value : null;
+            } catch (e) {
+                return null;
             }
-            return null;
         })
         .filter((value): value is number => value !== null);
 };
@@ -73,7 +89,7 @@ export const generateCalculationRows = (
     columnData: ColDef[],
     gridApi: any,
     displayedNodes: RowNode[]
-): CalculationRowData[] => {
+): any[] => {
     // Create calculation rows based on selected options
     const calculationRows = calculationSelections.map((calculationType) => {
         const row: CalculationRowData = {
