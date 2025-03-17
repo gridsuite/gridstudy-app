@@ -35,11 +35,10 @@ const styles = {
 };
 
 interface DiagramControlsProps {
-    showSaveControl?: boolean;
     onSave?: (data: IElementCreationDialog) => void;
 }
 
-const DiagramControls: React.FC<DiagramControlsProps> = ({ showSaveControl = false, onSave }) => {
+const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -70,13 +69,11 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ showSaveControl = fal
                         flexDirection: 'row',
                     }}
                 >
-                    {showSaveControl && (
-                        <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
-                            <IconButton sx={styles.actionIcon} onClick={handleClickSaveIcon}>
-                                <SaveIcon sx={styles.icon} />
-                            </IconButton>
-                        </Tooltip>
-                    )}
+                    <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
+                        <IconButton sx={styles.actionIcon} onClick={handleClickSaveIcon}>
+                            <SaveIcon sx={styles.icon} />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
             {studyUuid && (
