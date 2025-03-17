@@ -32,15 +32,6 @@ enum NodesOptionId {
     REFRESH = 'REFRESH',
 }
 
-interface NodesOption {
-    id: NodesOptionId;
-    label: string;
-    action: () => void;
-    disabled?: boolean;
-    tooltipMsgId?: string;
-    tooltipMsgValues?: Record<string, any>;
-}
-
 type CustomColumnsNodesConfigProps = {
     disabled?: boolean;
     tabIndex: number;
@@ -81,62 +72,6 @@ export default function CustomColumnsNodesConfig({
         }
     }, [fetchNodesEquipmentData, nodesToReload]);
 
-    const nodesOptions = useMemo(
-        () => ({
-            [NodesOptionId.CONFIG]: {
-                id: NodesOptionId.CONFIG,
-                label: 'spreadsheet/custom_column/option/parameter',
-                action: dialogOpen.setTrue,
-            },
-            [NodesOptionId.REFRESH]: {
-                id: NodesOptionId.REFRESH,
-                label: 'spreadsheet/custom_column/option/refresh',
-                action: handleRefresh,
-                disabled: nodesToReload ? nodesToReload.length === 0 : true,
-                tooltipMsgId: 'spreadsheet/custom_column/option/refresh/tooltip',
-                tooltipMsgValues: {
-                    aliases: nodesToReload?.map((node) => node.alias).join(', '),
-                },
-            },
-        }),
-        [dialogOpen.setTrue, nodesToReload, handleRefresh]
-    );
-
-    const handleMenuItemClick = useCallback(
-        (optionId: NodesOptionId) => {
-            nodesOptions[optionId].action();
-            handleClose();
-        },
-        [nodesOptions, handleClose]
-    );
-
-    const renderMenuItem = useCallback(
-        (option: NodesOption) => {
-            return (
-                <MenuItem key={option.id} onClick={() => handleMenuItemClick(option.id)} disabled={option?.disabled}>
-                    <FormattedMessage id={option.label} />
-                </MenuItem>
-            );
-        },
-        [handleMenuItemClick]
-    );
-
-    const renderMenuEntry = useCallback(
-        (option: NodesOption) => {
-            return (
-                <>
-                    {option.tooltipMsgId && (
-                        <Tooltip title={<FormattedMessage id={option.tooltipMsgId} values={option.tooltipMsgValues} />}>
-                            {renderMenuItem(option)}
-                        </Tooltip>
-                    )}
-                    {!option.tooltipMsgId && renderMenuItem(option)}
-                </>
-            );
-        },
-        [renderMenuItem]
-    );
-
     return (
         <>
             <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
@@ -144,7 +79,36 @@ export default function CustomColumnsNodesConfig({
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
             </Button>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                {Object.values(nodesOptions).map(renderMenuEntry)}
+                <MenuItem
+                    key={NodesOptionId.CONFIG}
+                    onClick={() => {
+                        dialogOpen.setTrue();
+                        handleClose();
+                    }}
+                >
+                    <FormattedMessage id={'spreadsheet/custom_column/option/parameter'} />
+                </MenuItem>
+                <Tooltip
+                    title={
+                        <FormattedMessage
+                            id={'spreadsheet/custom_column/option/refresh/tooltip'}
+                            values={{
+                                aliases: nodesToReload?.map((node) => node.alias).join(', '),
+                            }}
+                        />
+                    }
+                >
+                    <MenuItem
+                        key={NodesOptionId.REFRESH}
+                        onClick={() => {
+                            handleClose();
+                            handleRefresh();
+                        }}
+                        disabled={nodesToReload ? nodesToReload.length === 0 : true}
+                    >
+                        <FormattedMessage id={'spreadsheet/custom_column/option/refresh'} />
+                    </MenuItem>
+                </Tooltip>
             </Menu>
             <CustomColumnNodesDialog
                 open={dialogOpen}
