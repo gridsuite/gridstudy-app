@@ -12,7 +12,7 @@ import { FormattedMessage } from 'react-intl';
 import { Alert, Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EquipmentTable } from './equipment-table';
-import { Identifiable, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { EquipmentTabs } from './equipment-tabs';
@@ -26,7 +26,7 @@ import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-communit
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
-import { SpreadsheetGsFilter } from './spreadsheet-gs-filter';
+import SpreadsheetGsFilter from './spreadsheet-gs-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterType } from '../../types/custom-aggrid-types';
 import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
@@ -416,7 +416,12 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 <EquipmentTabs disabled={disabled} selectedTabUuid={activeTabUuid} handleSwitchTab={handleSwitchTab} />
                 <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.selectColumns}>
-                        <SpreadsheetGsFilter equipmentType={tableDefinition?.type} />
+                        <SpreadsheetGsFilter
+                            equipmentType={tableDefinition?.type}
+                            uuid={tableDefinition?.uuid}
+                            index={tableDefinition?.index}
+                            name={tableDefinition?.name}
+                        />
                     </Grid>
                     <Grid item>
                         <ColumnsConfig
@@ -457,7 +462,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     <FormattedMessage id={shouldDisableButtons ? 'NoSpreadsheets' : 'InvalidNode'} />
                 </Alert>
             ) : (
-                <Box sx={mergeSx(styles.table)}>
+                <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
                         studyUuid={studyUuid}
