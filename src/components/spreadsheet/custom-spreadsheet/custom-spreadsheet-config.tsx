@@ -11,10 +11,11 @@ import AddIcon from '@mui/icons-material/Add';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import { NEW_SPREADSHEET_CREATION_OPTIONS, SpreadsheetOption } from '../constants';
 import { FormattedMessage } from 'react-intl';
+import { SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 
 interface CustomSpreadsheetConfigProps {
     disabled: boolean;
-    resetTabIndex: VoidFunction;
+    resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
 }
 
 const styles = {

@@ -4,22 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
+import {
+    MinMaxReactiveLimitsFormInfos,
+    ReactiveCapabilityCurvePoints,
+} from '../../../../reactive-limits/reactive-limits.type';
+import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 
 export interface AttributeModification<T> {
     value?: T;
     op: string;
-}
-
-interface MinMaxReactiveLimitsData {
-    minQ: number | null;
-    maxQ: number | null;
-}
-
-interface ConnectablePositionInfos {
-    connectionName: string | null;
-    connectionDirection: string | null;
-    connectionPosition: number | null;
 }
 
 export interface ConverterStationElementInfos {
@@ -36,8 +29,8 @@ export interface ConverterStationElementInfos {
     p: number | null;
     q: number | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
-    minMaxReactiveLimits: MinMaxReactiveLimitsData | null;
-    connectablePositionInfos: ConnectablePositionInfos;
+    minMaxReactiveLimits: MinMaxReactiveLimitsFormInfos | null;
+    connectablePosition: ConnectablePositionInfos;
     reactivePower?: number;
     voltageRegulationOn?: boolean;
     voltage?: number;

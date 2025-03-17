@@ -93,6 +93,17 @@ export function removeSpreadsheetConfigFromCollection(collectionUuid: UUID, spre
     });
 }
 
+export function reorderSpreadsheetConfigs(collectionUuid: UUID, newOrder: UUID[]) {
+    const fetchUrl = `${getSpreadsheetConfigsCollectionsUrl()}/${collectionUuid}/reorder`;
+    return backendFetchJson(fetchUrl, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newOrder),
+    });
+}
+
 function getNetworkVisualizationsParametersUrl() {
     return `${PREFIX_STUDY_CONFIG_QUERIES}/v1/network-visualizations-params`;
 }

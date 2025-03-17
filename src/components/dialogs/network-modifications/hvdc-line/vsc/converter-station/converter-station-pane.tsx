@@ -102,7 +102,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={isModification}
-            previousValues={previousValues}
+            previousValues={{
+                connectablePosition: previousValues?.connectablePosition,
+                terminalConnected: previousValues?.terminalConnected,
+            }}
         />
     );
 
