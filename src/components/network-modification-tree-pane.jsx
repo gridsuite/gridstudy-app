@@ -153,11 +153,11 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     const width = useStore((state) => state.width);
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
-    const mapMissingDataLoading = useSelector((state) => state.mapMissingDataLoading);
+    const mapDataLoading = useSelector((state) => state.mapDataLoading);
 
     const isGeoDataOrTreeLoading = useMemo(
-        () => mapMissingDataLoading || (!isNetworkModificationTreeModelUpToDate && !isNodeBuilt(currentNode)),
-        [mapMissingDataLoading, isNetworkModificationTreeModelUpToDate, currentNode]
+        () => mapDataLoading || !isNetworkModificationTreeModelUpToDate,
+        [mapDataLoading, isNetworkModificationTreeModelUpToDate]
     );
     const updateNodes = useCallback(
         (updatedNodesIds) => {
