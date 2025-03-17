@@ -15,7 +15,7 @@ import { NodeAlias } from './node-alias.type';
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     // init value is undefined until we have successfully made a fetch
-    const [nodeAliases, setNodeAliases] = useState<NodeAlias[] | undefined>(undefined);
+    const [nodeAliases, setNodeAliases] = useState<NodeAlias[]>();
 
     const { snackError } = useSnackMessage();
 

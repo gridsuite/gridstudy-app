@@ -37,7 +37,7 @@ export const useSpreadsheetEquipments = (
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
 
-    const { fetchNodesEquipementData } = useFetchEquipment(type);
+    const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
     const nodesIdToFetch = useMemo(() => {
         let nodesIdToFetch = new Set<string>();
@@ -150,13 +150,13 @@ export const useSpreadsheetEquipments = (
         if (shouldFetchEquipments && isNetworkModificationTreeModelUpToDate && isNodeBuilt(currentNode)) {
             setErrorMessage(null);
             setIsFetching(true);
-            fetchNodesEquipementData(nodesIdToFetch, onFetchingDone);
+            fetchNodesEquipmentData(nodesIdToFetch, onFetchingDone);
         }
     }, [
         shouldFetchEquipments,
         isNetworkModificationTreeModelUpToDate,
         nodesIdToFetch,
-        fetchNodesEquipementData,
+        fetchNodesEquipmentData,
         currentNode,
     ]);
 

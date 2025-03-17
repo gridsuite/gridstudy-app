@@ -59,7 +59,7 @@ export default function CustomColumnsNodesConfig({
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex].type);
 
-    const { fetchNodesEquipementData } = useFetchEquipment(tableType);
+    const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
 
     const nodesToReload = useMemo(() => {
         // Get all aliased nodes ids, except for Root and current node (both are always up-to-date)
@@ -77,9 +77,9 @@ export default function CustomColumnsNodesConfig({
     const handleRefresh = useCallback(() => {
         if (nodesToReload?.length) {
             const nodesIdsToReload = new Set<string>(nodesToReload.map((n) => n.id as string));
-            fetchNodesEquipementData(nodesIdsToReload, undefined);
+            fetchNodesEquipmentData(nodesIdsToReload, undefined);
         }
-    }, [fetchNodesEquipementData, nodesToReload]);
+    }, [fetchNodesEquipmentData, nodesToReload]);
 
     const nodesOptions = useMemo(
         () => ({
@@ -91,7 +91,7 @@ export default function CustomColumnsNodesConfig({
             [NodesOptionId.REFRESH]: {
                 id: NodesOptionId.REFRESH,
                 label: 'spreadsheet/custom_column/option/refresh',
-                action: () => handleRefresh(),
+                action: handleRefresh,
                 disabled: nodesToReload ? nodesToReload.length === 0 : true,
                 tooltipMsgId: 'spreadsheet/custom_column/option/refresh/tooltip',
                 tooltipMsgValues: {
