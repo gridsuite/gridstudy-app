@@ -175,7 +175,8 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm
                 id={`${id}.${REACTIVE_LIMITS}`}
-                equipmentToModify={previousValues as any}
+                previousReactiveCapabilityCurvePoints={previousValues?.reactiveCapabilityCurveTable}
+                previousMinMaxReactiveLimits={previousValues?.minMaxReactiveLimits}
                 updatePreviousReactiveCapabilityCurveTable={
                     updatePreviousReactiveCapabilityCurveTableConverterStation as any
                 }

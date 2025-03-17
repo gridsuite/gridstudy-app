@@ -10,6 +10,7 @@ import {
     EQUIPMENT_NAME,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
+    REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
@@ -142,7 +143,9 @@ const BatteryModificationForm = ({
                 </Grid>
             </Grid>
             <ReactiveLimitsForm
-                equipmentToModify={batteryToModify}
+                id={REACTIVE_LIMITS}
+                previousReactiveCapabilityCurvePoints={batteryToModify?.reactiveCapabilityCurvePoints}
+                previousMinMaxReactiveLimits={batteryToModify?.minMaxReactiveLimits}
                 updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
             {/* Set points part */}

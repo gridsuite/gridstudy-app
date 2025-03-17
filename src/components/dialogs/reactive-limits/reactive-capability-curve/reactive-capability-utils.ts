@@ -15,6 +15,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from 'components/utils/field-constants';
 import { ReactiveCapabilityCurve, ReactiveCapabilityCurvePoints } from '../reactive-limits.type';
+import { FieldValues, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';
@@ -103,16 +104,20 @@ export const getReactiveCapabilityCurveValidationSchema = (
         }),
 });
 
-export function setSelectedReactiveLimits(id: string, minMaxReactiveLimits: number, setValue: any) {
+export function setSelectedReactiveLimits(
+    id: string,
+    minMaxReactiveLimits: number,
+    setValue: UseFormSetValue<FieldValues>
+) {
     setValue(id, minMaxReactiveLimits ? 'MINMAX' : 'CURVE');
 }
 
 export function setCurrentReactiveCapabilityCurveTable(
     previousReactiveCapabilityCurveTable: ReactiveCapabilityCurvePoints,
     fieldKey: string,
-    getValues: any,
-    setValue: any,
-    isNodeBuilt: any
+    getValues: UseFormGetValues<FieldValues>,
+    setValue: UseFormSetValue<FieldValues>,
+    isNodeBuilt?: boolean
 ) {
     const currentReactiveCapabilityCurveTable = getValues(fieldKey);
     if (isNodeBuilt || !currentReactiveCapabilityCurveTable) {

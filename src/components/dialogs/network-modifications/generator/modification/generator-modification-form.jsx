@@ -16,6 +16,7 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
+    REACTIVE_LIMITS,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
 } from 'components/utils/field-constants';
@@ -226,7 +227,9 @@ const GeneratorModificationForm = ({
                 </Grid>
             </Grid>
             <ReactiveLimitsForm
-                equipmentToModify={generatorToModify}
+                id={REACTIVE_LIMITS}
+                previousReactiveCapabilityCurvePoints={generatorToModify?.reactiveCapabilityCurvePoints}
+                previousMinMaxReactiveLimits={generatorToModify?.minMaxReactiveLimits}
                 updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
 

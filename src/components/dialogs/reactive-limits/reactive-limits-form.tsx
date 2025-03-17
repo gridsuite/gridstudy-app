@@ -19,16 +19,19 @@ import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import GridItem from '../commons/grid-item';
 import { ReactiveCapabilityCurveTableForm } from './reactive-capability-curve/reactive-capability-curve-table';
+import { MinMaxReactiveLimitsFormInfos, ReactiveCapabilityCurvePoints } from './reactive-limits.type';
 
 const headerIds = ['ActivePowerText', 'MinimumReactivePower', 'MaximumReactivePower'];
 export interface ReactiveLimitsFormProps {
     id: string;
-    equipmentToModify: any;
+    previousReactiveCapabilityCurvePoints?: ReactiveCapabilityCurvePoints[] | null;
+    previousMinMaxReactiveLimits?: MinMaxReactiveLimitsFormInfos | null;
     updatePreviousReactiveCapabilityCurveTable?: () => void;
 }
 export function ReactiveLimitsForm({
     id = REACTIVE_LIMITS,
-    equipmentToModify = null,
+    previousReactiveCapabilityCurvePoints = undefined,
+    previousMinMaxReactiveLimits = undefined,
     updatePreviousReactiveCapabilityCurveTable = undefined,
 }: Readonly<ReactiveLimitsFormProps>) {
     const reactiveCapabilityCurveChoice = useWatch({
@@ -50,7 +53,7 @@ export function ReactiveLimitsForm({
             name={`${id}.${MINIMUM_REACTIVE_POWER}`}
             label={'MinimumReactivePower'}
             adornment={ReactivePowerAdornment}
-            previousValue={equipmentToModify?.minMaxReactiveLimits?.minQ}
+            previousValue={previousMinMaxReactiveLimits?.minQ ?? undefined}
             clearable={true}
         />
     );
@@ -60,7 +63,7 @@ export function ReactiveLimitsForm({
             name={`${id}.${MAXIMUM_REACTIVE_POWER}`}
             label={'MaximumReactivePower'}
             adornment={ReactivePowerAdornment}
-            previousValue={equipmentToModify?.minMaxReactiveLimits?.maxQ}
+            previousValue={previousMinMaxReactiveLimits?.maxQ ?? undefined}
             clearable={true}
         />
     );
@@ -69,7 +72,7 @@ export function ReactiveLimitsForm({
         <ReactiveCapabilityCurveTableForm
             id={`${id}.${REACTIVE_CAPABILITY_CURVE_TABLE}`}
             tableHeadersIds={headerIds}
-            previousValues={equipmentToModify?.reactiveCapabilityCurvePoints}
+            previousValues={previousReactiveCapabilityCurvePoints ?? undefined}
             updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             disabled={isReactiveCapabilityCurveOn}
         />
