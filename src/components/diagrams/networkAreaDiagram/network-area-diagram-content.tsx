@@ -237,7 +237,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
-        const voltageLevelIds: Array<string> = diagramStates
+        const voltageLevelIds = diagramStates
             .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
             .map((diagram) => diagram.id);
         createDiagramConfig(
