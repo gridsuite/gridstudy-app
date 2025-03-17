@@ -164,7 +164,7 @@ const phaseTapChangerValidationSchema = (id) => ({
     }),
 });
 
-const phaseTapChangerModificationValidationSchema = (previousValues, id) => ({
+const phaseTapChangerModificationValidationSchema = (id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
         [REGULATION_MODE]: yup.string().nullable(),
@@ -219,8 +219,8 @@ export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
     return phaseTapChangerValidationSchema(id);
 };
 
-export const getPhaseTapChangerModificationValidationSchema = (previousValues, id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerModificationValidationSchema(previousValues, id);
+export const getPhaseTapChangerModificationValidationSchema = (id = PHASE_TAP_CHANGER) => {
+    return phaseTapChangerModificationValidationSchema(id);
 };
 
 const phaseTapChangerEmptyFormData = (isModification, id) => ({
