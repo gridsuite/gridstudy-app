@@ -1273,17 +1273,14 @@ export function setStateEstimationResultFilter(
 
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
 export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
-    equipmentType: SpreadsheetEquipmentType;
+    tabUuid: UUID;
     filters: ExpertFilter[];
 };
 
-export function saveSpreadsheetGsFilters(
-    equipmentType: SpreadsheetEquipmentType,
-    filters: ExpertFilter[]
-): SaveSpreadSheetGsFilterAction {
+export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: ExpertFilter[]): SaveSpreadSheetGsFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
-        equipmentType: equipmentType,
+        tabUuid: tabUuid,
         filters: filters,
     };
 }

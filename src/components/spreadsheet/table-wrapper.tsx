@@ -216,7 +216,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }
     }, []);
 
-    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.type);
+    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.uuid);
 
     const formatFetchedEquipmentsHandler = useCallback(
         (fetchedEquipments: any) => {

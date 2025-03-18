@@ -585,7 +585,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
 };
 
-export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
+export type GsFilterSpreadsheetState = Record<UUID, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
 interface TablesState {
@@ -1772,7 +1772,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
-        state.gsFilterSpreadsheetState[action.equipmentType] = action.filters;
+        state.gsFilterSpreadsheetState[action.tabUuid] = action.filters;
     });
 });
 
