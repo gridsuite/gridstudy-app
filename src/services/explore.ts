@@ -129,3 +129,40 @@ export function createContingencyList(
         body: JSON.stringify(newContingencyList),
     });
 }
+
+export interface DiagramConfigPosition {
+    voltageLevelId: string;
+    xposition?: number;
+    yposition?: number;
+    xlabelPosition?: number;
+    ylabelPosition?: number;
+}
+
+export interface DiagramConfig {
+    depth?: number;
+    scalingFactor?: number;
+    radiusFactor?: number;
+    voltageLevelIds: string[];
+    positions: DiagramConfigPosition[];
+}
+
+export function createDiagramConfig(
+    newDiagramConfig: DiagramConfig,
+    diagramConfigName: string,
+    description: string,
+    parentDirectoryUuid: string
+) {
+    console.info('Creating a new diagram config...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', diagramConfigName);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const createDiagramConfigUrl =
+        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/diagram-config?' + urlSearchParams.toString();
+    return backendFetch(createDiagramConfigUrl, {
+        method: 'post',
+        body: JSON.stringify(newDiagramConfig),
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
