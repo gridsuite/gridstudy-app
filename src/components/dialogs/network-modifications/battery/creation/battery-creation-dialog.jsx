@@ -62,6 +62,10 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import {
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
+} from '../../../active-power-control/active-power-control-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -70,8 +74,7 @@ const emptyFormData = {
     [MINIMUM_ACTIVE_POWER]: null,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
-    [FREQUENCY_REGULATION]: false,
-    [DROOP]: null,
+    ...getActivePowerControlEmptyFormData(),
     ...getReactiveLimitsEmptyFormData(),
     ...getConnectivityWithPositionEmptyFormData(),
     ...emptyProperties,
@@ -88,7 +91,7 @@ const formSchema = yup
         ...getActivePowerSetPointSchema(false),
         ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
-        ...getActivePowerSetPointSchema(),
+        ...getActivePowerControlSchema(),
     })
     .concat(creationPropertiesSchema)
     .required();
