@@ -871,6 +871,7 @@ export const NetworkMapTab = ({
             return;
         }
         // when root network has just been changed, we reset map equipment and geo data, they will be loaded as if we were opening a new study
+        // DO NOT BREAK AT FIRST LOADING (previousCurrentRootNetworkUuid=null)
         if (previousCurrentRootNetworkUuid && previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
             setInitialized(false);
             setIsRootNodeGeoDataLoaded(false);
