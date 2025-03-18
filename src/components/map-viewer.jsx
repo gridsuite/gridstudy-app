@@ -27,6 +27,7 @@ import BackHandOutlinedIcon from '@mui/icons-material/BackHandOutlined';
 import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlined';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
+import WaitingLoader from './utils/waiting-loader';
 
 const styles = {
     map: {
@@ -148,6 +149,7 @@ const MapViewer = ({
     const networkVisuParams = useSelector((state) => state.networkVisualizationsParameters);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const previousStudyDisplayMode = useRef(undefined);
+    const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
 
     const openVoltageLevel = useCallback(
         (vlId) => {
@@ -247,6 +249,7 @@ const MapViewer = ({
                 <HorizontalToolbar />
             </Box>
             <Box sx={styles.mapAndTreeContainer}>
+                <WaitingLoader message={'LoadingRemoteData'} loading={!isNetworkModificationTreeModelUpToDate} />
                 {/* Tree */}
                 <Box
                     sx={{
