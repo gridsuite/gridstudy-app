@@ -43,7 +43,7 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
     );
 
     const fetchNodesEquipmentData = useCallback(
-        (nodeIds: Set<string>, onFetchingDone: undefined | (() => void)) => {
+        (nodeIds: Set<string>, onFetchingDone?: () => void) => {
             if (studyUuid && currentRootNetworkUuid && currentNodeUuid) {
                 let fetcherPromises: Promise<unknown>[] = [];
                 let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
