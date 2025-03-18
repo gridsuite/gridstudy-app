@@ -1,7 +1,6 @@
-import React, { useState, useCallback, useRef, ReactNode, ReactElement } from 'react';
-import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui'; // Assuming this is the type
+import React, { useState, useCallback, useRef, ReactElement } from 'react';
+import { CustomAGGrid } from '@gridsuite/commons-ui'; // Assuming this is the type
 import { CellClickedEvent, RowClassParams, RowStyle } from 'ag-grid-community';
-import { useIntl } from 'react-intl'; 
 import CustomHeaderComponent from 'components/custom-aggrid/custom-aggrid-header';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import { Badge } from '@mui/material';
@@ -78,7 +77,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                         sx={{
                             display: 'flex',
                             justifyContent: 'center',
-                            alignItems: 'center',  
+                            alignItems: 'center',
                         }}
                     >
                         <RemoveRedEyeIcon />
@@ -135,8 +134,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             defaultColDef={defaultColumnDefinition}
             onGridReady={onGridReady}
             onCellContextMenu={handleCellContextualMenu}
-            onCellClicked={handleCellClick} 
-            // onRowSelected={onRowSelected} !!M
+            onCellClicked={handleCellClick}
+            onRowSelected={onRowSelected}
             onGridSizeChanged={recomputeOverFlowableCells}
             animateRows
             // gridOptions={{

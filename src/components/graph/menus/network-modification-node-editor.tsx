@@ -6,7 +6,6 @@
  */
 
 import {
-    CheckBoxList,
     ElementCreationDialog,
     ElementType,
     IElementCreationDialog,
@@ -21,7 +20,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, Checkbox, CircularProgress, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, CircularProgress, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -98,7 +97,7 @@ import ModificationByAssignmentDialog from '../../dialogs/network-modifications/
 import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
-import { isChecked, isPartial, styles } from './network-modification-node-editor-utils';
+import { styles } from './network-modification-node-editor-utils';
 import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent } from 'ag-grid-community';
 
@@ -129,7 +128,8 @@ const NetworkModificationNodeEditor = () => {
     const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
-    const [selectedItems, setSelectedItems] = useState<NetworkModificationInfos[]>([]);
+    const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationInfos[]>([]);
+
     const [copiedModifications, setCopiedModifications] = useState<UUID[]>([]);
     const [copyInfos, setCopyInfos] = useState<NetworkModificationCopyInfo | null>(null);
     const copyInfosRef = useRef<NetworkModificationCopyInfo | null>();
@@ -474,7 +474,7 @@ const NetworkModificationNodeEditor = () => {
 
     const updateSelectedItems = useCallback((modifications: NetworkModificationInfos[]) => {
         const toKeepIdsSet = new Set(modifications.map((e) => e.modificationInfos.uuid));
-        setSelectedItems((oldselectedItems) =>
+        setSelectedNetworkModifications((oldselectedItems) =>
             oldselectedItems.filter((s) => toKeepIdsSet.has(s.modificationInfos.uuid))
         );
     }, []);
@@ -613,7 +613,7 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const doDeleteModification = useCallback(() => {
-        const selectedModificationsUuid = selectedItems.map((item) => item.modificationInfos.uuid);
+        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.modificationInfos.uuid);
         stashModifications(studyUuid, currentNode?.id, selectedModificationsUuid)
             .then(() => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
@@ -631,7 +631,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'errDeleteModificationMsg',
                 });
             });
-    }, [currentNode?.id, selectedItems, snackError, studyUuid, cleanClipboard, copiedModifications]);
+    }, [currentNode?.id, selectedNetworkModifications, snackError, studyUuid, cleanClipboard, copiedModifications]);
 
     const doCreateCompositeModificationsElements = ({
         name,
@@ -639,7 +639,7 @@ const NetworkModificationNodeEditor = () => {
         folderName,
         folderId,
     }: IElementCreationDialog) => {
-        const selectedModificationsUuid = selectedItems.map((item) => item.modificationInfos.uuid);
+        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.modificationInfos.uuid);
 
         setSaveInProgress(true);
         createCompositeModifications(name, description, folderId, selectedModificationsUuid)
@@ -647,7 +647,7 @@ const NetworkModificationNodeEditor = () => {
                 snackInfo({
                     headerId: 'infoCreateModificationsMsg',
                     headerValues: {
-                        nbModifications: String(selectedItems.length),
+                        nbModifications: String(selectedNetworkModifications.length),
                         directory: folderName,
                     },
                 });
@@ -666,14 +666,14 @@ const NetworkModificationNodeEditor = () => {
     const selectedModificationsIds = useCallback(() => {
         const allModificationsIds = modifications.map((m) => m.modificationInfos.uuid);
         // sort the selected modifications in the same order as they appear in the whole modifications list
-        return selectedItems
+        return selectedNetworkModifications
             .sort(
                 (a, b) =>
                     allModificationsIds.indexOf(a.modificationInfos.uuid) -
                     allModificationsIds.indexOf(b.modificationInfos.uuid)
             )
             .map((m) => m.modificationInfos.uuid);
-    }, [modifications, selectedItems]);
+    }, [modifications, selectedNetworkModifications]);
 
     const doCutModifications = useCallback(() => {
         setCopiedModifications(selectedModificationsIds());
@@ -757,10 +757,10 @@ const NetworkModificationNodeEditor = () => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
-
-    const toggleSelectAllModifications = useCallback(() => {
-        setSelectedItems((oldVal) => (oldVal.length === 0 ? modifications : []));
-    }, [modifications]);
+    const handleRowSelected = (event: any) => {
+        const selectedRows = event.api.getSelectedRows(); // Get selected rows
+        setSelectedNetworkModifications(selectedRows);
+    };
 
     const renderDialog = () => {
         return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen)?.action?.();
@@ -811,59 +811,11 @@ const NetworkModificationNodeEditor = () => {
         );
     };
 
-    const handleSecondaryAction = useCallback(
-        (modification: NetworkModificationInfos, isItemHovered?: boolean) => {
-            return isItemHovered && !isDragging ? (
-                <SwitchNetworkModificationActive
-                    modificationActivated={modification.modificationInfos.activated}
-                    modificationUuid={modification.modificationInfos.uuid}
-                    setModifications={setModifications}
-                    disabled={isLoading() || isAnyNodeBuilding || mapDataLoading}
-                />
-            ) : null;
-        },
-        [isAnyNodeBuilding, isDragging, mapDataLoading, isLoading]
-    );
-
     const isModificationClickable = useCallback(
         (modification: NetworkModificationInfos) =>
             !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
-
-    const renderNetworkModificationsList = () => {
-        return (
-            <CheckBoxList
-                sx={{
-                    items: (modification) => ({
-                        label: {
-                            ...(!modification.modificationInfos.activated && { ...styles.disabledModification }),
-                            ...styles.checkBoxLabel,
-                        },
-                        checkBoxIcon: styles.checkBoxIcon,
-                        checkboxButton: styles.checkboxButton,
-                    }),
-                    dragAndDropContainer: styles.listContainer,
-                }}
-                onItemClick={(modification) => {
-                    isModificationClickable(modification) &&
-                        doEditModification(modification.modificationInfos.uuid, modification.modificationInfos.type);
-                }}
-                isItemClickable={isModificationClickable}
-                selectedItems={selectedItems}
-                onSelectionChange={setSelectedItems}
-                items={modifications}
-                getItemId={(val) => val.modificationInfos.uuid}
-                getItemLabel={(val) => getModificationLabel(val.modificationInfos)}
-                isDndDragAndDropActive
-                isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading}
-                secondaryAction={handleSecondaryAction}
-                onDragEnd={commit}
-                onDragStart={() => setIsDragging(true)}
-                divider
-            />
-        );
-    };
 
     const renderNetworkModificationsListTitleLoading = () => {
         return (
@@ -915,11 +867,10 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationsTable
                 handleCellClick={handleCellClick}
                 modifications={modifications}
-                // handleSwitchAction={handleSwitchAction} !!M
                 setModifications={setModifications}
                 // onRowDragStart={onRowDragStart}
                 // onRowDragEnd={onRowDragEnd}
-                // onRowSelected={handleRowSelected}
+                onRowSelected={handleRowSelected}
                 isRowDragEnabled={!isLoading() && !isAnyNodeBuilding && !mapDataLoading}
             />
         );
@@ -983,15 +934,6 @@ const NetworkModificationNodeEditor = () => {
     return (
         <>
             <Toolbar sx={styles.toolbar}>
-                <Checkbox
-                    sx={styles.toolbarCheckbox}
-                    color={'primary'}
-                    edge="start"
-                    checked={isChecked(selectedItems.length)}
-                    indeterminate={isPartial(selectedItems.length, modifications?.length)}
-                    disableRipple
-                    onClick={toggleSelectAllModifications}
-                />
                 <Box sx={styles.filler} />
                 <IconButton
                     sx={styles.toolbarIcon}
@@ -1020,7 +962,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={!(selectedItems?.length > 0) || saveInProgress === true}
+                            disabled={!(selectedNetworkModifications?.length > 0) || saveInProgress === true}
                         >
                             <SaveIcon />
                         </IconButton>
@@ -1030,7 +972,9 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCutModifications}
                     size={'small'}
                     sx={styles.toolbarIcon}
-                    disabled={selectedItems.length === 0 || isAnyNodeBuilding || mapDataLoading || !currentNode}
+                    disabled={
+                        selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading || !currentNode
+                    }
                 >
                     <ContentCutIcon />
                 </IconButton>
@@ -1038,7 +982,7 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCopyModifications}
                     size={'small'}
                     sx={styles.toolbarIcon}
-                    disabled={selectedItems.length === 0 || isAnyNodeBuilding || mapDataLoading}
+                    disabled={selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading}
                 >
                     <ContentCopyIcon />
                 </IconButton>
@@ -1071,7 +1015,7 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     sx={styles.toolbarIcon}
                     disabled={
-                        selectedItems.length === 0 ||
+                        selectedNetworkModifications.length === 0 ||
                         isAnyNodeBuilding ||
                         mapDataLoading ||
                         deleteInProgress ||
