@@ -5,28 +5,41 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid, Popper } from '@mui/material';
+import { Box, FilterOptionsState, Grid, GridDirection, Popper, PopperProps } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import { EQUIPMENT, ID, TYPE, VOLTAGE_LEVEL } from 'components/utils/field-constants';
-import PropTypes from 'prop-types';
-import { useCallback, useEffect, useState } from 'react';
+import { EQUIPMENT, ID, VOLTAGE_LEVEL } from 'components/utils/field-constants';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, Identifiable, Option } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';
+import { UUID } from 'crypto';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
-const filter = createFilterOptions();
+const filter = createFilterOptions() as (options: Option[], params: FilterOptionsState<Option>) => Option[];
 
 // Specific Popper component to be used with Autocomplete
 // This allows the popper to fit its content, which is not the case by default
-const FittingPopper = (props) => {
+const FittingPopper = (props: PopperProps) => {
     const { style, ...otherProps } = props; // We filter out the "style" props to remove the width provided by the autocomplete input field.
     return <Popper {...otherProps} placement="bottom-start" />;
 };
 
-const RegulatingTerminalForm = ({
-    id, // id that has to be defined to determine it's parent object within the form
+interface RegulatingTerminalFormProps {
+    id: string;
+    direction?: GridDirection;
+    disabled: boolean;
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    voltageLevelOptions: Identifiable[];
+    equipmentSectionTypeDefaultValue?: string;
+    previousRegulatingTerminalValue?: string;
+    previousEquipmentSectionTypeValue?: string;
+}
+
+export function RegulatingTerminalForm({
+    id, // id that has to be defined to determine it is parent object within the form
     direction,
     disabled = false,
     studyUuid,
@@ -36,13 +49,22 @@ const RegulatingTerminalForm = ({
     equipmentSectionTypeDefaultValue,
     previousRegulatingTerminalValue,
     previousEquipmentSectionTypeValue,
-}) => {
-    const [equipmentsOptions, setEquipmentsOptions] = useState([]);
+}: Readonly<RegulatingTerminalFormProps>) {
+    const [equipmentsOptions, setEquipmentsOptions] = useState<Option[]>([]);
     const { setValue } = useFormContext();
 
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
+
+    const vlOptions = useMemo(
+        () =>
+            voltageLevelOptions.map((item) => ({
+                id: item.id,
+                label: item.name ?? '',
+            })),
+        [voltageLevelOptions]
+    );
 
     useEffect(() => {
         if (
@@ -54,11 +76,17 @@ const RegulatingTerminalForm = ({
                 studyUuid,
                 currentNodeUuid,
                 currentRootNetworkUuid,
-                undefined,
                 watchVoltageLevelId,
+                undefined,
                 true
-            ).then((values) => {
-                setEquipmentsOptions(values);
+            ).then((equipments) => {
+                setEquipmentsOptions(
+                    equipments.map((equipment) => ({
+                        id: equipment.id,
+                        label: equipment.type,
+                        type: equipment.type,
+                    }))
+                );
             });
         } else {
             setEquipmentsOptions([]);
@@ -70,11 +98,11 @@ const RegulatingTerminalForm = ({
     }, [id, setValue]);
 
     return (
-        <Grid container direction={direction || 'row'} spacing={2}>
+        <Grid container direction={direction ?? 'row'} spacing={2}>
             <Grid
                 item
                 xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
-                align="start"
+                sx={{ align: 'start' }}
             >
                 {
                     <AutocompleteInput
@@ -90,16 +118,19 @@ const RegulatingTerminalForm = ({
                         selectOnFocus
                         disabled={disabled}
                         id="voltage-level"
-                        options={voltageLevelOptions}
-                        getOptionLabel={(vl) => (vl?.id ? vl?.id : '')}
+                        options={vlOptions}
+                        getOptionLabel={(vl) => (typeof vl !== 'string' ? vl?.id ?? '' : '')}
                         onChangeCallback={resetEquipment}
-                        previousValue={previousRegulatingTerminalValue}
+                        previousValue={previousRegulatingTerminalValue ?? undefined}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                             */
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
-                            if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
+                            if (
+                                params.inputValue !== '' &&
+                                !options.find((opt) => typeof opt !== 'string' && opt.id === params.inputValue)
+                            ) {
                                 filtered.push({
                                     id: params.inputValue,
                                     label: params.inputValue,
@@ -115,16 +146,18 @@ const RegulatingTerminalForm = ({
             <Grid
                 item
                 xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
-                align="start"
+                sx={{ align: 'start' }}
             >
                 {
                     <AutocompleteInput
                         name={`${id}.${EQUIPMENT}`}
-                        //setting null programmatically when allowNewValue is enable (i.e. freeSolo enabled) wont empty the field => need to convert null to empty and vice versa
-                        inputTransform={(value) => (value === null ? '' : value)}
+                        //setting null programmatically when allowNewValue is enabling (i.e. freeSolo enabled) wont empty the field => need to convert null to empty and vice versa
+                        inputTransform={(value) => value ?? ''}
                         outputTransform={(value) => {
                             if (typeof value === 'string') {
-                                return value === '' ? null : { id: value, type: equipmentSectionTypeDefaultValue };
+                                return value === ''
+                                    ? null
+                                    : { id: value, label: value, type: equipmentSectionTypeDefaultValue };
                             }
                             return value;
                         }}
@@ -138,13 +171,23 @@ const RegulatingTerminalForm = ({
                         previousValue={previousEquipmentSectionTypeValue}
                         options={equipmentsOptions}
                         getOptionLabel={(equipment) => {
-                            return equipment === '' ? '' : equipment?.[ID] || '';
+                            return typeof equipment !== 'string' ? equipment?.id ?? '' : '';
                         }}
                         renderOption={(props, option) => {
                             const { key, ...optionProps } = props;
+
+                            let displayText = '';
+                            if (typeof option !== 'string') {
+                                if (option.label) {
+                                    displayText = `${option.label} : ${option.id}`;
+                                } else {
+                                    displayText = option.id || '';
+                                }
+                            }
+
                             return (
                                 <Box key={key} component="li" {...optionProps}>
-                                    {option?.[TYPE] ? `${option?.[TYPE]} : ${option?.[ID]}` : option?.[ID]}
+                                    {displayText}
                                 </Box>
                             );
                         }}
@@ -153,10 +196,13 @@ const RegulatingTerminalForm = ({
                          */
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
-                            if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
+                            if (
+                                params.inputValue !== '' &&
+                                !options.find((opt) => typeof opt !== 'string' && opt?.id === params.inputValue)
+                            ) {
                                 filtered.push({
-                                    [TYPE]: equipmentSectionTypeDefaultValue,
-                                    [ID]: params.inputValue,
+                                    label: equipmentSectionTypeDefaultValue ?? '',
+                                    id: params.inputValue,
                                 });
                             }
                             return filtered;
@@ -168,14 +214,4 @@ const RegulatingTerminalForm = ({
             </Grid>
         </Grid>
     );
-};
-
-RegulatingTerminalForm.propTypes = {
-    id: PropTypes.string.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    currentRootNetworkUuid: PropTypes.string.isRequired,
-    direction: PropTypes.string,
-    disabled: PropTypes.bool,
-};
-
-export default RegulatingTerminalForm;
+}

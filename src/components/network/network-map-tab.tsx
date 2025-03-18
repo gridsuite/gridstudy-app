@@ -820,8 +820,18 @@ export const NetworkMapTab = ({
                     })
                 );
             }
+
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'rootNetworkModified' &&
+                studyUpdatedForce.eventData.headers['rootNetwork'] === currentRootNetworkUuid
+            ) {
+                setInitialized(false);
+                setIsRootNodeGeoDataLoaded(false);
+                dispatch(resetMapEquipment());
+                return;
+            }
         }
-    }, [isInitialized, studyUpdatedForce, currentRootNetworkUuid, reloadMapEquipments, snackError]);
+    }, [isInitialized, studyUpdatedForce, dispatch, currentRootNetworkUuid, reloadMapEquipments, snackError]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
@@ -847,7 +857,8 @@ export const NetworkMapTab = ({
             return;
         }
         // when root network has just been changed, we reset map equipment and geo data, they will be loaded as if we were opening a new study
-        if (previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
+        // DO NOT BREAK AT FIRST LOADING (previousCurrentRootNetworkUuid=null)
+        if (previousCurrentRootNetworkUuid && previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
             setInitialized(false);
             setIsRootNodeGeoDataLoaded(false);
             dispatch(resetMapEquipment());
