@@ -69,29 +69,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             minWidth: 100,
             flex: 1,
         },
-        {
-            cellRenderer: ChipCellRenderer,
-            minWidth: 100,
-            flex: 1,
-            headerComponent: CustomHeaderComponent,
-            headerComponentParams: {
-                icon: (
-                    <Badge
-                        overlap="circular"
-                        color="primary"
-                        variant="dot"
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <RemoveRedEyeIcon />
-                    </Badge>
-                ),
-            },
-        },
-    ];
+        
+     ];
 
     // Initialize dynamic columns state
     const [columnDefs, setColumnDefs] = useState<any[]>(staticColumns);
@@ -101,13 +80,9 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             ? Object.keys(firstModification.activationStatusByRootNetwork).map((rootNetworkUuid) => {
                   const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
                   return {
-                      //   valueGetter: (params: any) => {
-                      //       const status = params.data.activationStatusByRootNetwork[rootNetworkUuid];
-                      //       return status ? 'activated' : 'not activated';
-                      //   },
-                      //   field: rootNetworkUuid,
                       minWidth: 100,
                       flex: 1,
+                      cellRenderer: ChipCellRenderer,  // Apply the ChipCellRenderer here
                       headerComponent: CustomHeaderComponent,
                       headerComponentParams: {
                           icon: (
@@ -124,8 +99,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                                   <RemoveRedEyeIcon />
                               </Badge>
                           ),
-                          //  cellRenderer: ChipCellRenderer,
-
                           shouldShowIcon: isCurrentRootNetwork,
                       },
                   };
