@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, ReactElement } from 'react';
-import { CustomAGGrid } from '@gridsuite/commons-ui'; // Assuming this is the type
+import React, { useState, useCallback, useRef, ReactElement, ReactNode } from 'react';
+import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui'; // Assuming this is the type
 import { CellClickedEvent, RowClassParams, RowStyle } from 'ag-grid-community';
 import CustomHeaderComponent from 'components/custom-aggrid/custom-aggrid-header';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
@@ -7,6 +7,7 @@ import { Badge } from '@mui/material';
 import { NetworkModificationInfos } from './network-modification-menu.type';
 import { ChipCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import CellRendererSwitch from 'components/spreadsheet/utils/cell-renderer-switch';
+import { useIntl } from 'react-intl';
 interface NetworkModificationsTableProps {
     modifications: NetworkModificationInfos[];
     setModifications: React.Dispatch<React.SetStateAction<NetworkModificationInfos[]>>;
@@ -16,7 +17,7 @@ interface NetworkModificationsTableProps {
     handleSwitchAction?: (item: NetworkModificationInfos) => ReactElement | null;
 
     handleCellClick?: (event: CellClickedEvent) => void;
-    isRowDragEnabled?: boolean; // New prop to enable/disable drag
+    isRowDragEnabled?: boolean; // prop to enable/disable drag
     onRowDragStart?: (event: any) => void;
     onRowDragEnd?: (event: any) => void;
     onRowSelected?: (event: any) => void;
@@ -48,12 +49,29 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     //     flex: 1,
     // }));
 
+    //TO CHECK TO DO MAISSA
+    const intl = useIntl();
+    const { computeLabel } = useModificationLabelComputer();
+    const getModificationLabel = (modif: NetworkModificationMetadata): ReactNode => {
+        if (!modif) {
+            return '';
+        }
+        
+        return modif.messageValues;
+        // return intl.formatMessage(
+        //     { id: 'network_modifications.' + modif.messageValues },
+        //     {
+        //         ...modif,
+        //         ...computeLabel(modif),
+        //     }
+        // );
+    };
     const gridRef = useRef<any>(null);
     const [columnDefs] = useState([
         {
-            headerName: 'Modification Name',
+            headerName: 'Modification Name', 
             field: 'modificationName',
-            valueGetter: (params: any) => params?.data.modificationInfos?.messageValues,
+            valueGetter: (params: any) => getModificationLabel(params?.data.modificationInfos),
             minWidth: 300,
             flex: 1,
             cellStyle: { cursor: 'pointer' },
@@ -144,8 +162,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             columnDefs={modifiedColumnDefs}
             getRowStyle={getRowStyle}
             rowClass="custom-row-class"
-            // onRowDragEnter={onRowDragStart}  !!M
-            // onRowDragEnd={onRowDragEnd} !!M
+            onRowDragEnter={onRowDragStart} 
+            onRowDragEnd={onRowDragEnd}
             rowDragManaged={isRowDragEnabled}
         />
     );

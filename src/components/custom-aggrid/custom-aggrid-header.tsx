@@ -28,6 +28,7 @@ interface CustomHeaderComponentProps<F extends CustomAggridFilterParams, T> exte
     forceDisplayFilterIcon: boolean;
     filterComponent: ComponentType<F>;
     filterComponentParams: F;
+    icon?: React.ReactNode;
 }
 
 const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
@@ -39,6 +40,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
     filterComponent,
     filterComponentParams,
     api,
+    icon, // Destructure the icon prop
 }: CustomHeaderComponentProps<F, T>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
@@ -100,6 +102,9 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
                     )}
                     {menu && <CustomMenu {...menu} />}
                 </Grid>
+            </Grid>
+            <Grid container alignItems="center" justifyContent="center">
+                {icon && <Grid item>{icon}</Grid>}
             </Grid>
         </Grid>
     );

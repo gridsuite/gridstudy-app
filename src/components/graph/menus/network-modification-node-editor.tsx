@@ -10,7 +10,6 @@ import {
     ElementType,
     IElementCreationDialog,
     MODIFICATION_TYPES,
-    useModificationLabelComputer,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
@@ -54,8 +53,8 @@ import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-lin
 import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
 import { UPDATE_TYPE } from 'components/network/constants';
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     addNotification,
@@ -70,7 +69,6 @@ import { RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
-import { DropResult } from 'react-beautiful-dnd';
 import { AppState, StudyUpdated } from 'redux/reducer';
 import { createCompositeModifications } from '../../../services/explore';
 import { fetchNetworkModification } from '../../../services/network-modification';
@@ -91,7 +89,6 @@ import {
     NetworkModificationInfos,
     NetworkModificationMetadata,
 } from './network-modification-menu.type';
-import { SwitchNetworkModificationActive } from './switch-network-modification-active';
 import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
 import ModificationByAssignmentDialog from '../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
 import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
@@ -99,7 +96,7 @@ import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filte
 import { LccCreationDialog } from '../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
 import NetworkModificationsTable from './network-modifications-table';
-import { CellClickedEvent } from 'ag-grid-community';
+import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -136,6 +133,7 @@ const NetworkModificationNodeEditor = () => {
     copyInfosRef.current = copyInfos;
 
     const [isDragging, setIsDragging] = useState(false);
+    const [initialPosition, setInitialPosition] = useState<Number | undefined>(undefined);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
@@ -766,50 +764,35 @@ const NetworkModificationNodeEditor = () => {
         return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen)?.action?.();
     };
 
-    const commit = useCallback(
-        ({ source, destination }: DropResult) => {
-            setIsDragging(false);
-            if (!currentNode?.id || !destination || source.index === destination.index) {
-                return;
-            }
-            const res = [...modifications];
-            const [item] = res.splice(source.index, 1);
-            const before = res[destination.index]?.modificationInfos.uuid;
-            res.splice(destination ? destination.index : modifications.length, 0, item);
+    // const commit = useCallback(
+    //     ({ source, destination }: DropResult) => {
+    //         setIsDragging(false);
+    //         if (!currentNode?.id || !destination || source.index === destination.index) {
+    //             return;
+    //         }
+    //         const res = [...modifications];
+    //         const [item] = res.splice(source.index, 1);
+    //         const before = res[destination.index]?.modificationInfos.uuid;
+    //         res.splice(destination ? destination.index : modifications.length, 0, item);
 
-            /* doing the local change before update to server */
-            setModifications(res);
-            changeNetworkModificationOrder(studyUuid, currentNode.id, item.modificationInfos.uuid, before).catch(
-                (error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'errReorderModificationMsg',
-                    });
-                    setModifications(modifications); // rollback
-                }
-            );
-        },
-        [modifications, studyUuid, currentNode?.id, snackError]
-    );
+    //         /* doing the local change before update to server */
+    //         setModifications(res);
+    //         changeNetworkModificationOrder(studyUuid, currentNode.id, item.modificationInfos.uuid, before).catch(
+    //             (error) => {
+    //                 snackError({
+    //                     messageTxt: error.message,
+    //                     headerId: 'errReorderModificationMsg',
+    //                 });
+    //                 setModifications(modifications); // rollback
+    //             }
+    //         );
+    //     },
+    //     [modifications, studyUuid, currentNode?.id, snackError]
+    // );
 
     const isLoading = useCallback(() => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
     }, [notificationIdList, currentNode?.id]);
-
-    const intl = useIntl();
-    const { computeLabel } = useModificationLabelComputer();
-    const getModificationLabel = (modif: NetworkModificationMetadata): ReactNode => {
-        if (!modif) {
-            return '';
-        }
-        return intl.formatMessage(
-            { id: 'network_modifications.' + modif.messageType },
-            {
-                ...modif,
-                ...computeLabel(modif),
-            }
-        );
-    };
 
     const isModificationClickable = useCallback(
         (modification: NetworkModificationInfos) =>
@@ -868,8 +851,8 @@ const NetworkModificationNodeEditor = () => {
                 handleCellClick={handleCellClick}
                 modifications={modifications}
                 setModifications={setModifications}
-                // onRowDragStart={onRowDragStart}
-                // onRowDragEnd={onRowDragEnd}
+                onRowDragStart={onRowDragStart}
+                onRowDragEnd={onRowDragEnd}
                 onRowSelected={handleRowSelected}
                 isRowDragEnabled={!isLoading() && !isAnyNodeBuilding && !mapDataLoading}
             />
@@ -920,6 +903,45 @@ const NetworkModificationNodeEditor = () => {
         },
         [doEditModification, isModificationClickable] // Dependencies for the callback
     );
+    // TO CHECK DRAG AND DROP MECHANISM MAISSA    
+    const onRowDragStart = (event: RowDragEnterEvent<NetworkModificationInfos>) => {
+        setIsDragging(true);
+        setInitialPosition(event.overIndex);
+    };
+    const onRowDragEnd = (event: RowDragEndEvent<NetworkModificationInfos>) => {
+        const newPosition = event.overIndex;
+        const oldPosition = initialPosition;
+
+        console.log('Drag !! START Index:', oldPosition);
+        console.log('Drag !! END Index:', newPosition);
+
+        if (!currentNode?.id || newPosition === undefined || oldPosition === undefined || newPosition === oldPosition) {
+            setIsDragging(false);
+            return;
+        }
+
+        const updatedModifications = [...modifications];
+
+        // Remove item from old position
+        const [movedItem] = updatedModifications.splice(oldPosition as number, 1);
+
+        // Insert item at the new position
+        updatedModifications.splice(newPosition, 0, movedItem);
+
+        setModifications(updatedModifications);
+
+        const before = updatedModifications[newPosition + 1]?.modificationInfos?.uuid || null;
+
+        changeNetworkModificationOrder(studyUuid, currentNode?.id, movedItem.modificationInfos.uuid, before)
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'errReorderModificationMsg',
+                });
+                setModifications(modifications); 
+            })
+            .finally(() => setIsDragging(false));
+    };
 
     const renderPaneSubtitle = () => {
         if (isLoading() && messageId) {
