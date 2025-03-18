@@ -9,20 +9,21 @@ import { mergeSx } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
+// TODO DBR         backgroundColor: theme.palette.background, // formFiller.background TODO DBR
 const styles = {
-    filler: (theme) => ({
-        backgroundColor: theme.formFiller.background,
+    filler: () => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
     }),
 };
 
-export const FormFiller = ({
-    size = 12, // Default will take the whole row
-    lineHeight, // Filler's height : by default 100%, or if specified, equal to X times a generic row in the form.
-    children, // These elements will be centered in the filler
-}) => {
+interface FormFillerProps {
+    size?: number;
+    lineHeight?: number; // Filler's height will be X times a generic row in the form (or 100% by default)
+    children: any;
+}
+export function FormFiller({ size = 12, lineHeight, children }: Readonly<FormFillerProps>) {
     const theme = useTheme();
 
     return (
@@ -30,9 +31,9 @@ export const FormFiller = ({
             <Grid
                 item
                 xs={size}
-                align={'start'}
                 sx={{
                     marginTop: theme.spacing(2),
+                    align: 'start',
                 }}
             >
                 <Box
@@ -45,4 +46,4 @@ export const FormFiller = ({
             </Grid>
         </Grid>
     );
-};
+}

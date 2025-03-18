@@ -356,10 +356,7 @@ const VscModificationDialog: React.FC<any> = ({
             >
                 {equipmentId === null && (
                     <EquipmentIdSelector
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
                         defaultValue={equipmentId}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         setSelectedId={setEquipmentId}
                         equipmentType={ExtendedEquipmentType.HVDC_LINE_VSC}
                         fillerHeight={17}
