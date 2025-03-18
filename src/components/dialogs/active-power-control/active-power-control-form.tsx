@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { percentageTextField } from '../dialog-utils.js';
+import { percentageTextField } from '../dialog-utils';
 import { useWatch } from 'react-hook-form';
-import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants.js';
+import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
 import { useMemo } from 'react';
 import { FloatInput, SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
-import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input.js';
+import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
-import GridItem from '../commons/grid-item.js';
+import GridItem from '../commons/grid-item';
 import { ActivePowerControlInfos } from './active-power-control.type';
 
 export interface ActivePowerControlFormProps {
@@ -61,7 +61,7 @@ export function ActivePowerControlForm({
             name={DROOP}
             label={'Droop'}
             adornment={percentageTextField}
-            previousValue={previousValues?.droop ?? undefined}
+            previousValue={Number.isNaN(previousValues?.droop) ? undefined : previousValues?.droop ?? undefined}
             clearable={true}
         />
     );
