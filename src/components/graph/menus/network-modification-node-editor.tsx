@@ -87,7 +87,6 @@ import {
     NetworkModificationCopyType,
     NetworkModificationData,
     NetworkModificationInfos,
-    NetworkModificationMetadata,
 } from './network-modification-menu.type';
 import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
 import ModificationByAssignmentDialog from '../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
@@ -903,7 +902,7 @@ const NetworkModificationNodeEditor = () => {
         },
         [doEditModification, isModificationClickable] // Dependencies for the callback
     );
-    // TO CHECK DRAG AND DROP MECHANISM MAISSA    
+    // TO CHECK DRAG AND DROP MECHANISM MAISSA
     const onRowDragStart = (event: RowDragEnterEvent<NetworkModificationInfos>) => {
         setIsDragging(true);
         setInitialPosition(event.overIndex);
@@ -938,7 +937,7 @@ const NetworkModificationNodeEditor = () => {
                     messageTxt: error.message,
                     headerId: 'errReorderModificationMsg',
                 });
-                setModifications(modifications); 
+                setModifications(modifications);
             })
             .finally(() => setIsDragging(false));
     };

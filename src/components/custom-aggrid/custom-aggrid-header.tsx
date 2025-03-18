@@ -13,7 +13,6 @@ import { SortParams, useCustomAggridSort } from './hooks/use-custom-aggrid-sort'
 import { CustomMenu, CustomMenuProps } from './custom-aggrid-menu';
 import { CustomHeaderProps } from 'ag-grid-react';
 import { CustomAggridFilterParams } from './custom-aggrid-filters/custom-aggrid-filter.type';
-import { Delete as DeleteIcon } from '@mui/icons-material';
 
 const styles = {
     displayName: {
@@ -30,7 +29,7 @@ interface CustomHeaderComponentProps<F extends CustomAggridFilterParams, T> exte
     filterComponent: ComponentType<F>;
     filterComponentParams: F;
     icon?: React.ReactNode;
-    shouldShow?: boolean;
+    shouldShowIcon?: boolean;
 }
 const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
     column,
@@ -41,8 +40,8 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
     filterComponent,
     filterComponentParams,
     api,
-    icon,  
-    shouldShowIcon,  
+    icon,
+    shouldShowIcon,
 }: CustomHeaderComponentProps<F, T>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
