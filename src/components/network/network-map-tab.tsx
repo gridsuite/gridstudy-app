@@ -797,7 +797,6 @@ export const NetworkMapTab = ({
     );
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
-        console.log('SBO updateMapEquipmentsAndGeoData call');
         const currentNodeAtReloadCalling = currentNodeRef.current;
         if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
             dispatch(resetMapReloaded());
@@ -917,11 +916,6 @@ export const NetworkMapTab = ({
             // return to avoid update in manual reload or to avoid double update
             return;
         }
-        console.log(
-            'SBO check before updateMapEquipmentsAndGeoData',
-            isInitialized,
-            isReactFlowRootNodeData(currentNode)
-        );
         // if the map tab is initialized and we are on the root node, then we don't have missing equipments.
         if (isReactFlowRootNodeData(currentNode)) {
             return;
