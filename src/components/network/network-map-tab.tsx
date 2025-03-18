@@ -803,16 +803,15 @@ export const NetworkMapTab = ({
             return;
         }
         dispatch(setMapDataLoading(true));
-        updateMapEquipments(currentNodeAtReloadCalling)
-            .then(() => {
-                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    loadGeoData();
-                }
-            })
-            .finally(() => {
-                // loadGeoData will do it
-                //dispatch(setMapDataLoading(false));
-            });
+        updateMapEquipments(currentNodeAtReloadCalling).then(() => {
+            if (checkNodeConsistency(currentNodeAtReloadCalling)) {
+                loadGeoData();
+            } else {
+                // Do not set MapDataLoading redux state to false in the finnaly clause here
+                // loadGeoData will do it later in the process avoiding flickering
+                dispatch(setMapDataLoading(false));
+            }
+        });
     }, [currentNode, dispatch, loadGeoData, mapEquipments, studyUuid, updateMapEquipments]);
 
     useEffect(() => {
