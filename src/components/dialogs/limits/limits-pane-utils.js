@@ -51,8 +51,10 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         .number()
         .nullable()
         .positive('permanentCurrentLimitMustBeGreaterThanZero')
+        // if there are valid (named) temporary limits, permanent limit is mandatory
         .when([TEMPORARY_LIMITS], {
-            is: (temporaryLimits) => temporaryLimits?.length > 0 && !isModification,
+            is: (temporaryLimits /*:TemporaryLimit[]*/) =>
+                temporaryLimits?.length > 0 && temporaryLimits.find((limit) => limit.name) && !isModification,
             then: () =>
                 yup
                     .number()

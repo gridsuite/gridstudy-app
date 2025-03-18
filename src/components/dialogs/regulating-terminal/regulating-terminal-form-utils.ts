@@ -31,6 +31,12 @@ export const getRegulatingTerminalVoltageLevelData = ({
     voltageLevelSubstationId = '',
     voltageLevelNominalVoltage = '',
     voltageLevelTopologyKind = '',
+}: {
+    voltageLevelId?: string | null;
+    voltageLevelName?: string;
+    voltageLevelSubstationId?: string;
+    voltageLevelNominalVoltage?: string;
+    voltageLevelTopologyKind?: string;
 }) => {
     if (!voltageLevelId) {
         return null;
@@ -45,7 +51,15 @@ export const getRegulatingTerminalVoltageLevelData = ({
     };
 };
 
-export const getRegulatingTerminalEquipmentData = ({ equipmentId, equipmentName = '', equipmentType = '' }) => {
+export const getRegulatingTerminalEquipmentData = ({
+    equipmentId,
+    equipmentName = '',
+    equipmentType = '',
+}: {
+    equipmentId?: string | null;
+    equipmentName?: string | null;
+    equipmentType?: string | null;
+}) => {
     if (!equipmentId) {
         return null;
     }
@@ -66,6 +80,15 @@ export const getRegulatingTerminalFormData = ({
     equipmentId = null,
     equipmentName,
     equipmentType,
+}: {
+    voltageLevelId?: string | null;
+    voltageLevelName?: string;
+    voltageLevelSubstationId?: string;
+    voltageLevelNominalVoltage?: string;
+    voltageLevelTopologyKind?: string;
+    equipmentId?: string | null;
+    equipmentName?: string | null;
+    equipmentType?: string | null;
 }) => {
     return {
         [VOLTAGE_LEVEL]: getRegulatingTerminalVoltageLevelData({
