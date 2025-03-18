@@ -85,6 +85,7 @@ type OwnProps = {
 const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const dispatch = useDispatch();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
     const user = useSelector((state: AppState) => state.user);
 
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
@@ -229,6 +230,13 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     }, [enableDeveloperMode]);
 
     const displayTab = useCallback(() => {
+        /**
+         * We add appTabIndex to unmount the component when the user changes the tab
+         * This is necessary to reset the form when the user changes the tab
+         */
+        if (appTabIndex !== 4) {
+            return null;
+        }
         switch (tabValue) {
             case TAB_VALUES.lfParamsTabValue:
                 return (
@@ -282,6 +290,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
         }
     }, [
+        appTabIndex,
         tabValue,
         loadFlowParametersBackend,
         securityAnalysisParametersBackend,
