@@ -477,7 +477,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             </Grid>
             {disabled || shooldDisableButtons ? (
                 <Alert sx={styles.invalidNode} severity="warning">
-                    <FormattedMessage id={shooldDisableButtons ? 'NoSpreadsheets' : 'InvalidNode'} />
+                    <FormattedMessage id={disabled ? 'InvalidNode' : 'NoSpreadsheets'} />
                 </Alert>
             ) : (
                 <Box sx={styles.table}>
