@@ -41,14 +41,18 @@ export default function RenameTabDialog({
     const schema = yup.object().shape({
         name: yup
             .string()
-            .required(intl.formatMessage({ id: 'spreadsheet/rename_tab_required' }))
-            .test('unique-name', intl.formatMessage({ id: 'spreadsheet/tab_name_already_exists' }), (value) => {
-                if (!value) {
-                    return true;
+            .required()
+            .test(
+                'unique-name',
+                intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists' }),
+                (value) => {
+                    if (!value) {
+                        return true;
+                    }
+                    // Check if name is already in use by another tab (not the one being renamed)
+                    return !tablesDefinitions.some((tab) => tab.name === value && tab.uuid !== tabUuid);
                 }
-                // Check if name is already in use by another tab (not the one being renamed)
-                return !tablesDefinitions.some((tab) => tab.name === value && tab.uuid !== tabUuid);
-            }),
+            ),
     });
 
     const formMethods = useForm<RenameTabForm>({
@@ -72,14 +76,14 @@ export default function RenameTabDialog({
         <CustomFormProvider validationSchema={schema} {...formMethods}>
             <Dialog open={open} onClose={onClose} aria-labelledby="rename-tab-dialog-title">
                 <DialogTitle id="rename-tab-dialog-title">
-                    {intl.formatMessage({ id: 'spreadsheet/rename_tab_title' })}
+                    {intl.formatMessage({ id: 'spreadsheet/rename_dialog_title' })}
                 </DialogTitle>
                 <DialogContent dividers>
                     <Grid container spacing={2} direction="column">
                         <Grid item>
                             <TextInput
                                 name="name"
-                                label="spreadsheet/tab_name"
+                                label="spreadsheet/create_new_spreadsheet/spreadsheet_name"
                                 formProps={{
                                     autoFocus: true,
                                     fullWidth: true,

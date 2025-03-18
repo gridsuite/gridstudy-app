@@ -32,8 +32,8 @@ const RENAME = 'RENAME';
 const DELETE = 'DELETE';
 
 const TAB_MENU_DEFINITION = {
-    RENAME: { id: RENAME, label: 'spreadsheet/rename_tab' },
-    DELETE: { id: DELETE, label: 'spreadsheet/delete_tab' },
+    RENAME: { id: RENAME, label: 'spreadsheet/rename/label' },
+    DELETE: { id: DELETE, label: 'spreadsheet/delete/label' },
 };
 
 const draggableTabStyles = {
