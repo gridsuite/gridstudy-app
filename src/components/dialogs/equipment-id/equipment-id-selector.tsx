@@ -7,15 +7,19 @@
 
 import { useEffect, useState } from 'react';
 import { filledTextField } from '../dialog-utils';
+import { UUID } from 'crypto';
 import { Autocomplete, TextField, Grid, CircularProgress, Box } from '@mui/material';
-import { FieldLabel } from '@gridsuite/commons-ui';
-import { FormFiller } from '../commons/formFiller';
+import { Theme } from '@mui/material/styles';
+import { EquipmentType, ExtendedEquipmentType, FieldLabel } from '@gridsuite/commons-ui';
+import { FormFiller } from './formFiller.js';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
 import GridItem from '../commons/grid-item';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../redux/reducer';
 
 const styles = {
-    message: (theme) => ({
+    message: (theme: Theme) => ({
         fontSize: 'small',
         fontStyle: 'italic',
         color: theme.palette.text.secondary,
@@ -26,10 +30,16 @@ const styles = {
     },
 };
 
-export const EquipmentIdSelector = ({
-    studyUuid,
-    currentNode,
-    currentRootNetworkUuid,
+interface EquipmentIdSelectorProps {
+    defaultValue: string | null;
+    setSelectedId: (value: string) => void;
+    equipmentType: EquipmentType | ExtendedEquipmentType;
+    readOnly?: boolean;
+    fillerHeight?: number;
+    fillerMessageId?: string;
+    loading?: boolean;
+}
+export function EquipmentIdSelector({
     defaultValue,
     setSelectedId,
     equipmentType,
@@ -37,18 +47,21 @@ export const EquipmentIdSelector = ({
     fillerHeight,
     fillerMessageId = 'idSelector.idNeeded',
     loading = false,
-    ...props
-}) => {
-    const currentNodeUuid = currentNode?.id;
-    const [equipmentOptions, setEquipmentOptions] = useState([]);
-    const [selectedValue, setSelectedValue] = useState(null);
+}: Readonly<EquipmentIdSelectorProps>) {
+    const [equipmentOptions, setEquipmentOptions] = useState<string[]>([]);
+    const [selectedValue, setSelectedValue] = useState<string | undefined>();
+    const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid as UUID);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid as UUID);
 
     useEffect(() => {
-        fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, equipmentType, true).then(
-            (values) => {
-                setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
-            }
-        );
+        if (currentNodeUuid) {
+            fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, [], equipmentType, true).then(
+                (values) => {
+                    setEquipmentOptions(values.sort((a: string, b: string) => a.localeCompare(b)));
+                }
+            );
+        }
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid, equipmentType]);
 
     // We go through this effect to force a rerender and display the loading icon.
@@ -58,11 +71,11 @@ export const EquipmentIdSelector = ({
         }
     }, [selectedValue, setSelectedId]);
 
-    const handleChange = (newId, reason) => {
+    const handleChange = (newId: string | null, reason: string) => {
         if (newId && (reason === 'createOption' || reason === 'selectOption')) {
             setSelectedValue(newId);
         } else if (reason === 'clear') {
-            setSelectedValue(null);
+            setSelectedValue(undefined);
         }
     };
 
@@ -89,7 +102,6 @@ export const EquipmentIdSelector = ({
                     {...rest}
                 />
             )}
-            {...props}
         />
     );
 
@@ -114,4 +126,4 @@ export const EquipmentIdSelector = ({
             </FormFiller>
         </>
     );
-};
+}
