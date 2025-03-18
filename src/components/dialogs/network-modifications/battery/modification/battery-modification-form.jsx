@@ -23,7 +23,6 @@ import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 import PropTypes from 'prop-types';
-import LineCreationDialog from '../../line/creation/line-creation-dialog.jsx';
 
 const BatteryModificationForm = ({
     studyUuid,
