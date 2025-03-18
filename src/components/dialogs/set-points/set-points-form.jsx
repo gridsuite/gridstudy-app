@@ -104,7 +104,7 @@ const SetPointsForm = ({
                 <Box sx={{ width: '100%' }} />
                 <ActivePowerControlForm
                     isEquipmentModification={isEquipmentModification}
-                    previousValues={previousValues}
+                    previousValues={previousValues?.activePowerControl}
                 />
             </Grid>
         </>

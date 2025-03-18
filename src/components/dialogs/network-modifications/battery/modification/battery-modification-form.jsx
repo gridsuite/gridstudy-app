@@ -152,7 +152,10 @@ const BatteryModificationForm = ({
                 <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <ActivePowerControlForm isEquipmentModification={true} previousValues={batteryToModify} />
+                <ActivePowerControlForm
+                    isEquipmentModification={true}
+                    previousValues={batteryToModify?.activePowerControl}
+                />
             </Grid>
             <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>

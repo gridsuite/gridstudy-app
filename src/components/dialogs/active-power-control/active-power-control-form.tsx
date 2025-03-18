@@ -14,11 +14,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input.js';
 import { Box } from '@mui/material';
 import GridItem from '../commons/grid-item.js';
-import { ActivePowerControlFormInfos } from './active-power-control.type';
+import { ActivePowerControlInfos } from './active-power-control.type';
 
 export interface ActivePowerControlFormProps {
     isEquipmentModification?: boolean;
-    previousValues?: ActivePowerControlFormInfos;
+    previousValues?: ActivePowerControlInfos;
 }
 
 export function ActivePowerControlForm({
