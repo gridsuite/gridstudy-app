@@ -32,7 +32,11 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/column_name_already_exist': 'Column name already exists',
     'spreadsheet/custom_column/dependencies': 'The formula is linked to other columns',
     'spreadsheet/custom_column/nodes': 'Nodes',
-    'spreadsheet/custom_column/parameter_nodes': 'Parameter nodes aliases',
+    'spreadsheet/custom_column/option/parameter': 'Configure',
+    'spreadsheet/custom_column/option/refresh': 'Reload',
+    'spreadsheet/custom_column/option/refresh/tooltip':
+        'Reload data for current sheet for other configured nodes ({aliases})',
+    'spreadsheet/custom_column/parameter_nodes': 'Configure nodes aliases',
     'spreadsheet/custom_column/add_alias': 'Add an alias',
     'spreadsheet/custom_column/creates_cyclic_dependency': 'Column dependencies create a cyclic dependency',
     'spreadsheet/custom_column/error_saving_or_updating_column': 'Error while saving or updating column',
@@ -75,6 +79,7 @@ const spreadsheetEn = {
     'spreadsheet/parameter_aliases/no_special_characters': 'No special characters allowed',
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'No node with this name',
     'spreadsheet/parameter_aliases/unique_aliases': 'Aliases should be unique',
+    'spreadsheet/parameter_aliases/unique_node_names': 'Each node can only have one alias',
     'spreadsheet/filter/config': 'Gridsuite filters',
     'spreadsheet/remove_spreadsheet_confirmation':
         'Are you sure you want to remove the spreadsheet "{spreadsheetName}"?',
