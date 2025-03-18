@@ -665,7 +665,7 @@ const initialState: AppState = {
     [PARAM_LINE_PARALLEL_PATH]: true,
     [PARAM_LIMIT_REDUCTION]: 100,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
-    [PARAM_MAP_MANUAL_REFRESH]: false,
+    [PARAM_MAP_MANUAL_REFRESH]: true,
     [PARAM_MAP_BASEMAP]: MAP_BASEMAP_MAPBOX,
     [PARAM_LINE_FLOW_MODE]: 'feeders' as LineFlowMode.FEEDERS, // because jest not support enum
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage' as LineFlowColorMode.NOMINAL_VOLTAGE, // because jest not support enum

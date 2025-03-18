@@ -889,20 +889,6 @@ export const NetworkMapTab = ({
             // load root node geodata
             loadRootNodeGeoData();
         }
-        // manual reload
-        if (refIsMapManualRefreshEnabled.current && isInitialized) {
-            // this reloads the mapEquipments when, in manual refresh mode, the current node is built.
-            if (
-                isSameNode(previousCurrentNode, currentNode) && // must be the same node
-                previousCurrentRootNetworkUuid === currentRootNetworkUuid && // must be the same root network
-                !previousNodeStatus && // must change from unbuilt ...
-                isCurrentNodeBuiltRef.current // ... to built
-            ) {
-                updateMapEquipmentsAndGeoData();
-            }
-            // return to avoid update in manual reload or to avoid double update
-            return;
-        }
         // auto reload
         updateMapEquipmentsAndGeoData();
         // Note: studyUuid and dispatch don't change
