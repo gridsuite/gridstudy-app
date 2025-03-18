@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import React, { useState, useCallback } from 'react';
 import { Switch, Tooltip } from '@mui/material';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -7,7 +14,7 @@ import { FormattedMessage } from 'react-intl';
 import { AppState } from 'redux/reducer';
 
 const CellRendererSwitch = (props: any) => {
-    const { data, api, colDef, node } = props; // Access grid context
+    const { data, api } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -34,12 +41,10 @@ const CellRendererSwitch = (props: any) => {
         const updatedActivated = !modificationActivated;
 
         // Update the grid data with the new activated status
-        api.stopEditing(); // Stop editing mode
-        node.setDataValue(colDef.field, updatedActivated); // Set the new value in the grid data
-
+        api.stopEditing();
         // Trigger the API to update the state on the server (or whatever data source you're using)
         updateModification(updatedActivated);
-    }, [modificationActivated, updateModification, api, node, colDef.field]);
+    }, [modificationActivated, updateModification, api]);
 
     return (
         <Tooltip title={<FormattedMessage id={modificationActivated ? 'disable' : 'enable'} />} arrow>
@@ -48,7 +53,7 @@ const CellRendererSwitch = (props: any) => {
                     size="small"
                     disabled={isLoading}
                     checked={modificationActivated}
-                    onClick={toggleModificationActive} // Handle toggle
+                    onClick={toggleModificationActive}
                 />
             </span>
         </Tooltip>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -12,10 +12,10 @@ import CustomHeaderComponent from 'components/custom-aggrid/custom-aggrid-header
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import { Badge } from '@mui/material';
 import { NetworkModificationInfos } from './network-modification-menu.type';
-import { ChipCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import CellRendererSwitch from 'components/spreadsheet/utils/cell-renderer-switch';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import ChipRootNetworkCellRenderer from 'components/spreadsheet/utils/chip-root-network-cell-renderer';
 
 interface NetworkModificationsTableProps {
     modifications: NetworkModificationInfos[];
@@ -61,8 +61,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     const staticColumns = useMemo(
         () => [
             {
-                headerName: 'Modification Name',
-                field: 'modificationName',
+                headerName: 'Modification Name', //TO DO MAISSA computeLabel
+                colId: 'modificationName',
                 valueGetter: (params: any) => getModificationLabel(params?.data.modificationInfos),
                 minWidth: 300,
                 flex: 1,
@@ -87,9 +87,10 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             (rootNetworkUuid) => {
                 const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
                 return {
+                    colId: rootNetworkUuid,
                     minWidth: 100,
                     flex: 1,
-                    cellRenderer: ChipCellRenderer,
+                    cellRenderer: ChipRootNetworkCellRenderer,
                     headerComponent: CustomHeaderComponent,
                     headerComponentParams: {
                         icon: (
@@ -127,7 +128,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     // Modify column definitions to include row drag for 'modificationName' column
     const modifiedColumnDefs = columnDefs.map((col) => ({
         ...col,
-        rowDrag: col.field === 'modificationName' && isRowDragEnabled,
+        rowDrag: col.colId === 'modificationName',
     }));
 
     return (

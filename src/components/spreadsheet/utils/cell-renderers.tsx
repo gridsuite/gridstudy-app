@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Checkbox, Chip, Tooltip } from '@mui/material';
+import { Box, Checkbox, Tooltip } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
@@ -13,8 +13,6 @@ import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { ICellRendererParams } from 'ag-grid-community';
 import { CustomCellRendererProps } from 'ag-grid-react';
 import { mergeSx } from '@gridsuite/commons-ui';
-import { FormattedMessage } from 'react-intl';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 const styles = {
     tableCell: (theme: Theme) => ({
@@ -207,21 +205,6 @@ export const MessageLogCellRenderer = ({
                 </Box>
             </Tooltip>
         </Box>
-    );
-};
-export const ChipCellRenderer = (props: any) => {
-    return (
-        <Tooltip title={<FormattedMessage id={'RR'} />} arrow>
-            <span>
-                <Chip
-                    label={<FormattedMessage id={'RR'} />}
-                    deleteIcon={<CheckCircleOutlineIcon />}
-                    onDelete={() => {
-                        console.log('Delete clicked');
-                    }}
-                />
-            </span>
-        </Tooltip>
     );
 };
 export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNode; tooltipValue: ReactNode } }) => {

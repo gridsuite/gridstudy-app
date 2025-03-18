@@ -8,7 +8,7 @@
 import { MODIFICATION_TYPES, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
 import { toModificationOperation, toModificationUnsetOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { getStudyUrlWithNodeUuid, safeEncodeURIComponent } from './index';
+import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import { UUID } from 'crypto';
@@ -85,6 +85,27 @@ export function setModificationActivated(
     urlSearchParams.append('uuids', String([modificationUuid]));
     const modificationUpdateActiveUrl =
         getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    console.debug(modificationUpdateActiveUrl);
+    return backendFetch(modificationUpdateActiveUrl, {
+        method: 'PUT',
+    });
+}
+
+export function updateModificationStatusByRootNetwork(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    rootNetworkUuid: UUID | undefined,
+    modificationUuid: UUID,
+    activated: boolean
+) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('activated', String(activated));
+    urlSearchParams.append('uuids', String([modificationUuid]));
+    const modificationUpdateActiveUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
+        '/network-modifications' +
+        '?' +
+        urlSearchParams.toString();
     console.debug(modificationUpdateActiveUrl);
     return backendFetch(modificationUpdateActiveUrl, {
         method: 'PUT',
