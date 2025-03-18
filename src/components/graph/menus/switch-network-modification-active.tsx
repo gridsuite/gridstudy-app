@@ -6,7 +6,7 @@
  */
 
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
-import { NetworkModificationMetadata } from './network-modification-menu.type';
+import { NetworkModificationInfos } from './network-modification-menu.type';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -18,7 +18,7 @@ import { FormattedMessage } from 'react-intl';
 interface SwitchNetworkModificationActiveProps {
     modificationUuid: UUID;
     modificationActivated: boolean;
-    setModifications: Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
+    setModifications: Dispatch<SetStateAction<NetworkModificationInfos[]>>;
     disabled?: boolean;
 }
 
@@ -46,12 +46,12 @@ export const SwitchNetworkModificationActive = (props: SwitchNetworkModification
         setIsLoading(true);
         setModifications((oldModifications) => {
             const newModifications = [...oldModifications];
-            const modificationToUpdate = newModifications.find((m) => m.uuid === modificationUuid);
+            const modificationToUpdate = newModifications.find((m) => m.modificationInfos.uuid === modificationUuid);
             if (!modificationToUpdate) {
                 return oldModifications;
             }
-            modificationToUpdate.activated = !modificationToUpdate.activated;
-            updateModification(modificationToUpdate.activated);
+            modificationToUpdate.modificationInfos.activated = !modificationToUpdate.modificationInfos.activated;
+            updateModification(modificationToUpdate.modificationInfos.activated);
             return newModifications;
         });
     }, [modificationUuid, updateModification, setModifications]);

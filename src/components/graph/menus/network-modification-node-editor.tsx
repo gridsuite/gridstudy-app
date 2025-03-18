@@ -89,6 +89,7 @@ import {
     NetworkModificationCopyInfo,
     NetworkModificationCopyType,
     NetworkModificationData,
+    NetworkModificationInfos,
     NetworkModificationMetadata,
 } from './network-modification-menu.type';
 import { SwitchNetworkModificationActive } from './switch-network-modification-active';
@@ -105,28 +106,28 @@ const nonEditableModificationTypes = new Set([
     'OPERATING_STATUS_MODIFICATION',
 ]);
 
-const isEditableModification = (modif: NetworkModificationMetadata) => {
+const isEditableModification = (modif: NetworkModificationInfos) => {
     if (!modif) {
         return false;
     }
-    return !nonEditableModificationTypes.has(modif.type);
+    return !nonEditableModificationTypes.has(modif.modificationInfos.type);
 };
 
 const NetworkModificationNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
-    const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
+    const [modifications, setModifications] = useState<NetworkModificationInfos[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
-    const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
+    const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationInfos[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
-    const [selectedItems, setSelectedItems] = useState<NetworkModificationMetadata[]>([]);
+    const [selectedItems, setSelectedItems] = useState<NetworkModificationInfos[]>([]);
     const [copiedModifications, setCopiedModifications] = useState<UUID[]>([]);
     const [copyInfos, setCopyInfos] = useState<NetworkModificationCopyInfo | null>(null);
     const copyInfosRef = useRef<NetworkModificationCopyInfo | null>();
@@ -469,9 +470,11 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
-    const updateSelectedItems = useCallback((modifications: NetworkModificationMetadata[]) => {
-        const toKeepIdsSet = new Set(modifications.map((e) => e.uuid));
-        setSelectedItems((oldselectedItems) => oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid)));
+    const updateSelectedItems = useCallback((modifications: NetworkModificationInfos[]) => {
+        const toKeepIdsSet = new Set(modifications.map((e) => e.modificationInfos.uuid));
+        setSelectedItems((oldselectedItems) =>
+            oldselectedItems.filter((s) => toKeepIdsSet.has(s.modificationInfos.uuid))
+        );
     }, []);
 
     const dofetchNetworkModifications = useCallback(() => {
@@ -481,17 +484,17 @@ const NetworkModificationNodeEditor = () => {
         }
         setLaunchLoader(true);
         fetchNetworkModifications(studyUuid, currentNode.id, false)
-            .then((res: NetworkModificationMetadata[]) => {
+            .then((res: NetworkModificationInfos[]) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
                     const liveModifications = res.filter(
-                        (networkModification) => networkModification.stashed === false
+                        (networkModification) => networkModification.modificationInfos.stashed === false
                     );
                     updateSelectedItems(liveModifications);
                     setModifications(liveModifications);
                     setModificationsToRestore(
-                        res.filter((networkModification) => networkModification.stashed === true)
+                        res.filter((networkModification) => networkModification.modificationInfos.stashed === true)
                     );
                 }
             })
@@ -608,7 +611,7 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const doDeleteModification = useCallback(() => {
-        const selectedModificationsUuid = selectedItems.map((item) => item.uuid);
+        const selectedModificationsUuid = selectedItems.map((item) => item.modificationInfos.uuid);
         stashModifications(studyUuid, currentNode?.id, selectedModificationsUuid)
             .then(() => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
@@ -634,7 +637,7 @@ const NetworkModificationNodeEditor = () => {
         folderName,
         folderId,
     }: IElementCreationDialog) => {
-        const selectedModificationsUuid = selectedItems.map((item) => item.uuid);
+        const selectedModificationsUuid = selectedItems.map((item) => item.modificationInfos.uuid);
 
         setSaveInProgress(true);
         createCompositeModifications(name, description, folderId, selectedModificationsUuid)
@@ -659,11 +662,15 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const selectedModificationsIds = useCallback(() => {
-        const allModificationsIds = modifications.map((m) => m.uuid);
+        const allModificationsIds = modifications.map((m) => m.modificationInfos.uuid);
         // sort the selected modifications in the same order as they appear in the whole modifications list
         return selectedItems
-            .sort((a, b) => allModificationsIds.indexOf(a.uuid) - allModificationsIds.indexOf(b.uuid))
-            .map((m) => m.uuid);
+            .sort(
+                (a, b) =>
+                    allModificationsIds.indexOf(a.modificationInfos.uuid) -
+                    allModificationsIds.indexOf(b.modificationInfos.uuid)
+            )
+            .map((m) => m.modificationInfos.uuid);
     }, [modifications, selectedItems]);
 
     const doCutModifications = useCallback(() => {
@@ -765,18 +772,20 @@ const NetworkModificationNodeEditor = () => {
             }
             const res = [...modifications];
             const [item] = res.splice(source.index, 1);
-            const before = res[destination.index]?.uuid;
+            const before = res[destination.index]?.modificationInfos.uuid;
             res.splice(destination ? destination.index : modifications.length, 0, item);
 
             /* doing the local change before update to server */
             setModifications(res);
-            changeNetworkModificationOrder(studyUuid, currentNode.id, item.uuid, before).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'errReorderModificationMsg',
-                });
-                setModifications(modifications); // rollback
-            });
+            changeNetworkModificationOrder(studyUuid, currentNode.id, item.modificationInfos.uuid, before).catch(
+                (error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'errReorderModificationMsg',
+                    });
+                    setModifications(modifications); // rollback
+                }
+            );
         },
         [modifications, studyUuid, currentNode?.id, snackError]
     );
@@ -801,11 +810,11 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleSecondaryAction = useCallback(
-        (modification: NetworkModificationMetadata, isItemHovered?: boolean) => {
+        (modification: NetworkModificationInfos, isItemHovered?: boolean) => {
             return isItemHovered && !isDragging ? (
                 <SwitchNetworkModificationActive
-                    modificationActivated={modification.activated}
-                    modificationUuid={modification.uuid}
+                    modificationActivated={modification.modificationInfos.activated}
+                    modificationUuid={modification.modificationInfos.uuid}
                     setModifications={setModifications}
                     disabled={isLoading() || isAnyNodeBuilding || mapDataLoading}
                 />
@@ -815,7 +824,7 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const isModificationClickable = useCallback(
-        (modification: NetworkModificationMetadata) =>
+        (modification: NetworkModificationInfos) =>
             !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
@@ -826,7 +835,7 @@ const NetworkModificationNodeEditor = () => {
                 sx={{
                     items: (modification) => ({
                         label: {
-                            ...(!modification.activated && { ...styles.disabledModification }),
+                            ...(!modification.modificationInfos.activated && { ...styles.disabledModification }),
                             ...styles.checkBoxLabel,
                         },
                         checkBoxIcon: styles.checkBoxIcon,
@@ -835,14 +844,15 @@ const NetworkModificationNodeEditor = () => {
                     dragAndDropContainer: styles.listContainer,
                 }}
                 onItemClick={(modification) => {
-                    isModificationClickable(modification) && doEditModification(modification.uuid, modification.type);
+                    isModificationClickable(modification) &&
+                        doEditModification(modification.modificationInfos.uuid, modification.modificationInfos.type);
                 }}
                 isItemClickable={isModificationClickable}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
                 items={modifications}
-                getItemId={(val) => val.uuid}
-                getItemLabel={getModificationLabel}
+                getItemId={(val) => val.modificationInfos.uuid}
+                getItemLabel={(val) => getModificationLabel(val.modificationInfos)}
                 isDndDragAndDropActive
                 isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading}
                 secondaryAction={handleSecondaryAction}

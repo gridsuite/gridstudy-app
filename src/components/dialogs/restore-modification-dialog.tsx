@@ -21,7 +21,10 @@ import { deleteModifications, restoreModifications } from 'services/study/networ
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { NetworkModificationMetadata } from 'components/graph/menus/network-modification-menu.type';
+import {
+    NetworkModificationInfos,
+    NetworkModificationMetadata,
+} from 'components/graph/menus/network-modification-menu.type';
 import { toggleElementFromList } from 'components/utils/utils';
 
 const styles = {
@@ -50,7 +53,7 @@ const styles = {
 interface RestoreModificationDialogProps {
     open: boolean;
     onClose: () => void;
-    modifToRestore: NetworkModificationMetadata[];
+    modifToRestore: NetworkModificationInfos[];
 }
 
 /**
@@ -64,11 +67,12 @@ interface RestoreModificationDialogProps {
 
 const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreModificationDialogProps) => {
     const intl = useIntl();
+
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const [stashedModifications, setStashedModifications] = useState<NetworkModificationMetadata[]>([]);
-    const [selectedItems, setSelectedItems] = useState<NetworkModificationMetadata[]>([]);
+    const [stashedModifications, setStashedModifications] = useState<NetworkModificationInfos[]>([]);
+    const [selectedItems, setSelectedItems] = useState<NetworkModificationInfos[]>([]);
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] = useState(false);
 
     const { computeLabel } = useModificationLabelComputer();
@@ -79,14 +83,14 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
     };
 
     const handleDelete = () => {
-        const selectedModificationsUuidsToDelete = selectedItems.map((item) => item.uuid);
+        const selectedModificationsUuidsToDelete = selectedItems.map((item) => item.modificationInfos.uuid);
         setOpenDeleteConfirmationPopup(false);
         deleteModifications(studyUuid, currentNode?.id, selectedModificationsUuidsToDelete);
         handleClose();
     };
 
     const handleRestore = () => {
-        const selectedModificationsUuidToRestore = selectedItems.map((item) => item.uuid);
+        const selectedModificationsUuidToRestore = selectedItems.map((item) => item.modificationInfos.uuid);
 
         restoreModifications(studyUuid, currentNode?.id, selectedModificationsUuidToRestore);
         handleClose();
@@ -129,14 +133,14 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
                     items={stashedModifications}
                     selectedItems={selectedItems}
                     onSelectionChange={setSelectedItems}
-                    getItemId={(v) => v.uuid}
-                    getItemLabel={getLabel}
+                    getItemId={(v) => v.modificationInfos.uuid}
+                    getItemLabel={(v) => getLabel(v.modificationInfos)}
                     onItemClick={(stashedModification) =>
                         setSelectedItems((oldCheckedElements) =>
                             toggleElementFromList(
                                 stashedModification,
                                 oldCheckedElements,
-                                (v: NetworkModificationMetadata) => v.uuid
+                                (v: NetworkModificationInfos) => v.modificationInfos.uuid
                             )
                         )
                     }
