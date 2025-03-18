@@ -42,6 +42,7 @@ export default function RenameTabDialog({
         name: yup
             .string()
             .required()
+            .max(60, 'spreadsheet/spreadsheet_name_le_60')
             .test(
                 'unique-name',
                 intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists' }),

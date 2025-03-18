@@ -90,6 +90,7 @@ const spreadsheetEn = {
     'spreadsheet/delete/label': 'Delete',
     'spreadsheet/rename_spreadsheet_error': 'Error while renaming spreadsheet',
     'spreadsheet/rename_dialog_title': 'Rename spreadsheet',
+    'spreadsheet/spreadsheet_name_le_60': 'Spreadsheet name must be at most 60 characters',
 
     // Column types
     TEXT: 'Text',
