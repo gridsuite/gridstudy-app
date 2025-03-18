@@ -414,6 +414,29 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [currentNode?.type, handleOpenModificationDialog]
     );
 
+    const getStudySpreadsheetConfigCollection = useCallback(() => {
+        if (!studyUuid) {
+            return;
+        }
+
+        getSpreadsheetConfigCollection(studyUuid).then((collectionData: SpreadsheetCollectionDto) => {
+            const tableDefinitions = collectionData.spreadsheetConfigs.map((spreadsheetConfig, index) => {
+                return {
+                    uuid: spreadsheetConfig.id,
+                    index: index,
+                    name: spreadsheetConfig.name,
+                    columns: mapColumnsDto(spreadsheetConfig.columns),
+                    type: spreadsheetConfig.sheetType,
+                };
+            });
+            dispatch(initTableDefinitions(collectionData.id, tableDefinitions));
+            if (tableDefinitions.length > 0) {
+                handleSwitchTab(tableDefinitions[0].uuid);
+                dispatch(resetAllSpreadsheetGsFilters());
+            }
+        });
+    }, [studyUuid, dispatch, handleSwitchTab]);
+
     // Reset the collection to the default one defined in the user profile
     const resetSpreadsheetCollection = useCallback(() => {
         if (!studyUuid) {
@@ -422,22 +445,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
         setSpreadsheetConfigCollection(studyUuid)
             .then(() => {
-                getSpreadsheetConfigCollection(studyUuid).then((collectionData: SpreadsheetCollectionDto) => {
-                    const tableDefinitions = collectionData.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                        return {
-                            uuid: spreadsheetConfig.id,
-                            index: index,
-                            name: spreadsheetConfig.name,
-                            columns: mapColumnsDto(spreadsheetConfig.columns),
-                            type: spreadsheetConfig.sheetType,
-                        };
-                    });
-                    dispatch(initTableDefinitions(collectionData.id, tableDefinitions));
-                    if (tableDefinitions.length > 0) {
-                        handleSwitchTab(tableDefinitions[0].uuid);
-                        dispatch(resetAllSpreadsheetGsFilters());
-                    }
-                });
+                getStudySpreadsheetConfigCollection();
             })
             .catch((error) => {
                 snackError({
@@ -446,7 +454,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 });
             });
         setResetConfirmationDialogOpen(false);
-    }, [studyUuid, dispatch, handleSwitchTab, snackError]);
+    }, [studyUuid, getStudySpreadsheetConfigCollection, snackError]);
 
     const handleResetCollectionClick = useCallback(() => {
         if (tablesDefinitions.length > 0) {
