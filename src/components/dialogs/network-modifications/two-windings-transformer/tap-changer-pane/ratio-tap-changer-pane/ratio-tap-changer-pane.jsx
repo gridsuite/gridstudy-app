@@ -22,7 +22,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { VoltageAdornment } from '../../../../dialog-utils';
 import { SwitchInput, FloatInput, SelectInput } from '@gridsuite/commons-ui';
-import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
+import { RegulatingTerminalForm } from '../../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';

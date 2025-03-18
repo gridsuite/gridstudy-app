@@ -27,13 +27,15 @@ import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
-import { getNadIdentifier } from '../diagram-utils';
+import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import DiagramControls from '../diagram-controls';
+import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 
 const dynamicCssRules: CSS_RULE[] = [
@@ -150,7 +152,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
-
+    const { snackError } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
@@ -166,6 +168,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
 
     const nadIdentifier = useMemo(() => {
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
@@ -232,6 +235,30 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
         [setShouldDisplayTooltip, setAnchorPosition]
     );
+
+    const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
+        const voltageLevelIds = diagramStates
+            .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
+            .map((diagram) => diagram.id);
+        createDiagramConfig(
+            {
+                depth: networkAreaDiagramDepth,
+                scalingFactor: props.svgScalingFactor,
+                radiusFactor: 300.0, // At the moment, we only use the default value
+                voltageLevelIds: voltageLevelIds,
+                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
+            },
+            directoryData.name,
+            directoryData.description,
+            directoryData.folderId
+        ).catch((error) =>
+            snackError({
+                messageTxt: error.message,
+                headerId: 'SaveToGridexploreError',
+            })
+        );
+    };
+
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -346,6 +373,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
+            <DiagramControls onSave={handleSaveNadConfig} />
         </>
     );
 }
