@@ -99,6 +99,8 @@ import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-fo
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { LccCreationDialog } from '../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { isChecked, isPartial, styles } from './network-modification-node-editor-utils';
+import NetworkModificationsTable from './network-modifications-table';
+import { CellClickedEvent } from 'ag-grid-community';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -907,6 +909,21 @@ const NetworkModificationNodeEditor = () => {
             </Box>
         );
     };
+
+    const renderNetworkModificationsTable = () => {
+        return (
+            <NetworkModificationsTable
+                handleCellClick={handleCellClick}
+                modifications={modifications}
+                // handleSwitchAction={handleSwitchAction} !!M
+                setModifications={setModifications}
+                // onRowDragStart={onRowDragStart}
+                // onRowDragEnd={onRowDragEnd}
+                // onRowSelected={handleRowSelected}
+                isRowDragEnabled={!isLoading() && !isAnyNodeBuilding && !mapDataLoading}
+            />
+        );
+    };
     const renderNetworkModificationsToRestoreDialog = () => {
         return (
             <RestoreModificationDialog
@@ -934,6 +951,25 @@ const NetworkModificationNodeEditor = () => {
             )
         );
     };
+
+    const handleCellClick = useCallback(
+        (event: CellClickedEvent) => {
+            const { colDef, data } = event; // colDef gives us the column definition, data is the row data
+            if (colDef.field === 'modificationName') {
+                // Check if the clicked column is the 'modificationName' column
+                if (isModificationClickable(data)) {
+                    // Check if the modification is clickable
+                    // Perform the edit action
+                    doEditModification(data.modificationInfos.uuid, data.modificationInfos.type);
+                } else {
+                    // Optionally handle the case where the modification is not clickable
+                    console.log('This modification is not clickable');
+                }
+            }
+        },
+        [doEditModification, isModificationClickable] // Dependencies for the callback
+    );
+
     const renderPaneSubtitle = () => {
         if (isLoading() && messageId) {
             return renderNetworkModificationsListTitleLoading();
@@ -1080,7 +1116,7 @@ const NetworkModificationNodeEditor = () => {
             {createCompositeModificationDialogOpen && renderCreateCompositeNetworkModificationsDialog()}
             {renderPaneSubtitle()}
 
-            {renderNetworkModificationsList()}
+            {renderNetworkModificationsTable()}
 
             <NetworkModificationsMenu
                 open={openNetworkModificationsMenu}

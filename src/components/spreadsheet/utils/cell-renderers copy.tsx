@@ -119,6 +119,21 @@ export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
     );
 };
 
+export const ChipCellRenderer = (props: any) => {
+    return (
+        <Tooltip title={<FormattedMessage id={'RR'} />} arrow>
+            <span>
+                <Chip
+                    label={<FormattedMessage id={'RR'} />}
+                    deleteIcon={<CheckCircleOutlineIcon />}
+                    onDelete={() => {
+                        console.log('Delete clicked');
+                    }}
+                />
+            </span>
+        </Tooltip>
+    );
+};
 export const MessageLogCellRenderer = ({
     param,
     highlightColor,
@@ -209,21 +224,7 @@ export const MessageLogCellRenderer = ({
         </Box>
     );
 };
-export const ChipCellRenderer = (props: any) => {
-    return (
-        <Tooltip title={<FormattedMessage id={'RR'} />} arrow>
-            <span>
-                <Chip
-                    label={<FormattedMessage id={'RR'} />}
-                    deleteIcon={<CheckCircleOutlineIcon />}
-                    onDelete={() => {
-                        console.log('Delete clicked');
-                    }}
-                />
-            </span>
-        </Tooltip>
-    );
-};
+
 export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNode; tooltipValue: ReactNode } }) => {
     const { cellValue, tooltipValue } = value ?? {};
 
