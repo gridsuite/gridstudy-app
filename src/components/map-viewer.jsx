@@ -249,6 +249,8 @@ const MapViewer = ({
                 <HorizontalToolbar />
             </Box>
             <Box sx={styles.mapAndTreeContainer}>
+                {/* Waiting for map geodata is unnecessary. The map has is proper loader implementation */}
+                {/* This WaitingLoader is placed here to block functionnalities, hiding under components with some opacity*/}
                 <WaitingLoader message={'LoadingRemoteData'} loading={!isNetworkModificationTreeModelUpToDate} />
                 {/* Tree */}
                 <Box
