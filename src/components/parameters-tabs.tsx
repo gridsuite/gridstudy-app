@@ -7,7 +7,7 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
@@ -62,7 +62,6 @@ import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParametersBackend } from './dialogs/parameters/use-parameters-backend';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
-import { useDispatch } from 'react-redux';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
 
 enum TAB_VALUES {
