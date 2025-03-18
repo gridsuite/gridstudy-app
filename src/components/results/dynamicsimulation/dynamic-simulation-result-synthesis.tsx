@@ -56,13 +56,16 @@ const DynamicSimulationResultSynthesis = memo(
             currentRootNetworkUuid,
             fetchDynamicSimulationStatus,
             dynamicSimulationResultInvalidations,
-            null,
-            (status: RunningStatus) =>
-                status && [
-                    {
-                        status,
-                    },
-                ]
+            undefined,
+            (status: string | null) => {
+                return status === null
+                    ? undefined
+                    : [
+                          {
+                              status,
+                          },
+                      ];
+            }
         );
 
         const columnDefs = useMemo(

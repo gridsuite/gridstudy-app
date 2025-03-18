@@ -6,7 +6,6 @@
  */
 
 import { Box, Grid, Paper, TextField, Theme, ToggleButton, Tooltip, Typography } from '@mui/material';
-
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
 import { ChangeEvent, memo, useCallback, useMemo, useRef, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
@@ -92,17 +91,17 @@ function getTimeseriesIndex(metadata: TimeSeriesMetadata) {
 
 export type DynamicSimulationResultChartProps = {
     groupId: string;
-    timeseriesMetadatas: SimpleTimeSeriesMetadata[];
+    timeseriesMetadatas?: SimpleTimeSeriesMetadata[];
     selected?: boolean;
     loadTimeSeries: (selectedIndexes: number[]) => Promise<Timeseries[] | undefined>;
 };
 
-const DynamicSimulationResultChart = ({
+function DynamicSimulationResultChart({
     groupId,
     timeseriesMetadatas,
     selected,
     loadTimeSeries,
-}: Readonly<DynamicSimulationResultChartProps>) => {
+}: Readonly<DynamicSimulationResultChartProps>) {
     const intl = useIntl();
 
     const headers = useMemo(
@@ -209,6 +208,9 @@ const DynamicSimulationResultChart = ({
     const debouncedHandleRightAxisSelected = useDebounce(handleRightAxisSelected, 500);
 
     const items = useMemo(() => {
+        if (timeseriesMetadatas === undefined) {
+            return [];
+        }
         return timeseriesMetadatas.map((elem, index) => ({
             id: index,
             label: elem.name,
@@ -552,6 +554,6 @@ const DynamicSimulationResultChart = ({
             </Box>
         </Box>
     );
-};
+}
 
 export default memo(DynamicSimulationResultChart);

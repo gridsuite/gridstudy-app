@@ -202,12 +202,12 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const fetchResult = useMemo(() => {
         if (tabIndex === 0 || tabIndex === 1) {
             return fetchLimitViolationsWithParameters;
-        } else if (tabIndex === 2) {
+        } /*if (tabIndex === 2)*/ else {
             return fetchloadflowResultWithParameters;
         }
     }, [tabIndex, fetchLimitViolationsWithParameters, fetchloadflowResultWithParameters]);
 
-    const [loadflowResult, isLoadingResult, setResult] = useNodeData(
+    const [loadflowResult, isLoadingResult, setResult] = useNodeData<any>(
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,

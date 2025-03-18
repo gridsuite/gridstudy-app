@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
+import { Grid, List, ListSubheader, Theme, Typography } from '@mui/material';
+import { Dispatch, memo, SetStateAction, useCallback, useEffect, useState } from 'react';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
-import { Grid, List, ListSubheader, Typography } from '@mui/material';
-import { memo, useCallback, useEffect, useState } from 'react';
 
 const styles = {
     root: {
@@ -16,17 +15,34 @@ const styles = {
         height: '100%',
         overflow: 'auto',
     },
-    headerItem: (theme) => ({
+    headerItem: (theme: Theme) => ({
         textAlign: 'center',
         background: theme.palette.background.paper,
     }),
 };
 
-const DynamicSimulationResultSeriesList = ({ index, items, headers, onLeftAxisSelected, onRightAxisSelected }) => {
-    const [leftAxisCheckedIndexes, setLeftAxisCheckedIndexes] = useState([]);
-    const [rightAxisCheckedIndexes, setRightAxisCheckedIndexes] = useState([]);
+export type DynamicSimulationResultSeriesListProps = {
+    index: number;
+    items: {
+        id: number;
+        label: string;
+    }[];
+    headers: string[];
+    onLeftAxisSelected: (index: number, axisCheckedIndexes: number[]) => void;
+    onRightAxisSelected: (index: number, axisCheckedIndexes: number[]) => void;
+};
 
-    const handleToggle = useCallback((id, setAxisCheckedIndexes) => {
+function DynamicSimulationResultSeriesList({
+    index,
+    items,
+    headers,
+    onLeftAxisSelected,
+    onRightAxisSelected,
+}: DynamicSimulationResultSeriesListProps) {
+    const [leftAxisCheckedIndexes, setLeftAxisCheckedIndexes] = useState<number[]>([]);
+    const [rightAxisCheckedIndexes, setRightAxisCheckedIndexes] = useState<number[]>([]);
+
+    const handleToggle = useCallback((id: number, setAxisCheckedIndexes: Dispatch<SetStateAction<number[]>>) => {
         setAxisCheckedIndexes((prev) => {
             const currIndex = prev.indexOf(id);
             const newChecked = [...prev];
@@ -40,14 +56,14 @@ const DynamicSimulationResultSeriesList = ({ index, items, headers, onLeftAxisSe
     }, []);
 
     const handleToggleLeftAxis = useCallback(
-        (id) => {
+        (id: number) => {
             handleToggle(id, setLeftAxisCheckedIndexes);
         },
         [handleToggle]
     );
 
     const handleToggleRightAxis = useCallback(
-        (id) => {
+        (id: number) => {
             handleToggle(id, setRightAxisCheckedIndexes);
         },
         [handleToggle]
@@ -90,14 +106,6 @@ const DynamicSimulationResultSeriesList = ({ index, items, headers, onLeftAxisSe
             ))}
         </List>
     );
-};
-
-DynamicSimulationResultSeriesList.propTypes = {
-    index: PropTypes.number,
-    items: PropTypes.arrayOf(PropTypes.object),
-    headers: PropTypes.arrayOf(PropTypes.string).isRequired,
-    onLeftAxisSelected: PropTypes.func.isRequired,
-    onRightAxisSelected: PropTypes.func.isRequired,
-};
+}
 
 export default memo(DynamicSimulationResultSeriesList);

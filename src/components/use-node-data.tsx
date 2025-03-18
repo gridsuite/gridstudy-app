@@ -5,21 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from './utils/running-status';
+import { UUID } from 'crypto';
+import { AppState, StudyUpdated } from '../redux/reducer';
+import { identity } from '@gridsuite/commons-ui';
 
 export const UPDATE_TYPE_HEADER = 'updateType';
 
-function isWorthUpdate(
-    studyUpdatedForce,
-    fetcher,
-    lastUpdateRef,
-    nodeUuidRef,
-    rootNetworkUuidRef,
-    nodeUuid,
-    rootNetworkUuid,
-    invalidations
+function isWorthUpdate<T>(
+    studyUpdatedForce: StudyUpdated,
+    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<T>,
+    lastUpdateRef: RefObject<
+        | {
+              studyUpdatedForce: StudyUpdated;
+              fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<T>;
+          }
+        | undefined
+    >,
+    nodeUuidRef: RefObject<UUID | undefined>,
+    rootNetworkUuidRef: RefObject<UUID | undefined>,
+    nodeUuid: UUID,
+    rootNetworkUuid: UUID,
+    invalidations: string[]
 ) {
     const headers = studyUpdatedForce?.eventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
@@ -58,22 +67,25 @@ function isWorthUpdate(
     return false;
 }
 
-export function useNodeData(
-    studyUuid,
-    nodeUuid,
-    currentRootNetworkUuid,
-    fetcher,
-    invalidations,
-    defaultValue,
-    resultConversion
+export function useNodeData<T, R = T>(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<T | null>,
+    invalidations: string[],
+    defaultValue: R | undefined = undefined,
+    resultConversion: (fetchedResult: T | null) => R | null = identity
 ) {
-    const [result, setResult] = useState(defaultValue);
+    const [result, setResult] = useState<R | RunningStatus | undefined>(defaultValue);
     const [isPending, setIsPending] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
-    const nodeUuidRef = useRef();
-    const rootNetworkUuidRef = useRef();
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-    const lastUpdateRef = useRef();
+    const nodeUuidRef = useRef<UUID>();
+    const rootNetworkUuidRef = useRef<UUID>();
+    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
+    const lastUpdateRef = useRef<{
+        studyUpdatedForce: StudyUpdated;
+        fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<T | null>;
+    }>();
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
@@ -83,7 +95,7 @@ export function useNodeData(
         fetcher(studyUuid, nodeUuid, currentRootNetworkUuid)
             .then((res) => {
                 if (nodeUuidRef.current === nodeUuid && rootNetworkUuidRef.current === currentRootNetworkUuid) {
-                    setResult(resultConversion ? resultConversion(res) : res);
+                    setResult(resultConversion(res) ?? undefined);
                 }
             })
             .catch((err) => {
