@@ -469,7 +469,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         currentNode={currentNode}
                         rowData={rowData}
                         columnData={reorderedColsDefs}
-                        fetched={equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined}
+                        fetched={!isFetching}
                         handleColumnDrag={handleColumnDrag}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
