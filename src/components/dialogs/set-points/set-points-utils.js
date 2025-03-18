@@ -7,10 +7,10 @@
 
 import {
     ACTIVE_POWER_SET_POINT,
-    DROOP,
     EQUIPMENT,
-    FREQUENCY_REGULATION,
     ID,
+    MAXIMUM_ACTIVE_POWER,
+    MINIMUM_ACTIVE_POWER,
     NAME,
     NOMINAL_VOLTAGE,
     Q_PERCENT,
@@ -22,34 +22,14 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-    MINIMUM_ACTIVE_POWER,
-    MAXIMUM_ACTIVE_POWER,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../regulating-terminal/regulating-terminal-form-utils';
-
-export const getFrequencyRegulationEmptyFormData = (isEquipmentModification) => ({
-    [FREQUENCY_REGULATION]: isEquipmentModification ? null : false,
-    [DROOP]: null,
-});
-
-export const getFrequencyRegulationSchema = (isEquipmentModification) => ({
-    [FREQUENCY_REGULATION]: yup
-        .bool()
-        .nullable()
-        .when([], {
-            is: () => !isEquipmentModification,
-            then: (schema) => schema.required(),
-        }),
-    [DROOP]: yup
-        .number()
-        .nullable()
-        .when([FREQUENCY_REGULATION], {
-            is: (frequencyRegulation) => !isEquipmentModification && frequencyRegulation,
-            then: (schema) => schema.required(),
-        }),
-});
+import {
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
+} from '../active-power-control/active-power-control-utils';
 
 const getVoltageRegulationEmptyFormData = (isEquipmentModification) => ({
     [VOLTAGE_SET_POINT]: null,
@@ -106,7 +86,7 @@ export const getSetPointsEmptyFormData = (isEquipmentModification = false) => ({
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
     ...getVoltageRegulationEmptyFormData(isEquipmentModification),
-    ...getFrequencyRegulationEmptyFormData(isEquipmentModification),
+    ...getActivePowerControlEmptyFormData(isEquipmentModification),
 });
 
 export const getSetPointsSchema = (isEquipmentModification = false) => ({
@@ -120,7 +100,7 @@ export const getSetPointsSchema = (isEquipmentModification = false) => ({
     ...getActivePowerSetPointSchema(isEquipmentModification),
     ...getReactivePowerSetPointSchema(isEquipmentModification),
     ...getVoltageRegulationSchema(isEquipmentModification),
-    ...getFrequencyRegulationSchema(isEquipmentModification),
+    ...getActivePowerControlSchema(isEquipmentModification),
 });
 
 const getReactivePowerSetPointSchema = (isEquipmentModification) => ({
