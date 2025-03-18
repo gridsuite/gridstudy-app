@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, IconButton, Box, Typography, Menu, MenuItem } from '@mui/material';
+import { Grid } from '@mui/material';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { AppDispatch } from 'redux/store';
 import { removeTableDefinition, renameTableDefinition, reorderTableDefinitions } from 'redux/actions';
 import {
@@ -20,21 +19,14 @@ import {
     reorderSpreadsheetConfigs,
 } from 'services/study-config';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { DropResult } from 'react-beautiful-dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
 import { UUID } from 'crypto';
 import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
-
-const RENAME = 'RENAME';
-const DELETE = 'DELETE';
-
-const TAB_MENU_DEFINITION = {
-    RENAME: { id: RENAME, label: 'spreadsheet/rename/label' },
-    DELETE: { id: DELETE, label: 'spreadsheet/delete/label' },
-};
+import TabLabel from './tab-label';
 
 const draggableTabStyles = {
     container: {
@@ -57,86 +49,6 @@ interface EquipmentTabsProps {
     handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
 }
-
-const TabLabel: React.FC<{
-    name: string;
-    onRemove: () => void;
-    onRename?: () => void;
-    disabled: boolean;
-}> = ({ name, onRemove, onRename, disabled }) => {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-
-    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-        event.stopPropagation();
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleMenuItemClick = (option: { id: string }) => {
-        handleMenuClose();
-        switch (option.id) {
-            case RENAME:
-                onRename?.();
-                break;
-            case DELETE:
-                onRemove();
-                break;
-        }
-    };
-
-    return (
-        <Box
-            sx={(theme) => ({
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-                width: '100%',
-                minWidth: theme.spacing(4),
-                px: theme.spacing(2),
-                '& .tab-actions': {
-                    position: 'absolute',
-                    right: theme.spacing(-1),
-                    display: 'flex',
-                },
-            })}
-        >
-            <Typography
-                variant="inherit"
-                sx={{
-                    width: '100%',
-                    textAlign: 'center',
-                    transition: 'transform 0.2s',
-                    pr: 1,
-                }}
-            >
-                {name}
-            </Typography>
-            <div className="tab-actions">
-                <IconButton size="small" onClick={handleMenuOpen} disabled={disabled}>
-                    <MoreVertIcon fontSize="small" />
-                </IconButton>
-                <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose} onClick={(e) => e.stopPropagation()}>
-                    {Object.values(TAB_MENU_DEFINITION).map((option) => (
-                        <MenuItem
-                            key={option.id}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleMenuItemClick(option);
-                            }}
-                        >
-                            <FormattedMessage id={option.label} />
-                        </MenuItem>
-                    ))}
-                </Menu>
-            </div>
-        </Box>
-    );
-};
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
     selectedTabUuid,
