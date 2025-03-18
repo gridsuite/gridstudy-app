@@ -29,6 +29,7 @@ import {
     AutocompleteInput,
     Identifiable,
     IntegerInput,
+    Option,
     SelectInput,
     SwitchInput,
     TextInput,
@@ -90,7 +91,7 @@ export function ConnectivityForm({
     previousValues,
 }: Readonly<ConnectivityFormProps>) {
     const currentNodeUuid = currentNode?.id;
-    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
+    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState<Option[]>([]);
 
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
 
@@ -101,6 +102,15 @@ export function ConnectivityForm({
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
+
+    const vlOptions = useMemo(
+        () =>
+            voltageLevelOptions.map((item) => ({
+                id: item.id,
+                label: item.name ?? '',
+            })),
+        [voltageLevelOptions]
+    );
 
     useEffect(() => {
         if (isEquipmentModification) {
@@ -115,7 +125,12 @@ export function ConnectivityForm({
                     currentRootNetworkUuid,
                     watchVoltageLevelId
                 ).then((busesOrbusbarSections) => {
-                    setBusOrBusbarSectionOptions(busesOrbusbarSections || []);
+                    setBusOrBusbarSectionOptions(
+                        busesOrbusbarSections?.map((busesOrbusbarSection) => ({
+                            id: busesOrbusbarSection.id,
+                            label: busesOrbusbarSection?.name ?? '',
+                        })) || []
+                    );
                 });
             } else {
                 setBusOrBusbarSectionOptions([]);
@@ -160,10 +175,7 @@ export function ConnectivityForm({
         <AutocompleteInput
             name={`${id}.${VOLTAGE_LEVEL}.${ID}`}
             label={voltageLevelSelectLabel}
-            options={voltageLevelOptions.map((voltageLevel) => ({
-                id: voltageLevel.id,
-                label: voltageLevel?.name ?? '',
-            }))}
+            options={vlOptions}
             disabled={isEquipmentModification}
             size={'small'}
         />
@@ -183,10 +195,7 @@ export function ConnectivityForm({
             selectOnFocus
             name={`${id}.${VOLTAGE_LEVEL}`}
             label={voltageLevelSelectLabel}
-            options={voltageLevelOptions.map((voltageLevel) => ({
-                id: voltageLevel.id,
-                label: voltageLevel?.name ?? '',
-            }))}
+            options={vlOptions}
             getOptionLabel={getObjectId}
             size={'small'}
         />
