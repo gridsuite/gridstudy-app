@@ -17,12 +17,12 @@ import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '.
 import { Grid, TextField } from '@mui/material';
 import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
-import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import { FormattedMessage } from 'react-intl';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 
 const BatteryModificationForm = ({
     studyUuid,
@@ -155,7 +155,10 @@ const BatteryModificationForm = ({
                 <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <FrequencyRegulation isEquipmentModification={true} previousValues={batteryToModify} />
+                <ActivePowerControlForm
+                    isEquipmentModification={true}
+                    previousValues={batteryToModify?.activePowerControl}
+                />
             </Grid>
             <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>

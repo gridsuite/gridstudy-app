@@ -18,11 +18,11 @@ import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '.
 import { Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
-import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 
 const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
@@ -99,7 +99,7 @@ const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid })
                 <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <FrequencyRegulation />
+                <ActivePowerControlForm />
             </Grid>
             <PropertiesForm networkElementType={'battery'} />
         </>
