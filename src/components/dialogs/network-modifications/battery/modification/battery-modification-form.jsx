@@ -164,7 +164,7 @@ const BatteryModificationForm = ({
 };
 
 BatteryModificationForm.propTypes = {
-    activePowerControl: PropTypes.object,
+    batteryToModify: PropTypes.object,
 };
 
 export default BatteryModificationForm;
