@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, ReactElement, ReactNode } from 'react';
-import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui'; // Assuming this is the type
+import React, { useState, useEffect, useCallback, useRef, ReactElement, ReactNode } from 'react';
+import { CustomAGGrid, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { CellClickedEvent, RowClassParams, RowStyle } from 'ag-grid-community';
 import CustomHeaderComponent from 'components/custom-aggrid/custom-aggrid-header';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
@@ -7,7 +7,9 @@ import { Badge } from '@mui/material';
 import { NetworkModificationInfos } from './network-modification-menu.type';
 import { ChipCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import CellRendererSwitch from 'components/spreadsheet/utils/cell-renderer-switch';
-import { useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
+
 interface NetworkModificationsTableProps {
     modifications: NetworkModificationInfos[];
     setModifications: React.Dispatch<React.SetStateAction<NetworkModificationInfos[]>>;
@@ -15,13 +17,13 @@ interface NetworkModificationsTableProps {
     isAnyNodeBuilding?: boolean;
     mapDataLoading?: boolean;
     handleSwitchAction?: (item: NetworkModificationInfos) => ReactElement | null;
-
     handleCellClick?: (event: CellClickedEvent) => void;
-    isRowDragEnabled?: boolean; // prop to enable/disable drag
+    isRowDragEnabled?: boolean;
     onRowDragStart?: (event: any) => void;
     onRowDragEnd?: (event: any) => void;
     onRowSelected?: (event: any) => void;
 }
+
 const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     modifications,
     setModifications,
@@ -41,35 +43,21 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         suppressMovable: true,
     };
 
-    // const dynamicColumns = rootNetworkChanges.map((network, index) => ({
-    //     headerName: `Network ${index + 1}`,
-    //     field: `network_${index}`,
-    //     cellRenderer: ChipCellRenderer,
-    //     minWidth: 100,
-    //     flex: 1,
-    // }));
-
-    //TO CHECK TO DO MAISSA
-    const intl = useIntl();
-    const { computeLabel } = useModificationLabelComputer();
+    const firstModification = modifications[0];
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const getModificationLabel = (modif: NetworkModificationMetadata): ReactNode => {
         if (!modif) {
             return '';
         }
-        
         return modif.messageValues;
-        // return intl.formatMessage(
-        //     { id: 'network_modifications.' + modif.messageValues },
-        //     {
-        //         ...modif,
-        //         ...computeLabel(modif),
-        //     }
-        // );
     };
+
     const gridRef = useRef<any>(null);
-    const [columnDefs] = useState([
+
+    // Static columns definition
+    const staticColumns = [
         {
-            headerName: 'Modification Name', 
+            headerName: 'Modification Name',
             field: 'modificationName',
             valueGetter: (params: any) => getModificationLabel(params?.data.modificationInfos),
             minWidth: 300,
@@ -103,28 +91,60 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 ),
             },
         },
+    ];
 
-        { cellRenderer: ChipCellRenderer, minWidth: 100, flex: 1 },
-        { cellRenderer: ChipCellRenderer, minWidth: 100, flex: 1 },
-        // ...dynamicColumns, // Add dynamically generated columns
-    ]);
+    // Initialize dynamic columns state
+    const [columnDefs, setColumnDefs] = useState<any[]>(staticColumns);
+
+    useEffect(() => {
+        const dynamicColumns = firstModification?.activationStatusByRootNetwork
+            ? Object.keys(firstModification.activationStatusByRootNetwork).map((rootNetworkUuid) => {
+                  const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
+                  return {
+                      //   valueGetter: (params: any) => {
+                      //       const status = params.data.activationStatusByRootNetwork[rootNetworkUuid];
+                      //       return status ? 'activated' : 'not activated';
+                      //   },
+                      //   field: rootNetworkUuid,
+                      minWidth: 100,
+                      flex: 1,
+                      headerComponent: CustomHeaderComponent,
+                      headerComponentParams: {
+                          icon: (
+                              <Badge
+                                  overlap="circular"
+                                  color="primary"
+                                  variant="dot"
+                                  sx={{
+                                      display: 'flex',
+                                      justifyContent: 'center',
+                                      alignItems: 'center',
+                                  }}
+                              >
+                                  <RemoveRedEyeIcon />
+                              </Badge>
+                          ),
+                          //  cellRenderer: ChipCellRenderer,
+
+                          shouldShowIcon: isCurrentRootNetwork,
+                      },
+                  };
+              })
+            : [];
+
+        // Combine static and dynamic columns
+        setColumnDefs((prevColumnDefs) => [...prevColumnDefs, ...dynamicColumns]);
+    }, [firstModification?.activationStatusByRootNetwork, currentRootNetworkUuid]); // Re-run when modifications or currentRootNetworkUuid change
 
     // Event handlers
     const onGridReady = useCallback((params: any) => {
         console.log('Grid is ready!', params);
     }, []);
 
-    const handleCellContextualMenu = useCallback((event: any) => {
-        console.log('Cell context menu:', event);
-    }, []);
-
-    const recomputeOverFlowableCells = useCallback((event: any) => {
-        console.log('Grid size changed, recomputing overflowable cells...');
-    }, []);
-
     const getRowId = (params: any) => {
-        return params?.data?.modificationInfos?.uuid; // Assuming 'uuid' is unique for each row
+        return params?.data?.modificationInfos?.uuid;
     };
+
     const getRowStyle = useCallback((cellData: RowClassParams<NetworkModificationInfos, unknown>) => {
         const style: RowStyle = {};
         if (!cellData?.data?.modificationInfos?.activated) {
@@ -136,12 +156,13 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     // Modify column definitions to include row drag for 'modificationName' column
     const modifiedColumnDefs = columnDefs.map((col) => ({
         ...col,
-        rowDrag: col.field === 'modificationName' && isRowDragEnabled, // Enable dragging only for 'modificationName' column
+        rowDrag: col.field === 'modificationName' && isRowDragEnabled,
     }));
+
     return (
         <CustomAGGrid
             ref={gridRef}
-            rowData={modifications} // Use the mapped data
+            rowData={modifications}
             getRowId={getRowId}
             rowSelection={{
                 mode: 'multiRow',
@@ -151,18 +172,13 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             }}
             defaultColDef={defaultColumnDefinition}
             onGridReady={onGridReady}
-            onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
             onRowSelected={onRowSelected}
-            onGridSizeChanged={recomputeOverFlowableCells}
             animateRows
-            // gridOptions={{
-            //     headerHeight: 0,  // Hide header row by setting its height to 0
-            //   }}
             columnDefs={modifiedColumnDefs}
             getRowStyle={getRowStyle}
             rowClass="custom-row-class"
-            onRowDragEnter={onRowDragStart} 
+            onRowDragEnter={onRowDragStart}
             onRowDragEnd={onRowDragEnd}
             rowDragManaged={isRowDragEnabled}
         />
