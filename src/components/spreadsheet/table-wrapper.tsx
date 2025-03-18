@@ -161,9 +161,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [columnsDefinitions, tableDefinition?.columns]);
 
     const sortConfig = useSelector(
-        (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.name]
+        (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.uuid]
     );
-    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.name);
+    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
 
     const updateSortConfig = useCallback(() => {
         gridRef.current?.api?.applyColumnState({
