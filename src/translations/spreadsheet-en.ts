@@ -75,6 +75,7 @@ const spreadsheetEn = {
     'spreadsheet/parameter_aliases/no_special_characters': 'No special characters allowed',
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'No node with this name',
     'spreadsheet/parameter_aliases/unique_aliases': 'Aliases should be unique',
+    'spreadsheet/parameter_aliases/unique_node_names': 'Each node can only have one alias',
     'spreadsheet/filter/config': 'Gridsuite filters',
     'spreadsheet/remove_spreadsheet_confirmation':
         'Are you sure you want to remove the spreadsheet "{spreadsheetName}"?',
