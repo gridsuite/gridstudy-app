@@ -83,7 +83,7 @@ const spreadsheetEn = {
     'spreadsheet/reorder_columns/error': 'Error while reordering columns',
     'spreadsheet/reorder_tabs_error': 'Error while reordering tabs',
 
-    // calculation
+    // calculations
     'spreadsheet/calculation/sum': 'Sum',
     'spreadsheet/calculation/average': 'Average',
     'spreadsheet/calculation/min': 'Minimum',

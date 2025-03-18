@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ColDef, RowNode } from 'ag-grid-community';
+import { ColDef } from 'ag-grid-community';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 
 export enum CalculationRowType {
@@ -27,95 +27,115 @@ export interface CalculationRowData {
     [key: string]: any;
 }
 
-export const extractNumericValues = (gridApi: any, rowNodes: RowNode[], colId: string): number[] => {
-    const columnDef = gridApi.getColumnDef(colId);
-    if (!columnDef) {
-        return [];
+/**
+ * Extract numerical values for multiple columns in a single pass
+ */
+export const extractNumericValuesForColumns = (gridApi: any, columnIds: string[]): Record<string, number[]> => {
+    if (!gridApi || !columnIds.length) {
+        return {};
     }
 
-    return rowNodes
-        .map((rowNode: RowNode) => {
-            try {
-                const params = {
-                    data: rowNode.data || {},
-                    node: rowNode,
-                    colDef: columnDef,
-                    api: gridApi,
-                    getValue: (field: string) => {
-                        try {
-                            return gridApi.getValue(field, rowNode);
-                        } catch (e) {
-                            return rowNode.data?.[field];
-                        }
-                    },
-                };
+    try {
+        // Create a map to store values for each column
+        const columnValues: Record<string, number[]> = {};
+        columnIds.forEach((colId) => {
+            columnValues[colId] = [];
+        });
 
-                const value = columnDef.valueGetter ? columnDef.valueGetter(params) : rowNode.data?.[colId];
-                return !isNaN(value) ? value : null;
-            } catch (e) {
-                return null;
-            }
-        })
-        .filter((value): value is number => value !== null);
+        // Process all columns in a single export operation
+        gridApi.getDataAsCsv({
+            skipHeader: true,
+            columnKeys: columnIds,
+            processCellCallback: (params: any): string => {
+                // Skip pinned rows
+                if (!params.node.rowPinned && columnIds.includes(params.column.getColId())) {
+                    const colId = params.column.getColId();
+                    const numValue = parseFloat(params.value);
+                    if (!isNaN(numValue)) {
+                        columnValues[colId].push(numValue);
+                    }
+                }
+                return params.value;
+            },
+            suppressQuotes: true,
+            skipFooters: true,
+            skipGroups: true,
+            skipPinnedBottom: true,
+            skipPinnedTop: true,
+        });
+
+        return columnValues;
+    } catch (e) {
+        console.warn(`Error extracting batch values:`, e);
+        return {};
+    }
 };
 
 /**
  * Calculates aggregated value based on calculation type
  */
 export const calculateValue = (values: number[], calculationType: CalculationType): number | null => {
-    if (values.length === 0) {
+    if (!values || values.length === 0) {
         return null;
     }
 
-    switch (calculationType) {
-        case CalculationType.SUM:
-            return values.reduce((sum, val) => sum + val, 0);
-        case CalculationType.AVERAGE:
-            return values.reduce((sum, val) => sum + val, 0) / values.length;
-        case CalculationType.MIN:
-            return Math.min(...values);
-        case CalculationType.MAX:
-            return Math.max(...values);
-        default:
-            return null;
+    try {
+        switch (calculationType) {
+            case CalculationType.SUM:
+                return values.reduce((sum, val) => sum + val, 0);
+            case CalculationType.AVERAGE:
+                return values.reduce((sum, val) => sum + val, 0) / values.length;
+            case CalculationType.MIN:
+                return Math.min(...values);
+            case CalculationType.MAX:
+                return Math.max(...values);
+            default:
+                return null;
+        }
+    } catch (e) {
+        console.warn(`Error calculating ${calculationType}:`, e);
+        return null;
     }
 };
 
-/**
- * Generates calculation rows for the grid based on selected calculation types
- */
 export const generateCalculationRows = (
     calculationSelections: CalculationType[],
     columnData: ColDef[],
-    gridApi: any,
-    displayedNodes: RowNode[]
+    gridApi: any
 ): any[] => {
-    // Create calculation rows based on selected options
+    if (!gridApi || !Array.isArray(columnData) || !calculationSelections.length) {
+        return [{ rowType: CalculationRowType.CALCULATION_BUTTON }];
+    }
+
+    const numericColumns = columnData
+        .filter((colDef) => colDef?.colId && colDef?.context?.columnType === COLUMN_TYPES.NUMBER)
+        .map((colDef) => colDef.colId as string);
+
+    if (numericColumns.length === 0) {
+        return [{ rowType: CalculationRowType.CALCULATION_BUTTON }];
+    }
+
+    // Extract all column values in a single batch operation
+    const batchColumnValues = extractNumericValuesForColumns(gridApi, numericColumns);
+
     const calculationRows = calculationSelections.map((calculationType) => {
         const row: CalculationRowData = {
             rowType: CalculationRowType.CALCULATION,
             calculationType: calculationType,
         };
 
-        // Skip calculations if no data to process
-        if (displayedNodes.length > 0) {
-            // Process only numeric columns
-            columnData.forEach((colDef) => {
-                if (colDef.colId && colDef?.context?.columnType === COLUMN_TYPES.NUMBER) {
-                    // Extract numeric values and calculate
-                    const values = extractNumericValues(gridApi, displayedNodes, colDef.colId);
-                    const calculatedValue = calculateValue(values, calculationType);
+        // Process values for each column
+        numericColumns.forEach((colId) => {
+            const values = batchColumnValues[colId] || [];
+            const calculatedValue = calculateValue(values, calculationType);
 
-                    if (calculatedValue !== null) {
-                        row[colDef.colId] = calculatedValue;
-                    }
-                }
-            });
-        }
+            if (calculatedValue !== null) {
+                row[colId] = calculatedValue;
+            }
+        });
 
         return row;
     });
 
-    // Return the button row and all calculation rows
     return [{ rowType: CalculationRowType.CALCULATION_BUTTON }, ...calculationRows];
 };

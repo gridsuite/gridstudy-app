@@ -185,8 +185,6 @@ export const rowIndexColumnDefinition = (tabUuid: string): ColDef => {
                 return RowIndexCellRenderer(params);
             }
 
-            // For normal rows, calculate the index based on the displayed row index
-            // This is more reliable than using valueGetter
             if (!params.node) {
                 return null;
             }

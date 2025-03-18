@@ -612,6 +612,7 @@ const initialState: AppState = {
         allChildrenIds: null,
     },
     tables: initialTablesState,
+    calculationSelections: {},
     mapEquipments: undefined,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
@@ -790,7 +791,6 @@ const initialState: AppState = {
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
-    calculationSelections: {},
 };
 
 export const reducer = createReducer(initialState, (builder) => {

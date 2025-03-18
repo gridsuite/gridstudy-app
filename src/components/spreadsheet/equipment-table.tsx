@@ -17,7 +17,6 @@ import {
     RowClickedEvent,
     GridOptions,
     RowStyle,
-    RowNode,
 } from 'ag-grid-community';
 import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
@@ -27,7 +26,6 @@ import { CalculationRowType } from './utils/calculation-utils';
 const DEFAULT_ROW_HEIGHT = 28;
 const MAX_CLICK_DURATION = 200;
 
-// Row data interface
 interface RowData {
     id: string;
     rowType?: string;
@@ -42,7 +40,6 @@ const getRowId = (params: GetRowIdParams<RowData>) => {
     return params.data.id;
 };
 
-// Default column definition
 const defaultColDef: ColDef = {
     filter: true,
     sortable: true,
@@ -66,8 +63,7 @@ interface EquipmentTableProps {
     onRowClicked?: (event: RowClickedEvent) => void;
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
-    calculationRows: RowNode[];
-    onFilterChanged: GridOptions['onFilterChanged'];
+    onModelUpdated: GridOptions['onModelUpdated'];
 }
 
 const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
@@ -85,14 +81,12 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     onRowClicked,
     isExternalFilterPresent,
     doesExternalFilterPass,
-    calculationRows,
-    onFilterChanged,
+    onModelUpdated,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
     const clickTimeRef = useRef<number | null>(null);
 
-    // Styling for rows based on their type and position
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {
             const isRootNode = currentNode?.type === NodeType.ROOT;
@@ -137,10 +131,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode, studyUuid, theme]
     );
 
-    // Show rows only when data is ready
     const rowsToShow = useMemo(() => (fetched && rowData.length > 0 ? rowData : []), [rowData, fetched]);
 
-    // Message for empty/loading state
     const message = useMemo(() => {
         if (!fetched) {
             return intl.formatMessage({ id: 'LoadingRemoteData' });
@@ -162,9 +154,9 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         clickTimeRef.current = Date.now();
     }, []);
 
-    // Handler for row c
     const handleRowClicked = useCallback(
         (event: RowClickedEvent) => {
+            // Prevent row click event on pinned rows
             if (event.node.rowPinned === 'bottom') {
                 return;
             }
@@ -183,7 +175,6 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             rowSelection={{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }}
             getRowId={getRowId}
             rowData={rowsToShow}
-            pinnedBottomRowData={calculationRows}
             debounceVerticalScrollbar={true}
             getRowStyle={getRowStyle}
             columnDefs={columnData}
@@ -195,7 +186,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             suppressColumnVirtualisation={true}
             onCellMouseDown={handleCellMouseDown}
             onRowClicked={handleRowClicked}
-            onFilterChanged={onFilterChanged}
+            onModelUpdated={onModelUpdated}
             context={gridContext}
             shouldHidePinnedHeaderRightBorder={shouldHidePinnedHeaderRightBorder}
             rowHeight={DEFAULT_ROW_HEIGHT}
