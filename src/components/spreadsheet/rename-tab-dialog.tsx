@@ -42,6 +42,7 @@ export default function RenameTabDialog({
         name: yup
             .string()
             .required()
+            .max(60, 'spreadsheet/spreadsheet_name_le_60')
             .test(
                 'unique-name',
                 intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists' }),
@@ -74,7 +75,12 @@ export default function RenameTabDialog({
 
     return (
         <CustomFormProvider validationSchema={schema} {...formMethods}>
-            <Dialog open={open} onClose={onClose} aria-labelledby="rename-tab-dialog-title">
+            <Dialog
+                open={open}
+                onClose={onClose}
+                aria-labelledby="rename-tab-dialog-title"
+                PaperProps={{ sx: { width: '20%' } }}
+            >
                 <DialogTitle id="rename-tab-dialog-title">
                     {intl.formatMessage({ id: 'spreadsheet/rename_dialog_title' })}
                 </DialogTitle>
