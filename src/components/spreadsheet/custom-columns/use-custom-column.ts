@@ -20,6 +20,7 @@ import {
 import { validateFormulaResult } from './formula-validator';
 import { ColumnDefinition } from '../config/spreadsheet.type';
 import { CustomColDef } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { isCalculationRow } from '../utils/calculation-utils';
 
 export function useCustomColumn(tabIndex: number) {
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
@@ -29,7 +30,7 @@ export function useCustomColumn(tabIndex: number) {
             (params: ValueGetterParams): boolean | string | number | undefined => {
                 try {
                     // Skip formula processing for pinned rows and use raw value
-                    if (params.node?.rowPinned) {
+                    if (isCalculationRow(params.node?.data?.rowType)) {
                         return params.data[colDef.id];
                     }
                     const scope = { ...params.data };

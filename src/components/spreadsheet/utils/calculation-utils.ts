@@ -34,7 +34,7 @@ export const extractNumericValuesForColumns = (gridApi: GridApi, columnIds: stri
 
         gridApi.forEachNodeAfterFilter((node) => {
             // Skip pinned rows
-            if (node.rowPinned) {
+            if (isCalculationRow(node.data?.rowType)) {
                 return;
             }
 
@@ -100,31 +100,33 @@ export const generateCalculationRows = (
         .filter((colDef) => colDef?.colId && colDef?.context?.columnType === COLUMN_TYPES.NUMBER)
         .map((colDef) => colDef.colId);
 
-    if (numericColumns.length === 0) {
-        return [{ rowType: CalculationRowType.CALCULATION_BUTTON }];
-    }
-
-    // Extract all column values in a single batch operation
-    const batchColumnValues = extractNumericValuesForColumns(gridApi, numericColumns);
-
+    // Create empty calculation rows even when there are no numeric columns
     const calculationRows = calculationSelections.map((calculationType) => {
         const row: CalculationRowData = {
             rowType: CalculationRowType.CALCULATION,
             calculationType: calculationType,
         };
 
-        // Process values for each column
-        numericColumns.forEach((colId) => {
-            const values = batchColumnValues[colId] || [];
-            const calculatedValue = calculateValue(values, calculationType);
+        // Only process values if there are numeric columns
+        if (numericColumns.length > 0) {
+            // Extract all column values in a single batch operation
+            const batchColumnValues = extractNumericValuesForColumns(gridApi, numericColumns);
 
-            if (calculatedValue !== null) {
-                row[colId] = calculatedValue;
-            }
-        });
+            // Process values for each column
+            numericColumns.forEach((colId) => {
+                const values = batchColumnValues[colId] || [];
+                const calculatedValue = calculateValue(values, calculationType);
+
+                if (calculatedValue !== null) {
+                    row[colId] = calculatedValue;
+                }
+            });
+        }
 
         return row;
     });
 
     return [{ rowType: CalculationRowType.CALCULATION_BUTTON }, ...calculationRows];
 };
+
+export const isCalculationRow = (rowType: any): boolean => Object.values(CalculationRowType).includes(rowType);

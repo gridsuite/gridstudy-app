@@ -29,6 +29,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { UUID } from 'crypto';
+import { isCalculationRow } from '../utils/calculation-utils';
 
 export const textColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {
@@ -183,7 +184,7 @@ export const rowIndexColumnDefinition = (tabUuid: UUID): CustomColDef => {
         headerName: '',
         cellRenderer: (params: any) => {
             // For pinned rows, use the RowIndexCellRenderer which handles the calculate icon
-            if (params.node.rowPinned) {
+            if (isCalculationRow(params.node?.data?.rowType)) {
                 return RowIndexCellRenderer(params);
             }
             return params.node.rowIndex + 1;

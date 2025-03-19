@@ -22,6 +22,7 @@ import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 import { NodeType } from 'components/graph/tree-node.type';
 import { CalculationRowType } from './utils/calculation.type';
+import { isCalculationRow } from './utils/calculation-utils';
 
 const DEFAULT_ROW_HEIGHT = 28;
 const MAX_CLICK_DURATION = 200;
@@ -90,7 +91,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             const isRootNode = currentNode?.type === NodeType.ROOT;
             const cursorStyle = isRootNode ? 'initial' : 'pointer';
 
-            if (params.node.rowPinned === 'bottom') {
+            if (isCalculationRow(params.data?.rowType)) {
                 if (params.data?.rowType === CalculationRowType.CALCULATION) {
                     return {
                         backgroundColor: theme.palette.background.default,
@@ -144,7 +145,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     const handleRowClicked = useCallback(
         (event: RowClickedEvent) => {
             // Prevent row click event on pinned rows
-            if (event.node.rowPinned === 'bottom') {
+            if (isCalculationRow(event.node.data?.rowType)) {
                 return;
             }
             const clickDuration = Date.now() - (clickTimeRef.current ?? 0);

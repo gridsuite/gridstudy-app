@@ -19,6 +19,7 @@ import { CustomCellRendererProps } from 'ag-grid-react';
 import { mergeSx } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { CalculationRowType, CalculationType } from './calculation.type';
+import { isCalculationRow } from './calculation-utils';
 
 const styles = {
     tableCell: (theme: Theme) => ({
@@ -264,7 +265,7 @@ export const RowIndexCellRenderer = (props: CustomCellRendererProps) => {
         dispatch(setCalculationSelections(tabUuid, newSelections));
     };
 
-    if (props.node.rowPinned === 'bottom') {
+    if (isCalculationRow(props.data?.rowType)) {
         if (props.data?.rowType === CalculationRowType.CALCULATION_BUTTON) {
             return (
                 <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
