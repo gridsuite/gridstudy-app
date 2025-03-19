@@ -51,22 +51,20 @@ const defaultColDef: ColDef = {
 };
 
 interface EquipmentTableProps {
-    rowData: unknown[];
+    rowData: unknown[] | undefined;
     columnData: ColDef[];
     gridRef: RefObject<any> | undefined;
     studyUuid: string;
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
     handleRowDataUpdated: () => void;
-    fetched: boolean;
+    isFetching: boolean | undefined;
     shouldHidePinnedHeaderRightBorder: boolean;
     onRowClicked?: (event: RowClickedEvent) => void;
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
     onModelUpdated: GridOptions['onModelUpdated'];
 }
-
-const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     rowData,
@@ -76,7 +74,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     currentNode,
     handleColumnDrag,
     handleRowDataUpdated,
-    fetched,
+    isFetching,
     shouldHidePinnedHeaderRightBorder,
     onRowClicked,
     isExternalFilterPresent,
@@ -131,24 +129,13 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode, studyUuid, theme]
     );
 
-    const rowsToShow = useMemo(() => (fetched && rowData.length > 0 ? rowData : []), [rowData, fetched]);
-
-    const message = useMemo(() => {
-        if (!fetched) {
-            return intl.formatMessage({ id: 'LoadingRemoteData' });
+    const rowsToShow = useMemo(() => {
+        if (isFetching !== undefined && rowData !== undefined) {
+            return !isFetching && rowData.length > 0 ? rowData : [];
         }
-        if (fetched && rowData.length === 0) {
-            return intl.formatMessage({ id: 'grid.noRowsToShow' });
-        }
+        // If isFetching/rowData are not initialized, dont set [] for rowData to avoid an initial "no rows" state
         return undefined;
-    }, [rowData, fetched, intl]);
-
-    const loadingOverlayComponentParams = useMemo(
-        () => ({
-            loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),
-        }),
-        [intl]
-    );
+    }, [rowData, isFetching]);
 
     const handleCellMouseDown = useCallback(() => {
         clickTimeRef.current = Date.now();
@@ -190,10 +177,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             context={gridContext}
             shouldHidePinnedHeaderRightBorder={shouldHidePinnedHeaderRightBorder}
             rowHeight={DEFAULT_ROW_HEIGHT}
-            overlayNoRowsTemplate={message}
-            loadingOverlayComponent={loadingOverlayComponent}
-            loadingOverlayComponentParams={loadingOverlayComponentParams}
-            showOverlay={true}
+            loading={isFetching}
+            overlayLoadingTemplate={intl.formatMessage({ id: 'LoadingRemoteData' })}
             isExternalFilterPresent={isExternalFilterPresent}
             doesExternalFilterPass={doesExternalFilterPass}
         />

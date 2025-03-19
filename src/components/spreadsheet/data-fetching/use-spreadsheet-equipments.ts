@@ -5,28 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Identifiable, useNotificationsListener } from '@gridsuite/commons-ui';
+import { useNotificationsListener } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteEquipments, EquipmentToDelete, loadEquipments, removeNodeData, updateEquipments } from 'redux/actions';
+import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments } from 'redux/actions';
 import { AppState, NotificationType } from 'redux/reducer';
-import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
-import { SpreadsheetEquipmentsByNodes } from './config/spreadsheet.type';
+import type { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { getFetcher } from './config/common-config';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
-import { NOTIFICATIONS_URL_KEYS } from '../utils/notificationsProvider-utils';
-import { UPDATE_TYPE_HEADER } from '../use-node-data';
-import { NodeAlias } from './custom-columns/node-alias.type';
-
-type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
+import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
+import { UPDATE_TYPE_HEADER } from '../../use-node-data';
+import { NodeAlias } from '../custom-columns/node-alias.type';
+import { useFetchEquipment } from './use-fetch-equipment';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
-    formatFetchedEquipments: FormatFetchedEquipments,
     highlightUpdatedEquipment: () => void,
-    nodeAliases: NodeAlias[]
+    nodeAliases: NodeAlias[] | undefined
 ) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
@@ -37,12 +33,14 @@ export const useSpreadsheetEquipments = (
     );
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const [errorMessage, setErrorMessage] = useState<string | null>();
-    const [isFetching, setIsFetching] = useState(false);
+
+    const [isFetching, setIsFetching] = useState<boolean>();
+
+    const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
     const nodesIdToFetch = useMemo(() => {
         let nodesIdToFetch = new Set<string>();
-        if (!equipments) {
+        if (!equipments || !nodeAliases) {
             return nodesIdToFetch;
         }
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
@@ -61,6 +59,9 @@ export const useSpreadsheetEquipments = (
     const shouldFetchEquipments = useMemo(() => nodesIdToFetch.size > 0, [nodesIdToFetch]);
 
     useEffect(() => {
+        if (!nodeAliases) {
+            return;
+        }
         const currentNodeId = currentNode?.id as UUID;
 
         let unwantedFetchedNodes = new Set<string>();
@@ -139,52 +140,22 @@ export const useSpreadsheetEquipments = (
         },
     });
 
+    const onFetchingDone = () => {
+        setIsFetching(false);
+    };
+
     useEffect(() => {
-        if (
-            shouldFetchEquipments &&
-            studyUuid &&
-            currentRootNetworkUuid &&
-            currentNode?.id &&
-            isNetworkModificationTreeModelUpToDate &&
-            isNodeBuilt(currentNode)
-        ) {
-            setErrorMessage(null);
+        if (shouldFetchEquipments && isNetworkModificationTreeModelUpToDate && isNodeBuilt(currentNode)) {
             setIsFetching(true);
-            let fetchers: Promise<unknown>[] = [];
-            let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
-                nodesId: [],
-                equipmentsByNodeId: {},
-            };
-
-            nodesIdToFetch.forEach((nodeId) => {
-                const fetcherPromises = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
-                fetchers.push(fetcherPromises);
-                fetcherPromises.then((results) => {
-                    let fetchedEquipments = results.flat();
-                    spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                    if (formatFetchedEquipments) {
-                        fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
-                        spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
-                    }
-                });
-            });
-
-            Promise.all(fetchers).then(() => {
-                dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
-                setIsFetching(false);
-            });
+            fetchNodesEquipmentData(nodesIdToFetch, onFetchingDone);
         }
     }, [
         shouldFetchEquipments,
-        studyUuid,
-        currentNode,
-        currentRootNetworkUuid,
         isNetworkModificationTreeModelUpToDate,
-        dispatch,
-        formatFetchedEquipments,
         nodesIdToFetch,
-        type,
+        fetchNodesEquipmentData,
+        currentNode,
     ]);
 
-    return { equipments, errorMessage, isFetching };
+    return { equipments, isFetching };
 };

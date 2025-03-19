@@ -16,8 +16,7 @@ import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { EquipmentTabs } from './equipment-tabs';
-import { useSpreadsheetEquipments } from './use-spreadsheet-equipments';
-import { formatFetchedEquipments } from './utils/equipment-table-utils';
+import { useSpreadsheetEquipments } from './data-fetching/use-spreadsheet-equipments';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
@@ -115,7 +114,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
 
-    const [rowData, setRowData] = useState<Identifiable[]>([]);
+    const [rowData, setRowData] = useState<Identifiable[]>();
     const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
 
     // Initialize activeTabUuid with the first tab's UUID if not already set
@@ -143,7 +142,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition?.columns]
     );
 
-    const shooldDisableButtons = useMemo(
+    const shouldDisableButtons = useMemo(
         () => disabled || tablesDefinitions.length === 0,
         [disabled, tablesDefinitions]
     );
@@ -168,9 +167,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [columnsDefinitions, tableDefinition?.columns, tableDefinition?.uuid]);
 
     const sortConfig = useSelector(
-        (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.name]
+        (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.uuid]
     );
-    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.name);
+    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
 
     const updateSortConfig = useCallback(() => {
         gridRef.current?.api?.applyColumnState({
@@ -235,15 +234,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }
     }, []);
 
-    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.type);
-
-    const formatFetchedEquipmentsHandler = useCallback(
-        (fetchedEquipments: any) => {
-            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return formatFetchedEquipments(tableDefinition?.type, fetchedEquipments);
-        },
-        [tableDefinition?.type]
-    );
+    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.uuid);
 
     const highlightUpdatedEquipment = useCallback(() => {
         if (!equipmentToUpdateId) {
@@ -263,24 +254,14 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setEquipmentToUpdateId(null);
     }, [equipmentToUpdateId]);
 
-    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
+    const { equipments, isFetching } = useSpreadsheetEquipments(
         tableDefinition?.type,
-        formatFetchedEquipmentsHandler,
         highlightUpdatedEquipment,
         nodeAliases
     );
 
     useEffect(() => {
-        if (errorMessage) {
-            snackError({
-                messageTxt: errorMessage,
-                headerId: 'SpreadsheetFetchError',
-            });
-        }
-    }, [errorMessage, snackError]);
-
-    useEffect(() => {
-        if (disabled || equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
+        if (disabled || equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined || !nodeAliases) {
             return;
         }
         let localRowData: Identifiable[] = [];
@@ -323,8 +304,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         (tabUuid: UUID) => {
             setManualTabSwitch(true);
             // when switching tab column definition is updated before rowData which triggers costly
-            // useless process that's why we set rowData to an empty array to avoid that
-            setRowData([]);
+            // useless process that's why we set rowData to undefined to avoid that
+            setRowData(undefined);
             setActiveTabUuid(tabUuid);
             cleanTableState();
         },
@@ -376,7 +357,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         // wait a moment  before removing the loading message.
         timerRef.current = setTimeout(() => {
             gridRef.current?.api?.hideOverlay();
-            if (rowData.length === 0 && !isFetching) {
+            if (rowData?.length === 0 && !isFetching) {
                 // we need to call showNoRowsOverlay in order to show message when rowData is empty
                 gridRef.current?.api?.showNoRowsOverlay();
             }
@@ -456,7 +437,12 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [currentNode?.type, handleOpenModificationDialog]
     );
 
-    const { onModelUpdated } = useGridCalculations(gridRef, activeTabUuid, reorderedColsDefs, rowData.length > 0);
+    const { onModelUpdated } = useGridCalculations(
+        gridRef,
+        activeTabUuid,
+        reorderedColsDefs,
+        rowData !== undefined && rowData.length > 0
+    );
 
     return (
         <>
@@ -474,18 +460,19 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     <Grid item>
                         <ColumnsConfig
                             tabIndex={activeTabIndex}
-                            disabled={shooldDisableButtons || tableDefinition?.columns.length === 0}
+                            disabled={shouldDisableButtons || tableDefinition?.columns.length === 0}
                         />
                     </Grid>
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsConfig tabIndex={activeTabIndex} disabled={shooldDisableButtons} />
+                            <CustomColumnsConfig tabIndex={activeTabIndex} disabled={shouldDisableButtons} />
                         </Grid>
                     )}
                     {developerMode && (
                         <Grid item>
                             <CustomColumnsNodesConfig
-                                disabled={shooldDisableButtons}
+                                disabled={shouldDisableButtons}
+                                tabIndex={activeTabIndex}
                                 nodeAliases={nodeAliases}
                                 updateNodeAliases={updateNodeAliases}
                             />
@@ -498,15 +485,15 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             gridRef={gridRef}
                             columns={reorderedColsDefs}
                             tableName={tableDefinition?.name}
-                            disabled={shooldDisableButtons}
-                            dataSize={rowData.length}
+                            disabled={shouldDisableButtons}
+                            dataSize={rowData ? rowData.length : 0}
                         />
                     </Grid>
                 </Grid>
             </Grid>
-            {disabled || shooldDisableButtons ? (
+            {disabled || shouldDisableButtons ? (
                 <Alert sx={styles.invalidNode} severity="warning">
-                    <FormattedMessage id={shooldDisableButtons ? 'NoSpreadsheets' : 'InvalidNode'} />
+                    <FormattedMessage id={disabled ? 'InvalidNode' : 'NoSpreadsheets'} />
                 </Alert>
             ) : (
                 <Box sx={styles.table}>
@@ -516,10 +503,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         currentNode={currentNode}
                         rowData={rowData}
                         columnData={reorderedColsDefs}
-                        fetched={
-                            equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined ||
-                            !!errorMessage
-                        }
+                        isFetching={isFetching}
                         handleColumnDrag={handleColumnDrag}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}

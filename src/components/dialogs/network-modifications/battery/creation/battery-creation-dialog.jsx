@@ -44,7 +44,7 @@ import {
 import BatteryCreationForm from './battery-creation-form';
 import { sanitizeString } from '../../../dialog-utils';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
-import { getActivePowerSetPointSchema, getFrequencyRegulationSchema } from '../../../set-points/set-points-utils';
+import { getActivePowerSetPointSchema } from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
@@ -62,6 +62,10 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import {
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
+} from '../../../active-power-control/active-power-control-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -70,8 +74,7 @@ const emptyFormData = {
     [MINIMUM_ACTIVE_POWER]: null,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
-    [FREQUENCY_REGULATION]: false,
-    [DROOP]: null,
+    ...getActivePowerControlEmptyFormData(),
     ...getReactiveLimitsEmptyFormData(),
     ...getConnectivityWithPositionEmptyFormData(),
     ...emptyProperties,
@@ -88,7 +91,7 @@ const formSchema = yup
         ...getActivePowerSetPointSchema(false),
         ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
-        ...getFrequencyRegulationSchema(),
+        ...getActivePowerControlSchema(),
     })
     .concat(creationPropertiesSchema)
     .required();
