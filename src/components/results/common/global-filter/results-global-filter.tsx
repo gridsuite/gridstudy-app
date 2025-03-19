@@ -96,36 +96,37 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
             Promise.all(
                 // checks if the generic filters still exist, and sets their path value
                 globalFilters
-                    .filter((globalFilter: GlobalFilter) => globalFilter.filterType === FilterType.FILTER)
-                    .map(
-                        (fetchedGlobalFilter: GlobalFilter) =>
-                            fetchedGlobalFilter.uuid &&
-                            fetchDirectoryElementPath(fetchedGlobalFilter.uuid)
-                                .then((response: ElementAttributes[]) => {
-                                    const parentDirectoriesNames = response.map((parent) => parent.elementName);
-                                    const path = computeFullPath(parentDirectoriesNames);
-                                    let fetchedFilter: GlobalFilter | undefined = globalFilters.find(
-                                        (globalFilter) => globalFilter.uuid === fetchedGlobalFilter.uuid
-                                    );
-                                    if (fetchedFilter && !fetchedFilter.path) {
-                                        fetchedFilter.path = path;
-                                    }
-                                })
-                                .catch(() => {
-                                    if (fetchedGlobalFilter.uuid) {
-                                        // remove those missing filters from recent global filters
-                                        dispatch(removeFromRecentGlobalFilters(fetchedGlobalFilter.uuid));
-                                        globalFiltersToAddToRecents = [
-                                            ...globalFiltersToAddToRecents.filter(
-                                                (globalFilter) => globalFilter.uuid !== fetchedGlobalFilter.uuid
-                                            ),
-                                        ];
-                                    }
-                                    snackError({
-                                        messageTxt: fetchedGlobalFilter.path,
-                                        headerId: 'ComputationFilterResultsError',
-                                    });
-                                })
+                    .filter(
+                        (globalFilter: GlobalFilter) =>
+                            globalFilter.filterType === FilterType.FILTER && globalFilter.uuid
+                    )
+                    .map((fetchedGlobalFilter: GlobalFilter) =>
+                        fetchDirectoryElementPath(fetchedGlobalFilter.uuid)
+                            .then((response: ElementAttributes[]) => {
+                                const parentDirectoriesNames = response.map((parent) => parent.elementName);
+                                const path = computeFullPath(parentDirectoriesNames);
+                                let fetchedFilter: GlobalFilter | undefined = globalFilters.find(
+                                    (globalFilter) => globalFilter.uuid === fetchedGlobalFilter.uuid
+                                );
+                                if (fetchedFilter && !fetchedFilter.path) {
+                                    fetchedFilter.path = path;
+                                }
+                            })
+                            .catch(() => {
+                                if (fetchedGlobalFilter.uuid) {
+                                    // remove those missing filters from recent global filters
+                                    dispatch(removeFromRecentGlobalFilters(fetchedGlobalFilter.uuid));
+                                    globalFiltersToAddToRecents = [
+                                        ...globalFiltersToAddToRecents.filter(
+                                            (globalFilter) => globalFilter.uuid !== fetchedGlobalFilter.uuid
+                                        ),
+                                    ];
+                                }
+                                snackError({
+                                    messageTxt: fetchedGlobalFilter.path,
+                                    headerId: 'ComputationFilterResultsError',
+                                });
+                            })
                     )
             ).then(() => {
                 setSelectedGlobalFilters(globalFilters);
