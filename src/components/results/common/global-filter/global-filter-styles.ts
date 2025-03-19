@@ -87,10 +87,7 @@ export const resultsGlobalFilterStyles = {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `${theme.palette.info.main}!important`,
         },
-        '&.MuiChip-root:hover': {
-            backgroundColor: `${theme.palette.info.dark}!important`,
-        },
-        '&.MuiChip-root:focus': {
+        '&.MuiChip-root:hover, &.MuiChip-root:focus': {
             backgroundColor: `${theme.palette.info.dark}!important`,
         },
     }),
@@ -98,10 +95,7 @@ export const resultsGlobalFilterStyles = {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `${theme.palette.secondary.main}!important`,
         },
-        '&.MuiChip-root:hover': {
-            backgroundColor: `${theme.palette.secondary.dark}!important`,
-        },
-        '&.MuiChip-root:focus': {
+        '&.MuiChip-root:hover, &.MuiChip-root:focus': {
             backgroundColor: `${theme.palette.secondary.dark}!important`,
         },
     }),
@@ -109,10 +103,7 @@ export const resultsGlobalFilterStyles = {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `${cyan['500']}!important`,
         },
-        '&.MuiChip-root:hover': {
-            backgroundColor: `${cyan['700']}!important`,
-        },
-        '&.MuiChip-root:focus': {
+        '&.MuiChip-root:hover, &.MuiChip-root:focus': {
             backgroundColor: `${cyan['700']}!important`,
         },
     }),
