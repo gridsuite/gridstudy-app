@@ -10,6 +10,7 @@ import { Button, Tooltip } from '@mui/material';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnNodesDialog from './custom-columns-nodes-dialog';
 import BuildIcon from '@mui/icons-material/Build';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import { spreadsheetStyles } from '../utils/style';
 import { ROOT_NODE_LABEL } from '../../../constants/node.constant';
 import { NodeAlias } from './node-alias.type';
@@ -24,6 +25,11 @@ const styles = {
     icon: {
         height: '20px',
         width: '20px',
+    },
+    warningIcon: {
+        height: '20px',
+        width: '20px',
+        backgroundColor: 'red',
     },
 };
 
@@ -49,6 +55,10 @@ export default function CustomColumnsNodesConfig({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.type);
+    const showWarning =
+        nodeAliases !== undefined &&
+        nodeAliases.length > 0 &&
+        nodeAliases.every((n) => n.name === null || n.name === undefined);
 
     const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
 
@@ -77,6 +87,7 @@ export default function CustomColumnsNodesConfig({
             <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
                 <BuildIcon sx={styles.icon} />
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
+                {showWarning && <PriorityHighIcon sx={styles.warningIcon} />}
             </Button>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem
