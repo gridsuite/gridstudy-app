@@ -95,6 +95,16 @@ const spreadsheetEn = {
     'spreadsheet/rename_dialog_title': 'Rename spreadsheet',
     'spreadsheet/spreadsheet_name_le_60': 'Spreadsheet name must be at most 60 characters',
 
+    // calculations
+    'spreadsheet/calculation/sum': 'Sum',
+    'spreadsheet/calculation/average': 'Average',
+    'spreadsheet/calculation/min': 'Minimum',
+    'spreadsheet/calculation/max': 'Maximum',
+    'spreadsheet/calculation/sum_abbrev': 'Sum',
+    'spreadsheet/calculation/average_abbrev': 'Avg',
+    'spreadsheet/calculation/min_abbrev': 'Min',
+    'spreadsheet/calculation/max_abbrev': 'Max',
+
     // Column types
     TEXT: 'Text',
     NUMBER: 'Number',

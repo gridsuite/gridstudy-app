@@ -135,6 +135,7 @@ export type AppActions =
     | SaveSpreadSheetGsFilterAction
     | ResetAllSpreadsheetGsFiltersAction
     | RemoveTableDefinitionAction
+    | SetCalculationSelectionsAction
     | ReorderTableDefinitionsAction
     | RenameTableDefinitionAction
     | SetAppTabIndexAction
@@ -1329,6 +1330,20 @@ export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: ExpertFilter[])
         type: SAVE_SPREADSHEET_GS_FILTER,
         tabUuid: tabUuid,
         filters: filters,
+    };
+}
+
+export const SET_CALCULATION_SELECTIONS = 'SET_CALCULATION_SELECTIONS';
+export type SetCalculationSelectionsAction = Readonly<Action<typeof SET_CALCULATION_SELECTIONS>> & {
+    tabUuid: UUID;
+    selections: string[];
+};
+
+export function setCalculationSelections(tabUuid: UUID, selections: string[]): SetCalculationSelectionsAction {
+    return {
+        type: SET_CALCULATION_SELECTIONS,
+        tabUuid,
+        selections,
     };
 }
 
