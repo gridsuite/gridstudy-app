@@ -45,14 +45,14 @@ export default function SpreadsheetGsFilter({ equipmentType, index, name, uuid }
         (values: ExpertFilter[]) => {
             //Converts readonly values to a mutable one, prevents read-only type error
             const mutableValues = values.map((f) => ({ ...f }));
-            dispatch(saveSpreadsheetGsFilters(equipmentType, mutableValues));
+            dispatch(saveSpreadsheetGsFilters(uuid, mutableValues));
         },
-        [dispatch, equipmentType]
+        [dispatch, uuid]
     );
 
     useEffect(() => {
-        reset(toFormFormat(gsFilterSpreadsheetState[equipmentType] ?? []));
-    }, [equipmentType, reset, gsFilterSpreadsheetState]);
+        reset(toFormFormat(gsFilterSpreadsheetState[uuid] ?? []));
+    }, [uuid, reset, gsFilterSpreadsheetState]);
 
     return (
         <CustomFormProvider validationSchema={spreadsheetGsFilterFormSchema} {...formMethods}>

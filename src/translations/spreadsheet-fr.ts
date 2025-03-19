@@ -32,7 +32,11 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/column_name_already_exist': 'Nom de colonne déjà existant',
     'spreadsheet/custom_column/dependencies': "La formule fait référence à d'autres colonnes",
     'spreadsheet/custom_column/nodes': 'Nœuds',
-    'spreadsheet/custom_column/parameter_nodes': 'Parametrer les alias de nœuds',
+    'spreadsheet/custom_column/option/parameter': 'Paramétrer',
+    'spreadsheet/custom_column/option/refresh': 'Recharger',
+    'spreadsheet/custom_column/option/refresh/tooltip':
+        'Recharger les données de cette feuille pour les autres nœuds paramétrés ({aliases})',
+    'spreadsheet/custom_column/parameter_nodes': 'Paramétrer les alias de nœuds',
     'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
     'spreadsheet/custom_column/creates_cyclic_dependency':
         'Les dépendances de la colonne créent un cycle de dépendances',
@@ -85,6 +89,11 @@ const spreadsheetFr = {
     'spreadsheet/remove_spreadsheet_error': 'Erreur lors de la suppression du tableur',
     'spreadsheet/reorder_columns/error': 'Erreur lors du réordonnancement des colonnes',
     'spreadsheet/reorder_tabs_error': 'Erreur lors du réordonnancement des onglets',
+    'spreadsheet/rename/label': 'Renommer',
+    'spreadsheet/delete/label': 'Supprimer',
+    'spreadsheet/rename_spreadsheet_error': 'Erreur lors du renommage du tableur',
+    'spreadsheet/rename_dialog_title': 'Renommer le tableur',
+    'spreadsheet/spreadsheet_name_le_60': 'Le nom du tableur ne peut dépasser 60 caractères',
 
     // Column types
     TEXT: 'Texte',
