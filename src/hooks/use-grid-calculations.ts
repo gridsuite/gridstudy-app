@@ -8,26 +8,32 @@
 import { useCallback, useEffect } from 'react';
 import { useDebounce } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { ColDef } from 'ag-grid-community';
 import {
     CalculationRowData,
     CalculationRowType,
-    CalculationType,
     generateCalculationRows,
 } from 'components/spreadsheet/utils/calculation-utils';
+import { UUID } from 'crypto';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
+import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
-// Default calculation button row - ensure type is correct
+// Default calculation button row
 const DEFAULT_ROWS = [{ rowType: CalculationRowType.CALCULATION_BUTTON }];
 
 /**
- * Hook for managing calculation rows with more predictable state management
+ * Hook for managing calculation rows
  */
 export const useGridCalculations = (
     gridRef: React.RefObject<AgGridReact>,
-    calculationSelections: CalculationType[],
-    columnDefs: ColDef[],
+    tabUuid: UUID | null,
+    columnDefs: CustomColDef[],
     hasData: boolean
 ) => {
+    const calculationSelections = useSelector((state: AppState) =>
+        tabUuid ? state.calculationSelections?.[tabUuid] || [] : []
+    );
+
     const updateCalculations = useCallback(() => {
         let newRows: CalculationRowData[] = DEFAULT_ROWS;
 
@@ -35,7 +41,7 @@ export const useGridCalculations = (
         if (calculationSelections.length > 0 && hasData) {
             const api = gridRef?.current?.api;
             if (api) {
-                newRows = generateCalculationRows(calculationSelections, columnDefs, api) as CalculationRowData[];
+                newRows = generateCalculationRows(calculationSelections, columnDefs, api);
             }
         }
 
@@ -49,20 +55,11 @@ export const useGridCalculations = (
     // Debounce the update to prevent multiple unnecessary calculations
     const debouncedUpdateCalculations = useDebounce(updateCalculations, 5);
 
-    // Update calculations when selections or columns change
     useEffect(() => {
         debouncedUpdateCalculations();
-    }, [calculationSelections, columnDefs, debouncedUpdateCalculations]);
-
-    // Used to trigger calculations when displayed rows have changed.
-    // Triggered after sort, filter native or external ...
-    const handleModelUpdate = useCallback(() => {
-        if (calculationSelections.length > 0) {
-            debouncedUpdateCalculations();
-        }
-    }, [calculationSelections, debouncedUpdateCalculations]);
+    }, [debouncedUpdateCalculations]);
 
     return {
-        onModelUpdated: handleModelUpdate,
+        onModelUpdated: debouncedUpdateCalculations,
     };
 };

@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ColDef } from 'ag-grid-community';
+import { GridApi } from 'ag-grid-community';
+import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 
 export enum CalculationRowType {
@@ -30,7 +31,7 @@ export interface CalculationRowData {
 /**
  * Extract numerical values for multiple columns in a single pass
  */
-export const extractNumericValuesForColumns = (gridApi: any, columnIds: string[]): Record<string, number[]> => {
+export const extractNumericValuesForColumns = (gridApi: GridApi, columnIds: string[]): Record<string, number[]> => {
     if (!gridApi || !columnIds.length) {
         return {};
     }
@@ -44,7 +45,6 @@ export const extractNumericValuesForColumns = (gridApi: any, columnIds: string[]
 
         // Process all columns in a single export operation
         gridApi.getDataAsCsv({
-            skipHeader: true,
             columnKeys: columnIds,
             processCellCallback: (params: any): string => {
                 // Skip pinned rows
@@ -58,8 +58,6 @@ export const extractNumericValuesForColumns = (gridApi: any, columnIds: string[]
                 return params.value;
             },
             suppressQuotes: true,
-            skipFooters: true,
-            skipGroups: true,
             skipPinnedBottom: true,
             skipPinnedTop: true,
         });
@@ -100,16 +98,16 @@ export const calculateValue = (values: number[], calculationType: CalculationTyp
 
 export const generateCalculationRows = (
     calculationSelections: CalculationType[],
-    columnData: ColDef[],
-    gridApi: any
-): any[] => {
+    columnData: CustomColDef[],
+    gridApi: GridApi
+): CalculationRowData[] => {
     if (!gridApi || !Array.isArray(columnData) || !calculationSelections.length) {
         return [{ rowType: CalculationRowType.CALCULATION_BUTTON }];
     }
 
     const numericColumns = columnData
         .filter((colDef) => colDef?.colId && colDef?.context?.columnType === COLUMN_TYPES.NUMBER)
-        .map((colDef) => colDef.colId as string);
+        .map((colDef) => colDef.colId);
 
     if (numericColumns.length === 0) {
         return [{ rowType: CalculationRowType.CALCULATION_BUTTON }];

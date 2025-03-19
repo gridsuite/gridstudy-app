@@ -118,10 +118,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [rowData, setRowData] = useState<Identifiable[]>([]);
     const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
 
-    const calculationSelections = useSelector((state: AppState) =>
-        activeTabUuid ? state.calculationSelections?.[activeTabUuid] || [] : []
-    );
-
     // Initialize activeTabUuid with the first tab's UUID if not already set
     useEffect(() => {
         if (!activeTabUuid && tablesDefinitions.length > 0) {
@@ -204,12 +200,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     return s;
                 }) || [];
 
-        // Combine both sets of columns
-        lockedColumnsConfig.push(...userLockedColumns);
-
         // Apply column state with the specified default
         gridRef.current?.api?.applyColumnState({
-            state: lockedColumnsConfig,
+            state: [...lockedColumnsConfig, ...userLockedColumns],
             defaultState: { pinned: null },
         });
     }, [tableDefinition]);
@@ -463,12 +456,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [currentNode?.type, handleOpenModificationDialog]
     );
 
-    const { onModelUpdated } = useGridCalculations(
-        gridRef,
-        calculationSelections,
-        reorderedColsDefs,
-        rowData.length > 0
-    );
+    const { onModelUpdated } = useGridCalculations(gridRef, activeTabUuid, reorderedColsDefs, rowData.length > 0);
 
     return (
         <>

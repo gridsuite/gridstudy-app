@@ -233,7 +233,7 @@ export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNo
     );
 };
 
-export const RowIndexCellRenderer = (props: any) => {
+export const RowIndexCellRenderer = (props: CustomCellRendererProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 

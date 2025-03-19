@@ -23,10 +23,12 @@ import {
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
+    CustomColDef,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { UUID } from 'crypto';
 
 export const textColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {
@@ -175,7 +177,7 @@ export const booleanColumnDefinition = (displayName: string, tab: string): ColDe
     };
 };
 
-export const rowIndexColumnDefinition = (tabUuid: string): ColDef => {
+export const rowIndexColumnDefinition = (tabUuid: UUID): CustomColDef => {
     return {
         colId: 'rowIndex',
         headerName: '',
@@ -184,16 +186,7 @@ export const rowIndexColumnDefinition = (tabUuid: string): ColDef => {
             if (params.node.rowPinned) {
                 return RowIndexCellRenderer(params);
             }
-
-            if (!params.node) {
-                return null;
-            }
-
-            // Get the actual displayed row index
-            const displayedRowIndex = params.api.getDisplayedRowCount() > 0 ? params.node.rowIndex : null;
-
-            // Add 1 to convert from 0-based to 1-based indexing
-            return displayedRowIndex !== null ? displayedRowIndex + 1 : null;
+            return params.node.rowIndex + 1;
         },
         width: 65,
         pinned: 'left',
