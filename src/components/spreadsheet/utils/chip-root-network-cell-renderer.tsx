@@ -13,16 +13,23 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { NetworkModificationInfos } from 'components/graph/menus/network-modification-menu.type';
+import { ColDef } from 'ag-grid-community';
 
-const ChipRootNetworkCellRenderer = (props: any) => {
+interface ChipRootNetworkCellRendererProps {
+    data: NetworkModificationInfos;
+    colDef: ColDef<NetworkModificationInfos>;
+}
+
+const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) => {
     const { data, colDef } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
 
-    const modificationUuid = data?.modificationInfos?.uuid;
-    const rootNetworkUuid = colDef?.colId;
+    const modificationUuid = data.modificationInfos.uuid;
+    const rootNetworkUuid = colDef.colId;
 
     const modificationactivatedByRootNetwork = data?.activationStatusByRootNetwork[rootNetworkUuid].activationStatus;
     const rootNetworkTag = data?.activationStatusByRootNetwork[rootNetworkUuid].rootNetworkTag;

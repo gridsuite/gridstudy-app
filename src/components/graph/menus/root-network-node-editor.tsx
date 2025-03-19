@@ -42,7 +42,7 @@ import {
     getCaseImportParameters,
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
-import { setCurrentRootNetworkUuid } from 'redux/actions';
+import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
 import { isChecked, isPartial } from './network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 
@@ -129,7 +129,7 @@ const styles = {
 const RootNetworkNodeEditor = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
-    const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
+    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -155,7 +155,7 @@ const RootNetworkNodeEditor = () => {
             fetchRootNetworks(studyUuid)
                 .then((res: RootNetworkMetadata[]) => {
                     updateSelectedItems(res);
-                    setRootNetworks(res);
+                    dispatch(setRootNetworks(res));
                 })
                 .catch((error) => {
                     snackError({
@@ -163,7 +163,7 @@ const RootNetworkNodeEditor = () => {
                     });
                 });
         }
-    }, [studyUuid, updateSelectedItems, snackError]);
+    }, [studyUuid, updateSelectedItems, snackError, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce?.eventData?.headers) {

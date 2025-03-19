@@ -5,39 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { SelectChangeEvent, MenuItem, Select } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
-import { fetchRootNetworks } from 'services/root-network';
-import { RootNetworkMetadata } from './network-modification-menu.type';
 import { UUID } from 'crypto';
 
 export const RootNetworkSelection: FunctionComponent = () => {
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
+    // const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
+    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const [selectedRootNetworkUuid, setSelectedRootNetworkUuid] = useState<UUID | undefined>(undefined);
     const dispatch = useDispatch();
-
-    const doFetchRootNetworks = useCallback(() => {
-        if (studyUuid) {
-            fetchRootNetworks(studyUuid)
-                .then((res: RootNetworkMetadata[]) => {
-                    setRootNetworks(res);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        }
-    }, [studyUuid]);
-
-    useEffect(() => {
-        doFetchRootNetworks();
-    }, [doFetchRootNetworks]);
 
     useEffect(() => {
         if (currentRootNetworkUuid) {

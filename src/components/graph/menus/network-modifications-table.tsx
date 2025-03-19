@@ -26,7 +26,7 @@ import CellRendererSwitch from 'components/spreadsheet/utils/cell-renderer-switc
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import ChipRootNetworkCellRenderer from 'components/spreadsheet/utils/chip-root-network-cell-renderer';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 interface NetworkModificationsTableProps {
     modifications: NetworkModificationInfos[];
@@ -49,8 +49,10 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     onRowDragStart,
     onRowDragEnd,
     onRowSelected,
+    isLoading,
 }) => {
     const theme = useTheme();
+    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -60,12 +62,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         resizable: false,
         suppressMovable: true,
     };
-
-    const modificationRef = useRef<NetworkModificationInfos | null>(null);
-    const firstModification = modifications[0];
-    if (firstModification) {
-        modificationRef.current = firstModification;
-    }
 
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const dynamicColumnsRef = useRef<ColDef<NetworkModificationInfos>[]>([]);
@@ -90,6 +86,17 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         return [
             {
                 colId: 'modificationName',
+                headerComponent: () => (
+                    <>
+                        <FormattedMessage
+                            id={'network_modifications.modificationsCount'}
+                            values={{
+                                count: modifications?.length ?? '',
+                                hide: isLoading?.(),
+                            }}
+                        />
+                    </>
+                ),
                 cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
                     getModificationLabel(params?.data?.modificationInfos),
                 minWidth: 300,
@@ -102,21 +109,17 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 flex: 1,
             },
         ];
-    }, [getModificationLabel]);
+    }, [isLoading, modifications?.length, getModificationLabel]);
 
     const [columnDefs, setColumnDefs] = useState<ColDef<NetworkModificationInfos>[]>(staticColumns);
 
     useEffect(() => {
-        if (!modificationRef.current?.activationStatusByRootNetwork) {
-            return;
-        }
-        const newDynamicColumns: ColDef<NetworkModificationInfos>[] = Object.keys(
-            modificationRef.current.activationStatusByRootNetwork
-        ).map((rootNetworkUuid) => {
+        const newDynamicColumns: ColDef<NetworkModificationInfos>[] = rootNetworks.map((rootNetwork) => {
+            const rootNetworkUuid = rootNetwork.rootNetworkUuid;
             const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
             return {
                 colId: rootNetworkUuid,
-                minWidth: 100,
+                maxWidth: 100,
                 flex: 1,
                 cellRenderer: ChipRootNetworkCellRenderer,
                 headerComponent: CustomHeaderComponent,
@@ -140,7 +143,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             dynamicColumnsRef.current = newDynamicColumns;
             setColumnDefs([...staticColumns, ...newDynamicColumns]);
         }
-    }, [modificationRef.current?.activationStatusByRootNetwork, currentRootNetworkUuid, staticColumns]);
+    }, [rootNetworks, currentRootNetworkUuid, staticColumns]);
 
     const getRowId = (params: GetRowIdParams<NetworkModificationInfos>) => params.data.modificationInfos.uuid;
 

@@ -828,6 +828,7 @@ const NetworkModificationNodeEditor = () => {
                 onRowDragEnd={onRowDragEnd}
                 onRowSelected={handleRowSelected}
                 isRowDragEnabled={!isLoading() && !isAnyNodeBuilding && !mapDataLoading}
+                isLoading={isLoading}
             />
         );
     };
