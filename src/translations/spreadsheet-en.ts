@@ -86,6 +86,10 @@ const spreadsheetEn = {
     'spreadsheet/remove_spreadsheet_error': 'Error while removing spreadsheet',
     'spreadsheet/reorder_columns/error': 'Error while reordering columns',
     'spreadsheet/reorder_tabs_error': 'Error while reordering tabs',
+    'spreadsheet/rename/label': 'Rename',
+    'spreadsheet/delete/label': 'Delete',
+    'spreadsheet/rename_spreadsheet_error': 'Error while renaming spreadsheet',
+    'spreadsheet/rename_dialog_title': 'Rename spreadsheet',
 
     // Column types
     TEXT: 'Text',
