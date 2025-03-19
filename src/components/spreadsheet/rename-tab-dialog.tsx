@@ -75,7 +75,12 @@ export default function RenameTabDialog({
 
     return (
         <CustomFormProvider validationSchema={schema} {...formMethods}>
-            <Dialog open={open} onClose={onClose} aria-labelledby="rename-tab-dialog-title">
+            <Dialog
+                open={open}
+                onClose={onClose}
+                aria-labelledby="rename-tab-dialog-title"
+                PaperProps={{ sx: { width: '20%' } }}
+            >
                 <DialogTitle id="rename-tab-dialog-title">
                     {intl.formatMessage({ id: 'spreadsheet/rename_dialog_title' })}
                 </DialogTitle>
