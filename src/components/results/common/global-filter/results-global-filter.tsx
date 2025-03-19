@@ -373,7 +373,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                 filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
                     filterOptions(options, state)
                 }
-                PaperComponent={({ children }) => getCustomPaper(children)}
+                PaperComponent={CustomPaper}
             />
             {warningEquipmentTypeMessage && warningTooltip()}
             <DirectoryItemSelector
