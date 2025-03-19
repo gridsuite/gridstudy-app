@@ -292,7 +292,7 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
-import { CalculationType } from 'components/spreadsheet/utils/calculation-utils';
+import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
 
 export enum NotificationType {
     STUDY = 'study',

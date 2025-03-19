@@ -17,8 +17,8 @@ import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { ICellRendererParams } from 'ag-grid-community';
 import { CustomCellRendererProps } from 'ag-grid-react';
 import { mergeSx } from '@gridsuite/commons-ui';
-import { CalculationRowType, CalculationType } from './calculation-utils';
 import { useIntl } from 'react-intl';
+import { CalculationRowType, CalculationType } from './calculation.type';
 
 const styles = {
     tableCell: (theme: Theme) => ({

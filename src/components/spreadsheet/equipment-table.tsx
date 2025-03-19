@@ -21,7 +21,7 @@ import {
 import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 import { NodeType } from 'components/graph/tree-node.type';
-import { CalculationRowType } from './utils/calculation-utils';
+import { CalculationRowType } from './utils/calculation.type';
 
 const DEFAULT_ROW_HEIGHT = 28;
 const MAX_CLICK_DURATION = 200;

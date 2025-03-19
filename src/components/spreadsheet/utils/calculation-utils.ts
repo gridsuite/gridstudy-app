@@ -8,18 +8,7 @@
 import { GridApi } from 'ag-grid-community';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
-
-export enum CalculationRowType {
-    CALCULATION = 'calculation',
-    CALCULATION_BUTTON = 'calculationButton',
-}
-
-export enum CalculationType {
-    SUM = 'sum',
-    AVERAGE = 'average',
-    MIN = 'min',
-    MAX = 'max',
-}
+import { CalculationRowType, CalculationType } from './calculation.type';
 
 // Types for calculation data
 export interface CalculationRowData {

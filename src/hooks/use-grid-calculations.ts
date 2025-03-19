@@ -8,15 +8,12 @@
 import { useCallback, useEffect } from 'react';
 import { useDebounce } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import {
-    CalculationRowData,
-    CalculationRowType,
-    generateCalculationRows,
-} from 'components/spreadsheet/utils/calculation-utils';
+import { CalculationRowData, generateCalculationRows } from 'components/spreadsheet/utils/calculation-utils';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { CalculationRowType } from 'components/spreadsheet/utils/calculation.type';
 
 // Default calculation button row
 const DEFAULT_ROWS = [{ rowType: CalculationRowType.CALCULATION_BUTTON }];
