@@ -104,7 +104,7 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
                     {menu && <CustomMenu {...menu} />}
                 </Grid>
             </Grid>
-            <Grid container alignItems="center" justifyContent="center">
+            <Grid container justifyContent={'center'} alignItems={'center'} xs={8}>
                 {icon && shouldShowIcon && <Grid item>{icon}</Grid>}
             </Grid>
         </Grid>

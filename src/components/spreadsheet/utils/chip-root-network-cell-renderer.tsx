@@ -11,7 +11,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { FormattedMessage } from 'react-intl';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelIcon from '@mui/icons-material/Cancel';
 
@@ -25,8 +24,8 @@ const ChipRootNetworkCellRenderer = (props: any) => {
     const modificationUuid = data?.modificationInfos?.uuid;
     const rootNetworkUuid = colDef?.colId;
 
-    const modificationactivatedByRootNetwork = data?.activationStatusByRootNetwork[rootNetworkUuid];
-
+    const modificationactivatedByRootNetwork = data?.activationStatusByRootNetwork[rootNetworkUuid].activationStatus;
+    const rootNetworkTag = data?.activationStatusByRootNetwork[rootNetworkUuid].rootNetworkTag;
     const handleModificationStatusByRootNetworkUpdate = useCallback(() => {
         if (!rootNetworkUuid || !studyUuid || !modificationUuid || !currentNode) {
             return;
@@ -49,10 +48,10 @@ const ChipRootNetworkCellRenderer = (props: any) => {
     }, [studyUuid, currentNode, modificationUuid, rootNetworkUuid, snackError, modificationactivatedByRootNetwork]);
 
     return (
-        <Tooltip title={<FormattedMessage id={'RR'} />} arrow>
+        <Tooltip title={rootNetworkTag} arrow>
             <span>
                 <Chip
-                    label={<FormattedMessage id={'RR'} />}
+                    label={rootNetworkTag}
                     deleteIcon={modificationactivatedByRootNetwork ? <CheckCircleOutlineIcon /> : <CancelIcon />}
                     color="primary"
                     size="small"

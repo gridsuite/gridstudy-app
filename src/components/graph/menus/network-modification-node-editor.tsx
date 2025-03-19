@@ -763,32 +763,6 @@ const NetworkModificationNodeEditor = () => {
         return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen)?.action?.();
     };
 
-    // const commit = useCallback(
-    //     ({ source, destination }: DropResult) => {
-    //         setIsDragging(false);
-    //         if (!currentNode?.id || !destination || source.index === destination.index) {
-    //             return;
-    //         }
-    //         const res = [...modifications];
-    //         const [item] = res.splice(source.index, 1);
-    //         const before = res[destination.index]?.modificationInfos.uuid;
-    //         res.splice(destination ? destination.index : modifications.length, 0, item);
-
-    //         /* doing the local change before update to server */
-    //         setModifications(res);
-    //         changeNetworkModificationOrder(studyUuid, currentNode.id, item.modificationInfos.uuid, before).catch(
-    //             (error) => {
-    //                 snackError({
-    //                     messageTxt: error.message,
-    //                     headerId: 'errReorderModificationMsg',
-    //                 });
-    //                 setModifications(modifications); // rollback
-    //             }
-    //         );
-    //     },
-    //     [modifications, studyUuid, currentNode?.id, snackError]
-    // );
-
     const isLoading = useCallback(() => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
     }, [notificationIdList, currentNode?.id]);

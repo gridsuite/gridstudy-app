@@ -24,7 +24,7 @@ export interface NetworkModificationMetadata {
 
 export interface NetworkModificationInfos {
     modificationInfos: NetworkModificationMetadata;
-    activationStatusByRootNetwork: Map<UUID, boolean>;
+    activationStatusByRootNetwork: Map<UUID, Object>;
 }
 
 export enum NetworkModificationCopyType {

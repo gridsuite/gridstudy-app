@@ -10,7 +10,7 @@ import { CustomAGGrid, NetworkModificationMetadata } from '@gridsuite/commons-ui
 import { CellClickedEvent, RowClassParams, RowStyle } from 'ag-grid-community';
 import CustomHeaderComponent from 'components/custom-aggrid/custom-aggrid-header';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
-import { Badge } from '@mui/material';
+import { Badge, useTheme } from '@mui/material';
 import { NetworkModificationInfos } from './network-modification-menu.type';
 import CellRendererSwitch from 'components/spreadsheet/utils/cell-renderer-switch';
 import { useSelector } from 'react-redux';
@@ -39,6 +39,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     onRowDragEnd,
     onRowSelected,
 }) => {
+    const theme = useTheme();
+
     const defaultColumnDefinition = {
         sortable: false,
         resizable: false,
@@ -58,10 +60,9 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         return modif ? modif.messageValues : '';
     };
 
-    const staticColumns = useMemo(
-        () => [
+    const staticColumns = useMemo(() => {
+        return [
             {
-                headerName: 'Modification Name', //TO DO MAISSA computeLabel
                 colId: 'modificationName',
                 valueGetter: (params: any) => getModificationLabel(params?.data.modificationInfos),
                 minWidth: 300,
@@ -73,9 +74,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 minWidth: 100,
                 flex: 1,
             },
-        ],
-        []
-    );
+        ];
+    }, []);
 
     const [columnDefs, setColumnDefs] = useState<any[]>(staticColumns);
 
@@ -132,26 +132,28 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     }));
 
     return (
-        <CustomAGGrid
-            rowData={modifications}
-            getRowId={getRowId}
-            rowSelection={{
-                mode: 'multiRow',
-                enableClickSelection: false,
-                checkboxes: true,
-                headerCheckbox: true,
-            }}
-            defaultColDef={defaultColumnDefinition}
-            onCellClicked={handleCellClick}
-            onRowSelected={onRowSelected}
-            animateRows
-            columnDefs={modifiedColumnDefs}
-            getRowStyle={getRowStyle}
-            rowClass="custom-row-class"
-            onRowDragEnter={onRowDragStart}
-            onRowDragEnd={onRowDragEnd}
-            rowDragManaged={isRowDragEnabled}
-        />
+        <div style={{ position: 'relative', flexGrow: 1, marginTop: theme.spacing(1) }}>
+            <CustomAGGrid
+                rowData={modifications}
+                getRowId={getRowId}
+                rowSelection={{
+                    mode: 'multiRow',
+                    enableClickSelection: false,
+                    checkboxes: true,
+                    headerCheckbox: true,
+                }}
+                defaultColDef={defaultColumnDefinition}
+                onCellClicked={handleCellClick}
+                onRowSelected={onRowSelected}
+                animateRows
+                columnDefs={modifiedColumnDefs}
+                getRowStyle={getRowStyle}
+                rowClass="custom-row-class"
+                onRowDragEnter={onRowDragStart}
+                onRowDragEnd={onRowDragEnd}
+                rowDragManaged={isRowDragEnabled}
+            />
+        </div>
     );
 };
 
