@@ -133,6 +133,8 @@ const RootNetworkNodeEditor = () => {
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const currentRootNetworkUuidRef = useRef<UUID | null>(null);
+    currentRootNetworkUuidRef.current = currentRootNetworkUuid;
 
     const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
 
@@ -179,15 +181,22 @@ const RootNetworkNodeEditor = () => {
                 dofetchRootNetworks();
                 setDeleteInProgress(false);
             } else if (rootNetworksRef.current && eventType === 'rootNetworkDeletionStarted') {
-                // when node are being deleted, we select 1st node that won't be deleted
-                const deletingNodes = studyUpdatedForce.eventData.headers.rootNetworks;
+                setDeleteInProgress(true);
+                // when the current root network are being deleted, then we select the first rootNetwork that won't be deleted
+                // otherwise we keep the current root network
+                const deletedRootNetworkUuids = studyUpdatedForce.eventData.headers.rootNetworks;
+                if (
+                    currentRootNetworkUuidRef.current &&
+                    !deletedRootNetworkUuids.includes(currentRootNetworkUuidRef.current)
+                ) {
+                    return;
+                }
                 const newSelectedRootNetwork = rootNetworksRef.current.find(
-                    (rootNetwork) => !deletingNodes.includes(rootNetwork.rootNetworkUuid)
+                    (rootNetwork) => !deletedRootNetworkUuids.includes(rootNetwork.rootNetworkUuid)
                 );
                 if (newSelectedRootNetwork) {
                     dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
                 }
-                setDeleteInProgress(true);
             }
         }
     }, [studyUpdatedForce, dofetchRootNetworks, dispatch, snackError]);
