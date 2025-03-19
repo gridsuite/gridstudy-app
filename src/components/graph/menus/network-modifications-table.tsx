@@ -6,8 +6,18 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef, useMemo, ReactElement, ReactNode } from 'react';
-import { CustomAGGrid, NetworkModificationMetadata } from '@gridsuite/commons-ui';
-import { CellClickedEvent, RowClassParams, RowStyle } from 'ag-grid-community';
+import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
+import {
+    CellClickedEvent,
+    ColDef,
+    GetRowIdParams,
+    ICellRendererParams,
+    RowClassParams,
+    RowDragEndEvent,
+    RowDragEnterEvent,
+    RowSelectedEvent,
+    RowStyle,
+} from 'ag-grid-community';
 import CustomHeaderComponent from 'components/custom-aggrid/custom-aggrid-header';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import { Badge, useTheme } from '@mui/material';
@@ -16,6 +26,7 @@ import CellRendererSwitch from 'components/spreadsheet/utils/cell-renderer-switc
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import ChipRootNetworkCellRenderer from 'components/spreadsheet/utils/chip-root-network-cell-renderer';
+import { useIntl } from 'react-intl';
 
 interface NetworkModificationsTableProps {
     modifications: NetworkModificationInfos[];
@@ -26,9 +37,9 @@ interface NetworkModificationsTableProps {
     handleSwitchAction?: (item: NetworkModificationInfos) => ReactElement | null;
     handleCellClick?: (event: CellClickedEvent) => void;
     isRowDragEnabled?: boolean;
-    onRowDragStart?: (event: any) => void;
-    onRowDragEnd?: (event: any) => void;
-    onRowSelected?: (event: any) => void;
+    onRowDragStart?: (event: RowDragEnterEvent) => void;
+    onRowDragEnd?: (event: RowDragEndEvent) => void;
+    onRowSelected?: (event: RowSelectedEvent) => void;
 }
 
 const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
@@ -40,6 +51,9 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     onRowSelected,
 }) => {
     const theme = useTheme();
+
+    const intl = useIntl();
+    const { computeLabel } = useModificationLabelComputer();
 
     const defaultColumnDefinition = {
         sortable: false,
@@ -54,17 +68,30 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     }
 
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const dynamicColumnsRef = useRef<any[]>([]);
+    const dynamicColumnsRef = useRef<ColDef<NetworkModificationInfos>[]>([]);
 
-    const getModificationLabel = (modif: NetworkModificationMetadata): ReactNode => {
-        return modif ? modif.messageValues : '';
-    };
+    const getModificationLabel = useCallback(
+        (modif?: NetworkModificationMetadata): ReactNode => {
+            if (!modif) {
+                return '';
+            }
+            return intl.formatMessage(
+                { id: 'network_modifications.' + modif.messageType },
+                {
+                    ...modif,
+                    ...computeLabel(modif),
+                }
+            );
+        },
+        [computeLabel, intl]
+    );
 
-    const staticColumns = useMemo(() => {
+    const staticColumns: ColDef<NetworkModificationInfos>[] = useMemo(() => {
         return [
             {
                 colId: 'modificationName',
-                valueGetter: (params: any) => getModificationLabel(params?.data.modificationInfos),
+                cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
+                    getModificationLabel(params?.data?.modificationInfos),
                 minWidth: 300,
                 flex: 1,
                 cellStyle: { cursor: 'pointer' },
@@ -75,39 +102,39 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 flex: 1,
             },
         ];
-    }, []);
+    }, [getModificationLabel]);
 
-    const [columnDefs, setColumnDefs] = useState<any[]>(staticColumns);
+    const [columnDefs, setColumnDefs] = useState<ColDef<NetworkModificationInfos>[]>(staticColumns);
 
     useEffect(() => {
         if (!modificationRef.current?.activationStatusByRootNetwork) {
             return;
         }
-        const newDynamicColumns = Object.keys(modificationRef.current.activationStatusByRootNetwork).map(
-            (rootNetworkUuid) => {
-                const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
-                return {
-                    colId: rootNetworkUuid,
-                    minWidth: 100,
-                    flex: 1,
-                    cellRenderer: ChipRootNetworkCellRenderer,
-                    headerComponent: CustomHeaderComponent,
-                    headerComponentParams: {
-                        icon: (
-                            <Badge
-                                overlap="circular"
-                                color="primary"
-                                variant="dot"
-                                sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                            >
-                                <RemoveRedEyeIcon />
-                            </Badge>
-                        ),
-                        shouldShowIcon: isCurrentRootNetwork,
-                    },
-                };
-            }
-        );
+        const newDynamicColumns: ColDef<NetworkModificationInfos>[] = Object.keys(
+            modificationRef.current.activationStatusByRootNetwork
+        ).map((rootNetworkUuid) => {
+            const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
+            return {
+                colId: rootNetworkUuid,
+                minWidth: 100,
+                flex: 1,
+                cellRenderer: ChipRootNetworkCellRenderer,
+                headerComponent: CustomHeaderComponent,
+                headerComponentParams: {
+                    icon: (
+                        <Badge
+                            overlap="circular"
+                            color="primary"
+                            variant="dot"
+                            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                        >
+                            <RemoveRedEyeIcon />
+                        </Badge>
+                    ),
+                    shouldShowIcon: isCurrentRootNetwork,
+                },
+            };
+        });
 
         if (JSON.stringify(newDynamicColumns) !== JSON.stringify(dynamicColumnsRef.current)) {
             dynamicColumnsRef.current = newDynamicColumns;
@@ -115,7 +142,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         }
     }, [modificationRef.current?.activationStatusByRootNetwork, currentRootNetworkUuid, staticColumns]);
 
-    const getRowId = (params: any) => params?.data?.modificationInfos?.uuid;
+    const getRowId = (params: GetRowIdParams<NetworkModificationInfos>) => params.data.modificationInfos.uuid;
 
     const getRowStyle = useCallback((cellData: RowClassParams<NetworkModificationInfos, unknown>) => {
         const style: RowStyle = {};
