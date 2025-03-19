@@ -54,16 +54,16 @@ export function useCustomColumn(tabIndex: number) {
 
                 switch (colDef.type) {
                     case COLUMN_TYPES.NUMBER:
-                        baseDefinition = numberColumnDefinition(colDef.name, tableDefinition.name, colDef.precision);
+                        baseDefinition = numberColumnDefinition(colDef.name, tableDefinition.uuid, colDef.precision);
                         break;
                     case COLUMN_TYPES.TEXT:
-                        baseDefinition = textColumnDefinition(colDef.name, tableDefinition.name);
+                        baseDefinition = textColumnDefinition(colDef.name, tableDefinition.uuid);
                         break;
                     case COLUMN_TYPES.BOOLEAN:
-                        baseDefinition = booleanColumnDefinition(colDef.name, tableDefinition.name);
+                        baseDefinition = booleanColumnDefinition(colDef.name, tableDefinition.uuid);
                         break;
                     case COLUMN_TYPES.ENUM:
-                        baseDefinition = enumColumnDefinition(colDef.name, tableDefinition.name);
+                        baseDefinition = enumColumnDefinition(colDef.name, tableDefinition.uuid);
                         break;
                     default:
                         baseDefinition = {};
@@ -89,6 +89,6 @@ export function useCustomColumn(tabIndex: number) {
                     enableCellChangeFlash: true,
                 };
             }),
-        [tableDefinition?.columns, tableDefinition?.name, tabIndex, createValueGetter]
+        [tableDefinition?.columns, tableDefinition?.uuid, tabIndex, createValueGetter]
     );
 }

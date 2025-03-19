@@ -11,9 +11,8 @@ import { evaluateFilters, ExpertFilter } from '../../services/study/filter';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
-import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 
-export const useSpreadsheetGsFilter = (equipmentType: SpreadsheetEquipmentType) => {
+export const useSpreadsheetGsFilter = (tabUuid: UUID) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [filterIds, setFilterIds] = useState<string[]>([]);
@@ -39,14 +38,14 @@ export const useSpreadsheetGsFilter = (equipmentType: SpreadsheetEquipmentType) 
     );
 
     useEffect(() => {
-        applyGsFilter(gsFilterSpreadsheetState[equipmentType]);
-    }, [applyGsFilter, equipmentType, gsFilterSpreadsheetState]);
+        applyGsFilter(gsFilterSpreadsheetState[tabUuid]);
+    }, [applyGsFilter, tabUuid, gsFilterSpreadsheetState]);
 
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
     const isExternalFilterPresent = useCallback(
-        () => gsFilterSpreadsheetState[equipmentType]?.length > 0,
-        [equipmentType, gsFilterSpreadsheetState]
+        () => gsFilterSpreadsheetState[tabUuid]?.length > 0,
+        [tabUuid, gsFilterSpreadsheetState]
     );
 
     return { doesFormulaFilteringPass, isExternalFilterPresent };

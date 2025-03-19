@@ -18,9 +18,10 @@ import {
     GridOptions,
     RowStyle,
 } from 'ag-grid-community';
-import { CurrentTreeNode } from '../../redux/reducer';
+import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 import { NodeType } from 'components/graph/tree-node.type';
+import { useSelector } from 'react-redux';
 
 const DEFAULT_ROW_HEIGHT = 28;
 const MAX_CLICK_DURATION = 200;
@@ -38,31 +39,27 @@ const defaultColDef: ColDef = {
 };
 
 interface EquipmentTableProps {
-    rowData: unknown[];
+    rowData: unknown[] | undefined;
     columnData: ColDef[];
     gridRef: Ref<any> | undefined;
-    studyUuid: string;
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
     handleRowDataUpdated: () => void;
-    fetched: boolean;
+    isFetching: boolean | undefined;
     shouldHidePinnedHeaderRightBorder: boolean;
     onRowClicked?: (event: RowClickedEvent) => void;
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
 }
 
-const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
-
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     rowData,
     columnData,
     gridRef,
-    studyUuid,
     currentNode,
     handleColumnDrag,
     handleRowDataUpdated,
-    fetched,
+    isFetching,
     shouldHidePinnedHeaderRightBorder,
     onRowClicked,
     isExternalFilterPresent,
@@ -71,6 +68,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     const theme = useTheme();
     const intl = useIntl();
     const clickTimeRef = useRef<number | null>(null);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {
@@ -100,24 +98,13 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode, studyUuid, theme]
     );
 
-    const rowsToShow = useMemo(() => (fetched && rowData.length > 0 ? rowData : []), [rowData, fetched]);
-
-    const message = useMemo(() => {
-        if (!fetched) {
-            return intl.formatMessage({ id: 'LoadingRemoteData' });
+    const rowsToShow = useMemo(() => {
+        if (isFetching !== undefined && rowData !== undefined) {
+            return !isFetching && rowData.length > 0 ? rowData : [];
         }
-        if (fetched && rowData.length === 0) {
-            return intl.formatMessage({ id: 'grid.noRowsToShow' });
-        }
+        // If isFetching/rowData are not initialized, dont set [] for rowData to avoid an initial "no rows" state
         return undefined;
-    }, [rowData, fetched, intl]);
-
-    const loadingOverlayComponentParams = useMemo(
-        () => ({
-            loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),
-        }),
-        [intl]
-    );
+    }, [rowData, isFetching]);
 
     const handleCellMouseDown = useCallback(() => {
         clickTimeRef.current = Date.now();
@@ -154,10 +141,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             context={gridContext}
             shouldHidePinnedHeaderRightBorder={shouldHidePinnedHeaderRightBorder}
             rowHeight={DEFAULT_ROW_HEIGHT}
-            overlayNoRowsTemplate={message}
-            loadingOverlayComponent={loadingOverlayComponent}
-            loadingOverlayComponentParams={loadingOverlayComponentParams}
-            showOverlay={true}
+            loading={isFetching}
+            overlayLoadingTemplate={intl.formatMessage({ id: 'LoadingRemoteData' })}
             isExternalFilterPresent={isExternalFilterPresent}
             doesExternalFilterPass={doesExternalFilterPass}
         />

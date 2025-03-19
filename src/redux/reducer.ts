@@ -116,6 +116,7 @@ import {
     RemoveTableDefinitionAction,
     REORDER_TABLE_DEFINITIONS,
     ReorderTableDefinitionsAction,
+    RESET_ALL_SPREADSHEET_GS_FILTERS,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
@@ -123,6 +124,7 @@ import {
     RESET_MAP_EQUIPMENTS,
     RESET_MAP_RELOADED,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
+    ResetAllSpreadsheetGsFiltersAction,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
@@ -194,8 +196,10 @@ import {
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
     UpdateTableDefinitionAction,
+    RenameTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    RENAME_TABLE_DEFINITION,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -592,7 +596,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
 };
 
-export type GsFilterSpreadsheetState = Record<string, ExpertFilter[]>;
+export type GsFilterSpreadsheetState = Record<UUID, ExpertFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
 interface TablesState {
@@ -870,6 +874,13 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
+    builder.addCase(RENAME_TABLE_DEFINITION, (state, action: RenameTableDefinitionAction) => {
+        const tableDefinition = state.tables.definitions.find((tabDef) => tabDef.uuid === action.tabUuid);
+        if (tableDefinition) {
+            tableDefinition.name = action.newName;
+        }
+    });
+
     builder.addCase(INIT_TABLE_DEFINITIONS, (state, action: InitTableDefinitionsAction) => {
         state.tables.uuid = action.collectionUuid;
         state.tables.definitions = action.tableDefinitions.map((tabDef) => ({
@@ -877,12 +888,12 @@ export const reducer = createReducer(initialState, (builder) => {
             columns: tabDef.columns.map((col) => ({ ...col, visible: true, locked: false })),
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
-            .map((tabDef) => tabDef.name)
-            .reduce((acc, tabName) => ({ ...acc, [tabName]: [] }), {});
+            .map((tabDef) => tabDef.uuid)
+            .reduce((acc, tabUuid) => ({ ...acc, [tabUuid]: [] }), {});
         state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE] = Object.values(action.tableDefinitions)
-            .map((tabDef) => tabDef.name)
-            .reduce((acc, tabName) => {
-                acc[tabName] = [
+            .map((tabDef) => tabDef.uuid)
+            .reduce((acc, tabUuid) => {
+                acc[tabUuid] = [
                     {
                         colId: 'id',
                         sort: SortWay.ASC,
@@ -1729,8 +1740,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(ADD_FILTER_FOR_NEW_SPREADSHEET, (state, action: AddFilterForNewSpreadsheetAction) => {
-        const { newTabName, value } = action.payload;
-        state[SPREADSHEET_STORE_FIELD][newTabName] = value;
+        const { tabUuid, value } = action.payload;
+        state[SPREADSHEET_STORE_FIELD][tabUuid] = value;
     });
 
     builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
@@ -1748,8 +1759,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(ADD_SORT_FOR_NEW_SPREADSHEET, (state, action: AddSortForNewSpreadsheetAction) => {
-        const { newTabName, value } = action.payload;
-        state.tableSort[SPREADSHEET_SORT_STORE][newTabName] = value;
+        const { tabUuid, value } = action.payload;
+        state.tableSort[SPREADSHEET_SORT_STORE][tabUuid] = value;
     });
 
     builder.addCase(UPDATE_COLUMNS_DEFINITION, (state, action: UpdateColumnsDefinitionsAction) => {
@@ -1792,7 +1803,11 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
-        state.gsFilterSpreadsheetState[action.equipmentType] = action.filters;
+        state.gsFilterSpreadsheetState[action.tabUuid] = action.filters;
+    });
+
+    builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGsFiltersAction) => {
+        state.gsFilterSpreadsheetState = {};
     });
 });
 

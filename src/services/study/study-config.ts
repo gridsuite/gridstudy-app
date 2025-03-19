@@ -9,6 +9,7 @@ import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { NetworkVisualizationParameters } from '../../components/dialogs/parameters/network-visualizations/network-visualizations.types';
+import { SpreadsheetCollectionDto } from 'components/spreadsheet/config/spreadsheet.type';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID) {
     console.info('get network visualization parameters');
@@ -36,6 +37,20 @@ export function getSpreadsheetConfigCollection(studyUuid: UUID) {
     const url = getStudyUrl(studyUuid) + '/spreadsheet-config-collection';
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function setSpreadsheetConfigCollection(studyUuid: UUID, spreadsheetCollection?: SpreadsheetCollectionDto) {
+    console.info('set spreadsheet config collection');
+    const url = getStudyUrl(studyUuid) + '/spreadsheet-config-collection';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: spreadsheetCollection ? JSON.stringify(spreadsheetCollection) : null,
+    });
 }
 
 export function updateStudySpreadsheetConfigCollection(studyUuid: UUID, collectionUuid: UUID) {
