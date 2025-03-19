@@ -43,6 +43,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/error_saving_or_updating_column':
         'Erreur lors de la sauvegarde ou de la mise à jour de la colonne',
     'spreadsheet/save/button': 'Enregistrer',
+    'spreadsheet/reset/button': 'Réinitialiser',
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/collection': 'Collection',
     'spreadsheet/save/options/csv': 'Export CSV',
@@ -77,6 +78,8 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/error_loading_collection':
         'Erreur lors de la récupération de la collection de tableurs',
     'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': "Erreur lors de l'ajout du tableur",
+    'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
+        'Erreur lors de la réinitialisation de la collection de tableurs',
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',
@@ -94,6 +97,16 @@ const spreadsheetFr = {
     'spreadsheet/rename_spreadsheet_error': 'Erreur lors du renommage du tableur',
     'spreadsheet/rename_dialog_title': 'Renommer le tableur',
     'spreadsheet/spreadsheet_name_le_60': 'Le nom du tableur ne peut dépasser 60 caractères',
+
+    // calculations
+    'spreadsheet/calculation/sum': 'Somme',
+    'spreadsheet/calculation/average': 'Moyenne',
+    'spreadsheet/calculation/min': 'Minimum',
+    'spreadsheet/calculation/max': 'Maximum',
+    'spreadsheet/calculation/sum_abbrev': 'Som',
+    'spreadsheet/calculation/average_abbrev': 'Moy',
+    'spreadsheet/calculation/min_abbrev': 'Min',
+    'spreadsheet/calculation/max_abbrev': 'Max',
 
     // Column types
     TEXT: 'Texte',

@@ -112,6 +112,7 @@ import {
     RemoveTableDefinitionAction,
     REORDER_TABLE_DEFINITIONS,
     ReorderTableDefinitionsAction,
+    RESET_ALL_SPREADSHEET_GS_FILTERS,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
@@ -119,6 +120,7 @@ import {
     RESET_MAP_EQUIPMENTS,
     RESET_MAP_RELOADED,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
+    ResetAllSpreadsheetGsFiltersAction,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
@@ -192,6 +194,8 @@ import {
     USE_NAME,
     UseNameAction,
     RENAME_TABLE_DEFINITION,
+    SET_CALCULATION_SELECTIONS,
+    SetCalculationSelectionsAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -290,6 +294,7 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
+import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -542,6 +547,8 @@ export interface AppState extends CommonStoreState {
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
+
+    calculationSelections: Record<UUID, CalculationType[]>;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -609,6 +616,7 @@ const initialState: AppState = {
         allChildrenIds: null,
     },
     tables: initialTablesState,
+    calculationSelections: {},
     mapEquipments: undefined,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
@@ -880,8 +888,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(REMOVE_TABLE_DEFINITION, (state, action: RemoveTableDefinitionAction) => {
-        const removedTableName = state.tables.definitions[action.tabIndex].name;
-
+        const removedTable = state.tables.definitions[action.tabIndex];
         state.tables.definitions.splice(action.tabIndex, 1);
 
         // Update indexes of remaining table definitions
@@ -890,12 +897,14 @@ export const reducer = createReducer(initialState, (builder) => {
         });
 
         if (state[SPREADSHEET_STORE_FIELD]) {
-            delete state[SPREADSHEET_STORE_FIELD][removedTableName];
+            delete state[SPREADSHEET_STORE_FIELD][removedTable.name];
         }
 
         if (state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE]) {
-            delete state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE][removedTableName];
+            delete state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE][removedTable.name];
         }
+
+        delete state.calculationSelections[removedTable.uuid];
     });
 
     builder.addCase(
@@ -1773,6 +1782,17 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
         state.gsFilterSpreadsheetState[action.tabUuid] = action.filters;
+    });
+
+    builder.addCase(SET_CALCULATION_SELECTIONS, (state, action: SetCalculationSelectionsAction) => {
+        state.calculationSelections = {
+            ...state.calculationSelections,
+            [action.tabUuid]: action.selections,
+        };
+    });
+
+    builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGsFiltersAction) => {
+        state.gsFilterSpreadsheetState = {};
     });
 });
 
