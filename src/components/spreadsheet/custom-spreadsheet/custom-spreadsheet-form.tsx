@@ -31,6 +31,7 @@ export const getEmptySpreadsheetFormSchema = (tablesNames: string[]) => {
         [SPREADSHEET_NAME]: yup
             .string()
             .required()
+            .max(60, 'spreadsheet/spreadsheet_name_le_60')
             .test('unique', 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists', (value) => {
                 return !tablesNames.includes(value || '');
             }),
@@ -43,6 +44,7 @@ export const getSpreadsheetFromModelFormSchema = (tablesNames: string[]) => {
         [SPREADSHEET_NAME]: yup
             .string()
             .required()
+            .max(60, 'spreadsheet/spreadsheet_name_le_60')
             .test('unique', 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists', (value) => {
                 return !tablesNames.includes(value || '');
             }),

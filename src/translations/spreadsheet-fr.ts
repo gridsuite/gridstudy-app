@@ -89,6 +89,11 @@ const spreadsheetFr = {
     'spreadsheet/remove_spreadsheet_error': 'Erreur lors de la suppression du tableur',
     'spreadsheet/reorder_columns/error': 'Erreur lors du réordonnancement des colonnes',
     'spreadsheet/reorder_tabs_error': 'Erreur lors du réordonnancement des onglets',
+    'spreadsheet/rename/label': 'Renommer',
+    'spreadsheet/delete/label': 'Supprimer',
+    'spreadsheet/rename_spreadsheet_error': 'Erreur lors du renommage du tableur',
+    'spreadsheet/rename_dialog_title': 'Renommer le tableur',
+    'spreadsheet/spreadsheet_name_le_60': 'Le nom du tableur ne peut dépasser 60 caractères',
 
     // Column types
     TEXT: 'Texte',
