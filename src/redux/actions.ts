@@ -135,7 +135,8 @@ export type AppActions =
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction
     | RemoveTableDefinitionAction
-    | ReorderTableDefinitionsAction;
+    | ReorderTableDefinitionsAction
+    | RenameTableDefinitionAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -1194,6 +1195,20 @@ export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefiniti
     newTableDefinition,
 });
 
+export const RENAME_TABLE_DEFINITION = 'RENAME_TABLE_DEFINITION';
+export type RenameTableDefinitionAction = Readonly<Action<typeof RENAME_TABLE_DEFINITION>> & {
+    tabUuid: UUID;
+    newName: string;
+};
+
+export function renameTableDefinition(tabUuid: UUID, newName: string): RenameTableDefinitionAction {
+    return {
+        type: RENAME_TABLE_DEFINITION,
+        tabUuid,
+        newName,
+    };
+}
+
 export const INIT_TABLE_DEFINITIONS = 'INIT_TABLE_DEFINITIONS';
 
 export type InitTableDefinitionsAction = {
@@ -1226,16 +1241,13 @@ export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
 
 export type AddFilterForNewSpreadsheetAction = {
     type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: FilterConfig[] };
+    payload: { tabUuid: UUID; value: FilterConfig[] };
 };
 
-export const addFilterForNewSpreadsheet = (
-    newTabName: string,
-    value: FilterConfig[]
-): AddFilterForNewSpreadsheetAction => ({
+export const addFilterForNewSpreadsheet = (tabUuid: UUID, value: FilterConfig[]): AddFilterForNewSpreadsheetAction => ({
     type: ADD_FILTER_FOR_NEW_SPREADSHEET,
     payload: {
-        newTabName,
+        tabUuid,
         value,
     },
 });
@@ -1244,13 +1256,13 @@ export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
 
 export type AddSortForNewSpreadsheetAction = {
     type: typeof ADD_SORT_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: SortConfig[] };
+    payload: { tabUuid: UUID; value: SortConfig[] };
 };
 
-export const addSortForNewSpreadsheet = (newTabName: string, value: SortConfig[]): AddSortForNewSpreadsheetAction => ({
+export const addSortForNewSpreadsheet = (tabUuid: UUID, value: SortConfig[]): AddSortForNewSpreadsheetAction => ({
     type: ADD_SORT_FOR_NEW_SPREADSHEET,
     payload: {
-        newTabName,
+        tabUuid,
         value,
     },
 });
@@ -1274,17 +1286,14 @@ export function setStateEstimationResultFilter(
 
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
 export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
-    equipmentType: SpreadsheetEquipmentType;
+    tabUuid: UUID;
     filters: ExpertFilter[];
 };
 
-export function saveSpreadsheetGsFilters(
-    equipmentType: SpreadsheetEquipmentType,
-    filters: ExpertFilter[]
-): SaveSpreadSheetGsFilterAction {
+export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: ExpertFilter[]): SaveSpreadSheetGsFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
-        equipmentType: equipmentType,
+        tabUuid: tabUuid,
         filters: filters,
     };
 }

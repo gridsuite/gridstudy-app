@@ -9,26 +9,33 @@ import { percentageTextField } from '../dialog-utils';
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
 import { useMemo } from 'react';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { SwitchInput } from '@gridsuite/commons-ui';
+import { FloatInput, SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
 import GridItem from '../commons/grid-item';
+import { ActivePowerControlInfos } from './active-power-control.type';
 
-const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
+export interface ActivePowerControlFormProps {
+    isEquipmentModification?: boolean;
+    previousValues?: ActivePowerControlInfos;
+}
+
+export function ActivePowerControlForm({
+    isEquipmentModification = false,
+    previousValues,
+}: Readonly<ActivePowerControlFormProps>) {
     const intl = useIntl();
     const watchFrequencyRegulation = useWatch({
         name: FREQUENCY_REGULATION,
     });
 
     const previousFrequencyRegulation = useMemo(() => {
-        if (previousValues?.activePowerControl?.participate) {
+        if (previousValues?.participate) {
             return intl.formatMessage({ id: 'On' });
         } else if (
-            previousValues?.activePowerControl?.participate === false ||
-            (previousValues && previousValues?.activePowerControl?.participate === undefined)
+            previousValues?.participate === false ||
+            (previousValues && previousValues?.participate === undefined)
         ) {
             return intl.formatMessage({ id: 'Off' });
         }
@@ -54,9 +61,7 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
             name={DROOP}
             label={'Droop'}
             adornment={percentageTextField}
-            previousValue={
-                !isNaN(previousValues?.activePowerControl?.droop) ? previousValues?.activePowerControl?.droop : null
-            }
+            previousValue={Number.isNaN(previousValues?.droop) ? undefined : previousValues?.droop ?? undefined}
             clearable={true}
         />
     );
@@ -76,10 +81,4 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
             <GridItem size={4}>{droopField}</GridItem>
         </>
     );
-};
-
-FrequencyRegulation.propTypes = {
-    isEquipmentModification: PropTypes.bool,
-};
-
-export default FrequencyRegulation;
+}
