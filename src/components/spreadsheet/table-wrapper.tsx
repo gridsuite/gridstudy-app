@@ -7,12 +7,12 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
-import { Alert, Box, Grid } from '@mui/material';
+import { Alert, Box, Button, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EquipmentTable } from './equipment-table';
-import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
+import { Identifiable, PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { EquipmentTabs } from './equipment-tabs';
@@ -23,7 +23,7 @@ import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
-import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
 import SpreadsheetGsFilter from './spreadsheet-gs-filter';
@@ -32,12 +32,16 @@ import { FilterType } from '../../types/custom-aggrid-types';
 import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useEquipmentModification } from './equipment-modification/use-equipment-modification';
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
-import { updateTableDefinition } from 'redux/actions';
+import { initTableDefinitions, resetAllSpreadsheetGsFilters, updateTableDefinition } from 'redux/actions';
 import { NodeType } from '../graph/tree-node.type';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { reorderSpreadsheetColumns } from 'services/study-config';
 import { UUID } from 'crypto';
 import { useNodeAliases } from './custom-columns/use-node-aliases';
+import { spreadsheetStyles } from './utils/style';
+import RestoreIcon from '@mui/icons-material/Restore';
+import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
+import { mapColumnsDto } from './custom-spreadsheet/custom-spreadsheet-utils';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -77,7 +81,6 @@ const styles = {
 };
 
 interface TableWrapperProps {
-    studyUuid: string;
     currentNode: CurrentTreeNode;
     equipmentId: string;
     equipmentType: SpreadsheetEquipmentType;
@@ -91,7 +94,6 @@ interface RecursiveIdentifiable extends Identifiable {
 }
 
 export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
-    studyUuid,
     currentNode,
     equipmentId,
     equipmentType,
@@ -100,6 +102,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     onEquipmentScrolled,
 }) => {
     const dispatch = useDispatch();
+    const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
     const timerRef = useRef<NodeJS.Timeout>();
     const { snackError } = useSnackMessage();
@@ -110,8 +113,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
+    const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
 
     const [rowData, setRowData] = useState<Identifiable[]>();
     const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
@@ -396,7 +401,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({
-        studyUuid,
         equipmentType: tableDefinition?.type,
     });
 
@@ -410,6 +414,57 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         },
         [currentNode?.type, handleOpenModificationDialog]
     );
+
+    const getStudySpreadsheetConfigCollection = useCallback(() => {
+        if (!studyUuid) {
+            return;
+        }
+
+        getSpreadsheetConfigCollection(studyUuid).then((collectionData: SpreadsheetCollectionDto) => {
+            const tableDefinitions = collectionData.spreadsheetConfigs.map((spreadsheetConfig, index) => {
+                return {
+                    uuid: spreadsheetConfig.id,
+                    index: index,
+                    name: spreadsheetConfig.name,
+                    columns: mapColumnsDto(spreadsheetConfig.columns),
+                    type: spreadsheetConfig.sheetType,
+                };
+            });
+            dispatch(initTableDefinitions(collectionData.id, tableDefinitions));
+            if (tableDefinitions.length > 0) {
+                handleSwitchTab(tableDefinitions[0].uuid);
+                dispatch(resetAllSpreadsheetGsFilters());
+            }
+        });
+    }, [studyUuid, dispatch, handleSwitchTab]);
+
+    // Reset the collection to the default one defined in the user profile
+    const resetSpreadsheetCollection = useCallback(() => {
+        if (!studyUuid) {
+            return;
+        }
+
+        setSpreadsheetConfigCollection(studyUuid)
+            .then(() => {
+                getStudySpreadsheetConfigCollection();
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error,
+                    headerId: 'spreadsheet/reset_spreadsheet_collection/error_resetting_collection',
+                });
+            });
+        setResetConfirmationDialogOpen(false);
+    }, [studyUuid, getStudySpreadsheetConfigCollection, snackError]);
+
+    const handleResetCollectionClick = useCallback(() => {
+        if (tablesDefinitions.length > 0) {
+            setResetConfirmationDialogOpen(true);
+        } else {
+            // reset the collection directly if no tables exist
+            resetSpreadsheetCollection();
+        }
+    }, [tablesDefinitions, resetSpreadsheetCollection]);
 
     return (
         <>
@@ -451,6 +506,17 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
+                    <Grid item>
+                        <Button
+                            sx={spreadsheetStyles.spreadsheetButton}
+                            size={'small'}
+                            onClick={handleResetCollectionClick}
+                            disabled={disabled}
+                        >
+                            <RestoreIcon />
+                            <FormattedMessage id="spreadsheet/reset/button" />
+                        </Button>
+                    </Grid>
                     <Grid item sx={styles.save}>
                         <SpreadsheetSave
                             tabIndex={activeTabIndex}
@@ -472,7 +538,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
-                        studyUuid={studyUuid}
                         currentNode={currentNode}
                         rowData={rowData}
                         columnData={reorderedColsDefs}
@@ -487,6 +552,16 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 </Box>
             )}
             {modificationDialog}
+            {resetConfirmationDialogOpen && (
+                <PopupConfirmationDialog
+                    message={intl.formatMessage({
+                        id: 'spreadsheet/create_new_spreadsheet/replace_collection_confirmation',
+                    })}
+                    openConfirmationPopup={resetConfirmationDialogOpen}
+                    setOpenConfirmationPopup={setResetConfirmationDialogOpen}
+                    handlePopupConfirmation={resetSpreadsheetCollection}
+                />
+            )}
         </>
     );
 };
