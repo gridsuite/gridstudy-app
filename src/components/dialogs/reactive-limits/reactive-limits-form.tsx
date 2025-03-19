@@ -72,9 +72,9 @@ export function ReactiveLimitsForm({
         <ReactiveCapabilityCurveTableForm
             id={`${id}.${REACTIVE_CAPABILITY_CURVE_TABLE}`}
             tableHeadersIds={headerIds}
+            disabled={!isReactiveCapabilityCurveOn}
             previousValues={previousReactiveCapabilityCurvePoints ?? undefined}
             updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
-            disabled={isReactiveCapabilityCurveOn}
         />
     );
 

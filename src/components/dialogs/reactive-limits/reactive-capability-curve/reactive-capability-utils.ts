@@ -38,18 +38,15 @@ export const getRowEmptyFormData = () => ({
 });
 
 function getNotNullPFromArray(values: ReactiveCapabilityCurve) {
-    return (
-        values &&
-        values
-            .map((element) => {
-                const pValue = element[P];
+    return values
+        ?.map((element) => {
+            const pValue = element[P];
 
-                // Note : convertion toNumber is necessary here to prevent corner cases like if
-                // two values are "-0" and "0", which would be considered different by the Set below.
-                return validateValueIsANumber(pValue) ? toNumber(pValue) : null;
-            })
-            .filter((p) => p !== null)
-    );
+            // Note : convertion toNumber is necessary here to prevent corner cases like if
+            // two values are "-0" and "0", which would be considered different by the Set below.
+            return validateValueIsANumber(pValue) ? toNumber(pValue) : null;
+        })
+        .filter((p) => p !== null);
 }
 
 function checkAllPValuesAreUnique(values: ReactiveCapabilityCurve) {
