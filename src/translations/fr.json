@@ -1257,6 +1257,7 @@
     "GenerationAndLoad": "Production et consommation",
     "InsertModificationFrom": "Insérer à partir de GridExplore",
     "SaveToGridexplore": "Enregistrer dans GridExplore",
+    "GenerateFromGridexplore": "Générer à partir de GridExplore",
     "SaveToGridexploreError": "Une erreur est survenue lors de la sauvegarde dans GridExplore",
     "ModificationsSelection": "Sélection des modifications",
     "errCreateModificationsMsg": "Une erreur est survenue lors de la création des modifications",

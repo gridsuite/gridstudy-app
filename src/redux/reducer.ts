@@ -65,10 +65,12 @@ import {
     INIT_TABLE_DEFINITIONS,
     InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
+    LOAD_NAD_FROM_CONFIG,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
     LOADFLOW_RESULT_FILTER,
     LoadflowResultFilterAction,
+    LoadNadFromConfigAction,
     LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LogsFilterAction,
@@ -1427,6 +1429,21 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CLOSE_DIAGRAMS, (state, action: CloseDiagramsAction) => {
         const idsToClose = new Set(action.ids);
         state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
+    });
+
+    builder.addCase(LOAD_NAD_FROM_CONFIG, (state, action: LoadNadFromConfigAction) => {
+        console.error('CHARLY DANS LE REDUCER, nadConfigUuid : ' + action.nadConfigUuid);
+        let diagramStates = state.diagramStates;
+        // We close all the other NAD
+        // TODO Check not already open (see above logic)
+        // TODO Erase local movements related to this NAD
+        diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
+        diagramStates.push({
+            id: action.nadConfigUuid as UUID,
+            svgType: DiagramType.NAD_FROM_CONFIG,
+            state: ViewState.OPENED,
+        });
+        state.diagramStates = diagramStates;
     });
 
     builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {

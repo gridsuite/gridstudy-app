@@ -40,7 +40,7 @@ import { EquipmentType, mergeSx, OverflowableText, useDebounce, useSnackMessage 
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
-import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
+import { fetchSvg, getNetworkAreaDiagramUrl, getNetworkAreaDiagramUrlFromConfig } from '../../services/study';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
@@ -130,9 +130,17 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
         ]
     );
+    const checkAndGetNetworkAreaDiagramFromConfigUrl = useCallback(
+        (nadConfigUuid: string) =>
+            isNodeBuilt(currentNode)
+                ? getNetworkAreaDiagramUrlFromConfig(studyUuid, currentNode?.id, currentRootNetworkUuid, nadConfigUuid)
+                : null,
+        [studyUuid, currentNode, currentRootNetworkUuid]
+    );
 
     type FetchSvgDataFn = {
         (svgUrl: string | null, svgType: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL): Promise<SldSvg>;
+        (svgUrl: string | null, svgType: DiagramType.NAD_FROM_CONFIG): Promise<DiagramSvg>;
         (
             svgUrl: string | null,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
@@ -227,6 +235,45 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 });
             }
 
+            function createNetworkAreaDiagramFromConfigView(id: UUID, state: ViewState | undefined) {
+                const svgUrl = checkAndGetNetworkAreaDiagramFromConfigUrl(id);
+                return fetchSvgData(svgUrl, DiagramType.NAD_FROM_CONFIG).then((svg) => {
+                    let nadTitle = ''; // TODO CHARLY Fix that
+                    let substationsIds: UUID[] = [];
+                    svg.additionalMetadata?.voltageLevels
+                        .map((vl) => ({
+                            name: getNameOrId({ name: vl.name, id: vl.substationId }),
+                            substationId: vl.substationId,
+                        }))
+                        .sort((vlA, vlB) => vlA.name?.toLowerCase().localeCompare(vlB.name?.toLowerCase() ?? '') || 0)
+                        .forEach((voltageLevel) => {
+                            const name = voltageLevel.name;
+                            if (name !== null) {
+                                nadTitle += (nadTitle !== '' ? ', ' : '') + name;
+                            }
+                            substationsIds.push(voltageLevel.substationId);
+                        });
+                    if (nadTitle === '') {
+                        nadTitle = id.toString();
+                    }
+                    return {
+                        // id: ids[0],
+                        // ids: ids,
+                        id: id,
+                        nodeId: currentNode.id,
+                        state: state,
+                        name: nadTitle,
+                        fetchSvg: () => createNetworkAreaDiagramFromConfigView(id, state), // here 'name' and 'substationsIds' can change so we can't use fetchSvgData
+                        svgType: DiagramType.NAD_FROM_CONFIG,
+                        depth: 0, //depth, // TODO CHARLY depth a recup dans le metadata ?
+                        substationIds: substationsIds,
+                        nadMetadata: svg.metadata,
+                        scalingFactor: svg.additionalMetadata?.scalingFactor,
+                        ...svg,
+                    };
+                });
+            }
+
             function createNetworkAreaDiagramView(ids: UUID[] | undefined, state: ViewState | undefined, depth = 0) {
                 console.log('debug', 'createNetworkAreaDiagramView', state);
                 if (ids?.length) {
@@ -279,6 +326,8 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 return createVoltageLevelDiagramView(diagramState.id!, diagramState.state);
             } else if (diagramState.svgType === DiagramType.SUBSTATION) {
                 return createSubstationDiagramView(diagramState.id!, diagramState.state);
+            } else if (diagramState.svgType === DiagramType.NAD_FROM_CONFIG) {
+                return createNetworkAreaDiagramFromConfigView(diagramState.id!, diagramState.state);
             } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 return createNetworkAreaDiagramView(diagramState.ids, diagramState.state, diagramState.depth);
             }
@@ -287,6 +336,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             checkAndGetSubstationSingleLineDiagramUrl,
             checkAndGetVoltageLevelSingleLineDiagramUrl,
             checkAndGetNetworkAreaDiagramUrl,
+            checkAndGetNetworkAreaDiagramFromConfigUrl,
             getNameOrId,
             studyUuid,
             currentNode,
@@ -1105,7 +1155,8 @@ export function DiagramPane({
                                         visible={visible}
                                     />
                                 )}
-                                {diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM && (
+                                {(diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM ||
+                                    diagramView.svgType === DiagramType.NAD_FROM_CONFIG) && (
                                     <NetworkAreaDiagramContent
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}

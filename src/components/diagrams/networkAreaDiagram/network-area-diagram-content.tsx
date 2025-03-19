@@ -37,6 +37,7 @@ import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/com
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
+import { useDiagram } from '../use-diagram';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -169,8 +170,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
+    const { loadNadFromConfigView } = useDiagram();
 
     const nadIdentifier = useMemo(() => {
+        if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
+            return props.diagramId as string;
+        }
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
     }, [diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]);
 
@@ -258,6 +263,13 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             })
         );
     };
+
+    const handleLoadFromConfig = useCallback(
+        (nadConfigUuid: string) => {
+            loadNadFromConfigView(nadConfigUuid);
+        },
+        [loadNadFromConfigView]
+    );
 
     /**
      * DIAGRAM CONTENT BUILDING
@@ -373,7 +385,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
-            <DiagramControls onSave={handleSaveNadConfig} />
+            <DiagramControls onSave={handleSaveNadConfig} onLoad={handleLoadFromConfig} />
         </>
     );
 }

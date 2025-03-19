@@ -9,7 +9,14 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
 import { useCallback } from 'react';
 import { DiagramType } from './diagram.type';
-import { closeDiagram, closeDiagrams, minimizeDiagram, openDiagram, togglePinDiagram } from '../../redux/actions';
+import {
+    closeDiagram,
+    closeDiagrams,
+    loadNadFromConfig,
+    minimizeDiagram,
+    openDiagram,
+    togglePinDiagram,
+} from '../../redux/actions';
 
 export const useDiagram = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -49,11 +56,19 @@ export const useDiagram = () => {
         [dispatch]
     );
 
+    const loadNadFromConfigView = useCallback(
+        (nadConfigUuid: string) => {
+            dispatch(loadNadFromConfig(nadConfigUuid));
+        },
+        [dispatch]
+    );
+
     return {
         openDiagramView,
         minimizeDiagramView,
         togglePinDiagramView,
         closeDiagramView,
         closeDiagramViews,
+        loadNadFromConfigView,
     };
 };

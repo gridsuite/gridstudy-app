@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { ElementCreationDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
+import UploadIcon from '@mui/icons-material/Upload';
 import SaveIcon from '@mui/icons-material/Save';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
@@ -36,9 +37,10 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
+    onLoad?: (nadConfigId: string) => void;
 }
 
-const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
+const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => {
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -53,6 +55,15 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
     const handleSave = (data: IElementCreationDialog) => {
         if (onSave) {
             onSave(data);
+        }
+    };
+
+    const handleLoad = (nadConfigId: string) => {
+        // UUID d'un NAD sauvegardé en base : 8ce6a253-3cc4-4000-bd82-215c2581bdd0
+        const temporaryNadUuid = '8ce6a253-3cc4-4000-bd82-215c2581bdd0';
+        console.error('CHARLY try to load NadConfig ' + temporaryNadUuid);
+        if (onLoad) {
+            onLoad(temporaryNadUuid);
         }
     };
 
@@ -72,6 +83,11 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
                     <Tooltip title={<FormattedMessage id={'SaveToGridexplore'} />}>
                         <IconButton sx={styles.actionIcon} onClick={handleClickSaveIcon}>
                             <SaveIcon sx={styles.icon} />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={<FormattedMessage id={'GenerateFromGridexplore'} />}>
+                        <IconButton sx={styles.actionIcon} onClick={handleLoad}>
+                            <UploadIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
                 </Box>
