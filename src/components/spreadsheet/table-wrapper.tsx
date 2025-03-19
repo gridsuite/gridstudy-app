@@ -117,7 +117,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
 
-    const [rowData, setRowData] = useState<Identifiable[]>([]);
+    const [rowData, setRowData] = useState<Identifiable[]>();
     const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
 
     // Initialize activeTabUuid with the first tab's UUID if not already set
@@ -165,9 +165,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [columnsDefinitions, tableDefinition?.columns]);
 
     const sortConfig = useSelector(
-        (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.name]
+        (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.uuid]
     );
-    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.name);
+    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
 
     const updateSortConfig = useCallback(() => {
         gridRef.current?.api?.applyColumnState({
@@ -220,7 +220,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }
     }, []);
 
-    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.type);
+    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.uuid);
 
     const highlightUpdatedEquipment = useCallback(() => {
         if (!equipmentToUpdateId) {
@@ -340,7 +340,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         // wait a moment  before removing the loading message.
         timerRef.current = setTimeout(() => {
             gridRef.current?.api?.hideOverlay();
-            if (rowData.length === 0 && !isFetching) {
+            if (rowData?.length === 0 && !isFetching) {
                 // we need to call showNoRowsOverlay in order to show message when rowData is empty
                 gridRef.current?.api?.showNoRowsOverlay();
             }
@@ -518,7 +518,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             columns={reorderedColsDefs}
                             tableName={tableDefinition?.name}
                             disabled={shouldDisableButtons}
-                            dataSize={rowData.length}
+                            dataSize={rowData ? rowData.length : 0}
                         />
                     </Grid>
                 </Grid>
@@ -534,7 +534,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         currentNode={currentNode}
                         rowData={rowData}
                         columnData={reorderedColsDefs}
-                        fetched={equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) !== undefined}
+                        isFetching={isFetching}
                         handleColumnDrag={handleColumnDrag}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
