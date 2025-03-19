@@ -42,7 +42,6 @@ export const getConnectivityPropertiesValidationSchema = (isEquipmentModificatio
                     is: () => isEquipmentModification,
                     then: (schema) => schema.nullable(),
                 }),
-                [NAME]: yup.string(),
             }),
     };
 };
