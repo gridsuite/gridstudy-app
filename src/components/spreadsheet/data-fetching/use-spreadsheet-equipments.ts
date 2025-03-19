@@ -34,7 +34,7 @@ export const useSpreadsheetEquipments = (
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const [isFetching, setIsFetching] = useState(false);
+    const [isFetching, setIsFetching] = useState<boolean>();
 
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
