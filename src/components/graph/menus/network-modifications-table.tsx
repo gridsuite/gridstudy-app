@@ -121,7 +121,9 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 colId: rootNetworkUuid,
                 maxWidth: 100,
                 flex: 1,
-                cellRenderer: ChipRootNetworkCellRenderer,
+                cellRenderer: (param: ICellRendererParams<NetworkModificationInfos>) => (
+                    <ChipRootNetworkCellRenderer rootNetwork={rootNetwork} {...param} />
+                ),
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
                     icon: (

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Chip, Tooltip } from '@mui/material';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
@@ -13,28 +13,32 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { NetworkModificationInfos } from 'components/graph/menus/network-modification-menu.type';
+import { NetworkModificationInfos, RootNetworkMetadata } from 'components/graph/menus/network-modification-menu.type';
 import { ColDef } from 'ag-grid-community';
+import { UUID } from 'crypto';
 
 interface ChipRootNetworkCellRendererProps {
-    data: NetworkModificationInfos;
-    colDef: ColDef<NetworkModificationInfos>;
+    data?: NetworkModificationInfos;
+    rootNetwork: RootNetworkMetadata;
 }
 
 const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) => {
-    const { data, colDef } = props;
+    const { data, rootNetwork } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
 
-    const modificationUuid = data.modificationInfos.uuid;
-    const rootNetworkUuid = colDef.colId;
+    const modificationUuid = data?.modificationInfos.uuid;
 
-    const modificationactivatedByRootNetwork = data?.activationStatusByRootNetwork[rootNetworkUuid].activationStatus;
-    const rootNetworkTag = data?.activationStatusByRootNetwork[rootNetworkUuid].rootNetworkTag;
+    const modificationactivatedByRootNetwork = useMemo(
+        () => data?.activationStatusByRootNetwork[rootNetwork.rootNetworkUuid] ?? false,
+        [rootNetwork.rootNetworkUuid, data]
+    );
+
+    const rootNetworkTag = rootNetwork.tag;
     const handleModificationStatusByRootNetworkUpdate = useCallback(() => {
-        if (!rootNetworkUuid || !studyUuid || !modificationUuid || !currentNode) {
+        if (!studyUuid || !modificationUuid || !currentNode) {
             return;
         }
 
@@ -42,7 +46,7 @@ const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) =>
         updateModificationStatusByRootNetwork(
             studyUuid,
             currentNode?.id,
-            rootNetworkUuid,
+            rootNetwork.rootNetworkUuid,
             modificationUuid,
             !modificationactivatedByRootNetwork
         )
@@ -52,7 +56,7 @@ const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) =>
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [studyUuid, currentNode, modificationUuid, rootNetworkUuid, snackError, modificationactivatedByRootNetwork]);
+    }, [studyUuid, currentNode, modificationUuid, rootNetwork, snackError, modificationactivatedByRootNetwork]);
 
     return (
         <Tooltip title={rootNetworkTag} arrow>

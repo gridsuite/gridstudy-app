@@ -16,7 +16,6 @@ import { UUID } from 'crypto';
 
 export const RootNetworkSelection: FunctionComponent = () => {
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    // const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const [selectedRootNetworkUuid, setSelectedRootNetworkUuid] = useState<UUID | undefined>(undefined);
     const dispatch = useDispatch();
