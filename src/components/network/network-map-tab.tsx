@@ -53,6 +53,7 @@ import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode } from 'redux/reducer';
 import { UPDATE_TYPE_HEADER } from 'components/use-node-data';
+import { isReactFlowRootNodeData } from 'redux/utils';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -515,12 +516,11 @@ export const NetworkMapTab = ({
         const notFoundLineIds = lineFullPath
             ? getEquipmentsNotFoundIds(geoDataRef.current.linePositionsById, mapEquipments?.lines as GeoDataEquipment[])
             : [];
-
+        // The loader should be reset if there's no geo-data to fetch or once fetching is finished.
         if (notFoundSubstationIds.length > 0 || notFoundLineIds.length > 0) {
             console.info(
                 `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLineIds}'...`
             );
-            dispatch(setMapDataLoading(true));
             const missingSubstationPositions = getMissingEquipmentsPositions(
                 notFoundSubstationIds,
                 fetchSubstationPositions
@@ -529,7 +529,7 @@ export const NetworkMapTab = ({
             const missingLinesPositions = getMissingEquipmentsPositions(notFoundLineIds, fetchLinePositions);
 
             const nodeBeforeFetch = currentNodeRef.current;
-            Promise.all([missingSubstationPositions, missingLinesPositions])
+            return Promise.all([missingSubstationPositions, missingLinesPositions])
                 .then((positions) => {
                     // If the node changed or if it is not built anymore, we ignore the results returned by the fetch
                     if (!checkNodeConsistency(nodeBeforeFetch)) {
@@ -572,13 +572,11 @@ export const NetworkMapTab = ({
                         messageTxt: error.message,
                         headerId: 'geoDataLoadingFail',
                     });
-                })
-                .finally(() => {
-                    dispatch(setMapDataLoading(false));
                 });
+        } else {
+            return Promise.resolve(true);
         }
     }, [
-        dispatch,
         lineFullPath,
         snackError,
         studyUuid,
@@ -600,6 +598,7 @@ export const NetworkMapTab = ({
     const loadRootNodeGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         dispatch(setMapDataLoading(true));
+
         setGeoData(undefined);
         geoDataRef.current = null;
 
@@ -639,7 +638,9 @@ export const NetworkMapTab = ({
                 });
             })
             .finally(() => {
-                dispatch(setMapDataLoading(false));
+                if (currentNodeRef.current?.id === rootNodeId) {
+                    dispatch(setMapDataLoading(false));
+                } // otherwise loadMissingGeoData will stop the loading
             });
     }, [rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch, snackError, networkMapRef]);
 
@@ -651,7 +652,10 @@ export const NetworkMapTab = ({
                 geoDataRef.current?.substationPositionsById.size > 0 &&
                 (!lineFullPath || geoDataRef.current.linePositionsById.size > 0)
             ) {
-                loadMissingGeoData();
+                dispatch(setMapDataLoading(true));
+                loadMissingGeoData().finally(() => {
+                    dispatch(setMapDataLoading(false));
+                });
             } else {
                 // trigger root node geodata fetching
                 loadRootNodeGeoData();
@@ -661,7 +665,7 @@ export const NetworkMapTab = ({
                 setIsRootNodeGeoDataLoaded(false);
             }
         }
-    }, [studyUuid, loadRootNodeGeoData, loadMissingGeoData, lineFullPath]);
+    }, [studyUuid, lineFullPath, dispatch, loadMissingGeoData, loadRootNodeGeoData]);
 
     const {
         impactedSubstationsIds,
@@ -741,10 +745,9 @@ export const NetworkMapTab = ({
                 if (isFullReload) {
                     handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
                 }
-                dispatch(setMapDataLoading(false));
             });
         },
-        [currentNode, handleFilteredNominalVoltagesChange, currentRootNetworkUuid, dispatch, mapEquipments, studyUuid]
+        [currentNode, handleFilteredNominalVoltagesChange, currentRootNetworkUuid, mapEquipments, studyUuid]
     );
 
     const updateMapEquipments = useCallback(
@@ -769,7 +772,6 @@ export const NetworkMapTab = ({
             //     return Promise.reject();
             // }
             console.info('Update map equipments');
-            dispatch(setMapDataLoading(true));
 
             const updatedSubstationsToSend =
                 !isMapCollectionImpact && hasSubstationsImpacted ? impactedSubstationsIds : undefined;
@@ -800,9 +802,14 @@ export const NetworkMapTab = ({
             dispatch(resetMapReloaded());
             return;
         }
+        dispatch(setMapDataLoading(true));
         updateMapEquipments(currentNodeAtReloadCalling).then(() => {
             if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                 loadGeoData();
+            } else {
+                // Do not set MapDataLoading redux state to false in the finnaly clause here
+                // loadGeoData will do it later in the process avoiding flickering
+                dispatch(setMapDataLoading(false));
             }
         });
     }, [currentNode, dispatch, loadGeoData, mapEquipments, studyUuid, updateMapEquipments]);
@@ -814,11 +821,16 @@ export const NetworkMapTab = ({
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
                 rootNetworkUuidFromNotification === currentRootNetworkUuid
             ) {
-                reloadMapEquipments(currentNodeRef.current, undefined).catch((e) =>
-                    snackError({
-                        messageTxt: e.message,
-                    })
-                );
+                dispatch(setMapDataLoading(true));
+                reloadMapEquipments(currentNodeRef.current, undefined)
+                    .catch((e) =>
+                        snackError({
+                            messageTxt: e.message,
+                        })
+                    )
+                    .finally(() => {
+                        dispatch(setMapDataLoading(false));
+                    });
             }
 
             if (
@@ -903,6 +915,10 @@ export const NetworkMapTab = ({
             // return to avoid update in manual reload or to avoid double update
             return;
         }
+        // if the map tab is initialized and we are on the root node, then we don't have missing equipments.
+        if (isReactFlowRootNodeData(currentNode)) {
+            return;
+        }
         // auto reload
         updateMapEquipmentsAndGeoData();
         // Note: studyUuid and dispatch don't change
@@ -931,7 +947,12 @@ export const NetworkMapTab = ({
             if (mapEquipments) {
                 handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
             }
-            loadMissingGeoData();
+            if (currentNodeRef.current && !isReactFlowRootNodeData(currentNodeRef.current)) {
+                dispatch(setMapDataLoading(true));
+                loadMissingGeoData().finally(() => {
+                    dispatch(setMapDataLoading(false));
+                });
+            }
             setInitialized(true);
         }
     }, [
@@ -941,6 +962,7 @@ export const NetworkMapTab = ({
         isMapEquipmentsInitialized,
         isInitialized,
         loadMissingGeoData,
+        dispatch,
     ]);
 
     // Reload geo data (if necessary) when we switch on full path

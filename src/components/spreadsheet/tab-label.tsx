@@ -110,8 +110,7 @@ export const TabLabel: React.FC<TabLabelProps> = ({ name, onRemove, onRename, di
                     {Object.values(TAB_MENU_DEFINITION).map((option) => (
                         <MenuItem
                             key={option.id}
-                            onClick={(e) => {
-                                e.stopPropagation();
+                            onClick={() => {
                                 handleMenuItemClick(option);
                             }}
                         >
