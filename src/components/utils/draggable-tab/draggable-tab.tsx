@@ -7,23 +7,33 @@
 
 import { Draggable } from 'react-beautiful-dnd';
 import Tab, { TabProps } from '@mui/material/Tab';
+import { Box } from '@mui/material';
+import { SxProps, Theme } from '@mui/material/styles';
+
+interface DraggableTabStyles {
+    container?: SxProps<Theme>;
+    tab?: SxProps<Theme>;
+}
 
 interface DraggableTabOwnProps {
     id: string;
     index: number;
     value: number;
+    styles?: DraggableTabStyles;
 }
 
 type DraggableTabProps = DraggableTabOwnProps & Omit<TabProps, keyof DraggableTabOwnProps>;
 
 const DraggableTab = (props: DraggableTabProps) => {
-    const { id, index, value, label, ...others } = props;
+    const { id, index, value, label, styles = {}, ...others } = props;
+    const { container = {}, tab = {} } = styles;
+
     return (
         <Draggable draggableId={id} index={index} disableInteractiveElementBlocking>
             {(draggableProvided) => (
-                <div ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}>
-                    <Tab value={value} label={label} {...others} {...draggableProvided.dragHandleProps} />
-                </div>
+                <Box ref={draggableProvided.innerRef} {...draggableProvided.draggableProps} sx={container}>
+                    <Tab value={value} label={label} {...others} {...draggableProvided.dragHandleProps} sx={tab} />
+                </Box>
             )}
         </Draggable>
     );
