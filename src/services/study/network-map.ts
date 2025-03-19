@@ -96,7 +96,7 @@ export function fetchEquipmentsIds(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     substationsIds: string[],
-    equipmentType: EquipmentType | ExtendedEquipmentType.HVDC_LINE_VSC,
+    equipmentType: EquipmentType | ExtendedEquipmentType,
     inUpstreamBuiltParentNode: boolean,
     nominalVoltages?: number[]
 ) {

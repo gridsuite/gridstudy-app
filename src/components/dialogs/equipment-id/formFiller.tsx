@@ -7,21 +7,22 @@
 
 import { mergeSx } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Theme, useTheme } from '@mui/material/styles';
+import { ReactNode } from 'react';
 
-// TODO DBR         backgroundColor: theme.palette.background, // formFiller.background TODO DBR
 const styles = {
-    filler: () => ({
+    filler: (theme: Theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.09)', // from MUI code cf FilledInput.js
     }),
 };
 
 interface FormFillerProps {
     size?: number;
     lineHeight?: number; // Filler's height will be X times a generic row in the form (or 100% by default)
-    children: any;
+    children: ReactNode;
 }
 export function FormFiller({ size = 12, lineHeight, children }: Readonly<FormFillerProps>) {
     const theme = useTheme();

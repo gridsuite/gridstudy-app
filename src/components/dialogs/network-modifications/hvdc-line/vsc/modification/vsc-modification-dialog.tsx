@@ -110,7 +110,7 @@ const VscModificationDialog: React.FC<any> = ({
     const [tabIndex, setTabIndex] = useState(VSC_MODIFICATION_TABS.HVDC_LINE_TAB);
 
     const [equipmentId, setEquipmentId] = useState<string | null>(defaultIdValue ?? null);
-    const [vscToModify, setVcsToModify] = useState<VscModificationInfo | null>(null);
+    const [vscToModify, setVscToModify] = useState<VscModificationInfo | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -158,7 +158,7 @@ const VscModificationDialog: React.FC<any> = ({
         (equipmentId: string | null) => {
             if (!equipmentId) {
                 setValuesAndEmptyOthers();
-                setVcsToModify(null);
+                setVscToModify(null);
             } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
@@ -209,7 +209,7 @@ const VscModificationDialog: React.FC<any> = ({
                                 value.converterStation2?.minMaxReactiveLimits,
                                 setValue
                             );
-                            setVcsToModify({
+                            setVscToModify({
                                 ...value,
                                 converterStation1: {
                                     ...value.converterStation1,
@@ -230,7 +230,7 @@ const VscModificationDialog: React.FC<any> = ({
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
-                            setVcsToModify(null);
+                            setVscToModify(null);
                             reset(emptyFormData);
                         }
                     });
@@ -320,7 +320,7 @@ const VscModificationDialog: React.FC<any> = ({
         index: number,
         converterStationName: 'converterStation1' | 'converterStation2'
     ) => {
-        setVcsToModify((previousValue: VscModificationInfo | null) => {
+        setVscToModify((previousValue: VscModificationInfo | null) => {
             const newRccValues = previousValue?.[converterStationName]?.reactiveCapabilityCurveTable;
             return updateConverterStationCapabilityCurveTable(newRccValues, action, index, previousValue);
         });

@@ -32,8 +32,8 @@ const styles = {
 
 interface EquipmentIdSelectorProps {
     defaultValue: string | null;
-    setSelectedId: any; // TODO should be setState function
-    equipmentType: EquipmentType | ExtendedEquipmentType.HVDC_LINE_VSC;
+    setSelectedId: (value: string) => void;
+    equipmentType: EquipmentType | ExtendedEquipmentType;
     readOnly?: boolean;
     fillerHeight?: number;
     fillerMessageId?: string;
