@@ -44,7 +44,7 @@ export function ReactiveLimitsForm({
         <RadioInput
             name={`${id}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`}
             options={Object.values(REACTIVE_LIMIT_TYPES)}
-            formProps={{ style: { marginTop: '-12px' }, defaultValue: 'CURVE' }}
+            formProps={{ style: { marginTop: '-12px' } }}
         />
     );
 

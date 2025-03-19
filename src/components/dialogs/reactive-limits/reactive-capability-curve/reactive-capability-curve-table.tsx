@@ -22,7 +22,7 @@ interface ReactiveCapabilityCurveTableFormProps {
     id: string;
     tableHeadersIds: string[];
     disabled: boolean;
-    previousValues?: ReactiveCapabilityCurvePoints[];
+    previousValues?: ReactiveCapabilityCurvePoints[] | null;
     updatePreviousReactiveCapabilityCurveTable?: (action: string, index: number) => void;
 }
 

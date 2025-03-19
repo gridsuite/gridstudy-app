@@ -68,7 +68,7 @@ export interface BatteryModificationInfo {
     isReactiveCapabilityCurveOn?: boolean;
     minQ?: number | null;
     maxQ?: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints;
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints[] | null;
     targetP: number;
     targetQ: number;
     participate: boolean;
@@ -170,7 +170,7 @@ export interface GeneratorModificationInfo {
     droop: number | null;
     maxQ?: number | null;
     minQ?: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints[];
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints[] | null;
     connectionDirection?: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
@@ -359,7 +359,7 @@ export interface VSCCreationConverterStation {
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
 }
 
 export interface LCCCreationConverterStation {
@@ -417,7 +417,7 @@ export interface BatteryCreationInfo {
     isReactiveCapabilityCurveOn: boolean;
     minQ: number | null;
     maxQ: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints;
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints[] | null;
     targetP: number;
     targetQ: number;
     participate: boolean;
@@ -459,7 +459,7 @@ export interface GeneratorCreationInfo {
     droop: number | null;
     maxQ: number | null;
     minQ: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints[];
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints[] | null;
     connectionDirection: string | null;
     connectionName: string | null;
     connectionPosition: string | null;
