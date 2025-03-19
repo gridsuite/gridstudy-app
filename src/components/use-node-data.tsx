@@ -7,7 +7,6 @@
 
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { RunningStatus } from './utils/running-status';
 import { UUID } from 'crypto';
 import { AppState, StudyUpdated } from '../redux/reducer';
 import { identity } from '@gridsuite/commons-ui';
@@ -67,47 +66,55 @@ function isWorthUpdate<T>(
     return false;
 }
 
-export function useNodeData<T, R = T>(
-    studyUuid: UUID,
-    nodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<T | null>,
-    invalidations: string[],
-    defaultValue: R | undefined = undefined,
-    resultConversion: (fetchedResult: T | null) => R | null = identity
-) {
-    const [result, setResult] = useState<R | RunningStatus | undefined>(defaultValue);
-    const [isPending, setIsPending] = useState(false);
+export function useNodeData<T, R = T>({
+    studyUuid,
+    nodeUuid,
+    rootNetworkUuid,
+    fetcher,
+    invalidations,
+    defaultValue = undefined,
+    resultConversion = identity,
+}: {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    rootNetworkUuid: UUID;
+    fetcher?: (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<T | null>;
+    invalidations: string[];
+    defaultValue?: R | undefined;
+    resultConversion?: (fetchedResult: T | null) => R | null;
+}) {
+    const [result, setResult] = useState<R | undefined>(defaultValue);
+    const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
     const nodeUuidRef = useRef<UUID>();
     const rootNetworkUuidRef = useRef<UUID>();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const lastUpdateRef = useRef<{
         studyUpdatedForce: StudyUpdated;
-        fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<T | null>;
+        fetcher: (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<T | null>;
     }>();
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
-        rootNetworkUuidRef.current = currentRootNetworkUuid;
-        setIsPending(true);
+        rootNetworkUuidRef.current = rootNetworkUuid;
+        setIsLoading(true);
         setErrorMessage(undefined);
-        fetcher(studyUuid, nodeUuid, currentRootNetworkUuid)
+        fetcher?.(studyUuid, nodeUuid, rootNetworkUuid)
             .then((res) => {
-                if (nodeUuidRef.current === nodeUuid && rootNetworkUuidRef.current === currentRootNetworkUuid) {
+                if (nodeUuidRef.current === nodeUuid && rootNetworkUuidRef.current === rootNetworkUuid) {
                     setResult(resultConversion(res) ?? undefined);
                 }
             })
             .catch((err) => {
                 setErrorMessage(err.message);
-                setResult(RunningStatus.FAILED);
+                // setResult(RunningStatus.FAILED);
             })
-            .finally(() => setIsPending(false));
-    }, [nodeUuid, fetcher, currentRootNetworkUuid, studyUuid, resultConversion]);
+            .finally(() => setIsLoading(false));
+    }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConversion]);
 
     /* initial fetch and update */
     useEffect(() => {
-        if (!studyUuid || !nodeUuid || !currentRootNetworkUuid || !fetcher) {
+        if (!studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
             return;
         }
         const isUpdateForUs = isWorthUpdate(
@@ -117,18 +124,14 @@ export function useNodeData<T, R = T>(
             nodeUuidRef,
             rootNetworkUuidRef,
             nodeUuid,
-            currentRootNetworkUuid,
+            rootNetworkUuid,
             invalidations
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
-        if (
-            nodeUuidRef.current !== nodeUuid ||
-            rootNetworkUuidRef.current !== currentRootNetworkUuid ||
-            isUpdateForUs
-        ) {
+        if (nodeUuidRef.current !== nodeUuid || rootNetworkUuidRef.current !== rootNetworkUuid || isUpdateForUs) {
             update();
         }
-    }, [update, fetcher, nodeUuid, invalidations, currentRootNetworkUuid, studyUpdatedForce, studyUuid]);
+    }, [update, fetcher, nodeUuid, invalidations, rootNetworkUuid, studyUpdatedForce, studyUuid]);
 
-    return [result, isPending, setResult, errorMessage, update];
+    return { result, isLoading, setResult, errorMessage, update };
 }

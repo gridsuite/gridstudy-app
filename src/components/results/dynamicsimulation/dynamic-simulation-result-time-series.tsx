@@ -53,7 +53,7 @@ const DynamicSimulationResultTimeSeries = memo(function ({
         result,
         lazyLoadTimeSeriesCb: loadTimeSeries,
         isLoading,
-    } = useResultTimeSeries({ nodeUuid, studyUuid, currentRootNetworkUuid });
+    } = useResultTimeSeries({ nodeUuid, studyUuid, rootNetworkUuid: currentRootNetworkUuid });
 
     // tab id is automatically increased and reset to zero when there is no tab.
     const [tabIncId, setTabIncId] = useState<number>(1);

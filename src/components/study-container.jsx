@@ -45,7 +45,7 @@ import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
 import { HttpStatusCode } from 'utils/http-status-code';
 import { StudyIndexationStatus } from 'redux/reducer';
 import { NodeType } from './graph/tree-node.type';
-import { UPDATE_TYPE_HEADER } from './use-node-data.js';
+import { UPDATE_TYPE_HEADER } from './use-node-data';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();

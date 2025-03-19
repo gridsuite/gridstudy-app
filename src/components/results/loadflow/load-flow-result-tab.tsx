@@ -202,18 +202,22 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const fetchResult = useMemo(() => {
         if (tabIndex === 0 || tabIndex === 1) {
             return fetchLimitViolationsWithParameters;
-        } /*if (tabIndex === 2)*/ else {
+        } else if (tabIndex === 2) {
             return fetchloadflowResultWithParameters;
         }
     }, [tabIndex, fetchLimitViolationsWithParameters, fetchloadflowResultWithParameters]);
 
-    const [loadflowResult, isLoadingResult, setResult] = useNodeData<any>(
+    const {
+        result: loadflowResult,
+        isLoading: isLoadingResult,
+        setResult,
+    } = useNodeData({
         studyUuid,
         nodeUuid,
-        currentRootNetworkUuid,
-        fetchResult,
-        loadflowResultInvalidations
-    );
+        rootNetworkUuid: currentRootNetworkUuid,
+        fetcher: fetchResult,
+        invalidations: loadflowResultInvalidations,
+    });
 
     const loadFlowLimitViolationsColumns = useMemo(() => {
         switch (tabIndex) {
@@ -265,7 +269,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     }, []);
 
     const result = useMemo(() => {
-        if (loadflowResult === RunningStatus.FAILED || !loadflowResult) {
+        if (!loadflowResult) {
             return [];
         }
         if (tabIndex === 0 || tabIndex === 1) {

@@ -65,13 +65,13 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         return fetchEstimResults;
     }, [fetchEstimResults]);
 
-    const [stateEstimationResult, isLoadingResult] = useNodeData(
+    const { result: stateEstimationResult, isLoading: isLoadingResult } = useNodeData({
         studyUuid,
         nodeUuid,
-        currentRootNetworkUuid,
-        fetchResult,
-        stateEstimationResultInvalidations
-    );
+        rootNetworkUuid: currentRootNetworkUuid,
+        fetcher: fetchResult,
+        invalidations: stateEstimationResultInvalidations,
+    });
 
     const stateEstimationQualityColumns = useMemo(() => {
         switch (tabIndex) {

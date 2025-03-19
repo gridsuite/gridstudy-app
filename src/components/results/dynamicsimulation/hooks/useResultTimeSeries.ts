@@ -17,30 +17,29 @@ import { useNodeData } from 'components/use-node-data';
 const useResultTimeSeries = ({
     nodeUuid,
     studyUuid,
-    currentRootNetworkUuid,
+    rootNetworkUuid,
 }: {
     nodeUuid: UUID;
     studyUuid: UUID;
-    currentRootNetworkUuid: UUID;
+    rootNetworkUuid: UUID;
 }) => {
-    const [result, isLoading] = useNodeData<
+    const { result, isLoading } = useNodeData<
         SimpleTimeSeriesMetadata[],
         {
             timeseries: Timeseries[] | undefined;
             timeseriesMetadatas: SimpleTimeSeriesMetadata[] | undefined;
         }
-    >(
+    >({
         studyUuid,
         nodeUuid,
-        currentRootNetworkUuid,
-        fetchDynamicSimulationTimeSeriesMetadata,
-        dynamicSimulationResultInvalidations,
-        undefined,
-        (timeseriesMetadatas: SimpleTimeSeriesMetadata[] | null) => ({
+        rootNetworkUuid,
+        fetcher: fetchDynamicSimulationTimeSeriesMetadata,
+        invalidations: dynamicSimulationResultInvalidations,
+        resultConversion: (timeseriesMetadatas: SimpleTimeSeriesMetadata[] | null) => ({
             timeseries: timeseriesMetadatas ? Array(timeseriesMetadatas.length) : undefined,
             timeseriesMetadatas: timeseriesMetadatas ?? undefined,
-        })
-    );
+        }),
+    });
 
     const { snackError } = useSnackMessage();
 
@@ -85,7 +84,7 @@ const useResultTimeSeries = ({
                 return fetchDynamicSimulationResultTimeSeries(
                     studyUuid,
                     nodeUuid,
-                    currentRootNetworkUuid,
+                    rootNetworkUuid,
                     timeSeriesNamesToLoad
                 )
                     .then((newlyLoadedTimeSeries) => {
@@ -115,12 +114,12 @@ const useResultTimeSeries = ({
                     });
             }
         },
-        [studyUuid, nodeUuid, currentRootNetworkUuid, result, snackError]
+        [studyUuid, nodeUuid, rootNetworkUuid, result, snackError]
     );
 
     return {
-        result: result === null || typeof result !== 'object' ? undefined : result,
-        lazyLoadTimeSeriesCb: lazyLoadTimeSeriesCb,
+        result,
+        lazyLoadTimeSeriesCb,
         isLoading,
     };
 };

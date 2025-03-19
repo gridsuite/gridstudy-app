@@ -17,7 +17,6 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { StatusCellRender } from '../common/result-cell-renderers';
 import { UUID } from 'crypto';
-import RunningStatus from '../../utils/running-status';
 import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
@@ -50,14 +49,13 @@ const DynamicSimulationResultSynthesis = memo(
     ({ nodeUuid, studyUuid, currentRootNetworkUuid }: DynamicSimulationResultSynthesisProps) => {
         const intl = useIntl();
 
-        const [result, isLoading] = useNodeData(
+        const { result, isLoading } = useNodeData({
             studyUuid,
             nodeUuid,
-            currentRootNetworkUuid,
-            fetchDynamicSimulationStatus,
-            dynamicSimulationResultInvalidations,
-            undefined,
-            (status: string | null) => {
+            rootNetworkUuid: currentRootNetworkUuid,
+            fetcher: fetchDynamicSimulationStatus,
+            invalidations: dynamicSimulationResultInvalidations,
+            resultConversion: (status: string | null) => {
                 return status === null
                     ? undefined
                     : [
@@ -65,8 +63,8 @@ const DynamicSimulationResultSynthesis = memo(
                               status,
                           },
                       ];
-            }
-        );
+            },
+        });
 
         const columnDefs = useMemo(
             () => [
