@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, ReactNode, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteRenderInputParams,
@@ -70,7 +70,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
         new Map([
             [FilterType.COUNTRY, 0],
             [FilterType.VOLTAGE_LEVEL, 0],
-            [FilterType.FILTER, 0],
+            [FilterType.GENERIC_FILTER, 0],
         ])
     );
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
@@ -83,7 +83,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                     return translate(option.label);
                 case FilterType.VOLTAGE_LEVEL:
                     return option.label + ' kV';
-                case FilterType.FILTER:
+                case FilterType.GENERIC_FILTER:
                     return option.label;
             }
         },
@@ -95,7 +95,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
             let globalFiltersToAddToRecents: GlobalFilter[] = [...globalFilters];
             const fetchFiltersPromises = globalFilters
                 // checks if the generic filters still exist, and sets their path value
-                .filter((globalFilter: GlobalFilter) => globalFilter.filterType === FilterType.FILTER)
+                .filter((globalFilter: GlobalFilter) => globalFilter.filterType === FilterType.GENERIC_FILTER)
                 .map(async (fetchedGlobalFilter: GlobalFilter) => {
                     if (fetchedGlobalFilter.uuid) {
                         try {
@@ -149,7 +149,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                             uuid: element.elementUuid,
                             equipmentType: element.specificMetadata?.equipmentType,
                             label: element.elementName,
-                            filterType: FilterType.FILTER,
+                            filterType: FilterType.GENERIC_FILTER,
                             recent: true,
                         });
                     }

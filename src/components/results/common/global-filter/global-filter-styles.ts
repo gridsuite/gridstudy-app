@@ -19,8 +19,8 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
         case FilterType.VOLTAGE_LEVEL:
             chipStyle = resultsGlobalFilterStyles.chipVoltageLevel;
             break;
-        case FilterType.FILTER:
-            chipStyle = resultsGlobalFilterStyles.chipFilter;
+        case FilterType.GENERIC_FILTER:
+            chipStyle = resultsGlobalFilterStyles.chipGenericFilter;
             break;
     }
     return mergeSx(resultsGlobalFilterStyles.chip, chipStyle);
@@ -99,7 +99,7 @@ export const resultsGlobalFilterStyles = {
             backgroundColor: `${theme.palette.secondary.dark}!important`,
         },
     }),
-    chipFilter: () => ({
+    chipGenericFilter: () => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `${cyan['500']}!important`,
         },

@@ -258,7 +258,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             );
             const genericFilters: Set<string> = new Set(
                 value
-                    .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.FILTER)
+                    .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
                     .map((filter: GlobalFilter) => filter.uuid ?? '')
                     .filter((uuid: string): boolean => uuid !== '')
             );
