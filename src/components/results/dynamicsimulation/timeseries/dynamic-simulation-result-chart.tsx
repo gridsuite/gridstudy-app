@@ -161,7 +161,7 @@ function DynamicSimulationResultChart({
                 // transform to plotly's compatible data
                 return selectedTimeSeries?.map((elem) => {
                     const metadata = elem?.metadata;
-                    const values = elem?.chunks && elem.chunks[0]?.values;
+                    const values = elem?.chunks?.[0]?.values;
                     const timeseriesIndex = getTimeseriesIndex(metadata);
                     return {
                         index: elem.index,

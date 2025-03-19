@@ -134,7 +134,7 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                                 tabs.map((tab, index) => {
                                     return (
                                         <DraggableTab
-                                            key={index}
+                                            key={`tab-${index}`}
                                             id={`tab-${index}`}
                                             index={index}
                                             value={index}

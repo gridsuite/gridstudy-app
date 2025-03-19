@@ -38,7 +38,7 @@ function DynamicSimulationResultSeriesList({
     headers,
     onLeftAxisSelected,
     onRightAxisSelected,
-}: DynamicSimulationResultSeriesListProps) {
+}: Readonly<DynamicSimulationResultSeriesListProps>) {
     const [leftAxisCheckedIndexes, setLeftAxisCheckedIndexes] = useState<number[]>([]);
     const [rightAxisCheckedIndexes, setRightAxisCheckedIndexes] = useState<number[]>([]);
 
@@ -84,7 +84,7 @@ function DynamicSimulationResultSeriesList({
             <ListSubheader>
                 <Grid container>
                     {headers.map((header, index) => (
-                        <Grid item flexGrow={index === 1 ? 1 : 0} key={index}>
+                        <Grid item flexGrow={index === 1 ? 1 : 0} key={header}>
                             <Typography sx={styles.headerItem} variant={'subtitle1'}>
                                 {header}
                             </Typography>
@@ -98,7 +98,7 @@ function DynamicSimulationResultSeriesList({
         <List sx={styles.root} subheader={renderHeaders()}>
             {items.map((item, index) => (
                 <DynamicSimulationResultSeriesItem
-                    key={index}
+                    key={item.id}
                     item={item}
                     onChangeLeftAxis={handleToggleLeftAxis}
                     onChangeRightAxis={handleToggleRightAxis}
