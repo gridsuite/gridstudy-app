@@ -32,7 +32,11 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/column_name_already_exist': 'Nom de colonne déjà existant',
     'spreadsheet/custom_column/dependencies': "La formule fait référence à d'autres colonnes",
     'spreadsheet/custom_column/nodes': 'Nœuds',
-    'spreadsheet/custom_column/parameter_nodes': 'Parametrer les alias de nœuds',
+    'spreadsheet/custom_column/option/parameter': 'Paramétrer',
+    'spreadsheet/custom_column/option/refresh': 'Recharger',
+    'spreadsheet/custom_column/option/refresh/tooltip':
+        'Recharger les données de cette feuille pour les autres nœuds paramétrés ({aliases})',
+    'spreadsheet/custom_column/parameter_nodes': 'Paramétrer les alias de nœuds',
     'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
     'spreadsheet/custom_column/creates_cyclic_dependency':
         'Les dépendances de la colonne créent un cycle de dépendances',
@@ -79,6 +83,7 @@ const spreadsheetFr = {
     'spreadsheet/parameter_aliases/no_special_characters': 'Ne doit pas contenir de caractères spéciaux',
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'Aucun nœud avec ce nom',
     'spreadsheet/parameter_aliases/unique_aliases': 'Les alias doivent être unique',
+    'spreadsheet/parameter_aliases/unique_node_names': 'Chaque nœud ne peut avoir qu’un seul alias',
     'spreadsheet/filter/config': 'Filtres Gridsuite',
     'spreadsheet/remove_spreadsheet_confirmation': 'Êtes-vous sûr de vouloir supprimer le tableur {spreadsheetName} ?',
     'spreadsheet/remove_spreadsheet_error': 'Erreur lors de la suppression du tableur',
