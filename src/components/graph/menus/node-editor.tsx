@@ -15,6 +15,7 @@ import { updateTreeNode } from '../../../services/study/tree-subtree';
 import { Box } from '@mui/material';
 import { AppState } from '../../../redux/reducer';
 import { Theme } from '@mui/material/styles';
+import { RootNetworkSelection } from './root-network-selection';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -58,6 +59,7 @@ const NodeEditor = () => {
                 name={currentTreeNode?.data?.label ?? ''}
                 onClose={closeModificationsDrawer}
                 onChange={changeNodeName}
+                child={<RootNetworkSelection />}
             />
             <NetworkModificationNodeEditor />
         </Box>
