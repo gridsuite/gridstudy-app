@@ -191,43 +191,36 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
         return '';
     }, [intl, filterableEquipmentTypes, selectedGlobalFilters]);
 
-    const CustomPaper = useCallback((props: PropsWithChildren) => {
-        return (
-            <SelectableGlobalFilters
-                children={props.children}
-                onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
-            />
-        );
-    }, []);
+    const CustomPaper = (props: PropsWithChildren) => (
+        <SelectableGlobalFilters
+            children={props.children}
+            onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
+        />
+    );
 
     // renderInput : the inputfield that contains the chips, adornments and label
-    const getRenderInput = useCallback(
-        (params: AutocompleteRenderInputParams) => {
-            return (
-                <TextField
-                    id={params.id}
-                    size={params.size}
-                    fullWidth={params.fullWidth}
-                    inputProps={params.inputProps}
-                    disabled={params.disabled}
-                    label={intl.formatMessage({
-                        id: 'results.globalFilter.fillerText',
-                    })}
-                    InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                            <>
-                                <InputAdornment position="start">
-                                    <FilterAlt />
-                                </InputAdornment>
-                                {params.InputProps.startAdornment}
-                            </>
-                        ),
-                    }}
-                />
-            );
-        },
-        [intl]
+    const RenderInput = (params: AutocompleteRenderInputParams) => (
+        <TextField
+            id={params.id}
+            size={params.size}
+            fullWidth={params.fullWidth}
+            inputProps={params.inputProps}
+            disabled={params.disabled}
+            label={intl.formatMessage({
+                id: 'results.globalFilter.fillerText',
+            })}
+            InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                    <>
+                        <InputAdornment position="start">
+                            <FilterAlt />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                    </>
+                ),
+            }}
+        />
     );
 
     const filterOptions = useCallback(
@@ -260,29 +253,27 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
         [numberOfOptions, translate]
     );
 
-    const warningTooltip = useCallback(() => {
-        return (
-            <Tooltip
-                title={warningEquipmentTypeMessage}
-                placement="right"
-                arrow
-                PopperProps={{
-                    modifiers: [
-                        {
-                            name: 'offset',
-                            options: {
-                                offset: [0, -15],
-                            },
+    const WarningTooltip = () => (
+        <Tooltip
+            title={warningEquipmentTypeMessage}
+            placement="right"
+            arrow
+            PopperProps={{
+                modifiers: [
+                    {
+                        name: 'offset',
+                        options: {
+                            offset: [0, -15],
                         },
-                    ],
-                }}
-            >
-                <IconButton size="small" sx={{ cursor: 'default' }}>
-                    <WarningAmberRounded color="warning" fontSize="medium" />
-                </IconButton>
-            </Tooltip>
-        );
-    }, [warningEquipmentTypeMessage]);
+                    },
+                ],
+            }}
+        >
+            <IconButton size="small" sx={{ cursor: 'default' }}>
+                <WarningAmberRounded color="warning" fontSize="medium" />
+            </IconButton>
+        </Tooltip>
+    );
 
     return (
         <>
@@ -314,7 +305,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                 ]}
                 onChange={(_e, value) => handleChange(value as GlobalFilter[])}
                 groupBy={(option: GlobalFilter): string => (option.recent ? recentFilter : option.filterType)}
-                renderInput={(params: AutocompleteRenderInputParams) => getRenderInput(params)}
+                renderInput={RenderInput}
                 // renderTags : the chips in the inputField
                 renderTags={(filters: GlobalFilter[], getTagsProps) =>
                     filters.map((element: GlobalFilter, index: number) => (
@@ -377,7 +368,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                 }
                 PaperComponent={CustomPaper}
             />
-            {warningEquipmentTypeMessage && warningTooltip()}
+            {warningEquipmentTypeMessage && <WarningTooltip />}
             <DirectoryItemSelector
                 open={directoryItemSelectorOpen}
                 onClose={addSelectedFilters}
