@@ -28,7 +28,7 @@ const FittingPopper = (props: PopperProps) => {
 interface RegulatingTerminalFormProps {
     id: string;
     direction?: GridDirection;
-    disabled: boolean;
+    disabled?: boolean;
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
