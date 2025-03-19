@@ -18,11 +18,12 @@ import {
     GridOptions,
     RowStyle,
 } from 'ag-grid-community';
-import { CurrentTreeNode } from '../../redux/reducer';
+import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 import { NodeType } from 'components/graph/tree-node.type';
 import { CalculationRowType } from './utils/calculation.type';
 import { isCalculationRow } from './utils/calculation-utils';
+import { useSelector } from 'react-redux';
 
 const DEFAULT_ROW_HEIGHT = 28;
 const MAX_CLICK_DURATION = 200;
@@ -55,7 +56,6 @@ interface EquipmentTableProps {
     rowData: unknown[] | undefined;
     columnData: ColDef[];
     gridRef: RefObject<any> | undefined;
-    studyUuid: string;
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
     handleRowDataUpdated: () => void;
@@ -71,7 +71,6 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     rowData,
     columnData,
     gridRef,
-    studyUuid,
     currentNode,
     handleColumnDrag,
     handleRowDataUpdated,
@@ -85,6 +84,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     const theme = useTheme();
     const intl = useIntl();
     const clickTimeRef = useRef<number | null>(null);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {

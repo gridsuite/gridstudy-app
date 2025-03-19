@@ -112,6 +112,7 @@ import {
     RemoveTableDefinitionAction,
     REORDER_TABLE_DEFINITIONS,
     ReorderTableDefinitionsAction,
+    RESET_ALL_SPREADSHEET_GS_FILTERS,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
@@ -119,6 +120,7 @@ import {
     RESET_MAP_EQUIPMENTS,
     RESET_MAP_RELOADED,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
+    ResetAllSpreadsheetGsFiltersAction,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
@@ -1787,6 +1789,10 @@ export const reducer = createReducer(initialState, (builder) => {
             ...state.calculationSelections,
             [action.tabUuid]: action.selections,
         };
+    });
+
+    builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGsFiltersAction) => {
+        state.gsFilterSpreadsheetState = {};
     });
 });
 
