@@ -172,21 +172,23 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
             )
             .map((filter) => filter.label);
 
-        if (inappropriateFilters.length === 0) {
-            return '';
-        }
-        switch (inappropriateFilters.length) {
-            case 1:
+        if (inappropriateFilters.length > 0) {
+            if (inappropriateFilters.length > 1) {
                 return intl.formatMessage(
-                    { id: 'results.globalFilter.nonApplicable' },
-                    { filterName: inappropriateFilters[0] }
-                );
-            default:
-                return intl.formatMessage(
-                    { id: 'results.globalFilter.nonApplicableExtra' },
+                    {
+                        id: 'results.globalFilter.nonApplicableExtra',
+                    },
                     { filterName: inappropriateFilters[0], extraFiltersNum: inappropriateFilters.length - 1 }
                 );
+            }
+            return intl.formatMessage(
+                {
+                    id: 'results.globalFilter.nonApplicable',
+                },
+                { filterName: inappropriateFilters[0] }
+            );
         }
+        return '';
     }, [intl, filterableEquipmentTypes, selectedGlobalFilters]);
 
     const getCustomPaper = useCallback((children: ReactNode) => {
