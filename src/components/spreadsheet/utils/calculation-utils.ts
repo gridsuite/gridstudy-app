@@ -32,23 +32,25 @@ export const extractNumericValuesForColumns = (gridApi: GridApi, columnIds: stri
             columnValues[colId] = [];
         });
 
-        // Process all columns in a single export operation
-        gridApi.getDataAsCsv({
-            columnKeys: columnIds,
-            processCellCallback: (params: any): string => {
-                // Skip pinned rows
-                if (!params.node.rowPinned && columnIds.includes(params.column.getColId())) {
-                    const colId = params.column.getColId();
-                    const numValue = parseFloat(params.value);
+        gridApi.forEachNodeAfterFilter((node) => {
+            // Skip pinned rows
+            if (node.rowPinned) {
+                return;
+            }
+
+            // Process each column
+            columnIds.forEach((colId) => {
+                const cellValue = gridApi.getCellValue({
+                    rowNode: node,
+                    colKey: colId,
+                });
+                if (cellValue !== undefined && cellValue !== null) {
+                    const numValue = parseFloat(String(cellValue));
                     if (!isNaN(numValue)) {
                         columnValues[colId].push(numValue);
                     }
                 }
-                return params.value;
-            },
-            suppressQuotes: true,
-            skipPinnedBottom: true,
-            skipPinnedTop: true,
+            });
         });
 
         return columnValues;
