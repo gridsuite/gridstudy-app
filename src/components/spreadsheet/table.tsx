@@ -16,19 +16,15 @@ import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { useSpreadsheetEquipments } from './data-fetching/use-spreadsheet-equipments';
-import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
-import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
+import { ColumnMovedEvent, RowClickedEvent } from 'ag-grid-community';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
 import SpreadsheetGsFilter from './spreadsheet-gs-filter';
-import { useFilterSelector } from '../../hooks/use-filter-selector';
-import { FilterType } from '../../types/custom-aggrid-types';
-import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useEquipmentModification } from './equipment-modification/use-equipment-modification';
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
 import { updateTableDefinition } from 'redux/actions';
@@ -107,7 +103,6 @@ export const Table: FunctionComponent<TableProps> = ({
     const { nodeAliases, updateNodeAliases } = useNodeAliases();
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
-    const [rowData, setRowData] = useState<Identifiable[]>();
     const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
 
     // Calculate the visual index for compatibility with components that need numeric indices
@@ -147,34 +142,6 @@ export const Table: FunctionComponent<TableProps> = ({
         });
     }, [columnsDefinitions, tableDefinition?.columns]);
 
-    const sortConfig = useSelector(
-        (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.uuid]
-    );
-    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
-
-    const updateSortConfig = useCallback(() => {
-        gridRef.current?.api?.applyColumnState({
-            state: sortConfig,
-            defaultState: { sort: null },
-        });
-    }, [sortConfig]);
-
-    const updateLockedColumnsConfig = useCallback(() => {
-        const lockedColumnsConfig = tableDefinition?.columns
-            ?.filter((column) => column.visible && column.locked)
-            ?.map((column) => {
-                const s: ColumnState = {
-                    colId: column.id ?? '',
-                    pinned: 'left',
-                };
-                return s;
-            });
-        gridRef.current?.api?.applyColumnState({
-            state: lockedColumnsConfig,
-            defaultState: { pinned: null },
-        });
-    }, [tableDefinition]);
-
     const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.uuid);
 
     const highlightUpdatedEquipment = useCallback(() => {
@@ -201,21 +168,14 @@ export const Table: FunctionComponent<TableProps> = ({
         nodeAliases
     );
 
-    useEffect(() => {
-        if (
-            disabled ||
-            equipments?.nodesId.find((nodeId) => nodeId === currentNode?.id) === undefined ||
-            !nodeAliases
-        ) {
-            return;
-        }
+    const rowData = useMemo(() => {
         let localRowData: Identifiable[] = [];
         if (currentNode && tableDefinition?.type) {
-            equipments?.equipmentsByNodeId[currentNode.id].forEach((equipment) => {
+            equipments?.equipmentsByNodeId[currentNode.id]?.forEach((equipment) => {
                 let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
                 Object.entries(equipments?.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
                     let matchingEquipment = equipments.find((eq) => eq.id === equipment.id);
-                    let nodeAlias = nodeAliases.find((value) => value.id === nodeId);
+                    let nodeAlias = nodeAliases?.find((value) => value.id === nodeId);
                     if (nodeAlias !== undefined && matchingEquipment !== undefined) {
                         equipmentToAdd[nodeAlias.alias] = matchingEquipment;
                     }
@@ -223,28 +183,8 @@ export const Table: FunctionComponent<TableProps> = ({
                 localRowData.push(equipmentToAdd);
             });
         }
-
-        // To handle cases where a "customSpreadsheet" tab is opened.
-        // This ensures that the grid correctly displays data specific to the custom tab.
-        if (gridRef.current?.api) {
-            gridRef.current.api.setGridOption('rowData', localRowData);
-            updateSortConfig();
-            updateFilters(gridRef.current?.api, filters);
-            updateLockedColumnsConfig();
-        }
-        setRowData(localRowData);
-    }, [
-        activeTabUuid,
-        disabled,
-        equipments,
-        tableDefinition?.type,
-        nodeAliases,
-        currentNode?.id,
-        updateSortConfig,
-        filters,
-        updateLockedColumnsConfig,
-        currentNode,
-    ]);
+        return localRowData;
+    }, [currentNode, equipments?.equipmentsByNodeId, nodeAliases, tableDefinition?.type]);
 
     const scrollToEquipmentIndex = useCallback(() => {
         if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {

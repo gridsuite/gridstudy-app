@@ -87,6 +87,8 @@ export function useCustomColumn(tabIndex: number) {
                     valueGetter: createValueGetter(colDef),
                     editable: false,
                     enableCellChangeFlash: true,
+                    pinned: colDef.locked ? 'left' : null,
+                    hide: !(colDef.visible ?? true),
                 };
             }),
         [tableDefinition?.columns, tableDefinition?.uuid, tabIndex, createValueGetter]
