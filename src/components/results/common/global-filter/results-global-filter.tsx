@@ -191,10 +191,10 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
         return '';
     }, [intl, filterableEquipmentTypes, selectedGlobalFilters]);
 
-    const getCustomPaper = useCallback((children: ReactNode) => {
+    const CustomPaper = useCallback((props: PropsWithChildren) => {
         return (
             <SelectableGlobalFilters
-                children={children}
+                children={props.children}
                 onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
             />
         );
@@ -375,7 +375,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                 filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
                     filterOptions(options, state)
                 }
-                PaperComponent={({ children }) => getCustomPaper(children)}
+                PaperComponent={CustomPaper}
             />
             {warningEquipmentTypeMessage && warningTooltip()}
             <DirectoryItemSelector
