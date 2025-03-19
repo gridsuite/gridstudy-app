@@ -72,6 +72,17 @@ export function reorderSpreadsheetColumns(spreadsheetModelUuid: UUID, columnsOrd
     });
 }
 
+export function renameSpreadsheetModel(spreadsheetModelUuid: UUID, name: string) {
+    const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}/name`;
+    return backendFetchJson(fetchUrl, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: name,
+    });
+}
+
 export function addSpreadsheetConfigToCollection(collectionUuid: UUID, spreadsheetModel: SpreadsheetConfig) {
     const fetchUrl = `${getSpreadsheetConfigsCollectionsUrl()}/${collectionUuid}/spreadsheet-configs`;
     return backendFetchJson(fetchUrl, {

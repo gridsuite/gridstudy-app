@@ -160,9 +160,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [columnsDefinitions, tableDefinition?.columns]);
 
     const sortConfig = useSelector(
-        (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.name]
+        (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.uuid]
     );
-    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.name);
+    const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
 
     const updateSortConfig = useCallback(() => {
         gridRef.current?.api?.applyColumnState({
@@ -215,7 +215,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }
     }, []);
 
-    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.type);
+    const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.uuid);
 
     const highlightUpdatedEquipment = useCallback(() => {
         if (!equipmentToUpdateId) {
