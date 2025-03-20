@@ -256,7 +256,7 @@ export const getRatioTapChangerEmptyFormData = (isModification = false, id = RAT
 };
 
 export const getRatioTapChangerFormData = (
-    isModification = false,
+    isModification,
     {
         enabled = false,
         hasLoadTapChangingCapabilities = isModification ? null : false,
