@@ -11,6 +11,7 @@ import React, { ComponentType } from 'react';
 import { CustomColumnConfigProps } from '../custom-column-menu';
 import { SortParams } from '../hooks/use-custom-aggrid-sort';
 import { COLUMN_TYPES, CustomCellType } from '../custom-aggrid-header.type';
+import { UUID } from 'crypto';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -48,6 +49,7 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
     agGridFilterParams?: {
         filterOptions: IFilterOptionDef[];
     };
+    tabUuid?: UUID;
     columnType?: COLUMN_TYPES;
     columnWidth?: number;
     fractionDigits?: number;

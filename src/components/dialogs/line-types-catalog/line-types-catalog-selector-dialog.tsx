@@ -5,14 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useRef, useMemo, useEffect, useState } from 'react';
+import { useCallback, useRef, useMemo, useEffect, useState, FunctionComponent } from 'react';
 import BasicModificationDialog from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
-import PropTypes from 'prop-types';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { suppressEventsToPreventEditMode } from '../commons/utils';
+import { AgGridReact } from 'ag-grid-react';
+import { ColDef } from 'ag-grid-community';
+import { LineTypeInfo } from './line-catalog.type';
 
 const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
@@ -29,13 +31,25 @@ const defaultColDef = {
     suppressKeyboardEvent: suppressEventsToPreventEditMode,
 };
 
-const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowData, onClose, ...dialogProps }) => {
+export interface LineTypesCatalogSelectorDialogProps {
+    onSelectLine: (selectedLine: LineTypeInfo) => void;
+    preselectedRowId: string;
+    rowData: LineTypeInfo[];
+    onClose: () => void;
+    dialogProps: any; // TODO use specific type when BasicModificationDialog is ts
+}
+
+const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelectorDialogProps> = ({
+    onSelectLine,
+    preselectedRowId,
+    rowData,
+    onClose,
+    dialogProps,
+}) => {
     const intl = useIntl();
-    const gridRef = useRef(); // Necessary to call getSelectedRows on aggrid component
-
-    const [tabIndex, setTabIndex] = useState(LineTypesCatalogSelectorDialogTabs.AERIAL_TAB);
-
-    const [selectedRow, setSelectedRow] = useState(null);
+    const gridRef = useRef<AgGridReact>(null);
+    const [tabIndex, setTabIndex] = useState<number>(LineTypesCatalogSelectorDialogTabs.AERIAL_TAB);
+    const [selectedRow, setSelectedRow] = useState<LineTypeInfo | null>(null);
 
     const rowDataAerialTab = useMemo(() => {
         if (rowData) {
@@ -52,17 +66,24 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
     }, [rowData]);
 
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
-    const handleSubmit = useCallback(() => onSelectLine && onSelectLine(selectedRow), [onSelectLine, selectedRow]);
-    const handleTabChange = useCallback((newValue) => {
+
+    const handleSubmit = useCallback(() => {
+        onSelectLine && selectedRow && onSelectLine(selectedRow);
+    }, [onSelectLine, selectedRow]);
+
+    const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
     }, []);
+
     const onSelectionChanged = useCallback(() => {
         // We extract the selected row from AGGrid
         const selectedRow = gridRef.current?.api?.getSelectedRows();
-        setSelectedRow(selectedRow[0] ?? null);
+        if (selectedRow?.length) {
+            setSelectedRow(selectedRow[0] ?? null);
+        }
     }, []);
 
-    const aerialColumnDefs = useMemo(() => {
+    const aerialColumnDefs = useMemo((): ColDef[] => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'lineTypes.type' }),
@@ -73,7 +94,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 headerName: intl.formatMessage({ id: 'lineTypes.voltage' }),
                 field: 'voltage',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -85,7 +105,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 headerName: intl.formatMessage({ id: 'lineTypes.section' }),
                 field: 'section',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -93,7 +112,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 }),
                 field: 'conductorsNumber',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -101,7 +119,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 }),
                 field: 'circuitsNumber',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -109,7 +126,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 }),
                 field: 'groundWiresNumber',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -117,7 +133,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 }),
                 field: 'linearResistance',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -125,7 +140,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 }),
                 field: 'linearReactance',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -133,12 +147,11 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 }),
                 field: 'linearCapacity',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
         ];
     }, [intl]);
 
-    const undergroundColumnDefs = useMemo(() => {
+    const undergroundColumnDefs = useMemo((): ColDef[] => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'lineTypes.type' }),
@@ -149,7 +162,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 headerName: intl.formatMessage({ id: 'lineTypes.voltage' }),
                 field: 'voltage',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -161,7 +173,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 headerName: intl.formatMessage({ id: 'lineTypes.section' }),
                 field: 'section',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -181,7 +192,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 }),
                 field: 'linearResistance',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -189,7 +199,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 }),
                 field: 'linearReactance',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -197,7 +206,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 }),
                 field: 'linearCapacity',
                 cellRenderer: DefaultCellRenderer,
-                numeric: true,
             },
         ];
     }, [intl]);
@@ -214,7 +222,7 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
 
     const scrollToPreselectedElement = useCallback(() => {
         const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowId);
-        preselectedRow && gridRef.current.api?.ensureNodeVisible(preselectedRow, 'middle');
+        preselectedRow && gridRef.current?.api?.ensureNodeVisible(preselectedRow, 'middle');
         highlightSelectedRow();
     }, [preselectedRowId, highlightSelectedRow, rowData]);
 
@@ -244,7 +252,7 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
             }}
         >
             <Grid container>
-                <Tabs value={tabIndex} variant="scrollable" onChange={(event, newValue) => handleTabChange(newValue)}>
+                <Tabs value={tabIndex} variant="scrollable" onChange={(_event, newValue) => handleTabChange(newValue)}>
                     <Tab label={<FormattedMessage id="lineTypes.category.aerial" />} />
                     <Tab label={<FormattedMessage id="lineTypes.category.underground" />} />
                 </Tabs>
@@ -253,7 +261,7 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
     );
 
     const displayTable = useCallback(
-        (currentTab) => {
+        (currentTab: number) => {
             let rowData, columnDefs;
             if (currentTab === LineTypesCatalogSelectorDialogTabs.AERIAL_TAB) {
                 rowData = rowDataAerialTab;
@@ -288,9 +296,11 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
         <BasicModificationDialog
             fullWidth
             maxWidth="xl"
+            open={true}
             onClose={onClose}
             onClear={handleClear}
             onSave={handleSubmit}
+            disabledSave={!selectedRow}
             aria-labelledby="dialog-lineTypes-catalog-selector"
             subtitle={headerAndTabs}
             PaperProps={{
@@ -298,19 +308,12 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                     height: '95vh', // we want the dialog height to be fixed even when switching tabs
                 },
             }}
+            titleId={'SelectType'}
             {...dialogProps}
-            disabledSave={!selectedRow}
         >
             <div style={{ height: '100%' }}>{displayTable(tabIndex)}</div>
         </BasicModificationDialog>
     );
-};
-
-LineTypesCatalogSelectorDialog.propTypes = {
-    onClose: PropTypes.func,
-    rowData: PropTypes.array,
-    onSelectLine: PropTypes.func,
-    preselectedRowId: PropTypes.string,
 };
 
 export default LineTypesCatalogSelectorDialog;

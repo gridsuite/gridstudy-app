@@ -133,6 +133,8 @@ const RootNetworkNodeEditor = () => {
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const currentRootNetworkUuidRef = useRef<UUID | null>(null);
+    currentRootNetworkUuidRef.current = currentRootNetworkUuid;
 
     const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
 
@@ -179,15 +181,22 @@ const RootNetworkNodeEditor = () => {
                 dofetchRootNetworks();
                 setDeleteInProgress(false);
             } else if (rootNetworksRef.current && eventType === 'rootNetworkDeletionStarted') {
-                // when node are being deleted, we select 1st node that won't be deleted
-                const deletingNodes = studyUpdatedForce.eventData.headers.rootNetworks;
+                setDeleteInProgress(true);
+                // If the current root network isn't going to be deleted, we don't need to do anything
+                const deletedRootNetworkUuids = studyUpdatedForce.eventData.headers.rootNetworks;
+                if (
+                    currentRootNetworkUuidRef.current &&
+                    !deletedRootNetworkUuids.includes(currentRootNetworkUuidRef.current)
+                ) {
+                    return;
+                }
+                // Choice: if the current root network is going to be deleted, we select the first root network that won't be deleted
                 const newSelectedRootNetwork = rootNetworksRef.current.find(
-                    (rootNetwork) => !deletingNodes.includes(rootNetwork.rootNetworkUuid)
+                    (rootNetwork) => !deletedRootNetworkUuids.includes(rootNetwork.rootNetworkUuid)
                 );
                 if (newSelectedRootNetwork) {
                     dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
                 }
-                setDeleteInProgress(true);
             }
         }
     }, [studyUpdatedForce, dofetchRootNetworks, dispatch, snackError]);
@@ -231,9 +240,7 @@ const RootNetworkNodeEditor = () => {
                 <IconButton
                     size="small"
                     onClick={() => {
-                        if (rootNetwork.rootNetworkUuid !== currentRootNetworkUuid) {
-                            dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
-                        }
+                        dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
                     }}
                     disabled={rootNetwork.isCreating}
                 >
