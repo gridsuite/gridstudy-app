@@ -50,6 +50,10 @@ const styles = {
         marginTop: theme.spacing(2.5),
         lineHeight: 'unset',
         flexGrow: 1,
+        // Hide the vertical scrollbar for pinned bottom rows
+        '.ag-floating-bottom.ag-selectable': {
+            overflowY: 'hidden !important',
+        },
     }),
     blink: {
         animation: '$blink 2s infinite',
