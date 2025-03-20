@@ -230,7 +230,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
 
     const displayTab = useCallback(() => {
         /**
-         * We add appTabIndex to unmount the component when the user changes the study tab
+         * We add view dependency to unmount the component when the user changes the study tab
          * This is necessary to reset the form when the user changes the study tab
          */
         if (view !== StudyView.PARAMETERS) {
