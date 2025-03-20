@@ -69,7 +69,7 @@ import {
     toModificationProperties,
 } from '../../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
-import { ReactiveCapabilityCurvePointsData } from '../converter-station/converter-station-type';
+import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 
 const formSchema = yup
     .object()
@@ -294,7 +294,7 @@ const VscModificationDialog: React.FC<any> = ({
     };
 
     const updateConverterStationCapabilityCurveTable = (
-        newRccValues: ReactiveCapabilityCurvePointsData[] | undefined,
+        newRccValues: ReactiveCapabilityCurvePoints[] | undefined,
         action: string,
         index: number,
         previousValue: VscModificationInfo | null
