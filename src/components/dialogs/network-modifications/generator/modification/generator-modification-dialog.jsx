@@ -116,7 +116,7 @@ const formSchema = yup
                 then: (schema) =>
                     schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
             }),
-        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'ratedNominalPowerMustBeGreaterOrEqualToZero'),
+        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [TRANSIENT_REACTANCE]: yup.number().nullable(),
         [TRANSFORMER_REACTANCE]: yup.number().nullable(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),

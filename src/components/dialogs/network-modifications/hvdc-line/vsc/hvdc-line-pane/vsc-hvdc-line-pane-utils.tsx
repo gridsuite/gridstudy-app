@@ -23,8 +23,8 @@ export function getVscHvdcLinePaneSchema(id: string) {
     return {
         [id]: yup.object().shape(
             {
-                [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVoltageMustBeGreaterOrEqualToZero').required(),
-                [R]: yup.number().nullable().min(0, 'resistanceMustBeGreaterOrEqualToZero').required(),
+                [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+                [R]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
                 [MAX_P]: yup.number().nullable().required(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
@@ -57,8 +57,8 @@ export function getVscHvdcLineModificationPaneSchema(id: string) {
     return {
         [id]: yup.object().shape(
             {
-                [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVoltageMustBeGreaterOrEqualToZero'),
-                [R]: yup.number().nullable().min(0, 'resistanceMustBeGreaterOrEqualToZero'),
+                [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+                [R]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
                 [MAX_P]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),

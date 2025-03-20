@@ -131,7 +131,7 @@ export function getVscConverterStationModificationSchema(id: string) {
             [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
             [REACTIVE_POWER]: yup.number().nullable(),
-            [VOLTAGE]: yup.number().nullable().min(0, 'voltageSetPointMustBeGreaterOrEqualToZero'),
+            [VOLTAGE]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
             ...getReactiveLimitsSchema(true),
         }),
     };

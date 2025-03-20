@@ -1546,16 +1546,5 @@
     "qmax": "Q Max",
     "nodeAliasesRetrievingError": "Erreur lors de la récupération des alias de nœuds",
     "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds",
-    "nominalVoltageMustBeGreaterOrEqualToZero": "La tension nominale doit être supérieure ou égale à 0",
-    "lowVoltageLimitMustBeGreaterOrEqualToZero": "La limite de tension basse doit être supérieure ou égale à 0",
-    "highVoltageLimitMustBeGreaterOrEqualToZero": "La limite de tension haute doit être supérieure ou égale à 0",
-    "resistanceMustBeGreaterOrEqualToZero": "La résistance doit être supérieure ou égale à 0",
-    "conductanceMustBeGreaterOrEqualToZero": "La conductance doit être supérieure ou égale à 0",
-    "ratedVoltageMustBeGreaterOrEqualToZero": "La tension d'enroulement doit être supérieure ou égale à 0",
-    "ratedNominalPowerMustBeGreaterOrEqualToZero": "La puissance nominale doit être supérieure ou égale à 0",
-    "voltageSetPointMustBeGreaterOrEqualToZero": "La consigne de tension doit être supérieure ou égale à 0",
-    "lowVoltageSetPointMustBeGreaterOrEqualToZero": "La limite basse de consigne de tension doit être supérieure ou égale à 0",
-    "highVoltageSetPointMustBeGreaterOrEqualToZero": "La limite haute de de tension doit être supérieure ou égale à 0",
-    "lowVoltageThresholdMustBeGreaterOrEqualToZero": "Le seuil bas d'activation de tension doit être supérieur ou égale à 0",
-    "highVoltageThresholdMustBeGreaterOrEqualToZero": "La seuil haut d'activation de tension doit être supérieur ou égale à 0"
+    "mustBeGreaterOrEqualToZero": "cette valeur doit être supérieure ou égale à 0"
 }

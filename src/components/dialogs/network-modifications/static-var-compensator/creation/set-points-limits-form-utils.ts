@@ -74,7 +74,7 @@ export const getReactiveFormValidationSchema = () =>
         [VOLTAGE_SET_POINT]: yup
             .number()
             .nullable()
-            .min(0, 'voltageSetPointMustBeGreaterOrEqualToZero')
+            .min(0, 'mustBeGreaterOrEqualToZero')
             .when([VOLTAGE_REGULATION_MODE], {
                 is: (voltageRegulationMode: string) => voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id,
                 then: (schema) => schema.required(),

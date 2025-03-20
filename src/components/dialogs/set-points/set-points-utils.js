@@ -46,7 +46,7 @@ const getVoltageRegulationSchema = (isEquipmentModification) => ({
     [VOLTAGE_SET_POINT]: yup
         .number()
         .nullable()
-        .min(0, 'voltageSetPointMustBeGreaterOrEqualToZero')
+        .min(0, 'mustBeGreaterOrEqualToZero')
         .when([VOLTAGE_REGULATION], {
             is: (value) => !isEquipmentModification && value,
             then: (schema) => schema.required(),
