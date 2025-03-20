@@ -36,7 +36,7 @@ export interface LineTypesCatalogSelectorDialogProps {
     preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
-    dialogProps: any;
+    dialogProps: any; // TODO use specific type when BasicModificationDialog is ts
 }
 
 const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelectorDialogProps> = ({

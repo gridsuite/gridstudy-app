@@ -5,7 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// DTO from back-end
+type AerialLineTypeInfo = {
+    conductorsNumber: number;
+    circuitsNumber: number;
+    groundWiresNumber: number;
+};
+type UndergroundLineTypeInfo = {
+    insulator: string;
+    screen: string;
+};
+// DTO received from back-end
 export type LineTypeInfo = {
     id: string;
     type: string;
@@ -16,7 +25,7 @@ export type LineTypeInfo = {
     linearResistance: number;
     linearReactance: number;
     linearCapacity: number;
-};
+} & (AerialLineTypeInfo | UndergroundLineTypeInfo);
 
 // Interface with Line creation/modification
 export type ComputedLineCharacteristics = {
