@@ -98,6 +98,16 @@ const spreadsheetFr = {
     'spreadsheet/rename_dialog_title': 'Renommer le tableur',
     'spreadsheet/spreadsheet_name_le_60': 'Le nom du tableur ne peut dépasser 60 caractères',
 
+    // calculations
+    'spreadsheet/calculation/sum': 'Somme',
+    'spreadsheet/calculation/average': 'Moyenne',
+    'spreadsheet/calculation/min': 'Minimum',
+    'spreadsheet/calculation/max': 'Maximum',
+    'spreadsheet/calculation/sum_abbrev': 'Som',
+    'spreadsheet/calculation/average_abbrev': 'Moy',
+    'spreadsheet/calculation/min_abbrev': 'Min',
+    'spreadsheet/calculation/max_abbrev': 'Max',
+
     // Column types
     TEXT: 'Texte',
     NUMBER: 'Nombre',

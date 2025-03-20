@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, Ref, useCallback, useMemo, useRef } from 'react';
+import { FunctionComponent, RefObject, useCallback, useMemo, useRef } from 'react';
 import { useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -21,12 +21,26 @@ import {
 import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 import { NodeType } from 'components/graph/tree-node.type';
+import { CalculationRowType } from './utils/calculation.type';
+import { isCalculationRow } from './utils/calculation-utils';
 import { useSelector } from 'react-redux';
 
 const DEFAULT_ROW_HEIGHT = 28;
 const MAX_CLICK_DURATION = 200;
 
-const getRowId = (params: GetRowIdParams<{ id: string }>) => params.data.id;
+interface RowData {
+    id: string;
+    rowType?: string;
+    calculationType?: string;
+}
+
+// Handle row IDs for regular and calculation rows
+const getRowId = (params: GetRowIdParams<RowData>) => {
+    if (params.data.rowType) {
+        return params.data.rowType + (params.data.calculationType ?? '');
+    }
+    return params.data.id;
+};
 
 const defaultColDef: ColDef = {
     filter: true,
@@ -41,7 +55,7 @@ const defaultColDef: ColDef = {
 interface EquipmentTableProps {
     rowData: unknown[] | undefined;
     columnData: ColDef[];
-    gridRef: Ref<any> | undefined;
+    gridRef: RefObject<any> | undefined;
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
     handleRowDataUpdated: () => void;
@@ -50,6 +64,7 @@ interface EquipmentTableProps {
     onRowClicked?: (event: RowClickedEvent) => void;
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
+    onModelUpdated: GridOptions['onModelUpdated'];
 }
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
@@ -64,6 +79,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     onRowClicked,
     isExternalFilterPresent,
     doesExternalFilterPass,
+    onModelUpdated,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -74,6 +90,22 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         (params: RowClassParams): RowStyle | undefined => {
             const isRootNode = currentNode?.type === NodeType.ROOT;
             const cursorStyle = isRootNode ? 'initial' : 'pointer';
+
+            if (isCalculationRow(params.data?.rowType)) {
+                if (params.data?.rowType === CalculationRowType.CALCULATION) {
+                    return {
+                        backgroundColor: theme.palette.background.default,
+                        fontWeight: 'bold',
+                    };
+                }
+
+                if (params.data?.rowType === CalculationRowType.CALCULATION_BUTTON) {
+                    return {
+                        borderTop: '1px solid ' + theme.palette.divider,
+                        backgroundColor: theme.palette.action.hover,
+                    };
+                }
+            }
 
             if (params.rowIndex === 0 && params.node.rowPinned === 'top') {
                 return {
@@ -86,7 +118,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
                 cursor: cursorStyle,
             };
         },
-        [currentNode?.type, theme.palette.primary.main]
+        [currentNode?.type, theme]
     );
 
     const gridContext = useMemo(
@@ -112,6 +144,10 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
 
     const handleRowClicked = useCallback(
         (event: RowClickedEvent) => {
+            // Prevent row click event on pinned rows
+            if (isCalculationRow(event.node.data?.rowType)) {
+                return;
+            }
             const clickDuration = Date.now() - (clickTimeRef.current ?? 0);
             if (clickDuration < MAX_CLICK_DURATION) {
                 onRowClicked?.(event);
@@ -138,6 +174,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             suppressColumnVirtualisation={true}
             onCellMouseDown={handleCellMouseDown}
             onRowClicked={handleRowClicked}
+            onModelUpdated={onModelUpdated}
             context={gridContext}
             shouldHidePinnedHeaderRightBorder={shouldHidePinnedHeaderRightBorder}
             rowHeight={DEFAULT_ROW_HEIGHT}
