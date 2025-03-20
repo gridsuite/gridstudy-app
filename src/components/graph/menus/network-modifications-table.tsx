@@ -1,10 +1,3 @@
-/**
- * Copyright (c) 2025, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 import React, { useState, useEffect, useCallback, useRef, useMemo, ReactNode } from 'react';
 import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
@@ -93,14 +86,14 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 },
                 cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
                     getModificationLabel(params?.data?.modificationInfos),
-                minWidth: 200, // Reduced width for compactness
-                flex: 0.5, // Adjusted for left alignment and compactness
-                cellStyle: { cursor: 'pointer', paddingLeft: '10px' }, // Left alignment with some padding
+                minWidth: 200,
+                flex: 1,
+                cellStyle: { cursor: 'pointer', paddingLeft: '10px' },
             },
             {
                 cellRenderer: CellRendererSwitch,
-                flex: 0.2, // Reduce flex to reduce space between columns
-                minWidth: 70, // Further reduce width to minimize space
+                flex: 0.3,
+                minWidth: 70,
             },
         ];
     }, [isLoading, modifications?.length, getModificationLabel]);
@@ -116,7 +109,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
             return {
                 colId: rootNetworkUuid,
-                maxWidth: 100, // Reduced maxWidth to avoid unnecessary space
+                maxWidth: 100,
                 flex: dynamicColumnFlex,
                 cellRenderer: ChipRootNetworkCellRenderer,
                 cellRendererParams: {
@@ -135,7 +128,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                         </Badge>
                     ),
                     shouldShowIcon: isCurrentRootNetwork,
-                    flex: 0.2, // Adjusted to minimize space
+                    flex: 0.2,
                 },
             };
         });

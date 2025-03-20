@@ -833,7 +833,6 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationsTable
                 handleCellClick={handleCellClick}
                 modifications={modifications}
-                setModifications={setModifications}
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 onRowSelected={handleRowSelected}
