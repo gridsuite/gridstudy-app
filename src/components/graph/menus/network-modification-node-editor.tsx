@@ -146,8 +146,8 @@ const NetworkModificationNodeEditor = () => {
     const [createCompositeModificationDialogOpen, setCreateCompositeModificationDialogOpen] = useState(false);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const [messageId, setMessageId] = useState('');
-    const [launchLoader, setLaunchLoader] = useState(false);
+    const [notificationMessageId, setNotificationMessageId] = useState('');
+    const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
 
@@ -420,7 +420,7 @@ const NetworkModificationNodeEditor = () => {
         (study: StudyUpdated, messageId: string) => {
             // (work for all users)
             // specific message id for each action type
-            setMessageId(messageId);
+            setNotificationMessageId(messageId);
             dispatch(addNotification([study.eventData.headers.parentNode ?? []]));
         },
         [dispatch]
@@ -454,7 +454,7 @@ const NetworkModificationNodeEditor = () => {
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
         }
-        setLaunchLoader(true);
+        setIsFetchingModifications(true);
         fetchNetworkModifications(studyUuid, currentNode.id, true)
             .then((res) => {
                 if (currentNode.id === currentNodeIdRef.current) {
@@ -468,7 +468,7 @@ const NetworkModificationNodeEditor = () => {
             })
             .finally(() => {
                 setPendingState(false);
-                setLaunchLoader(false);
+                setIsFetchingModifications(false);
                 dispatch(setModificationsInProgress(false));
             });
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
@@ -485,7 +485,7 @@ const NetworkModificationNodeEditor = () => {
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
         }
-        setLaunchLoader(true);
+        setIsFetchingModifications(true);
         fetchNetworkModifications(studyUuid, currentNode.id, false)
             .then((res: NetworkModificationInfos[]) => {
                 // Check if during asynchronous request currentNode has already changed
@@ -508,7 +508,7 @@ const NetworkModificationNodeEditor = () => {
             })
             .finally(() => {
                 setPendingState(false);
-                setLaunchLoader(false);
+                setIsFetchingModifications(false);
                 dispatch(setModificationsInProgress(false));
             });
     }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
@@ -773,7 +773,7 @@ const NetworkModificationNodeEditor = () => {
         return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen)?.action?.();
     };
 
-    const isLoading = useCallback(() => {
+    const isImpactedByNotification = useCallback(() => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
     }, [notificationIdList, currentNode?.id]);
 
@@ -783,51 +783,6 @@ const NetworkModificationNodeEditor = () => {
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
 
-    const renderNetworkModificationsListTitleLoading = () => {
-        return (
-            <Box sx={styles.modificationsTitle}>
-                <Box sx={styles.icon}>
-                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
-                </Box>
-                <Typography noWrap>
-                    <FormattedMessage id={messageId} />
-                </Typography>
-            </Box>
-        );
-    };
-
-    const renderNetworkModificationsListTitleUpdating = () => {
-        return (
-            <Box sx={styles.modificationsTitle}>
-                <Box sx={styles.icon}>
-                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
-                </Box>
-                <Typography noWrap>
-                    <FormattedMessage id={'network_modifications.modifications'} />
-                </Typography>
-            </Box>
-        );
-    };
-
-    const renderNetworkModificationsListTitle = () => {
-        return (
-            <Box sx={styles.modificationsTitle}>
-                <Box sx={styles.icon}>
-                    {pendingState && <CircularProgress size={'1em'} sx={styles.circularProgress} />}
-                </Box>
-                <Typography noWrap>
-                    <FormattedMessage
-                        id={'network_modifications.modificationsCount'}
-                        values={{
-                            count: modifications ? modifications?.length : '',
-                            hide: pendingState,
-                        }}
-                    />
-                </Typography>
-            </Box>
-        );
-    };
-
     const renderNetworkModificationsTable = () => {
         return (
             <NetworkModificationsTable
@@ -836,8 +791,11 @@ const NetworkModificationNodeEditor = () => {
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 onRowSelected={handleRowSelected}
-                isRowDragEnabled={!isLoading() && !isAnyNodeBuilding && !mapDataLoading}
-                isLoading={isLoading}
+                isRowDragEnabled={!isImpactedByNotification() && !isAnyNodeBuilding && !mapDataLoading}
+                isImpactedByNotification={isImpactedByNotification}
+                notificationMessageId={notificationMessageId}
+                isFetchingModifications={isFetchingModifications}
+                pendingState={pendingState}
             />
         );
     };
@@ -911,16 +869,6 @@ const NetworkModificationNodeEditor = () => {
                 setModifications(modifications);
             })
             .finally(() => setIsDragging(false));
-    };
-
-    const renderPaneSubtitle = () => {
-        if (isLoading() && messageId) {
-            return renderNetworkModificationsListTitleLoading();
-        }
-        if (launchLoader) {
-            return renderNetworkModificationsListTitleUpdating();
-        }
-        return renderNetworkModificationsListTitle();
     };
 
     return (
@@ -1050,7 +998,6 @@ const NetworkModificationNodeEditor = () => {
             {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
             {importDialogOpen && renderImportNetworkModificationsDialog()}
             {createCompositeModificationDialogOpen && renderCreateCompositeNetworkModificationsDialog()}
-            {renderPaneSubtitle()}
 
             {renderNetworkModificationsTable()}
 

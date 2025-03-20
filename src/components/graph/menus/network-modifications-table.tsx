@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo, ReactNode } from 'react';
+import React, { useCallback, useMemo, ReactNode } from 'react';
 import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
     CellClickedEvent,
@@ -19,11 +19,14 @@ import CellRendererSwitch from 'components/spreadsheet/utils/cell-renderer-switc
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import ChipRootNetworkCellRenderer from 'components/spreadsheet/utils/chip-root-network-cell-renderer';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
+import {
+    NetworkModificationEditorNameHeader,
+    NetworkModificationEditorNameHeaderProps,
+} from './network-modification-node-editor-name-header';
 
-interface NetworkModificationsTableProps {
+interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationInfos[];
-    isLoading?: () => boolean;
     handleCellClick?: (event: CellClickedEvent) => void;
     isRowDragEnabled?: boolean;
     onRowDragStart?: (event: RowDragEnterEvent) => void;
@@ -38,7 +41,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     onRowDragStart,
     onRowDragEnd,
     onRowSelected,
-    isLoading,
+    ...nameHeaderProps
 }) => {
     const theme = useTheme();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
@@ -53,7 +56,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     };
 
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const dynamicColumnsRef = useRef<ColDef<NetworkModificationInfos>[]>([]);
 
     const getModificationLabel = useCallback(
         (modif?: NetworkModificationMetadata): ReactNode => {
@@ -71,19 +73,15 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         [computeLabel, intl]
     );
 
-    const staticColumns: ColDef<NetworkModificationInfos>[] = useMemo(() => {
-        return [
+    const columnDefs = useMemo<ColDef<NetworkModificationInfos>[]>(() => {
+        const numberOfRootNetworks = rootNetworks.length;
+        const dynamicColumnFlex = numberOfRootNetworks > 1 ? 1 : 0.4; // Adjust based on root networks count
+        const staticColumns = [
             {
                 colId: 'modificationName',
                 rowDrag: true,
-                headerComponent: FormattedMessage,
-                headerComponentParams: {
-                    id: 'network_modifications.modificationsCount',
-                    values: {
-                        count: modifications?.length ?? '',
-                        hide: isLoading?.(),
-                    },
-                },
+                headerComponent: NetworkModificationEditorNameHeader,
+                headerComponentParams: { modificationCount: modifications?.length, ...nameHeaderProps },
                 cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
                     getModificationLabel(params?.data?.modificationInfos),
                 minWidth: 200,
@@ -96,14 +94,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 minWidth: 70,
             },
         ];
-    }, [isLoading, modifications?.length, getModificationLabel]);
-
-    const [columnDefs, setColumnDefs] = useState<ColDef<NetworkModificationInfos>[]>(staticColumns);
-
-    useEffect(() => {
-        const numberOfRootNetworks = rootNetworks.length;
-        const dynamicColumnFlex = numberOfRootNetworks > 1 ? 1 : 0.4;
-
         const newDynamicColumns: ColDef<NetworkModificationInfos>[] = rootNetworks.map((rootNetwork) => {
             const rootNetworkUuid = rootNetwork.rootNetworkUuid;
             const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
@@ -133,11 +123,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             };
         });
 
-        if (JSON.stringify(newDynamicColumns) !== JSON.stringify(dynamicColumnsRef.current)) {
-            dynamicColumnsRef.current = newDynamicColumns;
-            setColumnDefs([...staticColumns, ...newDynamicColumns]);
-        }
-    }, [rootNetworks, currentRootNetworkUuid, staticColumns]);
+        return [...staticColumns, ...newDynamicColumns];
+    }, [modifications?.length, rootNetworks, currentRootNetworkUuid, getModificationLabel, nameHeaderProps]);
 
     const getRowId = (params: GetRowIdParams<NetworkModificationInfos>) => params.data.modificationInfos.uuid;
 
