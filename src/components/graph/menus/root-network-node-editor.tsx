@@ -158,7 +158,8 @@ const RootNetworkNodeEditor = () => {
                 .then((res: RootNetworkMetadata[]) => {
                     updateSelectedItems(res);
                     setRootNetworks(res);
-                    // All root networks must be fully established before the loader can be safely removed.
+                    // This is used to hide the loader for creation, update and deletion of the root networks.
+                    // All the root networks must be fully established before the loader can be safely removed.
                     if (res.every((network) => !network.isCreating)) {
                         dispatch(setRootNetworksProcessing(false));
                     }
@@ -217,6 +218,7 @@ const RootNetworkNodeEditor = () => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
 
         if (studyUuid) {
+            dispatch(setRootNetworksProcessing(true));
             deleteRootNetworks(studyUuid, selectedRootNetworksUuid)
                 .then(() => {
                     setDeleteInProgress(true);
@@ -228,6 +230,7 @@ const RootNetworkNodeEditor = () => {
                         headerId: 'deleteRootNetworkError',
                     });
                     setDeleteInProgress(false);
+                    dispatch(setRootNetworksProcessing(false));
                 });
         }
     }, [selectedItems, snackError, studyUuid]);
