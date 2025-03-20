@@ -121,9 +121,18 @@ const formSchema = yup
         [SUBSTATION_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
-        [NOMINAL_V]: yup.number().nullable().required(),
-        [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
-        [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
+        [NOMINAL_V]: yup
+            .number()
+            .nullable()
+            .min(0, 'nominalVoltageMustBeGreaterOrEqualToZero').required(),
+        [LOW_VOLTAGE_LIMIT]: yup
+            .number()
+            .nullable()
+            .min(0, 'lowVoltageLimitMustBeGreaterOrEqualToZero'),
+        [HIGH_VOLTAGE_LIMIT]: yup
+            .number()
+            .nullable()
+            .min(0, 'highVoltageLimitMustBeGreaterOrEqualToZero'),
         [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
             .nullable()

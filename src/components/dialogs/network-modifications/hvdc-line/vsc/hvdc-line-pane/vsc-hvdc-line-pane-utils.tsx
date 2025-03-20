@@ -23,8 +23,8 @@ export function getVscHvdcLinePaneSchema(id: string) {
     return {
         [id]: yup.object().shape(
             {
-                [NOMINAL_V]: yup.number().nullable().required(),
-                [R]: yup.number().nullable().required(),
+                [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVoltageMustBeGreaterOrEqualToZero').required(),
+                [R]: yup.number().nullable().min(0, 'resistanceMustBeGreaterOrEqualToZero').required(),
                 [MAX_P]: yup.number().nullable().required(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
@@ -57,8 +57,8 @@ export function getVscHvdcLineModificationPaneSchema(id: string) {
     return {
         [id]: yup.object().shape(
             {
-                [NOMINAL_V]: yup.number().nullable(),
-                [R]: yup.number().nullable(),
+                [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVoltageMustBeGreaterOrEqualToZero'),
+                [R]: yup.number().nullable().min(0, 'resistanceMustBeGreaterOrEqualToZero'),
                 [MAX_P]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),

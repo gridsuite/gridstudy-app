@@ -1547,5 +1547,17 @@
     "qmin": "Min Q",
     "qmax": "Max Q",
     "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
-    "nodeAliasesUpdateError": "An error occured while updating node aliases"
+    "nodeAliasesUpdateError": "An error occured while updating node aliases",
+    "nominalVoltageMustBeGreaterOrEqualToZero": "Nominal voltage must be greater than or equal to 0",
+    "lowVoltageLimitMustBeGreaterOrEqualToZero": "Low voltage limit must be greater than or equal to 0",
+    "highVoltageLimitMustBeGreaterOrEqualToZero": "High voltage limit must be greater than or equal to 0",
+    "resistanceMustBeGreaterOrEqualToZero": "Resistance must be greater than or equal to 0",
+    "conductanceMustBeGreaterOrEqualToZero": "Conductance must be greater than or equal to 0",
+    "ratedVoltageMustBeGreaterOrEqualToZero": "Rated voltage must be greater than or equal to 0",
+    "ratedNominalPowerMustBeGreaterOrEqualToZero": "Rated nominal power must be greater than or equal to 0",
+    "voltageSetPointMustBeGreaterOrEqualToZero": "Voltage set point must be greater than or equal to 0",
+    "lowVoltageSetPointMustBeGreaterOrEqualToZero": "Low voltage set point must be greater than or equal to 0",
+    "highVoltageSetPointMustBeGreaterOrEqualToZero": "high voltage set point must be greater than or equal to 0",
+    "lowVoltageThresholdMustBeGreaterOrEqualToZero": "low voltage threshold must be greater than or equal to 0",
+    "highVoltageThresholdMustBeGreaterOrEqualToZero": "high voltage threshold must be greater than or equal to 0"
 }
