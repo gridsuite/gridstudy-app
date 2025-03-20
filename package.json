@@ -18,7 +18,7 @@
         "@mui/material": "^5.16.14",
         "@mui/x-charts": "^7.25.0",
         "@mui/x-tree-view": "^6.17.0",
-        "@powsybl/network-viewer": "file:../../../~powsybl/powsybl-diagram-viewer/powsybl-network-viewer-1.7.1.tgz",
+        "@powsybl/network-viewer": "1.7.0",
         "@reduxjs/toolkit": "^2.5.1",
         "@svgdotjs/svg.js": "^3.2.4",
         "@xyflow/react": "^12.4.2",
@@ -54,6 +54,9 @@
         "yup": "^1.6.1"
     },
     "overrides": {
+        "@powsybl/network-viewer": {
+            "react-intl": "$react-intl"
+        },
         "react-plotly.js": {
             "plotly.js": {
                 "esbuild-style-plugin": "npm:dry-uninstall@^0.3.0"
