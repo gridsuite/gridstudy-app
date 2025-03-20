@@ -128,7 +128,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                 />
             </TabPanelLazy>
             <TabPanelLazy key={`parameters-${currentNode?.id}`} selected={props.view === StudyView.PARAMETERS}>
-                <ParametersTabs studyId={studyUuid} />
+                <ParametersTabs view={props.view} />
             </TabPanelLazy>
         </>
     );
