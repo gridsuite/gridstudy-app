@@ -288,9 +288,6 @@ const ShuntCompensatorModificationDialog = ({
             >
                 {!shuntCompensatorInfos && !idExists && (
                     <EquipmentIdSelector
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR}
