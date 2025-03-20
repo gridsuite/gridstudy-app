@@ -8,77 +8,52 @@
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid } from '@mui/material';
 import { EquipmentTabs } from './equipment-tabs';
 import { AppState } from '../../redux/reducer';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { UUID } from 'crypto';
 import { Table } from './table';
 
+type Equipment = {
+    id: string;
+    type: SpreadsheetEquipmentType;
+    changed: boolean; // force to re-trigger render even if we click again on the same equipment
+};
+
 interface TableWrapperProps {
-    equipmentId: string;
-    equipmentType: SpreadsheetEquipmentType;
-    equipmentChanged: boolean;
     disabled: boolean;
-    onEquipmentScrolled: () => void;
+    tableEquipment?: Equipment;
 }
 
-export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
-    equipmentId,
-    equipmentType,
-    equipmentChanged,
-    disabled,
-    onEquipmentScrolled,
-}) => {
-    const [activeTabUuid, setActiveTabUuid] = useState<UUID | null>(null);
+export const TableWrapper: FunctionComponent<TableWrapperProps> = ({ tableEquipment, disabled }) => {
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
-    const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
-
-    // Initialize activeTabUuid with the first tab's UUID if not already set
-    useEffect(() => {
-        if (!activeTabUuid && tablesDefinitions.length > 0) {
-            setActiveTabUuid(tablesDefinitions[0].uuid);
-        }
-    }, [activeTabUuid, tablesDefinitions]);
-
-    const handleSwitchTab = useCallback((tabUuid: UUID) => {
-        setManualTabSwitch(true);
-        setActiveTabUuid(tabUuid);
-    }, []);
+    const [activeTabUuid, setActiveTabUuid] = useState<UUID>(tablesDefinitions[0].uuid);
+    const [localEquipment, setLocalEquipment] = useState<Equipment>();
 
     useEffect(() => {
-        setManualTabSwitch(false);
-    }, [equipmentChanged]);
-
-    // Initialize activeTabUuid with the first tab's UUID if not already set
-    useEffect(() => {
-        if (!activeTabUuid && tablesDefinitions.length > 0) {
-            setActiveTabUuid(tablesDefinitions[0].uuid);
-        }
-    }, [activeTabUuid, tablesDefinitions]);
-
-    useEffect(() => {
-        if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
-            const matchingTab = tablesDefinitions.find((def) => def.type === equipmentType);
+        if (tableEquipment) {
+            const matchingTab = tablesDefinitions.find((def) => def.type === tableEquipment.type);
             if (matchingTab) {
-                if (matchingTab.uuid !== activeTabUuid) {
-                    // Need to switch to the tab with this equipment type
-                    setActiveTabUuid(matchingTab.uuid);
-                }
+                setLocalEquipment(tableEquipment);
+                // Need to switch to the tab with this equipment type
+                setActiveTabUuid(matchingTab.uuid);
             }
         }
-    }, [equipmentId, equipmentType, equipmentChanged, manualTabSwitch, activeTabUuid, tablesDefinitions]);
+    }, [tableEquipment, tablesDefinitions]);
+
+    const handleSwitchTab = useCallback((tabUuid: UUID) => {
+        setLocalEquipment(undefined);
+        setActiveTabUuid(tabUuid);
+    }, []);
 
     return (
         <>
             <EquipmentTabs disabled={disabled} selectedTabUuid={activeTabUuid} handleSwitchTab={handleSwitchTab} />
             <Table
                 activeTabUuid={activeTabUuid}
-                manualTabSwitch={manualTabSwitch}
                 disabled={disabled}
-                equipmentId={equipmentId}
-                equipmentType={equipmentType}
-                onEquipmentScrolled={onEquipmentScrolled}
+                equipmentId={localEquipment?.id ?? null}
+                equipmentType={localEquipment?.type ?? null}
             />
         </>
     );

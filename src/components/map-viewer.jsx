@@ -165,7 +165,7 @@ const MapViewer = ({
         let newTableEquipment = {
             id: equipment.equipmentId,
             type: equipment.equipmentType,
-            changed: !tableEquipment.changed,
+            changed: !(tableEquipment?.changed ?? false),
         };
         onTableEquipementChanged(newTableEquipment);
         onChangeTab(1); // switch to spreadsheet view

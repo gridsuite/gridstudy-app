@@ -73,28 +73,18 @@ const styles = {
 
 interface TableProps {
     activeTabUuid: UUID | null;
-    manualTabSwitch: boolean;
-    equipmentId: string;
-    equipmentType: SpreadsheetEquipmentType;
+    equipmentId: string | null;
+    equipmentType: SpreadsheetEquipmentType | null;
     disabled: boolean;
-    onEquipmentScrolled: () => void;
 }
 
 interface RecursiveIdentifiable extends Identifiable {
     [alias: string]: Identifiable | string | undefined;
 }
 
-export const Table: FunctionComponent<TableProps> = ({
-    activeTabUuid,
-    manualTabSwitch,
-    equipmentId,
-    equipmentType,
-    disabled,
-    onEquipmentScrolled,
-}) => {
+export const Table: FunctionComponent<TableProps> = ({ activeTabUuid, equipmentId, equipmentType, disabled }) => {
     const dispatch = useDispatch();
     const gridRef = useRef<AgGridReact>(null);
-    const timerRef = useRef<NodeJS.Timeout>();
     const { snackError } = useSnackMessage();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -186,34 +176,17 @@ export const Table: FunctionComponent<TableProps> = ({
         return localRowData;
     }, [currentNode, equipments?.equipmentsByNodeId, nodeAliases, tableDefinition?.type]);
 
-    const scrollToEquipmentIndex = useCallback(() => {
-        if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
+    useEffect(() => {
+        if (equipmentId !== null && equipmentType !== null) {
             //calculate row index to scroll to
             //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
             const selectedRow = gridRef.current?.api?.getRowNode(equipmentId);
             if (selectedRow) {
                 gridRef.current?.api?.ensureNodeVisible(selectedRow, 'top');
                 selectedRow.setSelected(true, true);
-                onEquipmentScrolled();
             }
         }
-    }, [equipmentId, equipmentType, manualTabSwitch, onEquipmentScrolled]);
-
-    const handleRowDataUpdated = useCallback(() => {
-        scrollToEquipmentIndex();
-        // wait a moment  before removing the loading message.
-        timerRef.current = setTimeout(() => {
-            gridRef.current?.api?.hideOverlay();
-            if (rowData?.length === 0 && !isFetching) {
-                // we need to call showNoRowsOverlay in order to show message when rowData is empty
-                gridRef.current?.api?.showNoRowsOverlay();
-            }
-        }, 50);
-    }, [scrollToEquipmentIndex, isFetching, rowData]);
-
-    useEffect(() => {
-        scrollToEquipmentIndex();
-    }, [scrollToEquipmentIndex]);
+    }, [equipmentId, equipmentType]);
 
     // Create a map to store the original positions of all columns
     const originalColumnPositions = useMemo(() => {
@@ -343,7 +316,6 @@ export const Table: FunctionComponent<TableProps> = ({
                         columnData={reorderedColsDefs}
                         isFetching={isFetching}
                         handleColumnDrag={handleColumnDrag}
-                        handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
                         onRowClicked={onRowClicked}
                         isExternalFilterPresent={isExternalFilterPresent}

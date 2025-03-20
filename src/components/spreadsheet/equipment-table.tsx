@@ -44,7 +44,6 @@ interface EquipmentTableProps {
     studyUuid: string;
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
-    handleRowDataUpdated: () => void;
     isFetching: boolean | undefined;
     shouldHidePinnedHeaderRightBorder: boolean;
     onRowClicked?: (event: RowClickedEvent) => void;
@@ -59,7 +58,6 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     studyUuid,
     currentNode,
     handleColumnDrag,
-    handleRowDataUpdated,
     isFetching,
     shouldHidePinnedHeaderRightBorder,
     onRowClicked,
@@ -132,7 +130,6 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             columnDefs={columnData}
             defaultColDef={defaultColDef}
             undoRedoCellEditing={true}
-            onRowDataUpdated={handleRowDataUpdated}
             onColumnMoved={handleColumnDrag}
             suppressDragLeaveHidesColumns={true}
             suppressColumnVirtualisation={true}

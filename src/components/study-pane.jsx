@@ -46,11 +46,7 @@ const styles = {
 };
 
 const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props }) => {
-    const [tableEquipment, setTableEquipment] = useState({
-        id: null,
-        type: null,
-        changed: false,
-    });
+    const [tableEquipment, setTableEquipment] = useState(null);
 
     const { openDiagramView } = useDiagram();
 
@@ -63,10 +59,6 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         }
     }
-
-    const unsetTableEquipment = () => {
-        setTableEquipment({ id: null, type: null, changed: false });
-    };
 
     return (
         <>
@@ -83,7 +75,6 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     view={props.view}
                     openDiagramView={openDiagramView}
-                    tableEquipment={tableEquipment}
                     onTableEquipementChanged={(newTableEquipment) => setTableEquipment(newTableEquipment)}
                     onChangeTab={props.onChangeTab}
                 ></MapViewer>
@@ -91,15 +82,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={props.view === StudyView.SPREADSHEET}>
                 <Paper sx={styles.table}>
-                    <TableWrapper
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        equipmentId={tableEquipment.id}
-                        equipmentType={tableEquipment.type}
-                        equipmentChanged={tableEquipment.changed}
-                        disabled={disabled}
-                        onEquipmentScrolled={unsetTableEquipment}
-                    />
+                    <TableWrapper tableEquipment={tableEquipment} disabled={disabled} />
                 </Paper>
             </TabPanelLazy>
             <Box
