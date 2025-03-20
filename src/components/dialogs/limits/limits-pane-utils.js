@@ -179,18 +179,20 @@ export const getAllLimitsFormData = (
 export const sanitizeLimitsGroups = (limitsGroups /*: OperationalLimitsGroup[]*/) =>
     limitsGroups.map(({ currentLimits, ...baseData }) => ({
         ...baseData,
-        currentLimits: currentLimits && {
-            permanentLimit: currentLimits.permanentLimit,
-            temporaryLimits: !currentLimits.temporaryLimits
-                ? []
-                : currentLimits.temporaryLimits
-                      // completely empty lines should be filtered out (the interface always displays some lines even if empty)
-                      .filter(({ name }) => name?.trim())
-                      .map(({ name, ...temporaryLimit }) => ({
-                          ...temporaryLimit,
-                          name: sanitizeString(name),
-                      })),
-        },
+        currentLimits: !currentLimits
+            ? null
+            : {
+                  permanentLimit: currentLimits.permanentLimit,
+                  temporaryLimits: !currentLimits.temporaryLimits
+                      ? []
+                      : currentLimits.temporaryLimits
+                            // completely empty lines should be filtered out (the interface always displays some lines even if empty)
+                            .filter(({ name }) => name?.trim())
+                            .map(({ name, ...temporaryLimit }) => ({
+                                ...temporaryLimit,
+                                name: sanitizeString(name),
+                            })),
+              },
     }));
 
 export const sanitizeLimitNames = (temporaryLimitList /*:TemporaryLimitData[]*/) /*:TemporaryLimitData[]*/ =>
