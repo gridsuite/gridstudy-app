@@ -1134,8 +1134,10 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(CURRENT_ROOT_NETWORK_UUID, (state, action: CurrentRootNetworkUuidAction) => {
-        state.currentRootNetworkUuid = action.currentRootNetworkUuid;
-        state.isNetworkModificationTreeModelUpToDate = false;
+        if (state.currentRootNetworkUuid !== action.currentRootNetworkUuid) {
+            state.currentRootNetworkUuid = action.currentRootNetworkUuid;
+            state.isNetworkModificationTreeModelUpToDate = false;
+        }
     });
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
