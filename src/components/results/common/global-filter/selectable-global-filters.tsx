@@ -11,17 +11,13 @@ import { mergeSx } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
-import React, { FunctionComponent } from 'react';
+import React, { PropsWithChildren } from 'react';
 
-export interface SelectableGlobalFiltersProps {
-    children: React.ReactNode;
+export interface SelectableGlobalFiltersProps extends PropsWithChildren {
     onClickGenericFilter: () => void;
 }
 
-const SelectableGlobalFilters: FunctionComponent<SelectableGlobalFiltersProps> = ({
-    children,
-    onClickGenericFilter,
-}) => {
+function SelectableGlobalFilters({ children, onClickGenericFilter }: Readonly<SelectableGlobalFiltersProps>) {
     return (
         <Paper>
             {children}
@@ -47,6 +43,6 @@ const SelectableGlobalFilters: FunctionComponent<SelectableGlobalFiltersProps> =
             </Box>
         </Paper>
     );
-};
+}
 
 export default SelectableGlobalFilters;

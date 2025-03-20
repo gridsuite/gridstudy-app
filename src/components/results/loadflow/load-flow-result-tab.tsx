@@ -284,7 +284,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return loadflowResult;
     }, [tabIndex, loadflowResult, intl]);
 
-    const getFiltrableEquipmentTypes = useCallback(() => {
+    const getFilterableEquipmentTypes = useCallback(() => {
         switch (tabIndex) {
             case 0:
                 return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
@@ -307,7 +307,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     <ResultsGlobalFilter
                         onChange={handleGlobalFilterChange}
                         filters={[...voltageLevelsFilter, ...countriesFilter]}
-                        filterableEquipmentTypes={getFiltrableEquipmentTypes()}
+                        filterableEquipmentTypes={getFilterableEquipmentTypes()}
                     />
                 </Box>
                 <Box sx={styles.emptySpace}></Box>

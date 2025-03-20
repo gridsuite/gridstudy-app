@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, PropsWithChildren, useCallback, useMemo, useState } from 'react';
+import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteRenderInputParams,
-    AutocompleteValue,
     Box,
     Chip,
     FilterOptionsState,
@@ -45,74 +44,83 @@ import { computeFullPath } from '../../../../utils/compute-title';
 
 const recentFilter: string = 'recent';
 
+const emptyArray: GlobalFilter[] = [];
+const DEFAULT_NB_OPTIONS_DISPLAYED: number = 10;
+
+// renderInput : the inputfield that contains the chips, adornments and label
+function RenderInput({
+    id,
+    size,
+    fullWidth,
+    inputProps,
+    disabled,
+    InputProps: { startAdornment, ...otherInputProps },
+}: Readonly<AutocompleteRenderInputParams>) {
+    const intl = useIntl();
+    return (
+        <TextField
+            id={id}
+            size={size}
+            fullWidth={fullWidth}
+            inputProps={inputProps}
+            disabled={disabled}
+            label={intl.formatMessage({
+                id: 'results.globalFilter.fillerText',
+            })}
+            InputProps={{
+                ...otherInputProps,
+                startAdornment: (
+                    <>
+                        <InputAdornment position="start">
+                            <FilterAlt />
+                        </InputAdornment>
+                        {startAdornment}
+                    </>
+                ),
+            }}
+        />
+    );
+}
+
+interface WarningTooltipProps {
+    warningEquipmentTypeMessage: string;
+}
+
+function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltipProps>) {
+    return (
+        <Tooltip
+            title={warningEquipmentTypeMessage}
+            placement="right"
+            arrow
+            PopperProps={{
+                modifiers: [
+                    {
+                        name: 'offset',
+                        options: {
+                            offset: [0, -15],
+                        },
+                    },
+                ],
+            }}
+        >
+            <IconButton size="small" sx={{ cursor: 'default' }}>
+                <WarningAmberRounded color="warning" fontSize="medium" />
+            </IconButton>
+        </Tooltip>
+    );
+}
+
 export interface ResultsGlobalFilterProps {
     onChange: (filters: GlobalFilter[]) => void;
     filterableEquipmentTypes: EQUIPMENT_TYPES[];
     filters: GlobalFilter[];
 }
 
-const emptyArray: GlobalFilter[] = [];
-const DEFAULT_NB_OPTIONS_DISPLAYED: number = 10;
-
-// renderInput : the inputfield that contains the chips, adornments and label
-const RenderInput = (params: AutocompleteRenderInputParams) => {
-    const intl = useIntl();
-    return (
-        <TextField
-            id={params.id}
-            size={params.size}
-            fullWidth={params.fullWidth}
-            inputProps={params.inputProps}
-            disabled={params.disabled}
-            label={intl.formatMessage({
-                id: 'results.globalFilter.fillerText',
-            })}
-            InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                    <>
-                        <InputAdornment position="start">
-                            <FilterAlt />
-                        </InputAdornment>
-                        {params.InputProps.startAdornment}
-                    </>
-                ),
-            }}
-        />
-    );
-};
-
-interface WarningTooltipProps {
-    warningEquipmentTypeMessage: string;
-}
-
-const WarningTooltip = (props: WarningTooltipProps) => (
-    <Tooltip
-        title={props.warningEquipmentTypeMessage}
-        placement="right"
-        arrow
-        PopperProps={{
-            modifiers: [
-                {
-                    name: 'offset',
-                    options: {
-                        offset: [0, -15],
-                    },
-                },
-            ],
-        }}
-    >
-        <IconButton size="small" sx={{ cursor: 'default' }}>
-            <WarningAmberRounded color="warning" fontSize="medium" />
-        </IconButton>
-    </Tooltip>
-);
-
-const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
+function ResultsGlobalFilter({
     onChange,
     filterableEquipmentTypes,
     filters = emptyArray,
-}) => {
+}: Readonly<ResultsGlobalFilterProps>) {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const { translate } = useLocalizedCountries();
@@ -278,7 +286,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
     return (
         <>
             <Autocomplete
-                value={selectedGlobalFilters as AutocompleteValue<GlobalFilter, true, false, false>}
+                value={selectedGlobalFilters}
                 sx={resultsGlobalFilterStyles.autocomplete}
                 multiple
                 id="result-global-filter"
@@ -303,7 +311,7 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
                             return 0;
                         }),
                 ]}
-                onChange={(_e, value) => handleChange(value as GlobalFilter[])}
+                onChange={(_e, value) => handleChange(value)}
                 groupBy={(option: GlobalFilter): string => (option.recent ? recentFilter : option.filterType)}
                 renderInput={RenderInput}
                 // renderTags : the chips in the inputField
@@ -385,6 +393,6 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
             />
         </>
     );
-};
+}
 
 export default ResultsGlobalFilter;
