@@ -36,6 +36,9 @@ instance.import(
             // == instead of === to be able to compare strings to numbers
             return a === b;
         },
+        match: function (expr: string, variable: string) {
+            return variable.match(expr) !== null;
+        },
         unitToKiloUnit,
         unitToMicroUnit,
     },
