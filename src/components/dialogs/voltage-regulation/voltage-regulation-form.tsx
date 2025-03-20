@@ -102,7 +102,7 @@ export function VoltageRegulationForm({
                     ? previousValues?.regulatingTerminalConnectableType +
                       ' : ' +
                       previousValues?.regulatingTerminalConnectableId
-                    : null ?? undefined
+                    : undefined
             }
         />
     );

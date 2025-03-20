@@ -16,13 +16,14 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
+    REACTIVE_LIMITS,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, MVAPowerAdornment, OhmAdornment } from '../../../dialog-utils';
 import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constants';
-import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
@@ -272,7 +273,9 @@ const GeneratorModificationForm = ({
                 </Grid>
             </Grid>
             <ReactiveLimitsForm
-                equipmentToModify={generatorToModify}
+                id={REACTIVE_LIMITS}
+                previousReactiveCapabilityCurvePoints={generatorToModify?.reactiveCapabilityCurvePoints}
+                previousMinMaxReactiveLimits={generatorToModify?.minMaxReactiveLimits}
                 updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
 
