@@ -277,7 +277,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentType: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalType,
                     voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
                 }),
-                ...getRatioTapChangerFormData({
+                ...getRatioTapChangerFormData(false, {
                     enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                     hasLoadTapChangingCapabilities: twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES],
                     regulationMode: computeRatioTapChangerRegulationMode(twt?.[RATIO_TAP_CHANGER]),
@@ -340,7 +340,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         [SELECTED_LIMITS_GROUP_1]: twt.selectedOperationalLimitsGroup1 ?? null,
                         [SELECTED_LIMITS_GROUP_2]: twt.selectedOperationalLimitsGroup2 ?? null,
                     }),
-                    ...getRatioTapChangerFormData({
+                    ...getRatioTapChangerFormData(false, {
                         enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                         hasLoadTapChangingCapabilities: twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES],
                         regulationMode: computeRatioTapChangerRegulationMode(twt?.[RATIO_TAP_CHANGER]),
