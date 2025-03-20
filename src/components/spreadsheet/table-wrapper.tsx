@@ -38,6 +38,8 @@ import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggr
 import { reorderSpreadsheetColumns } from 'services/study-config';
 import { UUID } from 'crypto';
 import { useNodeAliases } from './custom-columns/use-node-aliases';
+import { rowIndexColumnDefinition } from './config/common-column-definitions';
+import { useGridCalculations } from '../../hooks/use-grid-calculations';
 import { spreadsheetStyles } from './utils/style';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
@@ -153,16 +155,21 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const reorderedColsDefs = useMemo(() => {
         const columns = tableDefinition?.columns?.filter((column) => column.visible);
-        return columns?.map((column) => {
-            const colDef = columnsDefinitions.reduce((acc, curr) => {
-                if (curr.colId === column.id) {
-                    return curr;
-                }
-                return acc;
-            }, {} as CustomColDef);
-            return colDef;
-        });
-    }, [columnsDefinitions, tableDefinition?.columns]);
+        const visibleColDefs =
+            columns?.map((column) => {
+                const colDef = columnsDefinitions.reduce((acc, curr) => {
+                    if (curr.colId === column.id) {
+                        return curr;
+                    }
+                    return acc;
+                }, {} as CustomColDef);
+                return colDef;
+            }) || [];
+
+        // Return row index column first, followed by visible columns
+        // Pass the table UUID to the rowIndexColumnDefinition
+        return [rowIndexColumnDefinition(tableDefinition?.uuid || ''), ...visibleColDefs];
+    }, [columnsDefinitions, tableDefinition?.columns, tableDefinition?.uuid]);
 
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.uuid]
@@ -177,17 +184,29 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [sortConfig]);
 
     const updateLockedColumnsConfig = useCallback(() => {
-        const lockedColumnsConfig = tableDefinition?.columns
-            ?.filter((column) => column.visible && column.locked)
-            ?.map((column) => {
-                const s: ColumnState = {
-                    colId: column.id ?? '',
-                    pinned: 'left',
-                };
-                return s;
-            });
+        // Start with the row index column which should always be pinned left
+        const lockedColumnsConfig: ColumnState[] = [
+            {
+                colId: 'rowIndex',
+                pinned: 'left',
+            },
+        ];
+
+        // Add any other locked columns from the table definition
+        const userLockedColumns =
+            tableDefinition?.columns
+                ?.filter((column) => column.visible && column.locked)
+                ?.map((column) => {
+                    const s: ColumnState = {
+                        colId: column.id ?? '',
+                        pinned: 'left',
+                    };
+                    return s;
+                }) || [];
+
+        // Apply column state with the specified default
         gridRef.current?.api?.applyColumnState({
-            state: lockedColumnsConfig,
+            state: [...lockedColumnsConfig, ...userLockedColumns],
             defaultState: { pinned: null },
         });
     }, [tableDefinition]);
@@ -289,6 +308,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const handleSwitchTab = useCallback(
         (tabUuid: UUID) => {
             setManualTabSwitch(true);
+            // when switching tab column definition is updated before rowData which triggers costly
+            // useless process that's why we set rowData to undefined to avoid that
+            setRowData(undefined);
             setActiveTabUuid(tabUuid);
             cleanTableState();
         },
@@ -360,10 +382,15 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         (event: ColumnMovedEvent) => {
             const colId = event.column?.getColId();
             if (colId && event.finished && event.toIndex !== undefined) {
+                // Adjust toIndex to account for the row index column which is always first
+                // When moving a column, we need to subtract 1 from AG Grid's toIndex
+                // because our tableDefinition doesn't include the row index column
+                const adjustedToIndex = Math.max(0, event.toIndex - 1);
+
                 let reorderedTableDefinitionIndexesTemp = [...tableDefinition.columns.filter((col) => col.visible)];
                 const sourceIndex = reorderedTableDefinitionIndexesTemp.findIndex((col) => col.id === colId);
                 const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(sourceIndex, 1);
-                reorderedTableDefinitionIndexesTemp.splice(event.toIndex, 0, reorderedItem);
+                reorderedTableDefinitionIndexesTemp.splice(adjustedToIndex, 0, reorderedItem);
 
                 // Reinsert invisible columns in their original positions
                 const updatedColumns = [...reorderedTableDefinitionIndexesTemp];
@@ -412,6 +439,13 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             }
         },
         [currentNode?.type, handleOpenModificationDialog]
+    );
+
+    const { onModelUpdated } = useGridCalculations(
+        gridRef,
+        activeTabUuid,
+        reorderedColsDefs,
+        rowData !== undefined && rowData.length > 0
     );
 
     const getStudySpreadsheetConfigCollection = useCallback(() => {
@@ -541,6 +575,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         onRowClicked={onRowClicked}
                         isExternalFilterPresent={isExternalFilterPresent}
                         doesExternalFilterPass={doesFormulaFilteringPass}
+                        onModelUpdated={onModelUpdated}
                     />
                 </Box>
             )}
