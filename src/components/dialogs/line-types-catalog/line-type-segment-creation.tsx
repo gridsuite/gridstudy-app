@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect } from 'react';
+import { FunctionComponent, useCallback, useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
 import { KilometerAdornment } from '../dialog-utils';
 import EditIcon from '@mui/icons-material/Edit';
@@ -20,10 +20,21 @@ import {
 } from '../../utils/field-constants';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import { ButtonReadOnlyInput } from '../../utils/rhf-inputs/read-only/button-read-only-input';
-import PropTypes from 'prop-types';
 import GridItem from '../commons/grid-item';
 
-const LineTypeSegmentCreation = ({ name, index, onEditButtonClick, onSegmentDistanceChange }) => {
+export interface LineTypeSegmentCreationProps {
+    name: string;
+    index: number;
+    onEditButtonClick: (index: number) => void;
+    onSegmentDistanceChange: (index: number) => void;
+}
+
+const LineTypeSegmentCreation: FunctionComponent<LineTypeSegmentCreationProps> = ({
+    name,
+    index,
+    onEditButtonClick,
+    onSegmentDistanceChange,
+}) => {
     const watchDistance = useWatch({
         name: `${name}.${index}.${SEGMENT_DISTANCE_VALUE}`,
     });
@@ -49,16 +60,14 @@ const LineTypeSegmentCreation = ({ name, index, onEditButtonClick, onSegmentDist
 
     const segmentTypeField = (
         <ButtonReadOnlyInput name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}>
-            {onEditButtonClick && (
-                <IconButton onClick={handleEditButtonClick}>
-                    <EditIcon />
-                </IconButton>
-            )}
+            <IconButton onClick={handleEditButtonClick}>
+                <EditIcon />
+            </IconButton>
         </ButtonReadOnlyInput>
     );
 
     useEffect(() => {
-        onSegmentDistanceChange && onSegmentDistanceChange(index, watchDistance);
+        onSegmentDistanceChange && onSegmentDistanceChange(index);
     }, [onSegmentDistanceChange, index, watchDistance]);
 
     return (
@@ -70,13 +79,6 @@ const LineTypeSegmentCreation = ({ name, index, onEditButtonClick, onSegmentDist
             <GridItem size={2}>{segmentSusceptanceField}</GridItem>
         </>
     );
-};
-
-LineTypeSegmentCreation.prototype = {
-    name: PropTypes.string.isRequired,
-    index: PropTypes.number.isRequired,
-    onEditButtonClick: PropTypes.func.isRequired,
-    onSegmentDistanceChange: PropTypes.func.isRequired,
 };
 
 export default LineTypeSegmentCreation;
