@@ -4,22 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import {
+    MinMaxReactiveLimitsFormInfos,
+    ReactiveCapabilityCurvePoints,
+} from '../../../../reactive-limits/reactive-limits.type';
 import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 
 export interface AttributeModification<T> {
     value?: T;
     op: string;
-}
-
-interface MinMaxReactiveLimitsData {
-    minQ: number | null;
-    maxQ: number | null;
-}
-
-export interface ReactiveCapabilityCurvePointsData {
-    p?: number | null;
-    maxQ?: number | null;
-    minQ?: number | null;
 }
 
 export interface ConverterStationElementInfos {
@@ -35,8 +28,8 @@ export interface ConverterStationElementInfos {
     terminalConnected: boolean;
     p: number | null;
     q: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
-    minMaxReactiveLimits: MinMaxReactiveLimitsData | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
+    minMaxReactiveLimits: MinMaxReactiveLimitsFormInfos | null;
     connectablePosition: ConnectablePositionInfos;
     reactivePower?: number;
     voltageRegulationOn?: boolean;
@@ -49,13 +42,4 @@ export interface ConverterStationElementInfos {
 export type ConverterStationElementModificationInfos = Omit<
     ConverterStationElementInfos,
     'reactiveCapabilityCurvePoints'
-> & { reactiveCapabilityCurveTable: ReactiveCapabilityCurvePointsData[] };
-
-export interface ReactiveCapabilityCurvePoint {
-    p: number | null;
-    oldP: number | null;
-    minQ: number | null;
-    oldMinQ: number | null;
-    maxQ: number | null;
-    oldMaxQ: number | null;
-}
+> & { reactiveCapabilityCurveTable: ReactiveCapabilityCurvePoints[] };

@@ -10,7 +10,17 @@ import { MAX_Q, MIN_Q, P } from 'components/utils/field-constants';
 import { ActivePowerAdornment, ReactivePowerAdornment } from '../../dialog-utils';
 import GridItem from '../../commons/grid-item';
 
-const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix }) => {
+export interface ReactiveCapabilityCurveRowFormProps {
+    id: string;
+    index: number;
+    labelSuffix: string | number;
+}
+
+export function ReactiveCapabilityCurveRowForm({
+    id,
+    index,
+    labelSuffix,
+}: Readonly<ReactiveCapabilityCurveRowFormProps>) {
     const pField = (
         <FloatInput
             name={`${id}.${index}.${P}`}
@@ -45,6 +55,4 @@ const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix }) => {
             <GridItem size={3}>{qmaxPField}</GridItem>
         </>
     );
-};
-
-export default ReactiveCapabilityCurveRowForm;
+}

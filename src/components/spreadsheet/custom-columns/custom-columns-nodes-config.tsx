@@ -48,7 +48,7 @@ export default function CustomColumnsNodesConfig({
     const dialogOpen = useStateBoolean(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex].type);
+    const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.type);
 
     const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
 

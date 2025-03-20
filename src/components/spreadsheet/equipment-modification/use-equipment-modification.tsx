@@ -22,7 +22,6 @@ import { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 interface UseEquipmentModificationProps {
-    studyUuid: string;
     equipmentType: SpreadsheetEquipmentType;
 }
 
@@ -50,11 +49,12 @@ const EQUIPMENT_DIALOG_MAPPING: Record<EditableEquipmentType, React.FC<any>> = {
     [EQUIPMENT_TYPES.HVDC_LINE]: VscModificationDialog,
 };
 
-export const useEquipmentModification = ({ studyUuid, equipmentType }: UseEquipmentModificationProps) => {
+export const useEquipmentModification = ({ equipmentType }: UseEquipmentModificationProps) => {
     const [modificationDialog, setModificationDialog] = useState<React.ReactElement | null>(null);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const createDialogWithProps = useCallback(
         (Dialog: React.FC<any>, equipmentId: string) => {

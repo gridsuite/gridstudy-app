@@ -41,6 +41,7 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/creates_cyclic_dependency': 'Column dependencies create a cyclic dependency',
     'spreadsheet/custom_column/error_saving_or_updating_column': 'Error while saving or updating column',
     'spreadsheet/save/button': 'Save',
+    'spreadsheet/reset/button': 'Reset',
     'spreadsheet/save/options/model': 'As a model',
     'spreadsheet/save/options/collection': 'Collection',
     'spreadsheet/save/options/csv': 'Export CSV',
@@ -73,6 +74,8 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/error_loading_model': 'Error while retrieving spreadsheet model',
     'spreadsheet/create_new_spreadsheet/error_loading_collection': 'Error while retrieving spreadsheet collection',
     'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': 'Error while adding spreadsheet',
+    'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
+        'Error while resetting spreadsheet collection',
     'spreadsheet/parameter_aliases/node_name': 'Node name',
     'spreadsheet/parameter_aliases/node_alias': 'Node alias',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Cannot exceed 10 characters',
@@ -86,6 +89,21 @@ const spreadsheetEn = {
     'spreadsheet/remove_spreadsheet_error': 'Error while removing spreadsheet',
     'spreadsheet/reorder_columns/error': 'Error while reordering columns',
     'spreadsheet/reorder_tabs_error': 'Error while reordering tabs',
+    'spreadsheet/rename/label': 'Rename',
+    'spreadsheet/delete/label': 'Delete',
+    'spreadsheet/rename_spreadsheet_error': 'Error while renaming spreadsheet',
+    'spreadsheet/rename_dialog_title': 'Rename spreadsheet',
+    'spreadsheet/spreadsheet_name_le_60': 'Spreadsheet name must be at most 60 characters',
+
+    // calculations
+    'spreadsheet/calculation/sum': 'Sum',
+    'spreadsheet/calculation/average': 'Average',
+    'spreadsheet/calculation/min': 'Minimum',
+    'spreadsheet/calculation/max': 'Maximum',
+    'spreadsheet/calculation/sum_abbrev': 'Sum',
+    'spreadsheet/calculation/average_abbrev': 'Avg',
+    'spreadsheet/calculation/min_abbrev': 'Min',
+    'spreadsheet/calculation/max_abbrev': 'Max',
 
     // Column types
     TEXT: 'Text',
