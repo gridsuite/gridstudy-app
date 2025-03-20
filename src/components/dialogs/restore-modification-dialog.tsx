@@ -53,7 +53,7 @@ const styles = {
 interface RestoreModificationDialogProps {
     open: boolean;
     onClose: () => void;
-    modifToRestore: NetworkModificationInfos[];
+    modifToRestore: NetworkModificationMetadata[];
 }
 
 /**
@@ -71,8 +71,8 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const [stashedModifications, setStashedModifications] = useState<NetworkModificationInfos[]>([]);
-    const [selectedItems, setSelectedItems] = useState<NetworkModificationInfos[]>([]);
+    const [stashedModifications, setStashedModifications] = useState<NetworkModificationMetadata[]>([]);
+    const [selectedItems, setSelectedItems] = useState<NetworkModificationMetadata[]>([]);
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] = useState(false);
 
     const { computeLabel } = useModificationLabelComputer();
@@ -83,14 +83,14 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
     };
 
     const handleDelete = () => {
-        const selectedModificationsUuidsToDelete = selectedItems.map((item) => item.modificationInfos.uuid);
+        const selectedModificationsUuidsToDelete = selectedItems.map((item) => item.uuid);
         setOpenDeleteConfirmationPopup(false);
         deleteModifications(studyUuid, currentNode?.id, selectedModificationsUuidsToDelete);
         handleClose();
     };
 
     const handleRestore = () => {
-        const selectedModificationsUuidToRestore = selectedItems.map((item) => item.modificationInfos.uuid);
+        const selectedModificationsUuidToRestore = selectedItems.map((item) => item.uuid);
 
         restoreModifications(studyUuid, currentNode?.id, selectedModificationsUuidToRestore);
         handleClose();
@@ -133,15 +133,11 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
                     items={stashedModifications}
                     selectedItems={selectedItems}
                     onSelectionChange={setSelectedItems}
-                    getItemId={(v) => v.modificationInfos.uuid}
-                    getItemLabel={(v) => getLabel(v.modificationInfos)}
+                    getItemId={(v) => v.uuid}
+                    getItemLabel={(v) => getLabel(v)}
                     onItemClick={(stashedModification) =>
                         setSelectedItems((oldCheckedElements) =>
-                            toggleElementFromList(
-                                stashedModification,
-                                oldCheckedElements,
-                                (v: NetworkModificationInfos) => v.modificationInfos.uuid
-                            )
+                            toggleElementFromList(stashedModification, oldCheckedElements, (v) => v.uuid)
                         )
                     }
                     addSelectAllCheckbox

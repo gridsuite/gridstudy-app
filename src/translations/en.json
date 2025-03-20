@@ -1499,7 +1499,7 @@
     "updateRootNetworksError": "An error occurred while updating the root network",
     "visibleRootNetwork": "Visible network : ",
     "importCaseFailure" : "Unable to import case",
-    "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by rootNetwork",
+    "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 
     "unlimited": "Unlimited",
     "forbidden": "Forbidden",

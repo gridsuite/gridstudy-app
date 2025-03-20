@@ -10,6 +10,7 @@ import {
     ElementType,
     IElementCreationDialog,
     MODIFICATION_TYPES,
+    NetworkModificationMetadata,
     usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -121,7 +122,7 @@ const NetworkModificationNodeEditor = () => {
     const [modifications, setModifications] = useState<NetworkModificationInfos[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
-    const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationInfos[]>([]);
+    const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
@@ -458,7 +459,7 @@ const NetworkModificationNodeEditor = () => {
         fetchNetworkModifications(studyUuid, currentNode.id, true)
             .then((res) => {
                 if (currentNode.id === currentNodeIdRef.current) {
-                    setModificationsToRestore(res);
+                    setModificationsToRestore(res.map((m) => m.modificationInfos));
                 }
             })
             .catch((error) => {
@@ -497,7 +498,9 @@ const NetworkModificationNodeEditor = () => {
                     updateSelectedItems(liveModifications);
                     setModifications(liveModifications);
                     setModificationsToRestore(
-                        res.filter((networkModification) => networkModification.modificationInfos.stashed === true)
+                        res
+                            .filter((networkModification) => networkModification.modificationInfos.stashed === true)
+                            .map((m) => m.modificationInfos)
                     );
                 }
             })
@@ -852,7 +855,7 @@ const NetworkModificationNodeEditor = () => {
 
         const updatedModifications = [...modifications];
 
-        const [movedItem] = updatedModifications.splice(oldPosition as number, 1);
+        const [movedItem] = updatedModifications.splice(oldPosition, 1);
 
         updatedModifications.splice(newPosition, 0, movedItem);
 

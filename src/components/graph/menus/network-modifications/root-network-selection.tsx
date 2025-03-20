@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useEffect, useState } from 'react';
 import { SelectChangeEvent, MenuItem, Select } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { FormattedMessage } from 'react-intl';
@@ -14,31 +13,22 @@ import { AppState } from 'redux/reducer';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
 import { UUID } from 'crypto';
 
-export const RootNetworkSelection: FunctionComponent = () => {
+export const RootNetworkSelection = () => {
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
-    const [selectedRootNetworkUuid, setSelectedRootNetworkUuid] = useState<UUID | undefined>(undefined);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        if (currentRootNetworkUuid) {
-            setSelectedRootNetworkUuid(currentRootNetworkUuid);
-        }
-    }, [currentRootNetworkUuid]);
-
-    const handleRootNetworkChange = (event: SelectChangeEvent<string>) => {
+    const handleRootNetworkChange = (event: SelectChangeEvent<UUID>) => {
         const selectedUuid = event.target.value as UUID;
-        setSelectedRootNetworkUuid(selectedUuid);
         dispatch(setCurrentRootNetworkUuid(selectedUuid));
     };
 
     return (
         <Select
             labelId="root-network-label"
-            value={selectedRootNetworkUuid ?? ''}
+            value={currentRootNetworkUuid ?? ''}
             onChange={handleRootNetworkChange}
             size="small"
-            displayEmpty
             renderValue={(selected) => {
                 const selectedNetwork = rootNetworks.find((option) => option.rootNetworkUuid === selected);
                 return selectedNetwork ? (

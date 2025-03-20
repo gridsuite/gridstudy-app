@@ -63,7 +63,7 @@ export const EditableTitle = ({ name, onClose, onChange, showRootNetworkSelectio
                 value={name}
                 onValidate={(newName) => {
                     onChange?.(newName);
-                    setOpenEditTitle(false);
+                    // setOpenEditTitle(false);
                 }}
                 onClose={() => setOpenEditTitle(false)}
             />

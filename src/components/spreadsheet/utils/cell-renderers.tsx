@@ -207,6 +207,7 @@ export const MessageLogCellRenderer = ({
         </Box>
     );
 };
+
 export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNode; tooltipValue: ReactNode } }) => {
     const { cellValue, tooltipValue } = value ?? {};
 

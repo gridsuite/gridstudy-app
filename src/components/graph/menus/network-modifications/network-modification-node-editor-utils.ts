@@ -55,7 +55,7 @@ export const styles = {
     },
     circularProgress: (theme: Theme) => ({
         marginRight: theme.spacing(2),
-        color: theme.palette.primary.contrastText,
+        color: theme.palette.primary.dark,
     }),
     toolbarCircularProgress: (theme: Theme) => ({
         display: 'flex',
