@@ -265,6 +265,8 @@ export const StudyView = {
     PARAMETERS: 'Parameters',
 };
 
+export type StudyViewType = (typeof StudyView)[keyof typeof StudyView];
+
 export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
     return rows?.map((row) => {
         return { ...row, [SELECTED]: false };
