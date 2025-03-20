@@ -84,17 +84,15 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         return [
             {
                 colId: 'modificationName',
-                headerComponent: () => (
-                    <>
-                        <FormattedMessage
-                            id={'network_modifications.modificationsCount'}
-                            values={{
-                                count: modifications?.length ?? '',
-                                hide: isLoading?.(),
-                            }}
-                        />
-                    </>
-                ),
+                rowDrag: true,
+                headerComponent: FormattedMessage,
+                headerComponentParams: {
+                    id: 'network_modifications.modificationsCount',
+                    values: {
+                        count: modifications?.length ?? '',
+                        hide: isLoading?.(),
+                    },
+                },
                 cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
                     getModificationLabel(params?.data?.modificationInfos),
                 minWidth: 250,
@@ -120,9 +118,10 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 colId: rootNetworkUuid,
                 maxWidth: 100,
                 flex: dynamicColumnFlex,
-                cellRenderer: (param: ICellRendererParams<NetworkModificationInfos>) => (
-                    <ChipRootNetworkCellRenderer rootNetwork={rootNetwork} {...param} />
-                ),
+                cellRenderer: ChipRootNetworkCellRenderer,
+                cellRendererParams: {
+                    rootNetwork: rootNetwork,
+                },
                 headerComponent: CustomHeaderComponent,
                 headerComponentParams: {
                     icon: (
@@ -157,12 +156,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         return style;
     }, []);
 
-    // Modify column definitions to include row drag for 'modificationName' column
-    const modifiedColumnDefs = columnDefs.map((col) => ({
-        ...col,
-        rowDrag: col.colId === 'modificationName',
-    }));
-
     return (
         <div style={{ position: 'relative', flexGrow: 1, marginTop: theme.spacing(1) }}>
             <CustomAGGrid
@@ -178,7 +171,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 onCellClicked={handleCellClick}
                 onRowSelected={onRowSelected}
                 animateRows
-                columnDefs={modifiedColumnDefs}
+                columnDefs={columnDefs}
                 getRowStyle={getRowStyle}
                 rowClass="custom-row-class"
                 onRowDragEnter={onRowDragStart}
