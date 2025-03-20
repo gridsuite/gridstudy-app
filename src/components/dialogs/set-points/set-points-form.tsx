@@ -13,7 +13,7 @@ import GridItem from '../commons/grid-item';
 import GridSection from '../commons/grid-section';
 
 interface SetPointsFormProps {
-    previousValues?: { activePowerValue?: number | null; reactivePowerValue?: number | null };
+    previousValues?: { activePower?: number | null; reactivePower?: number | null };
 }
 export function SetPointsForm({ previousValues }: Readonly<SetPointsFormProps>) {
     const activePowerSetPointField = (
@@ -21,7 +21,7 @@ export function SetPointsForm({ previousValues }: Readonly<SetPointsFormProps>) 
             name={ACTIVE_POWER_SET_POINT}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={previousValues?.activePowerValue ?? undefined}
+            previousValue={previousValues?.activePower ?? undefined}
             clearable={true}
         />
     );
@@ -31,7 +31,7 @@ export function SetPointsForm({ previousValues }: Readonly<SetPointsFormProps>) 
             name={REACTIVE_POWER_SET_POINT}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.reactivePowerValue ?? undefined}
+            previousValue={previousValues?.reactivePower ?? undefined}
             clearable={true}
         />
     );

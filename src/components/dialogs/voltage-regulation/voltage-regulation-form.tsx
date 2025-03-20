@@ -23,11 +23,11 @@ interface VoltageRegulationFormProps {
     currentRootNetworkUuid: UUID;
     voltageLevelOptions: Identifiable[];
     previousValues?: {
-        regulatingTerminalConnectableIdValue?: string | null;
-        regulatingTerminalVlIdValue?: string | null;
-        regulatingTerminalConnectableTypeValue?: string | null;
-        voltageValue?: number | null;
-        qPercentValue?: number | null;
+        regulatingTerminalConnectableId?: string | null;
+        regulatingTerminalVlId?: string | null;
+        regulatingTerminalConnectableType?: string | null;
+        voltageSetPoint?: number | null;
+        qPercent?: number | null;
     };
     isEquipmentModification?: boolean;
 }
@@ -41,7 +41,7 @@ export function VoltageRegulationForm({
 }: Readonly<VoltageRegulationFormProps>) {
     const intl = useIntl();
     const previousRegulationType = useMemo(() => {
-        if (previousValues?.regulatingTerminalVlIdValue || previousValues?.regulatingTerminalConnectableIdValue) {
+        if (previousValues?.regulatingTerminalVlId || previousValues?.regulatingTerminalConnectableId) {
             return REGULATION_TYPES.DISTANT.id;
         } else {
             return REGULATION_TYPES.LOCAL.id;
@@ -83,7 +83,7 @@ export function VoltageRegulationForm({
             name={VOLTAGE_SET_POINT}
             label={'VoltageText'}
             adornment={VoltageAdornment}
-            previousValue={previousValues?.voltageValue ?? undefined}
+            previousValue={previousValues?.voltageSetPoint ?? undefined}
             clearable={true}
         />
     );
@@ -96,12 +96,12 @@ export function VoltageRegulationForm({
             currentNodeUuid={currentNodeUuid}
             currentRootNetworkUuid={currentRootNetworkUuid}
             studyUuid={studyUuid}
-            previousRegulatingTerminalValue={previousValues?.regulatingTerminalVlIdValue ?? undefined}
+            previousRegulatingTerminalValue={previousValues?.regulatingTerminalVlId ?? undefined}
             previousEquipmentSectionTypeValue={
-                previousValues?.regulatingTerminalConnectableTypeValue
-                    ? previousValues?.regulatingTerminalConnectableTypeValue +
+                previousValues?.regulatingTerminalConnectableType
+                    ? previousValues?.regulatingTerminalConnectableType +
                       ' : ' +
-                      previousValues?.regulatingTerminalConnectableIdValue
+                      previousValues?.regulatingTerminalConnectableId
                     : undefined
             }
         />
@@ -112,7 +112,7 @@ export function VoltageRegulationForm({
             name={Q_PERCENT}
             label={'QPercentText'}
             adornment={percentageTextField}
-            previousValue={previousValues?.qPercentValue ?? undefined}
+            previousValue={previousValues?.qPercent ?? undefined}
             clearable={true}
         />
     );

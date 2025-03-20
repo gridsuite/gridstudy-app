@@ -86,11 +86,11 @@ const GeneratorModificationForm = ({
             currentRootNetworkUuid={currentRootNetworkUuid}
             studyUuid={studyUuid}
             previousValues={{
-                regulatingTerminalConnectableIdValue: generatorToModify?.regulatingTerminalConnectableId,
-                regulatingTerminalVlIdValue: generatorToModify?.regulatingTerminalVlId,
-                regulatingTerminalConnectableTypeValue: generatorToModify?.regulatingTerminalConnectableType,
-                voltageValue: generatorToModify?.targetV,
-                qPercentValue: generatorToModify?.coordinatedReactiveControl?.qPercent,
+                regulatingTerminalConnectableId: generatorToModify?.regulatingTerminalConnectableId,
+                regulatingTerminalVlId: generatorToModify?.regulatingTerminalVlId,
+                regulatingTerminalConnectableType: generatorToModify?.regulatingTerminalConnectableType,
+                voltageSetPoint: generatorToModify?.targetV,
+                qPercent: generatorToModify?.coordinatedReactiveControl?.qPercent,
             }}
             isEquipmentModification={true}
         />
@@ -280,12 +280,11 @@ const GeneratorModificationForm = ({
             {/* Set points part */}
             <SetPointsForm
                 previousValues={{
-                    activePowerValue: generatorToModify?.targetP,
-                    reactivePowerValue: generatorToModify?.targetQ,
+                    activePower: generatorToModify?.targetP,
+                    reactivePower: generatorToModify?.targetQ,
                 }}
             />
             <Grid container spacing={2} paddingTop={2}>
-                <Box sx={{ width: '100%' }} />
                 <GridItem
                     tooltip={watchVoltageRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />}
                     size={4}
@@ -293,7 +292,6 @@ const GeneratorModificationForm = ({
                     {voltageRegulationField}
                 </GridItem>
                 {voltageRegulationFields}
-                <Box sx={{ width: '100%' }} />
                 <ActivePowerControlForm
                     isEquipmentModification={true}
                     previousValues={generatorToModify?.activePowerControl}
