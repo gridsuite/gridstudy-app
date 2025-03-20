@@ -426,9 +426,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition, originalColumnPositions, dispatch, snackError]
     );
 
-    const { modificationDialog, handleOpenModificationDialog, isModificationDialogForEquipmentType } = useEquipmentModification({
-        equipmentType: tableDefinition?.type,
-    });
+    const { modificationDialog, handleOpenModificationDialog, isModificationDialogForEquipmentType } =
+        useEquipmentModification({
+            equipmentType: tableDefinition?.type,
+        });
 
     const onRowClicked = useCallback(
         (event: RowClickedEvent) => {
