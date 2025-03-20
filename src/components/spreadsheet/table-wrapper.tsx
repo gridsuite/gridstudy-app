@@ -473,8 +473,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 handleSwitchTab(tableDefinitions[0].uuid);
                 dispatch(resetAllSpreadsheetGsFilters());
             }
+            resetNodeAliases(collectionData.nodeAliases);
         });
-    }, [studyUuid, dispatch, handleSwitchTab]);
+    }, [studyUuid, dispatch, handleSwitchTab, resetNodeAliases]);
 
     // Reset the collection to the default one defined in the user profile
     const resetSpreadsheetCollection = useCallback(() => {
