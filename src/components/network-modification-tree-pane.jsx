@@ -41,7 +41,7 @@ import {
     fetchStashedNodes,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
-import RestoreNodesDialog from './dialogs/restore-node-dialog';
+import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 import { StudyDisplayMode, CopyType, UpdateType } from './network-modification.type';
 
