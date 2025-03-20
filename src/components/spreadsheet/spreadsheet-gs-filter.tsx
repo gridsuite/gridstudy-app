@@ -5,7 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect } from 'react';
+import type { UUID } from 'crypto';
+import { useCallback, useEffect, useMemo } from 'react';
+import { Box } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,17 +24,14 @@ import { SPREADSHEET_GS_FILTER } from '../utils/field-constants';
 import { AppState } from '../../redux/reducer';
 import { ExpertFilter } from '../../services/study/filter';
 
-const styles = {
-    inputContainer: {
-        minWidth: '12em',
-    },
+export type SpreadsheetGsFilterProps = {
+    equipmentType: SpreadsheetEquipmentType;
+    uuid: UUID;
+    index: number;
+    name: string;
 };
 
-interface SpreadsheetGsFilterProps {
-    equipmentType: SpreadsheetEquipmentType;
-}
-
-export const SpreadsheetGsFilter = ({ equipmentType }: SpreadsheetGsFilterProps) => {
+export default function SpreadsheetGsFilter({ equipmentType, index, name, uuid }: Readonly<SpreadsheetGsFilterProps>) {
     const dispatch = useDispatch();
     const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
 
@@ -46,28 +45,29 @@ export const SpreadsheetGsFilter = ({ equipmentType }: SpreadsheetGsFilterProps)
         (values: ExpertFilter[]) => {
             //Converts readonly values to a mutable one, prevents read-only type error
             const mutableValues = values.map((f) => ({ ...f }));
-            dispatch(saveSpreadsheetGsFilters(equipmentType, mutableValues));
+            dispatch(saveSpreadsheetGsFilters(uuid, mutableValues));
         },
-        [dispatch, equipmentType]
+        [dispatch, uuid]
     );
 
     useEffect(() => {
-        reset(toFormFormat(gsFilterSpreadsheetState[equipmentType] ?? []));
-    }, [equipmentType, reset, gsFilterSpreadsheetState]);
+        reset(toFormFormat(gsFilterSpreadsheetState[uuid] ?? []));
+    }, [uuid, reset, gsFilterSpreadsheetState]);
 
     return (
         <CustomFormProvider validationSchema={spreadsheetGsFilterFormSchema} {...formMethods}>
-            <div style={styles.inputContainer}>
+            <Box minWidth="12em" /* TODO add sx props to DirectoryItemsInput in commons-ui to remove this div */>
                 <DirectoryItemsInput
+                    key={`filter-spreadsheet-${uuid || index + name + equipmentType}`} // force refresh on equipment type change
                     name={SPREADSHEET_GS_FILTER}
                     titleId="FiltersListsSelection"
                     label="filter"
                     elementType={ElementType.FILTER}
-                    equipmentTypes={[equipmentType]}
+                    equipmentTypes={useMemo(() => [equipmentType], [equipmentType])}
                     labelRequiredFromContext={false}
                     onChange={handleChange}
                 />
-            </div>
+            </Box>
         </CustomFormProvider>
     );
-};
+}

@@ -125,7 +125,6 @@
     "Results": "Results",
     "ID": "ID",
     "Name": "Name",
-    "name": "Name",
     "Country": "Country",
     "Country1": "Country 1",
     "Country2": "Country 2",
@@ -1259,7 +1258,8 @@
     "AttachingAndSplittingLines": "Attaching and splitting lines",
     "GenerationAndLoad": "Generation and load",
     "InsertModificationFrom": "Insert from GridExplore",
-    "SaveModificationTo": "Save to GridExplore",
+    "SaveToGridexplore": "Save to GridExplore",
+    "SaveToGridexploreError": "An error occurred while saving to GridExplore",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
     "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {directory}",
@@ -1483,6 +1483,7 @@
 
     "chooseCase": "Select a case",
     "addNetwork": "Add network",
+    "updateNetwork": "Update network",
     "rootName": "Network name",
     "rootTag": "Network tag",
     "TagRequiredCondition": "Tag is required, should be unique in study and of length <= 4",
@@ -1495,6 +1496,7 @@
     "rootNetworkDirectoryFetchingError": "An error occurred while fetching root directory",
     "rootNetworkNotFound": "No root network was found for the study with ID \"{studyUuid}\"",
     "createRootNetworksError": "An error occurred while creating the root network",
+    "updateRootNetworksError": "An error occurred while updating the root network",
     "importCaseFailure" : "Unable to import case",
 
     "unlimited": "Unlimited",

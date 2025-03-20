@@ -45,8 +45,8 @@ import {
     AttributeModification,
     ConverterStationElementInfos,
     ConverterStationElementModificationInfos,
-    ReactiveCapabilityCurvePointsData,
 } from './converter-station-type';
+import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -68,9 +68,9 @@ export interface ConverterStationInterfaceEditData {
     busbarSectionName?: string;
     connectionDirection: string | null;
     connectionName?: string | null;
-    connectionPosition?: string | null;
+    connectionPosition?: number | null;
     terminalConnected?: boolean | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
@@ -88,9 +88,9 @@ export interface ConverterStationModificationInterfaceEditData {
     busbarSectionName?: AttributeModification<string> | null;
     connectionDirection: AttributeModification<string> | null;
     connectionName?: AttributeModification<string> | null;
-    connectionPosition?: AttributeModification<string> | null;
+    connectionPosition?: AttributeModification<number> | null;
     terminalConnected?: AttributeModification<boolean> | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: AttributeModification<boolean> | null;
     minQ: AttributeModification<number> | null;
     maxQ: AttributeModification<number> | null;
@@ -294,8 +294,8 @@ export function getConverterStationFromSearchCopy(id: string, converterStation: 
             ...getConnectivityFormData({
                 voltageLevelId: converterStation?.voltageLevelId,
                 busbarSectionId: converterStation?.busOrBusbarSectionId,
-                connectionDirection: converterStation?.connectablePositionInfos?.connectionDirection,
-                connectionName: converterStation?.connectablePositionInfos?.connectionName,
+                connectionDirection: converterStation?.connectablePosition?.connectionDirection,
+                connectionName: converterStation?.connectablePosition?.connectionName,
                 connectionPosition: null,
                 busbarSectionName: null,
                 terminalConnected: true,

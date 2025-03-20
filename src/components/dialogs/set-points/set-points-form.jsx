@@ -7,12 +7,11 @@
 
 import { ActivePowerAdornment, ReactivePowerAdornment } from '../dialog-utils';
 import { Box, Grid } from '@mui/material';
-import { FloatInput } from '@gridsuite/commons-ui';
+import { FloatInput, SwitchInput } from '@gridsuite/commons-ui';
 import { ACTIVE_POWER_SET_POINT, REACTIVE_POWER_SET_POINT, VOLTAGE_REGULATION } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import FrequencyRegulation from './frequency-regulation';
+import { ActivePowerControlForm } from '../active-power-control/active-power-control-form.tsx';
 import VoltageRegulation from './voltage-regulation';
-import { SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import GridItem from '../commons/grid-item';
@@ -103,9 +102,9 @@ const SetPointsForm = ({
                 </GridItem>
                 {voltageRegulationFields}
                 <Box sx={{ width: '100%' }} />
-                <FrequencyRegulation
+                <ActivePowerControlForm
                     isEquipmentModification={isEquipmentModification}
-                    previousValues={previousValues}
+                    previousValues={previousValues?.activePowerControl}
                 />
             </Grid>
         </>

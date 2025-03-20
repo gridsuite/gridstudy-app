@@ -25,7 +25,7 @@ import {
     fetchVoltageLevels,
     fetchVscConverterStations,
 } from '../../../services/study/network';
-import { EquipmentFetcher, SpreadsheetEquipmentType } from './spreadsheet.type';
+import { EquipmentFetcher, SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 
 export const getFetcher = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher => {
     switch (equipmentType) {

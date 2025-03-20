@@ -22,7 +22,7 @@ import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
-import ReactiveLimitsForm from '../../../../reactive-limits/reactive-limits-form';
+import { ReactiveLimitsForm } from '../../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { TextField } from '@mui/material';
 import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
@@ -102,7 +102,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={isModification}
-            previousValues={previousValues}
+            previousValues={{
+                connectablePosition: previousValues?.connectablePosition,
+                terminalConnected: previousValues?.terminalConnected,
+            }}
         />
     );
 
@@ -175,7 +178,8 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm
                 id={`${id}.${REACTIVE_LIMITS}`}
-                equipmentToModify={previousValues as any}
+                previousReactiveCapabilityCurvePoints={previousValues?.reactiveCapabilityCurveTable}
+                previousMinMaxReactiveLimits={previousValues?.minMaxReactiveLimits}
                 updatePreviousReactiveCapabilityCurveTable={
                     updatePreviousReactiveCapabilityCurveTableConverterStation as any
                 }
