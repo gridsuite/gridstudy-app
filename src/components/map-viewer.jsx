@@ -150,6 +150,7 @@ const MapViewer = ({
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const previousStudyDisplayMode = useRef(undefined);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
+    const isRootNetworksProcessing = useSelector((state) => state.isRootNetworksProcessing);
 
     const openVoltageLevel = useCallback(
         (vlId) => {
@@ -242,7 +243,6 @@ const MapViewer = ({
             ? networkMapref.current.getSelectedLines()
             : networkMapref.current.getSelectedSubstations();
     };
-
     return (
         <Box sx={styles.table}>
             <Box sx={styles.horizontalToolbar}>
@@ -251,7 +251,10 @@ const MapViewer = ({
             <Box sx={styles.mapAndTreeContainer}>
                 {/* Waiting for map geodata is unnecessary. The map has is proper loader implementation */}
                 {/* This WaitingLoader is placed here to block functionnalities, hiding under components with some opacity*/}
-                <WaitingLoader message={'LoadingRemoteData'} loading={!isNetworkModificationTreeModelUpToDate} />
+                <WaitingLoader
+                    message={'LoadingRemoteData'}
+                    loading={!isNetworkModificationTreeModelUpToDate || isRootNetworksProcessing}
+                />
                 {/* Tree */}
                 <Box
                     sx={{

@@ -1284,3 +1284,15 @@ export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: ExpertFilter[])
         filters: filters,
     };
 }
+
+export const SET_ROOT_NETWORKS_PROCESSING = 'SET_ROOT_NETWORKS_PROCESSING';
+export type SetRootNetworksProcessing = Readonly<Action<typeof SET_ROOT_NETWORKS_PROCESSING>> & {
+    isRootNetworksProcessing: boolean;
+};
+
+export function setRootNetworksProcessing(isRootNetworksProcessing: boolean): SetRootNetworksProcessing {
+    return {
+        type: SET_ROOT_NETWORKS_PROCESSING,
+        isRootNetworksProcessing: isRootNetworksProcessing,
+    };
+}

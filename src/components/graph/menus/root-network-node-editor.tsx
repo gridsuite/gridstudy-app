@@ -42,7 +42,7 @@ import {
     getCaseImportParameters,
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
-import { setCurrentRootNetworkUuid } from 'redux/actions';
+import { setCurrentRootNetworkUuid, setRootNetworksProcessing } from 'redux/actions';
 import { isChecked, isPartial } from './network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 
@@ -156,6 +156,10 @@ const RootNetworkNodeEditor = () => {
                 .then((res: RootNetworkMetadata[]) => {
                     updateSelectedItems(res);
                     setRootNetworks(res);
+                    // All root networks must be fully established before the loader can be safely removed.
+                    if (res.every((network) => !network.isCreating)) {
+                        dispatch(setRootNetworksProcessing(false));
+                    }
                 })
                 .catch((error) => {
                     snackError({
@@ -163,7 +167,7 @@ const RootNetworkNodeEditor = () => {
                     });
                 });
         }
-    }, [studyUuid, updateSelectedItems, snackError]);
+    }, [studyUuid, updateSelectedItems, dispatch, snackError]);
 
     useEffect(() => {
         if (studyUpdatedForce?.eventData?.headers) {
@@ -360,6 +364,7 @@ const RootNetworkNodeEditor = () => {
                 const formattedParams = formatCaseImportParameters(params.parameters);
                 const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
                 // Call createRootNetwork with formatted parameters
+                dispatch(setRootNetworksProcessing(true));
                 return createRootNetwork(
                     caseId as UUID,
                     params.formatName,
@@ -389,6 +394,7 @@ const RootNetworkNodeEditor = () => {
                 ? customizeCurrentParameters(formattedParams as Parameter[])
                 : null;
 
+            dispatch(setRootNetworksProcessing(true));
             updateRootNetwork(
                 editedRootNetwork.rootNetworkUuid,
                 name,
@@ -403,6 +409,7 @@ const RootNetworkNodeEditor = () => {
                 headerId: 'updateRootNetworksError',
                 messageTxt: error instanceof Error ? error.message : String(error),
             });
+            dispatch(setRootNetworksProcessing(false));
         }
     };
 

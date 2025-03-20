@@ -192,6 +192,8 @@ import {
     USE_NAME,
     UseNameAction,
     RENAME_TABLE_DEFINITION,
+    SET_ROOT_NETWORKS_PROCESSING,
+    SetRootNetworksProcessing,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -472,6 +474,7 @@ export interface AppState extends CommonStoreState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
+    isRootNetworksProcessing: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
@@ -635,6 +638,7 @@ const initialState: AppState = {
     nadTextNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
+    isRootNetworksProcessing: false,
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
@@ -1773,6 +1777,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
         state.gsFilterSpreadsheetState[action.tabUuid] = action.filters;
+    });
+
+    builder.addCase(SET_ROOT_NETWORKS_PROCESSING, (state, action: SetRootNetworksProcessing) => {
+        state.isRootNetworksProcessing = action.isRootNetworksProcessing;
     });
 });
 
