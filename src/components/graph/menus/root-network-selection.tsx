@@ -35,7 +35,7 @@ export const RootNetworkSelection: FunctionComponent = () => {
     return (
         <Select
             labelId="root-network-label"
-            value={selectedRootNetworkUuid || ''}
+            value={selectedRootNetworkUuid ?? ''}
             onChange={handleRootNetworkChange}
             size="small"
             displayEmpty

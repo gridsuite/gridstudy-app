@@ -14,8 +14,6 @@ import { AppState } from 'redux/reducer';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { NetworkModificationInfos, RootNetworkMetadata } from 'components/graph/menus/network-modification-menu.type';
-import { ColDef } from 'ag-grid-community';
-import { UUID } from 'crypto';
 
 interface ChipRootNetworkCellRendererProps {
     data?: NetworkModificationInfos;

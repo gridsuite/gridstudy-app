@@ -132,7 +132,7 @@ const NetworkModificationNodeEditor = () => {
     copyInfosRef.current = copyInfos;
 
     const [isDragging, setIsDragging] = useState(false);
-    const [initialPosition, setInitialPosition] = useState<Number | undefined>(undefined);
+    const [initialPosition, setInitialPosition] = useState<number | undefined>(undefined);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
@@ -862,22 +862,15 @@ const NetworkModificationNodeEditor = () => {
 
     const handleCellClick = useCallback(
         (event: CellClickedEvent) => {
-            const { colDef, data } = event; // colDef gives us the column definition, data is the row data
-            if (colDef.field === 'modificationName') {
+            const { colDef, data } = event;
+            if (colDef.colId === 'modificationName' && isModificationClickable(data)) {
                 // Check if the clicked column is the 'modificationName' column
-                if (isModificationClickable(data)) {
-                    // Check if the modification is clickable
-                    // Perform the edit action
-                    doEditModification(data.modificationInfos.uuid, data.modificationInfos.type);
-                } else {
-                    // Optionally handle the case where the modification is not clickable
-                    console.log('This modification is not clickable');
-                }
+                doEditModification(data.modificationInfos.uuid, data.modificationInfos.type);
             }
         },
         [doEditModification, isModificationClickable] // Dependencies for the callback
     );
-    // TO CHECK DRAG AND DROP MECHANISM MAISSA
+
     const onRowDragStart = (event: RowDragEnterEvent<NetworkModificationInfos>) => {
         setIsDragging(true);
         setInitialPosition(event.overIndex);
@@ -885,10 +878,6 @@ const NetworkModificationNodeEditor = () => {
     const onRowDragEnd = (event: RowDragEndEvent<NetworkModificationInfos>) => {
         const newPosition = event.overIndex;
         const oldPosition = initialPosition;
-
-        console.log('Drag !! START Index:', oldPosition);
-        console.log('Drag !! END Index:', newPosition);
-
         if (!currentNode?.id || newPosition === undefined || oldPosition === undefined || newPosition === oldPosition) {
             setIsDragging(false);
             return;
@@ -896,10 +885,8 @@ const NetworkModificationNodeEditor = () => {
 
         const updatedModifications = [...modifications];
 
-        // Remove item from old position
         const [movedItem] = updatedModifications.splice(oldPosition as number, 1);
 
-        // Insert item at the new position
         updatedModifications.splice(newPosition, 0, movedItem);
 
         setModifications(updatedModifications);

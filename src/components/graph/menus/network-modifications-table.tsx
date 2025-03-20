@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useEffect, useCallback, useRef, useMemo, ReactElement, ReactNode } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, ReactNode } from 'react';
 import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
     CellClickedEvent,
@@ -30,11 +30,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 interface NetworkModificationsTableProps {
     modifications: NetworkModificationInfos[];
-    setModifications: React.Dispatch<React.SetStateAction<NetworkModificationInfos[]>>;
     isLoading?: () => boolean;
-    isAnyNodeBuilding?: boolean;
-    mapDataLoading?: boolean;
-    handleSwitchAction?: (item: NetworkModificationInfos) => ReactElement | null;
     handleCellClick?: (event: CellClickedEvent) => void;
     isRowDragEnabled?: boolean;
     onRowDragStart?: (event: RowDragEnterEvent) => void;
@@ -83,6 +79,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     );
 
     const staticColumns: ColDef<NetworkModificationInfos>[] = useMemo(() => {
+        const numberOfRootNetworks = rootNetworks.length;
+        const staticColumnFlex = numberOfRootNetworks > 1 ? 1 : 0.3;
         return [
             {
                 colId: 'modificationName',
@@ -99,28 +97,29 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 ),
                 cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
                     getModificationLabel(params?.data?.modificationInfos),
-                minWidth: 300,
-                flex: 1,
+                minWidth: 250,
                 cellStyle: { cursor: 'pointer' },
             },
             {
                 cellRenderer: CellRendererSwitch,
-                minWidth: 100,
-                flex: 1,
+                flex: staticColumnFlex, // Dynamic width based on root network count
             },
         ];
-    }, [isLoading, modifications?.length, getModificationLabel]);
+    }, [isLoading, modifications?.length, getModificationLabel, rootNetworks.length]);
 
     const [columnDefs, setColumnDefs] = useState<ColDef<NetworkModificationInfos>[]>(staticColumns);
 
     useEffect(() => {
+        const numberOfRootNetworks = rootNetworks.length;
+
+        const dynamicColumnFlex = numberOfRootNetworks > 1 ? 1 : 0.4; // Adjust based on root networks count
         const newDynamicColumns: ColDef<NetworkModificationInfos>[] = rootNetworks.map((rootNetwork) => {
             const rootNetworkUuid = rootNetwork.rootNetworkUuid;
             const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
             return {
                 colId: rootNetworkUuid,
                 maxWidth: 100,
-                flex: 1,
+                flex: dynamicColumnFlex,
                 cellRenderer: (param: ICellRendererParams<NetworkModificationInfos>) => (
                     <ChipRootNetworkCellRenderer rootNetwork={rootNetwork} {...param} />
                 ),
@@ -137,6 +136,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                         </Badge>
                     ),
                     shouldShowIcon: isCurrentRootNetwork,
+                    flex: 0.2,
                 },
             };
         });
