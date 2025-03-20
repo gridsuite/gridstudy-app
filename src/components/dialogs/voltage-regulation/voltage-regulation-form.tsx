@@ -96,8 +96,8 @@ export function VoltageRegulationForm({
             currentNodeUuid={currentNodeUuid}
             currentRootNetworkUuid={currentRootNetworkUuid}
             studyUuid={studyUuid}
-            previousRegulatingTerminalValue={previousValues?.regulatingTerminalVlId ?? undefined}
-            previousEquipmentSectionTypeValue={
+            regulatingTerminalVlId={previousValues?.regulatingTerminalVlId ?? undefined}
+            equipmentSectionType={
                 previousValues?.regulatingTerminalConnectableType
                     ? previousValues?.regulatingTerminalConnectableType +
                       ' : ' +
