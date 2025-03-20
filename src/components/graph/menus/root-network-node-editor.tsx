@@ -182,7 +182,7 @@ const RootNetworkNodeEditor = () => {
                 setDeleteInProgress(false);
             } else if (rootNetworksRef.current && eventType === 'rootNetworkDeletionStarted') {
                 setDeleteInProgress(true);
-                // when the current root network are being deleted, then we select the first rootNetwork that won't be deleted
+                // when the current root network is going to be deleted, then we select the first rootNetwork that won't be deleted
                 // otherwise we keep the current root network
                 const deletedRootNetworkUuids = studyUpdatedForce.eventData.headers.rootNetworks;
                 if (
