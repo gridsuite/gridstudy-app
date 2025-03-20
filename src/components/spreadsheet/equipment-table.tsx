@@ -50,6 +50,7 @@ interface EquipmentTableProps {
     onRowClicked?: (event: RowClickedEvent) => void;
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
+    isDataEditable: boolean;
 }
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
@@ -65,6 +66,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     onRowClicked,
     isExternalFilterPresent,
     doesExternalFilterPass,
+    isDataEditable,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -73,7 +75,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {
             const isRootNode = currentNode?.type === NodeType.ROOT;
-            const cursorStyle = isRootNode ? 'initial' : 'pointer';
+            const cursorStyle = isRootNode || !isDataEditable ? 'initial' : 'pointer';
 
             if (params.rowIndex === 0 && params.node.rowPinned === 'top') {
                 return {
@@ -86,7 +88,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
                 cursor: cursorStyle,
             };
         },
-        [currentNode?.type, theme.palette.primary.main]
+        [currentNode?.type, theme.palette.primary.main, isDataEditable]
     );
 
     const gridContext = useMemo(

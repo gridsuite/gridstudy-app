@@ -394,10 +394,11 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition, originalColumnPositions, dispatch, snackError]
     );
 
-    const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({
-        studyUuid,
-        equipmentType: tableDefinition?.type,
-    });
+    const { modificationDialog, handleOpenModificationDialog, isModificationDialogForEquipmentType } =
+        useEquipmentModification({
+            studyUuid,
+            equipmentType: tableDefinition?.type,
+        });
 
     const onRowClicked = useCallback(
         (event: RowClickedEvent) => {
@@ -476,6 +477,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         onRowClicked={onRowClicked}
                         isExternalFilterPresent={isExternalFilterPresent}
                         doesExternalFilterPass={doesFormulaFilteringPass}
+                        isDataEditable={isModificationDialogForEquipmentType()}
                     />
                 </Box>
             )}
