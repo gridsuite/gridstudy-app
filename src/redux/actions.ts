@@ -133,7 +133,9 @@ export type AppActions =
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction
+    | ResetAllSpreadsheetGsFiltersAction
     | RemoveTableDefinitionAction
+    | SetCalculationSelectionsAction
     | ReorderTableDefinitionsAction
     | RenameTableDefinitionAction;
 
@@ -1282,5 +1284,27 @@ export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: ExpertFilter[])
         type: SAVE_SPREADSHEET_GS_FILTER,
         tabUuid: tabUuid,
         filters: filters,
+    };
+}
+
+export const SET_CALCULATION_SELECTIONS = 'SET_CALCULATION_SELECTIONS';
+export type SetCalculationSelectionsAction = Readonly<Action<typeof SET_CALCULATION_SELECTIONS>> & {
+    tabUuid: UUID;
+    selections: string[];
+};
+
+export function setCalculationSelections(tabUuid: UUID, selections: string[]): SetCalculationSelectionsAction {
+    return {
+        type: SET_CALCULATION_SELECTIONS,
+        tabUuid,
+        selections,
+    };
+}
+
+export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
+export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
+export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
+    return {
+        type: RESET_ALL_SPREADSHEET_GS_FILTERS,
     };
 }
