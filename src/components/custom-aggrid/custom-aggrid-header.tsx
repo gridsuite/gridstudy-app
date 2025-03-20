@@ -29,6 +29,7 @@ interface CustomHeaderComponentProps<F extends CustomAggridFilterParams, T> exte
     filterComponent: ComponentType<F>;
     filterComponentParams: F;
 }
+
 const CustomHeaderComponent = <F extends CustomAggridFilterParams, T>({
     column,
     displayName,

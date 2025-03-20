@@ -134,7 +134,7 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
                     selectedItems={selectedItems}
                     onSelectionChange={setSelectedItems}
                     getItemId={(v) => v.uuid}
-                    getItemLabel={(v) => getLabel(v)}
+                    getItemLabel={getLabel}
                     onItemClick={(stashedModification) =>
                         setSelectedItems((oldCheckedElements) =>
                             toggleElementFromList(stashedModification, oldCheckedElements, (v) => v.uuid)
