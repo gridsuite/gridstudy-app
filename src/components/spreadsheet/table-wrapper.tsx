@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { EquipmentTabs } from './equipment-tabs';
@@ -13,6 +13,8 @@ import { AppState } from '../../redux/reducer';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { UUID } from 'crypto';
 import { Table } from './table';
+import { Alert } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
 
 type Equipment = {
     id: string;
@@ -25,10 +27,25 @@ interface TableWrapperProps {
     tableEquipment?: Equipment;
 }
 
+const styles = {
+    invalidNode: {
+        position: 'absolute',
+        top: '30%',
+        left: '43%',
+    },
+};
+
 export const TableWrapper: FunctionComponent<TableWrapperProps> = ({ tableEquipment, disabled }) => {
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const [activeTabUuid, setActiveTabUuid] = useState<UUID>(tablesDefinitions[0].uuid);
     const [localEquipment, setLocalEquipment] = useState<Equipment>();
+
+    const isEmptyCollection = useMemo(() => disabled || tablesDefinitions.length === 0, [disabled, tablesDefinitions]);
+
+    const handleSwitchTab = useCallback((tabUuid: UUID) => {
+        setLocalEquipment(undefined);
+        setActiveTabUuid(tabUuid);
+    }, []);
 
     useEffect(() => {
         if (tableEquipment) {
@@ -41,20 +58,22 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({ tableEquipm
         }
     }, [tableEquipment, tablesDefinitions]);
 
-    const handleSwitchTab = useCallback((tabUuid: UUID) => {
-        setLocalEquipment(undefined);
-        setActiveTabUuid(tabUuid);
-    }, []);
-
     return (
         <>
-            <EquipmentTabs disabled={disabled} selectedTabUuid={activeTabUuid} handleSwitchTab={handleSwitchTab} />
-            <Table
-                activeTabUuid={activeTabUuid}
-                disabled={disabled}
-                equipmentId={localEquipment?.id ?? null}
-                equipmentType={localEquipment?.type ?? null}
-            />
+            {disabled || isEmptyCollection ? (
+                <Alert sx={styles.invalidNode} severity="warning">
+                    <FormattedMessage id={disabled ? 'InvalidNode' : 'NoSpreadsheets'} />
+                </Alert>
+            ) : (
+                <>
+                    <EquipmentTabs selectedTabUuid={activeTabUuid} handleSwitchTab={handleSwitchTab} />
+                    <Table
+                        activeTabUuid={activeTabUuid}
+                        equipmentId={localEquipment?.id ?? null}
+                        equipmentType={localEquipment?.type ?? null}
+                    />
+                </>
+            )}
         </>
     );
 };

@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
-import { IconButton, Box, Typography, Menu, MenuItem, Tooltip, Theme } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, IconButton, Menu, MenuItem, Theme, Tooltip, Typography } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { FormattedMessage } from 'react-intl';
 
@@ -50,10 +50,9 @@ interface TabLabelProps {
     name: string;
     onRemove: () => void;
     onRename?: () => void;
-    disabled: boolean;
 }
 
-export const TabLabel: React.FC<TabLabelProps> = ({ name, onRemove, onRename, disabled }) => {
+export const TabLabel: React.FC<TabLabelProps> = ({ name, onRemove, onRename }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isTextTruncated, setIsTextTruncated] = useState(false);
     const textRef = useRef<HTMLSpanElement>(null);
@@ -103,7 +102,7 @@ export const TabLabel: React.FC<TabLabelProps> = ({ name, onRemove, onRename, di
                 typographyComponent
             )}
             <div className="tab-actions">
-                <IconButton size="small" onClick={handleMenuOpen} disabled={disabled}>
+                <IconButton size="small" onClick={handleMenuOpen}>
                     <MoreVertIcon fontSize="small" />
                 </IconButton>
                 <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose} onClick={(e) => e.stopPropagation()}>

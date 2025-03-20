@@ -46,10 +46,9 @@ const styles = {
 
 interface ColumnsConfigProps {
     tabIndex: number;
-    disabled: boolean;
 }
 
-export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex, disabled }) => {
+export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -246,12 +245,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
 
     return (
         <>
-            <Button
-                sx={spreadsheetStyles.spreadsheetButton}
-                disabled={disabled}
-                size={'small'}
-                onClick={handleOpenPopupSelectColumnNames}
-            >
+            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleOpenPopupSelectColumnNames}>
                 <ViewColumnIcon />
                 <FormattedMessage id="spreadsheet/column/button" />
             </Button>

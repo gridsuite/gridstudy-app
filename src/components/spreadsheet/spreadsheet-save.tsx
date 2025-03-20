@@ -43,7 +43,7 @@ export default function SpreadsheetSave({
     gridRef,
     columns,
     tableName,
-    disabled,
+    disabled = false,
     dataSize,
 }: Readonly<SpreadsheetSaveProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

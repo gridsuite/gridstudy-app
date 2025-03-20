@@ -7,9 +7,8 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
 
-import { Alert, Box, Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EquipmentTable } from './equipment-table';
 import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
@@ -51,17 +50,9 @@ const styles = {
             opacity: 0.1,
         },
     },
-    invalidNode: {
-        position: 'absolute',
-        top: '30%',
-        left: '43%',
-    },
     toolbar: (theme: Theme) => ({
         marginTop: theme.spacing(2),
         alignItems: 'center',
-    }),
-    filter: (theme: Theme) => ({
-        marginLeft: theme.spacing(1),
     }),
     selectColumns: (theme: Theme) => ({
         marginLeft: theme.spacing(1),
@@ -75,14 +66,13 @@ interface TableProps {
     activeTabUuid: UUID | null;
     equipmentId: string | null;
     equipmentType: SpreadsheetEquipmentType | null;
-    disabled: boolean;
 }
 
 interface RecursiveIdentifiable extends Identifiable {
     [alias: string]: Identifiable | string | undefined;
 }
 
-export const Table: FunctionComponent<TableProps> = ({ activeTabUuid, equipmentId, equipmentType, disabled }) => {
+export const Table: FunctionComponent<TableProps> = ({ activeTabUuid, equipmentId, equipmentType }) => {
     const dispatch = useDispatch();
     const gridRef = useRef<AgGridReact>(null);
     const { snackError } = useSnackMessage();
@@ -111,11 +101,6 @@ export const Table: FunctionComponent<TableProps> = ({ activeTabUuid, equipmentI
     const isLockedColumnNamesEmpty = useMemo(
         () => tableDefinition?.columns?.map((col) => col.locked).length === 0,
         [tableDefinition?.columns]
-    );
-
-    const shouldDisableButtons = useMemo(
-        () => disabled || tablesDefinitions.length === 0,
-        [disabled, tablesDefinitions]
     );
     const columnsDefinitions = useCustomColumn(activeTabIndex);
 
@@ -269,20 +254,16 @@ export const Table: FunctionComponent<TableProps> = ({ activeTabUuid, equipmentI
                         />
                     </Grid>
                     <Grid item>
-                        <ColumnsConfig
-                            tabIndex={activeTabIndex}
-                            disabled={shouldDisableButtons || tableDefinition?.columns.length === 0}
-                        />
+                        <ColumnsConfig tabIndex={activeTabIndex} />
                     </Grid>
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsConfig tabIndex={activeTabIndex} disabled={shouldDisableButtons} />
+                            <CustomColumnsConfig tabIndex={activeTabIndex} />
                         </Grid>
                     )}
                     {developerMode && (
                         <Grid item>
                             <CustomColumnsNodesConfig
-                                disabled={shouldDisableButtons}
                                 tabIndex={activeTabIndex}
                                 nodeAliases={nodeAliases}
                                 updateNodeAliases={updateNodeAliases}
@@ -296,33 +277,26 @@ export const Table: FunctionComponent<TableProps> = ({ activeTabUuid, equipmentI
                             gridRef={gridRef}
                             columns={reorderedColsDefs}
                             tableName={tableDefinition?.name}
-                            disabled={shouldDisableButtons}
                             dataSize={rowData ? rowData.length : 0}
                         />
                     </Grid>
                 </Grid>
             </Grid>
-            {disabled || shouldDisableButtons ? (
-                <Alert sx={styles.invalidNode} severity="warning">
-                    <FormattedMessage id={disabled ? 'InvalidNode' : 'NoSpreadsheets'} />
-                </Alert>
-            ) : (
-                <Box sx={styles.table}>
-                    <EquipmentTable
-                        studyUuid={studyUuid!}
-                        currentNode={currentNode!}
-                        gridRef={gridRef}
-                        rowData={rowData}
-                        columnData={reorderedColsDefs}
-                        isFetching={isFetching}
-                        handleColumnDrag={handleColumnDrag}
-                        shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
-                        onRowClicked={onRowClicked}
-                        isExternalFilterPresent={isExternalFilterPresent}
-                        doesExternalFilterPass={doesFormulaFilteringPass}
-                    />
-                </Box>
-            )}
+            <Box sx={styles.table}>
+                <EquipmentTable
+                    studyUuid={studyUuid!}
+                    currentNode={currentNode!}
+                    gridRef={gridRef}
+                    rowData={rowData}
+                    columnData={reorderedColsDefs}
+                    isFetching={isFetching}
+                    handleColumnDrag={handleColumnDrag}
+                    shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
+                    onRowClicked={onRowClicked}
+                    isExternalFilterPresent={isExternalFilterPresent}
+                    doesExternalFilterPass={doesFormulaFilteringPass}
+                />
+            </Box>
             {modificationDialog}
         </>
     );

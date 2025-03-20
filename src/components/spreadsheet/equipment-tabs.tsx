@@ -47,14 +47,9 @@ const draggableTabStyles = {
 interface EquipmentTabsProps {
     selectedTabUuid: UUID | null;
     handleSwitchTab: (tabUuid: UUID) => void;
-    disabled: boolean;
 }
 
-export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
-    selectedTabUuid,
-    handleSwitchTab,
-    disabled,
-}) => {
+export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ selectedTabUuid, handleSwitchTab }) => {
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
@@ -181,12 +176,11 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
                         name={def.name}
                         onRemove={() => handleRemoveTabClick(def.uuid)}
                         onRename={() => handleRenameTabClick(def.uuid)}
-                        disabled={disabled}
                     />
                 }
             />
         ));
-    }, [tablesDefinitions, disabled]);
+    }, [tablesDefinitions]);
 
     const tabToBeRemovedOrRenamedName = useMemo(() => {
         if (!tabToBeRemovedOrRenamedUuid) {
@@ -201,7 +195,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
             <Grid container direction="row" wrap="nowrap" item>
                 {developerMode && (
                     <Grid item padding={1}>
-                        <CustomSpreadsheetConfig disabled={disabled} resetTabIndex={resetTabSelection} />
+                        <CustomSpreadsheetConfig resetTabIndex={resetTabSelection} />
                     </Grid>
                 )}
                 <Grid item sx={{ overflow: 'hidden' }}>

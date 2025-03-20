@@ -14,7 +14,6 @@ import { FormattedMessage } from 'react-intl';
 import { SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 
 interface CustomSpreadsheetConfigProps {
-    disabled: boolean;
     resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
 }
 
@@ -24,7 +23,7 @@ const styles = {
     }),
 };
 
-const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({ disabled, resetTabIndex }) => {
+const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({ resetTabIndex }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const dialogOpen = useStateBoolean(false);
     const [selectedOption, setSelectedOption] = useState<SpreadsheetOption | undefined>();
@@ -51,7 +50,7 @@ const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({ disab
     return (
         <>
             <Tooltip title={<FormattedMessage id="spreadsheet/create_new_spreadsheet/add_button_tooltip" />}>
-                <Button onClick={handleClick} disabled={disabled} sx={styles.addButton}>
+                <Button onClick={handleClick} sx={styles.addButton}>
                     <AddIcon />
                 </Button>
             </Tooltip>
