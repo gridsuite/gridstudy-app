@@ -63,6 +63,7 @@ import { useParametersBackend } from './dialogs/parameters/use-parameters-backen
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
+import { StudyView, StudyViewType } from './utils/utils';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -77,14 +78,13 @@ enum TAB_VALUES {
     networkVisualizationsParams = 'networkVisualizationsParams',
 }
 
-type OwnProps = {
-    studyId: string;
+type ParametersTabsProps = {
+    view: StudyViewType;
 };
 
-const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
+const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const dispatch = useDispatch();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
-    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
     const user = useSelector((state: AppState) => state.user);
 
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
@@ -230,10 +230,10 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const displayTab = useCallback(() => {
         /**
-         * We add appTabIndex to unmount the component when the user changes the tab
-         * This is necessary to reset the form when the user changes the tab
+         * We add appTabIndex to unmount the component when the user changes the study tab
+         * This is necessary to reset the form when the user changes the study tab
          */
-        if (appTabIndex !== 4) {
+        if (view !== StudyView.PARAMETERS) {
             return null;
         }
         switch (tabValue) {
@@ -289,7 +289,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
         }
     }, [
-        appTabIndex,
+        view,
         tabValue,
         loadFlowParametersBackend,
         securityAnalysisParametersBackend,
