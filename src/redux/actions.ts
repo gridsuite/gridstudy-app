@@ -58,8 +58,6 @@ import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 
-type MutableUnknownArray = unknown[];
-
 export type TableValue<TValue = unknown> = {
     index: number;
     value: TValue;
@@ -567,12 +565,10 @@ export function setFullScreenDiagram(
 
 export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
 export type FavoriteContingencyListsAction = Readonly<Action<typeof FAVORITE_CONTINGENCY_LISTS>> & {
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: MutableUnknownArray;
+    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
 };
 
-export function selectFavoriteContingencyLists(
-    favoriteContingencyLists: MutableUnknownArray
-): FavoriteContingencyListsAction {
+export function selectFavoriteContingencyLists(favoriteContingencyLists: UUID[]): FavoriteContingencyListsAction {
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,

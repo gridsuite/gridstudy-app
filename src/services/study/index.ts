@@ -188,7 +188,7 @@ export function fetchContingencyCount(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     contingencyListNames: string[]
-) {
+): Promise<number> {
     console.info(
         `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
