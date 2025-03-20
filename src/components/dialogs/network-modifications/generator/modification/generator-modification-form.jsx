@@ -285,6 +285,7 @@ const GeneratorModificationForm = ({
                 }}
             />
             <Grid container spacing={2} paddingTop={2}>
+                <Box sx={{ width: '100%' }} />
                 <GridItem
                     tooltip={watchVoltageRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />}
                     size={4}
@@ -292,6 +293,7 @@ const GeneratorModificationForm = ({
                     {voltageRegulationField}
                 </GridItem>
                 {voltageRegulationFields}
+                <Box sx={{ width: '100%' }} />
                 <ActivePowerControlForm
                     isEquipmentModification={true}
                     previousValues={generatorToModify?.activePowerControl}

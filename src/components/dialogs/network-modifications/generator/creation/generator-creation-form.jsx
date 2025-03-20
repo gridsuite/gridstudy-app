@@ -155,6 +155,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid 
             {/* Set points part */}
             <SetPointsForm />
             <Grid container spacing={2} paddingTop={2}>
+                <Box sx={{ width: '100%' }} />
                 <GridItem
                     tooltip={watchVoltageRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />}
                     size={4}
@@ -162,6 +163,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid 
                     {voltageRegulationField}
                 </GridItem>
                 {voltageRegulationFields}
+                <Box sx={{ width: '100%' }} />
                 <ActivePowerControlForm />
             </Grid>
 
