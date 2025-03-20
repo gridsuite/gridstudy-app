@@ -10,6 +10,7 @@ import {
     ElementType,
     IElementCreationDialog,
     MODIFICATION_TYPES,
+    usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
@@ -113,6 +114,9 @@ const isEditableModification = (modif: NetworkModificationInfos) => {
 const NetworkModificationNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+    const rootNetworksLength = rootNetworks.length;
+    const rootNetworksPreviousLength = usePrevious(rootNetworks.length);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState<NetworkModificationInfos[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);
@@ -517,7 +521,13 @@ const NetworkModificationNodeEditor = () => {
         // first time with currentNode initialized then fetch modifications
         // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
         // OR next time if currentNodeId changed then fetch modifications
-        if (currentNode && (!currentNodeIdRef.current || currentNodeIdRef.current !== currentNode.id)) {
+        // OR when number of root networks has changed to fetch new applicabilities
+        if (
+            currentNode &&
+            (!currentNodeIdRef.current ||
+                currentNodeIdRef.current !== currentNode.id ||
+                (rootNetworksPreviousLength && rootNetworksLength > rootNetworksPreviousLength))
+        ) {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
             setModifications([]);
@@ -526,7 +536,7 @@ const NetworkModificationNodeEditor = () => {
             // reset the network modification and computing logs filter when the user changes the current node
             dispatch(resetLogsFilter());
         }
-    }, [currentNode, dispatch, dofetchNetworkModifications]);
+    }, [rootNetworksLength, rootNetworksPreviousLength, currentNode, dispatch, dofetchNetworkModifications]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
