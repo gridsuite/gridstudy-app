@@ -60,18 +60,9 @@ const formSchema = yup
     .shape({
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [SUBSTATION_ID]: yup.string().nullable(),
-        [NOMINAL_V]: yup
-            .number()
-            .nullable()
-            .min(0, 'nominalVoltageMustBeGreaterOrEqualToZero'),
-        [LOW_VOLTAGE_LIMIT]: yup
-            .number()
-            .nullable()
-            .min(0, 'lowVoltageLimitMustBeGreaterOrEqualToZero'),
-        [HIGH_VOLTAGE_LIMIT]: yup
-            .number()
-            .nullable()
-            .min(0, 'highVoltageLimitMustBeGreaterOrEqualToZero'),
+        [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVoltageMustBeGreaterOrEqualToZero'),
+        [LOW_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'lowVoltageLimitMustBeGreaterOrEqualToZero'),
+        [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'highVoltageLimitMustBeGreaterOrEqualToZero'),
         [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
             .nullable()

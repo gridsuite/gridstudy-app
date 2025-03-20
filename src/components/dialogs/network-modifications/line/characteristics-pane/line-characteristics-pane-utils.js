@@ -24,15 +24,9 @@ import {
 
 const characteristicsValidationSchema = (id, displayConnectivity, modification) => ({
     [id]: yup.object().shape({
-        [R]: modification ? yup
-                .number()
-                .nullable()
-                .min(0, 'resistanceMustBeGreaterOrEqualToZero') :
-            yup
-                .number()
-                .nullable()
-                .min(0, 'resistanceMustBeGreaterOrEqualToZero')
-                .required(),
+        [R]: modification
+            ? yup.number().nullable().min(0, 'resistanceMustBeGreaterOrEqualToZero')
+            : yup.number().nullable().min(0, 'resistanceMustBeGreaterOrEqualToZero').required(),
         [X]: modification ? yup.number().nullable() : yup.number().nullable().required(),
         [B1]: yup.number().nullable(),
         [G1]: yup.number().nullable().min(0, 'conductanceMustBeGreaterOrEqualToZero'),

@@ -10,13 +10,21 @@ import yup from 'components/utils/yup-config';
 
 const characteristicsValidationSchema = (isModification, additionalFields) => ({
     [CHARACTERISTICS]: yup.object().shape({
-        [R]: isModification ? yup.number().nullable().min(0, 'resistanceMustBeGreaterOrEqualToZero') : yup.number().nullable().min(0, 'resistanceMustBeGreaterOrEqualToZero').required(),
+        [R]: isModification
+            ? yup.number().nullable().min(0, 'resistanceMustBeGreaterOrEqualToZero')
+            : yup.number().nullable().min(0, 'resistanceMustBeGreaterOrEqualToZero').required(),
         [X]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
-        [G]: isModification ? yup.number().nullable().min(0, 'conductanceMustBeGreaterOrEqualToZero') : yup.number().nullable().min(0, 'conductanceMustBeGreaterOrEqualToZero').required(),
+        [G]: isModification
+            ? yup.number().nullable().min(0, 'conductanceMustBeGreaterOrEqualToZero')
+            : yup.number().nullable().min(0, 'conductanceMustBeGreaterOrEqualToZero').required(),
         [B]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
         [RATED_S]: yup.number().nullable().positive('RatedNominalPowerMustBeGreaterThanZero'),
-        [RATED_U1]: isModification ? yup.number().nullable().min(0, 'ratedVoltageMustBeGreaterOrEqualToZero') : yup.number().nullable().min(0, 'ratedVoltageMustBeGreaterOrEqualToZero').required(),
-        [RATED_U2]: isModification ? yup.number().nullable().min(0, 'ratedVoltageMustBeGreaterOrEqualToZero') : yup.number().nullable().min(0, 'ratedVoltageMustBeGreaterOrEqualToZero').required(),
+        [RATED_U1]: isModification
+            ? yup.number().nullable().min(0, 'ratedVoltageMustBeGreaterOrEqualToZero')
+            : yup.number().nullable().min(0, 'ratedVoltageMustBeGreaterOrEqualToZero').required(),
+        [RATED_U2]: isModification
+            ? yup.number().nullable().min(0, 'ratedVoltageMustBeGreaterOrEqualToZero')
+            : yup.number().nullable().min(0, 'ratedVoltageMustBeGreaterOrEqualToZero').required(),
         ...additionalFields,
     }),
 });

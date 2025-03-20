@@ -83,10 +83,18 @@ export const getStandbyAutomatonFormValidationSchema = () =>
                     addStandbyAutomaton && voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id,
                 then: (schema) => schema.required(),
             }),
-        [LOW_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'lowVoltageSetPointMustBeGreaterOrEqualToZero')),
-        [HIGH_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'highVoltageSetPointMustBeGreaterOrEqualToZero')),
-        [LOW_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'lowVoltageThresholdMustBeGreaterOrEqualToZero')),
-        [HIGH_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'highVoltageThresholdMustBeGreaterOrEqualToZero')),
+        [LOW_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(
+            yup.number().min(0, 'lowVoltageSetPointMustBeGreaterOrEqualToZero')
+        ),
+        [HIGH_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(
+            yup.number().min(0, 'highVoltageSetPointMustBeGreaterOrEqualToZero')
+        ),
+        [LOW_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(
+            yup.number().min(0, 'lowVoltageThresholdMustBeGreaterOrEqualToZero')
+        ),
+        [HIGH_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(
+            yup.number().min(0, 'highVoltageThresholdMustBeGreaterOrEqualToZero')
+        ),
         [B0]: requiredWhenSusceptanceChoice(yup.number().nullable()),
         [Q0]: requiredWhenQatNominalVChoice(yup.number().nullable()),
     });
