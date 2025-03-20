@@ -182,8 +182,7 @@ const RootNetworkNodeEditor = () => {
                 setDeleteInProgress(false);
             } else if (rootNetworksRef.current && eventType === 'rootNetworkDeletionStarted') {
                 setDeleteInProgress(true);
-                // when the current root network is going to be deleted, then we select the first rootNetwork that won't be deleted
-                // otherwise we keep the current root network
+                // If the current root network isn't going to be deleted, we don't need to do anything
                 const deletedRootNetworkUuids = studyUpdatedForce.eventData.headers.rootNetworks;
                 if (
                     currentRootNetworkUuidRef.current &&
@@ -191,6 +190,7 @@ const RootNetworkNodeEditor = () => {
                 ) {
                     return;
                 }
+                // Choice: if the current root network is going to be deleted, we select the first root network that won't be deleted
                 const newSelectedRootNetwork = rootNetworksRef.current.find(
                     (rootNetwork) => !deletedRootNetworkUuids.includes(rootNetwork.rootNetworkUuid)
                 );
@@ -240,9 +240,7 @@ const RootNetworkNodeEditor = () => {
                 <IconButton
                     size="small"
                     onClick={() => {
-                        if (rootNetwork.rootNetworkUuid !== currentRootNetworkUuid) {
-                            dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
-                        }
+                        dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
                     }}
                     disabled={rootNetwork.isCreating}
                 >
