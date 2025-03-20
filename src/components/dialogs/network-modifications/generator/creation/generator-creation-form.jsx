@@ -30,7 +30,7 @@ import {
 import { ENERGY_SOURCES } from 'components/network/constants';
 import { Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
