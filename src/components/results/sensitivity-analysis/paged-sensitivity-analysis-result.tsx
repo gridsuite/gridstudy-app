@@ -14,7 +14,6 @@ import {
     FUNCTION_TYPES,
     mappingTabs,
     PAGE_OPTIONS,
-    SENSITIVITY_AT_NODE,
     SensitivityResultTabs,
 } from './sensitivity-analysis-result-utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -31,6 +30,21 @@ import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
+import { UUID } from 'crypto';
+import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
+import { AppState } from '../../../redux/reducer';
+
+export type PagedSensitivityAnalysisResultProps = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    nOrNkIndex: number;
+    sensiKind: SensiKind;
+    page: number;
+    setPage: () => void;
+    onGridColumnsChanged: () => void;
+    onRowDataUpdated: () => void;
+};
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
@@ -40,8 +54,9 @@ const PagedSensitivityAnalysisResult = ({
     currentRootNetworkUuid,
     page,
     setPage,
-    ...props
-}) => {
+    onGridColumnsChanged,
+    onRowDataUpdated,
+}: Readonly<PagedSensitivityAnalysisResultProps>) => {
     const intl = useIntl();
 
     const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_COUNT);
@@ -49,10 +64,10 @@ const PagedSensitivityAnalysisResult = ({
     const [result, setResult] = useState(null);
     const [options, setOptions] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const sensiStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
+    const sensiStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
 
     const sortConfig = useSelector(
-        (state) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
+        (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
     const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
@@ -202,7 +217,8 @@ const PagedSensitivityAnalysisResult = ({
                 onFilter={onFilter}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
-                {...props}
+                onGridColumnsChanged={onGridColumnsChanged}
+                onRowDataUpdated={onRowDataUpdated}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

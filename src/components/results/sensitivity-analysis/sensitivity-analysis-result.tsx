@@ -17,12 +17,14 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
-import { mappingTabs, SENSITIVITY_AT_NODE, SUFFIX_TYPES } from './sensitivity-analysis-result-utils';
+import { mappingTabs, SUFFIX_TYPES } from './sensitivity-analysis-result-utils.js';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
+import { AppState } from '../../../redux/reducer';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -37,7 +39,9 @@ function makeRows(resultRecord) {
 const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, onFilter, isLoading, ...props }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
-    const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
+    const sensitivityAnalysisStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
     const { onGridColumnsChanged } = props;
 
     const messages = useIntlResultStatusMessages(intl, true);
