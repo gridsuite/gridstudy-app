@@ -125,7 +125,6 @@
     "Results": "Results",
     "ID": "ID",
     "Name": "Name",
-    "name": "Name",
     "Country": "Country",
     "Country1": "Country 1",
     "Country2": "Country 2",
@@ -511,8 +510,11 @@
 
     "results.globalFilter.fillerText": "Filtering",
     "results.globalFilter.recent": "Recent",
+    "results.globalFilter.filter": "Filters",
     "results.globalFilter.country": "Countries",
     "results.globalFilter.voltageLevel": "Voltage levels",
+    "results.globalFilter.nonApplicable": "Filtering {filterName} is not applicable for the current results table and is inactive",
+    "results.globalFilter.nonApplicableExtra": "Filtering {filterName} and {extraFiltersNum} others are not applicable for the current results table and are inactive",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
@@ -1268,6 +1270,7 @@
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
     "partialCopyShuntCompensator": "Partial copy : copying sections is not supported for this shunt compensator",
     "SensitivityAnalysisResultsError": "An error occurred while fetching sensitivity results",
+    "ComputationFilterResultsError": "Filter not found:",
     "muiTablePaginationLabelRowsPerPage": "Rows per page: ",
     "muiTablePaginationLabelRowsPerPageAllBusesSCA": "Faults per page: ",
     "muiTablePaginationLabelRowsPerPageOneBusSCA": "Feeders per page: ",
