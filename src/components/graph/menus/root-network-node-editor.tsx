@@ -34,7 +34,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
-import { RootNetworkMetadata } from './network-modification-menu.type';
+import { RootNetworkMetadata } from './network-modifications/network-modification-menu.type';
 
 import {
     CaseImportParameters,
@@ -43,7 +43,7 @@ import {
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
 import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
-import { isChecked, isPartial } from './network-modification-node-editor-utils';
+import { isChecked, isPartial } from './network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 
 const styles = {

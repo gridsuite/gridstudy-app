@@ -20,7 +20,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, CircularProgress, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -38,7 +38,7 @@ import LineCreationDialog from 'components/dialogs/network-modifications/line/cr
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import LinesAttachToSplitLinesDialog from 'components/dialogs/network-modifications/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 import LoadScalingDialog from 'components/dialogs/network-modifications/load-scaling/load-scaling-dialog';
-import { LoadCreationDialog } from '../../dialogs/network-modifications/load/creation/load-creation-dialog';
+import { LoadCreationDialog } from '../../../dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
@@ -52,7 +52,7 @@ import VoltageLevelCreationDialog from 'components/dialogs/network-modifications
 import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/creation/vsc-creation-dialog';
 import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
-import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
+import NetworkModificationsMenu from 'components/graph/menus/network-modifications/network-modifications-menu';
 import { UPDATE_TYPE } from 'components/network/constants';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -62,24 +62,24 @@ import {
     removeNotificationByNode,
     resetLogsFilter,
     setModificationsInProgress,
-} from '../../../redux/actions';
-import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
-import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
+} from '../../../../redux/actions';
+import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
 import { RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
 import { AppState, StudyUpdated } from 'redux/reducer';
-import { createCompositeModifications } from '../../../services/explore';
-import { fetchNetworkModification } from '../../../services/network-modification';
-import { copyOrMoveModifications } from '../../../services/study';
+import { createCompositeModifications } from '../../../../services/explore';
+import { fetchNetworkModification } from '../../../../services/network-modification';
+import { copyOrMoveModifications } from '../../../../services/study';
 import {
     changeNetworkModificationOrder,
     fetchNetworkModifications,
     stashModifications,
-} from '../../../services/study/network-modifications';
-import { FetchStatus } from '../../../services/utils';
+} from '../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../services/utils';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
@@ -89,11 +89,11 @@ import {
     NetworkModificationData,
     NetworkModificationInfos,
 } from './network-modification-menu.type';
-import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
-import ModificationByAssignmentDialog from '../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
-import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
-import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
-import { LccCreationDialog } from '../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
+import StaticVarCompensatorCreationDialog from '../../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
+import ModificationByAssignmentDialog from '../../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
+import ByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
+import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
+import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
 import { styles } from './network-modification-node-editor-utils';
 import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';

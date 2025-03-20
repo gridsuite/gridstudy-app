@@ -6,14 +6,12 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { Chip, Tooltip } from '@mui/material';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CancelIcon from '@mui/icons-material/Cancel';
-import { NetworkModificationInfos, RootNetworkMetadata } from 'components/graph/menus/network-modification-menu.type';
+import { ChipCellRenderer } from '../../../spreadsheet/utils/chip-cell-renderer';
+import { NetworkModificationInfos, RootNetworkMetadata } from './network-modification-menu.type';
 
 interface ChipRootNetworkCellRendererProps {
     data?: NetworkModificationInfos;
@@ -57,24 +55,12 @@ const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) =>
     }, [studyUuid, currentNode, modificationUuid, rootNetwork, snackError, modificationactivatedByRootNetwork]);
 
     return (
-        <Tooltip title={rootNetworkTag} arrow>
-            <span>
-                <Chip
-                    label={rootNetworkTag}
-                    deleteIcon={modificationactivatedByRootNetwork ? <CheckCircleOutlineIcon /> : <CancelIcon />}
-                    color="primary"
-                    size="small"
-                    variant={modificationactivatedByRootNetwork ? 'filled' : 'outlined'}
-                    onDelete={() => {
-                        handleModificationStatusByRootNetworkUpdate();
-                    }}
-                    onClick={() => {
-                        handleModificationStatusByRootNetworkUpdate();
-                    }}
-                    disabled={isLoading}
-                />
-            </span>
-        </Tooltip>
+        <ChipCellRenderer
+            label={rootNetworkTag}
+            isActivated={modificationactivatedByRootNetwork}
+            isDisabled={isLoading}
+            onClick={handleModificationStatusByRootNetworkUpdate}
+        />
     );
 };
 

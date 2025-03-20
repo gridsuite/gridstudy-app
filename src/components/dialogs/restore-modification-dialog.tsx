@@ -24,7 +24,7 @@ import { AppState } from 'redux/reducer';
 import {
     NetworkModificationInfos,
     NetworkModificationMetadata,
-} from 'components/graph/menus/network-modification-menu.type';
+} from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { toggleElementFromList } from 'components/utils/utils';
 
 const styles = {

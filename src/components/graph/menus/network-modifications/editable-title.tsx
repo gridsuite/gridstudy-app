@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, PropsWithChildren, ReactElement, useState } from 'react';
+import { useState } from 'react';
 import { IconButton, Box, Theme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
-import AskTextDialog from '../../utils/ask-text-dialog';
+import AskTextDialog from '../../../utils/ask-text-dialog';
 import { lighten, darken } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 import { OverflowableText } from '@gridsuite/commons-ui';

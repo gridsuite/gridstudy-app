@@ -14,10 +14,10 @@ import {
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import { Badge, Box, useTheme } from '@mui/material';
 import { NetworkModificationInfos } from './network-modification-menu.type';
-import CellRendererSwitch from 'components/spreadsheet/utils/cell-renderer-switch';
+import CellRendererSwitch from 'components/graph/menus/network-modifications/cell-renderer-switch';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import ChipRootNetworkCellRenderer from 'components/spreadsheet/utils/chip-root-network-cell-renderer';
+import ChipRootNetworkCellRenderer from 'components/graph/menus/network-modifications/chip-root-network-cell-renderer';
 import { useIntl } from 'react-intl';
 import {
     NetworkModificationEditorNameHeader,

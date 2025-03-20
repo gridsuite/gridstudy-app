@@ -12,19 +12,24 @@ import { setModificationActivated } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { AppState } from 'redux/reducer';
+import { ICellRendererParams } from 'ag-grid-community';
+import { NetworkModificationInfos } from './network-modification-menu.type';
 
-const CellRendererSwitch = (props: any) => {
+const CellRendererSwitch = (props: ICellRendererParams<NetworkModificationInfos>) => {
     const { data, api } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
 
-    const modificationUuid = data?.modificationInfos?.uuid; // Get the UUID of the modification
-    const modificationActivated = data?.modificationInfos?.activated; // Check if the modification is activated
+    const modificationUuid = data?.modificationInfos.uuid; // Get the UUID of the modification
+    const modificationActivated = data?.modificationInfos.activated; // Check if the modification is activated
 
     const updateModification = useCallback(
         (activated: boolean) => {
+            if (!modificationUuid) {
+                return;
+            }
             setModificationActivated(studyUuid, currentNode?.id, modificationUuid, activated)
                 .catch((err) => {
                     snackError({ messageTxt: err.message, messageId: 'networkModificationActivationError' });
