@@ -6,11 +6,10 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Button, Tooltip } from '@mui/material';
+import { Badge, Button, Tooltip } from '@mui/material';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnNodesDialog from './custom-columns-nodes-dialog';
 import BuildIcon from '@mui/icons-material/Build';
-import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import { spreadsheetStyles } from '../utils/style';
 import { ROOT_NODE_LABEL } from '../../../constants/node.constant';
 import { NodeAlias } from './node-alias.type';
@@ -25,11 +24,6 @@ const styles = {
     icon: {
         height: '20px',
         width: '20px',
-    },
-    warningIcon: {
-        height: '20px',
-        width: '20px',
-        backgroundColor: 'red',
     },
 };
 
@@ -87,7 +81,14 @@ export default function CustomColumnsNodesConfig({
             <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
                 <BuildIcon sx={styles.icon} />
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
-                {showWarning && <PriorityHighIcon sx={styles.warningIcon} />}
+                {showWarning && (
+                    <Badge
+                        badgeContent="!"
+                        color="warning"
+                        overlap="circular"
+                        style={{ transform: 'translate(10px, -15px)' }}
+                    ></Badge>
+                )}
             </Button>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem
