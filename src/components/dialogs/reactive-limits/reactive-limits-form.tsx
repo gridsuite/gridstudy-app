@@ -43,7 +43,7 @@ export function ReactiveLimitsForm({
     const reactiveCapabilityCurveChoiceRadioField = (
         <RadioInput
             name={`${id}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`}
-            options={Object.values(REACTIVE_LIMIT_TYPES)}
+            options={[...REACTIVE_LIMIT_TYPES]}
             formProps={{ style: { marginTop: '-12px' } }}
         />
     );
@@ -72,9 +72,9 @@ export function ReactiveLimitsForm({
         <ReactiveCapabilityCurveTableForm
             id={`${id}.${REACTIVE_CAPABILITY_CURVE_TABLE}`}
             tableHeadersIds={headerIds}
-            disabled={!isReactiveCapabilityCurveOn}
             previousValues={previousReactiveCapabilityCurvePoints ?? undefined}
             updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
+            disabled={!isReactiveCapabilityCurveOn}
         />
     );
 

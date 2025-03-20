@@ -21,17 +21,17 @@ const MIN_LENGTH = 2;
 interface ReactiveCapabilityCurveTableFormProps {
     id: string;
     tableHeadersIds: string[];
-    disabled: boolean;
     previousValues?: ReactiveCapabilityCurvePoints[] | null;
     updatePreviousReactiveCapabilityCurveTable?: (action: string, index: number) => void;
+    disabled?: boolean;
 }
 
 export function ReactiveCapabilityCurveTableForm({
     id,
     tableHeadersIds,
-    disabled = false,
     previousValues,
     updatePreviousReactiveCapabilityCurveTable,
+    disabled = false,
 }: Readonly<ReactiveCapabilityCurveTableFormProps>) {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
 
