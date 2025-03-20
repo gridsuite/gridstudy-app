@@ -45,6 +45,15 @@ const styles = {
     menuItemLabel: {
         marginLeft: 1,
     },
+    calculationButton: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        padding: 0,
+        minWidth: 'auto',
+        minHeight: 'auto',
+    },
 };
 
 export const BooleanCellRenderer = (props: any) => {
@@ -269,7 +278,7 @@ export const RowIndexCellRenderer = (props: CustomCellRendererProps) => {
         if (props.data?.rowType === CalculationRowType.CALCULATION_BUTTON) {
             return (
                 <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                    <IconButton size="small" aria-label="calculate" onClick={handleClick}>
+                    <IconButton size="small" aria-label="calculate" onClick={handleClick} sx={styles.calculationButton}>
                         <CalculateIcon fontSize="small" />
                     </IconButton>
                     <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
