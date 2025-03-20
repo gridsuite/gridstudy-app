@@ -280,7 +280,12 @@ const GeneratorModificationForm = ({
             />
 
             {/* Set points part */}
-            <SetPointsForm previousValues={(generatorToModify?.targetP, generatorToModify?.targetQ)} />
+            <SetPointsForm
+                previousValues={{
+                    previousActivePowerValue: generatorToModify?.targetP,
+                    previousReactivePowerValue: generatorToModify?.targetQ,
+                }}
+            />
             <Grid container spacing={2} paddingTop={2}>
                 <Box sx={{ width: '100%' }} />
                 <GridItem
