@@ -37,7 +37,7 @@ instance.import(
             return a === b;
         },
         match: function (expr: string, variable: string) {
-            return variable.match(expr) !== null;
+            return RegExp(expr).exec(variable) !== null;
         },
         unitToKiloUnit,
         unitToMicroUnit,
