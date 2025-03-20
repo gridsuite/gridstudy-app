@@ -23,7 +23,7 @@ import { MinMaxReactiveLimitsFormInfos, ReactiveCapabilityCurvePoints } from './
 
 const headerIds = ['ActivePowerText', 'MinimumReactivePower', 'MaximumReactivePower'];
 export interface ReactiveLimitsFormProps {
-    id: string;
+    id?: string;
     previousReactiveCapabilityCurvePoints?: ReactiveCapabilityCurvePoints[] | null;
     previousMinMaxReactiveLimits?: MinMaxReactiveLimitsFormInfos | null;
     updatePreviousReactiveCapabilityCurveTable?: () => void;

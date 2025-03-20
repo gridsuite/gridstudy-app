@@ -16,7 +16,6 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
-    REACTIVE_LIMITS,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION,
@@ -87,11 +86,11 @@ const GeneratorModificationForm = ({
             currentRootNetworkUuid={currentRootNetworkUuid}
             studyUuid={studyUuid}
             previousValues={{
-                regulatingTerminalConnectableId: generatorToModify?.regulatingTerminalConnectableId,
-                regulatingTerminalVlId: generatorToModify?.regulatingTerminalVlId,
-                regulatingTerminalConnectableType: generatorToModify?.regulatingTerminalConnectableType,
-                targetV: generatorToModify?.targetV,
-                qPercent: generatorToModify?.coordinatedReactiveControl?.qPercent,
+                regulatingTerminalConnectableIdValue: generatorToModify?.regulatingTerminalConnectableId,
+                regulatingTerminalVlIdValue: generatorToModify?.regulatingTerminalVlId,
+                regulatingTerminalConnectableTypeValue: generatorToModify?.regulatingTerminalConnectableType,
+                voltageValue: generatorToModify?.targetV,
+                qPercentValue: generatorToModify?.coordinatedReactiveControl?.qPercent,
             }}
             isEquipmentModification={true}
         />
@@ -273,7 +272,6 @@ const GeneratorModificationForm = ({
                 </Grid>
             </Grid>
             <ReactiveLimitsForm
-                id={REACTIVE_LIMITS}
                 previousReactiveCapabilityCurvePoints={generatorToModify?.reactiveCapabilityCurvePoints}
                 previousMinMaxReactiveLimits={generatorToModify?.minMaxReactiveLimits}
                 updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
@@ -282,8 +280,8 @@ const GeneratorModificationForm = ({
             {/* Set points part */}
             <SetPointsForm
                 previousValues={{
-                    previousActivePowerValue: generatorToModify?.targetP,
-                    previousReactivePowerValue: generatorToModify?.targetQ,
+                    activePowerValue: generatorToModify?.targetP,
+                    reactivePowerValue: generatorToModify?.targetQ,
                 }}
             />
             <Grid container spacing={2} paddingTop={2}>
