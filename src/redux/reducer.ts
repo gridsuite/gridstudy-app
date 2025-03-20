@@ -33,6 +33,7 @@ import {
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
+    REMOVE_FROM_RECENT_GLOBAL_FILTERS,
     AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
     AddSortForNewSpreadsheetAction,
@@ -199,6 +200,7 @@ import {
     RenameTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    RemoveFromRecentGlobalFiltersAction,
     RENAME_TABLE_DEFINITION,
     SET_CALCULATION_SELECTIONS,
     SetCalculationSelectionsAction,
@@ -278,7 +280,7 @@ import {
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
-import { Filter } from '../components/results/common/results-global-filter';
+import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     EQUIPMENT_TYPES as NetworkViewerEquipmentType,
     LineFlowColorMode,
@@ -472,7 +474,7 @@ export interface AppState extends CommonStoreState {
     oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
     notificationIdList: UUID[];
     nonEvacuatedEnergyNotif: boolean;
-    recentGlobalFilters: Filter[];
+    recentGlobalFilters: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
@@ -1705,13 +1707,20 @@ export const reducer = createReducer(initialState, (builder) => {
         action.globalFilters.forEach((filter) => {
             if (
                 !newRecentGlobalFilters.some(
-                    (obj) => obj.label === filter.label && obj.filterType === filter.filterType
+                    (obj) =>
+                        obj.label === filter.label && obj.filterType === filter.filterType && obj.uuid === filter.uuid
                 )
             ) {
                 newRecentGlobalFilters.push(filter);
             }
         });
         state.recentGlobalFilters = newRecentGlobalFilters;
+    });
+
+    builder.addCase(REMOVE_FROM_RECENT_GLOBAL_FILTERS, (state, action: RemoveFromRecentGlobalFiltersAction) => {
+        state.recentGlobalFilters = [
+            ...state.recentGlobalFilters.filter((recentGlobalFilter) => recentGlobalFilter.uuid !== action.uuid),
+        ];
     });
 
     builder.addCase(SET_LAST_COMPLETED_COMPUTATION, (state, action: SetLastCompletedComputationAction) => {

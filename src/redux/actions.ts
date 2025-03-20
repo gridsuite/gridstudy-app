@@ -33,7 +33,7 @@ import type {
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
-import type { Filter } from '../components/results/common/results-global-filter';
+import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
@@ -120,6 +120,7 @@ export type AppActions =
     | SetOptionalServicesAction
     | SetOneBusShortcircuitAnalysisDiagramAction
     | AddToRecentGlobalFiltersAction
+    | RemoveFromRecentGlobalFiltersAction
     | SetLastCompletedComputationAction
     | LoadflowResultFilterAction
     | SecurityAnalysisResultFilterAction
@@ -1014,13 +1015,25 @@ export function setOneBusShortcircuitAnalysisDiagram(
 
 export const ADD_TO_RECENT_GLOBAL_FILTERS = 'ADD_TO_RECENT_GLOBAL_FILTERS';
 export type AddToRecentGlobalFiltersAction = Readonly<Action<typeof ADD_TO_RECENT_GLOBAL_FILTERS>> & {
-    globalFilters: Filter[];
+    globalFilters: GlobalFilter[];
 };
 
-export function addToRecentGlobalFilters(globalFilters: Filter[]): AddToRecentGlobalFiltersAction {
+export function addToRecentGlobalFilters(globalFilters: GlobalFilter[]): AddToRecentGlobalFiltersAction {
     return {
         type: ADD_TO_RECENT_GLOBAL_FILTERS,
         globalFilters: globalFilters,
+    };
+}
+
+export const REMOVE_FROM_RECENT_GLOBAL_FILTERS = 'REMOVE_FROM_RECENT_GLOBAL_FILTERS';
+export type RemoveFromRecentGlobalFiltersAction = Readonly<Action<typeof REMOVE_FROM_RECENT_GLOBAL_FILTERS>> & {
+    uuid: UUID;
+};
+
+export function removeFromRecentGlobalFilters(uuid: UUID): RemoveFromRecentGlobalFiltersAction {
+    return {
+        type: REMOVE_FROM_RECENT_GLOBAL_FILTERS,
+        uuid: uuid,
     };
 }
 
