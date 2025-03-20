@@ -65,13 +65,13 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         .array()
         .of(temporaryLimitsValidationSchema())
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
-            const namesArray = array
-                .filter((l) => !!l[TEMPORARY_LIMIT_NAME])
-                .map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
+            const namesArray = !array
+                ? []
+                : array.filter((l) => !!l[TEMPORARY_LIMIT_NAME]).map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
             return areArrayElementsUnique(namesArray);
         })
         .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
-            const durationsArray = array.map((l) => l[TEMPORARY_LIMIT_DURATION]).filter((d) => d); // empty lines are ignored
+            const durationsArray = !array ? [] : array.map((l) => l[TEMPORARY_LIMIT_DURATION]).filter((d) => d); // empty lines are ignored
             return areArrayElementsUnique(durationsArray);
         }),
 });
@@ -179,15 +179,17 @@ export const getAllLimitsFormData = (
 export const sanitizeLimitsGroups = (limitsGroups /*: OperationalLimitsGroup[]*/) =>
     limitsGroups.map(({ currentLimits, ...baseData }) => ({
         ...baseData,
-        currentLimits: {
+        currentLimits: currentLimits && {
             permanentLimit: currentLimits.permanentLimit,
-            temporaryLimits: currentLimits.temporaryLimits
-                // completely empty lines should be filtered out (the interface always displays some lines even if empty)
-                .filter(({ name }) => name?.trim())
-                .map(({ name, ...temporaryLimit }) => ({
-                    ...temporaryLimit,
-                    name: sanitizeString(name),
-                })),
+            temporaryLimits: !currentLimits.temporaryLimits
+                ? []
+                : currentLimits.temporaryLimits
+                      // completely empty lines should be filtered out (the interface always displays some lines even if empty)
+                      .filter(({ name }) => name?.trim())
+                      .map(({ name, ...temporaryLimit }) => ({
+                          ...temporaryLimit,
+                          name: sanitizeString(name),
+                      })),
         },
     }));
 
