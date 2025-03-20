@@ -7,4 +7,4 @@
 
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 export const TOOLTIP_DELAY = 1000;
-export const DRAWER_NODE_EDITOR_WIDTH = 700;
+export const DRAWER_NODE_EDITOR_WIDTH = 630;

@@ -79,8 +79,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     );
 
     const staticColumns: ColDef<NetworkModificationInfos>[] = useMemo(() => {
-        const numberOfRootNetworks = rootNetworks.length;
-        const staticColumnFlex = numberOfRootNetworks > 1 ? 1 : 0.3;
         return [
             {
                 colId: 'modificationName',
@@ -97,28 +95,30 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 ),
                 cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
                     getModificationLabel(params?.data?.modificationInfos),
-                minWidth: 250,
-                cellStyle: { cursor: 'pointer' },
+                minWidth: 200, // Reduced width for compactness
+                flex: 0.5, // Adjusted for left alignment and compactness
+                cellStyle: { cursor: 'pointer', paddingLeft: '10px' }, // Left alignment with some padding
             },
             {
                 cellRenderer: CellRendererSwitch,
-                flex: staticColumnFlex, // Dynamic width based on root network count
+                flex: 0.2, // Reduce flex to reduce space between columns
+                minWidth: 70, // Further reduce width to minimize space
             },
         ];
-    }, [isLoading, modifications?.length, getModificationLabel, rootNetworks.length]);
+    }, [isLoading, modifications?.length, getModificationLabel]);
 
     const [columnDefs, setColumnDefs] = useState<ColDef<NetworkModificationInfos>[]>(staticColumns);
 
     useEffect(() => {
         const numberOfRootNetworks = rootNetworks.length;
+        const dynamicColumnFlex = numberOfRootNetworks > 1 ? 1 : 0.4;
 
-        const dynamicColumnFlex = numberOfRootNetworks > 1 ? 1 : 0.4; // Adjust based on root networks count
         const newDynamicColumns: ColDef<NetworkModificationInfos>[] = rootNetworks.map((rootNetwork) => {
             const rootNetworkUuid = rootNetwork.rootNetworkUuid;
             const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
             return {
                 colId: rootNetworkUuid,
-                maxWidth: 100,
+                maxWidth: 100, // Reduced maxWidth to avoid unnecessary space
                 flex: dynamicColumnFlex,
                 cellRenderer: (param: ICellRendererParams<NetworkModificationInfos>) => (
                     <ChipRootNetworkCellRenderer rootNetwork={rootNetwork} {...param} />
@@ -136,7 +136,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                         </Badge>
                     ),
                     shouldShowIcon: isCurrentRootNetwork,
-                    flex: 0.2,
+                    flex: 0.2, // Adjusted to minimize space
                 },
             };
         });
