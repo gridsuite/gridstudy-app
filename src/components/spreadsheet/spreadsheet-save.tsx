@@ -18,6 +18,7 @@ import { useCsvExport } from './csv-export/use-csv-export';
 import { CsvExportProps } from './csv-export/csv-export.type';
 import { spreadsheetStyles } from './utils/style';
 import { SpreadsheetCollectionSaveDialog } from './custom-spreadsheet/spreadsheet-collection-save-dialog';
+import { NodeAlias } from './custom-columns/node-alias.type';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
@@ -36,6 +37,7 @@ interface SpreadsheetSaveOption {
 interface SpreadsheetSaveProps extends CsvExportProps {
     tabIndex: number;
     dataSize?: number;
+    nodeAliases: NodeAlias[] | undefined;
 }
 
 export default function SpreadsheetSave({
@@ -45,6 +47,7 @@ export default function SpreadsheetSave({
     tableName,
     disabled,
     dataSize,
+    nodeAliases,
 }: Readonly<SpreadsheetSaveProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
@@ -124,7 +127,7 @@ export default function SpreadsheetSave({
                 {Object.values(spreadsheetOptions).map(renderMenuItem)}
             </Menu>
             <CustomSpreadsheetSaveDialog tabIndex={tabIndex} open={customSaveDialogOpen} />
-            <SpreadsheetCollectionSaveDialog open={saveCollectionDialogOpen} />
+            <SpreadsheetCollectionSaveDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
         </>
     );
 }
