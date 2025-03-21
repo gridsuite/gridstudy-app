@@ -1036,14 +1036,7 @@ export const NetworkMapTab = ({
             // map equipments presents in other nodes.
             updateMapEquipmentsAndGeoData();
         }
-        // if the map tab is initialized and we are on the root node, then we don't have missing equipments.
-        if (isReactFlowRootNodeData(currentNode)) {
-            dispatch(setReloadMapNeeded(false));
-            return;
-        }
     }, [
-        currentNode,
-        dispatch,
         isInitialized,
         isMapEquipmentsInitialized,
         isRootNodeGeoDataLoaded,
