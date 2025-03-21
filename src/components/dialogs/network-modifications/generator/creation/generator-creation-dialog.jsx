@@ -75,6 +75,14 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import {
+    getVoltageRegulationEmptyFormData,
+    getVoltageRegulationSchema,
+} from '../../../voltage-regulation/voltage-regulation-utils';
+import {
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
+} from '../../../active-power-control/active-power-control-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -90,6 +98,8 @@ const emptyFormData = {
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
     ...getSetPointsEmptyFormData(),
+    ...getVoltageRegulationEmptyFormData(),
+    ...getActivePowerControlEmptyFormData(),
     ...getReactiveLimitsEmptyFormData(),
     ...getConnectivityWithPositionEmptyFormData(),
     ...emptyProperties,
@@ -117,6 +127,8 @@ const formSchema = yup
         [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         ...getSetPointsSchema(),
+        ...getVoltageRegulationSchema(),
+        ...getActivePowerControlSchema(),
         ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
     })
