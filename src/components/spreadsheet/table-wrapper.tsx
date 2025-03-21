@@ -312,9 +312,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const handleSwitchTab = useCallback(
         (tabUuid: UUID) => {
             setManualTabSwitch(true);
-            // when switching tab column definition is updated before rowData which triggers costly
-            // useless process that's why we set rowData to undefined to avoid that
-            setRowData(undefined);
             setActiveTabUuid(tabUuid);
             cleanTableState();
         },
