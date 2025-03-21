@@ -26,8 +26,10 @@ import {
 import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
+import { OperationalLimitsGroup, TemporaryLimit } from '../../../services/network-modification-types';
+import { CurrentTreeNode } from '../../../redux/reducer';
 
-const limitsGroupValidationSchema = (isModification) => ({
+const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
 });
@@ -40,7 +42,7 @@ const temporaryLimitsValidationSchema = () => {
             .string()
             .nullable()
             .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
-                is: (limitValue, limitDuration) => limitValue || limitDuration,
+                is: (limitValue: number | null, limitDuration: number | null) => limitValue || limitDuration,
                 then: () => yup.string().nullable().required(),
             }),
     });
@@ -53,7 +55,7 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         .positive('permanentCurrentLimitMustBeGreaterThanZero')
         // if there are valid (named) temporary limits, permanent limit is mandatory
         .when([TEMPORARY_LIMITS], {
-            is: (temporaryLimits /*:TemporaryLimit[]*/) =>
+            is: (temporaryLimits: TemporaryLimit[]) =>
                 temporaryLimits?.length > 0 && temporaryLimits.find((limit) => limit.name) && !isModification,
             then: () =>
                 yup
@@ -76,7 +78,7 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         }),
 });
 
-const limitsValidationSchema = (id, isModification = false) => {
+const limitsValidationSchema = (id: string, isModification: boolean = false) => {
     const selectedCurrentLimitsSchema = {
         [CURRENT_LIMITS_1]: yup.object().shape(currentLimitsValidationSchema(isModification)),
         [CURRENT_LIMITS_2]: yup.object().shape(currentLimitsValidationSchema(isModification)),
@@ -86,13 +88,13 @@ const limitsValidationSchema = (id, isModification = false) => {
         [OPERATIONAL_LIMITS_GROUPS_1]: yup
             .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
             .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
-                const namesArray = array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
+                const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
                 return areArrayElementsUnique(namesArray);
             }),
         [OPERATIONAL_LIMITS_GROUPS_2]: yup
             .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
             .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
-                const namesArray = array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
+                const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
                 return areArrayElementsUnique(namesArray);
             }),
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
@@ -103,11 +105,11 @@ const limitsValidationSchema = (id, isModification = false) => {
     return { [id]: yup.object().shape(isModification ? selectedCurrentLimitsSchema : completeLimitsGroupSchema) };
 };
 
-export const getLimitsValidationSchema = (isModification = false, id = LIMITS) => {
+export const getLimitsValidationSchema = (isModification: boolean = false, id: string = LIMITS) => {
     return limitsValidationSchema(id, isModification);
 };
 
-const limitsEmptyFormData = (id, onlySelectedLimits = true) => {
+const limitsEmptyFormData = (id: string, onlySelectedLimits = true) => {
     const currentLimits = {
         [CURRENT_LIMITS_1]: {
             [PERMANENT_LIMIT]: null,
@@ -176,7 +178,7 @@ export const getAllLimitsFormData = (
 /**
  * sanitizes limit names and filters out the empty temporary limits lines
  */
-export const sanitizeLimitsGroups = (limitsGroups /*: OperationalLimitsGroup[]*/) =>
+export const sanitizeLimitsGroups = (limitsGroups: OperationalLimitsGroup[]) =>
     limitsGroups.map(({ currentLimits, ...baseData }) => ({
         ...baseData,
         currentLimits: !currentLimits
@@ -195,21 +197,24 @@ export const sanitizeLimitsGroups = (limitsGroups /*: OperationalLimitsGroup[]*/
               },
     }));
 
-export const sanitizeLimitNames = (temporaryLimitList /*:TemporaryLimitData[]*/) /*:TemporaryLimitData[]*/ =>
+export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimit[]): TemporaryLimit[] =>
     temporaryLimitList
-        ?.filter((limit) => limit?.name?.trim())
+        ?.filter((limit: TemporaryLimit) => limit?.name?.trim())
         .map(({ name, ...temporaryLimit }) => ({
             ...temporaryLimit,
-            name: sanitizeString(name),
+            name: sanitizeString(name) ?? '',
         })) || [];
 
-const findTemporaryLimit = (temporaryLimits, limit) =>
+const findTemporaryLimit = (temporaryLimits: TemporaryLimit[], limit: TemporaryLimit) =>
     temporaryLimits?.find((l) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration);
 
-export const updateTemporaryLimits = (modifiedTemporaryLimits, temporaryLimitsToModify) => {
+export const updateTemporaryLimits = (
+    modifiedTemporaryLimits: TemporaryLimit[],
+    temporaryLimitsToModify: TemporaryLimit[]
+) => {
     let updatedTemporaryLimits = modifiedTemporaryLimits ?? [];
     //add temporary limits from previous modifications
-    temporaryLimitsToModify?.forEach((limit) => {
+    temporaryLimitsToModify?.forEach((limit: TemporaryLimit) => {
         if (findTemporaryLimit(updatedTemporaryLimits, limit) === undefined) {
             updatedTemporaryLimits?.push({
                 ...limit,
@@ -219,7 +224,7 @@ export const updateTemporaryLimits = (modifiedTemporaryLimits, temporaryLimitsTo
 
     //remove deleted temporary limits from current and previous modifications
     updatedTemporaryLimits = updatedTemporaryLimits?.filter(
-        (limit) =>
+        (limit: TemporaryLimit) =>
             limit.modificationType !== TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED &&
             !(
                 (limit.modificationType === null ||
@@ -229,26 +234,26 @@ export const updateTemporaryLimits = (modifiedTemporaryLimits, temporaryLimitsTo
     );
 
     //update temporary limits values
-    updatedTemporaryLimits?.forEach((limit) => {
+    updatedTemporaryLimits?.forEach((limit: TemporaryLimit) => {
         if (limit.modificationType === null) {
-            limit.value = findTemporaryLimit(temporaryLimitsToModify, limit)?.value;
+            limit.value = findTemporaryLimit(temporaryLimitsToModify, limit)?.value ?? null;
         }
     });
     return updatedTemporaryLimits;
 };
 
 export const addModificationTypeToTemporaryLimits = (
-    temporaryLimits,
-    temporaryLimitsToModify,
-    currentModifiedTemporaryLimits,
-    currentNode
+    temporaryLimits: TemporaryLimit[],
+    temporaryLimitsToModify: TemporaryLimit[],
+    currentModifiedTemporaryLimits: TemporaryLimit[],
+    currentNode: CurrentTreeNode
 ) => {
     const formattedTemporaryLimitsToModify = formatTemporaryLimits(temporaryLimitsToModify);
     const formattedCurrentModifiedTemporaryLimits = formatTemporaryLimits(currentModifiedTemporaryLimits);
-    const updatedTemporaryLimits = temporaryLimits.map((limit) => {
+    const updatedTemporaryLimits: TemporaryLimit[] = temporaryLimits.map((limit) => {
         const limitWithSameName = findTemporaryLimit(formattedTemporaryLimitsToModify, limit);
         if (limitWithSameName) {
-            const currentLimitWithSameName = findTemporaryLimit(
+            const currentLimitWithSameName: TemporaryLimit | undefined = findTemporaryLimit(
                 formattedCurrentModifiedTemporaryLimits,
                 limitWithSameName
             );
@@ -306,8 +311,8 @@ export const addModificationTypeToTemporaryLimits = (
 // temporary function to be removed once the migration from selected limits group to complete limits group is over :
 // necessary because the network map server return complete operational limits groups but the modification only uses the currently selected (for now)
 export const completeCurrentLimitsGroupsToOnlySelected = (
-    completeLimitsGroups /*: OperationalLimitsGroup[]*/,
-    selectedOperationalLimitsGroup /*: string*/
+    completeLimitsGroups: OperationalLimitsGroup[],
+    selectedOperationalLimitsGroup: string
 ) => {
     if (selectedOperationalLimitsGroup && completeLimitsGroups) {
         return completeLimitsGroups.find((limitsGroup) => selectedOperationalLimitsGroup === limitsGroup.id);
