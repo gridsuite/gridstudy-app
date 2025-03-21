@@ -1345,6 +1345,7 @@ export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: ExpertFilter[])
         filters: filters,
     };
 }
+
 export const SET_CALCULATION_SELECTIONS = 'SET_CALCULATION_SELECTIONS';
 export type SetCalculationSelectionsAction = Readonly<Action<typeof SET_CALCULATION_SELECTIONS>> & {
     tabUuid: UUID;

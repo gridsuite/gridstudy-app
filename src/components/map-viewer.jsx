@@ -242,6 +242,7 @@ const MapViewer = ({
             ? networkMapref.current.getSelectedLines()
             : networkMapref.current.getSelectedSubstations();
     };
+
     return (
         <Box sx={styles.table}>
             <Box sx={styles.horizontalToolbar}>

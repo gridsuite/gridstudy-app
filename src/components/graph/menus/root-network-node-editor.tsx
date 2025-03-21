@@ -90,6 +90,7 @@ const styles = {
         borderBottom: `1px solid ${theme.palette.divider}`,
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),
+        alignItems: 'center',
         justifyContent: 'space-between',
     }),
     toolbar: (theme: Theme) => ({
@@ -115,7 +116,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: theme.spacing(1.25),
-        marginRight: theme.spacing(2),
+        marginRight: theme.spacing(1.25),
     }),
     icon: (theme: Theme) => ({
         width: theme.spacing(3),
@@ -392,13 +393,13 @@ const RootNetworkNodeEditor = () => {
             return;
         }
         try {
+            setIsRootNetworksProcessing(true);
             const params = caseId ? await getCaseImportParameters(caseId as UUID) : null;
             const formattedParams = params ? formatCaseImportParameters(params.parameters) : null;
             const customizedParams = formattedParams
                 ? customizeCurrentParameters(formattedParams as Parameter[])
                 : null;
 
-            setIsRootNetworksProcessing(true);
             updateRootNetwork(
                 editedRootNetwork.rootNetworkUuid,
                 name,
