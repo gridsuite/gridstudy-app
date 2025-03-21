@@ -83,6 +83,14 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import {
+    getVoltageRegulationEmptyFormData,
+    getVoltageRegulationSchema,
+} from '../../../voltage-regulation/voltage-regulation-utils';
+import {
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
+} from '../../../active-power-control/active-power-control-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -98,6 +106,8 @@ const emptyFormData = {
     [FORCED_OUTAGE_RATE]: null,
     ...getConnectivityWithPositionEmptyFormData(true),
     ...getSetPointsEmptyFormData(true),
+    ...getVoltageRegulationEmptyFormData(true),
+    ...getActivePowerControlEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
     ...emptyProperties,
 };
@@ -126,6 +136,8 @@ const formSchema = yup
         [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         ...getConnectivityWithPositionValidationSchema(true),
         ...getSetPointsSchema(true),
+        ...getVoltageRegulationSchema(true),
+        ...getActivePowerControlSchema(true),
         ...getReactiveLimitsSchema(true),
     })
     .concat(modificationPropertiesSchema)
