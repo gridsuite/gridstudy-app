@@ -644,16 +644,6 @@ const TwoWindingsTransformerModificationDialog = ({
         [editData]
     );
 
-    const getLoadRatioTapChangingCapabilities = useCallback(
-        (twt) => {
-            if (editData === undefined || editData?.ratioTapChanger?.hasLoadTapChangingCapabilities === undefined) {
-                return twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES];
-            }
-            return editData?.ratioTapChanger?.hasLoadTapChangingCapabilities?.value;
-        },
-        [editData]
-    );
-
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -700,7 +690,9 @@ const TwoWindingsTransformerModificationDialog = ({
                                 }),
                                 ...getRatioTapChangerFormData({
                                     enabled: isRatioTapChangerEnabled(twt),
-                                    hasLoadTapChangingCapabilities: getLoadRatioTapChangingCapabilities(twt),
+                                    hasLoadTapChangingCapabilities: getValues(
+                                        `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
+                                    ),
                                     regulationMode: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_MODE}`),
                                     regulationType: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_TYPE}`),
                                     regulationSide: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_SIDE}`),
@@ -759,7 +751,6 @@ const TwoWindingsTransformerModificationDialog = ({
             getValues,
             reset,
             isRatioTapChangerEnabled,
-            getLoadRatioTapChangingCapabilities,
             getRatioTapChangerSteps,
             isPhaseTapChangerEnabled,
             getPhaseTapChangerSteps,
