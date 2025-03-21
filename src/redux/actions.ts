@@ -90,7 +90,6 @@ export type AppActions =
     | EnableDeveloperModeAction
     | StudyUpdatedAction
     | MapDataLoadingAction
-    | ResetMapReloadedAction
     | MapEquipmentsInitializedAction
     | SetFullscreenDiagramAction
     | FavoriteContingencyListsAction
