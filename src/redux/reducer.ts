@@ -70,10 +70,12 @@ import {
     INIT_TABLE_DEFINITIONS,
     InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
+    LOAD_NAD_FROM_CONFIG,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
     LOADFLOW_RESULT_FILTER,
     LoadflowResultFilterAction,
+    LoadNadFromConfigAction,
     LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LogsFilterAction,
@@ -1365,7 +1367,8 @@ export const reducer = createReducer(initialState, (builder) => {
         const uniqueIds = [...new Set(action.ids)];
         // remove all existing NAD from store, we replace them with lists passed as param
         const diagramStatesWithoutNad = diagramStates.filter(
-            (diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
+            (diagram) =>
+                diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && diagram.svgType !== DiagramType.NAD_FROM_CONFIG
         );
 
         state.diagramStates = diagramStatesWithoutNad.concat(
@@ -1465,6 +1468,26 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CLOSE_DIAGRAMS, (state, action: CloseDiagramsAction) => {
         const idsToClose = new Set(action.ids);
         state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
+    });
+
+    builder.addCase(LOAD_NAD_FROM_CONFIG, (state, action: LoadNadFromConfigAction) => {
+        let diagramStates = state.diagramStates;
+
+        // TODO Erase local movements related to this NAD
+        // TODO Store depth directly in the NAD's diagramState
+
+        // We close all the other NAD
+        diagramStates = diagramStates.filter(
+            (diagram) =>
+                diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && diagram.svgType !== DiagramType.NAD_FROM_CONFIG
+        );
+        diagramStates.push({
+            id: action.nadConfigUuid as UUID,
+            name: action.nadName,
+            svgType: DiagramType.NAD_FROM_CONFIG,
+            state: ViewState.OPENED,
+        });
+        state.diagramStates = diagramStates;
     });
 
     builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {

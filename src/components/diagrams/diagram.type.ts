@@ -23,4 +23,5 @@ export enum DiagramType {
     VOLTAGE_LEVEL = 'voltage-level',
     SUBSTATION = 'substation',
     NETWORK_AREA_DIAGRAM = 'network-area-diagram',
+    NAD_FROM_CONFIG = 'nad-from-config',
 }

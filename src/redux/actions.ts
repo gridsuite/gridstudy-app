@@ -830,6 +830,20 @@ export function closeDiagrams(ids: string[]): CloseDiagramsAction {
     };
 }
 
+export const LOAD_NAD_FROM_CONFIG = 'LOAD_NAD_FROM_CONFIG';
+export type LoadNadFromConfigAction = Readonly<Action<typeof LOAD_NAD_FROM_CONFIG>> & {
+    nadConfigUuid: string;
+    nadName: string;
+};
+
+export function loadNadFromConfig(nadConfigUuid: string, nadName: string): LoadNadFromConfigAction {
+    return {
+        type: LOAD_NAD_FROM_CONFIG,
+        nadConfigUuid: nadConfigUuid,
+        nadName: nadName,
+    };
+}
+
 export const STOP_DIAGRAM_BLINK = 'STOP_DIAGRAM_BLINK';
 export type StopDiagramBlinkAction = Readonly<Action<typeof STOP_DIAGRAM_BLINK>>;
 

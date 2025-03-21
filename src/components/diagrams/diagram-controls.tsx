@@ -8,8 +8,15 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { ElementCreationDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
+import {
+    DirectoryItemSelector,
+    ElementCreationDialog,
+    ElementType,
+    IElementCreationDialog,
+    TreeViewFinderNodeProps,
+} from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
+import UploadIcon from '@mui/icons-material/Upload';
 import SaveIcon from '@mui/icons-material/Save';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
@@ -36,13 +43,15 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
+    onLoad?: (nadConfigId: string, nadName: string) => void;
 }
 
-const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
+const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => {
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+    const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const handleCloseDialog = () => {
+    const handleCloseSaveDialog = () => {
         setIsSaveDialogOpen(false);
     };
 
@@ -50,10 +59,31 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
         setIsSaveDialogOpen(true);
     };
 
+    const handleCloseLoadSelector = () => {
+        setIsLoadSelectorOpen(false);
+    };
+
+    const handleClickLoadIcon = () => {
+        setIsLoadSelectorOpen(true);
+    };
+
     const handleSave = (data: IElementCreationDialog) => {
         if (onSave) {
             onSave(data);
         }
+    };
+
+    const handleLoad = (nadConfigId: string, nadName: string) => {
+        if (onLoad) {
+            onLoad(nadConfigId, nadName);
+        }
+    };
+
+    const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
+        if (selectedElements.length > 0) {
+            handleLoad(selectedElements[0].id, selectedElements[0].name);
+        }
+        handleCloseLoadSelector();
     };
 
     /**
@@ -74,17 +104,33 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
                             <SaveIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
+                    <Tooltip title={<FormattedMessage id={'GenerateFromGridexplore'} />}>
+                        <IconButton sx={styles.actionIcon} onClick={handleClickLoadIcon}>
+                            <UploadIcon sx={styles.icon} />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
             {studyUuid && (
-                <ElementCreationDialog
-                    studyUuid={studyUuid}
-                    onClose={handleCloseDialog}
-                    onSave={handleSave}
-                    open={isSaveDialogOpen}
-                    type={ElementType.DIAGRAM_CONFIG}
-                    titleId={'SaveToGridexplore'}
-                />
+                <>
+                    <ElementCreationDialog
+                        studyUuid={studyUuid}
+                        onClose={handleCloseSaveDialog}
+                        onSave={handleSave}
+                        open={isSaveDialogOpen}
+                        type={ElementType.DIAGRAM_CONFIG}
+                        titleId={'SaveToGridexplore'}
+                    />
+                    <Box minWidth="12em">
+                        <DirectoryItemSelector
+                            open={isLoadSelectorOpen}
+                            onClose={selectElement}
+                            types={[ElementType.DIAGRAM_CONFIG]}
+                            title={<FormattedMessage id={'GenerateFromGridexplore'} />}
+                            multiSelect={false}
+                        />
+                    </Box>
+                </>
             )}
         </>
     );
