@@ -48,7 +48,6 @@ import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/roo
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },
-    disabledRootNetwork: { opacity: 0.4 },
     checkboxListItem: {
         display: 'flex',
         alignItems: 'flex-start',
@@ -258,9 +257,8 @@ const RootNetworkNodeEditor = () => {
             <CheckBoxList
                 isDisabled={(_rootNetwork) => isRootNetworksProcessing}
                 sx={{
-                    items: (rootNetwork) => ({
+                    items: () => ({
                         label: {
-                            ...(rootNetwork.isCreating && { ...styles.disabledRootNetwork }),
                             ...styles.checkBoxLabel,
                         },
                         checkboxListItem: styles.checkboxListItem,
