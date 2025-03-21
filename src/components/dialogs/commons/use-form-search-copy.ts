@@ -6,92 +6,79 @@
  */
 
 import { useIntl } from 'react-intl';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { EquipmentType, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { UUID } from 'crypto';
 import { EquipmentInfos } from '@gridsuite/commons-ui/dist/utils/types/equipmentType';
 
-export const useFormSearchCopy = (
-    toFormValues: (data: any) => any,
-    setFormValues: (data: any) => void,
+type FetchResponse = Awaited<ReturnType<typeof fetchNetworkElementInfos>>;
+
+export function useFormSearchCopy<TData = any>(
+    toFormValues: (data: FetchResponse) => TData,
+    setFormValues: (data: TData) => void,
     elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES
-) => {
+) {
     const intl = useIntl();
     const { snackInfo, snackError } = useSnackMessage();
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid as UUID);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid as UUID);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
 
-    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
+    const handleCloseSearchDialog = useCallback(() => {
+        setIsDialogSearchOpen(false);
+    }, []);
 
-    const handleSelectionChange = (element: EquipmentInfos) => {
-        let msg;
-        const fetchElementPromise = fetchNetworkElementInfos(
-            studyUuid,
+    const handleOpenSearchDialog = useCallback(() => {
+        setIsDialogSearchOpen(true);
+    }, []);
+
+    const handleSelectionChange = useCallback(
+        (element: EquipmentInfos) =>
+            fetchNetworkElementInfos(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                elementType,
+                EQUIPMENT_INFOS_TYPES.FORM.type,
+                element.id,
+                true
+            )
+                .then((response) => {
+                    setFormValues(toFormValues(response));
+                    snackInfo({
+                        messageTxt: intl.formatMessage({ id: 'EquipmentCopied' }, { equipmentId: element.id }),
+                    });
+                })
+                .catch((error) => {
+                    console.error(`error while fetching equipment ${element.id} : message = ${error.message}`);
+                    let msg;
+                    if (error.status === 404) {
+                        msg = intl.formatMessage({ id: 'EquipmentCopyFailed404' }, { equipmentId: element.id });
+                    } else {
+                        msg = `${intl.formatMessage({ id: 'EquipmentCopyFailed' }, { equipmentId: element.id })} ${
+                            error.message
+                        }`;
+                    }
+                    snackError({ messageTxt: msg });
+                })
+                .finally(() => handleCloseSearchDialog()),
+        [
             currentNodeUuid,
             currentRootNetworkUuid,
             elementType,
-            EQUIPMENT_INFOS_TYPES.FORM.type,
-            element.id,
-            true
-        );
-        return fetchElementPromise
-            .then((response) => {
-                const equipmentFormValues = toFormValues(response);
-                setFormValues(equipmentFormValues);
-
-                msg = intl.formatMessage(
-                    { id: 'EquipmentCopied' },
-                    {
-                        equipmentId: element.id,
-                    }
-                );
-                snackInfo({
-                    messageTxt: msg,
-                });
-            })
-            .catch((error) => {
-                console.error(
-                    'error while fetching equipment {equipmentId} : message = {message}',
-                    element.id,
-                    error.message
-                );
-                if (error.status === 404) {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed404' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                } else {
-                    msg =
-                        intl.formatMessage(
-                            { id: 'EquipmentCopyFailed' },
-                            {
-                                equipmentId: element.id,
-                            }
-                        ) +
-                        ' ' +
-                        error.message;
-                }
-                snackError({
-                    messageTxt: msg,
-                });
-            })
-            .finally(() => handleCloseSearchDialog());
-    };
-
-    const handleCloseSearchDialog = () => {
-        setDialogSearchOpen(false);
-    };
-
-    const handleOpenSearchDialog = () => {
-        setDialogSearchOpen(true);
-    };
+            handleCloseSearchDialog,
+            intl,
+            setFormValues,
+            snackError,
+            snackInfo,
+            studyUuid,
+            toFormValues,
+        ]
+    );
 
     return {
         isDialogSearchOpen,
@@ -99,4 +86,4 @@ export const useFormSearchCopy = (
         handleSelectionChange,
         handleCloseSearchDialog,
     };
-};
+}
