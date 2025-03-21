@@ -283,11 +283,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(
-        (data: StaticVarCompensatorCreationSchemaForm) => data,
-        fromSearchCopyToFormValues,
-        EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR
-    );
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR);
 
     useEffect(() => {
         if (editData) {

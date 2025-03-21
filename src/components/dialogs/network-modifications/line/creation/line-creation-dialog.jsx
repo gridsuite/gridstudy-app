@@ -243,7 +243,7 @@ const LineCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy((data) => data, fromSearchCopyToFormValues, EQUIPMENT_TYPES.LINE);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.LINE);
 
     useEffect(() => {
         if (editData) {

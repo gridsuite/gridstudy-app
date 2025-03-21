@@ -393,11 +393,7 @@ const TwoWindingsTransformerCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(
-        (data) => data,
-        fromSearchCopyToFormValues,
-        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
-    );
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER);
 
     useEffect(() => {
         if (editData) {

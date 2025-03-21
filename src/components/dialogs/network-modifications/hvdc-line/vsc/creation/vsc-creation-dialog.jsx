@@ -130,11 +130,7 @@ const VscCreationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
-    const searchCopy = useFormSearchCopy(
-        (data) => data,
-        fromSearchCopyToFormValues,
-        ExtendedEquipmentType.HVDC_LINE_VSC
-    );
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, ExtendedEquipmentType.HVDC_LINE_VSC);
 
     const generatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />

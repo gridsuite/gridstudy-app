@@ -143,7 +143,7 @@ const BatteryCreationDialog = ({
             { keepDefaultValues: true }
         );
     };
-    const searchCopy = useFormSearchCopy((data) => data, fromSearchCopyToFormValues, EQUIPMENT_TYPES.BATTERY);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.BATTERY);
 
     useEffect(() => {
         if (editData) {

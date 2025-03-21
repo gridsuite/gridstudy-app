@@ -75,7 +75,7 @@ const SubstationCreationDialog = ({
         );
     };
 
-    const searchCopy = useFormSearchCopy((data) => data, fromSearchCopyToFormValues, EQUIPMENT_TYPES.SUBSTATION);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.SUBSTATION);
 
     useEffect(() => {
         if (editData) {

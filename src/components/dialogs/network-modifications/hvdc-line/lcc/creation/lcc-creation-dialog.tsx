@@ -155,13 +155,9 @@ export function LccCreationDialog({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(
-        fromSearchCopyToFormValues,
-        (data: LccCreationSchemaForm) => {
-            reset(data, { keepDefaultValues: true });
-        },
-        ExtendedEquipmentType.HVDC_LINE_LCC
-    );
+    const searchCopy = useFormSearchCopy((data) => {
+        reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
+    }, ExtendedEquipmentType.HVDC_LINE_LCC);
 
     useEffect(() => {
         if (editData) {

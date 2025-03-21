@@ -143,13 +143,9 @@ export function LoadCreationDialog({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy(
-        fromSearchCopyToFormValues,
-        (data: LoadCreationSchemaForm) => {
-            reset(data, { keepDefaultValues: true });
-        },
-        EQUIPMENT_TYPES.LOAD
-    );
+    const searchCopy = useFormSearchCopy((data) => {
+        reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
+    }, EQUIPMENT_TYPES.LOAD);
 
     useEffect(() => {
         if (editData) {

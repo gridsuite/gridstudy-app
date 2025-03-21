@@ -254,7 +254,7 @@ const VoltageLevelCreationDialog = ({
         [setValue, intl, reset, snackWarning]
     );
 
-    const searchCopy = useFormSearchCopy((data) => data, fromExternalDataToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
+    const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
 
     useEffect(() => {
         if (editData) {

@@ -14,11 +14,11 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { EquipmentInfos } from '@gridsuite/commons-ui/dist/utils/types/equipmentType';
 
+// TODO fetchNetworkElementInfos has no type
 type FetchResponse = Awaited<ReturnType<typeof fetchNetworkElementInfos>>;
 
-export function useFormSearchCopy<TData = any>(
-    toFormValues: (data: FetchResponse) => TData,
-    setFormValues: (data: TData) => void,
+export function useFormSearchCopy(
+    setFormValues: (response: FetchResponse) => void,
     elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES
 ) {
     const intl = useIntl();
@@ -48,7 +48,7 @@ export function useFormSearchCopy<TData = any>(
                 true
             )
                 .then((response) => {
-                    setFormValues(toFormValues(response));
+                    setFormValues(response);
                     snackInfo({
                         messageTxt: intl.formatMessage({ id: 'EquipmentCopied' }, { equipmentId: element.id }),
                     });
@@ -76,7 +76,6 @@ export function useFormSearchCopy<TData = any>(
             snackError,
             snackInfo,
             studyUuid,
-            toFormValues,
         ]
     );
 

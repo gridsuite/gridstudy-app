@@ -160,7 +160,7 @@ const ShuntCompensatorCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy((data) => data, fromSearchCopyToFormValues, EQUIPMENT_TYPES.SHUNT_COMPENSATOR);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.SHUNT_COMPENSATOR);
 
     useEffect(() => {
         if (editData) {

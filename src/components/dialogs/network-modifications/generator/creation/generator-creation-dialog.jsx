@@ -203,7 +203,7 @@ const GeneratorCreationDialog = ({
         );
     };
 
-    const searchCopy = useFormSearchCopy((data) => data, fromSearchCopyToFormValues, EQUIPMENT_TYPES.GENERATOR);
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.GENERATOR);
 
     useEffect(() => {
         if (editData) {
