@@ -90,7 +90,6 @@ const styles = {
         borderBottom: `1px solid ${theme.palette.divider}`,
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),
-        // alignItems: 'center',
         justifyContent: 'space-between',
     }),
     toolbar: (theme: Theme) => ({
