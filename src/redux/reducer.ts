@@ -33,11 +33,15 @@ import {
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
+    REMOVE_FROM_RECENT_GLOBAL_FILTERS,
     AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
     AddSortForNewSpreadsheetAction,
     AddToRecentGlobalFiltersAction,
     AppActions,
+    ATTEMPT_LEAVE_PARAMETERS_TAB,
+    AttemptLeaveParametersTabAction,
+    CANCEL_LEAVE_PARAMETERS_TAB,
     CENTER_ON_SUBSTATION,
     CenterOnSubstationAction,
     CLOSE_DIAGRAM,
@@ -46,6 +50,7 @@ import {
     CloseDiagramAction,
     CloseDiagramsAction,
     CloseStudyAction,
+    CONFIRM_LEAVE_PARAMETERS_TAB,
     CURRENT_ROOT_NETWORK_UUID,
     CURRENT_TREE_NODE,
     CurrentRootNetworkUuidAction,
@@ -142,6 +147,7 @@ import {
     SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SensitivityAnalysisResultFilterAction,
+    SET_APP_TAB_INDEX,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
@@ -154,6 +160,7 @@ import {
     SET_PARAMS_LOADED,
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
+    SetAppTabIndexAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
     SetEventScenarioDrawerOpenAction,
@@ -195,6 +202,7 @@ import {
     RenameTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    RemoveFromRecentGlobalFiltersAction,
     RENAME_TABLE_DEFINITION,
     SET_CALCULATION_SELECTIONS,
     SetCalculationSelectionsAction,
@@ -274,7 +282,7 @@ import {
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
-import { Filter } from '../components/results/common/results-global-filter';
+import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     EQUIPMENT_TYPES as NetworkViewerEquipmentType,
     LineFlowColorMode,
@@ -454,6 +462,9 @@ export interface AppState extends CommonStoreState {
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
 
+    appTabIndex: number;
+    attemptedLeaveParametersTabIndex: number | null;
+
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
@@ -465,7 +476,7 @@ export interface AppState extends CommonStoreState {
     oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
     notificationIdList: UUID[];
     nonEvacuatedEnergyNotif: boolean;
-    recentGlobalFilters: Filter[];
+    recentGlobalFilters: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
@@ -608,6 +619,8 @@ const initialTablesState: TablesState = {
 };
 
 const initialState: AppState = {
+    appTabIndex: 0,
+    attemptedLeaveParametersTabIndex: null,
     studyUuid: null,
     currentTreeNode: null,
     currentRootNetworkUuid: null,
@@ -800,6 +813,24 @@ const initialState: AppState = {
 };
 
 export const reducer = createReducer(initialState, (builder) => {
+    builder.addCase(SET_APP_TAB_INDEX, (state, action: SetAppTabIndexAction) => {
+        state.appTabIndex = action.tabIndex;
+    });
+
+    builder.addCase(ATTEMPT_LEAVE_PARAMETERS_TAB, (state, action: AttemptLeaveParametersTabAction) => {
+        state.attemptedLeaveParametersTabIndex = action.targetTabIndex;
+    });
+
+    builder.addCase(CONFIRM_LEAVE_PARAMETERS_TAB, (state) => {
+        if (state.attemptedLeaveParametersTabIndex !== null) {
+            state.appTabIndex = state.attemptedLeaveParametersTabIndex;
+            state.attemptedLeaveParametersTabIndex = null;
+        }
+    });
+
+    builder.addCase(CANCEL_LEAVE_PARAMETERS_TAB, (state) => {
+        state.attemptedLeaveParametersTabIndex = null;
+    });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
 
@@ -1693,13 +1724,20 @@ export const reducer = createReducer(initialState, (builder) => {
         action.globalFilters.forEach((filter) => {
             if (
                 !newRecentGlobalFilters.some(
-                    (obj) => obj.label === filter.label && obj.filterType === filter.filterType
+                    (obj) =>
+                        obj.label === filter.label && obj.filterType === filter.filterType && obj.uuid === filter.uuid
                 )
             ) {
                 newRecentGlobalFilters.push(filter);
             }
         });
         state.recentGlobalFilters = newRecentGlobalFilters;
+    });
+
+    builder.addCase(REMOVE_FROM_RECENT_GLOBAL_FILTERS, (state, action: RemoveFromRecentGlobalFiltersAction) => {
+        state.recentGlobalFilters = [
+            ...state.recentGlobalFilters.filter((recentGlobalFilter) => recentGlobalFilter.uuid !== action.uuid),
+        ];
     });
 
     builder.addCase(SET_LAST_COMPLETED_COMPUTATION, (state, action: SetLastCompletedComputationAction) => {
