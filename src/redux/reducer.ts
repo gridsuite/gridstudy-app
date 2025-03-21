@@ -490,7 +490,6 @@ export interface AppState extends CommonStoreState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
-    isRootNetworksProcessing: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
@@ -659,7 +658,6 @@ const initialState: AppState = {
     nadTextNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
-    isRootNetworksProcessing: false,
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
@@ -1837,10 +1835,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGsFiltersAction) => {
         state.gsFilterSpreadsheetState = {};
-    });
-
-    builder.addCase(SET_ROOT_NETWORKS_PROCESSING, (state, action: SetRootNetworksProcessing) => {
-        state.isRootNetworksProcessing = action.isRootNetworksProcessing;
     });
 });
 

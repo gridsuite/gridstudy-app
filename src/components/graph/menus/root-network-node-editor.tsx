@@ -42,7 +42,7 @@ import {
     getCaseImportParameters,
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
-import { setCurrentRootNetworkUuid, setRootNetworksProcessing } from 'redux/actions';
+import { setCurrentRootNetworkUuid } from 'redux/actions';
 import { isChecked, isPartial } from './network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 
@@ -90,6 +90,8 @@ const styles = {
         borderBottom: `1px solid ${theme.palette.divider}`,
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),
+        // alignItems: 'center',
+        justifyContent: 'space-between',
     }),
     toolbar: (theme: Theme) => ({
         '&': {
@@ -109,17 +111,12 @@ const styles = {
     filler: {
         flexGrow: 1,
     },
-    circularProgress: (theme: Theme) => ({
-        marginRight: theme.spacing(2),
-        color: theme.palette.primary.contrastText,
-    }),
     toolbarCircularProgress: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: theme.spacing(1.25),
         marginRight: theme.spacing(2),
-        color: theme.palette.secondary.main,
     }),
     icon: (theme: Theme) => ({
         width: theme.spacing(3),
@@ -130,7 +127,6 @@ const RootNetworkNodeEditor = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
-    const [deleteInProgress, setDeleteInProgress] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentRootNetworkUuidRef = useRef<UUID | null>(null);
@@ -143,6 +139,7 @@ const RootNetworkNodeEditor = () => {
     const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
+    const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
 
     const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
     rootNetworksRef.current = rootNetworks;
@@ -161,7 +158,7 @@ const RootNetworkNodeEditor = () => {
                     // This is used to hide the loader for creation, update and deletion of the root networks.
                     // All the root networks must be fully established before the loader can be safely removed.
                     if (res.every((network) => !network.isCreating)) {
-                        dispatch(setRootNetworksProcessing(false));
+                        setIsRootNetworksProcessing(false);
                     }
                 })
                 .catch((error) => {
@@ -170,7 +167,7 @@ const RootNetworkNodeEditor = () => {
                     });
                 });
         }
-    }, [studyUuid, updateSelectedItems, dispatch, snackError]);
+    }, [studyUuid, updateSelectedItems, snackError]);
 
     useEffect(() => {
         if (studyUpdatedForce?.eventData?.headers) {
@@ -184,9 +181,7 @@ const RootNetworkNodeEditor = () => {
             }
             if (eventType === 'rootNetworksUpdated' || eventType === 'rootNetworkModified') {
                 dofetchRootNetworks();
-                setDeleteInProgress(false);
             } else if (rootNetworksRef.current && eventType === 'rootNetworkDeletionStarted') {
-                setDeleteInProgress(true);
                 // If the current root network isn't going to be deleted, we don't need to do anything
                 const deletedRootNetworkUuids = studyUpdatedForce.eventData.headers.rootNetworks;
                 if (
@@ -218,22 +213,16 @@ const RootNetworkNodeEditor = () => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
 
         if (studyUuid) {
-            dispatch(setRootNetworksProcessing(true));
-            deleteRootNetworks(studyUuid, selectedRootNetworksUuid)
-                .then(() => {
-                    setDeleteInProgress(true);
-                })
-
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'deleteRootNetworkError',
-                    });
-                    setDeleteInProgress(false);
-                    dispatch(setRootNetworksProcessing(false));
+            setIsRootNetworksProcessing(true);
+            deleteRootNetworks(studyUuid, selectedRootNetworksUuid).catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'deleteRootNetworkError',
                 });
+                setIsRootNetworksProcessing(false);
+            });
         }
-    }, [selectedItems, snackError, studyUuid]);
+    }, [setIsRootNetworksProcessing, selectedItems, snackError, studyUuid]);
 
     const toggleSelectAllRootNetworks = useCallback(() => {
         setSelectedItems((oldVal) => (oldVal.length === 0 ? rootNetworks : []));
@@ -249,7 +238,7 @@ const RootNetworkNodeEditor = () => {
                     onClick={() => {
                         dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
                     }}
-                    disabled={rootNetwork.isCreating}
+                    disabled={rootNetwork.isCreating || isRootNetworksProcessing}
                 >
                     {isCurrentRootNetwork ? (
                         <Badge overlap="circular" color="primary" variant="dot">
@@ -261,12 +250,13 @@ const RootNetworkNodeEditor = () => {
                 </IconButton>
             );
         },
-        [currentRootNetworkUuid, dispatch]
+        [currentRootNetworkUuid, dispatch, isRootNetworksProcessing]
     );
 
     const renderRootNetworksList = () => {
         return (
             <CheckBoxList
+                isDisabled={(_rootNetwork) => isRootNetworksProcessing}
                 sx={{
                     items: (rootNetwork) => ({
                         label: {
@@ -313,6 +303,11 @@ const RootNetworkNodeEditor = () => {
                         }}
                     />
                 </Typography>
+                {isRootNetworksProcessing && (
+                    <span>
+                        <CircularProgress size={'1em'} sx={styles.toolbarCircularProgress} />
+                    </span>
+                )}
             </Box>
         );
     };
@@ -367,14 +362,13 @@ const RootNetworkNodeEditor = () => {
         if (!studyUuid) {
             return;
         }
-
+        setIsRootNetworksProcessing(true);
         getCaseImportParameters(caseId as UUID)
             .then((params: GetCaseImportParametersReturn) => {
                 // Format the parameters
                 const formattedParams = formatCaseImportParameters(params.parameters);
                 const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
                 // Call createRootNetwork with formatted parameters
-                dispatch(setRootNetworksProcessing(true));
                 return createRootNetwork(
                     caseId as UUID,
                     params.formatName,
@@ -390,6 +384,7 @@ const RootNetworkNodeEditor = () => {
                     messageTxt: error.message,
                     headerId: 'createRootNetworksError',
                 });
+                setIsRootNetworksProcessing(false);
             });
     };
 
@@ -404,7 +399,7 @@ const RootNetworkNodeEditor = () => {
                 ? customizeCurrentParameters(formattedParams as Parameter[])
                 : null;
 
-            dispatch(setRootNetworksProcessing(true));
+            setIsRootNetworksProcessing(true);
             updateRootNetwork(
                 editedRootNetwork.rootNetworkUuid,
                 name,
@@ -419,7 +414,7 @@ const RootNetworkNodeEditor = () => {
                 headerId: 'updateRootNetworksError',
                 messageTxt: error instanceof Error ? error.message : String(error),
             });
-            dispatch(setRootNetworksProcessing(false));
+            setIsRootNetworksProcessing(false);
         }
     };
 
@@ -428,6 +423,7 @@ const RootNetworkNodeEditor = () => {
             <Toolbar sx={styles.toolbar}>
                 <Checkbox
                     sx={styles.toolbarCheckbox}
+                    disabled={isRootNetworksProcessing}
                     color={'primary'}
                     edge="start"
                     checked={isChecked(selectedItems.length)}
@@ -443,7 +439,7 @@ const RootNetworkNodeEditor = () => {
                             onClick={openRootNetworkCreationDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={rootNetworks.length >= 3}
+                            disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
                         >
                             <FileUpload />
                         </IconButton>
@@ -455,18 +451,14 @@ const RootNetworkNodeEditor = () => {
                     size={'small'}
                     sx={styles.toolbarIcon}
                     disabled={
-                        selectedItems.length === 0 || !currentNode || rootNetworks.length === selectedItems.length
+                        selectedItems.length === 0 ||
+                        !currentNode ||
+                        rootNetworks.length === selectedItems.length ||
+                        isRootNetworksProcessing
                     }
                 >
                     <DeleteIcon />
                 </IconButton>
-                {deleteInProgress ?? (
-                    <Tooltip title={<FormattedMessage id={'deletingRootNetwork'} />}>
-                        <span>
-                            <CircularProgress size={'1em'} sx={styles.toolbarCircularProgress} />
-                        </span>
-                    </Tooltip>
-                )}
             </Toolbar>
             {rootNetworkCreationDialogOpen && renderRootNetworkCreationDialog()}
             {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}

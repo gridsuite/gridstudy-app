@@ -1345,7 +1345,6 @@ export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: ExpertFilter[])
         filters: filters,
     };
 }
-
 export const SET_CALCULATION_SELECTIONS = 'SET_CALCULATION_SELECTIONS';
 export type SetCalculationSelectionsAction = Readonly<Action<typeof SET_CALCULATION_SELECTIONS>> & {
     tabUuid: UUID;
@@ -1365,17 +1364,5 @@ export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_AL
 export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
-    };
-}
-
-export const SET_ROOT_NETWORKS_PROCESSING = 'SET_ROOT_NETWORKS_PROCESSING';
-export type SetRootNetworksProcessing = Readonly<Action<typeof SET_ROOT_NETWORKS_PROCESSING>> & {
-    isRootNetworksProcessing: boolean;
-};
-
-export function setRootNetworksProcessing(isRootNetworksProcessing: boolean): SetRootNetworksProcessing {
-    return {
-        type: SET_ROOT_NETWORKS_PROCESSING,
-        isRootNetworksProcessing: isRootNetworksProcessing,
     };
 }
