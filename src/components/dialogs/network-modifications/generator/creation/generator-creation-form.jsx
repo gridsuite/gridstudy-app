@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
+import { FloatInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -19,6 +19,7 @@ import {
     RATED_NOMINAL_POWER,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
+    VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
 import {
     ActivePowerAdornment,
@@ -28,18 +29,25 @@ import {
     OhmAdornment,
 } from '../../../dialog-utils';
 import { ENERGY_SOURCES } from 'components/network/constants';
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
-import SetPointsForm from '../../../set-points/set-points-form';
+import { SetPointsForm } from '../../../set-points/set-points-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { FormattedMessage } from 'react-intl';
+import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
+import { useWatch } from 'react-hook-form';
+import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
+    const watchVoltageRegulation = useWatch({
+        name: VOLTAGE_REGULATION,
+    });
 
     const generatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
@@ -103,6 +111,21 @@ const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid 
 
     const forcedOutageRateField = <FloatInput name={FORCED_OUTAGE_RATE} label={'forcedOutageRate'} />;
 
+    const voltageRegulationField = (
+        <Box>
+            <SwitchInput name={VOLTAGE_REGULATION} label={'VoltageRegulationText'} />
+        </Box>
+    );
+
+    const voltageRegulationFields = (
+        <VoltageRegulationForm
+            voltageLevelOptions={voltageLevelOptions}
+            currentNodeUuid={currentNodeUuid}
+            currentRootNetworkUuid={currentRootNetworkUuid}
+            studyUuid={studyUuid}
+        />
+    );
+
     return (
         <>
             <Grid container spacing={2}>
@@ -130,12 +153,19 @@ const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid 
             <ReactiveLimitsForm />
 
             {/* Set points part */}
-            <SetPointsForm
-                studyUuid={studyUuid}
-                currentNodeUuid={currentNodeUuid}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                voltageLevelOptions={voltageLevelOptions}
-            />
+            <SetPointsForm />
+            <Grid container spacing={2} paddingTop={2}>
+                <Box sx={{ width: '100%' }} />
+                <GridItem
+                    tooltip={watchVoltageRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />}
+                    size={4}
+                >
+                    {voltageRegulationField}
+                </GridItem>
+                {voltageRegulationFields}
+                <Box sx={{ width: '100%' }} />
+                <ActivePowerControlForm />
+            </Grid>
 
             {/* Short Circuit of start part */}
             <GridSection title="ShortCircuit" />

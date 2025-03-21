@@ -5,25 +5,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
+import { FloatInput, Identifiable, SelectInput } from '@gridsuite/commons-ui';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { Q_PERCENT, VOLTAGE_REGULATION_TYPE, VOLTAGE_SET_POINT } from 'components/utils/field-constants';
 import { useMemo } from 'react';
 import { percentageTextField, VoltageAdornment } from '../dialog-utils';
 import { RegulatingTerminalForm } from '../regulating-terminal/regulating-terminal-form';
-import { Grid, Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useWatch } from 'react-hook-form';
 import GridItem from '../commons/grid-item';
+import { UUID } from 'crypto';
 
-const VoltageRegulation = ({
+interface VoltageRegulationFormProps {
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    voltageLevelOptions: Identifiable[];
+    previousValues?: {
+        regulatingTerminalConnectableId?: string | null;
+        regulatingTerminalVlId?: string | null;
+        regulatingTerminalConnectableType?: string | null;
+        voltageSetPoint?: number | null;
+        qPercent?: number | null;
+    };
+    isEquipmentModification?: boolean;
+}
+export function VoltageRegulationForm({
     studyUuid,
     currentNodeUuid,
     currentRootNetworkUuid,
     voltageLevelOptions,
     previousValues,
     isEquipmentModification,
-}) => {
+}: Readonly<VoltageRegulationFormProps>) {
     const intl = useIntl();
     const previousRegulationType = useMemo(() => {
         if (previousValues?.regulatingTerminalVlId || previousValues?.regulatingTerminalConnectableId) {
@@ -59,7 +74,7 @@ const VoltageRegulation = ({
             name={VOLTAGE_REGULATION_TYPE}
             label={'RegulationTypeText'}
             size={'small'}
-            previousValue={translatedPreviousRegulationLabel}
+            previousValue={translatedPreviousRegulationLabel ?? undefined}
         />
     );
 
@@ -68,7 +83,7 @@ const VoltageRegulation = ({
             name={VOLTAGE_SET_POINT}
             label={'VoltageText'}
             adornment={VoltageAdornment}
-            previousValue={previousValues?.targetV}
+            previousValue={previousValues?.voltageSetPoint ?? undefined}
             clearable={true}
         />
     );
@@ -81,13 +96,13 @@ const VoltageRegulation = ({
             currentNodeUuid={currentNodeUuid}
             currentRootNetworkUuid={currentRootNetworkUuid}
             studyUuid={studyUuid}
-            previousRegulatingTerminalValue={previousValues?.regulatingTerminalVlId}
-            previousEquipmentSectionTypeValue={
+            regulatingTerminalVlId={previousValues?.regulatingTerminalVlId ?? undefined}
+            equipmentSectionType={
                 previousValues?.regulatingTerminalConnectableType
                     ? previousValues?.regulatingTerminalConnectableType +
                       ' : ' +
                       previousValues?.regulatingTerminalConnectableId
-                    : null
+                    : undefined
             }
         />
     );
@@ -97,7 +112,7 @@ const VoltageRegulation = ({
             name={Q_PERCENT}
             label={'QPercentText'}
             adornment={percentageTextField}
-            previousValue={!isNaN(previousValues?.qPercent) ? previousValues?.qPercent : null}
+            previousValue={previousValues?.qPercent ?? undefined}
             clearable={true}
         />
     );
@@ -122,6 +137,4 @@ const VoltageRegulation = ({
             )}
         </>
     );
-};
-
-export default VoltageRegulation;
+}
