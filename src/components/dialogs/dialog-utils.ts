@@ -132,7 +132,7 @@ export function parseIntData(val: string, defaultValue: string) {
     return isNaN(intValue) ? defaultValue : intValue;
 }
 
-export function sanitizeString(val: string | undefined) {
+export function sanitizeString(val: string | null | undefined) {
     const trimedValue = val?.trim();
     return trimedValue === '' ? null : trimedValue;
 }
