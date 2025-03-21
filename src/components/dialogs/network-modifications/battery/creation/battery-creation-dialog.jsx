@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
+import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -143,14 +143,7 @@ const BatteryCreationDialog = ({
             { keepDefaultValues: true }
         );
     };
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.BATTERY,
-    });
+    const searchCopy = useFormSearchCopy((data) => data, fromSearchCopyToFormValues, EQUIPMENT_TYPES.BATTERY);
 
     useEffect(() => {
         if (editData) {

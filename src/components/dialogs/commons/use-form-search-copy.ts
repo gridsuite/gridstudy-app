@@ -7,25 +7,28 @@
 
 import { useIntl } from 'react-intl';
 import { useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
-import { fetchNetworkElementInfos } from '../../services/study/network';
+import { EquipmentType, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { fetchNetworkElementInfos } from '../../../services/study/network';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../redux/reducer';
+import { UUID } from 'crypto';
+import { EquipmentInfos } from '@gridsuite/commons-ui/dist/utils/types/equipmentType';
 
-export const useFormSearchCopy = ({
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    toFormValues,
-    setFormValues,
-    elementType,
-}) => {
+export const useFormSearchCopy = (
+    toFormValues: (data: any) => any,
+    setFormValues: (data: any) => void,
+    elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES
+) => {
     const intl = useIntl();
-
     const { snackInfo, snackError } = useSnackMessage();
+    const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid as UUID);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid as UUID);
 
     const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
 
-    const handleSelectionChange = (element) => {
+    const handleSelectionChange = (element: EquipmentInfos) => {
         let msg;
         const fetchElementPromise = fetchNetworkElementInfos(
             studyUuid,

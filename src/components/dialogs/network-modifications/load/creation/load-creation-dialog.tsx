@@ -12,7 +12,7 @@ import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
+import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
@@ -143,16 +143,13 @@ export function LoadCreationDialog({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: fromSearchCopyToFormValues,
-        setFormValues: (data: LoadCreationSchemaForm) => {
+    const searchCopy = useFormSearchCopy(
+        fromSearchCopyToFormValues,
+        (data: LoadCreationSchemaForm) => {
             reset(data, { keepDefaultValues: true });
         },
-        elementType: EQUIPMENT_TYPES.LOAD,
-    });
+        EQUIPMENT_TYPES.LOAD
+    );
 
     useEffect(() => {
         if (editData) {

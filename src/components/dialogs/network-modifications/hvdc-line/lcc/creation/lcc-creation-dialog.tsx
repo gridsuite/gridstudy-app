@@ -33,7 +33,7 @@ import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccCreationDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from './lcc-creation.type';
 import { Property, toModificationProperties } from '../../../common/properties/property-utils';
-import { useFormSearchCopy } from '../../../../form-search-copy-hook';
+import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import ModificationDialog from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
@@ -155,16 +155,13 @@ export function LccCreationDialog({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: fromSearchCopyToFormValues,
-        setFormValues: (data: LccCreationSchemaForm) => {
+    const searchCopy = useFormSearchCopy(
+        fromSearchCopyToFormValues,
+        (data: LccCreationSchemaForm) => {
             reset(data, { keepDefaultValues: true });
         },
-        elementType: ExtendedEquipmentType.HVDC_LINE_LCC,
-    });
+        ExtendedEquipmentType.HVDC_LINE_LCC
+    );
 
     useEffect(() => {
         if (editData) {

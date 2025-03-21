@@ -16,7 +16,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
-import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
+import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
 import {
     ADD_SUBSTATION_CREATION,
     ADDITIONAL_PROPERTIES,
@@ -254,14 +254,7 @@ const VoltageLevelCreationDialog = ({
         [setValue, intl, reset, snackWarning]
     );
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromExternalDataToFormValues,
-        elementType: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-    });
+    const searchCopy = useFormSearchCopy((data) => data, fromExternalDataToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
 
     useEffect(() => {
         if (editData) {
