@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
-import { Box, Grid, Paper, TextField, ToggleButton, Tooltip, Typography } from '@mui/material';
-
+import { Box, Grid, Paper, TextField, Theme, ToggleButton, Tooltip, Typography } from '@mui/material';
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, memo, useCallback, useMemo, useRef, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
 import Visibility from '../common/visibility';
 import TooltipIconButton from '../common/tooltip-icon-button';
@@ -24,6 +22,9 @@ import ResponsiveGridLayout from '../common/gridlayout/responsive-grid-layout';
 import { lighten } from '@mui/material/styles';
 import { mergeSx, useDebounce } from '@gridsuite/commons-ui';
 import { arrayFrom } from '../../../utils/utils';
+import { GridLayout, Plot, Series } from '../plot/plot-types';
+import { Layout, Layouts } from 'react-grid-layout';
+import { SimpleTimeSeriesMetadata, Timeseries, TimeSeriesMetadata } from '../types/dynamic-simulation-result.type';
 
 const styles = {
     root: {
@@ -32,7 +33,7 @@ const styles = {
         width: '100%',
         height: '100%',
     },
-    modal: (theme) => ({
+    modal: (theme: Theme) => ({
         position: 'fixed',
         top: 0,
         left: 0,
@@ -40,7 +41,7 @@ const styles = {
         zIndex: 1,
         background: lighten(theme.palette.background.paper, 0.05),
     }),
-    gridLayout: (theme) => ({
+    gridLayout: (theme: Theme) => ({
         paddingRight: theme.spacing(0.5),
         overflowY: 'auto',
         overflowX: 'hidden',
@@ -49,15 +50,15 @@ const styles = {
     menuCloseButton: {
         transform: 'scaleX(-1)',
     },
-    fullViewButton: (theme) => ({
+    fullViewButton: (theme: Theme) => ({
         marginRight: theme.spacing(2),
     }),
-    addButton: (theme) => ({
+    addButton: (theme: Theme) => ({
         borderRadius: '50%',
         marginRight: theme.spacing(10),
         color: theme.palette.primary.main,
     }),
-    paperOptionsGroup: (theme) => ({
+    paperOptionsGroup: (theme: Theme) => ({
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
         display: 'flex',
@@ -66,19 +67,19 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
     }),
-    toolBar: (theme) => ({
+    toolBar: (theme: Theme) => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     }),
-    colsLabel: (theme) => ({
+    colsLabel: (theme: Theme) => ({
         marginLeft: theme.spacing(2),
     }),
-    colsInput: (theme) => ({
+    colsInput: (theme: Theme) => ({
         marginLeft: theme.spacing(1),
     }),
 };
 
-function getTimeseriesIndex(metadata) {
+function getTimeseriesIndex(metadata: TimeSeriesMetadata) {
     if (metadata?.irregularIndex) {
         return metadata.irregularIndex;
     }
@@ -88,7 +89,19 @@ function getTimeseriesIndex(metadata) {
         : [];
 }
 
-const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, loadTimeSeries }) => {
+export type DynamicSimulationResultChartProps = {
+    groupId: string;
+    timeseriesMetadatas?: SimpleTimeSeriesMetadata[];
+    selected?: boolean;
+    loadTimeSeries: (selectedIndexes: number[]) => Promise<Timeseries[] | undefined>;
+};
+
+function DynamicSimulationResultChart({
+    groupId,
+    timeseriesMetadatas,
+    selected,
+    loadTimeSeries,
+}: Readonly<DynamicSimulationResultChartProps>) {
     const intl = useIntl();
 
     const headers = useMemo(
@@ -103,10 +116,10 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
     );
 
     // store the previous layout when scaling in order to restore later
-    const prevLayoutRef = useRef([]);
+    const prevLayoutRef = useRef<Layout[]>([]);
 
     // plotIdScale
-    const [plotIdScale, setPlotIdScale] = useState(undefined);
+    const [plotIdScale, setPlotIdScale] = useState<string | undefined>(undefined);
     // button options switch full view / normal view
     const [fullView, setFullView] = useState(false);
     // button options hide/show series/list
@@ -116,7 +129,7 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
 
     // tab id is auto increase and reset to zero when there is any tab
     const [plotIncId, setPlotIncId] = useState(1);
-    const [plots, setPlots] = useState([
+    const [plots, setPlots] = useState<Plot[]>([
         {
             id: `1`,
             leftSelectedSeries: [],
@@ -125,7 +138,7 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
     ]);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const [gridLayout, setGridLayout] = useState({
+    const [gridLayout, setGridLayout] = useState<GridLayout>({
         items: [
             {
                 i: `1`,
@@ -138,17 +151,17 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
         cols: 1,
     });
 
-    const handleSelectIndex = useCallback((index) => {
+    const handleSelectIndex = useCallback((index: number) => {
         setSelectedIndex(index);
     }, []);
 
-    const selectSeries = useCallback(
-        (selectedIndexes) => {
+    const selectSeries: (selectedIndexes: number[]) => Promise<Series[] | undefined> = useCallback(
+        (selectedIndexes: number[]) => {
             return loadTimeSeries(selectedIndexes).then((selectedTimeSeries) => {
                 // transform to plotly's compatible data
-                return selectedTimeSeries.map((elem) => {
+                return selectedTimeSeries?.map((elem) => {
                     const metadata = elem?.metadata;
-                    const values = elem?.chunks && elem.chunks[0]?.values;
+                    const values = elem?.chunks?.[0]?.values;
                     const timeseriesIndex = getTimeseriesIndex(metadata);
                     return {
                         index: elem.index,
@@ -165,7 +178,7 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
     );
 
     const handleLeftAxisSelected = useCallback(
-        (index, selectedIndexes) => {
+        (index: number, selectedIndexes: number[]) => {
             selectSeries(selectedIndexes).then((selectedSeries) => {
                 setPlots((prev) => {
                     const newPlots = Array.from(prev);
@@ -180,7 +193,7 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
     const debouncedHandleLeftAxisSelected = useDebounce(handleLeftAxisSelected, 500);
 
     const handleRightAxisSelected = useCallback(
-        (index, selectedIndexes) => {
+        (index: number, selectedIndexes: number[]) => {
             selectSeries(selectedIndexes).then((selectedSeries) => {
                 setPlots((prev) => {
                     const newPlots = Array.from(prev);
@@ -195,6 +208,9 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
     const debouncedHandleRightAxisSelected = useDebounce(handleRightAxisSelected, 500);
 
     const items = useMemo(() => {
+        if (timeseriesMetadatas === undefined) {
+            return [];
+        }
         return timeseriesMetadatas.map((elem, index) => ({
             id: index,
             label: elem.name,
@@ -243,7 +259,7 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
         setPlotIncId((prev) => prev + 1);
     }, [plotIncId, plots.length]);
 
-    const handleChangeCols = useCallback((event) => {
+    const handleChangeCols = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setGridLayout((prev) => ({
             ...prev,
             cols: +event.target.value,
@@ -251,7 +267,7 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
     }, []);
 
     const handlePlotScale = useCallback(
-        (plotId, plotScale) => {
+        (plotId: string, plotScale: boolean) => {
             // set grid layout
             setGridLayout((prev) => {
                 let newItems;
@@ -269,12 +285,14 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
                     }));
 
                     // scale only one current item
-                    let scaleItem = newItems.find((item) => item.i === plotId);
+                    const scaleItem = newItems.find((item) => item.i === plotId);
 
-                    scaleItem.w = prev.cols; // set to full width of container
-                    scaleItem.h = 10; // max height of the container
-                    scaleItem.x = 0;
-                    scaleItem.y = 0;
+                    if (scaleItem) {
+                        scaleItem.w = prev.cols; // set to full width of container
+                        scaleItem.h = 10; // max height of the container
+                        scaleItem.x = 0;
+                        scaleItem.y = 0;
+                    }
                 } else {
                     // restore all items
                     newItems = prevLayoutRef.current.map((item) => ({
@@ -295,7 +313,7 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
     );
 
     const handleClose = useCallback(
-        (index) => {
+        (index: number) => {
             const newPlots = Array.from(plots);
             newPlots.splice(index, 1);
             setSelectedIndex(newPlots.length === 0 ? -1 : index === plots.length - 1 ? newPlots.length - 1 : index); // get the next item in new plots
@@ -308,7 +326,7 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
         [plots]
     );
 
-    const handleBreakpointChange = (breakpoint, cols) => {
+    const handleBreakpointChange = (breakpoint: string, cols: number) => {
         setGridLayout((prev) => ({
             ...prev,
             breakpoint: breakpoint,
@@ -316,7 +334,7 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
         }));
     };
 
-    const handleLayoutChange = (layout, allLayouts) => {
+    const handleLayoutChange = (_: Layout[], allLayouts: Layouts) => {
         // save the internal changes to the component's state
         setGridLayout((prev) => ({
             ...prev,
@@ -325,9 +343,9 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
     };
 
     return (
-        <Box sx={mergeSx(styles.root, fullView && styles.modal)}>
+        <Box sx={mergeSx(styles.root, fullView ? styles.modal : undefined)}>
             <Box>
-                <Grid container sx={styles.toolBar} alignItems="center" justify="center">
+                <Grid container sx={styles.toolBar} alignItems="center" justifyContent="center">
                     {!plotIdScale && (
                         <Grid item>
                             <Paper elevation={2} sx={styles.paperOptionsGroup}>
@@ -374,7 +392,7 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
                     {!plotIdScale && (
                         <Grid item ml={2}>
                             <TooltipIconButton
-                                toolTip={intl.formatMessage({
+                                tooltip={intl.formatMessage({
                                     id: 'DynamicSimulationAddGraph',
                                 })}
                                 sx={styles.addButton}
@@ -536,17 +554,6 @@ const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, 
             </Box>
         </Box>
     );
-};
-
-DynamicSimulationResultChart.propTypes = {
-    groupId: PropTypes.string.isRequired,
-    timeseriesMetadatas: PropTypes.arrayOf(
-        PropTypes.shape({
-            name: PropTypes.string.isRequired,
-        })
-    ),
-    selected: PropTypes.bool.isRequired,
-    loadTimeSeries: PropTypes.func,
-};
+}
 
 export default memo(DynamicSimulationResultChart);

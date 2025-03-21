@@ -210,13 +210,17 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         }
     }, [tabIndex, fetchLimitViolationsWithParameters, fetchloadflowResultWithParameters]);
 
-    const [loadflowResult, isLoadingResult, setResult] = useNodeData(
+    const {
+        result: loadflowResult,
+        isLoading: isLoadingResult,
+        setResult,
+    } = useNodeData({
         studyUuid,
         nodeUuid,
-        currentRootNetworkUuid,
-        fetchResult,
-        loadflowResultInvalidations
-    );
+        rootNetworkUuid: currentRootNetworkUuid,
+        fetcher: fetchResult,
+        invalidations: loadflowResultInvalidations,
+    });
 
     const loadFlowLimitViolationsColumns = useMemo(() => {
         switch (tabIndex) {
@@ -275,7 +279,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     }, []);
 
     const result = useMemo(() => {
-        if (loadflowResult === RunningStatus.FAILED || !loadflowResult) {
+        if (!loadflowResult) {
             return [];
         }
         if (tabIndex === 0 || tabIndex === 1) {

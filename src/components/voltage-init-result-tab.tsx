@@ -13,17 +13,31 @@ import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import RunningStatus from './utils/running-status';
 import { voltageInitResultInvalidations } from './computing-status/use-all-computing-status';
 import { useNodeData } from './use-node-data';
+import { UUID } from 'crypto';
+import { AppState } from '../redux/reducer';
 
-export const VoltageInitResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUuid }) => {
-    const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
+export type VoltageInitResultTabProps = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+};
 
-    const [voltageInitResult, isWaiting] = useNodeData(
+export function VoltageInitResultTab({
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
+}: Readonly<VoltageInitResultTabProps>) {
+    const voltageInitStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
+    );
+
+    const { result: voltageInitResult, isLoading: isWaiting } = useNodeData({
         studyUuid,
         nodeUuid,
-        currentRootNetworkUuid,
-        fetchVoltageInitResult,
-        voltageInitResultInvalidations
-    );
+        rootNetworkUuid: currentRootNetworkUuid,
+        fetcher: fetchVoltageInitResult,
+        invalidations: voltageInitResultInvalidations,
+    });
 
     const voltageInitResultToShow =
         (voltageInitStatus === RunningStatus.SUCCEED || voltageInitStatus === RunningStatus.FAILED) && voltageInitResult
@@ -35,4 +49,4 @@ export const VoltageInitResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUu
             <VoltageInitResult result={voltageInitResultToShow} status={voltageInitStatus} />
         </WaitingLoader>
     );
-};
+}
