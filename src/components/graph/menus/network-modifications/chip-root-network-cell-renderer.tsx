@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { ChipCellRenderer } from '../../../spreadsheet/utils/chip-cell-renderer';
 import { NetworkModificationInfos, RootNetworkMetadata } from './network-modification-menu.type';
+import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 
 interface ChipRootNetworkCellRendererProps {
     data?: NetworkModificationInfos;
@@ -23,8 +24,10 @@ const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) =>
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
-    const { snackError } = useSnackMessage();
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
+    const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
 
+    const { snackError } = useSnackMessage();
     const modificationUuid = data?.modificationInfos.uuid;
 
     const modificationactivatedByRootNetwork = useMemo(
@@ -58,7 +61,7 @@ const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) =>
         <ChipCellRenderer
             label={rootNetworkTag}
             isActivated={modificationactivatedByRootNetwork}
-            isDisabled={isLoading}
+            isDisabled={isLoading || isAnyNodeBuilding || mapDataLoading}
             onClick={handleModificationStatusByRootNetworkUpdate}
         />
     );

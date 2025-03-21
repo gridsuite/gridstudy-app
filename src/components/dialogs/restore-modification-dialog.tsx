@@ -21,10 +21,7 @@ import { deleteModifications, restoreModifications } from 'services/study/networ
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import {
-    NetworkModificationInfos,
-    NetworkModificationMetadata,
-} from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { NetworkModificationMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { toggleElementFromList } from 'components/utils/utils';
 
 const styles = {

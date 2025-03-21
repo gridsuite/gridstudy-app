@@ -14,12 +14,16 @@ import { FormattedMessage } from 'react-intl';
 import { AppState } from 'redux/reducer';
 import { ICellRendererParams } from 'ag-grid-community';
 import { NetworkModificationInfos } from './network-modification-menu.type';
+import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 
 const CellRendererSwitch = (props: ICellRendererParams<NetworkModificationInfos>) => {
     const { data, api } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
+    const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
+
     const { snackError } = useSnackMessage();
 
     const modificationUuid = data?.modificationInfos.uuid; // Get the UUID of the modification
@@ -56,7 +60,7 @@ const CellRendererSwitch = (props: ICellRendererParams<NetworkModificationInfos>
             <span>
                 <Switch
                     size="small"
-                    disabled={isLoading}
+                    disabled={isLoading || isAnyNodeBuilding || mapDataLoading}
                     checked={modificationActivated}
                     onClick={toggleModificationActive}
                 />
