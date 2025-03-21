@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
+import { BoxProps } from '@mui/material/Box/Box';
 
 const styles = {
     fullHeight: {
@@ -14,8 +15,11 @@ const styles = {
     },
 };
 
-const TabPanelLazy = (props) => {
-    const { children, selected, ...other } = props;
+export type TabPanelLazyProps = BoxProps & {
+    selected?: boolean;
+};
+
+function TabPanelLazy({ children, selected, ...otherProps }: Readonly<TabPanelLazyProps>) {
     const [initialized, setInitialized] = useState(false);
 
     // force mount child once
@@ -26,10 +30,10 @@ const TabPanelLazy = (props) => {
     }, [selected, initialized]);
 
     return (
-        <Box style={{ display: selected ? 'inherit' : 'none' }} sx={styles.fullHeight} {...other}>
+        <Box style={{ display: selected ? 'inherit' : 'none' }} sx={styles.fullHeight} {...otherProps}>
             {initialized && children}
         </Box>
     );
-};
+}
 
 export default TabPanelLazy;
