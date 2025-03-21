@@ -235,37 +235,26 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 });
             }
 
-            function createNetworkAreaDiagramFromConfigView(id: UUID, state: ViewState | undefined) {
+            function createNetworkAreaDiagramFromConfigView(id: UUID, state: ViewState | undefined, nadName: string) {
                 const svgUrl = checkAndGetNetworkAreaDiagramFromConfigUrl(id);
                 return fetchSvgData(svgUrl, DiagramType.NAD_FROM_CONFIG).then((svg) => {
-                    let nadTitle = ''; // TODO CHARLY Fix that
                     let substationsIds: UUID[] = [];
                     svg.additionalMetadata?.voltageLevels
                         .map((vl) => ({
-                            name: getNameOrId({ name: vl.name, id: vl.substationId }),
                             substationId: vl.substationId,
                         }))
                         .sort((vlA, vlB) => vlA.name?.toLowerCase().localeCompare(vlB.name?.toLowerCase() ?? '') || 0)
                         .forEach((voltageLevel) => {
-                            const name = voltageLevel.name;
-                            if (name !== null) {
-                                nadTitle += (nadTitle !== '' ? ', ' : '') + name;
-                            }
                             substationsIds.push(voltageLevel.substationId);
                         });
-                    if (nadTitle === '') {
-                        nadTitle = id.toString();
-                    }
                     return {
-                        // id: ids[0],
-                        // ids: ids,
                         id: id,
                         nodeId: currentNode.id,
                         state: state,
-                        name: nadTitle,
-                        fetchSvg: () => createNetworkAreaDiagramFromConfigView(id, state), // here 'name' and 'substationsIds' can change so we can't use fetchSvgData
+                        name: nadName,
+                        fetchSvg: () => createNetworkAreaDiagramFromConfigView(id, state, nadName),
                         svgType: DiagramType.NAD_FROM_CONFIG,
-                        depth: 0, //depth, // TODO CHARLY depth a recup dans le metadata ?
+                        depth: 0, //depth, // TODO Retrieve the depth in the metadata from the backend (not implemented yet) ?
                         substationIds: substationsIds,
                         nadMetadata: svg.metadata,
                         scalingFactor: svg.additionalMetadata?.scalingFactor,
@@ -327,7 +316,11 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             } else if (diagramState.svgType === DiagramType.SUBSTATION) {
                 return createSubstationDiagramView(diagramState.id!, diagramState.state);
             } else if (diagramState.svgType === DiagramType.NAD_FROM_CONFIG) {
-                return createNetworkAreaDiagramFromConfigView(diagramState.id!, diagramState.state);
+                return createNetworkAreaDiagramFromConfigView(
+                    diagramState.id!,
+                    diagramState.state,
+                    diagramState.nadName
+                );
             } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 return createNetworkAreaDiagramView(diagramState.ids, diagramState.state, diagramState.depth);
             }
@@ -384,6 +377,7 @@ type DiagramView = {
     svgType: DiagramType;
     state: ViewState;
     name: string;
+    nadName?: string;
     align: 'left' | 'right' | 'center';
     loadingState: boolean;
     metadata?: SLDMetadata;
@@ -436,15 +430,15 @@ export function DiagramPane({
     currentRootNetworkUuidRef.current = currentRootNetworkUuid;
     const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;
+
     /**
      * BUILDS THE DIAGRAMS LIST
      *
      * Here, the goal is to build a list of views, each view corresponding to a diagram.
      * We get the diagrams from the redux store.
-     * In the case of SLD, each SLD corresponds to one view, but in the case of NAD,
-     * each opened NAD is merged into one view.
+     * In the case of SLD and NAD loaded from a config, each diagram corresponds to one view,
+     * but in the case of NAD created locally, each opened NAD is merged into one view.
      */
-
     // Check if we need to add new SLDs in the 'views' and add them if necessary
     const addMissingSLDs = useCallback(
         (diagramStates: DiagramState[]) => {
@@ -465,10 +459,23 @@ export function DiagramPane({
                             diagramView.id === diagramState.id
                     );
                     if (!diagramAlreadyPresentInViews) {
+                        let diagramProperties;
+                        if (diagramState.svgType !== DiagramType.NAD_FROM_CONFIG) {
+                            diagramProperties = {
+                                name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramState.id }),
+                                align: 'left',
+                            };
+                        } else {
+                            diagramProperties = {
+                                name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramState.name }),
+                                align: 'right',
+                                nadName: diagramState.name,
+                            };
+                        }
+
                         diagramsToAdd.push({
                             ...diagramState,
-                            name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramState.id }),
-                            align: 'left',
+                            ...diagramProperties,
                             loadingState: true,
                         });
                     }
@@ -486,7 +493,7 @@ export function DiagramPane({
                 // Then we add the data when the fetch is finished
                 diagramsToAdd.forEach((diagramState) => {
                     createView(diagramState)
-                        ?.then((singleLineDiagramView) => {
+                        ?.then((createdDiagramView) => {
                             setViews((views) => {
                                 const diagramViewId = views.findIndex(
                                     (view) =>
@@ -496,7 +503,7 @@ export function DiagramPane({
                                 // we update the SLD with the fetched data
                                 updatedViews[diagramViewId] = {
                                     ...updatedViews[diagramViewId],
-                                    ...singleLineDiagramView,
+                                    ...createdDiagramView,
                                     loadingState: false,
                                 } as unknown as DiagramView;
                                 return updatedViews;
@@ -667,7 +674,7 @@ export function DiagramPane({
         // We check if we need to update some diagrams
         let diagramsToUpdate: { index: number; state: ViewState }[] = [];
         diagramStates.forEach((diagramState: DiagramState) => {
-            // if SLD
+            // if SLD or NAD loaded from a config
             if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                 const diagramIndex = viewsRef.current.findIndex(
                     (diagramView: DiagramView) =>
@@ -683,7 +690,7 @@ export function DiagramPane({
                     });
                 }
             }
-            // if NAD
+            // if NAD (not loaded from a config)
             else {
                 // no need to check the ID because we have only one NAD in the views
                 // diagramIndex can only be -1 (if no match) or viewsRef.current.length - 1 (if match)
@@ -748,13 +755,13 @@ export function DiagramPane({
         }
         // UPDATING DIAGRAM STATES (before removing or adding new diagrams, for both SLDs and NAD)
         updateDiagramStates(diagramStates);
-        // SLD MANAGEMENT (adding or removing SLDs)
+        // SLD MANAGEMENT and NAD LOADED FROM A CONFIG MANAGEMENT (adding or removing SLDs)
         updateSLDs(diagramStates);
         // NAD MANAGEMENT (adding, removing or updating the NAD)
         // Here we call either the debounced or the non-debounced function
         // to force a server fetch after a few clicks to get the actual number of voltage levels.
         // it's ok to do this and doesn't cause two fetches at the end
-        // beacause the debounced function is recreated after each networkAreaDiagramDepth
+        // because the debounced function is recreated after each networkAreaDiagramDepth
         // change so the debounce hook clears the debounce timer
         if (shouldDebounceUpdateNAD(networkAreaDiagramDepth)) {
             debounceUpdateNAD(diagramStates);
@@ -1075,7 +1082,8 @@ export function DiagramPane({
     );
 
     const getDiagramTitle = (diagramView: DiagramView) => {
-        return diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
+        return diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
+            diagramView.svgType !== DiagramType.NAD_FROM_CONFIG
             ? diagramView.name + ' - ' + (diagramView.country ? translate(diagramView.country) : '')
             : diagramView.name;
     };
@@ -1163,6 +1171,9 @@ export function DiagramPane({
                                         svgType={diagramView.svgType}
                                         svgMetadata={diagramView.nadMetadata}
                                         svgScalingFactor={diagramView.additionalMetadata?.scalingFactor}
+                                        svgVoltageLevels={diagramView.additionalMetadata?.voltageLevels?.map(
+                                            (n) => n.id
+                                        )}
                                         loadingState={diagramView.loadingState}
                                         diagramSizeSetter={setDiagramSize}
                                         visible={visible}
@@ -1183,7 +1194,8 @@ export function DiagramPane({
                             <Chip
                                 key={diagramView.svgType + diagramView.id}
                                 icon={
-                                    diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM ? (
+                                    diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM ||
+                                    diagramView.svgType === DiagramType.NAD_FROM_CONFIG ? (
                                         <>
                                             <ArrowUpwardIcon />
                                             <TimelineIcon />

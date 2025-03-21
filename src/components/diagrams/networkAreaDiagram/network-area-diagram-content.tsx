@@ -144,6 +144,7 @@ type NetworkAreaDiagramContentProps = {
     readonly svg?: string;
     readonly svgMetadata?: DiagramMetadata;
     readonly svgScalingFactor?: number;
+    readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
@@ -153,7 +154,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
@@ -177,7 +178,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             return props.diagramId as string;
         }
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
-    }, [diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]);
+    }, [
+        diagramStates,
+        networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+        props.svgType,
+        props.diagramId,
+    ]);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
@@ -242,9 +248,19 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
-        const voltageLevelIds = diagramStates
-            .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
-            .map((diagram) => diagram.id);
+        let voltageLevelIds; // TODO This list could be built outside of this component
+        if (props.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+            voltageLevelIds = diagramStates
+                .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
+                .map((diagram) => diagram.id);
+        } else if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
+            voltageLevelIds = props.svgVoltageLevels;
+        } else {
+            snackError({
+                messageId: 'SaveToGridexploreError',
+            });
+            return;
+        }
         createDiagramConfig(
             {
                 depth: networkAreaDiagramDepth,
@@ -256,17 +272,23 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             directoryData.name,
             directoryData.description,
             directoryData.folderId
-        ).catch((error) =>
-            snackError({
-                messageTxt: error.message,
-                headerId: 'SaveToGridexploreError',
+        )
+            .then(() => {
+                snackInfo({
+                    messageId: 'NadSavedToGridexplore',
+                });
             })
-        );
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'SaveToGridexploreError',
+                })
+            );
     };
 
     const handleLoadFromConfig = useCallback(
-        (nadConfigUuid: string) => {
-            loadNadFromConfigView(nadConfigUuid);
+        (nadConfigUuid: string, nadName: string) => {
+            loadNadFromConfigView(nadConfigUuid, nadName);
         },
         [loadNadFromConfigView]
     );

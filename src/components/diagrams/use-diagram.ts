@@ -57,8 +57,8 @@ export const useDiagram = () => {
     );
 
     const loadNadFromConfigView = useCallback(
-        (nadConfigUuid: string) => {
-            dispatch(loadNadFromConfig(nadConfigUuid));
+        (nadConfigUuid: string, nadName: string) => {
+            dispatch(loadNadFromConfig(nadConfigUuid, nadName));
         },
         [dispatch]
     );

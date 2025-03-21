@@ -1362,7 +1362,8 @@ export const reducer = createReducer(initialState, (builder) => {
         const uniqueIds = [...new Set(action.ids)];
         // remove all existing NAD from store, we replace them with lists passed as param
         const diagramStatesWithoutNad = diagramStates.filter(
-            (diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
+            (diagram) =>
+                diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && diagram.svgType !== DiagramType.NAD_FROM_CONFIG
         );
 
         state.diagramStates = diagramStatesWithoutNad.concat(
@@ -1465,14 +1466,19 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(LOAD_NAD_FROM_CONFIG, (state, action: LoadNadFromConfigAction) => {
-        console.error('CHARLY DANS LE REDUCER, nadConfigUuid : ' + action.nadConfigUuid);
         let diagramStates = state.diagramStates;
-        // We close all the other NAD
-        // TODO Check not already open (see above logic)
+
         // TODO Erase local movements related to this NAD
-        diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
+        // TODO Store depth directly in the NAD's diagramState
+
+        // We close all the other NAD
+        diagramStates = diagramStates.filter(
+            (diagram) =>
+                diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && diagram.svgType !== DiagramType.NAD_FROM_CONFIG
+        );
         diagramStates.push({
             id: action.nadConfigUuid as UUID,
+            name: action.nadName,
             svgType: DiagramType.NAD_FROM_CONFIG,
             state: ViewState.OPENED,
         });

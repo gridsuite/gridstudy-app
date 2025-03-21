@@ -831,12 +831,14 @@ export function closeDiagrams(ids: string[]): CloseDiagramsAction {
 export const LOAD_NAD_FROM_CONFIG = 'LOAD_NAD_FROM_CONFIG';
 export type LoadNadFromConfigAction = Readonly<Action<typeof LOAD_NAD_FROM_CONFIG>> & {
     nadConfigUuid: string;
+    nadName: string;
 };
 
-export function loadNadFromConfig(nadConfigUuid: string): LoadNadFromConfigAction {
+export function loadNadFromConfig(nadConfigUuid: string, nadName: string): LoadNadFromConfigAction {
     return {
         type: LOAD_NAD_FROM_CONFIG,
         nadConfigUuid: nadConfigUuid,
+        nadName: nadName,
     };
 }
 

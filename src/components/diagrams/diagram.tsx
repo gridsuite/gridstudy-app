@@ -96,7 +96,7 @@ const Diagram: React.FC<DiagramProps> = ({
     const onCloseHandler = () => {
         dispatch(setFullScreenDiagram(null));
         closeDiagramView(diagramId, svgType);
-        if (svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+        if (svgType === DiagramType.NETWORK_AREA_DIAGRAM || svgType === DiagramType.NAD_FROM_CONFIG) {
             dispatch(resetNetworkAreaDiagramDepth());
         }
     };
@@ -150,7 +150,9 @@ const Diagram: React.FC<DiagramProps> = ({
                     diagramId={diagramId}
                     showMinimizeControl
                     onMinimize={onMinimizeHandler}
-                    showTogglePinControl={svgType !== DiagramType.NETWORK_AREA_DIAGRAM}
+                    showTogglePinControl={
+                        svgType !== DiagramType.NETWORK_AREA_DIAGRAM && svgType !== DiagramType.NAD_FROM_CONFIG
+                    }
                     onTogglePin={onTogglePinHandler}
                     pinned={pinned}
                     showCloseControl
