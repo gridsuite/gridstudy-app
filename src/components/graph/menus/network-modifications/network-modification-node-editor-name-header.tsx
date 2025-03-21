@@ -29,7 +29,7 @@ export const NetworkModificationEditorNameHeader = (props: NetworkModificationEd
         return (
             <>
                 <Box sx={styles.icon}>
-                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
+                    <CircularProgress size={'1em'} sx={styles.modificationCircularProgress} />
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage id={notificationMessageId} />
@@ -42,7 +42,7 @@ export const NetworkModificationEditorNameHeader = (props: NetworkModificationEd
         return (
             <>
                 <Box sx={styles.icon}>
-                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
+                    <CircularProgress size={'1em'} sx={styles.modificationCircularProgress} />
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage id={'network_modifications.modifications'} />
@@ -55,7 +55,7 @@ export const NetworkModificationEditorNameHeader = (props: NetworkModificationEd
         <>
             {pendingState && (
                 <Box sx={styles.icon}>
-                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
+                    <CircularProgress size={'1em'} sx={styles.modificationCircularProgress} />
                 </Box>
             )}
             <Typography noWrap>
