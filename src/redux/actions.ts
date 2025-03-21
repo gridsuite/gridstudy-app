@@ -33,7 +33,7 @@ import type {
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
-import type { Filter } from '../components/results/common/results-global-filter';
+import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
@@ -120,6 +120,7 @@ export type AppActions =
     | SetOptionalServicesAction
     | SetOneBusShortcircuitAnalysisDiagramAction
     | AddToRecentGlobalFiltersAction
+    | RemoveFromRecentGlobalFiltersAction
     | SetLastCompletedComputationAction
     | LoadflowResultFilterAction
     | SecurityAnalysisResultFilterAction
@@ -133,8 +134,57 @@ export type AppActions =
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction
+    | ResetAllSpreadsheetGsFiltersAction
     | RemoveTableDefinitionAction
-    | ReorderTableDefinitionsAction;
+    | SetCalculationSelectionsAction
+    | ReorderTableDefinitionsAction
+    | RenameTableDefinitionAction
+    | SetAppTabIndexAction
+    | AttemptLeaveParametersTabAction
+    | ConfirmLeaveParametersTabAction
+    | CancelLeaveParametersTabAction;
+
+export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
+export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
+    tabIndex: number;
+};
+
+export function setAppTabIndex(tabIndex: number): SetAppTabIndexAction {
+    return {
+        type: SET_APP_TAB_INDEX,
+        tabIndex,
+    };
+}
+
+export const ATTEMPT_LEAVE_PARAMETERS_TAB = 'ATTEMPT_LEAVE_PARAMETERS_TAB';
+export type AttemptLeaveParametersTabAction = Readonly<Action<typeof ATTEMPT_LEAVE_PARAMETERS_TAB>> & {
+    targetTabIndex: number;
+};
+
+export function attemptLeaveParametersTab(targetTabIndex: number): AttemptLeaveParametersTabAction {
+    return {
+        type: ATTEMPT_LEAVE_PARAMETERS_TAB,
+        targetTabIndex,
+    };
+}
+
+export const CONFIRM_LEAVE_PARAMETERS_TAB = 'CONFIRM_LEAVE_PARAMETERS_TAB';
+export type ConfirmLeaveParametersTabAction = Readonly<Action<typeof CONFIRM_LEAVE_PARAMETERS_TAB>>;
+
+export function confirmLeaveParametersTab(): ConfirmLeaveParametersTabAction {
+    return {
+        type: CONFIRM_LEAVE_PARAMETERS_TAB,
+    };
+}
+
+export const CANCEL_LEAVE_PARAMETERS_TAB = 'CANCEL_LEAVE_PARAMETERS_TAB';
+export type CancelLeaveParametersTabAction = Readonly<Action<typeof CANCEL_LEAVE_PARAMETERS_TAB>>;
+
+export function cancelLeaveParametersTab(): CancelLeaveParametersTabAction {
+    return {
+        type: CANCEL_LEAVE_PARAMETERS_TAB,
+    };
+}
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -965,13 +1015,25 @@ export function setOneBusShortcircuitAnalysisDiagram(
 
 export const ADD_TO_RECENT_GLOBAL_FILTERS = 'ADD_TO_RECENT_GLOBAL_FILTERS';
 export type AddToRecentGlobalFiltersAction = Readonly<Action<typeof ADD_TO_RECENT_GLOBAL_FILTERS>> & {
-    globalFilters: Filter[];
+    globalFilters: GlobalFilter[];
 };
 
-export function addToRecentGlobalFilters(globalFilters: Filter[]): AddToRecentGlobalFiltersAction {
+export function addToRecentGlobalFilters(globalFilters: GlobalFilter[]): AddToRecentGlobalFiltersAction {
     return {
         type: ADD_TO_RECENT_GLOBAL_FILTERS,
         globalFilters: globalFilters,
+    };
+}
+
+export const REMOVE_FROM_RECENT_GLOBAL_FILTERS = 'REMOVE_FROM_RECENT_GLOBAL_FILTERS';
+export type RemoveFromRecentGlobalFiltersAction = Readonly<Action<typeof REMOVE_FROM_RECENT_GLOBAL_FILTERS>> & {
+    uuid: UUID;
+};
+
+export function removeFromRecentGlobalFilters(uuid: UUID): RemoveFromRecentGlobalFiltersAction {
+    return {
+        type: REMOVE_FROM_RECENT_GLOBAL_FILTERS,
+        uuid: uuid,
     };
 }
 
@@ -1181,6 +1243,20 @@ export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefiniti
     newTableDefinition,
 });
 
+export const RENAME_TABLE_DEFINITION = 'RENAME_TABLE_DEFINITION';
+export type RenameTableDefinitionAction = Readonly<Action<typeof RENAME_TABLE_DEFINITION>> & {
+    tabUuid: UUID;
+    newName: string;
+};
+
+export function renameTableDefinition(tabUuid: UUID, newName: string): RenameTableDefinitionAction {
+    return {
+        type: RENAME_TABLE_DEFINITION,
+        tabUuid,
+        newName,
+    };
+}
+
 export const INIT_TABLE_DEFINITIONS = 'INIT_TABLE_DEFINITIONS';
 
 export type InitTableDefinitionsAction = {
@@ -1213,16 +1289,13 @@ export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
 
 export type AddFilterForNewSpreadsheetAction = {
     type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: FilterConfig[] };
+    payload: { tabUuid: UUID; value: FilterConfig[] };
 };
 
-export const addFilterForNewSpreadsheet = (
-    newTabName: string,
-    value: FilterConfig[]
-): AddFilterForNewSpreadsheetAction => ({
+export const addFilterForNewSpreadsheet = (tabUuid: UUID, value: FilterConfig[]): AddFilterForNewSpreadsheetAction => ({
     type: ADD_FILTER_FOR_NEW_SPREADSHEET,
     payload: {
-        newTabName,
+        tabUuid,
         value,
     },
 });
@@ -1231,13 +1304,13 @@ export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
 
 export type AddSortForNewSpreadsheetAction = {
     type: typeof ADD_SORT_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: SortConfig[] };
+    payload: { tabUuid: UUID; value: SortConfig[] };
 };
 
-export const addSortForNewSpreadsheet = (newTabName: string, value: SortConfig[]): AddSortForNewSpreadsheetAction => ({
+export const addSortForNewSpreadsheet = (tabUuid: UUID, value: SortConfig[]): AddSortForNewSpreadsheetAction => ({
     type: ADD_SORT_FOR_NEW_SPREADSHEET,
     payload: {
-        newTabName,
+        tabUuid,
         value,
     },
 });
@@ -1261,17 +1334,36 @@ export function setStateEstimationResultFilter(
 
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
 export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
-    equipmentType: SpreadsheetEquipmentType;
+    tabUuid: UUID;
     filters: ExpertFilter[];
 };
 
-export function saveSpreadsheetGsFilters(
-    equipmentType: SpreadsheetEquipmentType,
-    filters: ExpertFilter[]
-): SaveSpreadSheetGsFilterAction {
+export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: ExpertFilter[]): SaveSpreadSheetGsFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
-        equipmentType: equipmentType,
+        tabUuid: tabUuid,
         filters: filters,
+    };
+}
+
+export const SET_CALCULATION_SELECTIONS = 'SET_CALCULATION_SELECTIONS';
+export type SetCalculationSelectionsAction = Readonly<Action<typeof SET_CALCULATION_SELECTIONS>> & {
+    tabUuid: UUID;
+    selections: string[];
+};
+
+export function setCalculationSelections(tabUuid: UUID, selections: string[]): SetCalculationSelectionsAction {
+    return {
+        type: SET_CALCULATION_SELECTIONS,
+        tabUuid,
+        selections,
+    };
+}
+
+export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
+export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
+export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
+    return {
+        type: RESET_ALL_SPREADSHEET_GS_FILTERS,
     };
 }

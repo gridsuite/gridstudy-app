@@ -13,16 +13,15 @@ import {
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
-import { Grid } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import { FloatInput, TextInput } from '@gridsuite/commons-ui';
-import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
-import { TextField } from '@mui/material';
-import FrequencyRegulation from '../../../set-points/frequency-regulation';
+import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage } from 'react-intl';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
+import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 
 const BatteryModificationForm = ({
     studyUuid,
@@ -143,7 +142,8 @@ const BatteryModificationForm = ({
                 </Grid>
             </Grid>
             <ReactiveLimitsForm
-                equipmentToModify={batteryToModify}
+                previousReactiveCapabilityCurvePoints={batteryToModify?.reactiveCapabilityCurvePoints}
+                previousMinMaxReactiveLimits={batteryToModify?.minMaxReactiveLimits}
                 updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
             {/* Set points part */}
@@ -153,7 +153,10 @@ const BatteryModificationForm = ({
                 <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <FrequencyRegulation isEquipmentModification={true} previousValues={batteryToModify} />
+                <ActivePowerControlForm
+                    isEquipmentModification={true}
+                    previousValues={batteryToModify?.activePowerControl}
+                />
             </Grid>
             <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>

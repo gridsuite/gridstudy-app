@@ -41,6 +41,10 @@ export const customColumnNodesFormSchema = yup.object().shape({
             //filter to remove empty values, so we don't get this error instead of required when 2 fields are empty
             const aliasesArray = array.map((l) => l[NODE_ALIAS]).filter((value) => value);
             return areArrayElementsUnique(aliasesArray);
+        })
+        .test('uniqueNodeNames', 'spreadsheet/parameter_aliases/unique_node_names', (array) => {
+            const nodeNamesArray = array.map((l) => l[NODE_NAME]).filter((value) => value);
+            return areArrayElementsUnique(nodeNamesArray);
         }),
 });
 
