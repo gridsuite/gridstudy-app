@@ -204,8 +204,6 @@ import {
     RENAME_TABLE_DEFINITION,
     SET_CALCULATION_SELECTIONS,
     SetCalculationSelectionsAction,
-    SET_ROOT_NETWORKS_PROCESSING,
-    SetRootNetworksProcessing,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
