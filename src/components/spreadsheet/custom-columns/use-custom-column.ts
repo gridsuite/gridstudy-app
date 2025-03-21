@@ -38,7 +38,8 @@ export function useCustomColumn(tabIndex: number) {
                     colDependencies.forEach((dep) => {
                         scope[dep] = params.getValue(dep);
                     });
-                    const result = limitedEvaluate(colDef.formula, scope);
+                    const escapedFormula = colDef.formula.replace(/\\/g, '\\\\');
+                    const result = limitedEvaluate(escapedFormula, scope);
                     const validation = validateFormulaResult(result, colDef.type);
 
                     if (!validation.isValid) {
