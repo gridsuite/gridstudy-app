@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, SetStateAction } from 'react';
 import { Switch, Tooltip } from '@mui/material';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setModificationActivated } from 'services/study/network-modifications';
@@ -16,8 +16,12 @@ import { ICellRendererParams } from 'ag-grid-community';
 import { NetworkModificationInfos } from './network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 
-const CellRendererSwitch = (props: ICellRendererParams<NetworkModificationInfos>) => {
-    const { data, api } = props;
+export interface CellRendererSwitchProps extends ICellRendererParams<NetworkModificationInfos> {
+    setModifications: React.Dispatch<SetStateAction<NetworkModificationInfos[]>>;
+}
+
+const CellRendererSwitch = (props: CellRendererSwitchProps) => {
+    const { data, api, setModifications } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -49,11 +53,32 @@ const CellRendererSwitch = (props: ICellRendererParams<NetworkModificationInfos>
         setIsLoading(true);
         const updatedActivated = !modificationActivated;
 
+        setModifications((oldModifications) => {
+            const modificationToUpdateIndex = oldModifications.findIndex(
+                (m) => m.modificationInfos.uuid === modificationUuid
+            );
+            if (modificationToUpdateIndex === -1) {
+                return oldModifications;
+            }
+            const newModifications = [...oldModifications];
+            const newStatus = !newModifications[modificationToUpdateIndex].modificationInfos.activated;
+
+            newModifications[modificationToUpdateIndex] = {
+                ...newModifications[modificationToUpdateIndex],
+                modificationInfos: {
+                    ...newModifications[modificationToUpdateIndex].modificationInfos,
+                    activated: newStatus,
+                },
+            };
+
+            updateModification(newStatus);
+            return newModifications;
+        });
         // Update the grid data with the new activated status
         api.stopEditing();
         // Trigger the API to update the state on the server (or whatever data source you're using)
         updateModification(updatedActivated);
-    }, [modificationActivated, updateModification, api]);
+    }, [modificationUuid, modificationActivated, updateModification, setModifications, api]);
 
     return (
         <Tooltip title={<FormattedMessage id={modificationActivated ? 'disable' : 'enable'} />} arrow>

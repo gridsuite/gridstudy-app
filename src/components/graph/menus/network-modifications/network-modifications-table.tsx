@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, ReactNode } from 'react';
+import React, { useCallback, useMemo, ReactNode, SetStateAction } from 'react';
 import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
     CellClickedEvent,
@@ -28,6 +28,7 @@ import { useParameterState } from 'components/dialogs/parameters/use-parameters-
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationInfos[];
+    setModifications: React.Dispatch<SetStateAction<NetworkModificationInfos[]>>;
     handleCellClick?: (event: CellClickedEvent) => void;
     isRowDragEnabled?: boolean;
     onRowDragStart?: (event: RowDragEnterEvent) => void;
@@ -37,6 +38,7 @@ interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorN
 
 const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     modifications,
+    setModifications,
     handleCellClick,
     isRowDragEnabled,
     onRowDragStart,
@@ -91,6 +93,9 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             },
             {
                 cellRenderer: CellRendererSwitch,
+                cellRendererParams: {
+                    setModifications: setModifications,
+                },
                 maxWidth: 48,
                 width: 48,
             },
@@ -104,6 +109,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                       cellRenderer: ChipRootNetworkCellRenderer,
                       cellRendererParams: {
                           rootNetwork: rootNetwork,
+                          setModifications: setModifications,
                       },
                       cellStyle: { textAlign: 'center' },
                       headerStyle: { padding: 0 },
@@ -127,6 +133,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         currentRootNetworkUuid,
         enableDeveloperMode,
         getModificationLabel,
+        setModifications,
         nameHeaderProps,
     ]);
 

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, SetStateAction } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
@@ -16,11 +16,12 @@ import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook
 
 interface ChipRootNetworkCellRendererProps {
     data?: NetworkModificationInfos;
+    setModifications: React.Dispatch<SetStateAction<NetworkModificationInfos[]>>;
     rootNetwork: RootNetworkMetadata;
 }
 
 const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) => {
-    const { data, rootNetwork } = props;
+    const { data, rootNetwork, setModifications } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
@@ -36,26 +37,56 @@ const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) =>
     );
 
     const rootNetworkTag = rootNetwork.tag;
-    const handleModificationStatusByRootNetworkUpdate = useCallback(() => {
-        if (!studyUuid || !modificationUuid || !currentNode) {
-            return;
-        }
 
+    const updateStatus = useCallback(
+        (newStatus: boolean) => {
+            if (!studyUuid || !modificationUuid || !currentNode) {
+                return;
+            }
+            updateModificationStatusByRootNetwork(
+                studyUuid,
+                currentNode?.id,
+                rootNetwork.rootNetworkUuid,
+                modificationUuid,
+                newStatus
+            )
+                .catch((err) => {
+                    snackError({ messageTxt: err.message, messageId: 'modificationActivationByRootNetworkError' });
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        },
+        [studyUuid, modificationUuid, currentNode, rootNetwork, snackError]
+    );
+
+    const handleModificationStatusByRootNetworkUpdate = useCallback(() => {
         setIsLoading(true);
-        updateModificationStatusByRootNetwork(
-            studyUuid,
-            currentNode?.id,
-            rootNetwork.rootNetworkUuid,
-            modificationUuid,
-            !modificationactivatedByRootNetwork
-        )
-            .catch((err) => {
-                snackError({ messageTxt: err.message, messageId: 'modificationActivationByRootNetworkError' });
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
-    }, [studyUuid, currentNode, modificationUuid, rootNetwork, snackError, modificationactivatedByRootNetwork]);
+
+        setModifications((oldModifications) => {
+            const modificationToUpdateIndex = oldModifications.findIndex(
+                (m) => m.modificationInfos.uuid === modificationUuid
+            );
+            if (modificationToUpdateIndex === -1) {
+                return oldModifications;
+            }
+
+            const newModifications = [...oldModifications];
+            const newStatus =
+                !newModifications[modificationToUpdateIndex].activationStatusByRootNetwork[rootNetwork.rootNetworkUuid];
+
+            newModifications[modificationToUpdateIndex] = {
+                ...newModifications[modificationToUpdateIndex],
+                activationStatusByRootNetwork: {
+                    ...newModifications[modificationToUpdateIndex].activationStatusByRootNetwork,
+                    [rootNetwork.rootNetworkUuid]: newStatus,
+                },
+            };
+
+            updateStatus(newStatus);
+            return newModifications;
+        });
+    }, [modificationUuid, setModifications, updateStatus, rootNetwork.rootNetworkUuid]);
 
     return (
         <ChipCellRenderer
