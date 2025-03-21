@@ -28,14 +28,14 @@ const FittingPopper = (props: PopperProps) => {
 interface RegulatingTerminalFormProps {
     id: string;
     direction?: GridDirection;
-    disabled: boolean;
+    disabled?: boolean;
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     voltageLevelOptions: Identifiable[];
     equipmentSectionTypeDefaultValue?: string;
-    previousRegulatingTerminalValue?: string;
-    previousEquipmentSectionTypeValue?: string;
+    regulatingTerminalVlId?: string;
+    equipmentSectionType?: string;
 }
 
 export function RegulatingTerminalForm({
@@ -47,8 +47,8 @@ export function RegulatingTerminalForm({
     currentRootNetworkUuid,
     voltageLevelOptions = [],
     equipmentSectionTypeDefaultValue,
-    previousRegulatingTerminalValue,
-    previousEquipmentSectionTypeValue,
+    regulatingTerminalVlId,
+    equipmentSectionType,
 }: Readonly<RegulatingTerminalFormProps>) {
     const [equipmentsOptions, setEquipmentsOptions] = useState<Option[]>([]);
     const { setValue } = useFormContext();
@@ -121,7 +121,7 @@ export function RegulatingTerminalForm({
                         options={vlOptions}
                         getOptionLabel={(vl) => (typeof vl !== 'string' ? vl?.id ?? '' : '')}
                         onChangeCallback={resetEquipment}
-                        previousValue={previousRegulatingTerminalValue ?? undefined}
+                        previousValue={regulatingTerminalVlId ?? undefined}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                             */
@@ -168,7 +168,7 @@ export function RegulatingTerminalForm({
                         selectOnFocus
                         id="equipment"
                         disabled={!watchVoltageLevelId || disabled}
-                        previousValue={previousEquipmentSectionTypeValue}
+                        previousValue={equipmentSectionType}
                         options={equipmentsOptions}
                         getOptionLabel={(equipment) => {
                             return typeof equipment !== 'string' ? equipment?.id ?? '' : '';
