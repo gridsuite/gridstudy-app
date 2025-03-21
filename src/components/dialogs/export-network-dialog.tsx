@@ -24,16 +24,18 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CancelButton, FlatParameters, fetchDirectoryElementPath, useSnackMessage } from '@gridsuite/commons-ui';
-import { getAvailableExportFormats } from '../../services/study';
+import { ExportFormatProperties, getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import TextField from '@mui/material/TextField';
 import { useSelector } from 'react-redux';
+import { UUID } from 'crypto';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { useParameterState } from './parameters/use-parameters-state';
+import { AppState } from '../../redux/reducer';
+import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -44,24 +46,37 @@ const STRING_LIST = 'STRING_LIST';
  * @param {EventListener} onClick Event to submit the export
  * @param {String} studyUuid the uuid of the study to export
  * @param {String} nodeUuid the uuid of the selected node
- * @param {String} title Title of the dialog
  */
 
-const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, rootNetworkUuid, title }) => {
-    const [formatsWithParameters, setFormatsWithParameters] = useState([]);
+interface ExportNetworkDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onClick: (url: string) => void;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    rootNetworkUuid: UUID;
+}
+
+export function ExportNetworkDialog({
+    open,
+    onClose,
+    onClick,
+    studyUuid,
+    nodeUuid,
+    rootNetworkUuid,
+}: Readonly<ExportNetworkDialogProps>) {
+    const intl = useIntl();
+    const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
     const [selectedFormat, setSelectedFormat] = useState('');
     const [loading, setLoading] = useState(false);
     const [exportStudyErr, setExportStudyErr] = useState('');
     const { snackError } = useSnackMessage();
-    const [fileName, setFileName] = useState();
+    const [fileName, setFileName] = useState<string>();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [unfolded, setUnfolded] = useState(false);
 
-    const treeModel = useSelector((state) => state.networkModificationTreeModel);
-    const nodeName = useMemo(
-        () => treeModel?.treeNodes.find((node) => node.id === nodeUuid)?.data.label,
-        [treeModel, nodeUuid]
-    );
+    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
+    const nodeName = useMemo(() => treeNodes?.find((node) => node.id === nodeUuid)?.data.label, [treeNodes, nodeUuid]);
 
     // fetch study name to build default file name
     useEffect(() => {
@@ -90,8 +105,8 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, rootNetwork
                 // we check if the param is for extension, if it is, we select all possible values by default.
                 // the only way for the moment to check if the param is for extension, is by checking his type is name.
                 //TODO to be removed when extensions param default value corrected in backend to include all possible values
-                Object.values(availableFormats).forEach((f) => {
-                    f.parameters = f.parameters.map((parameter) => {
+                Object.values(availableFormats).forEach((format) => {
+                    format.parameters = format.parameters.map((parameter) => {
                         if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
                             parameter.defaultValue = parameter.possibleValues;
                         }
@@ -110,8 +125,8 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, rootNetwork
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
     const metasAsArray = formatWithParameter?.parameters || [];
     const [currentParameters, setCurrentParameters] = useState({});
-    const onChange = useCallback((paramName, value, isEdit) => {
-        if (!isEdit) {
+    const onChange = useCallback((paramName: string, value: unknown, isInEdition: boolean) => {
+        if (!isInEdition) {
             setCurrentParameters((prevCurrentParameters) => {
                 return {
                     ...prevCurrentParameters,
@@ -121,7 +136,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, rootNetwork
         }
     }, []);
     const handleExportClick = () => {
-        if (selectedFormat) {
+        if (fileName && selectedFormat) {
             const downloadUrl = getExportUrl(studyUuid, nodeUuid, rootNetworkUuid, selectedFormat);
             let suffix;
             const urlSearchParams = new URLSearchParams();
@@ -150,16 +165,18 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, rootNetwork
         onClose();
     };
 
-    const handleFormatSelectionChange = (event) => {
+    const handleFormatSelectionChange = (event: SelectChangeEvent) => {
         let selected = event.target.value;
         setSelectedFormat(selected);
     };
 
-    const intl = useIntl();
-
     return (
         <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose} aria-labelledby="dialog-title-export">
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle>
+                {intl.formatMessage({
+                    id: 'exportNetwork',
+                })}
+            </DialogTitle>
             <DialogContent>
                 <TextField
                     key="fileName"
@@ -237,16 +254,4 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, rootNetwork
             </DialogActions>
         </Dialog>
     );
-};
-
-ExportDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onClick: PropTypes.func.isRequired,
-    studyUuid: PropTypes.string,
-    nodeUuid: PropTypes.string,
-    rootNetworkUuid: PropTypes.string,
-    title: PropTypes.string.isRequired,
-};
-
-export default ExportDialog;
+}

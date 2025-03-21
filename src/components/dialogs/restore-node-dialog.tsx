@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, Box, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText } from '@mui/material';
 import { deleteStashedNodes, fetchStashedNodes, restoreStashedNodes } from '../../services/study/tree-subtree';
@@ -13,6 +12,8 @@ import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { CancelButton, CheckBoxList } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { toggleElementFromList } from 'components/utils/utils';
+import { UUID } from 'crypto';
+import { StashedNodeProperties } from '../graph/tree-node.type';
 
 /**
  * Dialog to select network modification to create
@@ -21,12 +22,20 @@ import { toggleElementFromList } from 'components/utils/utils';
  * @param anchorNodeId the anchor node id relative to which the restore will take place
  * @param studyUuid the study id
  */
-const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
+
+interface RestoreNodesDialogProps {
+    open: boolean;
+    onClose: () => void;
+    anchorNodeId: UUID;
+    studyUuid: UUID;
+}
+
+export function RestoreNodesDialog({ open, onClose, anchorNodeId, studyUuid }: Readonly<RestoreNodesDialogProps>) {
     const intl = useIntl();
 
-    const [nodes, setNodes] = useState([]);
+    const [nodes, setNodes] = useState<StashedNodeProperties[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedNodes, setSelectedNodes] = useState([]);
+    const [selectedNodes, setSelectedNodes] = useState<StashedNodeProperties[]>([]);
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] = useState(false);
 
     const handleClose = () => {
@@ -135,13 +144,4 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
             )}
         </Dialog>
     );
-};
-
-RestoreNodesDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    anchorNodeId: PropTypes.any,
-    studyUuid: PropTypes.any,
-};
-
-export default RestoreNodesDialog;
+}

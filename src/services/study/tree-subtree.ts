@@ -9,7 +9,7 @@ import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
-import { AbstractNode, NodeType } from '../../components/graph/tree-node.type';
+import { AbstractNode, NodeType, StashedNodeProperties } from '../../components/graph/tree-node.type';
 import { BUILD_STATUS } from '../../components/network/constants';
 
 interface Node {
@@ -203,7 +203,7 @@ export function fetchNetworkModificationSubtree(studyUuid: UUID, parentId: UUID)
     return backendFetchJson(url);
 }
 
-export function fetchStashedNodes(studyUuid: UUID) {
+export function fetchStashedNodes(studyUuid: UUID): Promise<StashedNodeProperties[]> {
     console.info('Fetching stashed nodes for study : ', studyUuid);
     const url = getStudyUrl(studyUuid) + '/tree/nodes/stash';
     console.debug(url);

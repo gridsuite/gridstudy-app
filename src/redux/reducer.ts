@@ -286,7 +286,7 @@ import {
     LineFlowColorMode,
     LineFlowMode,
 } from '@powsybl/network-viewer';
-import type { UnknownArray, ValueOf } from 'type-fest';
+import type { ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
@@ -523,7 +523,7 @@ export interface AppState extends CommonStoreState {
     [PARAM_DIAGONAL_LABEL]: boolean;
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
     [PARAM_COMPONENT_LIBRARY]: unknown | null;
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UnknownArray;
+    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;

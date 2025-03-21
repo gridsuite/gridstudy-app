@@ -6,12 +6,12 @@
  */
 
 import { backendFetchJson, getRequestParamFromList } from './utils';
-import { UnknownArray } from 'type-fest';
 import { ElementAttributes } from '@gridsuite/commons-ui';
+import { UUID } from 'crypto';
 
 const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
 
-export function fetchContingencyAndFiltersLists(listIds: UnknownArray): Promise<ElementAttributes[]> {
+export function fetchContingencyAndFiltersLists(listIds: UUID[]): Promise<ElementAttributes[]> {
     console.info('Fetching contingency and filters lists');
 
     // Add params to Url

@@ -14,13 +14,13 @@ export function startSecurityAnalysis(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    contingencyListNames: string[]
+    contingencyListUuids: UUID[]
 ) {
     console.info(
         `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
     // Add params to Url
-    const contingencyListsQueryParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
+    const contingencyListsQueryParams = getRequestParamFromList(contingencyListUuids, 'contingencyListName');
     const urlSearchParams = new URLSearchParams(contingencyListsQueryParams);
 
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
