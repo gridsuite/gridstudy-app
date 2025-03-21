@@ -74,7 +74,7 @@ import {
 import LineDialogTabs from '../line-dialog-tabs';
 import { filledTextField, sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
-import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
+import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createLine } from '../../../../../services/study/network-modifications';
@@ -243,14 +243,7 @@ const LineCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.LINE,
-    });
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.LINE);
 
     useEffect(() => {
         if (editData) {
