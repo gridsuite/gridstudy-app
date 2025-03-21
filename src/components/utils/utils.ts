@@ -11,7 +11,6 @@ import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
 import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
-import { AttributeModification } from '../dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -81,6 +80,16 @@ export const getObjectId = (object: string | { id: string }) => {
     return typeof object === 'string' ? object : object?.id ?? null;
 };
 
+export enum OperationType {
+    SET = 'SET',
+    UNSET = 'UNSET',
+}
+
+export type AttributeModification<T> = {
+    value?: T;
+    op: OperationType;
+};
+
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
     const newBusbarSections = [];
     for (let i = 0; i < busbarCount; i++) {
@@ -95,14 +104,16 @@ export const buildNewBusbarSections = (equipmentId: string, sectionCount: number
 };
 
 export function toModificationOperation<T>(value: T): AttributeModification<T> | null {
-    return value === 0 || value === false || value ? { value: value, op: 'SET' } : null;
+    return value === 0 || value === false || value ? { value: value, op: OperationType.SET } : null;
 }
 
 export function toModificationUnsetOperation<T>(value: T): AttributeModification<T> | null {
     if (value === null) {
         return null;
     }
-    return value === 0 || value === false || value ? { value: value, op: 'SET' } : { op: 'UNSET' };
+    return value === 0 || value === false || value
+        ? { value: value, op: OperationType.SET }
+        : { op: OperationType.UNSET };
 }
 
 export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]) =>

@@ -22,15 +22,29 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { UUID } from 'crypto';
+import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
+import { BatteryFormInfos } from '../battery-dialog.type';
 
-const BatteryModificationForm = ({
+export interface BatteryModificationFormProps {
+    studyUuid: UUID;
+    editData?: BatteryCreationInfos;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    batteryToModify: BatteryFormInfos | null;
+    updatePreviousReactiveCapabilityCurveTable: (action: string, index: number) => void;
+    equipmentId: string;
+}
+
+export function BatteryModificationForm({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
     batteryToModify,
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
-}) => {
+}: Readonly<BatteryModificationFormProps>) {
     const batteryIdField = (
         <TextField
             size="small"
@@ -102,7 +116,10 @@ const BatteryModificationForm = ({
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
-            previousValues={batteryToModify}
+            previousValues={{
+                connectablePosition: batteryToModify?.connectablePosition,
+                terminalConnected: batteryToModify?.terminalConnected,
+            }}
         />
     );
 
@@ -161,6 +178,4 @@ const BatteryModificationForm = ({
             <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>
     );
-};
-
-export default BatteryModificationForm;
+}

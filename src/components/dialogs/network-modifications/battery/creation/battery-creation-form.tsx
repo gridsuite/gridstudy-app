@@ -23,8 +23,20 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 
-const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
+export interface BatteryCreationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+}
+
+export default function BatteryCreationForm({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+}: Readonly<BatteryCreationFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
 
     const batteryIdField = (
@@ -104,6 +116,4 @@ const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid })
             <PropertiesForm networkElementType={'battery'} />
         </>
     );
-};
-
-export default BatteryCreationForm;
+}

@@ -18,6 +18,7 @@ import {
     ConverterStationElementModificationInfos,
 } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
+import { ModificationType } from '@gridsuite/commons-ui';
 
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
@@ -51,29 +52,27 @@ export interface VscModificationInfo {
     terminalConnected?: boolean | null;
 }
 
-export interface BatteryModificationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    modificationUuid?: string;
-    batteryId: string;
-    name: string | null;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    connectionName?: string | null;
-    connectionDirection?: string | null;
-    connectionPosition?: string | null;
-    terminalConnected?: boolean | null;
-    minP: number | null;
-    maxP: number | null;
-    isReactiveCapabilityCurveOn?: boolean;
-    minQ?: number | null;
-    maxQ?: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints[] | null;
-    targetP: number;
-    targetQ: number;
-    participate: boolean;
-    droop: number;
-    isUpdate?: boolean;
+export interface BatteryModificationInfos {
+    type: string;
+    uuid?: string;
+    equipmentId: string;
+    equipmentName: AttributeModification<string | null | undefined> | null;
+    maxP: AttributeModification<number | null | undefined> | null;
+    minP: AttributeModification<number | null | undefined> | null;
+    targetP: AttributeModification<number | null | undefined> | null;
+    targetQ: AttributeModification<number | null | undefined> | null;
+    participate: AttributeModification<boolean | null | undefined> | null;
+    droop: AttributeModification<number | null | undefined> | null;
+    reactiveCapabilityCurve: AttributeModification<boolean | null | undefined> | null;
+    minQ: AttributeModification<number | null | undefined> | null;
+    maxQ: AttributeModification<number | null | undefined> | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null | undefined;
+    voltageLevelId: AttributeModification<string | null | undefined> | null;
+    busOrBusbarSectionId: AttributeModification<string | null | undefined> | null;
+    connectionDirection: AttributeModification<string | null | undefined> | null;
+    connectionName?: AttributeModification<string | null | undefined> | null;
+    connectionPosition?: AttributeModification<number | null | undefined> | null;
+    terminalConnected?: AttributeModification<boolean | null | undefined> | null;
     properties?: Property[];
 }
 
@@ -401,29 +400,29 @@ export interface Assignment {
     propertyName?: string;
 }
 
-export interface BatteryCreationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string;
-    name: string | null;
-    voltageLevelId: string;
-    busOrBusbarSectionId: string;
-    connectionName: string | null;
+export interface BatteryCreationInfos {
+    type: ModificationType;
+    uuid?: string;
+    equipmentId: string;
+    equipmentName?: string | null;
+    minP?: number | null;
+    maxP?: number | null;
+    reactiveCapabilityCurve?: boolean | null;
+    targetP?: number | null;
+    targetQ?: number | null;
+    voltageLevelId?: string | null;
+    busOrBusbarSectionId?: string | null;
+    regulatingTerminalVlId?: string | null;
+    reactiveCapabilityCurvePoints?: ReactiveCapabilityCurvePoints[] | null;
+    participate?: boolean | null;
+    droop?: number | null;
+    maxQ?: number | null;
+    minQ?: number | null;
+    busbarSectionName?: string;
     connectionDirection: string | null;
-    connectionPosition: string | null;
-    terminalConnected: boolean | null;
-    minP: number | null;
-    maxP: number | null;
-    isReactiveCapabilityCurveOn: boolean;
-    minQ: number | null;
-    maxQ: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePoints[] | null;
-    targetP: number;
-    targetQ: number;
-    participate: boolean;
-    droop: number;
-    isUpdate: boolean;
-    modificationUuid: string;
+    connectionName?: string | null;
+    connectionPosition?: number | null;
+    terminalConnected?: boolean | null;
     properties?: Property[];
 }
 
