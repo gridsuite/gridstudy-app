@@ -5,14 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useState } from 'react';
+import { useState } from 'react';
 import { IconButton, Box, Theme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
-import AskTextDialog from '../../utils/ask-text-dialog';
+import AskTextDialog from '../../../utils/ask-text-dialog';
 import { lighten, darken } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 import { OverflowableText } from '@gridsuite/commons-ui';
+import { RootNetworkSelection } from './root-network-selection';
 
 const styles = {
     header: (theme: Theme) => ({
@@ -39,27 +40,30 @@ interface EditableTitleProps {
     name: string;
     onClose: () => void;
     onChange?: (value: string) => void;
+    showRootNetworkSelection?: boolean;
 }
 
-export const EditableTitle: FunctionComponent<EditableTitleProps> = ({ name, onClose, onChange }) => {
+export const EditableTitle = ({ name, onClose, onChange, showRootNetworkSelection }: EditableTitleProps) => {
     const [openEditTitle, setOpenEditTitle] = useState(false);
     const intl = useIntl();
 
     return (
         <Box sx={styles.header}>
-            <IconButton size={'small'} onClick={() => setOpenEditTitle(true)} disabled={onChange === undefined}>
+            <IconButton size="small" onClick={() => setOpenEditTitle(true)} disabled={!onChange}>
                 <EditIcon />
             </IconButton>
             <OverflowableText text={name} sx={styles.nodeNameTitle} />
-            <IconButton size={'small'} onClick={onClose}>
+            {showRootNetworkSelection && <RootNetworkSelection />}
+            <IconButton size="small" onClick={onClose}>
                 <CloseIcon />
             </IconButton>
             <AskTextDialog
                 show={openEditTitle}
                 title={intl.formatMessage({ id: 'NewName' })}
                 value={name}
-                onValidate={(e) => {
-                    onChange?.(e);
+                onValidate={(newName) => {
+                    onChange?.(newName);
+                    setOpenEditTitle(false);
                 }}
                 onClose={() => setOpenEditTitle(false)}
             />

@@ -18,7 +18,7 @@ import ModificationDialog from '../commons/modificationDialog';
 import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
-import { RootNetworkMetadata } from 'components/graph/menus/network-modification-menu.type';
+import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export interface FormData {
     [NAME]: string;
