@@ -31,6 +31,7 @@ interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorN
     setModifications: React.Dispatch<SetStateAction<NetworkModificationInfos[]>>;
     handleCellClick?: (event: CellClickedEvent) => void;
     isRowDragEnabled?: boolean;
+    isDragging?: boolean;
     onRowDragStart?: (event: RowDragEnterEvent) => void;
     onRowDragEnd?: (event: RowDragEndEvent) => void;
     onRowSelected?: (event: RowSelectedEvent) => void;
@@ -41,6 +42,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     setModifications,
     handleCellClick,
     isRowDragEnabled,
+    isDragging,
     onRowDragStart,
     onRowDragEnd,
     onRowSelected,
@@ -82,7 +84,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         const staticColumns: ColDef<NetworkModificationInfos>[] = [
             {
                 colId: 'modificationName',
-                rowDrag: true,
+                rowDrag: isDragging,
                 headerComponent: NetworkModificationEditorNameHeader,
                 headerComponentParams: { modificationCount: modifications?.length, ...nameHeaderProps },
                 cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
@@ -96,8 +98,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 cellRendererParams: {
                     setModifications: setModifications,
                 },
-                maxWidth: 48,
-                width: 48,
+                maxWidth: 99,
+                width: 99,
             },
         ];
         const newDynamicColumns: ColDef<NetworkModificationInfos>[] = enableDeveloperMode
@@ -114,6 +116,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                       cellStyle: { textAlign: 'center' },
                       headerStyle: { padding: 0 },
                       maxWidth: 72,
+                      minWidth: 72,
                       headerComponent: () =>
                           isCurrentRootNetwork && (
                               <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -128,6 +131,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
 
         return [...staticColumns, ...newDynamicColumns];
     }, [
+        isDragging,
         modifications?.length,
         rootNetworks,
         currentRootNetworkUuid,

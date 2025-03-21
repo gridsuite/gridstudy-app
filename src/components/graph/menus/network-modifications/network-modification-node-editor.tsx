@@ -795,6 +795,7 @@ const NetworkModificationNodeEditor = () => {
                 onRowDragStart={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 onRowSelected={handleRowSelected}
+                isDragging
                 isRowDragEnabled={!isImpactedByNotification() && !isAnyNodeBuilding && !mapDataLoading}
                 isImpactedByNotification={isImpactedByNotification}
                 notificationMessageId={notificationMessageId}
