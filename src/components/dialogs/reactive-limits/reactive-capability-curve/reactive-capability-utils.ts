@@ -112,8 +112,8 @@ export function setSelectedReactiveLimits(
 export function setCurrentReactiveCapabilityCurveTable(
     previousReactiveCapabilityCurveTable: ReactiveCapabilityCurvePoints,
     fieldKey: string,
-    getValues: UseFormGetValues<FieldValues>,
-    setValue: UseFormSetValue<FieldValues>,
+    getValues: UseFormGetValues<any>,
+    setValue: UseFormSetValue<any>,
     isNodeBuilt?: boolean
 ) {
     const currentReactiveCapabilityCurveTable = getValues(fieldKey);

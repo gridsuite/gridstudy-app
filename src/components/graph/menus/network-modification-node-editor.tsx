@@ -24,8 +24,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import { Box, Checkbox, CircularProgress, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
-import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
-import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
+import { BatteryCreationDialog } from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
+import { BatteryModificationDialog } from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import DeleteAttachingLineDialog from 'components/dialogs/network-modifications/delete-attaching-line/delete-attaching-line-dialog';
 import DeleteVoltageLevelOnLineDialog from 'components/dialogs/network-modifications/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
 import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';

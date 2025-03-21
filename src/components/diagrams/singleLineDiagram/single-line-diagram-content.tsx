@@ -31,7 +31,7 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
-import BatteryModificationDialog from '../../dialogs/network-modifications/battery/modification/battery-modification-dialog';
+import { BatteryModificationDialog } from '../../dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
@@ -484,17 +484,20 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 return <></>;
         }
         return (
-            <CurrentModificationDialog
-                open={true}
-                studyUuid={studyUuid}
-                currentNode={currentNode}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                defaultIdValue={equipmentToModify?.equipmentId}
-                isUpdate={true}
-                onClose={() => closeModificationDialog()}
-                editData={undefined}
-                editDataFetchStatus={undefined}
-            />
+            currentNode &&
+            currentRootNetworkUuid && (
+                <CurrentModificationDialog
+                    open={true}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    defaultIdValue={equipmentToModify?.equipmentId}
+                    isUpdate={true}
+                    onClose={() => closeModificationDialog()}
+                    editData={undefined}
+                    editDataFetchStatus={undefined}
+                />
+            )
         );
     };
 

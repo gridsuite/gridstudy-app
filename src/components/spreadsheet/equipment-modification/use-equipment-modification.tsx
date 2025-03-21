@@ -6,7 +6,7 @@
  */
 
 import { FetchStatus } from '@gridsuite/commons-ui';
-import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
+import { BatteryModificationDialog } from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
