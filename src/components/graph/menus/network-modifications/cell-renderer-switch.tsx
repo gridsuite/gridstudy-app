@@ -51,8 +51,6 @@ const CellRendererSwitch = (props: CellRendererSwitchProps) => {
 
     const toggleModificationActive = useCallback(() => {
         setIsLoading(true);
-        const updatedActivated = !modificationActivated;
-
         setModifications((oldModifications) => {
             const modificationToUpdateIndex = oldModifications.findIndex(
                 (m) => m.modificationInfos.uuid === modificationUuid
@@ -74,11 +72,8 @@ const CellRendererSwitch = (props: CellRendererSwitchProps) => {
             updateModification(newStatus);
             return newModifications;
         });
-        // Update the grid data with the new activated status
         api.stopEditing();
-        // Trigger the API to update the state on the server (or whatever data source you're using)
-        updateModification(updatedActivated);
-    }, [modificationUuid, modificationActivated, updateModification, setModifications, api]);
+    }, [modificationUuid, updateModification, setModifications, api]);
 
     return (
         <Tooltip title={<FormattedMessage id={modificationActivated ? 'disable' : 'enable'} />} arrow>
