@@ -255,7 +255,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         formatTemporaryLimits(twtModification.currentLimits2?.temporaryLimits)
                     ),
                 }),
-                ...getRatioTapChangerFormData(true, {
+                ...getRatioTapChangerFormData({
                     enabled: twtModification?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
                     hasLoadTapChangingCapabilities:
                         twtModification?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES]?.value ?? null,
@@ -688,7 +688,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
                                     temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
                                 }),
-                                ...getRatioTapChangerFormData(true, {
+                                ...getRatioTapChangerFormData({
                                     enabled: isRatioTapChangerEnabled(twt),
                                     hasLoadTapChangingCapabilities: getValues(
                                         `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
