@@ -35,15 +35,27 @@ import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 import { useWatch } from 'react-hook-form';
 import { SetPointsForm } from '../../../set-points/set-points-form';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { GeneratorFormInfos } from '../generator-dialog.type';
 
-const GeneratorModificationForm = ({
+export interface GeneratorModificationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    generatorToModify?: GeneratorFormInfos | null;
+    updatePreviousReactiveCapabilityCurveTable: (action: string, index: number) => void;
+    equipmentId: string;
+}
+
+export default function GeneratorModificationForm({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
     generatorToModify,
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
-}) => {
+}: Readonly<GeneratorModificationFormProps>) {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
@@ -74,7 +86,7 @@ const GeneratorModificationForm = ({
             <CheckboxNullableInput
                 name={VOLTAGE_REGULATION}
                 label={'VoltageRegulationText'}
-                previousValue={previousRegulation()}
+                previousValue={previousRegulation() ?? undefined}
             />
         </Box>
     );
@@ -124,7 +136,7 @@ const GeneratorModificationForm = ({
         <SelectInput
             name={ENERGY_SOURCE}
             label={'energySource'}
-            options={ENERGY_SOURCES}
+            options={[...ENERGY_SOURCES]}
             fullWidth
             size={'small'}
             formProps={{ ...filledTextField }}
@@ -167,7 +179,7 @@ const GeneratorModificationForm = ({
             name={TRANSIENT_REACTANCE}
             label={'TransientReactanceForm'}
             adornment={OhmAdornment}
-            previousValue={generatorToModify?.generatorShortCircuit?.directTransX}
+            previousValue={generatorToModify?.generatorShortCircuit?.directTransX ?? undefined}
             clearable={true}
         />
     );
@@ -177,11 +189,7 @@ const GeneratorModificationForm = ({
             name={TRANSFORMER_REACTANCE}
             label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
-            previousValue={
-                isNaN(generatorToModify?.generatorShortCircuit?.stepUpTransformerX)
-                    ? null
-                    : generatorToModify?.generatorShortCircuit?.stepUpTransformerX
-            }
+            previousValue={generatorToModify?.generatorShortCircuit?.stepUpTransformerX ?? undefined}
             clearable={true}
         />
     );
@@ -191,7 +199,7 @@ const GeneratorModificationForm = ({
             name={PLANNED_ACTIVE_POWER_SET_POINT}
             label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
-            previousValue={generatorToModify?.generatorStartup?.plannedActivePowerSetPoint}
+            previousValue={generatorToModify?.generatorStartup?.plannedActivePowerSetPoint ?? undefined}
             clearable={true}
         />
     );
@@ -200,7 +208,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={MARGINAL_COST}
             label={'MarginalCost'}
-            previousValue={generatorToModify?.generatorStartup?.marginalCost}
+            previousValue={generatorToModify?.generatorStartup?.marginalCost ?? undefined}
             clearable={true}
         />
     );
@@ -209,7 +217,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={PLANNED_OUTAGE_RATE}
             label={'plannedOutageRate'}
-            previousValue={generatorToModify?.generatorStartup?.plannedOutageRate}
+            previousValue={generatorToModify?.generatorStartup?.plannedOutageRate ?? undefined}
             clearable={true}
         />
     );
@@ -218,7 +226,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={FORCED_OUTAGE_RATE}
             label={'forcedOutageRate'}
-            previousValue={generatorToModify?.generatorStartup?.forcedOutageRate}
+            previousValue={generatorToModify?.generatorStartup?.forcedOutageRate ?? undefined}
             clearable={true}
         />
     );
@@ -230,7 +238,10 @@ const GeneratorModificationForm = ({
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
-            previousValues={generatorToModify}
+            previousValues={{
+                connectablePosition: generatorToModify?.connectablePosition,
+                terminalConnected: generatorToModify?.terminalConnected,
+            }}
         />
     );
 
@@ -320,6 +331,4 @@ const GeneratorModificationForm = ({
             <PropertiesForm networkElementType={'generator'} isModification={true} />
         </>
     );
-};
-
-export default GeneratorModificationForm;
+}

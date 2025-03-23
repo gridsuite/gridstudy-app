@@ -7,14 +7,12 @@
 
 import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import {
-    ACTIVE_POWER_SET_POINT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
+import { ActivePowerAdornment, filledTextField } from '../../../dialog-utils';
 import { Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
@@ -25,6 +23,7 @@ import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { SetPointsForm } from '../../../set-points/set-points-form';
 
 export interface BatteryCreationFormProps {
     studyUuid: UUID;
@@ -62,23 +61,6 @@ export default function BatteryCreationForm({
     const minimumActivePowerField = (
         <FloatInput name={MINIMUM_ACTIVE_POWER} label={'MinimumActivePowerText'} adornment={ActivePowerAdornment} />
     );
-    const activePowerSetPointField = (
-        <FloatInput
-            name={ACTIVE_POWER_SET_POINT}
-            label={'ActivePowerText'}
-            adornment={ActivePowerAdornment}
-            clearable
-        />
-    );
-
-    const reactivePowerSetPointField = (
-        <FloatInput
-            name={REACTIVE_POWER_SET_POINT}
-            label={'ReactivePowerText'}
-            adornment={ReactivePowerAdornment}
-            clearable
-        />
-    );
 
     return (
         <>
@@ -104,11 +86,8 @@ export default function BatteryCreationForm({
             <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm />
 
-            <GridSection title="Setpoints" />
-            <Grid container spacing={2}>
-                <GridItem size={4}>{activePowerSetPointField}</GridItem>
-                <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
-            </Grid>
+            {/* Set points part */}
+            <SetPointsForm />
             <Grid container spacing={2} paddingTop={2}>
                 <ActivePowerControlForm />
             </Grid>

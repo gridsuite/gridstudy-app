@@ -78,13 +78,13 @@ import {
 import { BatteryModificationInfos } from '../../../../../services/network-modification-types';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { BatteryModificationForm } from './battery-modification-form';
+import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
-    [ACTIVE_POWER_SET_POINT]: null,
-    [REACTIVE_POWER_SET_POINT]: null,
+    ...getSetPointsEmptyFormData(true),
     ...getConnectivityWithPositionEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
     ...getActivePowerControlEmptyFormData(true),
@@ -104,10 +104,9 @@ const formSchema = yup
                 then: (schema) =>
                     schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
             }),
-        [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
         [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
+        ...getSetPointsSchema(true),
         ...getActivePowerControlSchema(true),
     })
     .concat(modificationPropertiesSchema)
@@ -316,6 +315,7 @@ export function BatteryModificationDialog({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid,
+                isUpdate: !!editData,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -323,7 +323,7 @@ export function BatteryModificationDialog({
                 });
             });
         },
-        [selectedId, studyUuid, currentNodeUuid, editData?.uuid, snackError]
+        [selectedId, studyUuid, currentNodeUuid, editData, snackError]
     );
 
     const open = useOpenShortWaitFetching({
@@ -333,10 +333,6 @@ export function BatteryModificationDialog({
                 (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
         delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in BatteryModificationForm and right after receiving the editData without waiting
     });
-
-    const onValidationError = useCallback((errors: any) => {
-        console.log('==================================errors', errors);
-    }, []);
 
     return (
         <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
@@ -348,7 +344,6 @@ export function BatteryModificationDialog({
                 aria-labelledby="dialog-modification-battery"
                 maxWidth={'md'}
                 titleId="ModifyBattery"
-                onValidationError={onValidationError}
                 open={open}
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}

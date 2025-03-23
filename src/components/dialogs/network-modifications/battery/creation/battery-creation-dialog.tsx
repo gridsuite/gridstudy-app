@@ -69,14 +69,14 @@ import {
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import BatteryCreationForm from './battery-creation-form';
 import ModificationDialog from '../../../commons/modificationDialog';
+import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
-    [ACTIVE_POWER_SET_POINT]: null,
-    [REACTIVE_POWER_SET_POINT]: null,
+    ...getSetPointsEmptyFormData(),
     ...getConnectivityWithPositionEmptyFormData(),
     ...getReactiveLimitsEmptyFormData(),
     ...getActivePowerControlEmptyFormData(),
@@ -92,22 +92,7 @@ const formSchema = yup
         [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(),
         [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(),
-        [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
-        [ACTIVE_POWER_SET_POINT]: yup
-            .number()
-            .required()
-            .nonNullable('FieldIsRequired')
-            .test('activePowerSetPoint', 'ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower', (value, context) => {
-                const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
-                const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
-                if (value === 0) {
-                    return true;
-                }
-                if (minActivePower === null || maxActivePower === null) {
-                    return false;
-                }
-                return value >= minActivePower && value <= maxActivePower;
-            }),
+        ...getSetPointsSchema(),
         ...getActivePowerControlSchema(),
     })
     .concat(creationPropertiesSchema)
@@ -120,7 +105,6 @@ export interface BatteryCreationDialogProps extends Partial<DialogProps> {
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
     editDataFetchStatus: FetchStatus;
-    disabledSave: boolean;
 }
 
 export function BatteryCreationDialog({
@@ -250,6 +234,7 @@ export function BatteryCreationDialog({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid,
+                isUpdate: !!editData,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -257,7 +242,7 @@ export function BatteryCreationDialog({
                 });
             });
         },
-        [studyUuid, currentNodeUuid, editData?.uuid, snackError]
+        [studyUuid, currentNodeUuid, editData, snackError]
     );
 
     const open = useOpenShortWaitFetching({
