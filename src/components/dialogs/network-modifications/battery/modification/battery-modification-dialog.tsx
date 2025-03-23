@@ -20,7 +20,6 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY,
     DROOP,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FREQUENCY_REGULATION,
     ID,
@@ -65,13 +64,13 @@ import {
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import { BatteryDialogSchemaForm, BatteryFormInfos } from '../battery-dialog.type';
+import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { FetchStatus } from '../../../../../services/utils.type';
-import { toModificationOperation, toModificationUnsetOperation } from '../../../../utils/utils';
+import { toModificationOperation } from '../../../../utils/utils';
 import {
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,
@@ -95,7 +94,6 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
         [MINIMUM_ACTIVE_POWER]: yup
@@ -109,7 +107,7 @@ const formSchema = yup
         [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
-        [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true, false),
+        [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
         ...getActivePowerControlSchema(true),
     })
     .concat(modificationPropertiesSchema)
@@ -137,13 +135,13 @@ export function BatteryModificationDialog({
 }: Readonly<BatteryModificationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
+    const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [batteryToModify, setBatteryToModify] = useState<BatteryFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const formMethods = useForm<DeepNullable<BatteryDialogSchemaForm>>({
+    const formMethods = useForm<DeepNullable<BatteryModificationDialogSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<BatteryDialogSchemaForm>>(formSchema),
+        resolver: yupResolver<DeepNullable<BatteryModificationDialogSchemaForm>>(formSchema),
     });
 
     const { reset, getValues, setValue } = formMethods;
@@ -282,18 +280,17 @@ export function BatteryModificationDialog({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (battery: BatteryDialogSchemaForm) => {
+        (battery: BatteryModificationDialogSchemaForm) => {
             const reactiveLimits = battery[REACTIVE_LIMITS];
             const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const batteryModificationInfos = {
                 type: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
-                uuid: editData?.uuid,
                 equipmentId: selectedId,
                 equipmentName: toModificationOperation(sanitizeString(battery[EQUIPMENT_NAME])),
                 minP: toModificationOperation(battery[MINIMUM_ACTIVE_POWER]),
                 maxP: toModificationOperation(battery[MAXIMUM_ACTIVE_POWER]),
                 targetP: toModificationOperation(battery[ACTIVE_POWER_SET_POINT]),
-                targetQ: toModificationUnsetOperation(battery[REACTIVE_POWER_SET_POINT]),
+                targetQ: toModificationOperation(battery[REACTIVE_POWER_SET_POINT]),
                 voltageLevelId: toModificationOperation(battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
                 busOrBusbarSectionId: toModificationOperation(battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
                 connectionName: toModificationOperation(sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME])),
@@ -318,6 +315,7 @@ export function BatteryModificationDialog({
                 batteryModificationInfos: batteryModificationInfos,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -336,6 +334,10 @@ export function BatteryModificationDialog({
         delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in BatteryModificationForm and right after receiving the editData without waiting
     });
 
+    const onValidationError = useCallback((errors: any) => {
+        console.log('==================================errors', errors);
+    }, []);
+
     return (
         <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
@@ -346,6 +348,7 @@ export function BatteryModificationDialog({
                 aria-labelledby="dialog-modification-battery"
                 maxWidth={'md'}
                 titleId="ModifyBattery"
+                onValidationError={onValidationError}
                 open={open}
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}

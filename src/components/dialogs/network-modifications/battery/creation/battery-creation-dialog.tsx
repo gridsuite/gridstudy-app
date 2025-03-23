@@ -42,7 +42,6 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import { sanitizeString } from '../../../dialog-utils';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
-import { getActivePowerSetPointSchema, getReactivePowerSetPointSchema } from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
@@ -61,7 +60,7 @@ import {
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
-import { BatteryDialogSchemaForm, BatteryFormInfos } from '../battery-dialog.type';
+import { BatteryCreationDialogSchemaForm, BatteryFormInfos } from '../battery-dialog.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import {
     getActivePowerControlEmptyFormData,
@@ -78,8 +77,8 @@ const emptyFormData = {
     [MINIMUM_ACTIVE_POWER]: null,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
-    ...getReactiveLimitsEmptyFormData(),
     ...getConnectivityWithPositionEmptyFormData(),
+    ...getReactiveLimitsEmptyFormData(),
     ...getActivePowerControlEmptyFormData(),
     ...emptyProperties,
 };
@@ -91,10 +90,24 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
         [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(),
-        ...getReactivePowerSetPointSchema(),
-        ...getActivePowerSetPointSchema(),
+        [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(),
+        [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
+        [ACTIVE_POWER_SET_POINT]: yup
+            .number()
+            .required()
+            .nonNullable('FieldIsRequired')
+            .test('activePowerSetPoint', 'ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower', (value, context) => {
+                const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
+                const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
+                if (value === 0) {
+                    return true;
+                }
+                if (minActivePower === null || maxActivePower === null) {
+                    return false;
+                }
+                return value >= minActivePower && value <= maxActivePower;
+            }),
         ...getActivePowerControlSchema(),
     })
     .concat(creationPropertiesSchema)
@@ -122,9 +135,9 @@ export function BatteryCreationDialog({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<DeepNullable<BatteryDialogSchemaForm>>({
+    const formMethods = useForm<DeepNullable<BatteryCreationDialogSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<BatteryDialogSchemaForm>>(formSchema),
+        resolver: yupResolver<DeepNullable<BatteryCreationDialogSchemaForm>>(formSchema),
     });
 
     const { reset } = formMethods;
@@ -162,7 +175,7 @@ export function BatteryCreationDialog({
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid,
-        toFormValues: (data: BatteryDialogSchemaForm) => data,
+        toFormValues: (data: BatteryCreationDialogSchemaForm) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EquipmentType.BATTERY,
     });
@@ -205,12 +218,11 @@ export function BatteryCreationDialog({
     }, [reset]);
 
     const onSubmit = useCallback(
-        (battery: BatteryDialogSchemaForm) => {
+        (battery: BatteryCreationDialogSchemaForm) => {
             const reactiveLimits = battery[REACTIVE_LIMITS];
             const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const batteryCreationInfos = {
                 type: MODIFICATION_TYPES.BATTERY_CREATION.type,
-                uuid: editData?.uuid,
                 equipmentId: battery[EQUIPMENT_ID],
                 equipmentName: sanitizeString(battery[EQUIPMENT_NAME]),
                 voltageLevelId: battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
@@ -237,6 +249,7 @@ export function BatteryCreationDialog({
                 batteryCreationInfos: batteryCreationInfos,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -244,7 +257,7 @@ export function BatteryCreationDialog({
                 });
             });
         },
-        [currentNodeUuid, editData, studyUuid, snackError]
+        [studyUuid, currentNodeUuid, editData?.uuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({

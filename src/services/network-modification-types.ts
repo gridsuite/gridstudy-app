@@ -412,7 +412,6 @@ export interface BatteryCreationInfos {
     targetQ?: number | null;
     voltageLevelId?: string | null;
     busOrBusbarSectionId?: string | null;
-    regulatingTerminalVlId?: string | null;
     reactiveCapabilityCurvePoints?: ReactiveCapabilityCurvePoints[] | null;
     participate?: boolean | null;
     droop?: number | null;

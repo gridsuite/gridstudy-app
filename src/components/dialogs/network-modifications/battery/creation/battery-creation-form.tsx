@@ -104,7 +104,6 @@ export default function BatteryCreationForm({
             <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm />
 
-            {/* Set points part */}
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
                 <GridItem size={4}>{activePowerSetPointField}</GridItem>

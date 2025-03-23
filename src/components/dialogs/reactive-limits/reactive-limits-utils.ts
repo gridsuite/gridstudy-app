@@ -52,34 +52,36 @@ export const getReactiveLimitsEmptyFormData = (id = REACTIVE_LIMITS) => ({
     },
 });
 
+export const getReactiveLimitsValidationSchema = (
+    isEquipmentModification = false,
+    positiveAndNegativePExist = false // if true, we check that Reactive Capability table have at least one row with negative P and one with positive one
+) =>
+    yup.object().shape(
+        {
+            [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
+            [MINIMUM_REACTIVE_POWER]: yup
+                .number()
+                .nullable()
+                .when([MAXIMUM_REACTIVE_POWER], {
+                    is: (maximumReactivePower: number) => !isEquipmentModification && maximumReactivePower != null,
+                    then: (schema) => schema.required(),
+                }),
+            [MAXIMUM_REACTIVE_POWER]: yup
+                .number()
+                .nullable()
+                .when([MINIMUM_REACTIVE_POWER], {
+                    is: (minimumReactivePower: number) => !isEquipmentModification && minimumReactivePower != null,
+                    then: (schema) => schema.required(),
+                }),
+            ...getReactiveCapabilityCurveValidationSchema(REACTIVE_CAPABILITY_CURVE_TABLE, positiveAndNegativePExist),
+        },
+        [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER] as unknown as readonly [string, string][]
+    );
+
 export const getReactiveLimitsSchema = (
     isEquipmentModification = false,
     positiveAndNegativePExist = false,
     id = REACTIVE_LIMITS
 ) => ({
-    [id]: getReactiveLimitsValidationSchema(isEquipmentModification),
+    [id]: getReactiveLimitsValidationSchema(isEquipmentModification, positiveAndNegativePExist),
 });
-
-export const getReactiveLimitsValidationSchema = (
-    isEquipmentModification = false,
-    positiveAndNegativePExist = false, // if true, we check that Reactive Capability table have at least one row with negative P and one with positive one
-    id = REACTIVE_LIMITS
-) =>
-    yup.object().shape({
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
-        [MINIMUM_REACTIVE_POWER]: yup
-            .number()
-            .nullable()
-            .when([MAXIMUM_REACTIVE_POWER], {
-                is: (maximumReactivePower: number) => !isEquipmentModification && maximumReactivePower != null,
-                then: (schema) => schema.required(),
-            }),
-        [MAXIMUM_REACTIVE_POWER]: yup
-            .number()
-            .nullable()
-            .when([MINIMUM_REACTIVE_POWER], {
-                is: (minimumReactivePower: number) => !isEquipmentModification && minimumReactivePower != null,
-                then: (schema) => schema.required(),
-            }),
-        ...getReactiveCapabilityCurveValidationSchema(REACTIVE_CAPABILITY_CURVE_TABLE, positiveAndNegativePExist),
-    });

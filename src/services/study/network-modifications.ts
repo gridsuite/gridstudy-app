@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import { toModificationOperation, toModificationUnsetOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, safeEncodeURIComponent } from './index';
@@ -42,6 +42,7 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
+
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
@@ -288,19 +289,21 @@ export function createBattery({
     batteryCreationInfos,
     studyUuid,
     nodeUuid,
+    modificationUuid,
 }: {
     batteryCreationInfos: BatteryCreationInfos;
     studyUuid: UUID;
     nodeUuid: UUID;
+    modificationUuid?: string | null;
 }) {
     let createBatteryUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    if (batteryCreationInfos?.uuid) {
-        createBatteryUrl += '/' + encodeURIComponent(batteryCreationInfos?.uuid);
+    if (modificationUuid) {
+        createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating battery creation');
     } else {
         console.info('Creating battery creation');
     }
-    const isUpdate = !!batteryCreationInfos?.uuid;
+    const isUpdate = !!modificationUuid;
     return backendFetchText(createBatteryUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -308,7 +311,7 @@ export function createBattery({
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            batteryCreationInfos,
+            ...batteryCreationInfos,
         }),
     });
 }
@@ -317,29 +320,28 @@ export function modifyBattery({
     batteryModificationInfos,
     studyUuid,
     nodeUuid,
+    modificationUuid,
 }: {
     batteryModificationInfos: BatteryModificationInfos;
     studyUuid: UUID;
     nodeUuid?: UUID;
+    modificationUuid?: string;
 }) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    if (batteryModificationInfos?.uuid) {
-        modificationUrl += '/' + encodeURIComponent(batteryModificationInfos.uuid);
+    if (modificationUuid) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating battery modification');
     } else {
         console.info('Creating battery modification');
     }
-    const isUpdate = !!batteryModificationInfos?.uuid;
-    const batteryModification = {
-        batteryModificationInfos,
-    };
+    const isUpdate = !!modificationUuid;
     return backendFetchText(modificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(batteryModification),
+        body: JSON.stringify({ ...batteryModificationInfos }),
     });
 }
 

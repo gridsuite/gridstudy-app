@@ -38,7 +38,33 @@ import {
 } from '../../reactive-limits/reactive-limits.type';
 import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
 
-export type BatteryDialogSchemaForm = {
+export type BatteryModificationDialogSchemaForm = {
+    [EQUIPMENT_NAME]?: string;
+    [MAXIMUM_ACTIVE_POWER]?: number | null;
+    [MINIMUM_ACTIVE_POWER]?: number | null;
+    [REACTIVE_POWER_SET_POINT]?: number | null;
+    [ACTIVE_POWER_SET_POINT]?: number | null;
+    [CONNECTIVITY]: {
+        [VOLTAGE_LEVEL]: { [ID]?: string };
+        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
+        [CONNECTION_DIRECTION]?: string;
+        [CONNECTION_NAME]?: string;
+        [CONNECTION_POSITION]?: number;
+        [CONNECTED]?: boolean;
+    };
+    [FREQUENCY_REGULATION]?: boolean | null;
+    [DROOP]?: number | null;
+    [REACTIVE_LIMITS]: {
+        [MINIMUM_REACTIVE_POWER]?: number | null;
+        [MAXIMUM_REACTIVE_POWER]?: number | null;
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
+        [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
+    };
+    // Properties
+    [ADDITIONAL_PROPERTIES]?: Property[];
+};
+
+export type BatteryCreationDialogSchemaForm = {
     [EQUIPMENT_ID]: string;
     [EQUIPMENT_NAME]?: string;
     [MAXIMUM_ACTIVE_POWER]?: number | null;
