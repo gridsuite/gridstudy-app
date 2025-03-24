@@ -88,7 +88,6 @@ export type AppActions =
     | EnableDeveloperModeAction
     | StudyUpdatedAction
     | MapDataLoadingAction
-    | ResetMapReloadedAction
     | MapEquipmentsInitializedAction
     | SetFullscreenDiagramAction
     | FavoriteContingencyListsAction
@@ -559,12 +558,15 @@ export function setMapDataLoading(mapDataLoading: boolean): MapDataLoadingAction
     };
 }
 
-export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
-export type ResetMapReloadedAction = Readonly<Action<typeof RESET_MAP_RELOADED>>;
+export const SET_RELOAD_MAP_NEEDED = 'SET_RELOAD_MAP_NEEDED';
+export type SetReloadMapNeededAction = Readonly<Action<typeof SET_RELOAD_MAP_NEEDED>> & {
+    reloadMapNeeded: boolean;
+};
 
-export function resetMapReloaded(): ResetMapReloadedAction {
+export function setReloadMapNeeded(reloadMapNeeded: boolean): SetReloadMapNeededAction {
     return {
-        type: RESET_MAP_RELOADED,
+        type: SET_RELOAD_MAP_NEEDED,
+        reloadMapNeeded,
     };
 }
 
