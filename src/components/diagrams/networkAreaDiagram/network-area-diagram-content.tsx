@@ -254,7 +254,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
                 .map((diagram) => diagram.id);
         } else if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
-            voltageLevelIds = props.svgVoltageLevels;
+            voltageLevelIds = props.svgVoltageLevels ?? [];
         } else {
             snackError({
                 messageId: 'SaveToGridexploreError',

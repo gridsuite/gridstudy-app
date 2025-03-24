@@ -26,6 +26,7 @@ import {
     NoSvg,
     SldSvg,
     Svg,
+    VoltageLevel,
 } from './diagram-common';
 import { getEstimatedNbVoltageLevels, makeDiagramSorter } from './diagram-utils';
 import { isNodeBuilt, isNodeInNotificationList } from '../graph/util/model-functions';
@@ -36,7 +37,14 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { EquipmentType, mergeSx, OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    EquipmentType,
+    mergeSx,
+    OverflowableText,
+    useDebounce,
+    useSnackMessage,
+    Identifiable,
+} from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
@@ -131,7 +139,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
         ]
     );
     const checkAndGetNetworkAreaDiagramFromConfigUrl = useCallback(
-        (nadConfigUuid: string) =>
+        (nadConfigUuid: UUID) =>
             isNodeBuilt(currentNode)
                 ? getNetworkAreaDiagramUrlFromConfig(studyUuid, currentNode?.id, currentRootNetworkUuid, nadConfigUuid)
                 : null,
@@ -194,7 +202,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
 
     // this callback returns a promise
     return useCallback(
-        (diagramState: Partial<DiagramView>) => {
+        (partialDiagramView: Partial<DiagramView>) => {
             if (!studyUuid || !currentNode) {
                 return Promise.reject(new Error('useDisplayView error: currentNode not build or studyUuid undefined'));
             }
@@ -235,23 +243,30 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 });
             }
 
-            function createNetworkAreaDiagramFromConfigView(id: UUID, state: ViewState | undefined, nadName: string) {
+            function createNetworkAreaDiagramFromConfigView(
+                id: UUID,
+                state: ViewState | undefined,
+                nadName: string | undefined
+            ) {
                 const svgUrl = checkAndGetNetworkAreaDiagramFromConfigUrl(id);
-                return fetchSvgData(svgUrl, DiagramType.NAD_FROM_CONFIG).then((svg) => {
+                return fetchSvgData(svgUrl, DiagramType.NAD_FROM_CONFIG).then((svg: DiagramSvg) => {
                     let substationsIds: UUID[] = [];
                     svg.additionalMetadata?.voltageLevels
-                        .map((vl) => ({
+                        .map((vl: VoltageLevel) => ({
                             substationId: vl.substationId,
                         }))
-                        .sort((vlA, vlB) => vlA.name?.toLowerCase().localeCompare(vlB.name?.toLowerCase() ?? '') || 0)
-                        .forEach((voltageLevel) => {
+                        .sort(
+                            (vlA: VoltageLevel, vlB: VoltageLevel) =>
+                                vlA.name?.toLowerCase().localeCompare(vlB.name?.toLowerCase() ?? '') || 0
+                        )
+                        .forEach((voltageLevel: VoltageLevel) => {
                             substationsIds.push(voltageLevel.substationId);
                         });
                     return {
                         id: id,
                         nodeId: currentNode.id,
                         state: state,
-                        name: nadName,
+                        name: nadName ?? id,
                         fetchSvg: () => createNetworkAreaDiagramFromConfigView(id, state, nadName),
                         svgType: DiagramType.NAD_FROM_CONFIG,
                         depth: 0, //depth, // TODO Retrieve the depth in the metadata from the backend (not implemented yet) ?
@@ -311,18 +326,22 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 }
             }
 
-            if (diagramState.svgType === DiagramType.VOLTAGE_LEVEL) {
-                return createVoltageLevelDiagramView(diagramState.id!, diagramState.state);
-            } else if (diagramState.svgType === DiagramType.SUBSTATION) {
-                return createSubstationDiagramView(diagramState.id!, diagramState.state);
-            } else if (diagramState.svgType === DiagramType.NAD_FROM_CONFIG) {
+            if (partialDiagramView.svgType === DiagramType.VOLTAGE_LEVEL) {
+                return createVoltageLevelDiagramView(partialDiagramView.id!, partialDiagramView.state);
+            } else if (partialDiagramView.svgType === DiagramType.SUBSTATION) {
+                return createSubstationDiagramView(partialDiagramView.id!, partialDiagramView.state);
+            } else if (partialDiagramView.svgType === DiagramType.NAD_FROM_CONFIG) {
                 return createNetworkAreaDiagramFromConfigView(
-                    diagramState.id!,
-                    diagramState.state,
-                    diagramState.nadName
+                    partialDiagramView.id!,
+                    partialDiagramView.state,
+                    partialDiagramView.nadName
                 );
-            } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                return createNetworkAreaDiagramView(diagramState.ids, diagramState.state, diagramState.depth);
+            } else if (partialDiagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+                return createNetworkAreaDiagramView(
+                    partialDiagramView.ids,
+                    partialDiagramView.state,
+                    partialDiagramView.depth
+                );
             }
         },
         [
@@ -450,11 +469,12 @@ export function DiagramPane({
                 loadingState: boolean;
                 align: 'left' | 'right' | 'center';
                 name: string;
+                nadName?: string;
             }[] = [];
             diagramStates.forEach((diagramState) => {
                 if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                     const diagramAlreadyPresentInViews = viewsRef.current.find(
-                        (diagramView: DiagramState) =>
+                        (diagramView) =>
                             diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
                             diagramView.id === diagramState.id
                     );
@@ -464,13 +484,13 @@ export function DiagramPane({
                             diagramProperties = {
                                 name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramState.id }),
                                 align: 'left',
-                            };
+                            } as const;
                         } else {
                             diagramProperties = {
                                 name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramState.name }),
                                 align: 'right',
                                 nadName: diagramState.name,
-                            };
+                            } as const;
                         }
 
                         diagramsToAdd.push({
@@ -1172,7 +1192,7 @@ export function DiagramPane({
                                         svgMetadata={diagramView.nadMetadata}
                                         svgScalingFactor={diagramView.additionalMetadata?.scalingFactor}
                                         svgVoltageLevels={diagramView.additionalMetadata?.voltageLevels?.map(
-                                            (n) => n.id
+                                            (n: Identifiable) => n.id
                                         )}
                                         loadingState={diagramView.loadingState}
                                         diagramSizeSetter={setDiagramSize}

@@ -141,7 +141,8 @@ export type AppActions =
     | SetAppTabIndexAction
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
-    | CancelLeaveParametersTabAction;
+    | CancelLeaveParametersTabAction
+    | LoadNadFromConfigAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -1378,6 +1379,7 @@ export function setCalculationSelections(tabUuid: UUID, selections: string[]): S
 
 export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
 export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
+
 export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,

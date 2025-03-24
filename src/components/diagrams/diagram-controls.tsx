@@ -20,7 +20,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import SaveIcon from '@mui/icons-material/Save';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const styles = {
     actionIcon: (theme: Theme) => ({
@@ -47,6 +47,7 @@ interface DiagramControlsProps {
 }
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => {
+    const intl = useIntl();
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -126,7 +127,9 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => 
                             open={isLoadSelectorOpen}
                             onClose={selectElement}
                             types={[ElementType.DIAGRAM_CONFIG]}
-                            title={<FormattedMessage id={'GenerateFromGridexplore'} />}
+                            title={intl.formatMessage({
+                                id: 'GenerateFromGridexplore',
+                            })}
                             multiSelect={false}
                         />
                     </Box>

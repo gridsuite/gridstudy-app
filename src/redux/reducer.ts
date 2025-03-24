@@ -426,6 +426,7 @@ export type DiagramState = {
     svgType: DiagramType;
     state: ViewState;
     needsToBlink?: boolean;
+    name?: string;
 };
 
 export type NadNodeMovement = {
