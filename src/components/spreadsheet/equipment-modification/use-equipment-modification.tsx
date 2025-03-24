@@ -8,7 +8,6 @@
 import { FetchStatus } from '@gridsuite/commons-ui';
 import { BatteryModificationDialog } from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import { GeneratorModificationDialog } from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
-import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
