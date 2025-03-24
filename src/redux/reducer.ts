@@ -123,7 +123,6 @@ import {
     RESET_EQUIPMENTS_POST_LOADFLOW,
     RESET_LOGS_FILTER,
     RESET_MAP_EQUIPMENTS,
-    RESET_MAP_RELOADED,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     ResetAllSpreadsheetGsFiltersAction,
     ResetEquipmentsAction,
@@ -131,7 +130,6 @@ import {
     ResetEquipmentsPostLoadflowAction,
     ResetLogsFilterAction,
     ResetMapEquipmentsAction,
-    ResetMapReloadedAction,
     ResetNetworkAreaDiagramDepthAction,
     SAVE_SPREADSHEET_GS_FILTER,
     SaveSpreadSheetGsFilterAction,
@@ -156,6 +154,7 @@ import {
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
+    SET_RELOAD_MAP_NEEDED,
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
     SetAppTabIndexAction,
@@ -169,6 +168,7 @@ import {
     SetOneBusShortcircuitAnalysisDiagramAction,
     SetOptionalServicesAction,
     SetParamsLoadedAction,
+    SetReloadMapNeededAction,
     SetStudyDisplayModeAction,
     SetStudyIndexationStatusAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
@@ -286,7 +286,7 @@ import {
     LineFlowColorMode,
     LineFlowMode,
 } from '@powsybl/network-viewer';
-import type { UnknownArray, ValueOf } from 'type-fest';
+import type { ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
@@ -500,7 +500,8 @@ export interface AppState extends CommonStoreState {
     isEventScenarioDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
-    reloadMap: boolean;
+    reloadMapNeeded: boolean;
+    freezeMapUpdates: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     gsFilterSpreadsheetState: GsFilterSpreadsheetState;
@@ -522,7 +523,7 @@ export interface AppState extends CommonStoreState {
     [PARAM_DIAGONAL_LABEL]: boolean;
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
     [PARAM_COMPONENT_LIBRARY]: unknown | null;
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UnknownArray;
+    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;
@@ -654,7 +655,8 @@ const initialState: AppState = {
     diagramStates: [],
     nadNodeMovements: [],
     nadTextNodeMovements: [],
-    reloadMap: true,
+    reloadMapNeeded: true,
+    freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
@@ -688,7 +690,7 @@ const initialState: AppState = {
     [PARAM_LINE_PARALLEL_PATH]: true,
     [PARAM_LIMIT_REDUCTION]: 100,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
-    [PARAM_MAP_MANUAL_REFRESH]: false,
+    [PARAM_MAP_MANUAL_REFRESH]: true,
     [PARAM_MAP_BASEMAP]: MAP_BASEMAP_MAPBOX,
     [PARAM_LINE_FLOW_MODE]: 'feeders' as LineFlowMode.FEEDERS, // because jest not support enum
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage' as LineFlowColorMode.NOMINAL_VOLTAGE, // because jest not support enum
@@ -944,6 +946,7 @@ export const reducer = createReducer(initialState, (builder) => {
             state.networkModificationTreeModel = action.networkModificationTreeModel;
             state.networkModificationTreeModel.setBuildingStatus();
             state.isNetworkModificationTreeModelUpToDate = true;
+            state.reloadMapNeeded = true;
         }
     );
 
@@ -1060,7 +1063,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 if (action.networkModificationTreeNodes.find((node) => node.id === state.currentTreeNode?.id)) {
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                     // current node has changed, then will need to reload Geo Data
-                    state.reloadMap = true;
+                    state.reloadMapNeeded = true;
                 }
             }
         }
@@ -1136,8 +1139,8 @@ export const reducer = createReducer(initialState, (builder) => {
         state.showAuthenticationRouterLogin = action.showAuthenticationRouterLogin;
     });
 
-    builder.addCase(RESET_MAP_RELOADED, (state, _action: ResetMapReloadedAction) => {
-        state.reloadMap = false;
+    builder.addCase(SET_RELOAD_MAP_NEEDED, (state, action: SetReloadMapNeededAction) => {
+        state.reloadMapNeeded = action.reloadMapNeeded;
     });
 
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {
@@ -1159,7 +1162,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
-        state.reloadMap = true;
+        state.reloadMapNeeded = true;
     });
 
     builder.addCase(CURRENT_ROOT_NETWORK_UUID, (state, action: CurrentRootNetworkUuidAction) => {
@@ -1227,7 +1230,9 @@ export const reducer = createReducer(initialState, (builder) => {
             // Some actions in the TREE display mode could change this value after that
             // ex: change current Node, current Node updated ...
             if (action.studyDisplayMode === StudyDisplayMode.TREE) {
-                state.reloadMap = false;
+                state.freezeMapUpdates = true;
+            } else {
+                state.freezeMapUpdates = false;
             }
 
             state.studyDisplayMode = action.studyDisplayMode;

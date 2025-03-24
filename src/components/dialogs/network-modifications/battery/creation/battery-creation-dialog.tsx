@@ -8,7 +8,7 @@
 import { useForm } from 'react-hook-form';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
+import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -155,14 +155,7 @@ export function BatteryCreationDialog({
             { keepDefaultValues: true }
         );
     };
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: (data: BatteryCreationDialogSchemaForm) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EquipmentType.BATTERY,
-    });
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EquipmentType.BATTERY);
 
     useEffect(() => {
         if (editData) {
