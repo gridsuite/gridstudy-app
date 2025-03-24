@@ -57,6 +57,7 @@ import { AppState } from 'redux/reducer';
 import { createSpreadsheetColumn, updateSpreadsheetColumn } from 'services/study-config';
 import { UUID } from 'crypto';
 import { ColumnDefinition } from '../config/spreadsheet.type';
+import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -94,12 +95,12 @@ export default function CustomColumnDialog({
     const columnId = useWatch({ control, name: COLUMN_ID });
     const watchColumnName = useWatch({ control, name: COLUMN_NAME });
     const watchColumnType = useWatch({ control, name: COLUMN_TYPE });
-    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
+    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns.map());
     const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
     const tableName = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.name);
     const { snackError } = useSnackMessage();
     const columnDefinition = useMemo(
-        () => columnsDefinitions?.find((column) => column?.uuid === colUuid),
+        () => columnsDefinitions?.find((column) => column?.context?.definition.uuid === colUuid)?.context?.definition,
         [colUuid, columnsDefinitions]
     );
 

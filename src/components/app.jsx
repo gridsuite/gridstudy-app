@@ -18,8 +18,8 @@ import {
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
-    useSnackMessage,
     useNotificationsListener,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -54,6 +54,7 @@ import {
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
 import { StudyView } from './utils/utils';
+import { mapColumnDefinition } from '../utils/column-utils.js';
 
 const noUserManager = { instance: null, error: null };
 
@@ -210,22 +211,15 @@ const App = () => {
                 });
             });
 
-            const mapColumns = (columns) => {
-                return columns.map((column) => {
-                    return {
-                        ...column,
-                        dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
-                    };
-                });
-            };
-
             const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((config) => {
                 const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
                     return {
                         uuid: spreadsheetConfig.id,
                         index: index,
                         name: spreadsheetConfig.name,
-                        columns: mapColumns(spreadsheetConfig.columns),
+                        columns: spreadsheetConfig.columns.map((colDef) =>
+                            mapColumnDefinition(spreadsheetConfig.id, colDef)
+                        ),
                         type: spreadsheetConfig.sheetType,
                     };
                 });

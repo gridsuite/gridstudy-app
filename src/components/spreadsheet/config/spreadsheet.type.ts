@@ -9,6 +9,7 @@ import type { UUID } from 'crypto';
 import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { Identifiable } from '@gridsuite/commons-ui';
 import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
 export type EquipmentFetcher = (
     studyUuid: UUID,
@@ -25,12 +26,18 @@ export type SpreadsheetEquipmentType = Exclude<
     | EQUIPMENT_TYPES.DISCONNECTOR
 >;
 
+export interface StaticSpreadsheetTabDefinition {
+    name: string;
+    type: SpreadsheetEquipmentType;
+    columns: CustomColDef[];
+}
+
 export interface SpreadsheetTabDefinition {
     uuid: UUID;
     index: number;
     name: string;
     type: SpreadsheetEquipmentType;
-    columns: ColumnDefinition[];
+    columns: CustomColDef[];
 }
 
 export type ColumnDefinition = {

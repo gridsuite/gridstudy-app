@@ -11,6 +11,8 @@ import React, { ComponentType } from 'react';
 import { CustomColumnConfigProps } from '../custom-column-menu';
 import { SortParams } from '../hooks/use-custom-aggrid-sort';
 import { COLUMN_TYPES, CustomCellType } from '../custom-aggrid-header.type';
+import { UUID } from 'crypto';
+import { ColumnDefinition } from '../../spreadsheet/config/spreadsheet.type';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -61,6 +63,7 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
     //We omit colId and api here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
     filterComponentParams?: Omit<F, 'colId' | 'api'>;
     sortParams?: SortParams;
+    definition: ColumnDefinition;
 }
 
 export interface CustomColDef<TData = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>

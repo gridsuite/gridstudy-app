@@ -20,9 +20,10 @@ import {
 import { validateFormulaResult } from './formula-validator';
 import { ColumnDefinition } from '../config/spreadsheet.type';
 import { CustomColDef } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { UUID } from 'crypto';
 
-export function useCustomColumn(tabIndex: number) {
-    const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
+export function useCustomColumn(tabUuid: UUID) {
+    const columnDefinitions = useSelector((state: AppState) => state.tables.static[tabUuid].columns);
 
     const createValueGetter = useCallback(
         (colDef: ColumnDefinition) =>
@@ -49,21 +50,21 @@ export function useCustomColumn(tabIndex: number) {
 
     return useMemo(
         () =>
-            tableDefinition?.columns.map((colDef): CustomColDef => {
+            columnDefinitions.map((colDef): CustomColDef => {
                 let baseDefinition: ColDef;
 
                 switch (colDef.type) {
                     case COLUMN_TYPES.NUMBER:
-                        baseDefinition = numberColumnDefinition(colDef.name, tableDefinition.uuid, colDef.precision);
+                        baseDefinition = numberColumnDefinition(colDef.name, tabUuid, colDef.precision);
                         break;
                     case COLUMN_TYPES.TEXT:
-                        baseDefinition = textColumnDefinition(colDef.name, tableDefinition.uuid);
+                        baseDefinition = textColumnDefinition(colDef.name, tabUuid);
                         break;
                     case COLUMN_TYPES.BOOLEAN:
-                        baseDefinition = booleanColumnDefinition(colDef.name, tableDefinition.uuid);
+                        baseDefinition = booleanColumnDefinition(colDef.name, tabUuid);
                         break;
                     case COLUMN_TYPES.ENUM:
-                        baseDefinition = enumColumnDefinition(colDef.name, tableDefinition.uuid);
+                        baseDefinition = enumColumnDefinition(colDef.name, tabUuid);
                         break;
                     default:
                         baseDefinition = {};
@@ -79,7 +80,7 @@ export function useCustomColumn(tabIndex: number) {
                         menu: {
                             Menu: CustomColumnMenu,
                             menuParams: {
-                                tabIndex,
+                                tabUuid,
                                 colUuid: colDef.uuid,
                             },
                         },
@@ -91,6 +92,6 @@ export function useCustomColumn(tabIndex: number) {
                     hide: !(colDef.visible ?? true),
                 };
             }),
-        [tableDefinition?.columns, tableDefinition?.uuid, tabIndex, createValueGetter]
+        [columnDefinitions, tabUuid, createValueGetter]
     );
 }

@@ -18,9 +18,8 @@ import {
     GridOptions,
     RowStyle,
 } from 'ag-grid-community';
-import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
-import { NodeType } from 'components/graph/tree-node.type';
+import { UUID } from 'crypto';
 
 const DEFAULT_ROW_HEIGHT = 28;
 const MAX_CLICK_DURATION = 200;
@@ -42,13 +41,13 @@ interface EquipmentTableProps {
     columnData: ColDef[];
     gridRef: Ref<any> | undefined;
     studyUuid: string;
-    currentNode: CurrentTreeNode;
-    handleColumnDrag: (e: ColumnMovedEvent) => void;
-    isFetching: boolean | undefined;
-    shouldHidePinnedHeaderRightBorder: boolean;
+    currentNode: UUID;
+    handleColumnDrag?: (e: ColumnMovedEvent) => void;
+    isFetching?: boolean | undefined;
+    shouldHidePinnedHeaderRightBorder?: boolean;
     onRowClicked?: (event: RowClickedEvent) => void;
-    isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
-    doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
+    isExternalFilterPresent?: GridOptions['isExternalFilterPresent'];
+    doesExternalFilterPass?: GridOptions['doesExternalFilterPass'];
 }
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
@@ -70,7 +69,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
 
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {
-            const isRootNode = currentNode?.type === NodeType.ROOT;
+            const isRootNode = false;
             const cursorStyle = isRootNode ? 'initial' : 'pointer';
 
             if (params.rowIndex === 0 && params.node.rowPinned === 'top') {
@@ -84,7 +83,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
                 cursor: cursorStyle,
             };
         },
-        [currentNode?.type, theme.palette.primary.main]
+        [theme.palette.primary.main]
     );
 
     const gridContext = useMemo(

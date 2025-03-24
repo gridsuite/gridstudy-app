@@ -110,6 +110,8 @@ import {
     RemoveNodeDataAction,
     RemoveNotificationByNodeAction,
     RemoveTableDefinitionAction,
+    RENAME_TABLE_DEFINITION,
+    RenameTableDefinitionAction,
     REORDER_TABLE_DEFINITIONS,
     ReorderTableDefinitionsAction,
     RESET_EQUIPMENTS,
@@ -188,10 +190,8 @@ import {
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
     UpdateTableDefinitionAction,
-    RenameTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    RENAME_TABLE_DEFINITION,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -285,11 +285,13 @@ import {
     SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
+    StaticSpreadsheetTabDefinition,
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
+import { mapColumnDefinition } from '../utils/column-utils';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -590,11 +592,13 @@ const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
 interface TablesState {
     uuid: UUID | null;
+    static: Record<UUID, StaticSpreadsheetTabDefinition>;
     definitions: SpreadsheetTabDefinition[];
 }
 
 const initialTablesState: TablesState = {
     uuid: null,
+    static: {},
     definitions: [],
 };
 
@@ -852,9 +856,17 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(INIT_TABLE_DEFINITIONS, (state, action: InitTableDefinitionsAction) => {
         state.tables.uuid = action.collectionUuid;
+        state.tables.static = action.tableDefinitions.reduce((acc, item) => {
+            acc[item.uuid] = {
+                name: item.name,
+                type: item.type,
+                columns: item.columns,
+            };
+            return acc;
+        }, {} as Record<UUID, StaticSpreadsheetTabDefinition>);
         state.tables.definitions = action.tableDefinitions.map((tabDef) => ({
             ...tabDef,
-            columns: tabDef.columns.map((col) => ({ ...col, visible: true, locked: false })),
+            columns: tabDef.columns,
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
