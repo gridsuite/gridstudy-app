@@ -150,6 +150,7 @@ type NetworkAreaDiagramContentProps = {
     readonly diagramId: UUID;
     visible: boolean;
 };
+
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();
@@ -248,25 +249,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
-        let voltageLevelIds; // TODO This list could be built outside of this component
-        if (props.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-            voltageLevelIds = diagramStates
-                .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
-                .map((diagram) => diagram.id);
-        } else if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
-            voltageLevelIds = props.svgVoltageLevels ?? [];
-        } else {
-            snackError({
-                messageId: 'SaveToGridexploreError',
-            });
-            return;
-        }
         createDiagramConfig(
             {
                 depth: networkAreaDiagramDepth,
                 scalingFactor: props.svgScalingFactor,
                 radiusFactor: 300.0, // At the moment, we only use the default value
-                voltageLevelIds: voltageLevelIds,
+                voltageLevelIds: props.svgVoltageLevels ?? [],
                 positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
             },
             directoryData.name,
