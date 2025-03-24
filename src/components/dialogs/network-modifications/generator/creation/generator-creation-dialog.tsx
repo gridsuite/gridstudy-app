@@ -191,7 +191,9 @@ export function GeneratorCreationDialog({
                     generator?.regulatingTerminalId || generator?.regulatingTerminalConnectableId
                         ? REGULATION_TYPES.DISTANT.id
                         : REGULATION_TYPES.LOCAL.id,
-                [Q_PERCENT]: generator?.coordinatedReactiveControl?.qPercent ?? null,
+                [Q_PERCENT]: isNaN(Number(generator?.coordinatedReactiveControl?.qPercent))
+                    ? null
+                    : generator?.coordinatedReactiveControl?.qPercent,
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice: generator?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
                     minimumReactivePower: generator?.minMaxReactiveLimits?.minQ ?? null,
