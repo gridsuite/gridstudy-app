@@ -63,7 +63,7 @@ import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
+import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
     FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
@@ -393,14 +393,7 @@ const TwoWindingsTransformerCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-    });
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER);
 
     useEffect(() => {
         if (editData) {
