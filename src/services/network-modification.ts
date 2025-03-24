@@ -7,6 +7,7 @@
 
 import { backendFetch, backendFetchJson } from './utils';
 import { UUID } from 'crypto';
+import { LineTypeInfo } from '../components/dialogs/line-types-catalog/line-catalog.type';
 
 const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';
 
@@ -19,7 +20,7 @@ export function fetchNetworkModification(modificationUuid: UUID) {
     return backendFetch(modificationFetchUrl);
 }
 
-export function getLineTypesCatalog() {
+export function getLineTypesCatalog(): Promise<LineTypeInfo[]> {
     console.info(`get line types catalog`);
     const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types`;
     return backendFetchJson(url);

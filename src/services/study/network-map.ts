@@ -8,7 +8,14 @@
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
-import { createFilter, EquipmentInfos, EquipmentType, Identifiable, NewFilterType } from '@gridsuite/commons-ui';
+import {
+    createFilter,
+    EquipmentInfos,
+    EquipmentType,
+    ExtendedEquipmentType,
+    Identifiable,
+    NewFilterType,
+} from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
@@ -89,7 +96,7 @@ export function fetchEquipmentsIds(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     substationsIds: string[],
-    equipmentType: EquipmentType,
+    equipmentType: EquipmentType | ExtendedEquipmentType,
     inUpstreamBuiltParentNode: boolean,
     nominalVoltages?: number[]
 ) {

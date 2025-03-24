@@ -512,8 +512,11 @@
 
     "results.globalFilter.fillerText": "Filtrage",
     "results.globalFilter.recent": "Récents",
+    "results.globalFilter.filter": "Filtres",
     "results.globalFilter.country": "Pays",
     "results.globalFilter.voltageLevel": "Niveaux de tension",
+    "results.globalFilter.nonApplicable": "Le filtrage {filterName} n'est pas applicable pour le tableau de résultats courant et est inactif",
+    "results.globalFilter.nonApplicableExtra": "Le filtrage {filterName} et {extraFiltersNum} ne sont pas applicables pour le tableau de résultats courant et sont inactifs",
 
     "connectedComponentNum": "Numéro de composante connexe",
     "synchronousComponentNum": "Numéro de composante synchrone",
@@ -1265,6 +1268,7 @@
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
     "partialCopyShuntCompensator": "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
     "SensitivityAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de sensibilité",
+    "ComputationFilterResultsError": "Filtre introuvable :",
     "muiTablePaginationLabelRowsPerPage": "Lignes par page : ",
     "muiTablePaginationLabelRowsPerPageAllBusesSCA": "Défauts par page : ",
     "muiTablePaginationLabelRowsPerPageOneBusSCA": "Départs par page : ",

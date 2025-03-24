@@ -94,8 +94,8 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR}
-            previousRegulatingTerminalValue={undefined}
-            previousEquipmentSectionTypeValue={undefined}
+            regulatingTerminalVlId={undefined}
+            equipmentSectionType={undefined}
         />
     );
 

@@ -10,7 +10,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { GlobalFilter, LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
+import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
@@ -31,7 +31,7 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import ResultsGlobalFilter, { Filter } from '../common/results-global-filter';
+import ResultsGlobalFilter from '../common/global-filter/results-global-filter';
 import { mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -46,6 +46,8 @@ import {
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { GlobalFilter, GlobalFilters } from '../common/global-filter/global-filter-types';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 const styles = {
     flexWrapper: {
@@ -82,10 +84,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
-    const [countriesFilter, setCountriesFilter] = useState<Filter[]>([]);
-    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<Filter[]>([]);
+    const [countriesFilter, setCountriesFilter] = useState<GlobalFilter[]>([]);
+    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<GlobalFilter[]>([]);
 
-    const [globalFilter, setGlobalFilter] = useState<GlobalFilter>();
+    const [globalFilter, setGlobalFilter] = useState<GlobalFilters>();
 
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 
@@ -125,13 +127,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     }, [nodeUuid, studyUuid, currentRootNetworkUuid, snackError, loadFlowStatus]);
 
     const getGlobalFilterParameter = useCallback(
-        (globalFilter: GlobalFilter | undefined) => {
+        (globalFilter: GlobalFilters | undefined) => {
             let shouldSentParameter = false;
             if (globalFilter) {
-                if (globalFilter.countryCode && globalFilter.countryCode.length > 0) {
-                    shouldSentParameter = true;
-                }
-                if (globalFilter.nominalV && globalFilter.nominalV.length > 0) {
+                if (
+                    (globalFilter.countryCode && globalFilter.countryCode.length > 0) ||
+                    (globalFilter.nominalV && globalFilter.nominalV.length > 0) ||
+                    (globalFilter.genericFilter && globalFilter.genericFilter.length > 0)
+                ) {
                     shouldSentParameter = true;
                 }
             }
@@ -249,21 +252,28 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         setTabIndex(newTabIndex);
     };
 
-    const handleGlobalFilterChange = useCallback((value: Filter[]) => {
-        let newGlobalFilter: GlobalFilter = {};
+    const handleGlobalFilterChange = useCallback((value: GlobalFilter[]) => {
+        let newGlobalFilter: GlobalFilters = {};
         if (value) {
             const nominalVs = new Set(
                 value
-                    .filter((filter: Filter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
-                    .map((filter: Filter) => filter.label)
+                    .filter((filter: GlobalFilter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
+                    .map((filter: GlobalFilter) => filter.label)
+            );
+            const genericFilters: Set<string> = new Set(
+                value
+                    .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
+                    .map((filter: GlobalFilter) => filter.uuid ?? '')
+                    .filter((uuid: string): boolean => uuid !== '')
             );
             const countryCodes = new Set(
                 value
-                    .filter((filter: Filter) => filter.filterType === FilterType.COUNTRY)
-                    .map((filter: Filter) => filter.label)
+                    .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
+                    .map((filter: GlobalFilter) => filter.label)
             );
             newGlobalFilter.nominalV = [...nominalVs];
             newGlobalFilter.countryCode = [...countryCodes];
+            newGlobalFilter.genericFilter = [...genericFilters];
         }
         setGlobalFilter(newGlobalFilter);
     }, []);
@@ -278,6 +288,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return loadflowResult;
     }, [tabIndex, loadflowResult, intl]);
 
+    const getFilterableEquipmentTypes = useCallback(() => {
+        switch (tabIndex) {
+            case 0:
+                return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+            case 1:
+                return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+        }
+        return [];
+    }, [tabIndex]);
+
     return (
         <>
             <Box sx={styles.flexWrapper}>
@@ -291,6 +311,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     <ResultsGlobalFilter
                         onChange={handleGlobalFilterChange}
                         filters={[...voltageLevelsFilter, ...countriesFilter]}
+                        filterableEquipmentTypes={getFilterableEquipmentTypes()}
                     />
                 </Box>
                 <Box sx={styles.emptySpace}></Box>
