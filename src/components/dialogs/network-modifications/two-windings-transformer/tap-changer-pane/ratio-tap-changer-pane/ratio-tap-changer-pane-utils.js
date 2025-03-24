@@ -237,7 +237,7 @@ export const getRatioTapChangerModificationValidationSchema = (previousValues, i
 const ratioTapChangerEmptyFormData = (isModification, id) => ({
     [id]: {
         [ENABLED]: false,
-        [LOAD_TAP_CHANGING_CAPABILITIES]: false,
+        [LOAD_TAP_CHANGING_CAPABILITIES]: isModification ? null : false,
         [REGULATION_MODE]: null,
         [REGULATION_TYPE]: null,
         [REGULATION_SIDE]: isModification ? null : SIDE.SIDE1.id,

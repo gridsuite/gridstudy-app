@@ -8,7 +8,7 @@
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType, Parameter } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfo } from '../../components/graph/menus/network-modification-menu.type';
 import { ComputingType } from '../../components/computing-status/computing-type';
 import type { Svg } from 'components/diagrams/diagram-common';
@@ -188,7 +188,7 @@ export function fetchContingencyCount(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     contingencyListNames: string[]
-) {
+): Promise<number> {
     console.info(
         `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
@@ -234,7 +234,12 @@ export function copyOrMoveModifications(
     });
 }
 
-export function getAvailableExportFormats() {
+export interface ExportFormatProperties {
+    formatName: string;
+    parameters: Parameter[];
+}
+
+export function getAvailableExportFormats(): Promise<Record<string, ExportFormatProperties>> {
     console.info('get export formats');
     const getExportFormatsUrl = PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
     console.debug(getExportFormatsUrl);
