@@ -59,8 +59,6 @@ import { ExpertFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
-type MutableUnknownArray = unknown[];
-
 export type TableValue<TValue = unknown> = {
     index: number;
     value: TValue;
@@ -91,7 +89,6 @@ export type AppActions =
     | EnableDeveloperModeAction
     | StudyUpdatedAction
     | MapDataLoadingAction
-    | ResetMapReloadedAction
     | MapEquipmentsInitializedAction
     | SetFullscreenDiagramAction
     | FavoriteContingencyListsAction
@@ -562,12 +559,15 @@ export function setMapDataLoading(mapDataLoading: boolean): MapDataLoadingAction
     };
 }
 
-export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
-export type ResetMapReloadedAction = Readonly<Action<typeof RESET_MAP_RELOADED>>;
+export const SET_RELOAD_MAP_NEEDED = 'SET_RELOAD_MAP_NEEDED';
+export type SetReloadMapNeededAction = Readonly<Action<typeof SET_RELOAD_MAP_NEEDED>> & {
+    reloadMapNeeded: boolean;
+};
 
-export function resetMapReloaded(): ResetMapReloadedAction {
+export function setReloadMapNeeded(reloadMapNeeded: boolean): SetReloadMapNeededAction {
     return {
-        type: RESET_MAP_RELOADED,
+        type: SET_RELOAD_MAP_NEEDED,
+        reloadMapNeeded,
     };
 }
 
@@ -615,12 +615,10 @@ export function setFullScreenDiagram(
 
 export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
 export type FavoriteContingencyListsAction = Readonly<Action<typeof FAVORITE_CONTINGENCY_LISTS>> & {
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: MutableUnknownArray;
+    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
 };
 
-export function selectFavoriteContingencyLists(
-    favoriteContingencyLists: MutableUnknownArray
-): FavoriteContingencyListsAction {
+export function selectFavoriteContingencyLists(favoriteContingencyLists: UUID[]): FavoriteContingencyListsAction {
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
