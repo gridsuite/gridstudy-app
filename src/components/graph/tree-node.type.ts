@@ -24,6 +24,11 @@ export type AbstractNode = {
     columnPosition?: number;
 };
 
+export type StashedNodeProperties = {
+    first: AbstractNode;
+    second: number; // children size
+};
+
 export interface NodeBuildStatus {
     globalBuildStatus: BUILD_STATUS;
     localBuildStatus: BUILD_STATUS;
