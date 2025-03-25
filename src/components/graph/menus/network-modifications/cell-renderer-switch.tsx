@@ -30,8 +30,8 @@ const CellRendererSwitch = (props: CellRendererSwitchProps) => {
 
     const { snackError } = useSnackMessage();
 
-    const modificationUuid = data?.modificationInfos.uuid; // Get the UUID of the modification
-    const modificationActivated = data?.modificationInfos.activated; // Check if the modification is activated
+    const modificationUuid = data?.modificationInfos.uuid;
+    const modificationActivated = data?.modificationInfos.activated;
 
     const updateModification = useCallback(
         (activated: boolean) => {

@@ -109,7 +109,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 width: 99,
             },
         ];
-        const newDynamicColumns: ColDef<NetworkModificationInfos>[] = enableDeveloperMode
+        const dynamicColumns: ColDef<NetworkModificationInfos>[] = enableDeveloperMode
             ? rootNetworks.map((rootNetwork) => {
                   const rootNetworkUuid = rootNetwork.rootNetworkUuid;
                   const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
@@ -136,7 +136,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
               })
             : [];
 
-        return [...staticColumns, ...newDynamicColumns];
+        return [...staticColumns, ...dynamicColumns];
     }, [
         isDragging,
         modifications?.length,

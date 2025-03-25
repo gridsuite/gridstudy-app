@@ -31,7 +31,7 @@ const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) =>
     const { snackError } = useSnackMessage();
     const modificationUuid = data?.modificationInfos.uuid;
 
-    const modificationactivatedByRootNetwork = useMemo(
+    const modificationActivatedByRootNetwork = useMemo(
         () => data?.activationStatusByRootNetwork[rootNetwork.rootNetworkUuid] ?? false,
         [rootNetwork.rootNetworkUuid, data]
     );
@@ -91,7 +91,7 @@ const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) =>
     return (
         <ChipCellRenderer
             label={rootNetworkTag}
-            isActivated={modificationactivatedByRootNetwork}
+            isActivated={modificationActivatedByRootNetwork}
             isDisabled={isLoading || isAnyNodeBuilding || mapDataLoading}
             onClick={handleModificationStatusByRootNetworkUpdate}
         />

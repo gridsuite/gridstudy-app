@@ -840,7 +840,7 @@ const NetworkModificationNodeEditor = () => {
                 doEditModification(data.modificationInfos.uuid, data.modificationInfos.type);
             }
         },
-        [doEditModification, isModificationClickable] // Dependencies for the callback
+        [doEditModification, isModificationClickable]
     );
 
     const onRowDragStart = (event: RowDragEnterEvent<NetworkModificationInfos>) => {
