@@ -20,7 +20,7 @@ type FetchResponse = Awaited<ReturnType<typeof fetchNetworkElementInfos>>;
 export interface UseFormSearchCopy {
     isDialogSearchOpen: boolean;
     handleOpenSearchDialog: () => void;
-    handleSelectionChange: (element: EquipmentInfos) => void;
+    handleSelectionChange: (element: EquipmentInfos) => Promise<void>;
     handleCloseSearchDialog: () => void;
 }
 
