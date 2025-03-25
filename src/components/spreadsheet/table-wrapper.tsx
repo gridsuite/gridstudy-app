@@ -312,9 +312,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const handleSwitchTab = useCallback(
         (tabUuid: UUID) => {
             setManualTabSwitch(true);
-            // when switching tab column definition is updated before rowData which triggers costly
-            // useless process that's why we set rowData to undefined to avoid that
-            setRowData(undefined);
             setActiveTabUuid(tabUuid);
             cleanTableState();
         },
@@ -430,9 +427,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [tableDefinition, originalColumnPositions, dispatch, snackError]
     );
 
-    const { modificationDialog, handleOpenModificationDialog } = useEquipmentModification({
-        equipmentType: tableDefinition?.type,
-    });
+    const { modificationDialog, handleOpenModificationDialog, isModificationDialogForEquipmentType } =
+        useEquipmentModification({
+            equipmentType: tableDefinition?.type,
+        });
 
     const onRowClicked = useCallback(
         (event: RowClickedEvent) => {
@@ -580,6 +578,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         isExternalFilterPresent={isExternalFilterPresent}
                         doesExternalFilterPass={doesFormulaFilteringPass}
                         onModelUpdated={onModelUpdated}
+                        isDataEditable={isModificationDialogForEquipmentType()}
                     />
                 </Box>
             )}

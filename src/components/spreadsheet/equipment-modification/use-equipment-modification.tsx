@@ -8,7 +8,6 @@
 import { FetchStatus } from '@gridsuite/commons-ui';
 import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
-import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
@@ -35,6 +34,7 @@ type EditableEquipmentType = Exclude<
     | EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR
     | EQUIPMENT_TYPES.VSC_CONVERTER_STATION
     | EQUIPMENT_TYPES.LCC_CONVERTER_STATION
+    | EQUIPMENT_TYPES.HVDC_LINE
 >;
 
 const EQUIPMENT_DIALOG_MAPPING: Record<EditableEquipmentType, React.FC<any>> = {
@@ -46,7 +46,6 @@ const EQUIPMENT_DIALOG_MAPPING: Record<EditableEquipmentType, React.FC<any>> = {
     [EQUIPMENT_TYPES.LOAD]: LoadModificationDialog,
     [EQUIPMENT_TYPES.BATTERY]: BatteryModificationDialog,
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: ShuntCompensatorModificationDialog,
-    [EQUIPMENT_TYPES.HVDC_LINE]: VscModificationDialog,
 };
 
 export const useEquipmentModification = ({ equipmentType }: UseEquipmentModificationProps) => {
@@ -95,5 +94,10 @@ export const useEquipmentModification = ({ equipmentType }: UseEquipmentModifica
         [getDialogForEquipment]
     );
 
-    return { modificationDialog, handleOpenModificationDialog };
+    const isModificationDialogForEquipmentType = useCallback(() => {
+        const DialogComponent = EQUIPMENT_DIALOG_MAPPING[equipmentType as EditableEquipmentType];
+        return DialogComponent !== undefined;
+    }, [equipmentType]);
+
+    return { modificationDialog, handleOpenModificationDialog, isModificationDialogForEquipmentType };
 };
