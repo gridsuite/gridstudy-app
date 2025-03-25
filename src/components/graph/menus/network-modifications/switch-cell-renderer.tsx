@@ -16,11 +16,11 @@ import { ICellRendererParams } from 'ag-grid-community';
 import { NetworkModificationInfos } from './network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 
-export interface CellRendererSwitchProps extends ICellRendererParams<NetworkModificationInfos> {
+export interface SwitchCellRendererProps extends ICellRendererParams<NetworkModificationInfos> {
     setModifications: React.Dispatch<SetStateAction<NetworkModificationInfos[]>>;
 }
 
-const CellRendererSwitch = (props: CellRendererSwitchProps) => {
+const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
     const { data, api, setModifications } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -89,4 +89,4 @@ const CellRendererSwitch = (props: CellRendererSwitchProps) => {
     );
 };
 
-export default CellRendererSwitch;
+export default SwitchCellRenderer;

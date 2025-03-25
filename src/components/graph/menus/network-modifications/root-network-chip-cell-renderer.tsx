@@ -14,13 +14,13 @@ import { ChipCellRenderer } from '../../../spreadsheet/utils/chip-cell-renderer'
 import { NetworkModificationInfos, RootNetworkMetadata } from './network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 
-interface ChipRootNetworkCellRendererProps {
+interface RootNetworkChipCellRendererProps {
     data?: NetworkModificationInfos;
     setModifications: React.Dispatch<SetStateAction<NetworkModificationInfos[]>>;
     rootNetwork: RootNetworkMetadata;
 }
 
-const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) => {
+const RootNetworkChipCellRenderer = (props: RootNetworkChipCellRendererProps) => {
     const { data, rootNetwork, setModifications } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -98,4 +98,4 @@ const ChipRootNetworkCellRenderer = (props: ChipRootNetworkCellRendererProps) =>
     );
 };
 
-export default ChipRootNetworkCellRenderer;
+export default RootNetworkChipCellRenderer;

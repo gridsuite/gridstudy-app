@@ -21,10 +21,8 @@ import {
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import { Badge, Box, useTheme } from '@mui/material';
 import { NetworkModificationInfos } from './network-modification-menu.type';
-import CellRendererSwitch from 'components/graph/menus/network-modifications/cell-renderer-switch';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import ChipRootNetworkCellRenderer from 'components/graph/menus/network-modifications/chip-root-network-cell-renderer';
 import { useIntl } from 'react-intl';
 import {
     NetworkModificationEditorNameHeader,
@@ -32,6 +30,8 @@ import {
 } from './network-modification-node-editor-name-header';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
+import SwitchCellRenderer from './switch-cell-renderer';
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationInfos[];
@@ -101,7 +101,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 cellStyle: { cursor: 'pointer' },
             },
             {
-                cellRenderer: CellRendererSwitch,
+                cellRenderer: SwitchCellRenderer,
                 cellRendererParams: {
                     setModifications: setModifications,
                 },
@@ -115,7 +115,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                   const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
                   return {
                       colId: rootNetworkUuid,
-                      cellRenderer: ChipRootNetworkCellRenderer,
+                      cellRenderer: RootNetworkChipCellRenderer,
                       cellRendererParams: {
                           rootNetwork: rootNetwork,
                           setModifications: setModifications,
