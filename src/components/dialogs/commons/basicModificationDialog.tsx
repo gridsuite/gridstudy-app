@@ -19,7 +19,6 @@ export type BasicModificationDialogProps = Omit<ModificationDialogContentProps, 
 };
 
 export function BasicModificationDialog({
-    children,
     disabledSave = false,
     onClear,
     onDialogClose,

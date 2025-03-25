@@ -10,6 +10,17 @@ import { useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
 import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
 
+/**
+ * Generic Modification Dialog which manage basic common behaviors with react
+ * hook form validation.
+ * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
+ * @param {CallbackEvent} onSave callback when saving the modification
+ * @param {Boolean} disabledSave to control disabled prop of the validate button
+ * @param {CallbackEvent} onValidated callback when validation is successful
+ * @param {CallbackEvent} onValidationError callback when validation failed
+ * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
+ */
+
 export type ModificationDialogProps = Omit<ModificationDialogContentProps, 'closeAndClear' | 'submitButton'> & {
     disabledSave?: boolean;
     onClear: () => void;
