@@ -4,11 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Grid, Slider } from '@mui/material';
+import { Grid } from '@mui/material';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import {
-    PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
@@ -16,43 +14,19 @@ import {
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../../utils/config-params';
 import LineSeparator from '../../commons/line-separator';
-import { mergeSx, MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import {
-    ALERT_THRESHOLD_LABEL,
-    INTL_LINE_FLOW_COLOR_MODE_OPTIONS,
     INTL_LINE_FLOW_MODE_OPTIONS,
     INTL_MAP_BASE_MAP_OPTIONS,
-    LINE_FLOW_COLOR_MODE,
     LINE_FLOW_MODE,
     MAP_BASE_MAP,
     MAP_MANUAL_REFRESH,
     TabValue,
 } from './network-visualizations-utils';
-import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { styles } from '../parameters-style';
 
 export const MapParameters = () => {
-    const { setValue, getValues, control } = useFormContext();
-    const alertThresholdMarks = [
-        {
-            value: 0,
-            label: '0',
-        },
-        {
-            value: 100,
-            label: '100',
-        },
-    ];
-    const watchLineFlowColorMode = useWatch({
-        name: `${TabValue.MAP}.${PARAM_LINE_FLOW_COLOR_MODE}`,
-    });
-
-    const onSliderChange = (value: number) => {
-        const dirty = { shouldDirty: true };
-        setValue(`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`, value, dirty);
-    };
-
     // fields definition
     const lineSwitch = (name: string, label: string) => (
         <>
@@ -101,34 +75,6 @@ export const MapParameters = () => {
         </>
     );
 
-    const slider = (
-        <>
-            <Grid item xs={8} sx={styles.parameterName}>
-                <FormattedMessage id={ALERT_THRESHOLD_LABEL} />
-            </Grid>
-            <Grid item container xs={4} sx={mergeSx(styles.controlItem, { paddingRight: 2 })}>
-                <Controller
-                    name={`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`}
-                    control={control}
-                    render={() => (
-                        <Slider
-                            name={`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`}
-                            onChange={(_event, newValue) => {
-                                onSliderChange(Number(newValue));
-                            }}
-                            valueLabelDisplay="auto"
-                            max={100}
-                            min={0}
-                            value={Number(getValues(`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`))}
-                            marks={alertThresholdMarks}
-                            disabled={watchLineFlowColorMode === LineFlowColorMode.NOMINAL_VOLTAGE}
-                        />
-                    )}
-                />
-            </Grid>
-        </>
-    );
-
     return (
         <Grid
             xl={6}
@@ -146,12 +92,6 @@ export const MapParameters = () => {
             <LineSeparator />
 
             {lineFlow(PARAM_LINE_FLOW_MODE, LINE_FLOW_MODE, INTL_LINE_FLOW_MODE_OPTIONS)}
-            <LineSeparator />
-
-            {lineFlow(PARAM_LINE_FLOW_COLOR_MODE, LINE_FLOW_COLOR_MODE, INTL_LINE_FLOW_COLOR_MODE_OPTIONS)}
-            <LineSeparator />
-
-            {slider}
             <LineSeparator />
 
             {lineSwitch(PARAM_MAP_MANUAL_REFRESH, MAP_MANUAL_REFRESH)}

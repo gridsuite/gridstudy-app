@@ -312,7 +312,6 @@ const MapViewer = ({
                                     lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
                                     lineFlowMode={networkVisuParams.mapParameters.lineFlowMode}
                                     lineFlowColorMode={networkVisuParams.mapParameters.lineFlowColorMode}
-                                    lineFlowAlertThreshold={networkVisuParams.mapParameters.lineFlowAlertThreshold}
                                     openVoltageLevel={openVoltageLevel}
                                     currentNode={currentNode}
                                     currentRootNetworkUuid={currentRootNetworkUuid}
