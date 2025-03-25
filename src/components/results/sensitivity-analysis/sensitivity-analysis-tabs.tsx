@@ -5,23 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl/lib';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import {
     COMPUTATION_RESULTS_LOGS,
+    SensiTab,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
-} from './sensitivity-analysis-result-utils';
-import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+} from './sensitivity-analysis-result.type';
 
-const SensitivityAnalysisTabs = ({ sensiKind, setSensiKind }) => {
+export type SensitivityAnalysisTabsProps = {
+    sensiTab: SensiTab;
+    setSensiTab: (sensiKind: SensiTab) => void;
+};
+function SensitivityAnalysisTabs({ sensiTab, setSensiTab }: Readonly<SensitivityAnalysisTabsProps>) {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const sensiKindTabs = [
+    const sensiTabs = [
         SENSITIVITY_IN_DELTA_MW,
         SENSITIVITY_IN_DELTA_A,
         ...((enableDeveloperMode && [SENSITIVITY_AT_NODE]) || []),
@@ -29,20 +33,12 @@ const SensitivityAnalysisTabs = ({ sensiKind, setSensiKind }) => {
     ];
 
     return (
-        <Tabs
-            value={sensiKindTabs.indexOf(sensiKind)}
-            onChange={(_, newTabIndex) => setSensiKind(sensiKindTabs[newTabIndex])}
-        >
-            {sensiKindTabs.map((sensiKind) => (
+        <Tabs value={sensiTabs.indexOf(sensiTab)} onChange={(_, newTabIndex) => setSensiTab(sensiTabs[newTabIndex])}>
+            {sensiTabs.map((sensiKind) => (
                 <Tab label={<FormattedMessage id={sensiKind} />} key={sensiKind} />
             ))}
         </Tabs>
     );
-};
-
-SensitivityAnalysisTabs.propTypes = {
-    setSensiKind: PropTypes.func.isRequired,
-    sensiKind: PropTypes.string.isRequired,
-};
+}
 
 export default SensitivityAnalysisTabs;

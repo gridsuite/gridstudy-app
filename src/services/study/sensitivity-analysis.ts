@@ -28,7 +28,7 @@ interface SensitivityAnalysisFactorsCountParameters {
 interface CsvConfig {
     csvHeaders: string[];
     resultTab: string;
-    sensitivityFunctionType: string;
+    sensitivityFunctionType?: string;
 }
 
 export function startSensitivityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {

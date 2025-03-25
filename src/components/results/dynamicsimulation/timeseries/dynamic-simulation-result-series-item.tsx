@@ -5,20 +5,32 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import { Checkbox, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { memo, useState } from 'react';
 
-const DynamicSimulationResultSeriesItem = ({ item: { id, label }, onChangeLeftAxis, onChangeRightAxis }) => {
+export type DynamicSimulationResultSeriesItemProps = {
+    item: {
+        id: number;
+        label: string;
+    };
+    onChangeLeftAxis: (id: number) => void;
+    onChangeRightAxis: (id: number) => void;
+};
+
+function DynamicSimulationResultSeriesItem({
+    item: { id, label },
+    onChangeLeftAxis,
+    onChangeRightAxis,
+}: Readonly<DynamicSimulationResultSeriesItemProps>) {
     const [leftAxisChecked, setLeftAxisChecked] = useState(false);
     const [rightAxisChecked, setRightAxisChecked] = useState(false);
 
-    const handleToggleLeftAxis = (id) => {
+    const handleToggleLeftAxis = (id: number) => {
         onChangeLeftAxis(id);
         setLeftAxisChecked((prev) => !prev);
     };
 
-    const handleToggleRightAxis = (id) => {
+    const handleToggleRightAxis = (id: number) => {
         onChangeRightAxis(id);
         setRightAxisChecked((prev) => !prev);
     };
@@ -47,19 +59,10 @@ const DynamicSimulationResultSeriesItem = ({ item: { id, label }, onChangeLeftAx
                         }}
                     />
                 </ListItemIcon>
-                <ListItemText id={id} primary={label} />
+                <ListItemText id={`${id}`} primary={label} />
             </ListItemButton>
         </ListItem>
     );
-};
-
-DynamicSimulationResultSeriesItem.propTypes = {
-    item: PropTypes.shape({
-        id: PropTypes.number,
-        label: PropTypes.string,
-    }).isRequired,
-    onChangeLeftAxis: PropTypes.func.isRequired,
-    onChangeRightAxis: PropTypes.func.isRequired,
-};
+}
 
 export default memo(DynamicSimulationResultSeriesItem);
