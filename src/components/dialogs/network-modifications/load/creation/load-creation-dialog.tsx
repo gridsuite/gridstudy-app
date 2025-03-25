@@ -194,7 +194,6 @@ export function LoadCreationDialog({
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                onDialogClose={clear}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-load"

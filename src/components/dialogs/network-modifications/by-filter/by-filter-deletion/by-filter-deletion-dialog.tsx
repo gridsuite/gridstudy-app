@@ -62,7 +62,6 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
     editData,
     isUpdate,
     editDataFetchStatus,
-    onClose,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -126,7 +125,6 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
                 fullWidth
                 maxWidth={'md'}
                 onClear={clear}
-                onDialogClose={onClose}
                 onSave={onSubmit}
                 aria-labelledby="dialog-by-filter-equipment-deletion"
                 titleId="DeleteEquipmentByFilter"
