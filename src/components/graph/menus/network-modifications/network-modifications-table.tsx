@@ -179,6 +179,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 onRowDragEnter={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 rowDragManaged={isRowDragEnabled}
+                suppressNoRowsOverlay={true}
             />
         </div>
     );
