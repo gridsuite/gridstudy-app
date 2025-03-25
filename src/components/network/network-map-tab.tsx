@@ -13,7 +13,6 @@ import {
     type GeoDataEquipment,
     type GeoDataLine,
     type GeoDataSubstation,
-    LineFlowColorMode,
     LineFlowMode,
     type MapHvdcLine,
     type MapLine,
@@ -89,8 +88,6 @@ type NetworkMapTabProps = {
     lineFullPath: boolean;
     lineParallelPath: boolean;
     lineFlowMode: LineFlowMode;
-    lineFlowColorMode: LineFlowColorMode;
-    lineFlowAlertThreshold: number;
     openVoltageLevel: (idVoltageLevel: string) => void;
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
     onDrawPolygonModeActive: (active: DRAW_MODES) => void;
@@ -111,8 +108,6 @@ export const NetworkMapTab = ({
     lineFullPath,
     lineParallelPath,
     lineFlowMode,
-    lineFlowColorMode,
-    lineFlowAlertThreshold,
     /* callbacks */
     openVoltageLevel,
     showInSpreadsheet,
@@ -1060,8 +1055,6 @@ export const NetworkMapTab = ({
             lineFullPath={lineFullPath}
             lineParallelPath={lineParallelPath}
             lineFlowMode={lineFlowMode}
-            lineFlowColorMode={lineFlowColorMode}
-            lineFlowAlertThreshold={lineFlowAlertThreshold}
             useName={useName}
             visible={visible}
             disabled={disabled}
