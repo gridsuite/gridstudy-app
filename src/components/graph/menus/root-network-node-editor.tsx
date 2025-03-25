@@ -45,7 +45,6 @@ import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNet
 import { setCurrentRootNetworkUuid } from 'redux/actions';
 import { isChecked, isPartial } from './network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
-import { UPDATE_TYPE_HEADER } from 'components/use-node-data';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 
 const styles = {
@@ -172,7 +171,7 @@ const RootNetworkNodeEditor = () => {
     const rootNetworkModifiedNotification = useCallback(
         (event: MessageEvent<any>) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            const updateTypeHeader = eventData.headers.updateType;
             if (
                 updateTypeHeader === NotificationType.ROOT_NETWORK_MODIFIED ||
                 updateTypeHeader === NotificationType.ROOT_NETWORK_UPDATED
@@ -185,7 +184,7 @@ const RootNetworkNodeEditor = () => {
     const rootNetworksUpdateFailedNotification = useCallback(
         (event: MessageEvent<any>) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATE_FAILED) {
                 dofetchRootNetworks();
                 snackError({
@@ -199,7 +198,7 @@ const RootNetworkNodeEditor = () => {
     const rootNetworkDeletionStartedNotification = useCallback(
         (event: MessageEvent<any>) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORK_DELETION_STARTED) {
                 if (!rootNetworksRef.current) {
                     return;

@@ -58,7 +58,6 @@ import {
     NotificationType,
     RootNetworkModifiedEventData,
 } from 'redux/reducer';
-import { UPDATE_TYPE_HEADER } from 'components/use-node-data';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { isReactFlowRootNodeData } from 'redux/utils';
 
@@ -825,7 +824,7 @@ export const NetworkMapTab = ({
                 return;
             }
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.LOADFLOW_RESULT) {
                 const loadflowResultNotification = eventData as LoadflowResultEventData;
                 const rootNetworkUuidFromNotification = loadflowResultNotification.headers.rootNetwork;
@@ -852,7 +851,7 @@ export const NetworkMapTab = ({
                 return;
             }
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORK_MODIFIED) {
                 const rootNetworkModifiedNotification = eventData as RootNetworkModifiedEventData;
                 const rootNetworkUuidFromNotification = rootNetworkModifiedNotification.headers.rootNetwork;
