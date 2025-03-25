@@ -24,25 +24,13 @@ const styles = {
     }),
 };
 
-/**
- * Common parts for the Modification Dialog
- * @param {String} titleId id for title translation
- * @param {Object} onOpenCatalogDialog Object managing catalog
- * @param {Object} searchCopy Object managing search equipments for copy
- * @param {ReactElement} subtitle subtitle component to put inside DialogTitle
- * @param {Boolean} isDataFetching props to display loading
- * @param {ReactElement} submitButton submitButton to put in the dialog's footer
- * @param {CallbackEvent} closeAndClear callback when the dialog needs to be closed and cleared
- * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
- */
-
 interface ModificationDialogContentProps {
     children?: ReactNode;
     closeAndClear: (event: React.MouseEvent, reason: string) => void;
     isDataFetching?: boolean;
     titleId: string;
     open: boolean;
-    onOpenCatalogDialog?: React.MouseEventHandler<HTMLButtonElement>;
+    onOpenCatalogDialog?: () => void;
     searchCopy?: UseFormSearchCopy;
     showNodeNotBuiltWarning?: boolean;
     submitButton: ReactNode;

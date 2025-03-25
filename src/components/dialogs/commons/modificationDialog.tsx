@@ -11,25 +11,13 @@ import { SubmitButton } from '@gridsuite/commons-ui';
 import { ModificationDialogContent } from './modification-dialog-content';
 import { UseFormSearchCopy } from './use-form-search-copy';
 
-/**
- * Generic Modification Dialog which manage basic common behaviors with react
- * hook form validation.
- * @param {EventListener} onClose Event to close the dialog
- * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
- * @param {CallbackEvent} onSave callback when saving the modification
- * @param {Boolean} disabledSave to control disabled prop of the validate button
- * @param {CallbackEvent} onValidated callback when validation is successful
- * @param {CallbackEvent} onValidationError callback when validation failed
- * @param {Array} props props that are forwarded to the MUI Dialog component
- */
-
 interface ModificationDialogProps {
     children?: ReactNode;
     disabledSave?: boolean;
     isDataFetching?: boolean;
     onClear: () => void;
     onDialogClose?: () => void;
-    onOpenCatalogDialog?: React.MouseEventHandler<HTMLButtonElement>;
+    onOpenCatalogDialog?: () => void;
     onSave: (modificationData: any) => void;
     onValidated?: () => void;
     onValidationError?: (errors: any) => void;
@@ -110,6 +98,7 @@ export function ModificationDialog({
             closeAndClear={closeAndClear}
             isDataFetching={isDataFetching}
             open={open}
+            onOpenCatalogDialog={onOpenCatalogDialog}
             titleId={titleId}
             submitButton={submitButton}
             searchCopy={searchCopy}

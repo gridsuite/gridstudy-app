@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
-import BasicModificationDialog from '../../commons/basicModificationDialog';
+import { BasicModificationDialog } from '../../commons/basicModificationDialog';
 import { BooleanCellRenderer, DefaultCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';

@@ -445,9 +445,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-staticCompensator"
                 titleId="CreateStaticVarCompensator"
-                subtitle={headerAndTabs}
-                searchCopy={searchCopy}
-                onValidationError={onValidationError}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 PaperProps={{
