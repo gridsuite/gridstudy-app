@@ -181,7 +181,7 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                onClose={onClose}
+                onDialogClose={onClose}
                 onClear={handleClear}
                 onSave={handleSubmit}
                 aria-labelledby="dialog-event-configuration"

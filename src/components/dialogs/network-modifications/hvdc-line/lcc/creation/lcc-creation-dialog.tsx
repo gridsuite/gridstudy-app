@@ -243,7 +243,7 @@ export function LccCreationDialog({
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
-                onClose={clear}
+                onDialogClose={clear}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-lcc"

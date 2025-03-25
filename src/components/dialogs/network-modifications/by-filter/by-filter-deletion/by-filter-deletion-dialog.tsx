@@ -124,9 +124,9 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                maxWidth="md"
+                maxWidth={'md'}
                 onClear={clear}
-                onClose={onClose}
+                onDialogClose={onClose}
                 onSave={onSubmit}
                 aria-labelledby="dialog-by-filter-equipment-deletion"
                 titleId="DeleteEquipmentByFilter"

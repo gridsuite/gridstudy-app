@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ReactNode, useCallback } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
 import { ModificationDialogContent } from './modification-dialog-content';
@@ -25,17 +25,18 @@ import { UseFormSearchCopy } from './use-form-search-copy';
 
 interface ModificationDialogProps {
     children?: ReactNode;
-    disabledSave: boolean;
+    disabledSave?: boolean;
     isDataFetching?: boolean;
     onClear: () => void;
-    onClose: () => void;
+    onDialogClose?: () => void;
     onOpenCatalogDialog?: React.MouseEventHandler<HTMLButtonElement>;
     onSave: (modificationData: any) => void;
     onValidated?: () => void;
     onValidationError?: (errors: any) => void;
     open: boolean;
-    searchCopy: UseFormSearchCopy;
+    searchCopy?: UseFormSearchCopy;
     showNodeNotBuiltWarning?: boolean;
+    subtitle?: ReactNode;
     titleId: string;
 }
 
@@ -44,7 +45,7 @@ export function ModificationDialog({
     disabledSave = false,
     isDataFetching,
     onClear,
-    onClose,
+    onDialogClose,
     onOpenCatalogDialog,
     onSave,
     onValidated,
@@ -52,15 +53,17 @@ export function ModificationDialog({
     open,
     searchCopy,
     showNodeNotBuiltWarning = false,
+    subtitle,
     titleId,
     ...dialogProps
 }: Readonly<ModificationDialogProps>) {
     const { handleSubmit } = useFormContext();
 
-    const closeAndClear = (event: Event, reason: string) => {
+    const closeAndClear = (event: React.MouseEvent, reason: string) => {
         onClear();
-        //TODO DBR onClose(event, reason);
-        onClose();
+        if (onDialogClose) {
+            onDialogClose();
+        }
     };
 
     const handleValidate = (data: any) => {
@@ -110,6 +113,7 @@ export function ModificationDialog({
             titleId={titleId}
             submitButton={submitButton}
             searchCopy={searchCopy}
+            subtitle={subtitle}
             showNodeNotBuiltWarning={showNodeNotBuiltWarning}
             {...dialogProps}
         />

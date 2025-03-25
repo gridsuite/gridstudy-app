@@ -38,12 +38,12 @@ const styles = {
 
 interface ModificationDialogContentProps {
     children?: ReactNode;
-    closeAndClear: (event: Event, reason: string) => void;
+    closeAndClear: (event: React.MouseEvent, reason: string) => void;
     isDataFetching?: boolean;
     titleId: string;
     open: boolean;
     onOpenCatalogDialog?: React.MouseEventHandler<HTMLButtonElement>;
-    searchCopy: UseFormSearchCopy;
+    searchCopy?: UseFormSearchCopy;
     showNodeNotBuiltWarning?: boolean;
     submitButton: ReactNode;
     subtitle?: ReactNode;
@@ -75,14 +75,14 @@ export function ModificationDialogContent({
         icon: <FindInPageIcon />,
     });
 
-    const handleClose = (event: Event, reason: string) => {
+    const handleClose = (event: React.MouseEvent, reason: string) => {
         if (reason !== 'backdropClick') {
             closeAndClear(event, reason);
         }
     };
 
-    const handleCancel = () => {
-        //closeAndClear(event, 'cancelButtonClick'); TODO DBR
+    const handleCancel = (event: React.MouseEvent) => {
+        closeAndClear(event, 'cancelButtonClick');
     };
 
     return (

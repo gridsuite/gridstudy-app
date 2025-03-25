@@ -135,7 +135,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                 fullWidth
                 maxWidth={'md'}
                 open={open}
-                onClose={onClose}
+                onDialogClose={onClose}
                 onClear={clear}
                 onSave={handleSave}
                 aria-labelledby="dialog-root-network-creation"

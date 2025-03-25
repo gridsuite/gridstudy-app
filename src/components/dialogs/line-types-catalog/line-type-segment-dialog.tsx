@@ -60,12 +60,12 @@ const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ 
         <CustomFormProvider validationSchema={LineTypeSegmentSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                maxWidth="lg"
+                maxWidth={'lg'}
                 onClear={handleClear}
                 aria-labelledby="dialog-lineTypes-catalog"
                 titleId="LineTypesCatalogDialogTitle"
                 open={open}
-                onClose={onClose}
+                onDialogClose={onClose}
                 onSave={onSave}
             >
                 <LineTypeSegmentForm />

@@ -170,6 +170,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleCloseDialog = () => {
+        console.log('DBG DBR handleCloseDialog');
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
@@ -177,7 +178,7 @@ const NetworkModificationNodeEditor = () => {
     function withDefaultParams(Dialog: React.FC<any>) {
         return (
             <Dialog
-                onClose={handleCloseDialog}
+                onDialogClose={handleCloseDialog}
                 onValidated={handleValidatedDialog}
                 currentNode={currentNode}
                 studyUuid={studyUuid}
