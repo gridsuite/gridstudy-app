@@ -871,7 +871,7 @@ const NetworkModificationNodeEditor = () => {
                     messageTxt: error.message,
                     headerId: 'errReorderModificationMsg',
                 });
-                setModifications(modifications);
+                setModifications((prevModifications) => [...prevModifications]);
             })
             .finally(() => setIsDragging(false));
     };
