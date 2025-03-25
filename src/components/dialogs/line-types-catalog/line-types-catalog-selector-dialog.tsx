@@ -294,7 +294,6 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 
     return (
         <BasicModificationDialog
-            aria-labelledby="dialog-lineTypes-catalog-selector"
             disabledSave={!selectedRow}
             fullWidth
             maxWidth="xl"

@@ -8,10 +8,21 @@
 import React, { ReactNode, useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
-import { ModificationDialogContent } from './modification-dialog-content';
+import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
 import { UseFormSearchCopy } from './use-form-search-copy';
 
-interface ModificationDialogProps {
+export type ModificationDialogProps = Omit<
+    ModificationDialogContentProps,
+    | 'closeAndClear'
+    | 'isDataFetching'
+    | 'open'
+    | 'onOpenCatalogDialog'
+    | 'titleId'
+    | 'submitButton'
+    | 'searchCopy'
+    | 'subtitle'
+    | 'showNodeNotBuiltWarning'
+> & {
     children?: ReactNode;
     disabledSave?: boolean;
     isDataFetching?: boolean;
@@ -26,7 +37,7 @@ interface ModificationDialogProps {
     showNodeNotBuiltWarning?: boolean;
     subtitle?: ReactNode;
     titleId: string;
-}
+};
 
 export function ModificationDialog({
     children,

@@ -17,6 +17,7 @@ import { UseFormSearchCopy } from './use-form-search-copy';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer';
+import { DialogProps } from '@mui/material/Dialog/Dialog';
 
 const styles = {
     warningMessage: (theme: Theme) => ({
@@ -24,25 +25,23 @@ const styles = {
     }),
 };
 
-interface ModificationDialogContentProps {
+export type ModificationDialogContentProps = Omit<DialogProps, 'onClose' | 'aria-labelledby'> & {
     children?: ReactNode;
     closeAndClear: (event: React.MouseEvent, reason: string) => void;
     isDataFetching?: boolean;
     titleId: string;
-    open: boolean;
     onOpenCatalogDialog?: () => void;
     searchCopy?: UseFormSearchCopy;
     showNodeNotBuiltWarning?: boolean;
     submitButton: ReactNode;
     subtitle?: ReactNode;
-}
+};
 
 export function ModificationDialogContent({
     children,
     closeAndClear,
     isDataFetching = false,
     titleId,
-    open,
     onOpenCatalogDialog,
     searchCopy,
     showNodeNotBuiltWarning = false,
@@ -74,7 +73,7 @@ export function ModificationDialogContent({
     };
 
     return (
-        <Dialog onClose={handleClose} aria-labelledby={titleId} open={open} {...dialogProps}>
+        <Dialog onClose={handleClose} aria-labelledby={titleId} {...dialogProps}>
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container spacing={2} justifyContent={'space-between'}>

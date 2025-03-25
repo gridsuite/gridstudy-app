@@ -551,7 +551,6 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
 
     return (
         <BasicModificationDialog
-            aria-labelledby="dialog-voltage-init-modification"
             disabledSave={disabledSave || onPreviewModeSubmit === undefined || editData === undefined}
             fullWidth
             isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
