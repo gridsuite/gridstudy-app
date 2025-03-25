@@ -19,6 +19,7 @@ import {
     resetEquipmentsPostLoadflow,
     setCurrentRootNetworkUuid,
     setCurrentTreeNode,
+    setRootNetworks,
     setStudyIndexationStatus,
     studyUpdated,
 } from '../redux/actions';
@@ -65,6 +66,7 @@ function useStudy(studyUuidRequest) {
                         if (rootNetworks && rootNetworks.length > 0) {
                             // Validate that currentRootNetworkUuid is set
                             dispatch(setCurrentRootNetworkUuid(rootNetworks[0].rootNetworkUuid));
+                            dispatch(setRootNetworks(rootNetworks));
                         } else {
                             // Handle case where no root networks are available
                             setErrMessage(

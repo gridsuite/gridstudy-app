@@ -155,7 +155,6 @@ const RootNetworkNodeEditor = () => {
                 .then((res: RootNetworkMetadata[]) => {
                     updateSelectedItems(res);
                     dispatch(setRootNetworks(res));
-                    setRootNetworks(res);
                     // This is used to hide the loader for creation, update and deletion of the root networks.
                     // All the root networks must be fully established before the loader can be safely removed.
                     if (res.every((network) => !network.isCreating)) {
@@ -201,10 +200,6 @@ const RootNetworkNodeEditor = () => {
             }
         }
     }, [studyUpdatedForce, dofetchRootNetworks, dispatch, snackError]);
-
-    useEffect(() => {
-        dofetchRootNetworks();
-    }, [dofetchRootNetworks]);
 
     const openRootNetworkCreationDialog = useCallback(() => {
         setRootNetworkCreationDialogOpen(true);
