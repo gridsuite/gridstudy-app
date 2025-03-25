@@ -112,7 +112,7 @@ export function DynamicSimulationParametersSelector({
                 updateDynamicSimulationParameters(studyUuid, newDynamicSimulationParams)
                     .then(() => {
                         // start computation
-                        onStart(newDynamicSimulationParams); // TODO: param was missing... how could it work ?
+                        onStart(newDynamicSimulationParams);
                     })
                     .catch((error) => {
                         snackError({
