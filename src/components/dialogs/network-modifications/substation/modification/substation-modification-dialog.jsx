@@ -177,7 +177,6 @@ const SubstationModificationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-substation"
                 maxWidth={'md'}
                 titleId="ModifySubstation"
                 open={open}

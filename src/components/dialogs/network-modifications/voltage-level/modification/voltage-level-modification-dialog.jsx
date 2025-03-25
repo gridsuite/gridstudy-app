@@ -231,7 +231,6 @@ const VoltageLevelModificationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-voltage-level"
                 maxWidth={'md'}
                 open={open}
                 titleId="ModifyVoltageLevel"

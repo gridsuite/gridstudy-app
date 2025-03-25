@@ -128,7 +128,6 @@ const DeleteVoltageLevelOnLineDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-delete-voltage-level-on-line"
                 titleId="DeleteVoltageLevelOnLine"
                 subtitle={<DeleteVoltageLevelOnLineIllustration />}
                 open={open}

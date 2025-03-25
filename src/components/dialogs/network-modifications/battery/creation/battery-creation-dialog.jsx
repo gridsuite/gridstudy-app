@@ -232,7 +232,6 @@ const BatteryCreationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-battery"
                 maxWidth={'md'}
                 titleId="CreateBattery"
                 searchCopy={searchCopy}

@@ -272,7 +272,6 @@ const LineSplitWithVoltageLevelDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-voltage-level-amidst-a-line"
                 titleId="LineSplitWithVoltageLevel"
                 subtitle={<LineSplitWithVoltageLevelIllustration />}
                 open={open}

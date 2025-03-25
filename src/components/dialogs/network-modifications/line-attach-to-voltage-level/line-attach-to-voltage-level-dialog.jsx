@@ -317,7 +317,6 @@ const LineAttachToVoltageLevelDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-attach-voltage-level-to-a-line"
                 titleId="LineAttachToVoltageLevel"
                 subtitle={<LineAttachToVoltageLevelIllustration />}
                 open={open}

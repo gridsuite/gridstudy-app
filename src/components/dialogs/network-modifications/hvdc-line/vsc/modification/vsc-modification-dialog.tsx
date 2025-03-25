@@ -338,7 +338,6 @@ const VscModificationDialog: React.FC<any> = ({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={handleSubmit(onSubmit)}
-                aria-labelledby="dialog-modify-vsc"
                 maxWidth={'md'}
                 titleId="ModifyVsc"
                 PaperProps={{

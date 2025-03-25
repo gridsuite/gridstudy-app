@@ -443,7 +443,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 maxWidth={'md'}
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-staticCompensator"
                 titleId="CreateStaticVarCompensator"
                 open={open}
                 subtitle={headerAndTabs}

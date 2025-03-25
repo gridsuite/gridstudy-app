@@ -93,7 +93,6 @@ const GeneratorScalingDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-generator-scaling"
                 maxWidth={'md'}
                 titleId="GeneratorScaling"
                 open={open}

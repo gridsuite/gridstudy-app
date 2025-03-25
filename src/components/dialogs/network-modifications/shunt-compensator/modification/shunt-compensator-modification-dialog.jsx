@@ -276,7 +276,6 @@ const ShuntCompensatorModificationDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-shuntCompensator"
                 titleId="ModifyShuntCompensator"
                 open={open}
                 disabledSave={disableSave}

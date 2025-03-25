@@ -375,7 +375,6 @@ const LineCreationDialog = ({
                 onClear={clear}
                 onValidationError={onValidationError}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-line"
                 maxWidth={'xl'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}

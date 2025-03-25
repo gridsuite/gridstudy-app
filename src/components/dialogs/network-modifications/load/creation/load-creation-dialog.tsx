@@ -196,7 +196,6 @@ export function LoadCreationDialog({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-load"
                 maxWidth={'md'}
                 titleId="CreateLoad"
                 searchCopy={searchCopy}

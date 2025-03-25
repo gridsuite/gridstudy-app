@@ -163,7 +163,6 @@ const GenerationDispatchDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-generation-dispatch"
                 maxWidth={'md'}
                 titleId="GenerationDispatch"
                 open={open}

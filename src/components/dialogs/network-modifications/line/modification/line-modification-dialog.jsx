@@ -455,7 +455,6 @@ const LineModificationDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 onValidationError={onValidationError}
-                aria-labelledby="dialog-modify-line"
                 maxWidth={'md'}
                 titleId="ModifyLine"
                 subtitle={selectedId != null ? headerAndTabs : undefined}

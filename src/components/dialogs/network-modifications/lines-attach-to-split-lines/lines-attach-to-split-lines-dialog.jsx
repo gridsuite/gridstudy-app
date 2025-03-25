@@ -156,7 +156,6 @@ const LinesAttachToSplitLinesDialog = ({
                 maxWidth={'md'}
                 titleId="LinesAttachToSplitLines"
                 subtitle={<LineAttachToSplitLinesIllustration />}
-                aria-labelledby="dialog-attach-lines-to-split-lines"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}

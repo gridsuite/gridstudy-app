@@ -188,7 +188,6 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-by-formula"
                 titleId="ModifyByFormula"
                 open={open}
                 maxWidth={'xl'}

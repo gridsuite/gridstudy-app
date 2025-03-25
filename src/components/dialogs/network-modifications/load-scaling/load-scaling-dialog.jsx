@@ -85,7 +85,6 @@ const LoadScalingDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-load-scaling"
                 maxWidth={'md'}
                 titleId="LoadScaling"
                 open={open}

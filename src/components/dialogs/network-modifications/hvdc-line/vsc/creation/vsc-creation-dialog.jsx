@@ -235,7 +235,6 @@ const VscCreationDialog = ({
                 onClear={clear}
                 onValidationError={onValidationError}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-vsc"
                 maxWidth={'md'}
                 titleId="CreateVsc"
                 subtitle={headersAndTabs}

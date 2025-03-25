@@ -130,7 +130,6 @@ const EquipmentDeletionDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-equipment-deletion"
                 titleId="DeleteEquipment"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}

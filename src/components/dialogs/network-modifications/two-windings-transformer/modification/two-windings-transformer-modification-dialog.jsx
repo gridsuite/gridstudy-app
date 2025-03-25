@@ -787,7 +787,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 fullWidth
                 maxWidth="xl"
                 titleId="ModifyTwoWindingsTransformer"
-                aria-labelledby="dialog-modify-two-windings-transformer"
                 subtitle={selectedId != null ? headerAndTabs : undefined}
                 onClear={clear}
                 onSave={onSubmit}

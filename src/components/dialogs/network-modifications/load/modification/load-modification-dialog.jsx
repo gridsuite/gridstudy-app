@@ -233,7 +233,6 @@ const LoadModificationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-load"
                 maxWidth={'md'}
                 titleId="ModifyLoad"
                 open={open}

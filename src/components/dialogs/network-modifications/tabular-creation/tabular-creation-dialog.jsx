@@ -138,7 +138,6 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 onClear={clear}
                 disabledSave={disableSave}
                 onSave={onSubmit}
-                aria-labelledby="dialog-tabular-creation"
                 titleId="TabularCreation"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}

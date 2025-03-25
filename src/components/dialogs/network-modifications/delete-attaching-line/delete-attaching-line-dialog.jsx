@@ -134,7 +134,6 @@ const DeleteAttachingLineDialog = ({
                 subtitle={<DeleteAttachingLineIllustration />}
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-delete-attaching-line"
                 titleId="DeleteAttachingLine"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}

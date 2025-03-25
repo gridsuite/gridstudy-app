@@ -224,7 +224,6 @@ const ShuntCompensatorCreationDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-shuntCompensator"
                 titleId="CreateShuntCompensator"
                 searchCopy={searchCopy}
                 open={open}

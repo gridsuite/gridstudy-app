@@ -52,7 +52,6 @@ const emptyFormData = {
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
- * @param onClose on modification dialog close
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
@@ -126,7 +125,6 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
                 maxWidth={'md'}
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-by-filter-equipment-deletion"
                 titleId="DeleteEquipmentByFilter"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}

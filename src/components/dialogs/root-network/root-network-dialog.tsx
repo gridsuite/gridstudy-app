@@ -138,7 +138,6 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                 onDialogClose={onClose}
                 onClear={clear}
                 onSave={handleSave}
-                aria-labelledby="dialog-root-network-creation"
                 {...dialogProps}
                 titleId={titleId}
                 disabledSave={!isFormValid}

@@ -327,7 +327,6 @@ const GeneratorCreationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-generator"
                 maxWidth={'md'}
                 titleId="CreateGenerator"
                 searchCopy={searchCopy}

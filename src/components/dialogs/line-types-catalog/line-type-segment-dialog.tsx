@@ -62,7 +62,6 @@ const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ 
                 fullWidth
                 maxWidth={'lg'}
                 onClear={handleClear}
-                aria-labelledby="dialog-lineTypes-catalog"
                 titleId="LineTypesCatalogDialogTitle"
                 open={open}
                 onDialogClose={onClose}

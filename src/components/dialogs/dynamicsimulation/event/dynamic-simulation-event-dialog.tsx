@@ -184,7 +184,6 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
                 onDialogClose={onClose}
                 onClear={handleClear}
                 onSave={handleSubmit}
-                aria-labelledby="dialog-event-configuration"
                 maxWidth={'xs'}
                 titleId={title}
                 open={open}

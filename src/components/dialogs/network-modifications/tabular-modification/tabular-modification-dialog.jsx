@@ -133,7 +133,6 @@ const TabularModificationDialog = ({
                 maxWidth={'lg'}
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-tabular-modification"
                 titleId="TabularModification"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}

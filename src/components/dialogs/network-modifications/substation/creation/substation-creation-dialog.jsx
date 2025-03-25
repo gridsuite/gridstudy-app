@@ -137,7 +137,6 @@ const SubstationCreationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-substation"
                 maxWidth={'md'}
                 titleId="CreateSubstation"
                 searchCopy={searchCopy}

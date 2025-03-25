@@ -245,7 +245,6 @@ export function LccCreationDialog({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-lcc"
                 titleId="CreateLcc"
                 subtitle={headerAndTabs}
                 searchCopy={searchCopy}
