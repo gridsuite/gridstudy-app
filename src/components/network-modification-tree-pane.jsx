@@ -24,9 +24,9 @@ import NetworkModificationTree from './network-modification-tree';
 import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useStore } from '@xyflow/react';
-import ExportDialog from './dialogs/export-dialog';
+import { ExportNetworkDialog } from './dialogs/export-network-dialog';
 import { BUILD_STATUS, UPDATE_TYPE } from './network/constants';
 import {
     copySubtree,
@@ -41,7 +41,7 @@ import {
     fetchStashedNodes,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
-import RestoreNodesDialog from './dialogs/restore-node-dialog';
+import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 import { StudyDisplayMode, CopyType, UpdateType } from './network-modification.type';
 import WaitingLoader from './utils/waiting-loader';
@@ -79,7 +79,6 @@ const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 
 export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
-    const intlRef = useIntlRef();
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
     const DownloadIframe = 'downloadIframe';
     const isInitiatingCopyTab = useRef(false);
@@ -468,7 +467,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
 
-    const handleClickExportStudy = (url) => {
+    const handleClickExportNodeNetwork = (url) => {
         window.open(url, DownloadIframe);
         setOpenExportDialog(false);
     };
@@ -602,16 +601,13 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 />
             )}
             {openExportDialog && (
-                <ExportDialog
+                <ExportNetworkDialog
                     open={openExportDialog}
                     onClose={() => setOpenExportDialog(false)}
-                    onClick={handleClickExportStudy}
+                    onClick={handleClickExportNodeNetwork}
                     studyUuid={studyUuid}
                     rootNetworkUuid={currentRootNetworkUuid}
                     nodeUuid={activeNode?.id}
-                    title={intlRef.current.formatMessage({
-                        id: 'exportNetwork',
-                    })}
                 />
             )}
             {openRestoreDialog && (

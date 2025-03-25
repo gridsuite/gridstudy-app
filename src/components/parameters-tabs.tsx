@@ -7,7 +7,7 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
@@ -62,6 +62,8 @@ import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParametersBackend } from './dialogs/parameters/use-parameters-backend';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
+import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
+import { StudyView, StudyViewType } from './utils/utils';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -76,12 +78,15 @@ enum TAB_VALUES {
     networkVisualizationsParams = 'networkVisualizationsParams',
 }
 
-type OwnProps = {
-    studyId: string;
+type ParametersTabsProps = {
+    view: StudyViewType;
 };
 
-const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
+const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
+    const dispatch = useDispatch();
+    const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
+
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
@@ -167,6 +172,16 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const useStateEstimationParameters = useGetStateEstimationParameters();
 
+    useEffect(() => {
+        if (attemptedLeaveParametersTabIndex !== null) {
+            if (haveDirtyFields) {
+                setIsPopupOpen(true);
+            } else {
+                dispatch(confirmLeaveParametersTab());
+            }
+        }
+    }, [attemptedLeaveParametersTabIndex, haveDirtyFields, dispatch]);
+
     const handleChangeTab = (newValue: string) => {
         if (haveDirtyFields) {
             setNextTabValue(newValue);
@@ -179,10 +194,22 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const handlePopupChangeTab = useCallback(() => {
         if (nextTabValue) {
             setTabValue(nextTabValue);
+            setNextTabValue(undefined);
+        } else if (attemptedLeaveParametersTabIndex !== null) {
+            dispatch(confirmLeaveParametersTab());
         }
         setHaveDirtyFields(false);
         setIsPopupOpen(false);
-    }, [nextTabValue]);
+    }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
+
+    const handlePopupClose = useCallback(() => {
+        setIsPopupOpen(false);
+        setNextTabValue(undefined);
+
+        if (attemptedLeaveParametersTabIndex !== null) {
+            dispatch(cancelLeaveParametersTab());
+        }
+    }, [dispatch, attemptedLeaveParametersTabIndex]);
 
     useEffect(() => {
         setTabValue((oldValue) => {
@@ -202,6 +229,13 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     }, [enableDeveloperMode]);
 
     const displayTab = useCallback(() => {
+        /**
+         * We add view dependency to unmount the component when the user changes the study tab
+         * This is necessary to reset the form when the user changes the study tab
+         */
+        if (view !== StudyView.PARAMETERS) {
+            return null;
+        }
         switch (tabValue) {
             case TAB_VALUES.lfParamsTabValue:
                 return (
@@ -255,6 +289,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
         }
     }, [
+        view,
         tabValue,
         loadFlowParametersBackend,
         securityAnalysisParametersBackend,
@@ -358,7 +393,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             <SelectOptionsDialog
                 title={''}
                 open={isPopupOpen}
-                onClose={() => setIsPopupOpen(false)}
+                onClose={handlePopupClose}
                 onClick={handlePopupChangeTab}
                 child={
                     <DialogContentText>
