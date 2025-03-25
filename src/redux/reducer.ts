@@ -310,6 +310,9 @@ export enum NotificationType {
     NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
     LOADFLOW_RESULT = 'loadflowResult',
     ROOT_NETWORK_MODIFIED = 'rootNetworkModified',
+    ROOT_NETWORK_UPDATED = 'rootNetworksUpdated',
+    ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
+    ROOT_NETWORK_DELETION_STARTED = 'rootNetworkDeletionStarted',
 }
 
 export enum StudyIndexationStatus {
@@ -336,6 +339,12 @@ export interface StudyUpdatedEventDataHeader {
     error?: string;
     userId?: string;
     computationType?: ComputingType;
+}
+
+interface RootNetworkDeletionStartedEventDataHeader {
+    studyUuid: UUID;
+    rootNetworks: UUID[];
+    updateType?: string;
 }
 
 interface LoadflowResultEventDataHeaders {
@@ -378,6 +387,11 @@ export interface LoadflowResultEventData {
     payload: undefined;
 }
 
+export interface RootNetworkDeletionStartedEventData {
+    headers: RootNetworkDeletionStartedEventDataHeader;
+    payload: undefined;
+}
+
 export interface RootNetworkModifiedEventData {
     headers: RootNetworkModifiedEventDataHeaders;
     payload: undefined;
@@ -401,13 +415,36 @@ type LoadflowResultNotification = {
 
 type RootNetworkModifiedNotification = {
     type: NotificationType.ROOT_NETWORK_MODIFIED;
-    eventData: LoadflowResultEventData;
+    eventData: RootNetworkModifiedEventData;
+};
+
+type RootNetworkUpdatedNotification = {
+    type: NotificationType.ROOT_NETWORK_UPDATED;
+    eventData: RootNetworkModifiedEventData;
+};
+
+type RootNetworkUpdateFailedNotification = {
+    type: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
+    eventData: RootNetworkModifiedEventData;
+};
+
+type RootNetworkDeletionStartedNotification = {
+    type: NotificationType.ROOT_NETWORK_DELETION_STARTED;
+    eventData: RootNetworkDeletionStartedEventData;
 };
 
 // Redux state
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
-} & (StudyUpdatedUndefined | StudyUpdatedStudy | LoadflowResultNotification | RootNetworkModifiedNotification);
+} & (
+    | StudyUpdatedUndefined
+    | StudyUpdatedStudy
+    | LoadflowResultNotification
+    | RootNetworkModifiedNotification
+    | RootNetworkUpdatedNotification
+    | RootNetworkUpdateFailedNotification
+    | RootNetworkDeletionStartedNotification
+);
 
 type NodeCommonData = {
     label: string;
