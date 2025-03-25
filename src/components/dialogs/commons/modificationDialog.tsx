@@ -5,55 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { ReactNode, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
 import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
-import { UseFormSearchCopy } from './use-form-search-copy';
 
-export type ModificationDialogProps = Omit<
-    ModificationDialogContentProps,
-    | 'closeAndClear'
-    | 'isDataFetching'
-    | 'open'
-    | 'onOpenCatalogDialog'
-    | 'titleId'
-    | 'submitButton'
-    | 'searchCopy'
-    | 'subtitle'
-    | 'showNodeNotBuiltWarning'
-> & {
-    children?: ReactNode;
+export type ModificationDialogProps = Omit<ModificationDialogContentProps, 'closeAndClear' | 'submitButton'> & {
     disabledSave?: boolean;
-    isDataFetching?: boolean;
     onClear: () => void;
     onDialogClose?: () => void;
-    onOpenCatalogDialog?: () => void;
     onSave: (modificationData: any) => void;
     onValidated?: () => void;
     onValidationError?: (errors: any) => void;
-    open: boolean;
-    searchCopy?: UseFormSearchCopy;
-    showNodeNotBuiltWarning?: boolean;
-    subtitle?: ReactNode;
-    titleId: string;
 };
 
 export function ModificationDialog({
-    children,
     disabledSave = false,
-    isDataFetching,
     onClear,
     onDialogClose,
-    onOpenCatalogDialog,
     onSave,
     onValidated,
     onValidationError,
-    open,
-    searchCopy,
-    showNodeNotBuiltWarning = false,
-    subtitle,
-    titleId,
     ...dialogProps
 }: Readonly<ModificationDialogProps>) {
     const { handleSubmit } = useFormContext();
@@ -103,19 +75,5 @@ export function ModificationDialog({
         />
     );
 
-    return (
-        <ModificationDialogContent
-            children={children}
-            closeAndClear={closeAndClear}
-            isDataFetching={isDataFetching}
-            open={open}
-            onOpenCatalogDialog={onOpenCatalogDialog}
-            titleId={titleId}
-            submitButton={submitButton}
-            searchCopy={searchCopy}
-            subtitle={subtitle}
-            showNodeNotBuiltWarning={showNodeNotBuiltWarning}
-            {...dialogProps}
-        />
-    );
+    return <ModificationDialogContent closeAndClear={closeAndClear} submitButton={submitButton} {...dialogProps} />;
 }

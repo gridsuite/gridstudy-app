@@ -556,7 +556,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
             maxWidth="md"
             onClear={handleClear}
-            onClose={onClose}
+            onDialogClose={onClose}
             onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
             open={open}
             PaperProps={{

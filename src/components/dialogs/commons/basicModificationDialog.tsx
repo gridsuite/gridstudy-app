@@ -7,18 +7,16 @@
 
 import { FormattedMessage } from 'react-intl';
 import { Button } from '@mui/material';
-import { ModificationDialogContent } from './modification-dialog-content';
-import React, { ReactNode } from 'react';
+import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
 
-interface BasicModificationDialogProps {
-    children?: ReactNode;
+export type BasicModificationDialogProps = Omit<ModificationDialogContentProps, 'closeAndClear' | 'submitButton'> & {
     disabledSave?: boolean;
     onClear: () => void;
     onDialogClose?: () => void;
     onSave: () => void;
     open: boolean;
     titleId: string;
-}
+};
 
 export function BasicModificationDialog({
     children,
@@ -26,8 +24,6 @@ export function BasicModificationDialog({
     onClear,
     onDialogClose,
     onSave,
-    open,
-    titleId,
     ...dialogProps
 }: Readonly<BasicModificationDialogProps>) {
     const closeAndClear = (event: React.MouseEvent, reason: string) => {
@@ -49,14 +45,5 @@ export function BasicModificationDialog({
         </Button>
     );
 
-    return (
-        <ModificationDialogContent
-            children={children}
-            submitButton={submitButton}
-            closeAndClear={closeAndClear}
-            open={open}
-            titleId={titleId}
-            {...dialogProps}
-        />
-    );
+    return <ModificationDialogContent submitButton={submitButton} closeAndClear={closeAndClear} {...dialogProps} />;
 }
