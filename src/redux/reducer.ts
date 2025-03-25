@@ -1492,10 +1492,12 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(LOAD_NAD_FROM_CONFIG, (state, action: LoadNadFromConfigAction) => {
+        // Reset depth to zero
+        state.networkAreaDiagramDepth = 0;
+
         let diagramStates = state.diagramStates;
 
         // TODO Erase local movements related to this NAD
-        // TODO Store depth directly in the NAD's diagramState
 
         // We close all the other NAD
         diagramStates = diagramStates.filter(
@@ -1524,6 +1526,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: IncrementNetworkAreaDiagramDepthAction) => {
+        // TODO Must fix the depth management for NAD_FROM_CONFIG : it should regenerate another NAD (from Config) with another depth
         state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
     });
 

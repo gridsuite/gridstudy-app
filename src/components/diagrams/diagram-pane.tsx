@@ -1191,18 +1191,9 @@ export function DiagramPane({
                                         svgType={diagramView.svgType}
                                         svgMetadata={diagramView.nadMetadata}
                                         svgScalingFactor={diagramView.additionalMetadata?.scalingFactor}
-                                        svgVoltageLevels={
-                                            diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                                                ? diagramStates
-                                                      .filter(
-                                                          (diagram) =>
-                                                              diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                                                      )
-                                                      .map((diagram) => diagram.id)
-                                                : diagramView.additionalMetadata?.voltageLevels?.map(
-                                                      (n: Identifiable) => n.id
-                                                  )
-                                        }
+                                        svgVoltageLevels={diagramView.additionalMetadata?.voltageLevels?.map(
+                                            (n: Identifiable) => n.id
+                                        )}
                                         loadingState={diagramView.loadingState}
                                         diagramSizeSetter={setDiagramSize}
                                         visible={visible}

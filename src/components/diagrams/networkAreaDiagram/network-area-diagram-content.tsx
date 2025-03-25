@@ -171,7 +171,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
     const { loadNadFromConfigView } = useDiagram();
 
     const nadIdentifier = useMemo(() => {
@@ -251,9 +250,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
             {
-                depth: networkAreaDiagramDepth,
-                scalingFactor: props.svgScalingFactor,
-                radiusFactor: 300.0, // At the moment, we only use the default value
+                scalingFactor: props.svgScalingFactor, // TODO May still be needed for node movements post-save : to test as soon as the depth management in NAD_FROM_CONFIG is fixed
                 voltageLevelIds: props.svgVoltageLevels ?? [],
                 positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
             },
