@@ -17,10 +17,17 @@ import { EquipmentInfos } from '@gridsuite/commons-ui/dist/utils/types/equipment
 // TODO fetchNetworkElementInfos has no type
 type FetchResponse = Awaited<ReturnType<typeof fetchNetworkElementInfos>>;
 
+export interface UseFormSearchCopy {
+    isDialogSearchOpen: boolean;
+    handleOpenSearchDialog: () => void;
+    handleSelectionChange: (element: EquipmentInfos) => void;
+    handleCloseSearchDialog: () => void;
+}
+
 export function useFormSearchCopy(
     setFormValues: (response: FetchResponse) => void,
     elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES
-) {
+): UseFormSearchCopy {
     const intl = useIntl();
     const { snackInfo, snackError } = useSnackMessage();
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);

@@ -294,20 +294,20 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 
     return (
         <BasicModificationDialog
+            aria-labelledby="dialog-lineTypes-catalog-selector"
+            disabledSave={!selectedRow}
             fullWidth
             maxWidth="xl"
-            open={true}
-            onClose={onClose}
             onClear={handleClear}
+            onClose={onClose}
             onSave={handleSubmit}
-            disabledSave={!selectedRow}
-            aria-labelledby="dialog-lineTypes-catalog-selector"
-            subtitle={headerAndTabs}
+            open={true}
             PaperProps={{
                 sx: {
                     height: '95vh', // we want the dialog height to be fixed even when switching tabs
                 },
             }}
+            subtitle={headerAndTabs}
             titleId={'SelectType'}
             {...dialogProps}
         >

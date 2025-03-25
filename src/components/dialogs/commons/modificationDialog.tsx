@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
-import PropTypes from 'prop-types';
+import { ReactNode, useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
-import ModificationDialogContent from './modification-dialog-content';
+import { ModificationDialogContent } from './modification-dialog-content';
+import { UseFormSearchCopy } from './use-form-search-copy';
 
 /**
  * Generic Modification Dialog which manage basic common behaviors with react
@@ -22,24 +22,48 @@ import ModificationDialogContent from './modification-dialog-content';
  * @param {CallbackEvent} onValidationError callback when validation failed
  * @param {Array} props props that are forwarded to the MUI Dialog component
  */
-const ModificationDialog = ({
-    onClose,
-    onClear,
-    onSave,
+
+interface ModificationDialogProps {
+    children?: ReactNode;
+    disabledSave: boolean;
+    isDataFetching?: boolean;
+    onClear: () => void;
+    onClose: () => void;
+    onOpenCatalogDialog?: React.MouseEventHandler<HTMLButtonElement>;
+    onSave: (modificationData: any) => void;
+    onValidated?: () => void;
+    onValidationError?: (errors: any) => void;
+    open: boolean;
+    searchCopy: UseFormSearchCopy;
+    showNodeNotBuiltWarning?: boolean;
+    titleId: string;
+}
+
+export function ModificationDialog({
+    children,
     disabledSave = false,
-    showNodeNotBuiltWarning = false,
+    isDataFetching,
+    onClear,
+    onClose,
+    onOpenCatalogDialog,
+    onSave,
     onValidated,
     onValidationError,
-    ...props
-}) => {
+    open,
+    searchCopy,
+    showNodeNotBuiltWarning = false,
+    titleId,
+    ...dialogProps
+}: Readonly<ModificationDialogProps>) {
     const { handleSubmit } = useFormContext();
 
-    const closeAndClear = (event, reason) => {
+    const closeAndClear = (event: Event, reason: string) => {
         onClear();
-        onClose(event, reason);
+        //TODO DBR onClose(event, reason);
+        onClose();
     };
 
-    const handleValidate = (data) => {
+    const handleValidate = (data: any) => {
         onValidated && onValidated();
         onSave(data);
         // do not wait fetch response and close dialog, errors will be shown in snackbar.
@@ -64,7 +88,7 @@ const ModificationDialog = ({
         return () => clearTimeout(timeoutId);
     }, []);
 
-    const handleValidationError = (errors) => {
+    const handleValidationError = (errors: any) => {
         onValidationError && onValidationError(errors);
         handleScrollWhenError();
     };
@@ -79,30 +103,15 @@ const ModificationDialog = ({
 
     return (
         <ModificationDialogContent
-            submitButton={submitButton}
+            children={children}
             closeAndClear={closeAndClear}
+            isDataFetching={isDataFetching}
+            open={open}
+            titleId={titleId}
+            submitButton={submitButton}
+            searchCopy={searchCopy}
             showNodeNotBuiltWarning={showNodeNotBuiltWarning}
-            {...props}
+            {...dialogProps}
         />
     );
-};
-
-ModificationDialog.propTypes = {
-    showNodeNotBuiltWarning: PropTypes.bool,
-    isDataFetching: PropTypes.bool,
-    onClose: PropTypes.func.isRequired,
-    onClear: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired,
-    searchCopy: PropTypes.object,
-    subtitle: PropTypes.object,
-    disabledSave: PropTypes.bool,
-    onValidated: PropTypes.func,
-    onValidationError: PropTypes.func,
-    fullWidth: PropTypes.bool,
-    open: PropTypes.bool,
-    titleId: PropTypes.string,
-    maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-    children: PropTypes.node,
-};
-
-export default ModificationDialog;
+}

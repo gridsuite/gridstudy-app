@@ -8,7 +8,7 @@
 import { FormattedMessage } from 'react-intl';
 import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
-import ModificationDialogContent from './modification-dialog-content';
+import { ModificationDialogContent } from './modification-dialog-content';
 
 /**
  * Generic Modification Dialog which manage basic common behaviors

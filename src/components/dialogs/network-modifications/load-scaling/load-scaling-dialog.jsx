@@ -8,7 +8,7 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../commons/modificationDialog';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import LoadScalingForm from './load-scaling-form';
 import { useCallback, useEffect } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';

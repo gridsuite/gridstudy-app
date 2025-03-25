@@ -5,19 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage } from 'react-intl';
-import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress } from '@mui/material';
-import PropTypes from 'prop-types';
+import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, Alert } from '@mui/material';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import { useSelector } from 'react-redux';
-import Alert from '@mui/material/Alert';
 import { BUILD_STATUS } from '../../network/constants';
+import { Theme } from '@mui/material/styles';
+import React, { ReactNode } from 'react';
+import { UseFormSearchCopy } from './use-form-search-copy';
+import { FormattedMessage } from 'react-intl';
 import { CancelButton } from '@gridsuite/commons-ui';
+import { AppState } from '../../../redux/reducer';
 
 const styles = {
-    warningMessage: (theme) => ({
+    warningMessage: (theme: Theme) => ({
         backgroundColor: theme.formFiller.background,
     }),
 };
@@ -33,25 +35,39 @@ const styles = {
  * @param {CallbackEvent} closeAndClear callback when the dialog needs to be closed and cleared
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
  */
-const ModificationDialogContent = ({
+
+interface ModificationDialogContentProps {
+    children?: ReactNode;
+    closeAndClear: (event: Event, reason: string) => void;
+    isDataFetching?: boolean;
+    titleId: string;
+    open: boolean;
+    onOpenCatalogDialog?: React.MouseEventHandler<HTMLButtonElement>;
+    searchCopy: UseFormSearchCopy;
+    showNodeNotBuiltWarning?: boolean;
+    submitButton: ReactNode;
+    subtitle?: ReactNode;
+}
+
+export function ModificationDialogContent({
+    children,
+    closeAndClear,
+    isDataFetching = false,
     titleId,
+    open,
     onOpenCatalogDialog,
     searchCopy,
-    subtitle,
-    isDataFetching = false,
     showNodeNotBuiltWarning = false,
     submitButton,
-    closeAndClear,
+    subtitle,
     ...dialogProps
-}) => {
+}: Readonly<ModificationDialogContentProps>) {
     const catalogButton = useButtonWithTooltip({
         label: 'CatalogButtonTooltip',
         handleClick: onOpenCatalogDialog,
         icon: <AutoStoriesOutlinedIcon />,
     });
-    const currentNode = useSelector((state) => {
-        return state.currentTreeNode;
-    });
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isNodeNotBuilt = currentNode?.data?.globalBuildStatus === BUILD_STATUS.NOT_BUILT;
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
@@ -59,18 +75,18 @@ const ModificationDialogContent = ({
         icon: <FindInPageIcon />,
     });
 
-    const handleClose = (event, reason) => {
+    const handleClose = (event: Event, reason: string) => {
         if (reason !== 'backdropClick') {
             closeAndClear(event, reason);
         }
     };
 
-    const handleCancel = (event) => {
-        closeAndClear(event, 'cancelButtonClick');
+    const handleCancel = () => {
+        //closeAndClear(event, 'cancelButtonClick'); TODO DBR
     };
 
     return (
-        <Dialog onClose={handleClose} aria-labelledby={titleId} {...dialogProps}>
+        <Dialog onClose={handleClose} aria-labelledby={titleId} open={open} {...dialogProps}>
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container spacing={2} justifyContent={'space-between'}>
@@ -104,24 +120,11 @@ const ModificationDialogContent = ({
                     )}
                 </Grid>
             </DialogTitle>
-            <DialogContent>{dialogProps.children}</DialogContent>
+            <DialogContent>{children}</DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleCancel} />
                 {submitButton}
             </DialogActions>
         </Dialog>
     );
-};
-
-ModificationDialogContent.propTypes = {
-    titleId: PropTypes.string.isRequired,
-    onOpenCatalogDialog: PropTypes.func,
-    searchCopy: PropTypes.object,
-    subtitle: PropTypes.element,
-    isDataFetching: PropTypes.bool,
-    showNodeNotBuiltWarning: PropTypes.bool,
-    submitButton: PropTypes.element,
-    closeAndClear: PropTypes.func.isRequired,
-};
-
-export default ModificationDialogContent;
+}

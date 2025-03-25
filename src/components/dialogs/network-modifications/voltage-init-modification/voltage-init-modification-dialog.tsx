@@ -551,23 +551,23 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
 
     return (
         <BasicModificationDialog
-            fullWidth
-            maxWidth="md"
-            open={open}
-            onClose={onClose}
-            onClear={handleClear}
-            onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
-            disabledSave={disabledSave || onPreviewModeSubmit === undefined || editData === undefined}
             aria-labelledby="dialog-voltage-init-modification"
-            subtitle={equipmentTabs}
+            disabledSave={disabledSave || onPreviewModeSubmit === undefined || editData === undefined}
+            fullWidth
+            isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
+            maxWidth="md"
+            onClear={handleClear}
+            onClose={onClose}
+            onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
+            open={open}
             PaperProps={{
                 sx: {
                     height: '90vh',
                 },
             }}
+            subtitle={equipmentTabs}
             titleId={'VoltageInitModification'}
             {...dialogProps}
-            isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
         >
             {displayTable(tabIndex)}
         </BasicModificationDialog>
