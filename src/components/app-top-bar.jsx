@@ -63,12 +63,13 @@ const styles = {
 
 const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, StudyView.LOGS, StudyView.PARAMETERS];
 
-const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
+const AppTopBar = ({ user, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { openDiagramView } = useDiagram();
 
     const theme = useSelector((state) => state[PARAM_THEME]);
+    const appTabIndex = useSelector((state) => state.appTabIndex);
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
@@ -143,7 +144,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 {user && studyUuid && currentRootNetworkUuid && (
                     <Box sx={styles.boxContent}>
                         <Tabs
-                            value={tabIndex}
+                            value={appTabIndex}
                             variant="scrollable"
                             onChange={(event, newTabIndex) => {
                                 onChangeTab(newTabIndex);
@@ -201,7 +202,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
 AppTopBar.propTypes = {
     user: PropTypes.object,
-    tabIndex: PropTypes.number.isRequired,
     onChangeTab: PropTypes.func.isRequired,
     userManager: PropTypes.object.isRequired,
 };
