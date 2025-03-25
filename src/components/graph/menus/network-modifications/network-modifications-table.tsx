@@ -37,7 +37,7 @@ interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorN
     modifications: NetworkModificationInfos[];
     setModifications: React.Dispatch<SetStateAction<NetworkModificationInfos[]>>;
     handleCellClick?: (event: CellClickedEvent) => void;
-    isRowDragEnabled?: boolean;
+    isRowDragDisabled?: boolean;
     isDragging?: boolean;
     onRowDragStart?: (event: RowDragEnterEvent) => void;
     onRowDragEnd?: (event: RowDragEndEvent) => void;
@@ -48,7 +48,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     modifications,
     setModifications,
     handleCellClick,
-    isRowDragEnabled,
+    isRowDragDisabled,
     isDragging,
     onRowDragStart,
     onRowDragEnd,
@@ -91,7 +91,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         const staticColumns: ColDef<NetworkModificationInfos>[] = [
             {
                 colId: 'modificationName',
-                rowDrag: isDragging,
+                rowDrag: !isRowDragDisabled,
                 headerComponent: NetworkModificationEditorNameHeader,
                 headerComponentParams: { modificationCount: modifications?.length, ...nameHeaderProps },
                 cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
@@ -138,7 +138,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
 
         return [...staticColumns, ...dynamicColumns];
     }, [
-        isDragging,
+        isRowDragDisabled,
         modifications?.length,
         rootNetworks,
         currentRootNetworkUuid,
@@ -178,7 +178,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 rowClass="custom-row-class"
                 onRowDragEnter={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
-                rowDragManaged={isRowDragEnabled}
+                rowDragManaged={!isRowDragDisabled}
                 suppressNoRowsOverlay={true}
             />
         </div>
