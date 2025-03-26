@@ -16,7 +16,9 @@ import { fetchAllEquipments } from 'services/study/network-map';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
 import { NodeAlias } from '../custom-columns/node-alias.type';
+import { isStatusBuilt } from '../../graph/util/model-functions';
 import { useFetchEquipment } from './use-fetch-equipment';
+import { NodeType } from '../../graph/tree-node.type';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -32,30 +34,62 @@ export const useSpreadsheetEquipments = (
     );
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
+    const [nodeIdsToFetch, setNodeIdsToFetch] = useState<string[]>([]);
 
     const [isFetching, setIsFetching] = useState<boolean>();
 
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
-    const nodesIdToFetch = useMemo(() => {
-        let nodesIdToFetch = new Set<string>();
+    const builtAliasedNodesIds = useMemo(() => {
+        let set = new Set<string>();
+        if (nodeAliases) {
+            const aliasedNodesIds = nodeAliases.map((alias) => alias.id);
+            if (aliasedNodesIds.length > 0) {
+                treeNodes?.forEach((treeNode) => {
+                    if (
+                        aliasedNodesIds.includes(treeNode.id) &&
+                        (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
+                    ) {
+                        set.add(treeNode.id);
+                    }
+                });
+            }
+        }
+        return set;
+    }, [nodeAliases, treeNodes]);
+
+    useEffect(() => {
         if (!equipments || !nodeAliases) {
-            return nodesIdToFetch;
+            return;
         }
+        // We want to build a set with unique node uuids to be loaded
+        let nodeIds = new Set<string>();
+
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
-        if (equipments.nodesId.find((nodeId) => nodeId === currentNode?.id) === undefined) {
-            nodesIdToFetch.add(currentNode?.id as string);
+        const currentNodeId = currentNode?.id as string;
+        if (currentNodeId && equipments.nodesId.find((nodeId) => nodeId === currentNodeId) === undefined) {
+            nodeIds.add(currentNodeId);
         }
-        //Then we do the same for the other nodes we need the data of (the ones defined in aliases)
-        nodeAliases.forEach((nodeAlias) => {
-            if (equipments.nodesId.find((nodeId) => nodeId === nodeAlias.id) === undefined) {
-                nodesIdToFetch.add(nodeAlias.id);
+        // Then we do the same for the other built nodes we need the data of (the ones defined in aliases)
+        builtAliasedNodesIds.forEach((nodeAliasId) => {
+            if (equipments.nodesId.find((nodeId) => nodeId === nodeAliasId) === undefined) {
+                nodeIds.add(nodeAliasId);
             }
         });
-        return nodesIdToFetch;
-    }, [currentNode?.id, equipments, nodeAliases]);
-
-    const shouldFetchEquipments = useMemo(() => nodesIdToFetch.size > 0, [nodesIdToFetch]);
+        // Update the state only on values changes (to avoid multiple effects)
+        setNodeIdsToFetch((prevState) => {
+            const currentNodeIds = prevState;
+            currentNodeIds.sort((a, b) => a.localeCompare(b));
+            const computedNodeIds = Array.from(nodeIds);
+            computedNodeIds.sort((a, b) => a.localeCompare(b));
+            if (JSON.stringify(currentNodeIds) !== JSON.stringify(computedNodeIds)) {
+                console.log('DBG DBR REAL DIFF', JSON.stringify(currentNodeIds), JSON.stringify(computedNodeIds));
+                return computedNodeIds;
+            }
+            return prevState;
+        });
+    }, [builtAliasedNodesIds, currentNode?.id, equipments, nodeAliases]);
 
     useEffect(() => {
         if (!nodeAliases) {
@@ -144,17 +178,12 @@ export const useSpreadsheetEquipments = (
     };
 
     useEffect(() => {
-        if (shouldFetchEquipments && isNetworkModificationTreeModelUpToDate && isNodeBuilt(currentNode)) {
+        if (nodeIdsToFetch.length > 0 && isNetworkModificationTreeModelUpToDate && isNodeBuilt(currentNode)) {
             setIsFetching(true);
-            fetchNodesEquipmentData(nodesIdToFetch, onFetchingDone);
+            console.log('DBG DBR FETCHING', nodeIdsToFetch);
+            fetchNodesEquipmentData(new Set<string>(nodeIdsToFetch), onFetchingDone);
         }
-    }, [
-        shouldFetchEquipments,
-        isNetworkModificationTreeModelUpToDate,
-        nodesIdToFetch,
-        fetchNodesEquipmentData,
-        currentNode,
-    ]);
+    }, [isNetworkModificationTreeModelUpToDate, nodeIdsToFetch, fetchNodesEquipmentData, currentNode]);
 
     return { equipments, isFetching };
 };
