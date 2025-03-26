@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { lighten, darken } from '@mui/material/styles';
+import { lighten, darken, Theme } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EditableTitle } from './editable-title';
@@ -14,7 +14,6 @@ import { setModificationsDrawerOpen } from '../../../../redux/actions';
 import { updateTreeNode } from '../../../../services/study/tree-subtree';
 import { Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
-import { Theme } from '@mui/material/styles';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
