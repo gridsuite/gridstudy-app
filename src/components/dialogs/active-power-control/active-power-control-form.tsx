@@ -15,15 +15,16 @@ import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-
 import { Box } from '@mui/material';
 import GridItem from '../commons/grid-item';
 import { ActivePowerControlInfos } from './active-power-control.type';
+import { MapEquipment } from '../../menus/base-equipment-menu';
 
 export interface ActivePowerControlFormProps {
     isEquipmentModification?: boolean;
-    previousValues?: ActivePowerControlInfos;
+    pV?: ActivePowerControlInfos;
 }
 
 export function ActivePowerControlForm({
     isEquipmentModification = false,
-    previousValues,
+    pV,
 }: Readonly<ActivePowerControlFormProps>) {
     const intl = useIntl();
     const watchFrequencyRegulation = useWatch({
@@ -31,15 +32,15 @@ export function ActivePowerControlForm({
     });
 
     const previousFrequencyRegulation = useMemo(() => {
-        if (previousValues?.participate) {
+        if (pV?.participate) {
             return intl.formatMessage({ id: 'On' });
         } else if (
-            previousValues?.participate === false ||
-            (previousValues && previousValues?.participate === undefined)
+            pV?.participate === false ||
+            (pV && pV?.participate === undefined)
         ) {
             return intl.formatMessage({ id: 'Off' });
         }
-    }, [intl, previousValues]);
+    }, [intl, pV]);
 
     const frequencyRegulationField = isEquipmentModification ? (
         /** wrappe with box to avoid warning */
@@ -61,7 +62,8 @@ export function ActivePowerControlForm({
             name={DROOP}
             label={'Droop'}
             adornment={percentageTextField}
-            previousValue={Number.isNaN(previousValues?.droop) ? undefined : previousValues?.droop ?? undefined}
+            // previousValue={pV?.droop  as ActivePowerControlInfos}
+            previousValue={pV?.droop}
             clearable={true}
         />
     );
