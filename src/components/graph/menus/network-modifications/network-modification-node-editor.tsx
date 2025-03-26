@@ -860,13 +860,17 @@ const NetworkModificationNodeEditor = () => {
         setInitialPosition(event.overIndex);
     };
     const onRowDragEnd = (event: RowDragEndEvent<NetworkModificationInfos>) => {
-        const newPosition = event.overIndex;
+        let newPosition = event.overIndex;
         const oldPosition = initialPosition;
         if (!currentNode?.id || newPosition === undefined || oldPosition === undefined || newPosition === oldPosition) {
             setIsDragging(false);
             return;
         }
+        if (newPosition === -1) {
+            newPosition = modifications.length;
+        }
 
+        const previousModifications = [...modifications];
         const updatedModifications = [...modifications];
 
         const [movedItem] = updatedModifications.splice(oldPosition, 1);
@@ -883,7 +887,7 @@ const NetworkModificationNodeEditor = () => {
                     messageTxt: error.message,
                     headerId: 'errReorderModificationMsg',
                 });
-                setModifications((prevModifications) => [...prevModifications]);
+                setModifications(previousModifications);
             })
             .finally(() => setIsDragging(false));
     };
