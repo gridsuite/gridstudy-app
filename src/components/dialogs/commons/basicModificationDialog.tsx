@@ -12,10 +12,8 @@ import { ModificationDialogContent, ModificationDialogContentProps } from './mod
 export type BasicModificationDialogProps = Omit<ModificationDialogContentProps, 'closeAndClear' | 'submitButton'> & {
     disabledSave?: boolean;
     onClear: () => void;
-    onDialogClose?: () => void;
+    onDialogClose: () => void;
     onSave: () => void;
-    open: boolean;
-    titleId: string;
 };
 
 export function BasicModificationDialog({
@@ -27,9 +25,7 @@ export function BasicModificationDialog({
 }: Readonly<BasicModificationDialogProps>) {
     const closeAndClear = (event: React.MouseEvent, reason: string) => {
         onClear();
-        if (onDialogClose) {
-            onDialogClose();
-        }
+        onDialogClose();
     };
 
     const handleSubmit = (event: React.MouseEvent) => {

@@ -38,7 +38,6 @@ const styles = {
  */
 
 export type ModificationDialogContentProps = Omit<DialogProps, 'onClose' | 'aria-labelledby'> & {
-    children?: ReactNode;
     closeAndClear: (event: React.MouseEvent, reason: string) => void;
     isDataFetching?: boolean;
     titleId: string;
@@ -50,7 +49,6 @@ export type ModificationDialogContentProps = Omit<DialogProps, 'onClose' | 'aria
 };
 
 export function ModificationDialogContent({
-    children,
     closeAndClear,
     isDataFetching = false,
     titleId,
@@ -119,7 +117,7 @@ export function ModificationDialogContent({
                     )}
                 </Grid>
             </DialogTitle>
-            <DialogContent>{children}</DialogContent>
+            <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleCancel} />
                 {submitButton}

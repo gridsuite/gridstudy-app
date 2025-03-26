@@ -6,7 +6,7 @@
  */
 
 import { useCallback } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { FieldErrors, useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
 import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
 
@@ -27,7 +27,7 @@ export type ModificationDialogProps = Omit<ModificationDialogContentProps, 'clos
     onDialogClose?: () => void;
     onSave: (modificationData: any) => void;
     onValidated?: () => void;
-    onValidationError?: (errors: any) => void;
+    onValidationError?: (errors: FieldErrors) => void;
 };
 
 export function ModificationDialog({
@@ -73,7 +73,7 @@ export function ModificationDialog({
         return () => clearTimeout(timeoutId);
     }, []);
 
-    const handleValidationError = (errors: any) => {
+    const handleValidationError = (errors: FieldErrors) => {
         onValidationError && onValidationError(errors);
         handleScrollWhenError();
     };
