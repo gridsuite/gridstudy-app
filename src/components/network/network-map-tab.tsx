@@ -827,8 +827,7 @@ export const NetworkMapTab = ({
             const eventData = parsedEventData as LoadflowResultEventData;
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.LOADFLOW_RESULT) {
-                const loadflowResultNotification = eventData as LoadflowResultEventData;
-                const rootNetworkUuidFromNotification = loadflowResultNotification.headers.rootNetwork;
+                const rootNetworkUuidFromNotification = eventData.headers.rootNetwork;
                 if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
                     dispatch(setMapDataLoading(true));
                     reloadMapEquipments(currentNodeRef.current, undefined)
@@ -855,8 +854,7 @@ export const NetworkMapTab = ({
             const eventData = parsedEventData as RootNetworkModifiedEventData;
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORK_MODIFIED) {
-                const rootNetworkModifiedNotification = eventData as RootNetworkModifiedEventData;
-                const rootNetworkUuidFromNotification = rootNetworkModifiedNotification.headers.rootNetwork;
+                const rootNetworkUuidFromNotification = eventData.headers.rootNetwork;
                 if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
                     setInitialized(false);
                     setIsRootNodeGeoDataLoaded(false);

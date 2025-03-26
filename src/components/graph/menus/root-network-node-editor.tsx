@@ -211,9 +211,8 @@ const RootNetworkNodeEditor = () => {
                 if (!rootNetworksRef.current) {
                     return;
                 }
-                const rootNetworkModifiedNotification = eventData as RootNetworkDeletionStartedEventData;
                 // If the current root network isn't going to be deleted, we don't need to do anything
-                const deletedRootNetworkUuids = rootNetworkModifiedNotification.headers.rootNetworks;
+                const deletedRootNetworkUuids = eventData.headers.rootNetworks;
                 if (
                     currentRootNetworkUuidRef.current &&
                     !deletedRootNetworkUuids.includes(currentRootNetworkUuidRef.current)
