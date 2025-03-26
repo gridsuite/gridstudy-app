@@ -85,7 +85,6 @@ export function fetchVoltageLevelEquipments(
         encodeURIComponent(voltageLevelId) +
         '/equipments' +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId') +
         urlSearchParams.toString();
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
