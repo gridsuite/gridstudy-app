@@ -178,7 +178,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 rowClass="custom-row-class"
                 onRowDragEnter={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
-                rowDragManaged={!isRowDragDisabled || !isDragging}
+                rowDragManaged={!isRowDragDisabled}
                 suppressNoRowsOverlay={true}
             />
         </div>
