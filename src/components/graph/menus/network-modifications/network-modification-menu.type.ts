@@ -6,8 +6,8 @@
  */
 
 import { UUID } from 'crypto';
-import { FetchStatus } from '../../../services/utils.type';
-import { CurrentTreeNode } from '../tree-node.type';
+import { CurrentTreeNode } from '../../tree-node.type';
+import { FetchStatus } from '../../../../services/utils.type';
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
     name: string;

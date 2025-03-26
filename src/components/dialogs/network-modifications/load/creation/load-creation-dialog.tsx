@@ -35,7 +35,7 @@ import {
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { LoadCreationInfos, LoadCreationSchemaForm, LoadFormInfos } from './load-creation.type';
 import { FetchStatus } from '../../../../../services/utils.type';
-import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modification-menu.type';
+import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 /**
  * Dialog to create a load in the network

@@ -7,7 +7,7 @@
 
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { Filter } from '../commons/by-filter.type';
-import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modification-menu.type';
+import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 export interface ByFilterDeletionEditData {
     uuid: string;

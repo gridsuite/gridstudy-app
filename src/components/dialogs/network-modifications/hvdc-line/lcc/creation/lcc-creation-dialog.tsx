@@ -55,7 +55,7 @@ import {
     getLccHvdcLineFromSearchCopy,
     getLccHvdcLineSchema,
 } from './lcc-creation-utils';
-import { DefaultModificationDialogProps } from '../../../../../graph/menus/network-modification-menu.type';
+import { DefaultModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 export type LccCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
