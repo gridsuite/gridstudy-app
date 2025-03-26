@@ -14,6 +14,7 @@ export interface RootNetworkMetadata {
     tag: string;
     isCreating: boolean;
 }
+
 export interface NetworkModificationMetadata {
     uuid: UUID;
     type: string;
@@ -22,6 +23,11 @@ export interface NetworkModificationMetadata {
     activated: boolean;
     messageType: string;
     messageValues: string;
+}
+
+export interface NetworkModificationInfos {
+    modificationInfos: NetworkModificationMetadata;
+    activationStatusByRootNetwork: Record<UUID, boolean>;
 }
 
 export enum NetworkModificationCopyType {

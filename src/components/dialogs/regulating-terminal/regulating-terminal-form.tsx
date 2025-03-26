@@ -77,7 +77,6 @@ export function RegulatingTerminalForm({
                 currentNodeUuid,
                 currentRootNetworkUuid,
                 watchVoltageLevelId,
-                undefined,
                 true
             ).then((equipments) => {
                 setEquipmentsOptions(

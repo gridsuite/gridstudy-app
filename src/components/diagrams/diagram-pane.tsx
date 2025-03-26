@@ -43,7 +43,7 @@ import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
-import { AppState, DiagramState } from 'redux/reducer';
+import { AppState, DiagramState, StudyUpdatedEventData } from 'redux/reducer';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { DiagramType, ViewState } from './diagram.type';
 import { useDiagram } from './use-diagram';
@@ -842,17 +842,18 @@ export function DiagramPane({
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers['rootNetwork'] !== currentRootNetworkUuidRef.current) {
+            const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
+            if (studyUpdatedEventData.headers.rootNetwork !== currentRootNetworkUuidRef.current) {
                 return;
             }
-            if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult') {
+            if (studyUpdatedEventData.headers.updateType === 'loadflowResult') {
                 //TODO reload data more intelligently
                 updateDiagramsByCurrentNode();
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
+            } else if (studyUpdatedEventData.headers.updateType === 'study') {
                 // FM if we want to reload data more precisely, we need more information from notifications
                 updateDiagramsByCurrentNode();
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'buildCompleted') {
-                if (studyUpdatedForce.eventData.headers['node'] === currentNodeRef.current?.id) {
+            } else if (studyUpdatedEventData.headers.updateType === 'buildCompleted') {
+                if (studyUpdatedEventData.headers.node === currentNodeRef.current?.id) {
                     updateDiagramsByCurrentNode();
                 }
             }
