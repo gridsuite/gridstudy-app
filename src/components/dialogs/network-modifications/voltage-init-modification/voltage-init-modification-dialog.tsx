@@ -167,7 +167,6 @@ interface VoltageInitModificationProps {
     onPreviewModeSubmit?: () => void;
     editDataFetchStatus: FetchStatus;
     disabledSave: boolean;
-    dialogProps: any;
 }
 
 const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationProps> = ({
@@ -176,7 +175,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
     onPreviewModeSubmit,
     editDataFetchStatus,
     disabledSave,
-    dialogProps,
+    ...dialogProps
 }) => {
     const intl = useIntl();
 

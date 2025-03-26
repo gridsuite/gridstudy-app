@@ -13,7 +13,7 @@ export type BasicModificationDialogProps = Omit<ModificationDialogContentProps, 
     disabledSave?: boolean;
     onClear: () => void;
     onClose: () => void;
-    onSave: () => void;
+    onSave?: () => void;
 };
 
 export function BasicModificationDialog({
@@ -29,7 +29,7 @@ export function BasicModificationDialog({
     };
 
     const handleSubmit = (event: React.MouseEvent) => {
-        onSave();
+        onSave?.();
         // do not wait fetch response and close dialog, errors will be shown in snackbar.
         closeAndClear(event, 'validateButtonClick');
     };

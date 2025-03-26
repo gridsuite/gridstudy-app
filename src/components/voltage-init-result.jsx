@@ -177,7 +177,6 @@ const VoltageInitResult = ({ result, status }) => {
                 onClose={() => setPreviewModificationsDialogOpen(false)}
                 onPreviewModeSubmit={applyModifications}
                 editDataFetchStatus={FetchStatus.IDLE}
-                dialogProps={undefined}
                 disabledSave={autoApplyModifications}
             />
         );

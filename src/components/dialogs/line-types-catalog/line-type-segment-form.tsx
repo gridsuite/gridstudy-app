@@ -226,7 +226,6 @@ export const LineTypeSegmentForm = () => {
                     rowData={lineTypesCatalog}
                     onSelectLine={onSelectCatalogLine}
                     preselectedRowId={getPreselectedRowIdForCatalog(openCatalogDialogIndex)}
-                    dialogProps={undefined}
                 />
             )}
         </>

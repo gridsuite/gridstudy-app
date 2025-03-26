@@ -32,7 +32,6 @@ interface RootNetworkDialogProps {
     onSave: (data: FormData) => void;
     onClose: () => void;
     titleId: string;
-    dialogProps?: any;
     editableRootNetwork?: RootNetworkMetadata;
 }
 
@@ -70,8 +69,8 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     onSave,
     onClose,
     titleId,
-    dialogProps,
     editableRootNetwork,
+    ...dialogProps
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [modifiedByUser, setModifiedByUser] = useState(false);
