@@ -10,11 +10,10 @@ import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from './computing-type';
-import { AppState, StudyUpdated } from 'redux/reducer';
+import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
-import { UPDATE_TYPE_HEADER } from 'components/use-node-data';
 
 interface UseComputingStatusProps {
     (
@@ -45,11 +44,12 @@ function isWorthUpdate(
     currentRootNetworkUuid: UUID,
     invalidations: string[]
 ): boolean {
-    const headers = studyUpdatedForce?.eventData?.headers;
-    const updateType = headers?.[UPDATE_TYPE_HEADER];
-    const node = headers?.['node'];
-    const nodes = headers?.['nodes'];
-    const rootNetworkUuidFromNotification = studyUpdatedForce?.eventData?.headers?.['rootNetwork'];
+    const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
+    const headers = studyUpdatedEventData?.headers;
+    const updateType = headers?.updateType;
+    const node = headers?.node;
+    const nodes = headers?.nodes;
+    const rootNetworkUuidFromNotification = headers?.rootNetwork;
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
     }

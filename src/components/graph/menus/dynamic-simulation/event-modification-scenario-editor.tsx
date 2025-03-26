@@ -23,7 +23,7 @@ import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulati
 import { isChecked, isPartial, styles } from '../network-modifications/network-modification-node-editor-utils';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
-import { AppState, StudyUpdated } from '../../../../redux/reducer';
+import { AppState, StudyUpdated, StudyUpdatedEventData } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
@@ -63,8 +63,13 @@ const EventModificationScenarioEditor = () => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
+            const studyUpdatedEventData = study?.eventData as StudyUpdatedEventData;
+
             dispatch(
-                addNotification([study.eventData.headers['parentNode'], ...(study.eventData.headers['nodes'] ?? [])])
+                addNotification([
+                    studyUpdatedEventData.headers.parentNode,
+                    ...(studyUpdatedEventData.headers.nodes ?? []),
+                ])
             );
         },
         [dispatch]
@@ -73,11 +78,11 @@ const EventModificationScenarioEditor = () => {
     const manageNotification = useCallback(
         (study: StudyUpdated) => {
             let messageId = '';
-            if (study.eventData.headers['updateType'] === EventCrudType.EVENT_CREATING_IN_PROGRESS) {
+            if (study.eventData.headers.updateType === EventCrudType.EVENT_CREATING_IN_PROGRESS) {
                 messageId = 'DynamicSimulationEventCreating';
-            } else if (study.eventData.headers['updateType'] === EventCrudType.EVENT_UPDATING_IN_PROGRESS) {
+            } else if (study.eventData.headers.updateType === EventCrudType.EVENT_UPDATING_IN_PROGRESS) {
                 messageId = 'DynamicSimulationEventUpdating';
-            } else if (study.eventData.headers['updateType'] === EventCrudType.EVENT_DELETING_IN_PROGRESS) {
+            } else if (study.eventData.headers.updateType === EventCrudType.EVENT_DELETING_IN_PROGRESS) {
                 messageId = 'DynamicSimulationEventDeleting';
             }
             fillNotification(study, messageId);
@@ -133,28 +138,28 @@ const EventModificationScenarioEditor = () => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (currentNodeIdRef.current !== studyUpdatedForce.eventData.headers['parentNode']) {
+            const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
+
+            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
                 return;
             }
 
-            if (
-                Object.values<string>(EventCrudType).includes(studyUpdatedForce.eventData.headers['updateType'] ?? '')
-            ) {
+            if (Object.values<string>(EventCrudType).includes(studyUpdatedEventData.headers.updateType ?? '')) {
                 dispatch(setModificationsInProgress(true));
                 setPendingState(true);
                 manageNotification(studyUpdatedForce);
             }
             // notify  finished action (success or error => we remove the loader)
             // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-            if (studyUpdatedForce.eventData.headers['updateType'] === EVENT_CRUD_FINISHED) {
+            if (studyUpdatedEventData.headers.updateType === EVENT_CRUD_FINISHED) {
                 // fetch events because it must have changed
                 // Do not clear the events list, because currentNode is the concerned one
                 // this allows to append new events to the existing list.
                 doFetchEvents();
                 dispatch(
                     removeNotificationByNode([
-                        studyUpdatedForce.eventData.headers['parentNode'],
-                        ...(studyUpdatedForce.eventData.headers['nodes'] ?? []),
+                        studyUpdatedEventData.headers.parentNode,
+                        ...(studyUpdatedEventData.headers.nodes ?? []),
                     ])
                 );
             }

@@ -71,7 +71,7 @@ import { RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
-import { AppState, StudyUpdated } from 'redux/reducer';
+import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
 import { createCompositeModifications } from '../../../../services/explore';
 import { fetchNetworkModification } from '../../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../../services/study';
@@ -423,8 +423,10 @@ const NetworkModificationNodeEditor = () => {
         (study: StudyUpdated, messageId: string) => {
             // (work for all users)
             // specific message id for each action type
+            const studyUpdatedEventData = study?.eventData as StudyUpdatedEventData;
+
             setNotificationMessageId(messageId);
-            dispatch(addNotification([study.eventData.headers.parentNode ?? []]));
+            dispatch(addNotification([studyUpdatedEventData.headers.parentNode ?? []]));
         },
         [dispatch]
     );
@@ -432,7 +434,7 @@ const NetworkModificationNodeEditor = () => {
     const manageNotification = useCallback(
         (study: StudyUpdated) => {
             let messageId;
-            switch (study.eventData.headers['updateType']) {
+            switch (study.eventData.headers.updateType) {
                 case 'creatingInProgress':
                     messageId = 'network_modifications.creatingModification';
                     break;
@@ -555,10 +557,12 @@ const NetworkModificationNodeEditor = () => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeDeleted') {
+            const studyUpdatedEventData = studyUpdatedForce.eventData as StudyUpdatedEventData;
+
+            if (studyUpdatedEventData.headers.updateType === 'nodeDeleted') {
                 if (
                     copyInfosRef.current &&
-                    studyUpdatedForce.eventData.headers['nodes']?.some(
+                    studyUpdatedEventData.headers.nodes?.some(
                         (nodeId) => nodeId === copyInfosRef.current?.originNodeUuid
                     )
                 ) {
@@ -566,16 +570,16 @@ const NetworkModificationNodeEditor = () => {
                     cleanClipboard();
                 }
             }
-            if (currentNodeIdRef.current !== studyUpdatedForce.eventData.headers['parentNode']) {
+            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
                 return;
             }
 
             if (
-                studyUpdatedForce.eventData.headers['updateType'] &&
+                studyUpdatedEventData.headers.updateType &&
                 // @ts-expect-error TS2345: Argument of type string is not assignable to parameter of type UPDATE_TYPE (a restrained array of strings)
-                UPDATE_TYPE.includes(studyUpdatedForce.eventData.headers['updateType'])
+                UPDATE_TYPE.includes(studyUpdatedEventData.headers.updateType)
             ) {
-                if (studyUpdatedForce.eventData.headers['updateType'] === 'deletingInProgress') {
+                if (studyUpdatedEventData.headers.updateType === 'deletingInProgress') {
                     // deleting means removing from trashcan (stashed elements) so there is no network modification
                     setDeleteInProgress(true);
                 } else {
@@ -586,19 +590,19 @@ const NetworkModificationNodeEditor = () => {
             }
             // notify  finished action (success or error => we remove the loader)
             // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-            if (studyUpdatedForce.eventData.headers['updateType'] === 'UPDATE_FINISHED') {
+            if (studyUpdatedEventData.headers.updateType === 'UPDATE_FINISHED') {
                 // fetch modifications because it must have changed
                 // Do not clear the modifications list, because currentNode is the concerned one
                 // this allows to append new modifications to the existing list.
                 dofetchNetworkModifications();
                 dispatch(
                     removeNotificationByNode([
-                        studyUpdatedForce.eventData.headers['parentNode'],
-                        ...(studyUpdatedForce.eventData.headers.nodes ?? []),
+                        studyUpdatedEventData.headers.parentNode,
+                        ...(studyUpdatedEventData.headers.nodes ?? []),
                     ])
                 );
             }
-            if (studyUpdatedForce.eventData.headers['updateType'] === 'DELETE_FINISHED') {
+            if (studyUpdatedEventData.headers.updateType === 'DELETE_FINISHED') {
                 setDeleteInProgress(false);
                 dofetchNetworkModifications();
             }
