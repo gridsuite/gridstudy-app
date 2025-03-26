@@ -71,5 +71,5 @@ export type DefaultModificationDialogProps = {
     isUpdate: boolean;
     editDataFetchStatus: FetchStatus;
     onValidated: () => void;
-    onDialogClose: () => void;
+    onClose: () => void;
 };

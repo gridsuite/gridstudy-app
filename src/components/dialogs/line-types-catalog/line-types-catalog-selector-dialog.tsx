@@ -298,7 +298,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             fullWidth
             maxWidth="xl"
             onClear={handleClear}
-            onDialogClose={onClose}
+            onClose={onClose}
             onSave={handleSubmit}
             open={true}
             PaperProps={{

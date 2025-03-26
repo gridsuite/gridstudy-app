@@ -177,7 +177,7 @@ const NetworkModificationNodeEditor = () => {
     function withDefaultParams(Dialog: React.FC<any>) {
         return (
             <Dialog
-                onDialogClose={handleCloseDialog}
+                onClose={handleCloseDialog}
                 onValidated={handleValidatedDialog}
                 currentNode={currentNode}
                 studyUuid={studyUuid}

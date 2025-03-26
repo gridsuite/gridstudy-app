@@ -163,7 +163,7 @@ interface EditData {
 
 interface VoltageInitModificationProps {
     editData: EditData;
-    onDialogClose: () => void;
+    onClose: () => void;
     onPreviewModeSubmit?: () => void;
     editDataFetchStatus: FetchStatus;
     disabledSave: boolean;
@@ -172,7 +172,7 @@ interface VoltageInitModificationProps {
 
 const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationProps> = ({
     editData,
-    onDialogClose,
+    onClose,
     onPreviewModeSubmit,
     editDataFetchStatus,
     disabledSave,
@@ -545,8 +545,8 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             fullWidth
             isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
             maxWidth="md"
-            onClear={onDialogClose}
-            onDialogClose={onDialogClose}
+            onClear={onClose}
+            onClose={onClose}
             onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
             open={open}
             PaperProps={{

@@ -181,7 +181,7 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                onDialogClose={onClose}
+                onClose={onClose}
                 onClear={handleClear}
                 onSave={handleSubmit}
                 maxWidth={'xs'}

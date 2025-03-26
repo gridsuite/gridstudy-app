@@ -64,7 +64,7 @@ const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ 
                 onClear={handleClear}
                 titleId="LineTypesCatalogDialogTitle"
                 open={open}
-                onDialogClose={onClose}
+                onClose={onClose}
                 onSave={onSave}
             >
                 <LineTypeSegmentForm />

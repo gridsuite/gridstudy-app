@@ -174,7 +174,7 @@ const VoltageInitResult = ({ result, status }) => {
                 currentNode={currentNode.id}
                 studyUuid={studyUuid}
                 editData={voltageInitModification}
-                onDialogClose={() => setPreviewModificationsDialogOpen(false)}
+                onClose={() => setPreviewModificationsDialogOpen(false)}
                 onPreviewModeSubmit={applyModifications}
                 editDataFetchStatus={FetchStatus.IDLE}
                 dialogProps={undefined}
