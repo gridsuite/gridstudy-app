@@ -283,6 +283,27 @@ function ResultsGlobalFilter({
         [numberOfOptions, translate]
     );
 
+    const options = useMemo(
+        () => [
+            ...recentGlobalFilters.map((filter) => {
+                return { ...filter, recent: true };
+            }),
+            ...filters
+                .map((filter) => {
+                    return { ...filter, recent: false };
+                })
+                .sort((a: GlobalFilter, b: GlobalFilter) => {
+                    // only the countries are sorted alphabetically
+                    if (a.filterType === FilterType.COUNTRY && b.filterType === FilterType.COUNTRY) {
+                        const bt: string = translate(b.label);
+                        const at: string = translate(a.label);
+                        return at.localeCompare(bt);
+                    }
+                    return 0;
+                }),
+        ],
+        [filters, recentGlobalFilters, translate]
+    );
     return (
         <>
             <Autocomplete
@@ -293,24 +314,7 @@ function ResultsGlobalFilter({
                 size="small"
                 limitTags={2}
                 disableCloseOnSelect
-                options={[
-                    ...recentGlobalFilters.map((filter) => {
-                        return { ...filter, recent: true };
-                    }),
-                    ...filters
-                        .map((filter) => {
-                            return { ...filter, recent: false };
-                        })
-                        .sort((a: GlobalFilter, b: GlobalFilter) => {
-                            // only the countries are sorted alphabetically
-                            if (a.filterType === FilterType.COUNTRY && b.filterType === FilterType.COUNTRY) {
-                                const bt: string = translate(b.label);
-                                const at: string = translate(a.label);
-                                return at.localeCompare(bt);
-                            }
-                            return 0;
-                        }),
-                ]}
+                options={options}
                 onChange={(_e, value) => handleChange(value)}
                 groupBy={(option: GlobalFilter): string => (option.recent ? recentFilter : option.filterType)}
                 renderInput={RenderInput}
