@@ -126,10 +126,10 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
     [EQUIPMENT_TYPES.LINE]: [
         { id: 'R', label: 'SeriesResistanceText', unit: OHM },
         { id: 'X', label: 'SeriesReactanceText', unit: OHM },
-        { id: 'G1', label: 'G1', unit: MICRO_SIEMENS },
-        { id: 'G2', label: 'G2', unit: MICRO_SIEMENS },
-        { id: 'B1', label: 'B1', unit: MICRO_SIEMENS },
-        { id: 'B2', label: 'B2', unit: MICRO_SIEMENS },
+        { id: 'G1', label: 'ShuntConductanceText1', unit: MICRO_SIEMENS },
+        { id: 'G2', label: 'ShuntConductanceText2', unit: MICRO_SIEMENS },
+        { id: 'B1', label: 'ShuntSusceptanceText1', unit: MICRO_SIEMENS },
+        { id: 'B2', label: 'ShuntSusceptanceText2', unit: MICRO_SIEMENS },
     ],
 };
 
