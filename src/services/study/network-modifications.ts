@@ -8,7 +8,7 @@
 import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { getStudyUrlWithNodeUuid, safeEncodeURIComponent } from './index';
+import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import { UUID } from 'crypto';
@@ -42,7 +42,7 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-
+import { NetworkModificationInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
@@ -86,6 +86,27 @@ export function setModificationActivated(
     urlSearchParams.append('uuids', String([modificationUuid]));
     const modificationUpdateActiveUrl =
         getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    console.debug(modificationUpdateActiveUrl);
+    return backendFetch(modificationUpdateActiveUrl, {
+        method: 'PUT',
+    });
+}
+
+export function updateModificationStatusByRootNetwork(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    rootNetworkUuid: UUID,
+    modificationUuid: UUID,
+    activated: boolean
+) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('activated', String(activated));
+    urlSearchParams.append('uuids', String([modificationUuid]));
+    const modificationUpdateActiveUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
+        '/network-modifications' +
+        '?' +
+        urlSearchParams.toString();
     console.debug(modificationUpdateActiveUrl);
     return backendFetch(modificationUpdateActiveUrl, {
         method: 'PUT',
@@ -1618,7 +1639,11 @@ export function deleteEquipmentByFilter(
     });
 }
 
-export function fetchNetworkModifications(studyUuid: UUID | null, nodeUuid: string, onlyStashed: boolean) {
+export function fetchNetworkModifications(
+    studyUuid: UUID | null,
+    nodeUuid: string,
+    onlyStashed: boolean
+): Promise<NetworkModificationInfos[]> {
     console.info('Fetching network modifications (metadata) for nodeUuid : ', nodeUuid);
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('onlyStashed', onlyStashed.toString());

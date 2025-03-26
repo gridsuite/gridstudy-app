@@ -6,12 +6,12 @@
  */
 
 import {
-    CheckBoxList,
     ElementCreationDialog,
     ElementType,
     IElementCreationDialog,
     MODIFICATION_TYPES,
-    useModificationLabelComputer,
+    NetworkModificationMetadata,
+    usePrevious,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
@@ -21,7 +21,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, Checkbox, CircularProgress, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import { BatteryCreationDialog } from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -39,7 +39,7 @@ import LineCreationDialog from 'components/dialogs/network-modifications/line/cr
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import LinesAttachToSplitLinesDialog from 'components/dialogs/network-modifications/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 import LoadScalingDialog from 'components/dialogs/network-modifications/load-scaling/load-scaling-dialog';
-import { LoadCreationDialog } from '../../dialogs/network-modifications/load/creation/load-creation-dialog';
+import { LoadCreationDialog } from '../../../dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
@@ -53,35 +53,34 @@ import VoltageLevelCreationDialog from 'components/dialogs/network-modifications
 import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/creation/vsc-creation-dialog';
 import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
-import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
+import NetworkModificationsMenu from 'components/graph/menus/network-modifications/network-modifications-menu';
 import { UPDATE_TYPE } from 'components/network/constants';
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     addNotification,
     removeNotificationByNode,
     resetLogsFilter,
     setModificationsInProgress,
-} from '../../../redux/actions';
-import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
-import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
+} from '../../../../redux/actions';
+import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
 import { RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
-import { DropResult } from 'react-beautiful-dnd';
-import { AppState, StudyUpdated } from 'redux/reducer';
-import { createCompositeModifications } from '../../../services/explore';
-import { fetchNetworkModification } from '../../../services/network-modification';
-import { copyOrMoveModifications } from '../../../services/study';
+import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
+import { createCompositeModifications } from '../../../../services/explore';
+import { fetchNetworkModification } from '../../../../services/network-modification';
+import { copyOrMoveModifications } from '../../../../services/study';
 import {
     changeNetworkModificationOrder,
     fetchNetworkModifications,
     stashModifications,
-} from '../../../services/study/network-modifications';
-import { FetchStatus } from '../../../services/utils';
+} from '../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../services/utils';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
@@ -89,15 +88,16 @@ import {
     NetworkModificationCopyInfo,
     NetworkModificationCopyType,
     NetworkModificationData,
-    NetworkModificationMetadata,
+    NetworkModificationInfos,
 } from './network-modification-menu.type';
-import { SwitchNetworkModificationActive } from './switch-network-modification-active';
-import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
-import ModificationByAssignmentDialog from '../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
-import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
-import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
-import { LccCreationDialog } from '../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
-import { isChecked, isPartial, styles } from './network-modification-node-editor-utils';
+import StaticVarCompensatorCreationDialog from '../../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
+import ModificationByAssignmentDialog from '../../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
+import ByFormulaDialog from '../../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
+import ByFilterDeletionDialog from '../../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
+import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation-dialog';
+import { styles } from './network-modification-node-editor-utils';
+import NetworkModificationsTable from './network-modifications-table';
+import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -105,18 +105,23 @@ const nonEditableModificationTypes = new Set([
     'OPERATING_STATUS_MODIFICATION',
 ]);
 
-const isEditableModification = (modif: NetworkModificationMetadata) => {
+const isEditableModification = (modif: NetworkModificationInfos) => {
     if (!modif) {
         return false;
     }
-    return !nonEditableModificationTypes.has(modif.type);
+    return !nonEditableModificationTypes.has(modif.modificationInfos.type);
 };
 
 const NetworkModificationNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+    const createdRootNetworks = rootNetworks.filter((rn) => !rn.isCreating);
+    // modifications need to reload once root network is fully created (not in "isCreating" state) in order to fetch its applicability
+    const createdRootNetworksLength = createdRootNetworks.length;
+    const createdRootNetworksPreviousLength = usePrevious(createdRootNetworks.length);
     const { snackInfo, snackError } = useSnackMessage();
-    const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
+    const [modifications, setModifications] = useState<NetworkModificationInfos[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
@@ -126,13 +131,15 @@ const NetworkModificationNodeEditor = () => {
     const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
-    const [selectedItems, setSelectedItems] = useState<NetworkModificationMetadata[]>([]);
+    const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationInfos[]>([]);
+
     const [copiedModifications, setCopiedModifications] = useState<UUID[]>([]);
     const [copyInfos, setCopyInfos] = useState<NetworkModificationCopyInfo | null>(null);
     const copyInfosRef = useRef<NetworkModificationCopyInfo | null>();
     copyInfosRef.current = copyInfos;
 
     const [isDragging, setIsDragging] = useState(false);
+    const [initialPosition, setInitialPosition] = useState<number | undefined>(undefined);
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
@@ -142,8 +149,8 @@ const NetworkModificationNodeEditor = () => {
     const [createCompositeModificationDialogOpen, setCreateCompositeModificationDialogOpen] = useState(false);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const [messageId, setMessageId] = useState('');
-    const [launchLoader, setLaunchLoader] = useState(false);
+    const [notificationMessageId, setNotificationMessageId] = useState('');
+    const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
 
@@ -416,8 +423,10 @@ const NetworkModificationNodeEditor = () => {
         (study: StudyUpdated, messageId: string) => {
             // (work for all users)
             // specific message id for each action type
-            setMessageId(messageId);
-            dispatch(addNotification([study.eventData.headers.parentNode ?? []]));
+            const studyUpdatedEventData = study?.eventData as StudyUpdatedEventData;
+
+            setNotificationMessageId(messageId);
+            dispatch(addNotification([studyUpdatedEventData.headers.parentNode ?? []]));
         },
         [dispatch]
     );
@@ -425,7 +434,7 @@ const NetworkModificationNodeEditor = () => {
     const manageNotification = useCallback(
         (study: StudyUpdated) => {
             let messageId;
-            switch (study.eventData.headers['updateType']) {
+            switch (study.eventData.headers.updateType) {
                 case 'creatingInProgress':
                     messageId = 'network_modifications.creatingModification';
                     break;
@@ -450,11 +459,11 @@ const NetworkModificationNodeEditor = () => {
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
         }
-        setLaunchLoader(true);
+        setIsFetchingModifications(true);
         fetchNetworkModifications(studyUuid, currentNode.id, true)
             .then((res) => {
                 if (currentNode.id === currentNodeIdRef.current) {
-                    setModificationsToRestore(res);
+                    setModificationsToRestore(res.map((m) => m.modificationInfos));
                 }
             })
             .catch((error) => {
@@ -464,14 +473,16 @@ const NetworkModificationNodeEditor = () => {
             })
             .finally(() => {
                 setPendingState(false);
-                setLaunchLoader(false);
+                setIsFetchingModifications(false);
                 dispatch(setModificationsInProgress(false));
             });
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
-    const updateSelectedItems = useCallback((modifications: NetworkModificationMetadata[]) => {
-        const toKeepIdsSet = new Set(modifications.map((e) => e.uuid));
-        setSelectedItems((oldselectedItems) => oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid)));
+    const updateSelectedItems = useCallback((modifications: NetworkModificationInfos[]) => {
+        const toKeepIdsSet = new Set(modifications.map((e) => e.modificationInfos.uuid));
+        setSelectedNetworkModifications((oldselectedItems) =>
+            oldselectedItems.filter((s) => toKeepIdsSet.has(s.modificationInfos.uuid))
+        );
     }, []);
 
     const dofetchNetworkModifications = useCallback(() => {
@@ -479,19 +490,21 @@ const NetworkModificationNodeEditor = () => {
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
         }
-        setLaunchLoader(true);
+        setIsFetchingModifications(true);
         fetchNetworkModifications(studyUuid, currentNode.id, false)
-            .then((res: NetworkModificationMetadata[]) => {
+            .then((res: NetworkModificationInfos[]) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
                     const liveModifications = res.filter(
-                        (networkModification) => networkModification.stashed === false
+                        (networkModification) => networkModification.modificationInfos.stashed === false
                     );
                     updateSelectedItems(liveModifications);
                     setModifications(liveModifications);
                     setModificationsToRestore(
-                        res.filter((networkModification) => networkModification.stashed === true)
+                        res
+                            .filter((networkModification) => networkModification.modificationInfos.stashed === true)
+                            .map((m) => m.modificationInfos)
                     );
                 }
             })
@@ -502,7 +515,7 @@ const NetworkModificationNodeEditor = () => {
             })
             .finally(() => {
                 setPendingState(false);
-                setLaunchLoader(false);
+                setIsFetchingModifications(false);
                 dispatch(setModificationsInProgress(false));
             });
     }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
@@ -512,26 +525,44 @@ const NetworkModificationNodeEditor = () => {
     }, [editData]);
 
     useEffect(() => {
+        if (!currentNode) {
+            return;
+        }
         // first time with currentNode initialized then fetch modifications
         // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
         // OR next time if currentNodeId changed then fetch modifications
-        if (currentNode && (!currentNodeIdRef.current || currentNodeIdRef.current !== currentNode.id)) {
+        // OR when number of root networks has changed to fetch new applicabilities
+        const hasNodeChanged = !currentNodeIdRef.current || currentNodeIdRef.current !== currentNode.id;
+        if (
+            hasNodeChanged ||
+            (createdRootNetworksPreviousLength && createdRootNetworksLength > createdRootNetworksPreviousLength)
+        ) {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
             setModifications([]);
             setModificationsToRestore([]);
             dofetchNetworkModifications();
             // reset the network modification and computing logs filter when the user changes the current node
-            dispatch(resetLogsFilter());
+            if (hasNodeChanged) {
+                dispatch(resetLogsFilter());
+            }
         }
-    }, [currentNode, dispatch, dofetchNetworkModifications]);
+    }, [
+        createdRootNetworksLength,
+        createdRootNetworksPreviousLength,
+        currentNode,
+        dispatch,
+        dofetchNetworkModifications,
+    ]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeDeleted') {
+            const studyUpdatedEventData = studyUpdatedForce.eventData as StudyUpdatedEventData;
+
+            if (studyUpdatedEventData.headers.updateType === 'nodeDeleted') {
                 if (
                     copyInfosRef.current &&
-                    studyUpdatedForce.eventData.headers['nodes']?.some(
+                    studyUpdatedEventData.headers.nodes?.some(
                         (nodeId) => nodeId === copyInfosRef.current?.originNodeUuid
                     )
                 ) {
@@ -539,16 +570,16 @@ const NetworkModificationNodeEditor = () => {
                     cleanClipboard();
                 }
             }
-            if (currentNodeIdRef.current !== studyUpdatedForce.eventData.headers['parentNode']) {
+            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
                 return;
             }
 
             if (
-                studyUpdatedForce.eventData.headers['updateType'] &&
+                studyUpdatedEventData.headers.updateType &&
                 // @ts-expect-error TS2345: Argument of type string is not assignable to parameter of type UPDATE_TYPE (a restrained array of strings)
-                UPDATE_TYPE.includes(studyUpdatedForce.eventData.headers['updateType'])
+                UPDATE_TYPE.includes(studyUpdatedEventData.headers.updateType)
             ) {
-                if (studyUpdatedForce.eventData.headers['updateType'] === 'deletingInProgress') {
+                if (studyUpdatedEventData.headers.updateType === 'deletingInProgress') {
                     // deleting means removing from trashcan (stashed elements) so there is no network modification
                     setDeleteInProgress(true);
                 } else {
@@ -559,19 +590,19 @@ const NetworkModificationNodeEditor = () => {
             }
             // notify  finished action (success or error => we remove the loader)
             // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-            if (studyUpdatedForce.eventData.headers['updateType'] === 'UPDATE_FINISHED') {
+            if (studyUpdatedEventData.headers.updateType === 'UPDATE_FINISHED') {
                 // fetch modifications because it must have changed
                 // Do not clear the modifications list, because currentNode is the concerned one
                 // this allows to append new modifications to the existing list.
                 dofetchNetworkModifications();
                 dispatch(
                     removeNotificationByNode([
-                        studyUpdatedForce.eventData.headers['parentNode'],
-                        ...(studyUpdatedForce.eventData.headers.nodes ?? []),
+                        studyUpdatedEventData.headers.parentNode,
+                        ...(studyUpdatedEventData.headers.nodes ?? []),
                     ])
                 );
             }
-            if (studyUpdatedForce.eventData.headers['updateType'] === 'DELETE_FINISHED') {
+            if (studyUpdatedEventData.headers.updateType === 'DELETE_FINISHED') {
                 setDeleteInProgress(false);
                 dofetchNetworkModifications();
             }
@@ -608,7 +639,7 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const doDeleteModification = useCallback(() => {
-        const selectedModificationsUuid = selectedItems.map((item) => item.uuid);
+        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.modificationInfos.uuid);
         stashModifications(studyUuid, currentNode?.id, selectedModificationsUuid)
             .then(() => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
@@ -626,7 +657,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'errDeleteModificationMsg',
                 });
             });
-    }, [currentNode?.id, selectedItems, snackError, studyUuid, cleanClipboard, copiedModifications]);
+    }, [currentNode?.id, selectedNetworkModifications, snackError, studyUuid, cleanClipboard, copiedModifications]);
 
     const doCreateCompositeModificationsElements = ({
         name,
@@ -634,7 +665,7 @@ const NetworkModificationNodeEditor = () => {
         folderName,
         folderId,
     }: IElementCreationDialog) => {
-        const selectedModificationsUuid = selectedItems.map((item) => item.uuid);
+        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.modificationInfos.uuid);
 
         setSaveInProgress(true);
         createCompositeModifications(name, description, folderId, selectedModificationsUuid)
@@ -642,7 +673,7 @@ const NetworkModificationNodeEditor = () => {
                 snackInfo({
                     headerId: 'infoCreateModificationsMsg',
                     headerValues: {
-                        nbModifications: String(selectedItems.length),
+                        nbModifications: String(selectedNetworkModifications.length),
                         directory: folderName,
                     },
                 });
@@ -659,12 +690,16 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const selectedModificationsIds = useCallback(() => {
-        const allModificationsIds = modifications.map((m) => m.uuid);
+        const allModificationsIds = modifications.map((m) => m.modificationInfos.uuid);
         // sort the selected modifications in the same order as they appear in the whole modifications list
-        return selectedItems
-            .sort((a, b) => allModificationsIds.indexOf(a.uuid) - allModificationsIds.indexOf(b.uuid))
-            .map((m) => m.uuid);
-    }, [modifications, selectedItems]);
+        return selectedNetworkModifications
+            .sort(
+                (a, b) =>
+                    allModificationsIds.indexOf(a.modificationInfos.uuid) -
+                    allModificationsIds.indexOf(b.modificationInfos.uuid)
+            )
+            .map((m) => m.modificationInfos.uuid);
+    }, [modifications, selectedNetworkModifications]);
 
     const doCutModifications = useCallback(() => {
         setCopiedModifications(selectedModificationsIds());
@@ -748,153 +783,41 @@ const NetworkModificationNodeEditor = () => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
-
-    const toggleSelectAllModifications = useCallback(() => {
-        setSelectedItems((oldVal) => (oldVal.length === 0 ? modifications : []));
-    }, [modifications]);
+    const handleRowSelected = (event: any) => {
+        const selectedRows = event.api.getSelectedRows(); // Get selected rows
+        setSelectedNetworkModifications(selectedRows);
+    };
 
     const renderDialog = () => {
         return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen)?.action?.();
     };
 
-    const commit = useCallback(
-        ({ source, destination }: DropResult) => {
-            setIsDragging(false);
-            if (!currentNode?.id || !destination || source.index === destination.index) {
-                return;
-            }
-            const res = [...modifications];
-            const [item] = res.splice(source.index, 1);
-            const before = res[destination.index]?.uuid;
-            res.splice(destination ? destination.index : modifications.length, 0, item);
-
-            /* doing the local change before update to server */
-            setModifications(res);
-            changeNetworkModificationOrder(studyUuid, currentNode.id, item.uuid, before).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'errReorderModificationMsg',
-                });
-                setModifications(modifications); // rollback
-            });
-        },
-        [modifications, studyUuid, currentNode?.id, snackError]
-    );
-
-    const isLoading = useCallback(() => {
+    const isImpactedByNotification = useCallback(() => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
     }, [notificationIdList, currentNode?.id]);
 
-    const intl = useIntl();
-    const { computeLabel } = useModificationLabelComputer();
-    const getModificationLabel = (modif: NetworkModificationMetadata): ReactNode => {
-        if (!modif) {
-            return '';
-        }
-        return intl.formatMessage(
-            { id: 'network_modifications.' + modif.messageType },
-            {
-                ...modif,
-                ...computeLabel(modif),
-            }
-        );
-    };
-
-    const handleSecondaryAction = useCallback(
-        (modification: NetworkModificationMetadata, isItemHovered?: boolean) => {
-            return isItemHovered && !isDragging ? (
-                <SwitchNetworkModificationActive
-                    modificationActivated={modification.activated}
-                    modificationUuid={modification.uuid}
-                    setModifications={setModifications}
-                    disabled={isLoading() || isAnyNodeBuilding || mapDataLoading}
-                />
-            ) : null;
-        },
-        [isAnyNodeBuilding, isDragging, mapDataLoading, isLoading]
-    );
-
     const isModificationClickable = useCallback(
-        (modification: NetworkModificationMetadata) =>
+        (modification: NetworkModificationInfos) =>
             !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
         [isAnyNodeBuilding, mapDataLoading, isDragging]
     );
 
-    const renderNetworkModificationsList = () => {
+    const renderNetworkModificationsTable = () => {
         return (
-            <CheckBoxList
-                sx={{
-                    items: (modification) => ({
-                        label: {
-                            ...(!modification.activated && { ...styles.disabledModification }),
-                            ...styles.checkBoxLabel,
-                        },
-                        checkBoxIcon: styles.checkBoxIcon,
-                        checkboxButton: styles.checkboxButton,
-                    }),
-                    dragAndDropContainer: styles.listContainer,
-                }}
-                onItemClick={(modification) => {
-                    isModificationClickable(modification) && doEditModification(modification.uuid, modification.type);
-                }}
-                isItemClickable={isModificationClickable}
-                selectedItems={selectedItems}
-                onSelectionChange={setSelectedItems}
-                items={modifications}
-                getItemId={(val) => val.uuid}
-                getItemLabel={getModificationLabel}
-                isDndDragAndDropActive
-                isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading}
-                secondaryAction={handleSecondaryAction}
-                onDragEnd={commit}
-                onDragStart={() => setIsDragging(true)}
-                divider
+            <NetworkModificationsTable
+                handleCellClick={handleCellClick}
+                modifications={modifications}
+                setModifications={setModifications}
+                onRowDragStart={onRowDragStart}
+                onRowDragEnd={onRowDragEnd}
+                onRowSelected={handleRowSelected}
+                isDragging
+                isRowDragDisabled={isImpactedByNotification() || isAnyNodeBuilding || mapDataLoading}
+                isImpactedByNotification={isImpactedByNotification}
+                notificationMessageId={notificationMessageId}
+                isFetchingModifications={isFetchingModifications}
+                pendingState={pendingState}
             />
-        );
-    };
-
-    const renderNetworkModificationsListTitleLoading = () => {
-        return (
-            <Box sx={styles.modificationsTitle}>
-                <Box sx={styles.icon}>
-                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
-                </Box>
-                <Typography noWrap>
-                    <FormattedMessage id={messageId} />
-                </Typography>
-            </Box>
-        );
-    };
-
-    const renderNetworkModificationsListTitleUpdating = () => {
-        return (
-            <Box sx={styles.modificationsTitle}>
-                <Box sx={styles.icon}>
-                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
-                </Box>
-                <Typography noWrap>
-                    <FormattedMessage id={'network_modifications.modifications'} />
-                </Typography>
-            </Box>
-        );
-    };
-
-    const renderNetworkModificationsListTitle = () => {
-        return (
-            <Box sx={styles.modificationsTitle}>
-                <Box sx={styles.icon}>
-                    {pendingState && <CircularProgress size={'1em'} sx={styles.circularProgress} />}
-                </Box>
-                <Typography noWrap>
-                    <FormattedMessage
-                        id={'network_modifications.modificationsCount'}
-                        values={{
-                            count: modifications ? modifications?.length : '',
-                            hide: pendingState,
-                        }}
-                    />
-                </Typography>
-            </Box>
         );
     };
     const renderNetworkModificationsToRestoreDialog = () => {
@@ -924,28 +847,58 @@ const NetworkModificationNodeEditor = () => {
             )
         );
     };
-    const renderPaneSubtitle = () => {
-        if (isLoading() && messageId) {
-            return renderNetworkModificationsListTitleLoading();
+
+    const handleCellClick = useCallback(
+        (event: CellClickedEvent) => {
+            const { colDef, data } = event;
+            if (colDef.colId === 'modificationName' && isModificationClickable(data)) {
+                // Check if the clicked column is the 'modificationName' column
+                doEditModification(data.modificationInfos.uuid, data.modificationInfos.type);
+            }
+        },
+        [doEditModification, isModificationClickable]
+    );
+
+    const onRowDragStart = (event: RowDragEnterEvent<NetworkModificationInfos>) => {
+        setIsDragging(true);
+        setInitialPosition(event.overIndex);
+    };
+    const onRowDragEnd = (event: RowDragEndEvent<NetworkModificationInfos>) => {
+        let newPosition = event.overIndex;
+        const oldPosition = initialPosition;
+        if (!currentNode?.id || newPosition === undefined || oldPosition === undefined || newPosition === oldPosition) {
+            setIsDragging(false);
+            return;
         }
-        if (launchLoader) {
-            return renderNetworkModificationsListTitleUpdating();
+        if (newPosition === -1) {
+            newPosition = modifications.length;
         }
-        return renderNetworkModificationsListTitle();
+
+        const previousModifications = [...modifications];
+        const updatedModifications = [...modifications];
+
+        const [movedItem] = updatedModifications.splice(oldPosition, 1);
+
+        updatedModifications.splice(newPosition, 0, movedItem);
+
+        setModifications(updatedModifications);
+
+        const before = updatedModifications[newPosition + 1]?.modificationInfos?.uuid || null;
+
+        changeNetworkModificationOrder(studyUuid, currentNode?.id, movedItem.modificationInfos.uuid, before)
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'errReorderModificationMsg',
+                });
+                setModifications(previousModifications);
+            })
+            .finally(() => setIsDragging(false));
     };
 
     return (
         <>
             <Toolbar sx={styles.toolbar}>
-                <Checkbox
-                    sx={styles.toolbarCheckbox}
-                    color={'primary'}
-                    edge="start"
-                    checked={isChecked(selectedItems.length)}
-                    indeterminate={isPartial(selectedItems.length, modifications?.length)}
-                    disableRipple
-                    onClick={toggleSelectAllModifications}
-                />
                 <Box sx={styles.filler} />
                 <IconButton
                     sx={styles.toolbarIcon}
@@ -974,7 +927,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={!(selectedItems?.length > 0) || saveInProgress === true}
+                            disabled={!(selectedNetworkModifications?.length > 0) || saveInProgress === true}
                         >
                             <SaveIcon />
                         </IconButton>
@@ -984,7 +937,9 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCutModifications}
                     size={'small'}
                     sx={styles.toolbarIcon}
-                    disabled={selectedItems.length === 0 || isAnyNodeBuilding || mapDataLoading || !currentNode}
+                    disabled={
+                        selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading || !currentNode
+                    }
                 >
                     <ContentCutIcon />
                 </IconButton>
@@ -992,7 +947,7 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCopyModifications}
                     size={'small'}
                     sx={styles.toolbarIcon}
-                    disabled={selectedItems.length === 0 || isAnyNodeBuilding || mapDataLoading}
+                    disabled={selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading}
                 >
                     <ContentCopyIcon />
                 </IconButton>
@@ -1025,7 +980,7 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     sx={styles.toolbarIcon}
                     disabled={
-                        selectedItems.length === 0 ||
+                        selectedNetworkModifications.length === 0 ||
                         isAnyNodeBuilding ||
                         mapDataLoading ||
                         deleteInProgress ||
@@ -1068,9 +1023,8 @@ const NetworkModificationNodeEditor = () => {
             {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
             {importDialogOpen && renderImportNetworkModificationsDialog()}
             {createCompositeModificationDialogOpen && renderCreateCompositeNetworkModificationsDialog()}
-            {renderPaneSubtitle()}
 
-            {renderNetworkModificationsList()}
+            {renderNetworkModificationsTable()}
 
             <NetworkModificationsMenu
                 open={openNetworkModificationsMenu}
