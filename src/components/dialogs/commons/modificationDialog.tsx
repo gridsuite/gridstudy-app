@@ -24,7 +24,7 @@ import { ModificationDialogContent, ModificationDialogContentProps } from './mod
 export type ModificationDialogProps = Omit<ModificationDialogContentProps, 'closeAndClear' | 'submitButton'> & {
     disabledSave?: boolean;
     onClear: () => void;
-    onDialogClose?: () => void;
+    onDialogClose: () => void;
     onSave: (modificationData: any) => void;
     onValidated?: () => void;
     onValidationError?: (errors: FieldErrors) => void;
@@ -43,9 +43,7 @@ export function ModificationDialog({
 
     const closeAndClear = (event: React.MouseEvent, reason: string) => {
         onClear();
-        if (onDialogClose) {
-            onDialogClose();
-        }
+        onDialogClose();
     };
 
     const handleValidate = (data: any) => {

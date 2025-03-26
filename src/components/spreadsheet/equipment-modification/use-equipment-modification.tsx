@@ -59,8 +59,7 @@ export const useEquipmentModification = ({ equipmentType }: UseEquipmentModifica
         (Dialog: React.FC<any>, equipmentId: string) => {
             return (
                 <Dialog
-                    onClose={() => setModificationDialog(null)}
-                    onValidated={() => {}}
+                    onDialogClose={() => setModificationDialog(null)}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}

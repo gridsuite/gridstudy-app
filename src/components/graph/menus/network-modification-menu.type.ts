@@ -6,6 +6,8 @@
  */
 
 import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../redux/reducer';
+import { FetchStatus } from '../../../services/utils.type';
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
     name: string;
@@ -59,4 +61,15 @@ export interface NetworkModificationData {
     uuid: UUID;
     type: string;
     [key: string]: any;
+}
+
+// Cf withDefaultParams : common props for any modification available from the menu
+export type DefaultModificationDialogProps = {
+    currentNode: CurrentTreeNode;
+    studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    isUpdate: boolean;
+    editDataFetchStatus: FetchStatus;
+    onValidated: () => void;
+    onDialogClose: () => void;
 }

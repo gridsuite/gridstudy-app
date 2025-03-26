@@ -31,6 +31,21 @@ import { FetchStatus } from '../../../../services/utils.type';
 import type { ColDef, RowDataUpdatedEvent } from 'ag-grid-community';
 import { suppressEventsToPreventEditMode } from '../../commons/utils';
 
+const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    csvExport: {
+        display: 'flex',
+        alignItems: 'baseline',
+    },
+    grid: {
+        flexGrow: '1',
+    },
+};
+
 const defaultColDef: ColDef = {
     filter: true,
     sortable: true,
@@ -60,14 +75,6 @@ const EquipmentTypeTabs = {
     SHUNT_COMPENSATOR_TAB: 4,
     BUS_TAB: 5,
 };
-
-interface CloseFunction {
-    (): void;
-}
-
-interface PreviewModeSubmitFunction {
-    (): void;
-}
 
 interface GeneratorRowData {
     ID: string;
@@ -156,27 +163,12 @@ interface EditData {
 
 interface VoltageInitModificationProps {
     editData: EditData;
-    onDialogClose: CloseFunction;
-    onPreviewModeSubmit?: PreviewModeSubmitFunction;
+    onDialogClose: () => void;
+    onPreviewModeSubmit?: () => void;
     editDataFetchStatus: FetchStatus;
     disabledSave: boolean;
     dialogProps: any;
 }
-
-const styles = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
-    csvExport: {
-        display: 'flex',
-        alignItems: 'baseline',
-    },
-    grid: {
-        flexGrow: '1',
-    },
-};
 
 const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationProps> = ({
     editData,
@@ -189,8 +181,6 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(EquipmentTypeTabs.GENERATOR_TAB);
-
-    const handleClear = useCallback(() => onDialogClose && onDialogClose(), [onDialogClose]);
 
     const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
@@ -555,7 +545,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             fullWidth
             isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
             maxWidth="md"
-            onClear={handleClear}
+            onClear={onDialogClose}
             onDialogClose={onDialogClose}
             onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
             open={open}

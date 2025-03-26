@@ -34,10 +34,8 @@ import {
 } from '../../common/properties/property-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { LoadCreationInfos, LoadCreationSchemaForm, LoadFormInfos } from './load-creation.type';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
-import { UUID } from 'crypto';
 import { FetchStatus } from '../../../../../services/utils.type';
-import { DialogProps } from '@mui/material/Dialog/Dialog';
+import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modification-menu.type';
 
 /**
  * Dialog to create a load in the network
@@ -71,15 +69,9 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export interface LoadCreationDialogProps extends Partial<DialogProps> {
+export type LoadCreationDialogProps = DefaultModificationDialogProps & {
     editData: LoadCreationInfos;
-    currentNode: CurrentTreeNode;
-    studyUuid: UUID;
-    currentRootNetworkUuid: UUID;
-    isUpdate: boolean;
-    editDataFetchStatus: FetchStatus;
-    disabledSave: boolean;
-}
+};
 
 export function LoadCreationDialog({
     editData,
