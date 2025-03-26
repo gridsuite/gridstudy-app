@@ -15,7 +15,6 @@ import type { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
-import { UPDATE_TYPE_HEADER } from '../../use-node-data';
 import { NodeAlias } from '../custom-columns/node-alias.type';
 import { useFetchEquipment } from './use-fetch-equipment';
 
@@ -121,7 +120,7 @@ export const useSpreadsheetEquipments = (
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
         listenerCallbackMessage: (event) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.STUDY) {
                 const eventStudyUuid = eventData.headers.studyUuid;
                 const eventNodeUuid = eventData.headers.node;

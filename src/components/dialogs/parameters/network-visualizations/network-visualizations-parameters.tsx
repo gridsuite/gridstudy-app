@@ -35,7 +35,6 @@ import {
     setNetworkVisualizationParameters,
 } from '../../../../services/study/study-config';
 import { UUID } from 'crypto';
-import { UPDATE_TYPE_HEADER } from '../common/computation-parameters-util';
 import { setUpdateNetworkVisualizationParameters } from '../../../../redux/actions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { fetchNetworkVisualizationsParameters } from '../../../../services/study-config';
@@ -102,8 +101,7 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
     useEffect(() => {
         if (
             studyUpdated.eventData.headers &&
-            studyUpdated.eventData.headers[UPDATE_TYPE_HEADER] ===
-                NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED
+            studyUpdated.eventData.headers.updateType === NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED
         ) {
             getNetworkVisualizationParameters(studyUuid as UUID)
                 .then((params: NetworkVisualizationParameters) => {
