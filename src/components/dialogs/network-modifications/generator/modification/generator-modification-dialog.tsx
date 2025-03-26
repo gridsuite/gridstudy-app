@@ -283,7 +283,7 @@ export function GeneratorModificationDialog({
                     equipmentId,
                     true
                 )
-                    .then((value) => {
+                    .then((value: GeneratorFormInfos) => {
                         if (value) {
                             const previousReactiveCapabilityCurveTable = value?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable) {
@@ -299,7 +299,7 @@ export function GeneratorModificationDialog({
                             setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`, value?.busOrBusbarSectionId);
                             setGeneratorToModify({
                                 ...value,
-                                reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable,
+                                reactiveCapabilityCurvePoints: previousReactiveCapabilityCurveTable,
                             });
                             reset((formValues) => ({
                                 ...formValues,
@@ -342,7 +342,8 @@ export function GeneratorModificationDialog({
     const onSubmit = useCallback(
         (generator: GeneratorModificationDialogSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn =
+                reactiveLimits && reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation =
                 generator?.[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id ||
                 (generator[VOLTAGE_REGULATION_TYPE] === null &&
@@ -385,10 +386,10 @@ export function GeneratorModificationDialog({
                 participate: toModificationOperation(generator[FREQUENCY_REGULATION]),
                 droop: toModificationOperation(generator[DROOP]),
                 maxQ: toModificationOperation(
-                    isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER]
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits && reactiveLimits[MAXIMUM_REACTIVE_POWER]
                 ),
                 minQ: toModificationOperation(
-                    isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER]
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits && reactiveLimits[MINIMUM_REACTIVE_POWER]
                 ),
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
                     ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]

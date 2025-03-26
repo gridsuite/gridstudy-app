@@ -55,14 +55,13 @@ import {
 } from '../../reactive-limits/reactive-limits.type';
 import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
 
-export type GeneratorCreationDialogSchemaForm = {
-    [EQUIPMENT_ID]: string;
+export type GeneratorDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
-    [ENERGY_SOURCE]?: string | null;
-    [MAXIMUM_ACTIVE_POWER]?: number | null;
-    [MINIMUM_ACTIVE_POWER]?: number | null;
-    [RATED_NOMINAL_POWER]?: number;
-    [TRANSFORMER_REACTANCE]?: number;
+    [ENERGY_SOURCE]: string | null;
+    [MAXIMUM_ACTIVE_POWER]: number | null;
+    [MINIMUM_ACTIVE_POWER]: number | null;
+    [RATED_NOMINAL_POWER]?: number | null;
+    [TRANSFORMER_REACTANCE]?: number | null;
     [TRANSIENT_REACTANCE]?: number | null;
     [PLANNED_ACTIVE_POWER_SET_POINT]?: number | null;
     [MARGINAL_COST]?: number | null;
@@ -110,59 +109,9 @@ export type GeneratorCreationDialogSchemaForm = {
     [ADDITIONAL_PROPERTIES]?: Property[];
 };
 
-export type GeneratorModificationDialogSchemaForm = {
-    [EQUIPMENT_NAME]?: string;
-    [ENERGY_SOURCE]?: string | null;
-    [MAXIMUM_ACTIVE_POWER]?: number | null;
-    [MINIMUM_ACTIVE_POWER]?: number | null;
-    [RATED_NOMINAL_POWER]?: number;
-    [TRANSFORMER_REACTANCE]?: number;
-    [TRANSIENT_REACTANCE]?: number | null;
-    [PLANNED_ACTIVE_POWER_SET_POINT]?: number | null;
-    [MARGINAL_COST]?: number | null;
-    [PLANNED_OUTAGE_RATE]?: number | null;
-    [FORCED_OUTAGE_RATE]?: number | null;
+export type GeneratorCreationDialogSchemaForm = { [EQUIPMENT_ID]: string } & GeneratorDialogSchemaBaseForm;
 
-    [CONNECTIVITY]: {
-        [VOLTAGE_LEVEL]: { [ID]?: string };
-        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
-        [CONNECTION_DIRECTION]?: string;
-        [CONNECTION_NAME]?: string;
-        [CONNECTION_POSITION]?: number;
-        [CONNECTED]?: boolean;
-    };
-
-    [VOLTAGE_REGULATION]?: boolean | null;
-    [ACTIVE_POWER_SET_POINT]?: number;
-    [REACTIVE_POWER_SET_POINT]?: number | null;
-    [VOLTAGE_REGULATION_TYPE]?: string | null;
-    [VOLTAGE_SET_POINT]?: number | null;
-    [Q_PERCENT]?: number | null;
-
-    [VOLTAGE_LEVEL]?: {
-        [ID]?: string;
-        [NAME]?: string;
-        [SUBSTATION_ID]?: string;
-        [NOMINAL_VOLTAGE]?: string;
-        [TOPOLOGY_KIND]?: string | null;
-    };
-
-    [EQUIPMENT]?: {
-        [ID]?: string;
-        [NAME]?: string | null;
-        [TYPE]?: string;
-    };
-    [FREQUENCY_REGULATION]?: boolean | null;
-    [DROOP]?: number | null;
-    [REACTIVE_LIMITS]: {
-        [MINIMUM_REACTIVE_POWER]?: number | null;
-        [MAXIMUM_REACTIVE_POWER]?: number | null;
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]: string | null;
-        [REACTIVE_CAPABILITY_CURVE_TABLE]?: ReactiveCapabilityCurvePoints[];
-    };
-    // Properties
-    [ADDITIONAL_PROPERTIES]?: Property[];
-};
+export type GeneratorModificationDialogSchemaForm = Partial<GeneratorDialogSchemaBaseForm>;
 
 export interface GeneratorFormInfos {
     id: string;

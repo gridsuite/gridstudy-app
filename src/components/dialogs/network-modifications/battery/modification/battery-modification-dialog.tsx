@@ -228,7 +228,7 @@ export function BatteryModificationDialog({
                     equipmentId,
                     true
                 )
-                    .then((value) => {
+                    .then((value: BatteryFormInfos) => {
                         if (value) {
                             const previousReactiveCapabilityCurveTable = value?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable) {
@@ -248,7 +248,7 @@ export function BatteryModificationDialog({
                             setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`, value?.busOrBusbarSectionId);
                             setBatteryToModify({
                                 ...value,
-                                reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable,
+                                reactiveCapabilityCurvePoints: previousReactiveCapabilityCurveTable,
                             });
                             reset((formValues) => ({
                                 ...formValues,
