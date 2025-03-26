@@ -281,7 +281,8 @@ export function BatteryModificationDialog({
     const onSubmit = useCallback(
         (battery: BatteryModificationDialogSchemaForm) => {
             const reactiveLimits = battery[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn =
+                reactiveLimits && reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const batteryModificationInfos = {
                 type: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
                 equipmentId: selectedId,
@@ -300,10 +301,10 @@ export function BatteryModificationDialog({
                 participate: toModificationOperation(battery[FREQUENCY_REGULATION]),
                 droop: toModificationOperation(battery[DROOP]),
                 maxQ: toModificationOperation(
-                    isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER]
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits && reactiveLimits[MAXIMUM_REACTIVE_POWER]
                 ),
                 minQ: toModificationOperation(
-                    isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER]
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits && reactiveLimits[MINIMUM_REACTIVE_POWER]
                 ),
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
                     ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
