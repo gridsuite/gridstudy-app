@@ -154,6 +154,7 @@ import {
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
+    SET_ROOT_NETWORKS,
     SET_RELOAD_MAP_NEEDED,
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
@@ -168,6 +169,7 @@ import {
     SetOneBusShortcircuitAnalysisDiagramAction,
     SetOptionalServicesAction,
     SetParamsLoadedAction,
+    SetRootNetworksAction,
     SetReloadMapNeededAction,
     SetStudyDisplayModeAction,
     SetStudyIndexationStatusAction,
@@ -302,6 +304,7 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
+import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
 
 export enum NotificationType {
@@ -538,6 +541,7 @@ export interface AppState extends CommonStoreState {
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
     currentRootNetworkUuid: UUID | null;
+    rootNetworks: RootNetworkMetadata[];
     computingStatus: ComputingStatus;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
@@ -694,6 +698,7 @@ const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
     currentRootNetworkUuid: null,
+    rootNetworks: [],
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
@@ -1241,6 +1246,10 @@ export const reducer = createReducer(initialState, (builder) => {
             state.currentRootNetworkUuid = action.currentRootNetworkUuid;
             state.isNetworkModificationTreeModelUpToDate = false;
         }
+    });
+
+    builder.addCase(SET_ROOT_NETWORKS, (state, action: SetRootNetworksAction) => {
+        state.rootNetworks = action.rootNetworks;
     });
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
