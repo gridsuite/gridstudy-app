@@ -344,19 +344,19 @@ export interface StudyUpdatedEventDataHeader {
 interface RootNetworkDeletionStartedEventDataHeader {
     studyUuid: UUID;
     rootNetworks: UUID[];
-    updateType?: string;
+    updateType: string;
 }
 
 interface LoadflowResultEventDataHeaders {
     studyUuid: UUID;
     rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
-    updateType?: string;
+    updateType: string;
 }
 
 interface RootNetworkModifiedEventDataHeaders {
     studyUuid: UUID;
     rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
-    updateType?: string;
+    updateType: string;
 }
 
 // Payloads
