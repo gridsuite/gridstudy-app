@@ -166,9 +166,7 @@ const Diagram: React.FC<DiagramProps> = ({
                     )}
                 </Box>
                 <DiagramFooter
-                    showCounterControls={
-                        svgType === DiagramType.NETWORK_AREA_DIAGRAM || svgType === DiagramType.NAD_FROM_CONFIG
-                    }
+                    showCounterControls={svgType === DiagramType.NETWORK_AREA_DIAGRAM}
                     counterText={intl.formatMessage({
                         id: 'depth',
                     })}

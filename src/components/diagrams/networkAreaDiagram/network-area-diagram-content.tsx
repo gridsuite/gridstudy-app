@@ -250,7 +250,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
             {
-                scalingFactor: props.svgScalingFactor, // TODO May still be needed for node movements post-save : to test as soon as the depth management in NAD_FROM_CONFIG is fixed
+                scalingFactor: props.svgScalingFactor,
                 voltageLevelIds: props.svgVoltageLevels ?? [],
                 positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
             },

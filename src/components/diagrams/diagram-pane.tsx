@@ -269,7 +269,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                         name: nadName ?? id,
                         fetchSvg: () => createNetworkAreaDiagramFromConfigView(id, state, nadName),
                         svgType: DiagramType.NAD_FROM_CONFIG,
-                        depth: 0, //depth, // TODO Retrieve the depth in the metadata from the backend (not implemented yet) ?
+                        depth: 0,
                         substationIds: substationsIds,
                         nadMetadata: svg.metadata,
                         scalingFactor: svg.additionalMetadata?.scalingFactor,
@@ -292,7 +292,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                         let substationsIds: UUID[] = [];
                         svg.additionalMetadata?.voltageLevels
                             .map((vl) => ({
-                                name: getNameOrId({ name: vl.name, id: vl.substationId }),
+                                name: getNameOrId({ name: vl.name, id: vl.id ?? vl.substationId }),
                                 substationId: vl.substationId,
                             }))
                             .sort(
@@ -568,7 +568,7 @@ export function DiagramPane({
     }, []);
 
     // Check if we need to remove or add SLDs
-    const updateSLDs = useCallback(
+    const updateSLDsAndNadFromConfig = useCallback(
         (diagramStates: DiagramState[]) => {
             removeObsoleteSLDs(diagramStates);
             addMissingSLDs(diagramStates);
@@ -776,7 +776,7 @@ export function DiagramPane({
         // UPDATING DIAGRAM STATES (before removing or adding new diagrams, for both SLDs and NAD)
         updateDiagramStates(diagramStates);
         // SLD MANAGEMENT and NAD LOADED FROM A CONFIG MANAGEMENT (adding or removing SLDs)
-        updateSLDs(diagramStates);
+        updateSLDsAndNadFromConfig(diagramStates);
         // NAD MANAGEMENT (adding, removing or updating the NAD)
         // Here we call either the debounced or the non-debounced function
         // to force a server fetch after a few clicks to get the actual number of voltage levels.
@@ -794,7 +794,7 @@ export function DiagramPane({
         currentNode,
         notificationIdList,
         updateDiagramStates,
-        updateSLDs,
+        updateSLDsAndNadFromConfig,
         updateNAD,
         debounceUpdateNAD,
         networkAreaDiagramDepth,

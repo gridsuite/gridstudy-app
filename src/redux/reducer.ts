@@ -33,7 +33,6 @@ import {
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
-    REMOVE_FROM_RECENT_GLOBAL_FILTERS,
     AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
     AddSortForNewSpreadsheetAction,
@@ -110,13 +109,17 @@ import {
     OpenNadListAction,
     OpenStudyAction,
     REMOVE_COLUMN_DEFINITION,
+    REMOVE_FROM_RECENT_GLOBAL_FILTERS,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
     REMOVE_TABLE_DEFINITION,
     RemoveColumnDefinitionAction,
+    RemoveFromRecentGlobalFiltersAction,
     RemoveNodeDataAction,
     RemoveNotificationByNodeAction,
     RemoveTableDefinitionAction,
+    RENAME_TABLE_DEFINITION,
+    RenameTableDefinitionAction,
     REORDER_TABLE_DEFINITIONS,
     ReorderTableDefinitionsAction,
     RESET_ALL_SPREADSHEET_GS_FILTERS,
@@ -146,6 +149,7 @@ import {
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SensitivityAnalysisResultFilterAction,
     SET_APP_TAB_INDEX,
+    SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
@@ -160,6 +164,7 @@ import {
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
     SetAppTabIndexAction,
+    SetCalculationSelectionsAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
     SetEventScenarioDrawerOpenAction,
@@ -199,13 +204,8 @@ import {
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
     UpdateTableDefinitionAction,
-    RenameTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    RemoveFromRecentGlobalFiltersAction,
-    RENAME_TABLE_DEFINITION,
-    SET_CALCULATION_SELECTIONS,
-    SetCalculationSelectionsAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -1495,15 +1495,21 @@ export const reducer = createReducer(initialState, (builder) => {
         // Reset depth to zero
         state.networkAreaDiagramDepth = 0;
 
+        // Reset the potential movements stored for this particular NAD
+        state.nadNodeMovements = state.nadNodeMovements.filter(
+            (movement) => movement.nadIdentifier !== action.nadConfigUuid
+        );
+        state.nadTextNodeMovements = state.nadTextNodeMovements.filter(
+            (movement) => movement.nadIdentifier !== action.nadConfigUuid
+        );
+
+        // We close all the other NAD ...
         let diagramStates = state.diagramStates;
-
-        // TODO Erase local movements related to this NAD
-
-        // We close all the other NAD
         diagramStates = diagramStates.filter(
             (diagram) =>
                 diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && diagram.svgType !== DiagramType.NAD_FROM_CONFIG
         );
+        // ... and create the new NAD
         diagramStates.push({
             id: action.nadConfigUuid as UUID,
             name: action.nadName,
@@ -1526,7 +1532,6 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: IncrementNetworkAreaDiagramDepthAction) => {
-        // TODO Must fix the depth management for NAD_FROM_CONFIG : it should regenerate another NAD (from Config) with another depth
         state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
     });
 
