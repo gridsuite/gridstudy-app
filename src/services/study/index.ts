@@ -9,9 +9,9 @@ import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromLi
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 import { EquipmentType, ExtendedEquipmentType, Parameter } from '@gridsuite/commons-ui';
-import { NetworkModificationCopyInfo } from '../../components/graph/menus/network-modification-menu.type';
 import { ComputingType } from '../../components/computing-status/computing-type';
 import type { Svg } from 'components/diagrams/diagram-common';
+import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export function safeEncodeURIComponent(value: string | null | undefined): string {
     return value != null ? encodeURIComponent(value) : '';

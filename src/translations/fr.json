@@ -1501,8 +1501,9 @@
     "rootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'identifiant \"{studyUuid}\"",
     "createRootNetworksError": "Une erreur est survenue lors de la création du réseau racine",
     "updateRootNetworksError": "Une erreur est survenue lors de la modification du réseau racine",
+    "visibleRootNetwork": "Réseau Visible : ",
     "importCaseFailure": "Impossible d'importer la situation",
-
+    "modificationActivationByRootNetworkError": "Une erreur est survenue lors de l'activation / désactivation de la modification par réseau racine",
     "unlimited": "Illimité",
     "forbidden": "Interdit",
 
