@@ -308,6 +308,11 @@ export enum NotificationType {
     STUDY = 'study',
     COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
     NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
+    LOADFLOW_RESULT = 'loadflowResult',
+    ROOT_NETWORK_MODIFIED = 'rootNetworkModified',
+    ROOT_NETWORK_UPDATED = 'rootNetworksUpdated',
+    ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
+    ROOT_NETWORK_DELETION_STARTED = 'rootNetworkDeletionStarted',
 }
 
 export enum StudyIndexationStatus {
@@ -336,6 +341,24 @@ export interface StudyUpdatedEventDataHeader {
     computationType?: ComputingType;
 }
 
+interface RootNetworkDeletionStartedEventDataHeader {
+    studyUuid: UUID;
+    rootNetworks: UUID[];
+    updateType: string;
+}
+
+interface LoadflowResultEventDataHeaders {
+    studyUuid: UUID;
+    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
+    updateType: string;
+}
+
+interface RootNetworkModifiedEventDataHeaders {
+    studyUuid: UUID;
+    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
+    updateType: string;
+}
+
 // Payloads
 export interface DeletedEquipment {
     equipmentId: string;
@@ -359,6 +382,21 @@ interface StudyUpdatedEventDataUnknown {
     payload: string;
 }
 
+export interface LoadflowResultEventData {
+    headers: LoadflowResultEventDataHeaders;
+    payload: undefined;
+}
+
+export interface RootNetworkDeletionStartedEventData {
+    headers: RootNetworkDeletionStartedEventDataHeader;
+    payload: undefined;
+}
+
+export interface RootNetworkModifiedEventData {
+    headers: RootNetworkModifiedEventDataHeaders;
+    payload: undefined;
+}
+
 // Notification types
 type StudyUpdatedStudy = {
     type: NotificationType.STUDY;
@@ -370,10 +408,43 @@ type StudyUpdatedUndefined = {
     eventData: StudyUpdatedEventDataUnknown;
 };
 
+type LoadflowResultNotification = {
+    type: NotificationType.LOADFLOW_RESULT;
+    eventData: LoadflowResultEventData;
+};
+
+type RootNetworkModifiedNotification = {
+    type: NotificationType.ROOT_NETWORK_MODIFIED;
+    eventData: RootNetworkModifiedEventData;
+};
+
+type RootNetworkUpdatedNotification = {
+    type: NotificationType.ROOT_NETWORK_UPDATED;
+    eventData: RootNetworkModifiedEventData;
+};
+
+type RootNetworkUpdateFailedNotification = {
+    type: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
+    eventData: RootNetworkModifiedEventData;
+};
+
+type RootNetworkDeletionStartedNotification = {
+    type: NotificationType.ROOT_NETWORK_DELETION_STARTED;
+    eventData: RootNetworkDeletionStartedEventData;
+};
+
 // Redux state
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
-} & (StudyUpdatedUndefined | StudyUpdatedStudy);
+} & (
+    | StudyUpdatedUndefined
+    | StudyUpdatedStudy
+    | LoadflowResultNotification
+    | RootNetworkModifiedNotification
+    | RootNetworkUpdatedNotification
+    | RootNetworkUpdateFailedNotification
+    | RootNetworkDeletionStartedNotification
+);
 
 type NodeCommonData = {
     label: string;
