@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Chip } from '@mui/material';
+import { Chip, Tooltip } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelIcon from '@mui/icons-material/Cancel';
 
@@ -20,15 +20,19 @@ export const ChipCellRenderer = (props: ChipCellRendererProps) => {
     const { isActivated, label, onClick, isDisabled } = props;
 
     return (
-        <Chip
-            label={label}
-            deleteIcon={isActivated ? <CheckCircleOutlineIcon /> : <CancelIcon />}
-            color="primary"
-            size="small"
-            variant={isActivated ? 'filled' : 'outlined'}
-            onDelete={onClick}
-            onClick={onClick}
-            disabled={isDisabled}
-        />
+        <Tooltip title={label} arrow>
+            <span>
+                <Chip
+                    label={label}
+                    deleteIcon={isActivated ? <CheckCircleOutlineIcon /> : <CancelIcon />}
+                    color="primary"
+                    size="small"
+                    variant={isActivated ? 'filled' : 'outlined'}
+                    onDelete={onClick}
+                    onClick={onClick}
+                    disabled={isDisabled}
+                />
+            </span>
+        </Tooltip>
     );
 };
