@@ -43,7 +43,8 @@ type EquipmentFieldsKeys =
     | EQUIPMENT_TYPES.SHUNT_COMPENSATOR
     | EQUIPMENT_TYPES.VOLTAGE_LEVEL
     | EQUIPMENT_TYPES.LOAD
-    | EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
+    | EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
+    | EQUIPMENT_TYPES.LINE;
 type EquipmentFields = {
     [key in EquipmentFieldsKeys]: EquipmentField[];
 };
@@ -121,6 +122,14 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         { id: 'PHASE_LOW_TAP_POSITION', label: 'PhaseLowTapPosition' },
         { id: 'PHASE_TAP_POSITION', label: 'PhaseTapPosition' },
         { id: 'PHASE_TARGET_DEADBAND', label: 'PhaseDeadBand' },
+    ],
+    [EQUIPMENT_TYPES.LINE]: [
+        { id: 'R', label: 'SeriesResistanceText', unit: OHM },
+        { id: 'X', label: 'SeriesReactanceText', unit: OHM },
+        { id: 'G1', label: 'G1', unit: MICRO_SIEMENS },
+        { id: 'G2', label: 'G2', unit: MICRO_SIEMENS },
+        { id: 'B1', label: 'B1', unit: MICRO_SIEMENS },
+        { id: 'B2', label: 'B2', unit: MICRO_SIEMENS },
     ],
 };
 
