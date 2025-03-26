@@ -819,11 +819,12 @@ export const NetworkMapTab = ({
     }, [currentNode, dispatch, loadGeoData, mapEquipments, studyUuid, updateMapEquipments]);
 
     const loadflowResultNotification = useCallback(
-        (event: MessageEvent<any>) => {
+        (event: MessageEvent<string>) => {
             if (!isInitialized) {
                 return;
             }
-            const eventData = JSON.parse(event.data);
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as LoadflowResultEventData;
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.LOADFLOW_RESULT) {
                 const loadflowResultNotification = eventData as LoadflowResultEventData;
@@ -846,11 +847,12 @@ export const NetworkMapTab = ({
     );
 
     const rootNetworkModifiedNotification = useCallback(
-        (event: MessageEvent<any>) => {
+        (event: MessageEvent<string>) => {
             if (!isInitialized) {
                 return;
             }
-            const eventData = JSON.parse(event.data);
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworkModifiedEventData;
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORK_MODIFIED) {
                 const rootNetworkModifiedNotification = eventData as RootNetworkModifiedEventData;

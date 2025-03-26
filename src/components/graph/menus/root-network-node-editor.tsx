@@ -33,7 +33,12 @@ import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
-import { AppState, NotificationType, RootNetworkDeletionStartedEventData } from 'redux/reducer';
+import {
+    AppState,
+    NotificationType,
+    RootNetworkDeletionStartedEventData,
+    RootNetworkModifiedEventData,
+} from 'redux/reducer';
 import { RootNetworkMetadata } from './network-modification-menu.type';
 
 import {
@@ -169,8 +174,9 @@ const RootNetworkNodeEditor = () => {
     }, [studyUuid, updateSelectedItems, snackError]);
 
     const rootNetworkModifiedNotification = useCallback(
-        (event: MessageEvent<any>) => {
-            const eventData = JSON.parse(event.data);
+        (event: MessageEvent<string>) => {
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworkModifiedEventData;
             const updateTypeHeader = eventData.headers.updateType;
             if (
                 updateTypeHeader === NotificationType.ROOT_NETWORK_MODIFIED ||
@@ -182,8 +188,9 @@ const RootNetworkNodeEditor = () => {
         [dofetchRootNetworks]
     );
     const rootNetworksUpdateFailedNotification = useCallback(
-        (event: MessageEvent<any>) => {
-            const eventData = JSON.parse(event.data);
+        (event: MessageEvent<string>) => {
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworkModifiedEventData;
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATE_FAILED) {
                 dofetchRootNetworks();
@@ -196,8 +203,9 @@ const RootNetworkNodeEditor = () => {
         [dofetchRootNetworks, snackError]
     );
     const rootNetworkDeletionStartedNotification = useCallback(
-        (event: MessageEvent<any>) => {
-            const eventData = JSON.parse(event.data);
+        (event: MessageEvent<string>) => {
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworkDeletionStartedEventData;
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORK_DELETION_STARTED) {
                 if (!rootNetworksRef.current) {
