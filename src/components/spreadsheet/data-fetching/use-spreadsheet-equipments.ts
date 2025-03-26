@@ -124,7 +124,7 @@ export const useSpreadsheetEquipments = (
             if (updateTypeHeader === NotificationType.STUDY) {
                 const eventStudyUuid = eventData.headers.studyUuid;
                 const eventNodeUuid = eventData.headers.node;
-                const eventRootNetworkUuid = eventData.headers.rootNetwork;
+                const eventRootNetworkUuid = eventData.headers.rootNetworkUuid;
                 if (
                     studyUuid === eventStudyUuid &&
                     currentNode?.id === eventNodeUuid &&
