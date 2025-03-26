@@ -116,8 +116,10 @@ const NetworkModificationNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
-    const rootNetworksLength = rootNetworks.length;
-    const rootNetworksPreviousLength = usePrevious(rootNetworks.length);
+    const createdRootNetworks = rootNetworks.filter((rn) => !rn.isCreating);
+    // modifications need to reload once root network is fully created (not in "isCreating" state) in order to fetch its applicability
+    const createdRootNetworksLength = createdRootNetworks.length;
+    const createdRootNetworksPreviousLength = usePrevious(createdRootNetworks.length);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState<NetworkModificationInfos[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);
@@ -521,15 +523,17 @@ const NetworkModificationNodeEditor = () => {
     }, [editData]);
 
     useEffect(() => {
+        if (!currentNode) {
+            return;
+        }
         // first time with currentNode initialized then fetch modifications
         // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
         // OR next time if currentNodeId changed then fetch modifications
         // OR when number of root networks has changed to fetch new applicabilities
+        const hasNodeChanged = !currentNodeIdRef.current || currentNodeIdRef.current !== currentNode.id;
         if (
-            currentNode &&
-            (!currentNodeIdRef.current ||
-                currentNodeIdRef.current !== currentNode.id ||
-                (rootNetworksPreviousLength && rootNetworksLength > rootNetworksPreviousLength))
+            hasNodeChanged ||
+            (createdRootNetworksPreviousLength && createdRootNetworksLength > createdRootNetworksPreviousLength)
         ) {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
@@ -537,9 +541,17 @@ const NetworkModificationNodeEditor = () => {
             setModificationsToRestore([]);
             dofetchNetworkModifications();
             // reset the network modification and computing logs filter when the user changes the current node
-            dispatch(resetLogsFilter());
+            if (hasNodeChanged) {
+                dispatch(resetLogsFilter());
+            }
         }
-    }, [rootNetworksLength, rootNetworksPreviousLength, currentNode, dispatch, dofetchNetworkModifications]);
+    }, [
+        createdRootNetworksLength,
+        createdRootNetworksPreviousLength,
+        currentNode,
+        dispatch,
+        dofetchNetworkModifications,
+    ]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
