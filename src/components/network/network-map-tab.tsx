@@ -51,9 +51,10 @@ import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
-import { AppState, CurrentTreeNode } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { UPDATE_TYPE_HEADER } from 'components/use-node-data';
 import { isReactFlowRootNodeData } from 'redux/utils';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -601,21 +602,21 @@ export const NetworkMapTab = ({
         setGeoData(undefined);
         geoDataRef.current = null;
 
-        // @ts-expect-error TODO: manage rootNodeId undefined case
-        const substationPositionsDone = fetchSubstationPositions(studyUuid, rootNodeId, currentRootNetworkUuid).then(
-            (data) => {
-                console.info(`Received substations of study '${studyUuid}'...`);
-                const newGeoData = new GeoData(new Map(), geoDataRef.current?.linePositionsById || new Map());
-                newGeoData.setSubstationPositions(data);
-                setGeoData(newGeoData);
-                geoDataRef.current = newGeoData;
-            }
-        );
+        const substationPositionsDone = fetchSubstationPositions(
+            studyUuid,
+            rootNodeId as UUID,
+            currentRootNetworkUuid
+        ).then((data) => {
+            console.info(`Received substations of study '${studyUuid}'...`);
+            const newGeoData = new GeoData(new Map(), geoDataRef.current?.linePositionsById || new Map());
+            newGeoData.setSubstationPositions(data);
+            setGeoData(newGeoData);
+            geoDataRef.current = newGeoData;
+        });
 
         const linePositionsDone = !lineFullPath
             ? Promise.resolve()
-            : // @ts-expect-error TODO: manage rootNodeId undefined case
-              fetchLinePositions(studyUuid, rootNodeId, currentRootNetworkUuid).then((data) => {
+            : fetchLinePositions(studyUuid, rootNodeId as UUID, currentRootNetworkUuid).then((data) => {
                   console.info(`Received lines of study '${studyUuid}'...`);
                   const newGeoData = new GeoData(geoDataRef.current?.substationPositionsById || new Map(), new Map());
                   newGeoData.setLinePositions(data);

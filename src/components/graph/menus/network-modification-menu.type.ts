@@ -6,8 +6,8 @@
  */
 
 import { UUID } from 'crypto';
-import { CurrentTreeNode } from '../../../redux/reducer';
 import { FetchStatus } from '../../../services/utils.type';
+import { CurrentTreeNode } from '../tree-node.type';
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
     name: string;
@@ -72,4 +72,4 @@ export type DefaultModificationDialogProps = {
     editDataFetchStatus: FetchStatus;
     onValidated: () => void;
     onDialogClose: () => void;
-}
+};
