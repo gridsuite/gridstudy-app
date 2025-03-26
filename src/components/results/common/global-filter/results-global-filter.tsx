@@ -155,10 +155,10 @@ function ResultsGlobalFilter({
     const handleChange = useCallback(
         async (globalFilters: GlobalFilter[]): Promise<void> => {
             let globalFiltersToAddToRecents: GlobalFilter[] = [...globalFilters];
-            const fetchFiltersPromises = globalFilters
+            const fetchFiltersPromises: Promise<UUID | null>[] = globalFilters
                 // checks if the generic filters still exist, and sets their path value
                 .filter((globalFilter: GlobalFilter) => globalFilter.filterType === FilterType.GENERIC_FILTER)
-                .map(async (fetchedGlobalFilter: GlobalFilter) => {
+                .map(async (fetchedGlobalFilter: GlobalFilter): Promise<UUID | null> => {
                     if (fetchedGlobalFilter.uuid) {
                         try {
                             const response: ElementAttributes[] = await fetchDirectoryElementPath(
@@ -173,19 +173,27 @@ function ResultsGlobalFilter({
                                 fetchedFilter.path = path;
                             }
                         } catch (error) {
-                            // remove those missing filters from recent global filters
-                            dispatch(removeFromRecentGlobalFilters(fetchedGlobalFilter.uuid));
-                            globalFiltersToAddToRecents = globalFiltersToAddToRecents.filter(
-                                (globalFilter) => globalFilter.uuid !== fetchedGlobalFilter.uuid
-                            );
-                            snackError({
-                                messageTxt: fetchedGlobalFilter.path,
-                                headerId: 'ComputationFilterResultsError',
-                            });
+                            return fetchedGlobalFilter.uuid;
                         }
                     }
+                    return null;
                 });
-            await Promise.all(fetchFiltersPromises);
+            const missingFiltersUuids = await Promise.all(fetchFiltersPromises);
+            // remove those missing filters from recent global filters
+            missingFiltersUuids
+                .filter((uuid: UUID | null) => uuid != null)
+                .forEach((missingFiltersuuid) => {
+                    if (missingFiltersuuid != null) {
+                        dispatch(removeFromRecentGlobalFilters(missingFiltersuuid));
+                    }
+                    globalFiltersToAddToRecents = globalFiltersToAddToRecents.filter(
+                        (globalFilter) => globalFilter.uuid !== missingFiltersuuid
+                    );
+                    snackError({
+                        messageTxt: globalFilters.find((filter) => filter.uuid === missingFiltersuuid)?.path,
+                        headerId: 'ComputationFilterResultsError',
+                    });
+                });
             setSelectedGlobalFilters(globalFilters);
             // Updates the "recent" filters unless they have not been found
             dispatch(addToRecentGlobalFilters(globalFiltersToAddToRecents));
