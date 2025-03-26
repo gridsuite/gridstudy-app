@@ -9,6 +9,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QU
 
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
+import { DynamicSimulationParametersFetchReturn, DynamicSimulationParametersInfos } from './dynamic-simulation.type';
 import { Timeseries } from '../../components/results/dynamicsimulation/types/dynamic-simulation-result.type';
 
 export function getDynamicMappings(studyUuid: UUID) {
@@ -22,7 +23,7 @@ export function startDynamicSimulation(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    dynamicSimulationConfiguration?: any
+    dynamicSimulationConfiguration?: DynamicSimulationParametersInfos
 ) {
     console.info(
         `Running dynamic simulation on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
@@ -132,13 +133,12 @@ export function updateDynamicSimulationProvider(studyUuid: UUID, newProvider: st
     });
 }
 
-export function fetchDynamicSimulationParameters(studyUuid: UUID) {
+export function fetchDynamicSimulationParameters(studyUuid: UUID): Promise<DynamicSimulationParametersFetchReturn> {
     console.info(`Fetching dynamic simulation parameters on '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
-    const parametersPromise = backendFetchJson(url);
-
-    const mappingsPromise = getDynamicMappings(studyUuid);
+    const parametersPromise = backendFetchJson(url); // return DynamicSimulationParametersInfos
+    const mappingsPromise = getDynamicMappings(studyUuid); // return mappings
 
     return Promise.all([parametersPromise, mappingsPromise]).then(([parameters, mappings]) => ({
         ...parameters,
@@ -146,7 +146,7 @@ export function fetchDynamicSimulationParameters(studyUuid: UUID) {
     }));
 }
 
-export function updateDynamicSimulationParameters(studyUuid: UUID, newParams: any) {
+export function updateDynamicSimulationParameters(studyUuid: UUID, newParams: DynamicSimulationParametersInfos | null) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
