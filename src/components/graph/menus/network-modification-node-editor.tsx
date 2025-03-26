@@ -170,7 +170,6 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleCloseDialog = () => {
-        console.log('DBG DBR handleCloseDialog !!');
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
@@ -400,7 +399,7 @@ const NetworkModificationNodeEditor = () => {
         {
             id: 'VOLTAGE_INIT_MODIFICATION',
             label: 'VoltageInitModification',
-            hide: true,
+            hide: true, // this modification is not visible in the creation menu
             action: () => withDefaultParams(VoltageInitModificationDialog),
         },
     ];

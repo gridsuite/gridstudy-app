@@ -156,7 +156,7 @@ interface EditData {
 
 interface VoltageInitModificationProps {
     editData: EditData;
-    onClose: CloseFunction;
+    onDialogClose: CloseFunction;
     onPreviewModeSubmit?: PreviewModeSubmitFunction;
     editDataFetchStatus: FetchStatus;
     disabledSave: boolean;
@@ -180,7 +180,7 @@ const styles = {
 
 const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationProps> = ({
     editData,
-    onClose,
+    onDialogClose,
     onPreviewModeSubmit,
     editDataFetchStatus,
     disabledSave,
@@ -190,7 +190,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
 
     const [tabIndex, setTabIndex] = useState(EquipmentTypeTabs.GENERATOR_TAB);
 
-    const handleClear = useCallback(() => onClose && onClose(), [onClose]);
+    const handleClear = useCallback(() => onDialogClose && onDialogClose(), [onDialogClose]);
 
     const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
@@ -556,7 +556,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
             maxWidth="md"
             onClear={handleClear}
-            onDialogClose={onClose}
+            onDialogClose={onDialogClose}
             onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
             open={open}
             PaperProps={{
