@@ -91,7 +91,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         const staticColumns: ColDef<NetworkModificationInfos>[] = [
             {
                 colId: 'modificationName',
-                rowDrag: !isRowDragDisabled || !isDragging,
+                rowDrag: !isRowDragDisabled,
                 headerComponent: NetworkModificationEditorNameHeader,
                 headerComponentParams: { modificationCount: modifications?.length, ...nameHeaderProps },
                 cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
@@ -139,7 +139,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         return [...staticColumns, ...dynamicColumns];
     }, [
         isRowDragDisabled,
-        isDragging,
         modifications?.length,
         rootNetworks,
         currentRootNetworkUuid,

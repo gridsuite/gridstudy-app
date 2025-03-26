@@ -91,6 +91,7 @@ const RootNetworkChipCellRenderer = (props: RootNetworkChipCellRendererProps) =>
     return (
         <ChipCellRenderer
             label={rootNetworkTag}
+            tooltipMessage={rootNetwork.name}
             isActivated={modificationActivatedByRootNetwork}
             isDisabled={isLoading || isAnyNodeBuilding || mapDataLoading}
             onClick={handleModificationStatusByRootNetworkUpdate}

@@ -12,15 +12,16 @@ import CancelIcon from '@mui/icons-material/Cancel';
 export interface ChipCellRendererProps {
     isActivated: boolean;
     label: string;
+    tooltipMessage: string;
     onClick: () => void;
     isDisabled?: boolean;
 }
 
 export const ChipCellRenderer = (props: ChipCellRendererProps) => {
-    const { isActivated, label, onClick, isDisabled } = props;
+    const { isActivated, label, tooltipMessage, onClick, isDisabled } = props;
 
     return (
-        <Tooltip title={label} arrow>
+        <Tooltip title={tooltipMessage} arrow>
             <span>
                 <Chip
                     label={label}
