@@ -44,7 +44,7 @@ export const RootNetworkSelection = () => {
         >
             {rootNetworks.map((option) => (
                 <MenuItem key={option.rootNetworkUuid} value={option.rootNetworkUuid}>
-                    {option.name}
+                    {option.tag}
                 </MenuItem>
             ))}
         </Select>
