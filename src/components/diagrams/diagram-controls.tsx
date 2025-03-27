@@ -92,9 +92,9 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onUpdate }) =
                     open={isSaveDialogOpen}
                     type={ElementType.DIAGRAM_CONFIG}
                     titleId={'SaveToGridexplore'}
-                    selectorTitleId="directory"
-                    createLabelId="SaveToGridexplore"
-                    updateLabelId="SaveToGridexplore"
+                    selectorTitleId="NetworkAreaDiagram"
+                    createLabelId="createDiagramConfigLabel"
+                    updateLabelId="updateDiagramConfigLabel"
                 />
             )}
         </>

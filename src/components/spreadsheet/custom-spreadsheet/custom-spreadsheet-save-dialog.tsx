@@ -95,16 +95,19 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
         updateSpreadsheetModel(id, name, description, spreadsheetConfig)
             .then(() => {
                 snackInfo({
-                    headerId: 'spreadsheet/save/confirmation_message',
+                    headerId: 'spreadsheet/save/update_confirmation_message',
                     headerValues: {
-                        folderName: elementFullPath,
+                        item: elementFullPath,
                     },
                 });
             })
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
-                    headerId: 'spreadsheet/save/error_message',
+                    headerId: 'spreadsheet/save/update_error_message',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
                 });
             });
     };

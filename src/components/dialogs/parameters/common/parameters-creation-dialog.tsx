@@ -70,7 +70,7 @@ const CreateParameterDialog = <T extends FieldValues>({
                 snackInfo({
                     headerId: 'paramsUpdateMsg',
                     headerValues: {
-                        directory: elementFullPath,
+                        item: elementFullPath,
                     },
                 });
             })
@@ -79,6 +79,9 @@ const CreateParameterDialog = <T extends FieldValues>({
                 snackError({
                     messageTxt: error.message,
                     headerId: 'paramsUpdatingError',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
                 });
             });
     };
@@ -93,9 +96,9 @@ const CreateParameterDialog = <T extends FieldValues>({
                 type={parameterType}
                 titleId={'saveParameters'}
                 studyUuid={studyUuid}
-                selectorTitleId="directory"
-                createLabelId="createParameter"
-                updateLabelId="updateParameter"
+                selectorTitleId="showSelectParameterDialog"
+                createLabelId="createParameterLabel"
+                updateLabelId="updateParameterLabel"
             />
         )
     );

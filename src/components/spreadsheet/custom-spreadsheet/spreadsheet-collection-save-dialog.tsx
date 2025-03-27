@@ -188,13 +188,16 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                 snackInfo({
                     headerId: 'spreadsheet/collection/update/success',
                     headerValues: {
-                        folderName: elementFullPath,
+                        item: elementFullPath,
                     },
                 });
                 setShowElementCreationDialog(false);
             } catch (error) {
                 snackError({
                     headerId: 'spreadsheet/collection/update/error',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
                     messageTxt: error instanceof Error ? error.message : String(error),
                 });
             }
@@ -278,9 +281,9 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                     type={ElementType.SPREADSHEET_CONFIG_COLLECTION}
                     titleId={'spreadsheet/collection/save/collection_name_dialog_title'}
                     studyUuid={studyUuid}
-                    selectorTitleId="directory"
+                    selectorTitleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
                     createLabelId="spreadsheet/collection/save/create"
-                    updateLabelId="spreadsheet/collection/save/update"
+                    updateLabelId="spreadsheet/collection/save/replace"
                 />
             )}
         </>

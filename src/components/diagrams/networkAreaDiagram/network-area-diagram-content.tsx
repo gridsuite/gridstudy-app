@@ -254,7 +254,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         )
             .then(() => {
                 snackInfo({
-                    headerId: 'paramsCreationMsg',
+                    headerId: 'diagramConfigCreationMsg',
                     headerValues: {
                         directory: directoryData.folderName,
                     },
@@ -263,7 +263,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             .catch((error) =>
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'SaveToGridexploreError',
+                    headerId: 'diagramConfigCreationError',
                 })
             );
     };
@@ -286,16 +286,19 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         )
             .then(() => {
                 snackInfo({
-                    headerId: 'paramsUpdateMsg',
+                    headerId: 'diagramConfigUpdateMsg',
                     headerValues: {
-                        directory: directoryData.elementFullPath,
+                        item: directoryData.elementFullPath,
                     },
                 });
             })
             .catch((error) =>
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'SaveToGridexploreError',
+                    headerId: 'diagramConfigUpdateError',
+                    headerValues: {
+                        item: directoryData.elementFullPath,
+                    },
                 })
             );
     };

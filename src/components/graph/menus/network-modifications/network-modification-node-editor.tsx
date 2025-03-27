@@ -705,7 +705,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'infoUpdateModificationsMsg',
                     headerValues: {
                         nbModifications: String(selectedNetworkModifications.length),
-                        directory: elementFullPath,
+                        item: elementFullPath,
                     },
                 });
             })
@@ -713,6 +713,9 @@ const NetworkModificationNodeEditor = () => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errUpdateModificationsMsg',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
                 });
             })
             .finally(() => {
@@ -875,9 +878,9 @@ const NetworkModificationNodeEditor = () => {
                     titleId="CreateCompositeModification"
                     prefixIdForGeneratedName="GeneratedModification"
                     studyUuid={studyUuid}
-                    selectorTitleId="SelectDirectory"
-                    createLabelId="Create"
-                    updateLabelId="Update"
+                    selectorTitleId="SelectCompositeModificationTitle"
+                    createLabelId="CreateCompositeModificationLabel"
+                    updateLabelId="UpdateCompositeModificationLabel"
                 />
             )
         );
