@@ -41,7 +41,7 @@ export function ModificationDialog({
 }: Readonly<ModificationDialogProps>) {
     const { handleSubmit } = useFormContext();
 
-    const closeAndClear = (event: React.MouseEvent, reason: string) => {
+    const closeAndClear = () => {
         onClear();
         onClose();
     };
@@ -50,7 +50,7 @@ export function ModificationDialog({
         onValidated && onValidated();
         onSave(data);
         // do not wait fetch response and close dialog, errors will be shown in snackbar.
-        closeAndClear(data, 'validateButtonClick');
+        closeAndClear();
     };
 
     const handleScrollWhenError = useCallback(() => {

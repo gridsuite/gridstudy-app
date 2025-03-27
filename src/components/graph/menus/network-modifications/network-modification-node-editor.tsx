@@ -177,6 +177,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleCloseDialog = () => {
+        console.log('DBG DBR handleCloseDialog COMMON');
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };

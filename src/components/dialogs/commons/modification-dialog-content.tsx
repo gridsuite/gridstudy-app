@@ -38,7 +38,7 @@ const styles = {
  */
 
 export type ModificationDialogContentProps = Omit<DialogProps, 'onClose' | 'aria-labelledby'> & {
-    closeAndClear: (event: React.MouseEvent, reason: string) => void;
+    closeAndClear: () => void;
     isDataFetching?: boolean;
     titleId: string;
     onOpenCatalogDialog?: () => void;
@@ -72,14 +72,17 @@ export function ModificationDialogContent({
         icon: <FindInPageIcon />,
     });
 
-    const handleClose = (event: React.MouseEvent, reason: string) => {
+    const handleClose = (event_: React.MouseEvent, reason: string) => {
+        console.log('DBG DBR handleClose', reason);
         if (reason !== 'backdropClick') {
-            closeAndClear(event, reason);
+            // don't close the dialog for outside click
+            closeAndClear();
         }
     };
 
-    const handleCancel = (event: React.MouseEvent) => {
-        closeAndClear(event, 'cancelButtonClick');
+    const handleCancel = () => {
+        console.log('DBG DBR handleCancel');
+        closeAndClear();
     };
 
     return (

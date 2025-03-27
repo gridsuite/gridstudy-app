@@ -23,15 +23,15 @@ export function BasicModificationDialog({
     onSave,
     ...dialogProps
 }: Readonly<BasicModificationDialogProps>) {
-    const closeAndClear = (event: React.MouseEvent, reason: string) => {
+    const closeAndClear = () => {
         onClear();
         onClose();
     };
 
-    const handleSubmit = (event: React.MouseEvent) => {
+    const handleSubmit = () => {
         onSave?.();
         // do not wait fetch response and close dialog, errors will be shown in snackbar.
-        closeAndClear(event, 'validateButtonClick');
+        closeAndClear();
     };
 
     const submitButton = (
