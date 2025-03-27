@@ -263,14 +263,16 @@ const GeneratorModificationDialog = ({
                 )
                     .then((value) => {
                         if (value) {
+                            console.log("Etienne")
+                            console.log(value)
                             const previousReactiveCapabilityCurveTable = value?.reactiveCapabilityCurvePoints;
+                            console.log(previousReactiveCapabilityCurveTable)
                             if (previousReactiveCapabilityCurveTable) {
                                 setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable,
                                     `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     getValues,
-                                    setValue,
-                                    isNodeBuilt(currentNode)
+                                    setValue
                                 );
                             }
                             setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, value?.voltageLevelId);

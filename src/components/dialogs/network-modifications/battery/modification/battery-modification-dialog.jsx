@@ -214,8 +214,7 @@ const BatteryModificationDialog = ({
                                     previousReactiveCapabilityCurveTable,
                                     `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     getValues,
-                                    setValue,
-                                    isNodeBuilt(currentNode)
+                                    setValue
                                 );
                             }
                             setValue(

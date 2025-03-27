@@ -114,10 +114,7 @@ export function setCurrentReactiveCapabilityCurveTable(
     fieldKey: string,
     getValues: UseFormGetValues<FieldValues>,
     setValue: UseFormSetValue<FieldValues>,
-    isNodeBuilt?: boolean
 ) {
-    const currentReactiveCapabilityCurveTable = getValues(fieldKey);
-    if (isNodeBuilt || !currentReactiveCapabilityCurveTable) {
-        setValue(fieldKey, previousReactiveCapabilityCurveTable);
-    }
+    setValue(fieldKey, previousReactiveCapabilityCurveTable);
+
 }
