@@ -53,7 +53,7 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode, DiagramState, StudyUpdatedEventData } from 'redux/reducer';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
-import { DiagramType, ViewState } from './diagram.type';
+import { DiagramType, isNadType, isSldType, ViewState } from './diagram.type';
 import { useDiagram } from './use-diagram';
 
 // Returns a callback that returns a promise
@@ -174,13 +174,8 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                         console.error('Error while fetching SVG', error.message);
                         let errorMessage;
                         if (error.status === 404) {
-                            if (svgType === DiagramType.SUBSTATION) {
-                                errorMessage = 'SubstationNotFound';
-                            }
-                            // if VL (SLD or NAD)
-                            else {
-                                errorMessage = 'VoltageLevelNotFound';
-                            }
+                            errorMessage =
+                                svgType === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
                         } else {
                             snackError({
                                 headerId: 'svgLoadingFail',
@@ -455,11 +450,12 @@ export function DiagramPane({
      *
      * Here, the goal is to build a list of views, each view corresponding to a diagram.
      * We get the diagrams from the redux store.
-     * In the case of SLD and NAD loaded from a config, each diagram corresponds to one view,
-     * but in the case of NAD created locally, each opened NAD is merged into one view.
+     * All the diagram instances of type NETWORK_AREA_DIAGRAM are merged into one diagram.
+     * The other types of diagram all have their own view and diagram.
      */
-    // Check if we need to add new SLDs in the 'views' and add them if necessary
-    const addMissingSLDs = useCallback(
+    // Check if we need to add new diagrams in the 'views' and add them if necessary
+    // This function do not touch the NETWORK_AREA_DIAGRAM(s). It/they will be treated elsewhere.
+    const addMissingDiagrams = useCallback(
         (diagramStates: DiagramState[]) => {
             // We check if we need to add new diagrams
             const diagramsToAdd: {
@@ -540,8 +536,9 @@ export function DiagramPane({
         [createView, intl, snackError]
     );
 
-    // Check if we need to remove old SLDs from the 'views' and remove them if necessary
-    const removeObsoleteSLDs = useCallback((diagramStates: DiagramState[]) => {
+    // Check if we need to remove old diagrams from the 'views' and remove them if necessary
+    // This function do not touch the NETWORK_AREA_DIAGRAM(s). It/they will be treated elsewhere.
+    const removeObsoleteDiagrams = useCallback((diagramStates: DiagramState[]) => {
         // We check if we need to remove old diagrams
         const diagramIdsToRemove: UUID[] = [];
         viewsRef.current.forEach((diagramView) => {
@@ -567,13 +564,13 @@ export function DiagramPane({
         }
     }, []);
 
-    // Check if we need to remove or add SLDs
-    const updateSLDsAndNadFromConfig = useCallback(
+    // Check if we need to remove or add diagrams
+    const removeAndAddDiagrams = useCallback(
         (diagramStates: DiagramState[]) => {
-            removeObsoleteSLDs(diagramStates);
-            addMissingSLDs(diagramStates);
+            removeObsoleteDiagrams(diagramStates);
+            addMissingDiagrams(diagramStates);
         },
-        [removeObsoleteSLDs, addMissingSLDs]
+        [removeObsoleteDiagrams, addMissingDiagrams]
     );
 
     // Add a new NAD in the 'views' (if a NAD is already present, we replace it)
@@ -694,7 +691,6 @@ export function DiagramPane({
         // We check if we need to update some diagrams
         let diagramsToUpdate: { index: number; state: ViewState }[] = [];
         diagramStates.forEach((diagramState: DiagramState) => {
-            // if SLD or NAD loaded from a config
             if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                 const diagramIndex = viewsRef.current.findIndex(
                     (diagramView: DiagramView) =>
@@ -709,17 +705,15 @@ export function DiagramPane({
                         state: diagramState.state,
                     });
                 }
-            }
-            // if NAD (not loaded from a config)
-            else {
-                // no need to check the ID because we have only one NAD in the views
+            } else {
+                // no need to check the ID because we merge all the NETWORK_AREA_DIAGRAM in one view
                 // diagramIndex can only be -1 (if no match) or viewsRef.current.length - 1 (if match)
                 const diagramIndex = viewsRef.current.findIndex(
                     (diagramView: DiagramView) =>
                         diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM &&
                         diagramView.state !== diagramState.state
                 );
-                // if the NAD has a new state (all NAD are supposed to have the same state)
+                // if the NETWORK_AREA_DIAGRAM has a new state (all NETWORK_AREA_DIAGRAM are supposed to have the same state)
                 if (
                     diagramIndex > -1 &&
                     // we don't want to add it twice
@@ -773,11 +767,13 @@ export function DiagramPane({
         if (!visible || !currentNode || isNodeInNotificationList(currentNode, notificationIdList)) {
             return;
         }
-        // UPDATING DIAGRAM STATES (before removing or adding new diagrams, for both SLDs and NAD)
+        // Updating diagram states (before removing or adding new diagrams)
         updateDiagramStates(diagramStates);
-        // SLD MANAGEMENT and NAD LOADED FROM A CONFIG MANAGEMENT (adding or removing SLDs)
-        updateSLDsAndNadFromConfig(diagramStates);
-        // NAD MANAGEMENT (adding, removing or updating the NAD)
+
+        // We remove obsolete diagrams and add new diagrams
+        removeAndAddDiagrams(diagramStates);
+
+        // NETWORK_AREA_DIAGRAM management (adding, removing or updating the NETWORK_AREA_DIAGRAM)
         // Here we call either the debounced or the non-debounced function
         // to force a server fetch after a few clicks to get the actual number of voltage levels.
         // it's ok to do this and doesn't cause two fetches at the end
@@ -794,7 +790,7 @@ export function DiagramPane({
         currentNode,
         notificationIdList,
         updateDiagramStates,
-        updateSLDsAndNadFromConfig,
+        removeAndAddDiagrams,
         updateNAD,
         debounceUpdateNAD,
         networkAreaDiagramDepth,
@@ -805,6 +801,7 @@ export function DiagramPane({
         .filter((view) => [ViewState.OPENED, ViewState.PINNED].includes(view.state))
         .sort(makeDiagramSorter(diagramStates));
     const minimizedDiagrams = views.filter((view) => [ViewState.MINIMIZED].includes(view.state));
+
     /**
      * MINIMIZED DIAGRAMS' CONTROLS
      */
@@ -1103,10 +1100,9 @@ export function DiagramPane({
     );
 
     const getDiagramTitle = (diagramView: DiagramView) => {
-        return diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
-            diagramView.svgType !== DiagramType.NAD_FROM_CONFIG
-            ? diagramView.name + ' - ' + (diagramView.country ? translate(diagramView.country) : '')
-            : diagramView.name;
+        return isNadType(diagramView.svgType)
+            ? diagramView.name
+            : diagramView.name + ' - ' + (diagramView.country ? translate(diagramView.country) : '');
     };
 
     /**
@@ -1148,10 +1144,10 @@ export function DiagramPane({
                         <Fragment key={diagramView.svgType + diagramView.id}>
                             {
                                 /*
-                                We put a space (a separator) before the first right aligned diagram.
-                                This space takes all the remaining space on screen and "pushes" the right aligned
-                                diagrams to the right of the screen.
-                                */
+We put a space (a separator) before the first right aligned diagram.
+This space takes all the remaining space on screen and "pushes" the right aligned
+diagrams to the right of the screen.
+*/
                                 array[index]?.align === 'right' &&
                                     (index === 0 || array[index - 1]?.align === 'left') && (
                                         <Box sx={styles.separator}></Box>
@@ -1170,8 +1166,7 @@ export function DiagramPane({
                                 fullscreenHeight={height}
                                 loadingState={diagramView.loadingState}
                             >
-                                {(diagramView.svgType === DiagramType.VOLTAGE_LEVEL ||
-                                    diagramView.svgType === DiagramType.SUBSTATION) && (
+                                {isSldType(diagramView.svgType) && (
                                     <SingleLineDiagramContent
                                         showInSpreadsheet={showInSpreadsheet}
                                         studyUuid={studyUuid}
@@ -1184,8 +1179,7 @@ export function DiagramPane({
                                         visible={visible}
                                     />
                                 )}
-                                {(diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM ||
-                                    diagramView.svgType === DiagramType.NAD_FROM_CONFIG) && (
+                                {isNadType(diagramView.svgType) && (
                                     <NetworkAreaDiagramContent
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}
@@ -1215,8 +1209,7 @@ export function DiagramPane({
                             <Chip
                                 key={diagramView.svgType + diagramView.id}
                                 icon={
-                                    diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM ||
-                                    diagramView.svgType === DiagramType.NAD_FROM_CONFIG ? (
+                                    isNadType(diagramView.svgType) ? (
                                         <>
                                             <ArrowUpwardIcon />
                                             <TimelineIcon />
