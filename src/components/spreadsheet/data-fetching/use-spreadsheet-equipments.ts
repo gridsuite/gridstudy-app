@@ -58,7 +58,6 @@ export const useSpreadsheetEquipments = (
                 }
             });
         }
-        console.log('DBG DBR useEffect 1', set);
         // Because of treeNodes: update the state only on real values changes (to avoid multiple effects for the watchers)
         setBuiltAliasedNodesIds((prevState) => {
             const currentIds = prevState;
@@ -66,11 +65,6 @@ export const useSpreadsheetEquipments = (
             const computedIds = Array.from(set);
             computedIds.sort((a, b) => a.localeCompare(b));
             if (JSON.stringify(currentIds) !== JSON.stringify(computedIds)) {
-                console.log(
-                    'DBG DBR DIFF builtAliasedNodesIds',
-                    JSON.stringify(currentIds),
-                    JSON.stringify(computedIds)
-                );
                 return computedIds;
             }
             return prevState;
@@ -78,10 +72,8 @@ export const useSpreadsheetEquipments = (
     }, [nodeAliases, treeNodes]);
 
     const nodesIdToFetch = useMemo(() => {
-        console.log('DBG DBR useMemo');
         let nodesIdToFetch = new Set<string>();
         if (!equipments || !builtAliasedNodesIds) {
-            console.log('DBG DBR useMemo RET');
             return nodesIdToFetch;
         }
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
@@ -94,7 +86,6 @@ export const useSpreadsheetEquipments = (
                 nodesIdToFetch.add(builtAliasNodeId);
             }
         });
-        console.log('DBG DBR useMemo END', nodesIdToFetch);
         return nodesIdToFetch;
     }, [currentNode?.id, equipments, builtAliasedNodesIds]);
 
@@ -104,7 +95,6 @@ export const useSpreadsheetEquipments = (
             return;
         }
         const currentNodeId = currentNode?.id as UUID;
-        console.log('DBG DBR effect removeNodeData');
         let unwantedFetchedNodes = new Set<string>();
         Object.values(allEquipments).forEach((value) => {
             unwantedFetchedNodes = new Set([...unwantedFetchedNodes, ...value.nodesId]);
@@ -113,7 +103,6 @@ export const useSpreadsheetEquipments = (
         usedNodesId.add(currentNodeId);
         usedNodesId.forEach((nodeId) => unwantedFetchedNodes.delete(nodeId));
         if (unwantedFetchedNodes.size !== 0) {
-            console.log('DBG DBR removeNodeData', unwantedFetchedNodes);
             dispatch(removeNodeData(Array.from(unwantedFetchedNodes)));
         }
     }, [builtAliasedNodesIds, currentNode, dispatch, allEquipments]);
@@ -187,10 +176,8 @@ export const useSpreadsheetEquipments = (
     };
 
     useEffect(() => {
-        console.log('DBG DBR useEffect 3', nodesIdToFetch);
         if (nodesIdToFetch.size > 0 && isNetworkModificationTreeModelUpToDate && isNodeBuilt(currentNode)) {
             setIsFetching(true);
-            console.log('DBG DBR FETCHING', nodesIdToFetch);
             fetchNodesEquipmentData(nodesIdToFetch, onFetchingDone);
         }
     }, [isNetworkModificationTreeModelUpToDate, nodesIdToFetch, fetchNodesEquipmentData, currentNode]);
