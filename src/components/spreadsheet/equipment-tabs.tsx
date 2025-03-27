@@ -48,12 +48,14 @@ interface EquipmentTabsProps {
     selectedTabUuid: UUID | null;
     handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
+    resetNodeAliases: (aliases?: string[]) => void;
 }
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
     selectedTabUuid,
     handleSwitchTab,
     disabled,
+    resetNodeAliases,
 }) => {
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
@@ -201,7 +203,11 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
             <Grid container direction="row" wrap="nowrap" item>
                 {developerMode && (
                     <Grid item padding={1}>
-                        <CustomSpreadsheetConfig disabled={disabled} resetTabIndex={resetTabSelection} />
+                        <CustomSpreadsheetConfig
+                            disabled={disabled}
+                            resetTabIndex={resetTabSelection}
+                            resetNodeAliases={resetNodeAliases}
+                        />
                     </Grid>
                 )}
                 <Grid item sx={{ overflow: 'hidden' }}>

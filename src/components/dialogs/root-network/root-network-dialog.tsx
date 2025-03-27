@@ -150,6 +150,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             studyUuid={studyUuid}
                             elementExists={checkRootNetworkNameExistence}
                             errorMessageKey="nameAlreadyUsed"
+                            catchMessageKey="rootNetworknameValidityCheckError"
                             formProps={{ fullWidth: true }}
                             onManualChangeCallback={() => setModifiedByUser(true)}
                         />
@@ -163,6 +164,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             elementExists={checkRootNetworkTagExistence}
                             inputProps={{ maxLength: MAX_TAG_LENGTH }}
                             errorMessageKey="tagAlreadyUsed"
+                            catchMessageKey="rootNetworknameValidityCheckError"
                             max_length={MAX_TAG_LENGTH}
                         />
                     </Grid>

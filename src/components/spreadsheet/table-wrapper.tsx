@@ -115,7 +115,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const [activeTabUuid, setActiveTabUuid] = useState<UUID | null>(null);
 
-    const { nodeAliases, updateNodeAliases } = useNodeAliases();
+    const { nodeAliases, updateNodeAliases, resetNodeAliases } = useNodeAliases();
+
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -470,8 +471,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 handleSwitchTab(tableDefinitions[0].uuid);
                 dispatch(resetAllSpreadsheetGsFilters());
             }
+            resetNodeAliases(collectionData.nodeAliases);
         });
-    }, [studyUuid, dispatch, handleSwitchTab]);
+    }, [studyUuid, dispatch, handleSwitchTab, resetNodeAliases]);
 
     // Reset the collection to the default one defined in the user profile
     const resetSpreadsheetCollection = useCallback(() => {
@@ -504,7 +506,12 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     return (
         <>
             <Grid container justifyContent={'space-between'}>
-                <EquipmentTabs disabled={disabled} selectedTabUuid={activeTabUuid} handleSwitchTab={handleSwitchTab} />
+                <EquipmentTabs
+                    disabled={disabled}
+                    selectedTabUuid={activeTabUuid}
+                    handleSwitchTab={handleSwitchTab}
+                    resetNodeAliases={resetNodeAliases}
+                />
                 <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.selectColumns}>
                         <SpreadsheetGsFilter
@@ -555,6 +562,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             tableName={tableDefinition?.name}
                             disabled={shouldDisableButtons}
                             dataSize={rowData ? rowData.length : 0}
+                            nodeAliases={nodeAliases}
                         />
                     </Grid>
                 </Grid>
