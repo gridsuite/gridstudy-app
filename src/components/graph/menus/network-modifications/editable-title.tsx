@@ -59,7 +59,7 @@ export const EditableTitle = ({ name, onClose, onChange, showRootNetworkSelectio
             </IconButton>
             <NodeNameEditDialog
                 open={openEditTitle}
-                titleId={intl.formatMessage({ id: 'NewName' })}
+                titleId={'NewName'}
                 initialName={name}
                 onSave={(data) => onChange?.(data.name)}
                 onClose={() => setOpenEditTitle(false)}
