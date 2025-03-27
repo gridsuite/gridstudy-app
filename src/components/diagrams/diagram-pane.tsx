@@ -250,10 +250,6 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                         .map((vl: VoltageLevel) => ({
                             substationId: vl.substationId,
                         }))
-                        .sort(
-                            (vlA: VoltageLevel, vlB: VoltageLevel) =>
-                                vlA.name?.toLowerCase().localeCompare(vlB.name?.toLowerCase() ?? '') || 0
-                        )
                         .forEach((voltageLevel: VoltageLevel) => {
                             substationsIds.push(voltageLevel.substationId);
                         });
@@ -446,15 +442,10 @@ export function DiagramPane({
     viewsRef.current = views;
 
     /**
-     * BUILDS THE DIAGRAMS LIST
-     *
-     * Here, the goal is to build a list of views, each view corresponding to a diagram.
-     * We get the diagrams from the redux store.
-     * All the diagram instances of type NETWORK_AREA_DIAGRAM are merged into one diagram.
-     * The other types of diagram all have their own view and diagram.
+     * Check if we need to add new diagrams in the 'views' and add them if necessary.
+     * This function works for VOLTAGE_LEVEL, SUBSTATION and NAD_FROM_CONFIG only.
+     * This function do not touch the NETWORK_AREA_DIAGRAMs : they are treated elsewhere.
      */
-    // Check if we need to add new diagrams in the 'views' and add them if necessary
-    // This function do not touch the NETWORK_AREA_DIAGRAM(s). It/they will be treated elsewhere.
     const addMissingDiagrams = useCallback(
         (diagramStates: DiagramState[]) => {
             // We check if we need to add new diagrams
@@ -536,8 +527,11 @@ export function DiagramPane({
         [createView, intl, snackError]
     );
 
-    // Check if we need to remove old diagrams from the 'views' and remove them if necessary
-    // This function do not touch the NETWORK_AREA_DIAGRAM(s). It/they will be treated elsewhere.
+    /**
+     * Check if we need to remove old diagrams from the 'views' and remove them if necessary.
+     * This function works for VOLTAGE_LEVEL, SUBSTATION and NAD_FROM_CONFIG only.
+     * This function do not touch the NETWORK_AREA_DIAGRAMs : they are treated elsewhere.
+     */
     const removeObsoleteDiagrams = useCallback((diagramStates: DiagramState[]) => {
         // We check if we need to remove old diagrams
         const diagramIdsToRemove: UUID[] = [];
@@ -564,7 +558,9 @@ export function DiagramPane({
         }
     }, []);
 
-    // Check if we need to remove or add diagrams
+    /**
+     * Check if we need to remove or add diagrams or type VOLTAGE_LEVEL, SUBSTATION and NAD_FROM_CONFIG
+     */
     const removeAndAddDiagrams = useCallback(
         (diagramStates: DiagramState[]) => {
             removeObsoleteDiagrams(diagramStates);
@@ -573,7 +569,9 @@ export function DiagramPane({
         [removeObsoleteDiagrams, addMissingDiagrams]
     );
 
-    // Add a new NAD in the 'views' (if a NAD is already present, we replace it)
+    /**
+     * Completes the diagram of type NETWORK_AREA_DIAGRAM
+     */
     const addOrReplaceNAD = useCallback(
         (networkAreaIds: UUID[], networkAreaViewState: ViewState, networkAreaDiagramDepth: number) => {
             // First we add the empty diagram in the views
@@ -588,7 +586,7 @@ export function DiagramPane({
                     loadingState: true,
                 };
                 const updatedViews = views.slice();
-                // if we already have a NAD, we replace it but keep the same object to avoid resizing
+                // if we already have a diagram of type NETWORK_AREA_DIAGRAM, we replace it but keep the same object to avoid resizing
                 const nadViewId = views.findIndex((view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM);
                 if (nadViewId >= 0) {
                     updatedViews[nadViewId] = {
@@ -637,6 +635,9 @@ export function DiagramPane({
         [createView, intl, dispatch, snackError]
     );
 
+    /**
+     * Removes the diagram of type NETWORK_AREA_DIAGRAM
+     */
     const removeNAD = useCallback(() => {
         setViews((views) => {
             const updatedViews = views.filter((view) => view.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
@@ -644,6 +645,9 @@ export function DiagramPane({
         });
     }, []);
 
+    /**
+     * NETWORK_AREA_DIAGRAM type diagram management (adding, removing or updating the NETWORK_AREA_DIAGRAM)
+     */
     const updateNAD = useCallback(
         (diagramStates: DiagramState[]) => {
             const initNadWithGeoDataParamHasChanged =
@@ -686,7 +690,9 @@ export function DiagramPane({
         ]
     );
 
-    // Update the state of the diagrams (opened, minimized, etc) in the 'views'
+    /**
+     * Update the state of the diagrams (opened, minimized, etc) in the 'views'
+     */
     const updateDiagramStates = useCallback((diagramStates: DiagramState[]) => {
         // We check if we need to update some diagrams
         let diagramsToUpdate: { index: number; state: ViewState }[] = [];
@@ -773,7 +779,7 @@ export function DiagramPane({
         // We remove obsolete diagrams and add new diagrams
         removeAndAddDiagrams(diagramStates);
 
-        // NETWORK_AREA_DIAGRAM management (adding, removing or updating the NETWORK_AREA_DIAGRAM)
+        // NETWORK_AREA_DIAGRAM type diagram management (adding, removing or updating the NETWORK_AREA_DIAGRAM)
         // Here we call either the debounced or the non-debounced function
         // to force a server fetch after a few clicks to get the actual number of voltage levels.
         // it's ok to do this and doesn't cause two fetches at the end
@@ -1143,11 +1149,9 @@ export function DiagramPane({
                     {displayedDiagrams.map((diagramView, index, array) => (
                         <Fragment key={diagramView.svgType + diagramView.id}>
                             {
-                                /*
-We put a space (a separator) before the first right aligned diagram.
-This space takes all the remaining space on screen and "pushes" the right aligned
-diagrams to the right of the screen.
-*/
+                                // We put a space (a separator) before the first right aligned diagram.
+                                // This space takes all the remaining space on screen and "pushes" the right aligned
+                                // diagrams to the right of the screen.
                                 array[index]?.align === 'right' &&
                                     (index === 0 || array[index - 1]?.align === 'left') && (
                                         <Box sx={styles.separator}></Box>
