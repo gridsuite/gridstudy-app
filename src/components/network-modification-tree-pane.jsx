@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
 import NetworkModificationTree from './network-modification-tree';
 import { StudyDrawer } from './study-drawer';
-import NodeEditor from './graph/menus/node-editor';
+import NodeEditor from './graph/menus/network-modifications/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useStore } from '@xyflow/react';

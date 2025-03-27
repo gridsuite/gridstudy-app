@@ -11,7 +11,7 @@ import { copyOrMoveModifications } from '../../services/study';
 import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { NetworkModificationCopyType } from 'components/graph/menus/network-modification-menu.type';
+import { NetworkModificationCopyType } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 /**
  * Dialog to select some network modifications and append them in the current node

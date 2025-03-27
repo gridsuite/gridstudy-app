@@ -57,6 +57,7 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
+import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export type TableValue<TValue = unknown> = {
     index: number;
@@ -645,6 +646,18 @@ export function setCurrentRootNetworkUuid(currentRootNetworkUuid: UUID): Current
     return {
         type: CURRENT_ROOT_NETWORK_UUID,
         currentRootNetworkUuid: currentRootNetworkUuid,
+    };
+}
+
+export const SET_ROOT_NETWORKS = 'SET_ROOT_NETWORKS';
+export type SetRootNetworksAction = Readonly<Action<typeof SET_ROOT_NETWORKS>> & {
+    rootNetworks: RootNetworkMetadata[];
+};
+
+export function setRootNetworks(rootNetworks: RootNetworkMetadata[]): SetRootNetworksAction {
+    return {
+        type: SET_ROOT_NETWORKS,
+        rootNetworks: rootNetworks,
     };
 }
 
