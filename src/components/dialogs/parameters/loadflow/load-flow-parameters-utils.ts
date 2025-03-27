@@ -136,7 +136,7 @@ export const setSpecificParameters = (
     specificParamsDescriptions: Record<string, SpecificParameterInfos[]> | null,
     formMethods: UseFormReturn
 ) => {
-    const specificParams = provider ? specificParamsDescriptions?.[provider] ?? [] : [];
+    const specificParams = provider ? (specificParamsDescriptions?.[provider] ?? []) : [];
     const specificParamsValues = getDefaultSpecificParamsValues(specificParams);
     formMethods.setValue(SPECIFIC_PARAMETERS, specificParamsValues);
 };

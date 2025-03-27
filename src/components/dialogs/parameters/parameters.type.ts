@@ -38,16 +38,16 @@ export type SpecificParametersInfos = Record<string, SpecificParameterInfos>;
 export type ParametersInfos<T extends ComputingType> = T extends ComputingType.SENSITIVITY_ANALYSIS
     ? SensitivityAnalysisParametersInfos
     : T extends ComputingType.SECURITY_ANALYSIS
-    ? ISAParameters
-    : T extends ComputingType.NON_EVACUATED_ENERGY_ANALYSIS
-    ? NonEvacuatedEnergyParametersInfos
-    : T extends ComputingType.LOAD_FLOW
-    ? LoadFlowParametersInfos
-    : T extends ComputingType.DYNAMIC_SIMULATION
-    ? DynamicSimulationParametersFetchReturn
-    : T extends ComputingType.DYNAMIC_SECURITY_ANALYSIS
-    ? DynamicSecurityAnalysisParametersFetchReturn
-    : Record<string, any>;
+      ? ISAParameters
+      : T extends ComputingType.NON_EVACUATED_ENERGY_ANALYSIS
+        ? NonEvacuatedEnergyParametersInfos
+        : T extends ComputingType.LOAD_FLOW
+          ? LoadFlowParametersInfos
+          : T extends ComputingType.DYNAMIC_SIMULATION
+            ? DynamicSimulationParametersFetchReturn
+            : T extends ComputingType.DYNAMIC_SECURITY_ANALYSIS
+              ? DynamicSecurityAnalysisParametersFetchReturn
+              : Record<string, any>;
 
 export type UseParametersBackendReturnProps<T extends ComputingType> = [
     Record<string, string>,
@@ -58,5 +58,5 @@ export type UseParametersBackendReturnProps<T extends ComputingType> = [
     (newParams: ParametersInfos<T>) => void,
     () => Promise<void> | undefined,
     Record<string, any> | null,
-    ILimitReductionsByVoltageLevel[]
+    ILimitReductionsByVoltageLevel[],
 ];

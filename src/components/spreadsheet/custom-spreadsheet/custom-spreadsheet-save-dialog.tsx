@@ -30,18 +30,21 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const customColumns = useMemo(() => {
-        return tableDefinition?.columns.reduce((acc, item) => {
-            acc[item.id] = {
-                uuid: item?.uuid ?? uuid4(),
-                id: item.id,
-                name: item.name,
-                type: item.type,
-                precision: item.precision,
-                formula: item.formula,
-                dependencies: item.dependencies?.length ? JSON.stringify(item.dependencies) : undefined,
-            };
-            return acc;
-        }, {} as Record<string, ColumnDefinitionDto>);
+        return tableDefinition?.columns.reduce(
+            (acc, item) => {
+                acc[item.id] = {
+                    uuid: item?.uuid ?? uuid4(),
+                    id: item.id,
+                    name: item.name,
+                    type: item.type,
+                    precision: item.precision,
+                    formula: item.formula,
+                    dependencies: item.dependencies?.length ? JSON.stringify(item.dependencies) : undefined,
+                };
+                return acc;
+            },
+            {} as Record<string, ColumnDefinitionDto>
+        );
     }, [tableDefinition?.columns]);
 
     const reorderedColumns = useMemo(() => {

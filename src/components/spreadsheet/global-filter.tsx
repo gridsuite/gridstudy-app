@@ -44,16 +44,12 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }: GlobalFilterProps
         return inputRef.current.value;
     }, []);
 
-    useImperativeHandle(
-        ref,
-        () => {
-            return {
-                resetFilter: resetFilter,
-                getFilterValue: getFilterValue,
-            };
-        },
-        [getFilterValue, resetFilter]
-    );
+    useImperativeHandle(ref, () => {
+        return {
+            resetFilter: resetFilter,
+            getFilterValue: getFilterValue,
+        };
+    }, [getFilterValue, resetFilter]);
 
     const handleChangeFilter = useCallback(
         (event: ChangeEvent<HTMLInputElement>) => {
