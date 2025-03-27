@@ -35,9 +35,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UUID } from 'crypto';
 import {
     AppState,
-    NotificationType,
-    RootNetworkDeletionStartedEventData,
-    RootNetworkModifiedEventData,
+    isRootNetworkDeletionStartedNotification,
+    isRootNetworkRootNetworkModifiedNotification,
+    isRootNetworkRootNetworkUpdateFailedNotification,
 } from 'redux/reducer';
 import { RootNetworkMetadata } from './network-modifications/network-modification-menu.type';
 
@@ -176,13 +176,8 @@ const RootNetworkNodeEditor = () => {
 
     const rootNetworkModifiedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworkModifiedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (
-                updateTypeHeader === NotificationType.ROOT_NETWORK_MODIFIED ||
-                updateTypeHeader === NotificationType.ROOT_NETWORK_UPDATED
-            ) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworkRootNetworkModifiedNotification(eventData)) {
                 dofetchRootNetworks();
             }
         },
@@ -190,10 +185,9 @@ const RootNetworkNodeEditor = () => {
     );
     const rootNetworksUpdateFailedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworkModifiedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATE_FAILED) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworkRootNetworkUpdateFailedNotification(eventData)) {
+                // TODO print eventData.error ?
                 dofetchRootNetworks();
                 snackError({
                     messageId: 'importCaseFailure',
@@ -205,10 +199,8 @@ const RootNetworkNodeEditor = () => {
     );
     const rootNetworkDeletionStartedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworkDeletionStartedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORK_DELETION_STARTED) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworkDeletionStartedNotification(eventData)) {
                 if (!rootNetworksRef.current) {
                     return;
                 }

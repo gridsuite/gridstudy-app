@@ -10,7 +10,7 @@ import { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments } from 'redux/actions';
-import { AppState, NotificationType } from 'redux/reducer';
+import { AppState, isStudyUpdatedNotification } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
@@ -120,8 +120,7 @@ export const useSpreadsheetEquipments = (
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
         listenerCallbackMessage: (event) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.STUDY) {
+            if (isStudyUpdatedNotification(eventData)) {
                 const eventStudyUuid = eventData.headers.studyUuid;
                 const eventNodeUuid = eventData.headers.node;
                 const eventRootNetworkUuid = eventData.headers.rootNetwork;
@@ -130,9 +129,8 @@ export const useSpreadsheetEquipments = (
                     currentNode?.id === eventNodeUuid &&
                     currentRootNetworkUuid === eventRootNetworkUuid
                 ) {
-                    const payload = JSON.parse(eventData.payload);
-                    const impactedSubstationsIds = payload.impactedSubstationsIds;
-                    const deletedEquipments = payload.deletedEquipments;
+                    const impactedSubstationsIds = eventData.payload.impactedSubstationsIds;
+                    const deletedEquipments = eventData.payload.deletedEquipments;
                     updateEquipmentsLocal(impactedSubstationsIds, deletedEquipments);
                 }
             }

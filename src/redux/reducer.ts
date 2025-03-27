@@ -347,19 +347,26 @@ export interface StudyUpdatedEventDataHeader {
 interface RootNetworkDeletionStartedEventDataHeader {
     studyUuid: UUID;
     rootNetworks: UUID[];
-    updateType: string;
+    updateType: NotificationType.ROOT_NETWORK_DELETION_STARTED;
 }
 
 interface LoadflowResultEventDataHeaders {
     studyUuid: UUID;
     rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
-    updateType: string;
+    updateType: NotificationType.LOADFLOW_RESULT;
 }
 
 interface RootNetworkModifiedEventDataHeaders {
     studyUuid: UUID;
     rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
-    updateType: string;
+    updateType: NotificationType.ROOT_NETWORK_MODIFIED;
+}
+
+interface RootNetworkUpdateFailedEventDataHeaders {
+    studyUuid: UUID;
+    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
+    updateType: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
+    error: string;
 }
 
 // Payloads
@@ -400,6 +407,44 @@ export interface RootNetworkModifiedEventData {
     payload: undefined;
 }
 
+export interface RootNetworkUpdateFailedEventData {
+    headers: RootNetworkUpdateFailedEventDataHeaders;
+    payload: undefined;
+}
+
+export function isComputationParametersUpdatedNotification(notif: unknown): notif is StudyUpdatedEventDataUnknown {
+    return (
+        (notif as StudyUpdatedEventDataUnknown).headers?.updateType === NotificationType.COMPUTATION_PARAMETERS_UPDATED
+    );
+}
+
+export function isStudyUpdatedNotification(notif: unknown): notif is StudyUpdatedEventData {
+    return (notif as StudyUpdatedEventData).headers?.updateType === NotificationType.STUDY;
+}
+
+export function isLoadflowResultNotification(notif: unknown): notif is LoadflowResultEventData {
+    return (notif as LoadflowResultEventData).headers?.updateType === NotificationType.LOADFLOW_RESULT;
+}
+
+export function isRootNetworkDeletionStartedNotification(notif: unknown): notif is RootNetworkDeletionStartedEventData {
+    return (
+        (notif as RootNetworkDeletionStartedEventData).headers?.updateType ===
+        NotificationType.ROOT_NETWORK_DELETION_STARTED
+    );
+}
+
+export function isRootNetworkRootNetworkModifiedNotification(notif: unknown): notif is RootNetworkModifiedEventData {
+    return (notif as RootNetworkModifiedEventData).headers?.updateType === NotificationType.ROOT_NETWORK_MODIFIED;
+}
+
+export function isRootNetworkRootNetworkUpdateFailedNotification(
+    notif: unknown
+): notif is RootNetworkUpdateFailedEventData {
+    return (
+        (notif as RootNetworkUpdateFailedEventData).headers?.updateType === NotificationType.ROOT_NETWORKS_UPDATE_FAILED
+    );
+}
+
 // Notification types
 type StudyUpdatedStudy = {
     type: NotificationType.STUDY;
@@ -428,7 +473,7 @@ type RootNetworkUpdatedNotification = {
 
 type RootNetworkUpdateFailedNotification = {
     type: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
-    eventData: RootNetworkModifiedEventData;
+    eventData: RootNetworkUpdateFailedEventData;
 };
 
 type RootNetworkDeletionStartedNotification = {
