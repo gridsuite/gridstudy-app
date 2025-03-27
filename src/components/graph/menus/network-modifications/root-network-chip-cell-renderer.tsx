@@ -32,8 +32,9 @@ const RootNetworkChipCellRenderer = (props: RootNetworkChipCellRendererProps) =>
     const modificationUuid = data?.modificationInfos.uuid;
 
     const modificationActivatedByRootNetwork = useMemo(
-        () => data?.activationStatusByRootNetwork[rootNetwork.rootNetworkUuid] ?? false,
-        [rootNetwork.rootNetworkUuid, data]
+        () =>
+            rootNetwork.isCreating ? true : data?.activationStatusByRootNetwork[rootNetwork.rootNetworkUuid] ?? false,
+        [rootNetwork.rootNetworkUuid, rootNetwork.isCreating, data]
     );
 
     const rootNetworkTag = rootNetwork.tag;
