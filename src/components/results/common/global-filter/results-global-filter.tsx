@@ -26,7 +26,6 @@ import { FilterType } from '../utils';
 import {
     ElementType,
     TreeViewFinderNodeProps,
-    mergeSx,
     DirectoryItemSelector,
     fetchElementsInfos,
     ElementAttributes,
@@ -384,7 +383,7 @@ function ResultsGlobalFilter({
                 }
                 PaperComponent={(props: PropsWithChildren) => (
                     <SelectableGlobalFilters
-                        categories={Object.values(FilterType)}
+                        categories={[recentFilter, ...Object.values(FilterType)]}
                         children={props.children}
                         onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
                     />

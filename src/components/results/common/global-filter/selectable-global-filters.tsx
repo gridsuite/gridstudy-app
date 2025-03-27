@@ -11,13 +11,12 @@ import { FormattedMessage } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
 import React, { PropsWithChildren } from 'react';
-import { FilterType } from '../utils';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 
 export interface SelectableGlobalFiltersProps extends PropsWithChildren {
     onClickGenericFilter: () => void;
-    categories: FilterType[]; // TODO ? may be turned into string to keep this more reusable ? => vérifier avec ceux qui bossent sur les tableurs
+    categories: string[];
 }
 
 const XS_COLUMN1: number = 3.5;
