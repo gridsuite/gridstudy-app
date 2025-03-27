@@ -15,7 +15,7 @@ import ComputingType from '../../computing-status/computing-type';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { StatusCellRender } from '../common/result-cell-renderers';
+import { COL_STATUS, StatusCellRender } from '../common/result-cell-renderers';
 import { UUID } from 'crypto';
 import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -60,7 +60,7 @@ const DynamicSimulationResultSynthesis = memo(
                     ? undefined
                     : [
                           {
-                              status,
+                              [COL_STATUS]: status,
                           },
                       ];
             },
@@ -70,10 +70,10 @@ const DynamicSimulationResultSynthesis = memo(
             () => [
                 makeAgGridCustomHeaderColumn({
                     headerName: intl.formatMessage({
-                        id: 'status',
+                        id: COL_STATUS,
                     }),
-                    colId: 'status',
-                    field: 'status',
+                    colId: COL_STATUS,
+                    field: COL_STATUS,
                     width: MEDIUM_COLUMN_WIDTH,
                     cellRenderer: StatusCellRender,
                 }),
