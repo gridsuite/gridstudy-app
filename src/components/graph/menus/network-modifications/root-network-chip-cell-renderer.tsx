@@ -31,11 +31,12 @@ const RootNetworkChipCellRenderer = (props: RootNetworkChipCellRendererProps) =>
     const { snackError } = useSnackMessage();
     const modificationUuid = data?.modificationInfos.uuid;
 
-    const modificationActivatedByRootNetwork = useMemo(
-        () =>
-            rootNetwork.isCreating ? true : data?.activationStatusByRootNetwork[rootNetwork.rootNetworkUuid] ?? false,
-        [rootNetwork.rootNetworkUuid, rootNetwork.isCreating, data]
-    );
+    const modificationActivatedByRootNetwork = useMemo(() => {
+        if (rootNetwork.isCreating) {
+            return true;
+        }
+        return data?.activationStatusByRootNetwork[rootNetwork.rootNetworkUuid] ?? false;
+    }, [rootNetwork.rootNetworkUuid, rootNetwork.isCreating, data]);
 
     const rootNetworkTag = rootNetwork.tag;
 
