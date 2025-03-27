@@ -35,7 +35,7 @@ const useResultTimeSeries = ({
         rootNetworkUuid,
         fetcher: fetchDynamicSimulationTimeSeriesMetadata,
         invalidations: dynamicSimulationResultInvalidations,
-        resultConversion: (timeseriesMetadatas: SimpleTimeSeriesMetadata[] | null) => ({
+        resultConverter: (timeseriesMetadatas: SimpleTimeSeriesMetadata[] | null) => ({
             timeseries: timeseriesMetadatas ? Array(timeseriesMetadatas.length) : undefined,
             timeseriesMetadatas: timeseriesMetadatas ?? undefined,
         }),

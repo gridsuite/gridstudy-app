@@ -78,7 +78,7 @@ export function useNodeData<T, R = T>({
     fetcher,
     invalidations,
     defaultValue,
-    resultConversion = identity,
+    resultConverter = identity,
 }: {
     studyUuid: UUID;
     nodeUuid: UUID;
@@ -86,7 +86,7 @@ export function useNodeData<T, R = T>({
     fetcher?: (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<T | null>;
     invalidations: string[];
     defaultValue?: R;
-    resultConversion?: (fetchedResult: T | null) => R | null;
+    resultConverter?: (fetchedResult: T | null) => R | null;
 }) {
     const [result, setResult] = useState<R | undefined>(defaultValue);
     const [isLoading, setIsLoading] = useState(false);
@@ -107,14 +107,14 @@ export function useNodeData<T, R = T>({
         fetcher?.(studyUuid, nodeUuid, rootNetworkUuid)
             .then((res) => {
                 if (nodeUuidRef.current === nodeUuid && rootNetworkUuidRef.current === rootNetworkUuid) {
-                    setResult(resultConversion(res) ?? undefined);
+                    setResult(resultConverter(res) ?? undefined);
                 }
             })
             .catch((err) => {
                 setErrorMessage(err.message);
             })
             .finally(() => setIsLoading(false));
-    }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConversion]);
+    }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter]);
 
     /* initial fetch and update */
     useEffect(() => {

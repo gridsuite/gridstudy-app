@@ -55,7 +55,7 @@ const DynamicSimulationResultSynthesis = memo(
             rootNetworkUuid: currentRootNetworkUuid,
             fetcher: fetchDynamicSimulationStatus,
             invalidations: dynamicSimulationResultInvalidations,
-            resultConversion: (status: string | null) => {
+            resultConverter: (status: string | null) => {
                 return status === null
                     ? undefined
                     : [

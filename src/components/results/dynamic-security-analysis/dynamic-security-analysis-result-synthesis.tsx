@@ -55,7 +55,7 @@ const DynamicSecurityAnalysisResultSynthesis = memo(
             rootNetworkUuid: currentRootNetworkUuid,
             fetcher: fetchDynamicSecurityAnalysisStatus,
             invalidations: dynamicSecurityAnalysisResultInvalidations,
-            resultConversion: (status: string | null) => {
+            resultConverter: (status: string | null) => {
                 return status === null
                     ? undefined
                     : [
