@@ -321,7 +321,9 @@ export function isNodeExists(studyUuid: UUID, nodeName: string) {
             nodeName: nodeName,
         });
     console.debug(existsNodeUrl);
-    return backendFetch(existsNodeUrl, { method: 'head' });
+    return backendFetch(existsNodeUrl, { method: 'head' }).then((response) => {
+        return response.status !== 204;
+    });
 }
 
 export function getUniqueNodeName(studyUuid: UUID) {

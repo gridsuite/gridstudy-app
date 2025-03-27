@@ -610,7 +610,6 @@
     "removeNode": "Remove node",
     "unbuildNode": "Unbuild node",
     "exportCaseOnNode": "Export case",
-    "nodeNameAlreadyUsed": "This name is already used",
     "NetworkModificationTreeLoadError": "An error occurred while loading network modification tree",
     "MapEquipmentsLoadError": "An error occurred while loading network map",
     "CaseNameLoadError": "An error occurred while loading case name",
