@@ -35,12 +35,13 @@ export const useSpreadsheetEquipments = (
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
-    const [builtNodesIds, setBuiltNodesIds] = useState<UUID[]>();
+    const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>();
 
     const [isFetching, setIsFetching] = useState<boolean>();
 
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
+    // effect to keep builtAliasedNodesIds up-to-date (when we add/remove an alias or build/unbuild an aliased node)
     useEffect(() => {
         if (!nodeAliases) {
             return;
@@ -58,14 +59,18 @@ export const useSpreadsheetEquipments = (
             });
         }
         console.log('DBG DBR useEffect 1', set);
-        // Because of treenode: update the state only on real values changes (to avoid multiple effects for the watchers)
-        setBuiltNodesIds((prevState) => {
+        // Because of treeNodes: update the state only on real values changes (to avoid multiple effects for the watchers)
+        setBuiltAliasedNodesIds((prevState) => {
             const currentIds = prevState;
             currentIds?.sort((a, b) => a.localeCompare(b));
             const computedIds = Array.from(set);
             computedIds.sort((a, b) => a.localeCompare(b));
             if (JSON.stringify(currentIds) !== JSON.stringify(computedIds)) {
-                console.log('DBG DBR DIFF builtNodesIds', JSON.stringify(currentIds), JSON.stringify(computedIds));
+                console.log(
+                    'DBG DBR DIFF builtAliasedNodesIds',
+                    JSON.stringify(currentIds),
+                    JSON.stringify(computedIds)
+                );
                 return computedIds;
             }
             return prevState;
@@ -75,7 +80,7 @@ export const useSpreadsheetEquipments = (
     const nodesIdToFetch = useMemo(() => {
         console.log('DBG DBR useMemo');
         let nodesIdToFetch = new Set<string>();
-        if (!equipments || !builtNodesIds) {
+        if (!equipments || !builtAliasedNodesIds) {
             console.log('DBG DBR useMemo RET');
             return nodesIdToFetch;
         }
@@ -84,32 +89,34 @@ export const useSpreadsheetEquipments = (
             nodesIdToFetch.add(currentNode?.id as string);
         }
         // Then we do the same for the other nodes we need the data of (the ones defined in aliases)
-        builtNodesIds.forEach((builtAliasNodeId) => {
+        builtAliasedNodesIds.forEach((builtAliasNodeId) => {
             if (equipments.nodesId.find((nodeId) => nodeId === builtAliasNodeId) === undefined) {
                 nodesIdToFetch.add(builtAliasNodeId);
             }
         });
         console.log('DBG DBR useMemo END', nodesIdToFetch);
         return nodesIdToFetch;
-    }, [currentNode?.id, equipments, builtNodesIds]);
+    }, [currentNode?.id, equipments, builtAliasedNodesIds]);
 
+    // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
-        if (!nodeAliases) {
+        if (!allEquipments || !builtAliasedNodesIds) {
             return;
         }
         const currentNodeId = currentNode?.id as UUID;
-
+        console.log('DBG DBR effect removeNodeData');
         let unwantedFetchedNodes = new Set<string>();
         Object.values(allEquipments).forEach((value) => {
             unwantedFetchedNodes = new Set([...unwantedFetchedNodes, ...value.nodesId]);
         });
-        const usedNodesId = new Set(nodeAliases.map((nodeAlias) => nodeAlias.id));
+        const usedNodesId = new Set(builtAliasedNodesIds);
         usedNodesId.add(currentNodeId);
         usedNodesId.forEach((nodeId) => unwantedFetchedNodes.delete(nodeId));
         if (unwantedFetchedNodes.size !== 0) {
+            console.log('DBG DBR removeNodeData', unwantedFetchedNodes);
             dispatch(removeNodeData(Array.from(unwantedFetchedNodes)));
         }
-    }, [dispatch, nodeAliases, currentNode, allEquipments]);
+    }, [builtAliasedNodesIds, currentNode, dispatch, allEquipments]);
 
     const updateEquipmentsLocal = useCallback(
         (impactedSubstationsIds: string[], deletedEquipments: { equipmentType: string; equipmentId: string }[]) => {
