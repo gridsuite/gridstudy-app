@@ -8,7 +8,7 @@
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { UUID } from 'crypto';
-import { AppState, NotificationType, StudyUpdated } from '../redux/reducer';
+import { AppState, StudyUpdated, StudyUpdatedEventData } from '../redux/reducer';
 import { identity } from '@gridsuite/commons-ui';
 
 export const UPDATE_TYPE_HEADER = 'updateType';
@@ -46,12 +46,8 @@ function shouldUpdate<T>({
     nodeUuidRef,
     rootNetworkUuidRef,
 }: ShouldUpdateParams<T>) {
-    // check whether StudyUpdated notification is StudyUpdatedStudy, otherwise do not perform update
-    if (studyUpdatedForce.type !== NotificationType.STUDY) {
-        return false;
-    }
-
-    const headers = studyUpdatedForce?.eventData?.headers;
+    const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData; // TODO narrowing by predicate
+    const headers = studyUpdatedEventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const nodeUuidFromNotif = headers?.node;
     const nodeUuidsFromNotif = headers?.nodes;
