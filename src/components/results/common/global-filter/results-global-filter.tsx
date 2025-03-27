@@ -339,18 +339,13 @@ function ResultsGlobalFilter({
                 }
                 // renderGroup : the boxes below that are visible when we focus on the AutoComplete
                 renderGroup={(item) => {
+                    // TODO : ici n'afficher que le groupe sélectionné dans la partie de gauche
                     const { group, children } = item;
                     const recent: boolean = group === recentFilter;
                     const numOfGroupOptions: number = numberOfOptions.get(group) ?? 0;
                     return (
-                        <Box
-                            key={'keyBoxGroup_' + group}
-                            sx={mergeSx(
-                                resultsGlobalFilterStyles.chipBox,
-                                !recent ? resultsGlobalFilterStyles.filterTypeBox : undefined
-                            )}
-                        >
-                            <Box sx={resultsGlobalFilterStyles.groupLabel}>
+                        <Box key={'keyBoxGroup_' + group} sx={resultsGlobalFilterStyles.chipBox}>
+                            <Box>
                                 <FormattedMessage id={'results.globalFilter.' + group} />
                             </Box>
                             {children}
@@ -367,6 +362,7 @@ function ResultsGlobalFilter({
                     );
                 }}
                 // renderOption : the chips that are in the boxes that is visible when we focus on the AutoComplete
+                // TODO : ici afficher selon le cas des checkboxes ou autre
                 renderOption={(props, option: GlobalFilter) => {
                     const { children, color, ...otherProps } = props;
                     return (
@@ -388,6 +384,7 @@ function ResultsGlobalFilter({
                 }
                 PaperComponent={(props: PropsWithChildren) => (
                     <SelectableGlobalFilters
+                        categories={Object.values(FilterType)}
                         children={props.children}
                         onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
                     />

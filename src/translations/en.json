@@ -508,9 +508,10 @@
     "LoadFlowResultsStatus": "Status",
     "ComputationResultsLogs": "Logs",
 
+    "results.globalFilter.categories": "Categories",
     "results.globalFilter.fillerText": "Filtering",
     "results.globalFilter.recent": "Recent",
-    "results.globalFilter.filter": "Filters",
+    "results.globalFilter.genericFilter": "Filters",
     "results.globalFilter.country": "Countries",
     "results.globalFilter.voltageLevel": "Voltage levels",
     "results.globalFilter.nonApplicable": "Filtering {filterName} is not applicable for the current results table and is inactive",

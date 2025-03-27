@@ -26,12 +26,14 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
     return mergeSx(resultsGlobalFilterStyles.chip, chipStyle);
 };
 
+const AUTOCOMPLETE_WIDTH: number = 420;
+const POPPER_EXTRA_WIDTH: number = 250;
+
 export const resultsGlobalFilterStyles = {
     autocomplete: (theme: Theme) => ({
-        width: '420px',
+        width: AUTOCOMPLETE_WIDTH + 'px',
         '.MuiAutocomplete-inputRoot': {
             height: '40px',
-            backgroundColor: 'unset', // prevents the field from changing size when selected with the keyboard
         },
         '.Mui-expanded, .Mui-focused, .Mui-focusVisible': {
             position: 'absolute',
@@ -51,16 +53,20 @@ export const resultsGlobalFilterStyles = {
         flexWrap: 'wrap',
         padding: '0.5em',
     },
-    filterTypeBox: (theme: Theme) => ({
-        borderTop: '1px solid',
-        borderColor: theme.palette.divider,
+    // from the expanded part :
+    dropdown: (theme: Theme) => ({
+        position: 'absolute',
+        left: `-${POPPER_EXTRA_WIDTH / 2}px`,
+        width: `${AUTOCOMPLETE_WIDTH + POPPER_EXTRA_WIDTH}px`,
     }),
-    groupLabel: (theme: Theme) => ({
+    cell: (theme: Theme) => ({
         display: 'flex',
         color: theme.palette.text.secondary,
-        fontSize: '0.9em',
+        fontSize: '1em',
         width: '100%',
-        paddingLeft: 1,
+        padding: 1,
+        border: '1px solid',
+        borderColor: theme.palette.divider,
     }),
     chip: {
         '&.MuiChip-root': {
