@@ -248,7 +248,6 @@ export default function BatteryCreationDialog({
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                onClose={clear}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-battery"

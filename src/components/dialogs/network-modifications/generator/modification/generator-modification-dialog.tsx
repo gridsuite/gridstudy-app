@@ -253,7 +253,7 @@ export default function GeneratorModificationDialog({
             if (!previousValue) {
                 return null;
             }
-            const newRccValues = [...(previousValue?.reactiveCapabilityCurvePoints || [])];
+            const newRccValues = previousValue?.reactiveCapabilityCurvePoints || [];
             if (action === REMOVE) {
                 newRccValues.splice(index, 1);
             } else {
@@ -432,7 +432,6 @@ export default function GeneratorModificationDialog({
             <ModificationDialog
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
-                onClose={setValuesAndEmptyOthers}
                 onSave={onSubmit}
                 aria-labelledby="dialog-modification-generator"
                 maxWidth={'md'}

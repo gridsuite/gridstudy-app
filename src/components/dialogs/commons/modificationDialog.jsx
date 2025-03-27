@@ -90,8 +90,8 @@ const ModificationDialog = ({
 ModificationDialog.propTypes = {
     showNodeNotBuiltWarning: PropTypes.bool,
     isDataFetching: PropTypes.bool,
-    onClose: PropTypes.func.isRequired,
-    onClear: PropTypes.func.isRequired,
+    onClose: PropTypes.func,
+    onClear: PropTypes.func,
     onSave: PropTypes.func.isRequired,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.object,

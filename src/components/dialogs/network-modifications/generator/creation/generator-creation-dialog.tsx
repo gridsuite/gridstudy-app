@@ -344,7 +344,6 @@ export default function GeneratorCreationDialog({
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                onClose={clear}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-generator"
