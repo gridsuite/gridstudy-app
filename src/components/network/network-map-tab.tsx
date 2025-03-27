@@ -32,7 +32,7 @@ import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter, { type NominalVoltageFilterProps } from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
-import { type Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { type Equipment, EquipmentType, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
@@ -51,8 +51,14 @@ import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
-import { AppState, CurrentTreeNode } from 'redux/reducer';
-import { UPDATE_TYPE_HEADER } from 'components/use-node-data';
+import {
+    AppState,
+    CurrentTreeNode,
+    LoadflowResultEventData,
+    NotificationType,
+    RootNetworkModifiedEventData,
+} from 'redux/reducer';
+import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { isReactFlowRootNodeData } from 'redux/utils';
 
 const INITIAL_POSITION = [0, 0] as const;
@@ -123,7 +129,6 @@ export const NetworkMapTab = ({
     onNominalVoltagesChange,
 }: NetworkMapTabProps) => {
     const mapEquipments = useSelector((state: AppState) => state.mapEquipments);
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
     const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
@@ -813,36 +818,59 @@ export const NetworkMapTab = ({
         });
     }, [currentNode, dispatch, loadGeoData, mapEquipments, studyUuid, updateMapEquipments]);
 
-    useEffect(() => {
-        if (isInitialized && studyUpdatedForce.eventData.headers) {
-            const rootNetworkUuidFromNotification = studyUpdatedForce.eventData.headers['rootNetwork'];
-            if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
-                rootNetworkUuidFromNotification === currentRootNetworkUuid
-            ) {
-                dispatch(setMapDataLoading(true));
-                reloadMapEquipments(currentNodeRef.current, undefined)
-                    .catch((e) =>
-                        snackError({
-                            messageTxt: e.message,
-                        })
-                    )
-                    .finally(() => {
-                        dispatch(setMapDataLoading(false));
-                    });
-            }
-
-            if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'rootNetworkModified' &&
-                studyUpdatedForce.eventData.headers['rootNetwork'] === currentRootNetworkUuid
-            ) {
-                setInitialized(false);
-                setIsRootNodeGeoDataLoaded(false);
-                dispatch(resetMapEquipment());
+    const loadflowResultNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            if (!isInitialized) {
                 return;
             }
-        }
-    }, [isInitialized, studyUpdatedForce, dispatch, currentRootNetworkUuid, reloadMapEquipments, snackError]);
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as LoadflowResultEventData;
+            const updateTypeHeader = eventData.headers.updateType;
+            if (updateTypeHeader === NotificationType.LOADFLOW_RESULT) {
+                const rootNetworkUuidFromNotification = eventData.headers.rootNetwork;
+                if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
+                    dispatch(setMapDataLoading(true));
+                    reloadMapEquipments(currentNodeRef.current, undefined)
+                        .catch((e) =>
+                            snackError({
+                                messageTxt: e.message,
+                            })
+                        )
+                        .finally(() => {
+                            dispatch(setMapDataLoading(false));
+                        });
+                }
+            }
+        },
+        [currentRootNetworkUuid, dispatch, isInitialized, reloadMapEquipments, snackError]
+    );
+
+    const rootNetworkModifiedNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            if (!isInitialized) {
+                return;
+            }
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworkModifiedEventData;
+            const updateTypeHeader = eventData.headers.updateType;
+            if (updateTypeHeader === NotificationType.ROOT_NETWORK_MODIFIED) {
+                const rootNetworkUuidFromNotification = eventData.headers.rootNetwork;
+                if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
+                    setInitialized(false);
+                    setIsRootNodeGeoDataLoaded(false);
+                    dispatch(resetMapEquipment());
+                }
+            }
+        },
+        [currentRootNetworkUuid, dispatch, isInitialized]
+    );
+
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+        listenerCallbackMessage: loadflowResultNotification,
+    });
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+        listenerCallbackMessage: rootNetworkModifiedNotification,
+    });
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
