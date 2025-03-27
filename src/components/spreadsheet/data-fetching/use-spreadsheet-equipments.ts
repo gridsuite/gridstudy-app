@@ -47,7 +47,9 @@ export const useSpreadsheetEquipments = (
             return;
         }
         let set = new Set<UUID>();
-        const aliasedNodesIds = nodeAliases.filter((nodeAlias) => nodeAlias.id !== undefined).map((nodeAlias) => nodeAlias.id)
+        const aliasedNodesIds = nodeAliases
+            .filter((nodeAlias) => nodeAlias.id !== undefined)
+            .map((nodeAlias) => nodeAlias.id);
         if (aliasedNodesIds.length > 0) {
             treeNodes?.forEach((treeNode) => {
                 if (
