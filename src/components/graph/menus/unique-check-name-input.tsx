@@ -28,6 +28,7 @@ export interface UniqueCheckNameInputProps {
     inputProps?: TextFieldProps['inputProps'];
     elementExists: (studyUuid: UUID, elementName: string) => Promise<boolean>;
     errorMessageKey: string;
+    catchMessageKey: string;
     max_length?: number;
 }
 
@@ -45,6 +46,7 @@ export function UniqueCheckNameInput({
     inputProps,
     elementExists,
     errorMessageKey,
+    catchMessageKey,
     max_length,
 }: Readonly<UniqueCheckNameInputProps>) {
     const {
@@ -84,7 +86,7 @@ export function UniqueCheckNameInput({
                     .catch((e) => {
                         setError(name, {
                             type: 'validate',
-                            message: 'rootNetworknameValidityCheckError',
+                            message: catchMessageKey,
                         });
                         console.error(e?.message);
                     })
@@ -97,7 +99,7 @@ export function UniqueCheckNameInput({
                     });
             }
         },
-        [studyUuid, elementExists, setError, name, errorMessageKey, clearErrors, trigger]
+        [studyUuid, elementExists, setError, name, errorMessageKey, catchMessageKey, clearErrors, trigger]
     );
 
     const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
@@ -120,6 +122,10 @@ export function UniqueCheckNameInput({
             debouncedHandleCheckName(trimmedValue);
         } else {
             clearErrors('root.isValidating');
+            setError(name, {
+                type: 'validate',
+                message: 'FieldIsRequired',
+            });
         }
     }, [debouncedHandleCheckName, setError, clearErrors, name, value, isDirty]);
 
@@ -129,7 +135,7 @@ export function UniqueCheckNameInput({
         onManualChangeCallback?.();
     };
 
-    const translatedLabel = <FormattedMessage id={label} />;
+    const translatedLabel = label ? <FormattedMessage id={label} /> : null;
 
     const translatedError = error && <FormattedMessage id={error.message} />;
 
@@ -150,7 +156,7 @@ export function UniqueCheckNameInput({
             value={value}
             name={name}
             inputRef={ref}
-            label={translatedLabel}
+            label={label ? translatedLabel : null}
             type="text"
             autoFocus={autoFocus}
             margin="dense"
