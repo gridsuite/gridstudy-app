@@ -73,15 +73,13 @@ export function ModificationDialogContent({
     });
 
     const handleClose = (event_: React.MouseEvent, reason: string) => {
-        console.log('DBG DBR handleClose', reason);
+        // don't close the dialog for outside click
         if (reason !== 'backdropClick') {
-            // don't close the dialog for outside click
             closeAndClear();
         }
     };
 
     const handleCancel = () => {
-        console.log('DBG DBR handleCancel');
         closeAndClear();
     };
 
