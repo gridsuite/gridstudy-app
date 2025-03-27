@@ -49,10 +49,13 @@ export default function CustomColumnsNodesConfig({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.type);
-    const showWarning =
-        nodeAliases !== undefined &&
-        nodeAliases.length > 0 &&
-        nodeAliases.every((n) => n.name === null || n.name === undefined);
+    const showWarning = useMemo(
+        () =>
+            nodeAliases !== undefined &&
+            nodeAliases.length > 0 &&
+            nodeAliases.every((n) => n.name === null || n.name === undefined),
+        [nodeAliases]
+    );
 
     const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
 
