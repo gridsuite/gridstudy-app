@@ -9,11 +9,10 @@ import { useState } from 'react';
 import { IconButton, Box, Theme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
-import AskTextDialog from '../../../utils/ask-text-dialog';
 import { lighten, darken } from '@mui/material/styles';
-import { useIntl } from 'react-intl';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { RootNetworkSelection } from './root-network-selection';
+import NodeNameEditDialog from '../node-name-edit-dialog';
 
 const styles = {
     header: (theme: Theme) => ({
@@ -45,7 +44,6 @@ interface EditableTitleProps {
 
 export const EditableTitle = ({ name, onClose, onChange, showRootNetworkSelection }: EditableTitleProps) => {
     const [openEditTitle, setOpenEditTitle] = useState(false);
-    const intl = useIntl();
 
     return (
         <Box sx={styles.header}>
@@ -57,14 +55,11 @@ export const EditableTitle = ({ name, onClose, onChange, showRootNetworkSelectio
             <IconButton size="small" onClick={onClose}>
                 <CloseIcon />
             </IconButton>
-            <AskTextDialog
-                show={openEditTitle}
-                title={intl.formatMessage({ id: 'NewName' })}
-                value={name}
-                onValidate={(newName) => {
-                    onChange?.(newName);
-                    setOpenEditTitle(false);
-                }}
+            <NodeNameEditDialog
+                open={openEditTitle}
+                titleId={'NewName'}
+                initialName={name}
+                onSave={(data) => onChange?.(data.name)}
                 onClose={() => setOpenEditTitle(false)}
             />
         </Box>
