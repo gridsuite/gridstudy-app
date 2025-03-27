@@ -342,8 +342,7 @@ export default function GeneratorModificationDialog({
     const onSubmit = useCallback(
         (generator: GeneratorModificationDialogSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn =
-                reactiveLimits && reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn = reactiveLimits?.[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation =
                 generator?.[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id ||
                 (generator[VOLTAGE_REGULATION_TYPE] === null &&
@@ -387,10 +386,10 @@ export default function GeneratorModificationDialog({
                 participate: toModificationOperation(generator[FREQUENCY_REGULATION]),
                 droop: toModificationOperation(generator[DROOP]),
                 maxQ: toModificationOperation(
-                    isReactiveCapabilityCurveOn ? null : reactiveLimits && reactiveLimits[MAXIMUM_REACTIVE_POWER]
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MAXIMUM_REACTIVE_POWER]
                 ),
                 minQ: toModificationOperation(
-                    isReactiveCapabilityCurveOn ? null : reactiveLimits && reactiveLimits[MINIMUM_REACTIVE_POWER]
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MINIMUM_REACTIVE_POWER]
                 ),
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
                     ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null
