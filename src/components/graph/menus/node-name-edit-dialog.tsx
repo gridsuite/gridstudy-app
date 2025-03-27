@@ -64,7 +64,7 @@ const NodeNameEditDialog: React.FC<BaseDialogProps> = ({
 
     useEffect(() => {
         if (open) {
-            reset({ [NAME]: initialName || '' });
+            reset({ [NAME]: initialName ?? '' });
         }
     }, [initialName, open, reset]);
 
