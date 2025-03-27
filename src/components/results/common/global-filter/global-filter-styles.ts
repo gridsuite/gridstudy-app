@@ -54,17 +54,23 @@ export const resultsGlobalFilterStyles = {
         padding: '0.5em',
     },
     // from the expanded part :
-    dropdown: (theme: Theme) => ({
-        position: 'absolute',
+    dropdown: () => ({
+        position: 'relative',
         left: `-${POPPER_EXTRA_WIDTH / 2}px`,
         width: `${AUTOCOMPLETE_WIDTH + POPPER_EXTRA_WIDTH}px`,
+    }),
+    cellTitle: (theme: Theme) => ({
+        color: theme.palette.text.secondary,
+        fontSize: '1em',
+        padding: 1,
+        border: '1px solid',
+        borderColor: theme.palette.divider,
     }),
     cell: (theme: Theme) => ({
         display: 'flex',
         color: theme.palette.text.secondary,
         fontSize: '1em',
         width: '100%',
-        padding: 1,
         border: '1px solid',
         borderColor: theme.palette.divider,
     }),

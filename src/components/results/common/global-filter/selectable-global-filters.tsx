@@ -20,6 +20,10 @@ export interface SelectableGlobalFiltersProps extends PropsWithChildren {
     categories: FilterType[]; // TODO ? may be turned into string to keep this more reusable ? => vérifier avec ceux qui bossent sur les tableurs
 }
 
+const XS_COLUMN1: number = 3.5;
+const XS_COLUMN2: number = 4;
+const XS_COLUMN3: number = 4.5;
+
 // TODO ici se passe l'essentiel des changements
 function SelectableGlobalFilters({
     children,
@@ -29,19 +33,19 @@ function SelectableGlobalFilters({
     return (
         <Paper sx={resultsGlobalFilterStyles.dropdown}>
             <Grid container>
-                <Grid item xs={4} sx={resultsGlobalFilterStyles.cell}>
+                <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cellTitle}>
                     <FormattedMessage id={'results.globalFilter.categories'} />
                 </Grid>
-                <Grid item xs={4} sx={resultsGlobalFilterStyles.cell} />
-                <Grid item xs={4} sx={resultsGlobalFilterStyles.cell}>
+                <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellTitle} />
+                <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellTitle}>
                     TODO
                 </Grid>
 
-                <Grid item xs={4} sx={resultsGlobalFilterStyles.cell}>
-                    <List>
+                <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cell}>
+                    <List sx={{ width: '100%' }}>
                         {categories.map((category) => {
                             return (
-                                <ListItemButton component="a" href="#simple-list">
+                                <ListItemButton component="a" href="#">
                                     <ListItemText
                                         primary={<FormattedMessage id={'results.globalFilter.' + category} />}
                                     />
@@ -50,10 +54,10 @@ function SelectableGlobalFilters({
                         })}
                     </List>
                 </Grid>
-                <Grid item xs={4} sx={resultsGlobalFilterStyles.cell}>
+                <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
                     <Box>{children}</Box>
                 </Grid>
-                <Grid item xs={4} sx={resultsGlobalFilterStyles.cell}>
+                <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
                     <Box>
                         <Box
                             sx={{
