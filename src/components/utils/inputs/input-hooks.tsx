@@ -20,7 +20,7 @@ import { isNodeExists } from '../../../services/study';
 import { UUID } from 'crypto';
 
 interface UseButtonWithTooltipProps {
-    handleClick?: React.MouseEventHandler<HTMLButtonElement>;
+    handleClick: React.MouseEventHandler<HTMLButtonElement>;
     label: string;
     icon: ReactNode;
 }

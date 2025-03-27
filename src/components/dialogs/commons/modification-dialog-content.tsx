@@ -61,14 +61,14 @@ export function ModificationDialogContent({
 }: Readonly<ModificationDialogContentProps>) {
     const catalogButton = useButtonWithTooltip({
         label: 'CatalogButtonTooltip',
-        handleClick: onOpenCatalogDialog,
+        handleClick: onOpenCatalogDialog ?? (() => {}),
         icon: <AutoStoriesOutlinedIcon />,
     });
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isNodeNotBuilt = currentNode?.data?.globalBuildStatus === BUILD_STATUS.NOT_BUILT;
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
-        handleClick: searchCopy?.handleOpenSearchDialog,
+        handleClick: searchCopy?.handleOpenSearchDialog ?? (() => {}),
         icon: <FindInPageIcon />,
     });
 
