@@ -37,7 +37,7 @@ export interface BatteryModificationFormProps {
     equipmentId: string;
 }
 
-export function BatteryModificationForm({
+export default function BatteryModificationForm({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,

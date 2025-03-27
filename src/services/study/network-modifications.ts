@@ -348,7 +348,7 @@ export function modifyBattery({
     batteryModificationInfos: BatteryModificationInfos;
     studyUuid: UUID;
     nodeUuid?: UUID;
-    modificationUuid?: string;
+    modificationUuid: string | null;
     isUpdate: boolean;
 }) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
@@ -480,7 +480,7 @@ export function modifyGenerator({
     generatorModificationInfos: GeneratorModificationInfos;
     studyUuid: UUID;
     nodeUuid?: UUID;
-    modificationUuid?: string;
+    modificationUuid: string | null;
     isUpdate: boolean;
 }) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);

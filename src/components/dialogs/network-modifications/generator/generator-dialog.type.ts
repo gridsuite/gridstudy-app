@@ -137,7 +137,6 @@ export interface GeneratorFormInfos {
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    busbarSectionName?: string;
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;

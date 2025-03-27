@@ -160,7 +160,7 @@ export interface GeneratorModificationDialogProps extends Partial<DialogProps> {
     editDataFetchStatus?: FetchStatus;
 }
 
-export function GeneratorModificationDialog({
+export default function GeneratorModificationDialog({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
@@ -228,7 +228,7 @@ export function GeneratorModificationDialog({
                     equipmentType: editData?.regulatingTerminalType?.value,
                     voltageLevelId: editData?.regulatingTerminalVlId?.value,
                 }),
-                ...getPropertiesFromModification(editData.properties),
+                ...getPropertiesFromModification(editData?.properties ?? undefined),
             });
         },
         [reset]
@@ -351,6 +351,7 @@ export function GeneratorModificationDialog({
 
             const generatorModificationInfos = {
                 type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
+                uuid: editData?.uuid ?? null,
                 equipmentId: selectedId,
                 equipmentName: toModificationOperation(sanitizeString(generator[EQUIPMENT_NAME])),
                 energySource: toModificationOperation(generator[ENERGY_SOURCE]),
@@ -359,7 +360,7 @@ export function GeneratorModificationDialog({
                 ratedS: toModificationOperation(generator[RATED_NOMINAL_POWER]),
                 targetP: toModificationOperation(generator[ACTIVE_POWER_SET_POINT]),
                 targetQ: toModificationOperation(generator[REACTIVE_POWER_SET_POINT]),
-                voltageRegulation: toModificationOperation(generator[VOLTAGE_REGULATION]),
+                voltageRegulationOn: toModificationOperation(generator[VOLTAGE_REGULATION]),
                 targetV: toModificationOperation(generator[VOLTAGE_SET_POINT]),
                 voltageLevelId: toModificationOperation(generator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
                 busOrBusbarSectionId: toModificationOperation(generator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
@@ -392,16 +393,16 @@ export function GeneratorModificationDialog({
                     isReactiveCapabilityCurveOn ? null : reactiveLimits && reactiveLimits[MINIMUM_REACTIVE_POWER]
                 ),
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
+                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null
                     : null,
-                properties: toModificationProperties(generator),
-            };
+                properties: toModificationProperties(generator) ?? null,
+            } satisfies GeneratorModificationInfos;
 
             modifyGenerator({
                 generatorModificationInfos: generatorModificationInfos,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
+                modificationUuid: editData?.uuid ?? null,
                 isUpdate: !!editData,
             }).catch((error) => {
                 snackError({

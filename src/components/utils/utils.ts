@@ -7,7 +7,13 @@
 
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
-import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
+import {
+    AttributeModification,
+    CurrentLimits,
+    OperationalLimitsGroup,
+    OperationType,
+    TemporaryLimit,
+} from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
 import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
@@ -80,16 +86,6 @@ export const getObjectId = (object: string | { id: string }) => {
     return typeof object === 'string' ? object : object?.id ?? null;
 };
 
-export enum OperationType {
-    SET = 'SET',
-    UNSET = 'UNSET',
-}
-
-export type AttributeModification<T> = {
-    value?: T;
-    op: OperationType;
-};
-
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
     const newBusbarSections = [];
     for (let i = 0; i < busbarCount; i++) {
@@ -103,16 +99,22 @@ export const buildNewBusbarSections = (equipmentId: string, sectionCount: number
     return newBusbarSections;
 };
 
-export function toModificationOperation<T>(value: T): AttributeModification<T> | null {
-    return value === 0 || value === false || value ? { value: value, op: OperationType.SET } : null;
+export function toModificationOperation<T>(
+    value: T
+): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
+    return value === 0 || value === false || value
+        ? { value: value as Exclude<Exclude<T, null>, undefined>, op: OperationType.SET }
+        : null;
 }
 
-export function toModificationUnsetOperation<T>(value: T): AttributeModification<T> | null {
+export function toModificationUnsetOperation<T>(
+    value: T
+): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
     if (value === null) {
         return null;
     }
     return value === 0 || value === false || value
-        ? { value: value, op: OperationType.SET }
+        ? { value: value as Exclude<Exclude<T, null>, undefined>, op: OperationType.SET }
         : { op: OperationType.UNSET };
 }
 

@@ -107,7 +107,7 @@ export interface BatteryCreationDialogProps extends Partial<DialogProps> {
     editDataFetchStatus: FetchStatus;
 }
 
-export function BatteryCreationDialog({
+export default function BatteryCreationDialog({
     editData,
     currentNode,
     studyUuid,
@@ -185,7 +185,7 @@ export function BatteryCreationDialog({
                         ? editData?.reactiveCapabilityCurvePoints
                         : [{}, {}],
                 }),
-                ...getPropertiesFromModification(editData.properties),
+                ...getPropertiesFromModification(editData?.properties ?? undefined),
             });
         }
     }, [editData, reset]);
@@ -200,10 +200,11 @@ export function BatteryCreationDialog({
             const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const batteryCreationInfos = {
                 type: MODIFICATION_TYPES.BATTERY_CREATION.type,
+                uuid: editData?.uuid,
                 equipmentId: battery[EQUIPMENT_ID],
-                equipmentName: sanitizeString(battery[EQUIPMENT_NAME]),
-                voltageLevelId: battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                busOrBusbarSectionId: battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                equipmentName: sanitizeString(battery[EQUIPMENT_NAME]) ?? null,
+                voltageLevelId: battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID] ?? null,
+                busOrBusbarSectionId: battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID] ?? null,
                 connectionName: sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME]),
                 connectionDirection: battery[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
                 connectionPosition: battery[CONNECTIVITY]?.[CONNECTION_POSITION],
@@ -211,17 +212,17 @@ export function BatteryCreationDialog({
                 minP: battery[MINIMUM_ACTIVE_POWER],
                 maxP: battery[MAXIMUM_ACTIVE_POWER],
                 reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-                minQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER],
-                maxQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER],
+                minQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER] ?? null,
+                maxQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER] ?? null,
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
+                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null
                     : null,
-                targetP: battery[ACTIVE_POWER_SET_POINT],
-                targetQ: battery[REACTIVE_POWER_SET_POINT],
-                participate: battery[FREQUENCY_REGULATION],
+                targetP: battery[ACTIVE_POWER_SET_POINT] ?? null,
+                targetQ: battery[REACTIVE_POWER_SET_POINT] ?? null,
+                participate: battery[FREQUENCY_REGULATION] ?? null,
                 droop: battery[DROOP] ?? null,
-                properties: toModificationProperties(battery),
-            };
+                properties: toModificationProperties(battery) ?? null,
+            } satisfies BatteryCreationInfos;
             createBattery({
                 batteryCreationInfos: batteryCreationInfos,
                 studyUuid: studyUuid,

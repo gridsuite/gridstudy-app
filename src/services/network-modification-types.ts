@@ -13,12 +13,19 @@ import {
 } from '../components/dialogs/network-modifications/by-filter/by-assignment/assignment/assignment.type';
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation.type';
-import {
-    AttributeModification,
-    ConverterStationElementModificationInfos,
-} from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
+import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 import { ModificationType } from '@gridsuite/commons-ui';
+
+export enum OperationType {
+    SET = 'SET',
+    UNSET = 'UNSET',
+}
+
+export type AttributeModification<T> = {
+    value?: T;
+    op: OperationType;
+};
 
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
@@ -45,7 +52,6 @@ export interface VscModificationInfo {
     converterStation2: ConverterStationElementModificationInfos;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    busbarSectionName?: string;
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
@@ -54,26 +60,26 @@ export interface VscModificationInfo {
 
 export interface BatteryModificationInfos {
     type: string;
-    uuid?: string;
+    uuid: string | null;
     equipmentId: string;
-    equipmentName: AttributeModification<string | null | undefined> | null;
-    maxP: AttributeModification<number | null | undefined> | null;
-    minP: AttributeModification<number | null | undefined> | null;
-    targetP: AttributeModification<number | null | undefined> | null;
-    targetQ: AttributeModification<number | null | undefined> | null;
-    participate: AttributeModification<boolean | null | undefined> | null;
-    droop: AttributeModification<number | null | undefined> | null;
-    reactiveCapabilityCurve: AttributeModification<boolean | null | undefined> | null;
-    minQ: AttributeModification<number | null | undefined> | null;
-    maxQ: AttributeModification<number | null | undefined> | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null | undefined;
-    voltageLevelId: AttributeModification<string | null | undefined> | null;
-    busOrBusbarSectionId: AttributeModification<string | null | undefined> | null;
-    connectionDirection: AttributeModification<string | null | undefined> | null;
-    connectionName?: AttributeModification<string | null | undefined> | null;
-    connectionPosition?: AttributeModification<number | null | undefined> | null;
-    terminalConnected?: AttributeModification<boolean | null | undefined> | null;
-    properties?: Property[];
+    equipmentName: AttributeModification<string> | null;
+    maxP: AttributeModification<number> | null;
+    minP: AttributeModification<number> | null;
+    targetP: AttributeModification<number> | null;
+    targetQ: AttributeModification<number> | null;
+    participate: AttributeModification<boolean> | null;
+    droop: AttributeModification<number> | null;
+    reactiveCapabilityCurve: AttributeModification<boolean> | null;
+    minQ: AttributeModification<number> | null;
+    maxQ: AttributeModification<number> | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
+    voltageLevelId: AttributeModification<string> | null;
+    busOrBusbarSectionId: AttributeModification<string> | null;
+    connectionDirection: AttributeModification<string> | null;
+    connectionName: AttributeModification<string> | null;
+    connectionPosition: AttributeModification<number> | null;
+    terminalConnected: AttributeModification<boolean> | null;
+    properties: Property[] | null;
 }
 
 export interface LoadCreationInfo {
@@ -111,7 +117,7 @@ export interface LoadModificationInfo {
     p0: number;
     q0: number;
     isUpdate?: boolean;
-    properties?: Property[];
+    properties: Property[] | null;
 }
 
 export interface ShuntCompensatorModificationInfo {
@@ -133,46 +139,46 @@ export interface ShuntCompensatorModificationInfo {
     connectionName?: string | null;
     connectionPosition?: string | null;
     terminalConnected?: boolean | null;
-    properties?: Property[];
+    properties: Property[] | null;
 }
 
 export interface GeneratorModificationInfos {
     type: string;
-    uuid?: string;
+    uuid: string | null;
     equipmentId: string;
-    equipmentName?: AttributeModification<string | null> | null;
-    energySource?: AttributeModification<string | null> | null;
-    maxP: AttributeModification<number | null | undefined> | null;
-    minP: AttributeModification<number | null | undefined> | null;
-    targetP: AttributeModification<number | null | undefined> | null;
-    targetQ: AttributeModification<number | null | undefined> | null;
-    participate: AttributeModification<boolean | null | undefined> | null;
-    droop: AttributeModification<number | null | undefined> | null;
-    reactiveCapabilityCurve: AttributeModification<boolean | null | undefined> | null;
-    minQ: AttributeModification<number | null | undefined> | null;
-    maxQ: AttributeModification<number | null | undefined> | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null | undefined;
-    voltageLevelId: AttributeModification<string | null | undefined> | null;
-    busOrBusbarSectionId: AttributeModification<string | null | undefined> | null;
-    connectionDirection: AttributeModification<string | null | undefined> | null;
-    connectionName?: AttributeModification<string | null | undefined> | null;
-    connectionPosition?: AttributeModification<number | null | undefined> | null;
-    terminalConnected?: AttributeModification<boolean | null | undefined> | null;
-    properties?: Property[];
-    ratedS?: AttributeModification<number | null | undefined> | null;
-    voltageRegulationOn?: AttributeModification<boolean | null | undefined> | null;
-    targetV: AttributeModification<number | null | undefined> | null;
-    qPercent: AttributeModification<number | null | undefined> | null;
-    plannedActivePowerSetPoint: AttributeModification<number | null | undefined> | null;
-    marginalCost: AttributeModification<number | null | undefined> | null;
-    plannedOutageRate: AttributeModification<number | null | undefined> | null;
-    forcedOutageRate: AttributeModification<number | null | undefined> | null;
-    directTransX: AttributeModification<number | null | undefined> | null;
-    stepUpTransformerX: AttributeModification<number | null | undefined> | null;
-    voltageRegulationType?: AttributeModification<string | null | undefined> | null;
-    regulatingTerminalId: AttributeModification<string | null | undefined> | null;
-    regulatingTerminalType: AttributeModification<string | null | undefined> | null;
-    regulatingTerminalVlId: AttributeModification<string | null | undefined> | null;
+    equipmentName: AttributeModification<string> | null;
+    energySource?: AttributeModification<string> | null;
+    maxP: AttributeModification<number> | null;
+    minP: AttributeModification<number> | null;
+    targetP: AttributeModification<number> | null;
+    targetQ: AttributeModification<number> | null;
+    participate: AttributeModification<boolean> | null;
+    droop: AttributeModification<number> | null;
+    reactiveCapabilityCurve: AttributeModification<boolean> | null;
+    minQ: AttributeModification<number> | null;
+    maxQ: AttributeModification<number> | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
+    voltageLevelId: AttributeModification<string> | null;
+    busOrBusbarSectionId: AttributeModification<string> | null;
+    connectionDirection: AttributeModification<string> | null;
+    connectionName?: AttributeModification<string> | null;
+    connectionPosition?: AttributeModification<number> | null;
+    terminalConnected?: AttributeModification<boolean> | null;
+    properties: Property[] | null;
+    ratedS: AttributeModification<number> | null;
+    voltageRegulationOn: AttributeModification<boolean> | null;
+    targetV: AttributeModification<number> | null;
+    qPercent: AttributeModification<number> | null;
+    plannedActivePowerSetPoint: AttributeModification<number> | null;
+    marginalCost: AttributeModification<number> | null;
+    plannedOutageRate: AttributeModification<number> | null;
+    forcedOutageRate: AttributeModification<number> | null;
+    directTransX: AttributeModification<number> | null;
+    stepUpTransformerX: AttributeModification<number> | null;
+    voltageRegulationType?: AttributeModification<string> | null;
+    regulatingTerminalId: AttributeModification<string> | null;
+    regulatingTerminalType: AttributeModification<string> | null;
+    regulatingTerminalVlId: AttributeModification<string> | null;
 }
 
 export interface StaticVarCompensatorCreationInfo {
@@ -281,7 +287,7 @@ export interface SubstationModificationInfo {
     id: string;
     name: string | null;
     country: string;
-    properties?: Property[];
+    properties: Property[] | null;
 }
 
 export interface VoltageLeveInfo {
@@ -299,7 +305,7 @@ export interface VoltageLeveInfo {
     couplingDevices?: any[];
     isUpdate?: boolean;
     modificationUuid?: UUID;
-    properties?: Property[];
+    properties: Property[] | null;
 }
 
 export interface VoltageLeveCreationlInfo extends VoltageLeveInfo {
@@ -400,65 +406,64 @@ export interface Assignment {
 
 export interface BatteryCreationInfos {
     type: ModificationType;
-    uuid?: string;
+    uuid: string | null;
     equipmentId: string;
-    equipmentName?: string | null;
-    minP?: number | null;
-    maxP?: number | null;
+    equipmentName: string | null;
+    minP: number | null;
+    maxP: number | null;
     reactiveCapabilityCurve?: boolean | null;
-    targetP?: number | null;
-    targetQ?: number | null;
-    voltageLevelId?: string | null;
-    busOrBusbarSectionId?: string | null;
-    reactiveCapabilityCurvePoints?: ReactiveCapabilityCurvePoints[] | null;
-    participate?: boolean | null;
-    droop?: number | null;
-    maxQ?: number | null;
-    minQ?: number | null;
-    busbarSectionName?: string;
+    targetP: number | null;
+    targetQ: number | null;
+    voltageLevelId: string | null;
+    busOrBusbarSectionId: string | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
+    participate: boolean | null;
+    droop: number | null;
+    maxQ: number | null;
+    minQ: number | null;
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: number | null;
     terminalConnected?: boolean | null;
-    properties?: Property[];
+    properties: Property[] | null;
 }
 
 export interface GeneratorCreationInfos {
     type: ModificationType;
     uuid?: string;
     equipmentId: string;
-    equipmentName?: string | null;
-    energySource?: string | null;
-    minP?: number | null;
-    maxP?: number | null;
-    ratedS?: number | null;
-    targetP?: number | null;
-    targetQ?: number | null;
-    voltageRegulationOn?: boolean | null;
-    targetV?: number | null;
-    qPercent?: number | null;
-    voltageLevelId?: string | null;
-    busOrBusbarSectionId?: string | null;
-    plannedActivePowerSetPoint?: number | null;
-    marginalCost?: number | null;
-    plannedOutageRate?: number | null;
-    forcedOutageRate?: number | null;
-    directTransX?: number | null;
-    stepUpTransformerX?: number | null;
-    regulatingTerminalId?: string | null;
-    regulatingTerminalType?: string | null;
-    regulatingTerminalVlId?: string | null;
-    reactiveCapabilityCurve?: boolean;
-    participate?: boolean | null;
-    droop?: number | null;
-    maxQ?: number | null;
-    minQ?: number | null;
-    reactiveCapabilityCurvePoints?: ReactiveCapabilityCurvePoints[] | null;
+    equipmentName: string | null;
+    energySource: string | null;
+    minP: number | null;
+    maxP: number | null;
+    ratedS: number | null;
+    targetP: number | null;
+    targetQ: number | null;
+    voltageRegulationOn: boolean | null;
+    targetV: number | null;
+    qPercent: number | null;
+    voltageLevelId: string | null;
+    busOrBusbarSectionId: string | null;
+    plannedActivePowerSetPoint: number | null;
+    marginalCost: number | null;
+    plannedOutageRate: number | null;
+    forcedOutageRate: number | null;
+    directTransX: number | null;
+    stepUpTransformerX: number | null;
+    regulatingTerminalId: string | null;
+    regulatingTerminalType: string | null;
+    regulatingTerminalVlId: string | null;
+    reactiveCapabilityCurve: boolean;
+    participate: boolean | null;
+    droop: number | null;
+    maxQ: number | null;
+    minQ: number | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
     connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean | null;
-    properties?: Property[];
+    connectionName: string | null;
+    connectionPosition: number | null;
+    terminalConnected: boolean | null;
+    properties: Property[] | null;
 }
 
 export interface ShuntCompensatorCreationInfo {
@@ -478,7 +483,7 @@ export interface ShuntCompensatorCreationInfo {
     connectionName: string | null;
     connectionPosition: string | null;
     terminalConnected: boolean | null;
-    properties?: Property[];
+    properties: Property[] | null;
 }
 
 export interface LineCreationInfo {
@@ -512,7 +517,7 @@ export interface LineCreationInfo {
     connectionPosition2: string | null;
     connected1: boolean;
     connected2: boolean;
-    properties?: Property[];
+    properties: Property[] | null;
 }
 
 export interface LineModificationInfo {
@@ -541,7 +546,7 @@ export interface LineModificationInfo {
     connectionPosition2: string | null;
     connected1: boolean;
     connected2: boolean;
-    properties?: Property[];
+    properties: Property[] | null;
     p1MeasurementValue: number | null;
     p1MeasurementValidity: boolean | null;
     q1MeasurementValue: number | null;
@@ -584,7 +589,7 @@ export interface TwoWindingsTransformerCreationInfo {
     connectionPosition2: string | null;
     connected1: boolean;
     connected2: boolean;
-    properties?: Property[];
+    properties: Property[] | null;
 }
 
 export interface SubstationCreationInfo {
@@ -595,7 +600,7 @@ export interface SubstationCreationInfo {
     country: string;
     isUpdate: boolean;
     modificationUuid: UUID;
-    properties?: Property[];
+    properties: Property[] | null;
 }
 
 export interface DivideLineInfo {
@@ -674,7 +679,7 @@ export interface VSCCreationInfo {
     droop: number | null;
     converterStation1: VSCCreationConverterStation;
     converterStation2: VSCCreationConverterStation;
-    properties?: Property[];
+    properties: Property[] | null;
     isUpdate: boolean;
     modificationUuid: UUID;
 }
