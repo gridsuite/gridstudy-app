@@ -10,7 +10,6 @@ import { IconButton, Box, Theme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import { lighten, darken } from '@mui/material/styles';
-import { useIntl } from 'react-intl';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { RootNetworkSelection } from './root-network-selection';
 import NodeNameEditDialog from '../node-name-edit-dialog';
@@ -45,7 +44,6 @@ interface EditableTitleProps {
 
 export const EditableTitle = ({ name, onClose, onChange, showRootNetworkSelection }: EditableTitleProps) => {
     const [openEditTitle, setOpenEditTitle] = useState(false);
-    const intl = useIntl();
 
     return (
         <Box sx={styles.header}>
