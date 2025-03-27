@@ -16,6 +16,7 @@ import { SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 interface CustomSpreadsheetConfigProps {
     disabled: boolean;
     resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
+    resetNodeAliases: (aliases?: string[]) => void;
 }
 
 const styles = {
@@ -24,7 +25,11 @@ const styles = {
     }),
 };
 
-const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({ disabled, resetTabIndex }) => {
+const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({
+    disabled,
+    resetTabIndex,
+    resetNodeAliases,
+}) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const dialogOpen = useStateBoolean(false);
     const [selectedOption, setSelectedOption] = useState<SpreadsheetOption | undefined>();
@@ -63,7 +68,9 @@ const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({ disab
                 ))}
             </Menu>
 
-            {SelectedDialog && <SelectedDialog open={dialogOpen} resetTabIndex={resetTabIndex} />}
+            {SelectedDialog && (
+                <SelectedDialog open={dialogOpen} resetTabIndex={resetTabIndex} resetNodeAliases={resetNodeAliases} />
+            )}
         </>
     );
 };
