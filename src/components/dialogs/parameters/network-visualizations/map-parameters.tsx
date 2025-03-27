@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Grid } from '@mui/material';
-import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
+import { LineFlowMode } from '@powsybl/network-viewer';
 import {
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
@@ -39,11 +39,7 @@ export const MapParameters = () => {
         </>
     );
 
-    const lineFlow = (
-        name: string,
-        label: string,
-        options: { id: LineFlowColorMode | LineFlowMode; label: string }[]
-    ) => (
+    const lineFlow = (name: string, label: string, options: { id: LineFlowMode; label: string }[]) => (
         <>
             <Grid item xs={5} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
