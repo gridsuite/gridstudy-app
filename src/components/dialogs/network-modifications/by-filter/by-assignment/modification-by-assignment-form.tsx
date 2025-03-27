@@ -30,7 +30,6 @@ const ModificationByAssignmentForm: FC<ModificationByAssignmentFormProps> = () =
         name: EQUIPMENT_TYPE_FIELD,
     });
     const equipmentFields = EQUIPMENTS_FIELDS[equipmentType] ?? [];
-
     // get predefined properties
     const [predefinedProperties, setEquipmentType] = usePredefinedProperties(equipmentType);
     useEffect(() => {
