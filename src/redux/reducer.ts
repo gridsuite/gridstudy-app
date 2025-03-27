@@ -154,6 +154,7 @@ import {
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
+    SET_ROOT_NETWORKS,
     SET_RELOAD_MAP_NEEDED,
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
@@ -168,6 +169,7 @@ import {
     SetOneBusShortcircuitAnalysisDiagramAction,
     SetOptionalServicesAction,
     SetParamsLoadedAction,
+    SetRootNetworksAction,
     SetReloadMapNeededAction,
     SetStudyDisplayModeAction,
     SetStudyIndexationStatusAction,
@@ -286,7 +288,7 @@ import {
     LineFlowColorMode,
     LineFlowMode,
 } from '@powsybl/network-viewer';
-import type { UnknownArray, ValueOf } from 'type-fest';
+import type { ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
@@ -302,12 +304,18 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
+import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
 
 export enum NotificationType {
     STUDY = 'study',
     COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
     NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
+    LOADFLOW_RESULT = 'loadflowResult',
+    ROOT_NETWORK_MODIFIED = 'rootNetworkModified',
+    ROOT_NETWORK_UPDATED = 'rootNetworksUpdated',
+    ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
+    ROOT_NETWORK_DELETION_STARTED = 'rootNetworkDeletionStarted',
 }
 
 export enum StudyIndexationStatus {
@@ -336,6 +344,24 @@ export interface StudyUpdatedEventDataHeader {
     computationType?: ComputingType;
 }
 
+interface RootNetworkDeletionStartedEventDataHeader {
+    studyUuid: UUID;
+    rootNetworks: UUID[];
+    updateType: string;
+}
+
+interface LoadflowResultEventDataHeaders {
+    studyUuid: UUID;
+    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
+    updateType: string;
+}
+
+interface RootNetworkModifiedEventDataHeaders {
+    studyUuid: UUID;
+    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
+    updateType: string;
+}
+
 // Payloads
 export interface DeletedEquipment {
     equipmentId: string;
@@ -359,6 +385,21 @@ interface StudyUpdatedEventDataUnknown {
     payload: string;
 }
 
+export interface LoadflowResultEventData {
+    headers: LoadflowResultEventDataHeaders;
+    payload: undefined;
+}
+
+export interface RootNetworkDeletionStartedEventData {
+    headers: RootNetworkDeletionStartedEventDataHeader;
+    payload: undefined;
+}
+
+export interface RootNetworkModifiedEventData {
+    headers: RootNetworkModifiedEventDataHeaders;
+    payload: undefined;
+}
+
 // Notification types
 type StudyUpdatedStudy = {
     type: NotificationType.STUDY;
@@ -370,10 +411,43 @@ type StudyUpdatedUndefined = {
     eventData: StudyUpdatedEventDataUnknown;
 };
 
+type LoadflowResultNotification = {
+    type: NotificationType.LOADFLOW_RESULT;
+    eventData: LoadflowResultEventData;
+};
+
+type RootNetworkModifiedNotification = {
+    type: NotificationType.ROOT_NETWORK_MODIFIED;
+    eventData: RootNetworkModifiedEventData;
+};
+
+type RootNetworkUpdatedNotification = {
+    type: NotificationType.ROOT_NETWORK_UPDATED;
+    eventData: RootNetworkModifiedEventData;
+};
+
+type RootNetworkUpdateFailedNotification = {
+    type: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
+    eventData: RootNetworkModifiedEventData;
+};
+
+type RootNetworkDeletionStartedNotification = {
+    type: NotificationType.ROOT_NETWORK_DELETION_STARTED;
+    eventData: RootNetworkDeletionStartedEventData;
+};
+
 // Redux state
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
-} & (StudyUpdatedUndefined | StudyUpdatedStudy);
+} & (
+    | StudyUpdatedUndefined
+    | StudyUpdatedStudy
+    | LoadflowResultNotification
+    | RootNetworkModifiedNotification
+    | RootNetworkUpdatedNotification
+    | RootNetworkUpdateFailedNotification
+    | RootNetworkDeletionStartedNotification
+);
 
 type NodeCommonData = {
     label: string;
@@ -467,6 +541,7 @@ export interface AppState extends CommonStoreState {
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
     currentRootNetworkUuid: UUID | null;
+    rootNetworks: RootNetworkMetadata[];
     computingStatus: ComputingStatus;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
@@ -523,7 +598,7 @@ export interface AppState extends CommonStoreState {
     [PARAM_DIAGONAL_LABEL]: boolean;
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
     [PARAM_COMPONENT_LIBRARY]: unknown | null;
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UnknownArray;
+    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;
@@ -623,6 +698,7 @@ const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
     currentRootNetworkUuid: null,
+    rootNetworks: [],
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
@@ -1170,6 +1246,10 @@ export const reducer = createReducer(initialState, (builder) => {
             state.currentRootNetworkUuid = action.currentRootNetworkUuid;
             state.isNetworkModificationTreeModelUpToDate = false;
         }
+    });
+
+    builder.addCase(SET_ROOT_NETWORKS, (state, action: SetRootNetworksAction) => {
+        state.rootNetworks = action.rootNetworks;
     });
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {

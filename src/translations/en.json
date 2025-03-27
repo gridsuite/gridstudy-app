@@ -1502,7 +1502,9 @@
     "rootNetworkNotFound": "No root network was found for the study with ID \"{studyUuid}\"",
     "createRootNetworksError": "An error occurred while creating the root network",
     "updateRootNetworksError": "An error occurred while updating the root network",
+    "visibleRootNetwork": "Visible network : ",
     "importCaseFailure" : "Unable to import case",
+    "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 
     "unlimited": "Unlimited",
     "forbidden": "Forbidden",
