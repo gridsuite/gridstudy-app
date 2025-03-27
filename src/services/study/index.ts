@@ -82,7 +82,7 @@ export function getNetworkAreaDiagramUrlFromConfig(
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-area-diagram?' +
         new URLSearchParams({
-            nadConfigUuid: nadConfigUuid.toString(),
+            nadConfigUuid: nadConfigUuid,
         })
     );
 }

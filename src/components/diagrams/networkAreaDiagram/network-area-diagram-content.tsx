@@ -175,7 +175,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const nadIdentifier = useMemo(() => {
         if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
-            return props.diagramId as string;
+            return props.diagramId;
         }
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
     }, [
