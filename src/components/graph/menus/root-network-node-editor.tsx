@@ -383,15 +383,18 @@ const RootNetworkNodeEditor = () => {
     }
 
     function customizeCurrentParameters(params: Parameter[]): Record<string, string> {
-        return params.reduce((obj, parameter) => {
-            // we check if the parameter is for extensions. If so, we select all possible values by default.
-            // the only way for the moment to check if the parameter is for extension, is by checking his name.
-            // TODO: implement a cleaner way to determine the extensions field
-            if (parameter.type === 'STRING_LIST' && parameter.name?.endsWith('extensions')) {
-                return { ...obj, [parameter.name]: parameter.possibleValues.toString() };
-            }
-            return obj;
-        }, {} as Record<string, string>);
+        return params.reduce(
+            (obj, parameter) => {
+                // we check if the parameter is for extensions. If so, we select all possible values by default.
+                // the only way for the moment to check if the parameter is for extension, is by checking his name.
+                // TODO: implement a cleaner way to determine the extensions field
+                if (parameter.type === 'STRING_LIST' && parameter.name?.endsWith('extensions')) {
+                    return { ...obj, [parameter.name]: parameter.possibleValues.toString() };
+                }
+                return obj;
+            },
+            {} as Record<string, string>
+        );
     }
 
     const doCreateRootNetwork = ({ name, tag, caseName, caseId }: FormData) => {

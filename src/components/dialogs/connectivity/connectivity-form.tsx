@@ -266,13 +266,13 @@ export function ConnectivityForm({
             name={`${id}.${CONNECTION_NAME}`}
             label="ConnectionName"
             previousValue={
-                isEquipmentModification ? previousValues?.connectablePosition?.connectionName ?? undefined : undefined
+                isEquipmentModification ? (previousValues?.connectablePosition?.connectionName ?? undefined) : undefined
             }
         />
     );
 
     const previousConnectionDirectionLabel = isEquipmentModification
-        ? getConnectionDirectionLabel(previousValues?.connectablePosition?.connectionDirection) ?? null
+        ? (getConnectionDirectionLabel(previousValues?.connectablePosition?.connectionDirection) ?? null)
         : null;
 
     const newConnectionDirectionField = (
@@ -306,7 +306,7 @@ export function ConnectivityForm({
             label="ConnectionPosition"
             previousValue={
                 isEquipmentModification
-                    ? previousValues?.connectablePosition?.connectionPosition ?? undefined
+                    ? (previousValues?.connectablePosition?.connectionPosition ?? undefined)
                     : undefined
             }
             clearable={true}

@@ -202,7 +202,7 @@ const VoltageLevelCreationDialog = ({
 
             const equipmentId = (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : '');
             const equipmentName = voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME];
-            const substationId = isSubstationCreation ? null : voltageLevel[SUBSTATION_ID] ?? null;
+            const substationId = isSubstationCreation ? null : (voltageLevel[SUBSTATION_ID] ?? null);
 
             const properties = fromCopy
                 ? copyEquipmentPropertiesForCreation(voltageLevel)
