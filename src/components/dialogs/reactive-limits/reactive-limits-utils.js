@@ -20,7 +20,7 @@ import yup from 'components/utils/yup-config';
 
 export const getReactiveLimitsFormData = ({
     id = REACTIVE_LIMITS,
-    reactiveCapabilityCurveChoice = 'CURVE',
+    reactiveCapabilityCurveChoice,
     minimumReactivePower,
     maximumReactivePower,
     reactiveCapabilityCurveTable,

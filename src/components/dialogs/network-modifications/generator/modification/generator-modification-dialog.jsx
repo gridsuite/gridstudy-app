@@ -62,6 +62,7 @@ import {
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import {
     REMOVE,
+    setCurrentReactiveCapabilityCurveChoice,
     setCurrentReactiveCapabilityCurveTable,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -266,6 +267,14 @@ const GeneratorModificationDialog = ({
                             const previousReactiveCapabilityCurveTable = value?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable) {
                                 setCurrentReactiveCapabilityCurveTable(
+                                    previousReactiveCapabilityCurveTable,
+                                    `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                    getValues,
+                                    setValue,
+                                    isNodeBuilt(currentNode)
+                                );
+                            } else {
+                                setCurrentReactiveCapabilityCurveChoice(
                                     previousReactiveCapabilityCurveTable,
                                     `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     getValues,
