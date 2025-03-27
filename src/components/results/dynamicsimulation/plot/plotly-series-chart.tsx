@@ -173,7 +173,7 @@ function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Reado
             data={data}
             layout={layout}
             config={{ displaylogo: false }}
-            useResizeHandler={true} // need to set true, react-plotly will config resizeHandler() method
+            useResizeHandler // need to be set to true, react-plotly will config resizeHandler() method
             style={{
                 width: '100%',
                 height: '95%',

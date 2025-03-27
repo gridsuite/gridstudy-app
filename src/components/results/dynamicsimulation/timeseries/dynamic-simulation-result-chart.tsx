@@ -9,7 +9,7 @@ import { Box, Grid, Paper, TextField, Theme, ToggleButton, Tooltip, Typography }
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
 import { ChangeEvent, memo, useCallback, useMemo, useRef, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
-import Visibility from '../common/visibility';
+import VisibilityBox from '../common/visibility-box';
 import TooltipIconButton from '../common/tooltip-icon-button';
 import AddIcon from '@mui/icons-material/Add';
 import SyncIcon from '@mui/icons-material/Sync';
@@ -71,15 +71,15 @@ const styles = {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     }),
-    colsLabel: (theme: Theme) => ({
+    numColumnsLabel: (theme: Theme) => ({
         marginLeft: theme.spacing(2),
     }),
-    colsInput: (theme: Theme) => ({
+    numColumnsInput: (theme: Theme) => ({
         marginLeft: theme.spacing(1),
     }),
 };
 
-function getTimeseriesIndex(metadata: TimeSeriesMetadata) {
+function getTimeseriesIndexes(metadata: TimeSeriesMetadata): number[] {
     if (metadata?.irregularIndex) {
         return metadata.irregularIndex;
     }
@@ -148,7 +148,7 @@ function DynamicSimulationResultChart({
                 h: 5,
             },
         ],
-        cols: 1,
+        numColumns: 1,
     });
 
     const handleSelectIndex = useCallback((index: number) => {
@@ -162,7 +162,7 @@ function DynamicSimulationResultChart({
                 return selectedTimeSeries?.map((elem) => {
                     const metadata = elem?.metadata;
                     const values = elem?.chunks?.[0]?.values;
-                    const timeseriesIndex = getTimeseriesIndex(metadata);
+                    const timeseriesIndex = getTimeseriesIndexes(metadata);
                     return {
                         index: elem.index,
                         name: metadata?.name,
@@ -246,7 +246,7 @@ function DynamicSimulationResultChart({
                 ...prev.items,
                 {
                     i: `${plotIncId + 1}`,
-                    x: prev.items.length % prev.cols,
+                    x: prev.items.length % prev.numColumns,
                     y: Infinity, // put new item at the bottom
                     w: 1,
                     h: 5,
@@ -259,10 +259,10 @@ function DynamicSimulationResultChart({
         setPlotIncId((prev) => prev + 1);
     }, [plotIncId, plots.length]);
 
-    const handleChangeCols = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    const handleChangeNumColumns = useCallback((event: ChangeEvent<HTMLInputElement>) => {
         setGridLayout((prev) => ({
             ...prev,
-            cols: +event.target.value,
+            numColumns: +event.target.value,
         }));
     }, []);
 
@@ -288,7 +288,7 @@ function DynamicSimulationResultChart({
                     const scaleItem = newItems.find((item) => item.i === plotId);
 
                     if (scaleItem) {
-                        scaleItem.w = prev.cols; // set to full width of container
+                        scaleItem.w = prev.numColumns; // set to full width of container
                         scaleItem.h = 10; // max height of the container
                         scaleItem.x = 0;
                         scaleItem.y = 0;
@@ -326,11 +326,11 @@ function DynamicSimulationResultChart({
         [plots]
     );
 
-    const handleBreakpointChange = (breakpoint: string, cols: number) => {
+    const handleBreakpointChange = (breakpoint: string, numColumns: number) => {
         setGridLayout((prev) => ({
             ...prev,
             breakpoint: breakpoint,
-            cols: cols,
+            numColumns: numColumns,
         }));
     };
 
@@ -368,17 +368,17 @@ function DynamicSimulationResultChart({
                                         </Tooltip>
                                     )}
                                 </ToggleButton>
-                                <Typography sx={styles.colsLabel}>
+                                <Typography sx={styles.numColumnsLabel}>
                                     {`${intl.formatMessage({
                                         id: 'DynamicSimulationResultLayoutCols',
                                     })}`}
                                 </Typography>
                                 <TextField
-                                    sx={styles.colsInput}
+                                    sx={styles.numColumnsInput}
                                     size={'small'}
                                     type="number"
-                                    value={gridLayout.cols}
-                                    onChange={handleChangeCols}
+                                    value={gridLayout.numColumns}
+                                    onChange={handleChangeNumColumns}
                                     InputProps={{
                                         inputProps: {
                                             max: 3,
@@ -476,9 +476,9 @@ function DynamicSimulationResultChart({
                             <ResponsiveGridLayout
                                 className={`layout`}
                                 cols={{
-                                    lg: gridLayout.cols,
-                                    md: gridLayout.cols,
-                                    sm: gridLayout.cols,
+                                    lg: gridLayout.numColumns,
+                                    md: gridLayout.numColumns,
+                                    sm: gridLayout.numColumns,
                                     xs: 1,
                                     xxs: 1,
                                 }}
@@ -533,10 +533,10 @@ function DynamicSimulationResultChart({
                             }}
                         >
                             {plots.map((plot, index) => (
-                                <Visibility
+                                <VisibilityBox
                                     key={`plot-${plot.id}`}
-                                    value={selectedIndex}
-                                    index={index}
+                                    activeIndex={selectedIndex}
+                                    boxIndex={index}
                                     visible={selected}
                                 >
                                     <DynamicSimulationResultSeriesList
@@ -546,7 +546,7 @@ function DynamicSimulationResultChart({
                                         onLeftAxisSelected={debouncedHandleLeftAxisSelected}
                                         onRightAxisSelected={debouncedHandleRightAxisSelected}
                                     />
-                                </Visibility>
+                                </VisibilityBox>
                             ))}
                         </Box>
                     </Grid>

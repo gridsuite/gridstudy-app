@@ -20,18 +20,24 @@ const getStyle = (hidden: boolean) => {
     };
 };
 
-export type VisibilityProps = BoxProps & {
-    value: number;
-    index: number;
+export type VisibilityBoxProps = BoxProps & {
+    activeIndex: number;
+    boxIndex: number;
     visible?: boolean;
 };
 
-function Visibility({ children, value, index, visible = true, ...otherProps }: Readonly<VisibilityProps>) {
+function VisibilityBox({
+    children,
+    activeIndex,
+    boxIndex,
+    visible = true,
+    ...otherProps
+}: Readonly<VisibilityBoxProps>) {
     return (
-        <Box sx={getStyle(!visible || value !== index)} {...otherProps}>
+        <Box sx={getStyle(!visible || activeIndex !== boxIndex)} {...otherProps}>
             {children}
         </Box>
     );
 }
 
-export default Visibility;
+export default VisibilityBox;
