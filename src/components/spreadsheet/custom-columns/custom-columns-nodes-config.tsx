@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Button, Tooltip } from '@mui/material';
+import { Badge, Button, Tooltip } from '@mui/material';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnNodesDialog from './custom-columns-nodes-dialog';
 import BuildIcon from '@mui/icons-material/Build';
@@ -49,6 +49,13 @@ export default function CustomColumnsNodesConfig({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.type);
+    const showWarning = useMemo(
+        () =>
+            nodeAliases !== undefined &&
+            nodeAliases.length > 0 &&
+            nodeAliases.every((n) => n.name === null || n.name === undefined),
+        [nodeAliases]
+    );
 
     const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
 
@@ -77,6 +84,14 @@ export default function CustomColumnsNodesConfig({
             <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
                 <BuildIcon sx={styles.icon} />
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
+                {showWarning && (
+                    <Badge
+                        badgeContent="!"
+                        color="warning"
+                        overlap="circular"
+                        style={{ transform: 'translate(10px, -15px)' }}
+                    ></Badge>
+                )}
             </Button>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem
