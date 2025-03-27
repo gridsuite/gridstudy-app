@@ -50,6 +50,8 @@ const spreadsheetEn = {
     'spreadsheet/save/error_message': 'Spreadsheet model creation error',
     'spreadsheet/collection/save/error': 'Spreadsheet collection creation error',
     'spreadsheet/save/confirmation_message': 'Spreadsheet model created in {folderName}',
+    'spreadsheet/save/create_new_model': 'Create a new model',
+    'spreadsheet/save/replace_existing_model': 'Replace an existing model',
     'spreadsheet/collection/save/success': 'Spreadsheet collection created in {folderName}',
     'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Create an empty spreadsheet',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Apply a spreadsheet model',

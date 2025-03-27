@@ -7,9 +7,10 @@
 
 import {
     CheckBoxList,
-    ElementCreationDialog,
+    ElementSaveDialog,
     ElementType,
     IElementCreationDialog,
+    IElementUpdateDialog,
     MODIFICATION_TYPES,
     useModificationLabelComputer,
     useSnackMessage,
@@ -73,7 +74,7 @@ import RestoreModificationDialog from 'components/dialogs/restore-modification-d
 import { UUID } from 'crypto';
 import { DropResult } from 'react-beautiful-dnd';
 import { AppState, StudyUpdated } from 'redux/reducer';
-import { createCompositeModifications } from '../../../services/explore';
+import { createCompositeModifications, updateCompositeModifications } from '../../../services/explore';
 import { fetchNetworkModification } from '../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../services/study';
 import {
@@ -658,6 +659,36 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
+    const doUpdateCompositeModificationsElements = ({
+        id,
+        name,
+        description,
+        elementFullPath,
+    }: IElementUpdateDialog) => {
+        const selectedModificationsUuid = selectedItems.map((item) => item.uuid);
+
+        setSaveInProgress(true);
+        updateCompositeModifications(id, name, description, selectedModificationsUuid)
+            .then(() => {
+                snackInfo({
+                    headerId: 'infoUpdateModificationsMsg',
+                    headerValues: {
+                        nbModifications: String(selectedItems.length),
+                        directory: elementFullPath,
+                    },
+                });
+            })
+            .catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errUpdateModificationsMsg',
+                });
+            })
+            .finally(() => {
+                setSaveInProgress(false);
+            });
+    };
+
     const selectedModificationsIds = useCallback(() => {
         const allModificationsIds = modifications.map((m) => m.uuid);
         // sort the selected modifications in the same order as they appear in the whole modifications list
@@ -912,14 +943,18 @@ const NetworkModificationNodeEditor = () => {
     const renderCreateCompositeNetworkModificationsDialog = () => {
         return (
             studyUuid && (
-                <ElementCreationDialog
+                <ElementSaveDialog
                     open={createCompositeModificationDialogOpen}
                     onSave={doCreateCompositeModificationsElements}
+                    OnUpdate={doUpdateCompositeModificationsElements}
                     onClose={() => setCreateCompositeModificationDialogOpen(false)}
                     type={ElementType.MODIFICATION}
                     titleId="CreateCompositeModification"
                     prefixIdForGeneratedName="GeneratedModification"
                     studyUuid={studyUuid}
+                    selectorTitleId="SelectDirectory"
+                    createLabelId="Create"
+                    updateLabelId="Update"
                 />
             )
         );

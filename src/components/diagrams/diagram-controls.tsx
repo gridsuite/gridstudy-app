@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { ElementCreationDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
+import { ElementSaveDialog, ElementType, IElementCreationDialog, IElementUpdateDialog } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import SaveIcon from '@mui/icons-material/Save';
 import { Theme, Tooltip } from '@mui/material';
@@ -36,9 +36,10 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
+    onUpdate?: (data: IElementUpdateDialog) => void;
 }
 
-const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
+const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onUpdate }) => {
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -53,6 +54,12 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
     const handleSave = (data: IElementCreationDialog) => {
         if (onSave) {
             onSave(data);
+        }
+    };
+
+    const handleUpdate = (data: IElementUpdateDialog) => {
+        if (onUpdate) {
+            onUpdate(data);
         }
     };
 
@@ -76,14 +83,18 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
                     </Tooltip>
                 </Box>
             </Box>
-            {studyUuid && (
-                <ElementCreationDialog
+            {studyUuid && isSaveDialogOpen && (
+                <ElementSaveDialog
                     studyUuid={studyUuid}
                     onClose={handleCloseDialog}
                     onSave={handleSave}
+                    OnUpdate={handleUpdate}
                     open={isSaveDialogOpen}
                     type={ElementType.DIAGRAM_CONFIG}
                     titleId={'SaveToGridexplore'}
+                    selectorTitleId="directory"
+                    createLabelId="SaveToGridexplore"
+                    updateLabelId="SaveToGridexplore"
                 />
             )}
         </>

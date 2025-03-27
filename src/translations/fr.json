@@ -47,7 +47,7 @@
     "studyCreated": "Étude créée",
     "studyCreatingError": "Une erreur est survenue lors de la création de l'étude : {studyName}",
     "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
-    "nameValidityCheckErrorMsg": "Erreur à la vérification du nom d'étude\u00a0:",
+    "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom",
 
     "diagonalLabel": "Afficher les noms d'ouvrages en diagonale",
     "centerLabel": "Centrer les noms d'ouvrages",
@@ -471,6 +471,7 @@
     "saveParameters": "Enregistrer des paramètres",
     "settings.button.chooseSettings": "Sélectionner",
     "showSelectDirectoryDialog": "Modifier dossier",
+    "showSelectDirectoryItemDialog": "Sélectionner",
     "showSelectParameterDialog": "Choisir paramètres",
     "nameAlreadyUsed": "Ce nom est déjà utilisé",
     "tagAlreadyUsed": "Cette balise est déjà utilisée",

@@ -469,6 +469,7 @@
     "saveParameters": "Save settings",
     "settings.button.chooseSettings": "Choose settings",
     "showSelectDirectoryDialog": "Choose folder",
+    "showSelectDirectoryItemDialog": "Choose",
     "showSelectParameterDialog": "Choose parameters",
     "nameAlreadyUsed": "This name is already used",
     "tagAlreadyUsed": "This tag is already used",

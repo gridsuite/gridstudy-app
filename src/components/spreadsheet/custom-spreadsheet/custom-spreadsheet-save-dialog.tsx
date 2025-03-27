@@ -6,14 +6,15 @@
  */
 
 import {
-    ElementCreationDialog,
+    ElementSaveDialog,
     ElementType,
     IElementCreationDialog,
+    IElementUpdateDialog,
     useSnackMessage,
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useMemo } from 'react';
-import { createSpreadsheetModel } from '../../../services/explore';
+import { createSpreadsheetModel, updateSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { v4 as uuid4 } from 'uuid';
@@ -79,16 +80,49 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
             });
     };
 
+    const updateSpreadsheetColumnsConfiguration = ({
+        id,
+        name,
+        description,
+        elementFullPath,
+    }: IElementUpdateDialog) => {
+        const spreadsheetConfig: SpreadsheetConfig = {
+            name: tableDefinition?.name,
+            sheetType: tableDefinition?.type,
+            columns: reorderedColumns,
+        };
+
+        updateSpreadsheetModel(id, name, description, spreadsheetConfig)
+            .then(() => {
+                snackInfo({
+                    headerId: 'spreadsheet/save/confirmation_message',
+                    headerValues: {
+                        folderName: elementFullPath,
+                    },
+                });
+            })
+            .catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'spreadsheet/save/error_message',
+                });
+            });
+    };
+
     return (
         <>
             {open.value && studyUuid && (
-                <ElementCreationDialog
+                <ElementSaveDialog
                     open={open.value}
                     onClose={open.setFalse}
                     onSave={saveSpreadsheetColumnsConfiguration}
+                    OnUpdate={updateSpreadsheetColumnsConfiguration}
                     type={ElementType.SPREADSHEET_CONFIG}
                     titleId={'spreadsheet/save/dialog_title'}
                     studyUuid={studyUuid}
+                    selectorTitleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
+                    createLabelId="spreadsheet/save/create_new_model"
+                    updateLabelId="spreadsheet/save/replace_existing_model"
                 />
             )}
         </>

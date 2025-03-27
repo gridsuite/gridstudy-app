@@ -52,6 +52,8 @@ const spreadsheetFr = {
     'spreadsheet/save/error_message': 'Une erreur est survenue lors de la création du modèle de tableur',
     'spreadsheet/collection/save/error': 'Une erreur est survenue lors de la création de la collection de tableurs',
     'spreadsheet/save/confirmation_message': "Création d'un modèle de tableur dans {folderName}",
+    'spreadsheet/save/create_new_model': 'Créer un nouveau modèle',
+    'spreadsheet/save/replace_existing_model': 'Remplacer un modèle existant',
     'spreadsheet/collection/save/success': 'Collection de tableurs créée dans {folderName}',
     'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Créer une feuille de calcul vide',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Appliquer un modèle de tableur',
