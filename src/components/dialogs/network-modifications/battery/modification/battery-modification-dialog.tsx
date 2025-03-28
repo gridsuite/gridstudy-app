@@ -66,7 +66,6 @@ import {
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { UUID } from 'crypto';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { toModificationOperation } from '../../../../utils/utils';
@@ -112,7 +111,7 @@ const formSchema = yup
     .concat(modificationPropertiesSchema)
     .required();
 
-export interface BatteryModificationDialogProps extends Partial<DialogProps> {
+export interface BatteryModificationDialogProps {
     editData?: BatteryModificationInfos;
     defaultIdValue: string;
     currentNode: CurrentTreeNode;
@@ -120,6 +119,7 @@ export interface BatteryModificationDialogProps extends Partial<DialogProps> {
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;
+    onClose: () => void;
 }
 
 export default function BatteryModificationDialog({
@@ -336,7 +336,13 @@ export default function BatteryModificationDialog({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={setValuesAndEmptyOthers}

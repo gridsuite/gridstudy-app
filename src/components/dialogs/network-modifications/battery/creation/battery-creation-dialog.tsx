@@ -58,8 +58,6 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import { DialogProps } from '@mui/material/Dialog/Dialog';
-import { UUID } from 'crypto';
 import { BatteryCreationDialogSchemaForm, BatteryFormInfos } from '../battery-dialog.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import {
@@ -69,7 +67,7 @@ import {
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import BatteryCreationForm from './battery-creation-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
-import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -98,14 +96,9 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export interface BatteryCreationDialogProps extends Partial<DialogProps> {
+export type BatteryCreationDialogProps = DefaultModificationDialogProps & {
     editData: BatteryCreationInfos;
-    currentNode: CurrentTreeNode;
-    studyUuid: UUID;
-    currentRootNetworkUuid: UUID;
-    isUpdate: boolean;
-    editDataFetchStatus: FetchStatus;
-}
+};
 
 export default function BatteryCreationDialog({
     editData,

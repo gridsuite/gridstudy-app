@@ -134,7 +134,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                 fullWidth
                 maxWidth={'md'}
                 open={open}
-                onDialogClose={onClose}
+                onClose={onClose}
                 onClear={clear}
                 onSave={handleSave}
                 {...dialogProps}

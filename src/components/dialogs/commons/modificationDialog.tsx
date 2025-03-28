@@ -27,7 +27,7 @@ export type ModificationDialogProps<TFieldValues extends FieldValues> = Omit<
 > & {
     disabledSave?: boolean;
     onClear: () => void;
-    onDialogClose?: () => void;
+    onClose?: () => void;
     onSave: (modificationData: TFieldValues) => void;
     onValidated?: () => void;
     onValidationError?: (errors: FieldErrors<TFieldValues>) => void;
@@ -36,7 +36,7 @@ export type ModificationDialogProps<TFieldValues extends FieldValues> = Omit<
 export function ModificationDialog<TFieldValues extends FieldValues>({
     disabledSave = false,
     onClear,
-    onDialogClose,
+    onClose,
     onSave,
     onValidated,
     onValidationError,
@@ -46,7 +46,7 @@ export function ModificationDialog<TFieldValues extends FieldValues>({
 
     const closeAndClear = () => {
         onClear();
-        onDialogClose?.();
+        onClose?.();
     };
 
     const handleValidate = (data: TFieldValues) => {

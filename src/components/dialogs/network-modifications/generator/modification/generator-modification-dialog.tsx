@@ -91,7 +91,6 @@ import {
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
-import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
 import { UUID } from 'crypto';
 import { DeepNullable } from '../../../../utils/ts-utils';
@@ -150,7 +149,7 @@ const formSchema = yup
     .concat(modificationPropertiesSchema)
     .required();
 
-export interface GeneratorModificationDialogProps extends Partial<DialogProps> {
+export interface GeneratorModificationDialogProps {
     editData?: GeneratorModificationInfos;
     defaultIdValue: string;
     currentNode: CurrentTreeNode;
@@ -158,6 +157,7 @@ export interface GeneratorModificationDialogProps extends Partial<DialogProps> {
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
     editDataFetchStatus?: FetchStatus;
+    onClose: () => void;
 }
 
 export default function GeneratorModificationDialog({

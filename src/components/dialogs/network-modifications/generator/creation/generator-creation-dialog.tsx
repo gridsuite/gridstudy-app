@@ -79,13 +79,11 @@ import {
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
-import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
-import { UUID } from 'crypto';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
-import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -138,14 +136,9 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export interface GeneratorCreationDialogProps extends Partial<DialogProps> {
-    editData?: GeneratorCreationInfos;
-    currentNode: CurrentTreeNode;
-    studyUuid: UUID;
-    currentRootNetworkUuid: UUID;
-    isUpdate: boolean;
-    editDataFetchStatus?: FetchStatus;
-}
+export type GeneratorCreationDialogProps = DefaultModificationDialogProps & {
+    editData: GeneratorCreationInfos;
+};
 
 export default function GeneratorCreationDialog({
     editData,

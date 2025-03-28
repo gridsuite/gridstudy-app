@@ -86,7 +86,7 @@ const NodeNameEditDialog: React.FC<BaseDialogProps> = ({
                 fullWidth
                 maxWidth={'xs'}
                 open={open}
-                onDialogClose={onClose}
+                onClose={onClose}
                 onClear={clear}
                 onSave={handleSave}
                 aria-labelledby="dialog-name-edit"
