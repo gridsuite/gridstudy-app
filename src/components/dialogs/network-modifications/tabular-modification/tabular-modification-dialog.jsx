@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
-import ModificationDialog from 'components/dialogs/commons/modificationDialog';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { createTabulareModification } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
@@ -133,7 +133,6 @@ const TabularModificationDialog = ({
                 maxWidth={'lg'}
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-tabular-modification"
                 titleId="TabularModification"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
