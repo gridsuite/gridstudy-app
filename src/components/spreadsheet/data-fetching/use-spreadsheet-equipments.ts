@@ -151,8 +151,8 @@ export const useSpreadsheetEquipments = (
         [studyUuid, currentRootNetworkUuid, currentNode?.id, dispatch, type, highlightUpdatedEquipment]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
-        listenerCallbackMessage: (event) => {
+    const listenerUpdateEquipmentsLocal = useCallback(
+        (event: MessageEvent) => {
             const eventData = JSON.parse(event.data);
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.STUDY) {
@@ -171,6 +171,11 @@ export const useSpreadsheetEquipments = (
                 }
             }
         },
+        [currentNode?.id, currentRootNetworkUuid, studyUuid, updateEquipmentsLocal]
+    );
+
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+        listenerCallbackMessage: listenerUpdateEquipmentsLocal,
     });
 
     const onFetchingDone = () => {

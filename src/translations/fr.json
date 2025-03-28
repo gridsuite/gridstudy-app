@@ -1260,6 +1260,7 @@
     "InsertModificationFrom": "Insérer à partir de GridExplore",
     "SaveToGridexplore": "Enregistrer dans GridExplore",
     "SaveToGridexploreError": "Une erreur est survenue lors de la sauvegarde dans GridExplore",
+    "EditNad" : "Éditer",
     "ModificationsSelection": "Sélection des modifications",
     "errCreateModificationsMsg": "Une erreur est survenue lors de la création des modifications",
     "infoCreateModificationsMsg": "Création d'une modification composite de {nbModifications} modifications unitaires dans {directory}",

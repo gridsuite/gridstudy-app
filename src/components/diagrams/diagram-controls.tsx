@@ -6,14 +6,16 @@
  */
 
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 import { ElementCreationDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
+import { setEditNadMode } from 'redux/actions';
 
 const styles = {
     actionIcon: (theme: Theme) => ({
@@ -29,8 +31,19 @@ const styles = {
         top: theme.spacing(1),
         left: theme.spacing(1),
     }),
+    buttonPanel: (theme: Theme) => ({
+        borderRadius: theme.spacing(1),
+        padding: theme.spacing(0.5),
+        display: 'block',
+        position: 'absolute',
+        top: '5px',
+        right: '5px',
+    }),
     icon: {
         fontSize: 'medium',
+    },
+    button: {
+        minWidth: 'auto',
     },
 };
 
@@ -41,7 +54,8 @@ interface DiagramControlsProps {
 const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-
+    const isEditMode = useSelector((state: AppState) => state.isEditMode);
+    const dispatch = useDispatch();
     const handleCloseDialog = () => {
         setIsSaveDialogOpen(false);
     };
@@ -54,6 +68,10 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
         if (onSave) {
             onSave(data);
         }
+    };
+
+    const handleToggleEditMode = () => {
+        dispatch(setEditNadMode(!isEditMode));
     };
 
     /**
@@ -75,6 +93,11 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
                         </IconButton>
                     </Tooltip>
                 </Box>
+            </Box>
+            <Box sx={styles.buttonPanel}>
+                <Button size="small" sx={styles.button} onClick={handleToggleEditMode}>
+                    <FormattedMessage id={isEditMode ? 'save' : 'EditNad'} />
+                </Button>
             </Box>
             {studyUuid && (
                 <ElementCreationDialog
