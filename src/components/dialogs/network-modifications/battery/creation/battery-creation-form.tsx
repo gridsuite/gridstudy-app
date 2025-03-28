@@ -7,14 +7,12 @@
 
 import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import {
-    ACTIVE_POWER_SET_POINT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
+import { ActivePowerAdornment, filledTextField } from '../../../dialog-utils';
 import { Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
@@ -23,8 +21,21 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { SetPointsForm } from '../../../set-points/set-points-form';
 
-const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
+export interface BatteryCreationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+}
+
+export default function BatteryCreationForm({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+}: Readonly<BatteryCreationFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
 
     const batteryIdField = (
@@ -49,23 +60,6 @@ const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid })
 
     const minimumActivePowerField = (
         <FloatInput name={MINIMUM_ACTIVE_POWER} label={'MinimumActivePowerText'} adornment={ActivePowerAdornment} />
-    );
-    const activePowerSetPointField = (
-        <FloatInput
-            name={ACTIVE_POWER_SET_POINT}
-            label={'ActivePowerText'}
-            adornment={ActivePowerAdornment}
-            clearable
-        />
-    );
-
-    const reactivePowerSetPointField = (
-        <FloatInput
-            name={REACTIVE_POWER_SET_POINT}
-            label={'ReactivePowerText'}
-            adornment={ReactivePowerAdornment}
-            clearable
-        />
     );
 
     return (
@@ -93,17 +87,11 @@ const BatteryCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid })
             <ReactiveLimitsForm />
 
             {/* Set points part */}
-            <GridSection title="Setpoints" />
-            <Grid container spacing={2}>
-                <GridItem size={4}>{activePowerSetPointField}</GridItem>
-                <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
-            </Grid>
+            <SetPointsForm />
             <Grid container spacing={2} paddingTop={2}>
                 <ActivePowerControlForm />
             </Grid>
             <PropertiesForm networkElementType={'battery'} />
         </>
     );
-};
-
-export default BatteryCreationForm;
+}

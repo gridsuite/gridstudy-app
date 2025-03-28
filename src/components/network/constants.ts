@@ -77,7 +77,7 @@ export const CONNECTION_DIRECTIONS = [
 // and the undefined/default one (not displayed)
 export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 
-export function getEnergySourceLabel(energySourceId: string) {
+export function getEnergySourceLabel(energySourceId?: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
 

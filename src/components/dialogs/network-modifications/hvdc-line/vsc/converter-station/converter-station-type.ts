@@ -10,11 +10,6 @@ import {
 } from '../../../../reactive-limits/reactive-limits.type';
 import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 
-export interface AttributeModification<T> {
-    value?: T;
-    op: string;
-}
-
 export interface ConverterStationElementInfos {
     id: string;
     name: string | null;

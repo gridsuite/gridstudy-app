@@ -70,12 +70,16 @@ export interface NetworkModificationData {
 }
 
 // Cf withDefaultParams : common props for any modification available from the menu
-export type DefaultModificationDialogProps = {
+export type NetworkModificationDialogProps = {
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
-    editDataFetchStatus: FetchStatus;
-    onValidated: () => void;
+    editDataFetchStatus?: FetchStatus;
+    onValidated?: () => void;
     onClose: () => void;
+};
+
+export type EquipmentModificationDialogProps = NetworkModificationDialogProps & {
+    defaultIdValue: string;
 };

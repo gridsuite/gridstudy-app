@@ -41,8 +41,20 @@ import { FormattedMessage } from 'react-intl';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
 import { useWatch } from 'react-hook-form';
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
-const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
+export interface GeneratorCreationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+}
+
+export default function GeneratorCreationForm({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+}: Readonly<GeneratorCreationFormProps>) {
     const currentNodeUuid = currentNode?.id;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
     const watchVoltageRegulation = useWatch({
@@ -59,7 +71,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid 
         <SelectInput
             name={ENERGY_SOURCE}
             label={'energySource'}
-            options={ENERGY_SOURCES}
+            options={[...ENERGY_SOURCES]}
             fullWidth
             size={'small'}
             disableClearable={true}
@@ -187,6 +199,4 @@ const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid 
             <PropertiesForm networkElementType={'generator'} />
         </>
     );
-};
-
-export default GeneratorCreationForm;
+}
