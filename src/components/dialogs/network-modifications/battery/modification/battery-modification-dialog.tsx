@@ -66,7 +66,6 @@ import {
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { UUID } from 'crypto';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { toModificationOperation } from '../../../../utils/utils';
 import {
@@ -77,7 +76,7 @@ import { BatteryModificationInfos } from '../../../../../services/network-modifi
 import BatteryModificationForm from './battery-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -111,16 +110,9 @@ const formSchema = yup
     .concat(modificationPropertiesSchema)
     .required();
 
-export interface BatteryModificationDialogProps {
+export type BatteryModificationDialogProps = DefaultModificationDialogProps & {
     editData?: BatteryModificationInfos;
-    defaultIdValue: string;
-    currentNode: CurrentTreeNode;
-    studyUuid: UUID;
-    currentRootNetworkUuid: UUID;
-    isUpdate: boolean;
-    editDataFetchStatus?: FetchStatus;
-    onClose: () => void;
-}
+};
 
 export default function BatteryModificationDialog({
     editData,

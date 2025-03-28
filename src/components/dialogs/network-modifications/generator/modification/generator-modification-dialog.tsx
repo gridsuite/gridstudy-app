@@ -92,11 +92,10 @@ import {
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
-import { UUID } from 'crypto';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
 import { toModificationOperation } from '../../../../utils/utils';
-import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -149,16 +148,9 @@ const formSchema = yup
     .concat(modificationPropertiesSchema)
     .required();
 
-export interface GeneratorModificationDialogProps {
+export type GeneratorModificationDialogProps = DefaultModificationDialogProps & {
     editData?: GeneratorModificationInfos;
-    defaultIdValue: string;
-    currentNode: CurrentTreeNode;
-    studyUuid: UUID;
-    currentRootNetworkUuid: UUID;
-    isUpdate: boolean;
-    editDataFetchStatus?: FetchStatus;
-    onClose: () => void;
-}
+};
 
 export default function GeneratorModificationDialog({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list

@@ -67,7 +67,7 @@ import {
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import BatteryCreationForm from './battery-creation-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
-import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { DefaultCreationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -96,7 +96,7 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export type BatteryCreationDialogProps = DefaultModificationDialogProps & {
+export type BatteryCreationDialogProps = DefaultCreationDialogProps & {
     editData: BatteryCreationInfos;
 };
 
