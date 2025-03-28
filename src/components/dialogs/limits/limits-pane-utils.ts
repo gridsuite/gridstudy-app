@@ -27,7 +27,7 @@ import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { OperationalLimitsGroup, TemporaryLimit } from '../../../services/network-modification-types';
-import { CurrentTreeNode } from '../../../redux/reducer';
+import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
