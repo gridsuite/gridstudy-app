@@ -54,9 +54,8 @@ import { UUID } from 'crypto';
 import {
     AppState,
     CurrentTreeNode,
-    LoadflowResultEventData,
-    NotificationType,
-    RootNetworkModifiedEventData,
+    isLoadflowResultNotification,
+    isRootNetworkRootNetworkModifiedNotification,
 } from 'redux/reducer';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { isReactFlowRootNodeData } from 'redux/utils';
@@ -823,10 +822,8 @@ export const NetworkMapTab = ({
             if (!isInitialized) {
                 return;
             }
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as LoadflowResultEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.LOADFLOW_RESULT) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isLoadflowResultNotification(eventData)) {
                 const rootNetworkUuidFromNotification = eventData.headers.rootNetwork;
                 if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
                     dispatch(setMapDataLoading(true));
@@ -850,10 +847,8 @@ export const NetworkMapTab = ({
             if (!isInitialized) {
                 return;
             }
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworkModifiedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORK_MODIFIED) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworkRootNetworkModifiedNotification(eventData)) {
                 const rootNetworkUuidFromNotification = eventData.headers.rootNetwork;
                 if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
                     setInitialized(false);
