@@ -19,7 +19,7 @@ import { getStateEstimationStudyParameters } from '../../../../services/study/st
 
 export type UseGetStateEstimationParametersProps = [
     StateEstimationParameters | null,
-    Dispatch<SetStateAction<StateEstimationParameters | null>>
+    Dispatch<SetStateAction<StateEstimationParameters | null>>,
 ];
 
 export const useGetStateEstimationParameters = (): UseGetStateEstimationParametersProps => {

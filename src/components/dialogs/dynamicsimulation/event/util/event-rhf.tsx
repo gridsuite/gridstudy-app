@@ -35,7 +35,7 @@ const renderEnumField = (
 ) => (
     <SelectInput
         name={propertyName}
-        options={propertyDefinition ? propertyDefinition.values ?? [] : []}
+        options={propertyDefinition ? (propertyDefinition.values ?? []) : []}
         label={propertyDefinition ? propertyDefinition.label : ''}
         size={'small'}
         previousValue={propertyValue}

@@ -49,7 +49,7 @@ const MyPluggableComponent = () => {
 
 Add your private translations to the following directory to complete or overwrite existing translations
 
--   src/plugins/translations
+- src/plugins/translations
 
 import your file and export an object messages_plugins for the translation in french or english
 in src/plugins/translations/index.js

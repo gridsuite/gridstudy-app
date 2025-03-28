@@ -242,12 +242,15 @@ const LoadFlowParameters: FunctionComponent<{
         formData: Record<string, any>,
         specificParametersValues: SpecificParametersPerProvider
     ) => {
-        return Object.keys(formData[SPECIFIC_PARAMETERS]).reduce((acc: Record<string, any>, key: string) => {
-            if (specificParametersValues[key].toString() !== formData[SPECIFIC_PARAMETERS][key].toString()) {
-                acc[key] = formData[SPECIFIC_PARAMETERS][key].toString();
-            }
-            return acc;
-        }, {} as Record<string, any>);
+        return Object.keys(formData[SPECIFIC_PARAMETERS]).reduce(
+            (acc: Record<string, any>, key: string) => {
+                if (specificParametersValues[key].toString() !== formData[SPECIFIC_PARAMETERS][key].toString()) {
+                    acc[key] = formData[SPECIFIC_PARAMETERS][key].toString();
+                }
+                return acc;
+            },
+            {} as Record<string, any>
+        );
     };
 
     const formatNewParams = useCallback(
