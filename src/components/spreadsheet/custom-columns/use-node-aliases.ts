@@ -51,5 +51,19 @@ export const useNodeAliases = () => {
         [snackError, studyUuid]
     );
 
-    return { nodeAliases, updateNodeAliases };
+    const resetNodeAliases = useCallback(
+        (aliases: string[] | undefined) => {
+            let newNodeAliases: NodeAlias[] = [];
+            if (aliases) {
+                newNodeAliases = aliases.map((alias) => {
+                    let nodeAlias: NodeAlias = { id: undefined, name: undefined, alias: alias };
+                    return nodeAlias;
+                });
+            }
+            updateNodeAliases(newNodeAliases);
+        },
+        [updateNodeAliases]
+    );
+
+    return { nodeAliases, updateNodeAliases, resetNodeAliases };
 };

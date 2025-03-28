@@ -67,10 +67,12 @@ export type SpreadsheetConfigDto = SpreadsheetConfig & {
 export type SpreadsheetCollection = {
     id?: string;
     spreadsheetConfigs: SpreadsheetConfig[];
+    nodeAliases?: string[];
 };
 
 export type SpreadsheetCollectionDto = {
     id: UUID;
     name: string;
     spreadsheetConfigs: SpreadsheetConfigDto[];
+    nodeAliases?: string[];
 };
