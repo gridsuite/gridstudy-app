@@ -36,11 +36,14 @@ const styles = {
         padding: theme.spacing(0.5),
         display: 'block',
         position: 'absolute',
-        top: theme.spacing(1),
-        right: theme.spacing(1),
+        top: '5px',
+        right: '5px',
     }),
     icon: {
         fontSize: 'medium',
+    },
+    button: {
+        minWidth: 'auto',
     },
 };
 
@@ -92,7 +95,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
                 </Box>
             </Box>
             <Box sx={styles.buttonPanel}>
-                <Button onClick={handleToggleEditMode}>
+                <Button size="small" sx={styles.button} onClick={handleToggleEditMode}>
                     <FormattedMessage id={isEditMode ? 'save' : 'EditNad'} />
                 </Button>
             </Box>
