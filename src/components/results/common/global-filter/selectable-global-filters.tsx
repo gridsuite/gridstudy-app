@@ -44,7 +44,7 @@ function SelectableGlobalFilters({
                     <List sx={{ width: '100%' }}>
                         {categories.map((category) => {
                             return (
-                                <ListItemButton component="a" href="#">
+                                <ListItemButton component="a" href="#" key={category}>
                                     <ListItemText
                                         primary={<FormattedMessage id={'results.globalFilter.' + category} />}
                                     />
