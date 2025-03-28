@@ -65,13 +65,13 @@ const DynamicSimulationResultTimeline = memo(
         const intl = useIntl();
         const gridRef = useRef<AgGridReact>(null);
 
-        const [timelines, isLoading] = useNodeData(
+        const { result: timelines, isLoading } = useNodeData({
             studyUuid,
             nodeUuid,
-            currentRootNetworkUuid,
-            fetchDynamicSimulationResultTimeline,
-            dynamicSimulationResultInvalidations
-        );
+            rootNetworkUuid: currentRootNetworkUuid,
+            fetcher: fetchDynamicSimulationResultTimeline,
+            invalidations: dynamicSimulationResultInvalidations,
+        });
 
         // columns are defined from fields in {@link TimelineEvent} types
         const columnDefs = useMemo(
