@@ -73,7 +73,7 @@ import { BatteryModificationInfos } from '../../../../../services/network-modifi
 import BatteryModificationForm from './battery-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { DefaultEquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -107,7 +107,7 @@ const formSchema = yup
     .concat(modificationPropertiesSchema)
     .required();
 
-export type BatteryModificationDialogProps = DefaultEquipmentModificationDialogProps & {
+export type BatteryModificationDialogProps = EquipmentModificationDialogProps & {
     editData?: BatteryModificationInfos;
 };
 

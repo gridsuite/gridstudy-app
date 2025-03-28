@@ -83,7 +83,7 @@ import { GeneratorCreationInfos } from '../../../../../services/network-modifica
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
-import { DefaultNetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -136,7 +136,7 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export type GeneratorCreationDialogProps = DefaultNetworkModificationDialogProps & {
+export type GeneratorCreationDialogProps = NetworkModificationDialogProps & {
     editData: GeneratorCreationInfos;
 };
 

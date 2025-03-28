@@ -35,7 +35,7 @@ import {
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { LoadCreationInfos, LoadCreationSchemaForm, LoadFormInfos } from './load-creation.type';
 import { FetchStatus } from '../../../../../services/utils.type';
-import { DefaultNetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 /**
  * Dialog to create a load in the network
@@ -69,7 +69,7 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export type LoadCreationDialogProps = DefaultNetworkModificationDialogProps & {
+export type LoadCreationDialogProps = NetworkModificationDialogProps & {
     editData: LoadCreationInfos;
 };
 
