@@ -5,19 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage } from 'react-intl';
-import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress } from '@mui/material';
-import PropTypes from 'prop-types';
+import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, Alert } from '@mui/material';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import { useSelector } from 'react-redux';
-import Alert from '@mui/material/Alert';
 import { BUILD_STATUS } from '../../network/constants';
+import { Theme } from '@mui/material/styles';
+import React, { ReactNode } from 'react';
+import { UseFormSearchCopy } from './use-form-search-copy';
+import { FormattedMessage } from 'react-intl';
 import { CancelButton } from '@gridsuite/commons-ui';
+import { AppState } from '../../../redux/reducer';
+import { DialogProps } from '@mui/material/Dialog/Dialog';
 
 const styles = {
-    warningMessage: (theme) => ({
+    warningMessage: (theme: Theme) => ({
         backgroundColor: theme.formFiller.background,
     }),
 };
@@ -33,40 +36,51 @@ const styles = {
  * @param {CallbackEvent} closeAndClear callback when the dialog needs to be closed and cleared
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
  */
-const ModificationDialogContent = ({
+
+export type ModificationDialogContentProps = Omit<DialogProps, 'onClose' | 'aria-labelledby'> & {
+    closeAndClear: () => void;
+    isDataFetching?: boolean;
+    titleId: string;
+    onOpenCatalogDialog?: () => void;
+    searchCopy?: UseFormSearchCopy;
+    showNodeNotBuiltWarning?: boolean;
+    submitButton: ReactNode;
+    subtitle?: ReactNode;
+};
+
+export function ModificationDialogContent({
+    closeAndClear,
+    isDataFetching = false,
     titleId,
     onOpenCatalogDialog,
     searchCopy,
-    subtitle,
-    isDataFetching = false,
     showNodeNotBuiltWarning = false,
     submitButton,
-    closeAndClear,
+    subtitle,
     ...dialogProps
-}) => {
+}: Readonly<ModificationDialogContentProps>) {
     const catalogButton = useButtonWithTooltip({
         label: 'CatalogButtonTooltip',
-        handleClick: onOpenCatalogDialog,
+        handleClick: onOpenCatalogDialog ?? (() => {}),
         icon: <AutoStoriesOutlinedIcon />,
     });
-    const currentNode = useSelector((state) => {
-        return state.currentTreeNode;
-    });
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isNodeNotBuilt = currentNode?.data?.globalBuildStatus === BUILD_STATUS.NOT_BUILT;
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
-        handleClick: searchCopy?.handleOpenSearchDialog,
+        handleClick: searchCopy?.handleOpenSearchDialog ?? (() => {}),
         icon: <FindInPageIcon />,
     });
 
-    const handleClose = (event, reason) => {
+    const handleClose = (event_: React.MouseEvent, reason: string) => {
+        // don't close the dialog for outside click
         if (reason !== 'backdropClick') {
-            closeAndClear(event, reason);
+            closeAndClear();
         }
     };
 
-    const handleCancel = (event) => {
-        closeAndClear(event, 'cancelButtonClick');
+    const handleCancel = () => {
+        closeAndClear();
     };
 
     return (
@@ -111,17 +125,4 @@ const ModificationDialogContent = ({
             </DialogActions>
         </Dialog>
     );
-};
-
-ModificationDialogContent.propTypes = {
-    titleId: PropTypes.string.isRequired,
-    onOpenCatalogDialog: PropTypes.func,
-    searchCopy: PropTypes.object,
-    subtitle: PropTypes.element,
-    isDataFetching: PropTypes.bool,
-    showNodeNotBuiltWarning: PropTypes.bool,
-    submitButton: PropTypes.element,
-    closeAndClear: PropTypes.func.isRequired,
-};
-
-export default ModificationDialogContent;
+}

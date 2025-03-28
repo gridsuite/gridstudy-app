@@ -50,13 +50,8 @@ import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
-import {
-    AppState,
-    CurrentTreeNode,
-    LoadflowResultEventData,
-    NotificationType,
-    RootNetworkModifiedEventData,
-} from 'redux/reducer';
+import { AppState, LoadflowResultEventData, NotificationType, RootNetworkModifiedEventData } from 'redux/reducer';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { isReactFlowRootNodeData } from 'redux/utils';
 
