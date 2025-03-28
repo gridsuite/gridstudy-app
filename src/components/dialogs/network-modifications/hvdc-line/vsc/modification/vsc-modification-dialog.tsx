@@ -57,6 +57,7 @@ import { fetchNetworkElementInfos } from '../../../../../../services/study/netwo
 import { VscModificationInfo } from 'services/network-modification-types';
 import {
     REMOVE,
+    setCurrentReactiveCapabilityCurveTable,
     setSelectedReactiveLimits,
 } from 'components/dialogs/reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
@@ -177,18 +178,20 @@ const VscModificationDialog: React.FC<any> = ({
                             const previousReactiveCapabilityCurveTable1 =
                                 value.converterStation1?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable1) {
-                                setValue(
+                                setCurrentReactiveCapabilityCurveTable(
+                                    previousReactiveCapabilityCurveTable1,
                                     `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    previousReactiveCapabilityCurveTable1
+                                    setValue
                                 );
                             }
 
                             const previousReactiveCapabilityCurveTable2 =
                                 value.converterStation2?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable2) {
-                                setValue(
+                                setCurrentReactiveCapabilityCurveTable(
+                                    previousReactiveCapabilityCurveTable2,
                                     `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    previousReactiveCapabilityCurveTable2
+                                    setValue
                                 );
                             }
                             setSelectedReactiveLimits(
