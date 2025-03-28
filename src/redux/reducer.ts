@@ -229,8 +229,6 @@ import {
     PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
-    PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
@@ -285,11 +283,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import {
-    EQUIPMENT_TYPES as NetworkViewerEquipmentType,
-    LineFlowColorMode,
-    LineFlowMode,
-} from '@powsybl/network-viewer';
+import { EQUIPMENT_TYPES as NetworkViewerEquipmentType, LineFlowMode } from '@powsybl/network-viewer';
 import type { ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
@@ -573,11 +567,9 @@ export interface AppState extends CommonStoreState {
     [PARAM_USE_NAME]: boolean;
     [PARAM_LINE_FULL_PATH]: boolean;
     [PARAM_LINE_PARALLEL_PATH]: boolean;
-    [PARAM_LINE_FLOW_ALERT_THRESHOLD]: number;
     [PARAM_MAP_MANUAL_REFRESH]: boolean;
     [PARAM_MAP_BASEMAP]: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL; //TODO enum
     [PARAM_LINE_FLOW_MODE]: LineFlowMode;
-    [PARAM_LINE_FLOW_COLOR_MODE]: LineFlowColorMode;
     [PARAM_CENTER_LABEL]: boolean;
     [PARAM_DIAGONAL_LABEL]: boolean;
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
@@ -750,11 +742,9 @@ const initialState: AppState = {
     [PARAM_LINE_FULL_PATH]: true,
     [PARAM_LINE_PARALLEL_PATH]: true,
     [PARAM_LIMIT_REDUCTION]: 100,
-    [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_MAP_MANUAL_REFRESH]: true,
     [PARAM_MAP_BASEMAP]: MAP_BASEMAP_MAPBOX,
     [PARAM_LINE_FLOW_MODE]: 'feeders' as LineFlowMode.FEEDERS, // because jest not support enum
-    [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage' as LineFlowColorMode.NOMINAL_VOLTAGE, // because jest not support enum
     [PARAM_CENTER_LABEL]: false,
     [PARAM_DIAGONAL_LABEL]: false,
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout.HORIZONTAL,
