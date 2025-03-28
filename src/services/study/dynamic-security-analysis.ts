@@ -61,7 +61,7 @@ export function fetchDynamicSecurityAnalysisStatus(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID
-) {
+): Promise<string | null> {
     console.info(`Fetching dynamic security analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`);
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +

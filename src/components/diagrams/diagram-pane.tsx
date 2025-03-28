@@ -43,10 +43,11 @@ import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
-import { AppState, CurrentTreeNode, DiagramState, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState, DiagramState, StudyUpdatedEventData } from 'redux/reducer';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { DiagramType, ViewState } from './diagram.type';
 import { useDiagram } from './use-diagram';
+import { CurrentTreeNode } from '../graph/tree-node.type';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRootNetworkUuid: UUID) => {
