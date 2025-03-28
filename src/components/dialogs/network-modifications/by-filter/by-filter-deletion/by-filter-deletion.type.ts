@@ -7,7 +7,7 @@
 
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { Filter } from '../commons/by-filter.type';
-import { DefaultCreationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { DefaultNetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 export interface ByFilterDeletionEditData {
     uuid: string;
@@ -20,6 +20,6 @@ export interface ByFilterDeletionFormData {
     filters: Filter[];
 }
 
-export type ByFilterDeletionDialogProps = DefaultCreationDialogProps & {
+export type ByFilterDeletionDialogProps = DefaultNetworkModificationDialogProps & {
     editData: ByFilterDeletionEditData;
 };

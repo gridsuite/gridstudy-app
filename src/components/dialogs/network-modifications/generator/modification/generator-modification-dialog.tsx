@@ -95,7 +95,7 @@ import { GeneratorModificationInfos } from '../../../../../services/network-modi
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
 import { toModificationOperation } from '../../../../utils/utils';
-import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { DefaultEquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -148,7 +148,7 @@ const formSchema = yup
     .concat(modificationPropertiesSchema)
     .required();
 
-export type GeneratorModificationDialogProps = DefaultModificationDialogProps & {
+export type GeneratorModificationDialogProps = DefaultEquipmentModificationDialogProps & {
     editData?: GeneratorModificationInfos;
 };
 
