@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 import { ElementCreationDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
@@ -16,7 +16,6 @@ import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import { setEditNadMode } from 'redux/actions';
-import { useDispatch } from 'react-redux';
 
 const styles = {
     actionIcon: (theme: Theme) => ({
