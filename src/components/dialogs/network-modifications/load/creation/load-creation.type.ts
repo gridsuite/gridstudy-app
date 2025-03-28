@@ -75,7 +75,6 @@ export interface LoadFormInfos {
     voltageLevelId: string;
     connectablePosition: ConnectablePositionInfos;
     busOrBusbarSectionId: string;
-    busbarSectionName: string;
     terminalConnected?: boolean | null;
     properties: Record<string, string> | undefined;
 }
