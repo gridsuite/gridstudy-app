@@ -69,6 +69,24 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
+export function getNetworkAreaDiagramUrlFromConfig(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    nadConfigUuid: UUID
+) {
+    console.info(
+        `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
+    );
+    return (
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network-area-diagram?' +
+        new URLSearchParams({
+            nadConfigUuid: nadConfigUuid,
+        })
+    );
+}
+
 export function fetchParentNodesReport(
     studyUuid: UUID | null,
     nodeUuid: UUID,
