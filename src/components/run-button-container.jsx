@@ -18,8 +18,8 @@ import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
+import { DynamicSimulationParametersSelector } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 import { ContingencyListSelector } from './dialogs/contingency-list-selector';
-import DynamicSimulationParametersSelector from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 
 import { startSensitivityAnalysis, stopSensitivityAnalysis } from '../services/study/sensitivity-analysis';
 import { startNonEvacuatedEnergy, stopNonEvacuatedEnergy } from '../services/study/non-evacuated-energy';

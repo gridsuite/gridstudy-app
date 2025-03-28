@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
@@ -231,7 +231,6 @@ const VoltageLevelModificationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-voltage-level"
                 maxWidth={'md'}
                 open={open}
                 titleId="ModifyVoltageLevel"
