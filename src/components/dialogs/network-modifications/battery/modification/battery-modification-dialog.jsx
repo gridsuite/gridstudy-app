@@ -44,10 +44,7 @@ import {
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
-import {
-    REMOVE,
-    setCurrentReactiveCapabilityCurveTable,
-} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
@@ -210,10 +207,9 @@ const BatteryModificationDialog = ({
                         if (value) {
                             const previousReactiveCapabilityCurveTable = value?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable) {
-                                setCurrentReactiveCapabilityCurveTable(
-                                    previousReactiveCapabilityCurveTable,
+                                setValue(
                                     `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    setValue
+                                    previousReactiveCapabilityCurveTable
                                 );
                             }
                             setValue(
