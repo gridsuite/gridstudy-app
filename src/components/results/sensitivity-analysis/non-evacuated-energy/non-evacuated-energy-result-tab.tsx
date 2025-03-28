@@ -54,13 +54,13 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTa
         (state: AppState) => state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
     );
 
-    const [nonEvacuatedEnergyResult] = useNodeData(
+    const { result: nonEvacuatedEnergyResult } = useNodeData({
         studyUuid,
         nodeUuid,
-        currentRootNetworkUuid,
-        fetchNonEvacuatedEnergyResult,
-        nonEvacuatedEnergyResultInvalidations
-    );
+        rootNetworkUuid: currentRootNetworkUuid,
+        fetcher: fetchNonEvacuatedEnergyResult,
+        invalidations: nonEvacuatedEnergyResultInvalidations,
+    });
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
         setTabIndex(newTabIndex);
