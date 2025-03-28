@@ -268,7 +268,6 @@ const GeneratorModificationDialog = ({
                                 setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable,
                                     `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    getValues,
                                     setValue
                                 );
                             }
