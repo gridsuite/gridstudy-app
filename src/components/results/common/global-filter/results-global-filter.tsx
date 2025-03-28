@@ -8,6 +8,7 @@
 import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import {
     Autocomplete,
+    AutocompleteCloseReason,
     AutocompleteRenderInputParams,
     Box,
     Chip,
@@ -16,7 +17,7 @@ import {
     TextField,
 } from '@mui/material';
 import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters, removeFromRecentGlobalFilters } from '../../../../redux/actions';
@@ -24,13 +25,12 @@ import { AppState } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 import { FilterType } from '../utils';
 import {
-    ElementType,
-    TreeViewFinderNodeProps,
-    mergeSx,
     DirectoryItemSelector,
-    fetchElementsInfos,
     ElementAttributes,
+    ElementType,
     fetchDirectoryElementPath,
+    fetchElementsInfos,
+    TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
@@ -41,11 +41,11 @@ import SelectableGlobalFilters from './selectable-global-filters';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { computeFullPath } from '../../../../utils/compute-title';
+import { getOptionLabel } from './global-filter-utils';
 
-const recentFilter: string = 'recent';
+const RECENT_FILTER: string = 'recent';
 
 const emptyArray: GlobalFilter[] = [];
-const DEFAULT_NB_OPTIONS_DISPLAYED: number = 10;
 
 // renderInput : the inputfield that contains the chips, adornments and label
 function RenderInput({
@@ -122,43 +122,23 @@ function ResultsGlobalFilter({
     filters = emptyArray,
 }: Readonly<ResultsGlobalFilterProps>) {
     const intl = useIntl();
+    const [openedDropdown, setOpenedDropdown] = useState(false);
     const { snackError } = useSnackMessage();
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch<AppDispatch>();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
-    // Map <FilterType, number of options of this type>
-    // -1 number of options means that the user required everything to be displayed no matter the number of options
-    const [numberOfOptions, setNumberOfOptions] = useState<Map<string, number>>(
-        new Map([
-            [FilterType.COUNTRY, 0],
-            [FilterType.VOLTAGE_LEVEL, 0],
-            [FilterType.GENERIC_FILTER, 0],
-        ])
-    );
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
+    // may be a filter type or a recent filter or whatever category
+    const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
     const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>([]);
-
-    const getOptionLabel = useCallback(
-        (option: GlobalFilter) => {
-            switch (option.filterType) {
-                case FilterType.COUNTRY:
-                    return translate(option.label);
-                case FilterType.VOLTAGE_LEVEL:
-                    return option.label + ' kV';
-                case FilterType.GENERIC_FILTER:
-                    return option.label;
-            }
-        },
-        [translate]
-    );
 
     const handleChange = useCallback(
         async (globalFilters: GlobalFilter[]): Promise<void> => {
             let globalFiltersToAddToRecents: GlobalFilter[] = [...globalFilters];
-            const fetchFiltersPromises = globalFilters
+            const fetchFiltersPromises: Promise<UUID | null>[] = globalFilters
                 // checks if the generic filters still exist, and sets their path value
                 .filter((globalFilter: GlobalFilter) => globalFilter.filterType === FilterType.GENERIC_FILTER)
-                .map(async (fetchedGlobalFilter: GlobalFilter) => {
+                .map(async (fetchedGlobalFilter: GlobalFilter): Promise<UUID | null> => {
                     if (fetchedGlobalFilter.uuid) {
                         try {
                             const response: ElementAttributes[] = await fetchDirectoryElementPath(
@@ -173,19 +153,27 @@ function ResultsGlobalFilter({
                                 fetchedFilter.path = path;
                             }
                         } catch (error) {
-                            // remove those missing filters from recent global filters
-                            dispatch(removeFromRecentGlobalFilters(fetchedGlobalFilter.uuid));
-                            globalFiltersToAddToRecents = globalFiltersToAddToRecents.filter(
-                                (globalFilter) => globalFilter.uuid !== fetchedGlobalFilter.uuid
-                            );
-                            snackError({
-                                messageTxt: fetchedGlobalFilter.path,
-                                headerId: 'ComputationFilterResultsError',
-                            });
+                            return fetchedGlobalFilter.uuid;
                         }
                     }
+                    return null;
                 });
-            await Promise.all(fetchFiltersPromises);
+            const missingFiltersUuids = await Promise.all(fetchFiltersPromises);
+            // remove those missing filters from recent global filters
+            missingFiltersUuids
+                .filter((uuid: UUID | null) => uuid != null)
+                .forEach((missingFiltersuuid) => {
+                    if (missingFiltersuuid != null) {
+                        dispatch(removeFromRecentGlobalFilters(missingFiltersuuid));
+                    }
+                    globalFiltersToAddToRecents = globalFiltersToAddToRecents.filter(
+                        (globalFilter) => globalFilter.uuid !== missingFiltersuuid
+                    );
+                    snackError({
+                        messageTxt: globalFilters.find((filter) => filter.uuid === missingFiltersuuid)?.path,
+                        headerId: 'ComputationFilterResultsError',
+                    });
+                });
             setSelectedGlobalFilters(globalFilters);
             // Updates the "recent" filters unless they have not been found
             dispatch(addToRecentGlobalFilters(globalFiltersToAddToRecents));
@@ -255,113 +243,97 @@ function ResultsGlobalFilter({
 
     const filterOptions = useCallback(
         (options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
-            const numByGroup: Map<string, number> = new Map();
-            const filteredOptions: GlobalFilter[] = options
-                // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
-                .filter((option: GlobalFilter) => {
-                    const labelToMatch: string =
-                        option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
-                    return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
-                })
-                // display only a part of the options if there are too many (unless required by the user)
-                .filter((option: GlobalFilter) => {
-                    if (option.recent || numberOfOptions.get(option.filterType) === -1) {
-                        return true;
-                    }
-                    const num = numByGroup.get(option.filterType) ?? 0;
-                    numByGroup.set(option.filterType, num + 1);
-                    return num < DEFAULT_NB_OPTIONS_DISPLAYED;
-                });
-
-            // if the numberOfOptions has not been set yet :
-            if (Array.from(numberOfOptions.values()).find((number) => number !== 0) === undefined) {
-                setNumberOfOptions(numByGroup);
-            }
-
-            return filteredOptions;
+            return (
+                options
+                    // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
+                    .filter((option: GlobalFilter) => {
+                        const labelToMatch: string =
+                            option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
+                        return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
+                    })
+                    .filter((option: GlobalFilter) =>
+                        // recent filters are a group in itself
+                        option?.recent
+                            ? filterGroupSelected === RECENT_FILTER
+                            : option.filterType === filterGroupSelected
+                    )
+            );
         },
-        [numberOfOptions, translate]
+        [filterGroupSelected, translate]
     );
 
+    const options = useMemo(
+        () => [
+            ...recentGlobalFilters.map((filter) => {
+                return { ...filter, recent: true };
+            }),
+            ...filters
+                .map((filter) => {
+                    return { ...filter, recent: false };
+                })
+                .sort((a: GlobalFilter, b: GlobalFilter) => {
+                    // only the countries are sorted alphabetically
+                    if (a.filterType === FilterType.COUNTRY && b.filterType === FilterType.COUNTRY) {
+                        const bt: string = translate(b.label);
+                        const at: string = translate(a.label);
+                        return at.localeCompare(bt);
+                    }
+                    return 0;
+                }),
+        ],
+        [filters, recentGlobalFilters, translate]
+    );
     return (
         <>
             <Autocomplete
                 value={selectedGlobalFilters}
+                open={openedDropdown}
+                onOpen={() => setOpenedDropdown(true)}
+                onClose={(event, reason: AutocompleteCloseReason) => {
+                    if (reason !== 'selectOption' && reason !== 'blur') {
+                        // TODO : blur est peut-être excessif => trouver coment ne pas fermer la dropdown quand on clique dans la fenêtre
+                        setOpenedDropdown(false);
+                    }
+                }}
                 sx={resultsGlobalFilterStyles.autocomplete}
                 multiple
                 id="result-global-filter"
                 size="small"
                 limitTags={2}
+                openOnFocus
                 disableCloseOnSelect
-                options={[
-                    ...recentGlobalFilters.map((filter) => {
-                        return { ...filter, recent: true };
-                    }),
-                    ...filters
-                        .map((filter) => {
-                            return { ...filter, recent: false };
-                        })
-                        .sort((a: GlobalFilter, b: GlobalFilter) => {
-                            // only the countries are sorted alphabetically
-                            if (a.filterType === FilterType.COUNTRY && b.filterType === FilterType.COUNTRY) {
-                                const bt: string = translate(b.label);
-                                const at: string = translate(a.label);
-                                return at.localeCompare(bt);
-                            }
-                            return 0;
-                        }),
-                ]}
+                options={options}
                 onChange={(_e, value) => handleChange(value)}
-                groupBy={(option: GlobalFilter): string => (option.recent ? recentFilter : option.filterType)}
+                groupBy={(option: GlobalFilter): string => (option.recent ? RECENT_FILTER : option.filterType)}
                 renderInput={RenderInput}
                 // renderTags : the chips in the inputField
                 renderTags={(filters: GlobalFilter[], getTagsProps) =>
                     filters.map((element: GlobalFilter, index: number) => (
                         <Chip
                             size="small"
-                            label={getOptionLabel(element)}
+                            label={getOptionLabel(element, translate)}
                             {...getTagsProps({ index })}
                             sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                         />
                     ))
                 }
-                // renderGroup : the boxes below that are visible when we focus on the AutoComplete
                 renderGroup={(item) => {
                     const { group, children } = item;
-                    const recent: boolean = group === recentFilter;
-                    const numOfGroupOptions: number = numberOfOptions.get(group) ?? 0;
                     return (
-                        <Box
-                            key={'keyBoxGroup_' + group}
-                            sx={mergeSx(
-                                resultsGlobalFilterStyles.chipBox,
-                                !recent ? resultsGlobalFilterStyles.filterTypeBox : undefined
-                            )}
-                        >
-                            <Box sx={resultsGlobalFilterStyles.groupLabel}>
-                                <FormattedMessage id={'results.globalFilter.' + group} />
-                            </Box>
+                        <Box key={'keyBoxGroup_' + group} sx={resultsGlobalFilterStyles.chipBox}>
                             {children}
-                            {!recent && numOfGroupOptions - DEFAULT_NB_OPTIONS_DISPLAYED > 0 && (
-                                <Chip
-                                    component="li"
-                                    label={'+ ' + (numOfGroupOptions - DEFAULT_NB_OPTIONS_DISPLAYED)}
-                                    size="small"
-                                    sx={getResultsGlobalFiltersChipStyle(group)}
-                                    onClick={() => setNumberOfOptions(new Map([...numberOfOptions, [group, -1]]))}
-                                />
-                            )}
                         </Box>
                     );
                 }}
                 // renderOption : the chips that are in the boxes that is visible when we focus on the AutoComplete
+                // TODO : ici afficher selon le cas des checkboxes ou autre
                 renderOption={(props, option: GlobalFilter) => {
                     const { children, color, ...otherProps } = props;
                     return (
                         <Chip
                             {...otherProps}
                             component="li"
-                            label={getOptionLabel(option)}
+                            label={getOptionLabel(option, translate)}
                             size="small"
                             sx={getResultsGlobalFiltersChipStyle(option.filterType)}
                         />
@@ -376,8 +348,12 @@ function ResultsGlobalFilter({
                 }
                 PaperComponent={(props: PropsWithChildren) => (
                     <SelectableGlobalFilters
+                        categories={[RECENT_FILTER, ...Object.values(FilterType)]}
                         children={props.children}
                         onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
+                        filterGroupSelected={filterGroupSelected}
+                        setFilterGroupSelected={setFilterGroupSelected}
+                        selectedGlobalFilters={selectedGlobalFilters}
                     />
                 )}
             />
