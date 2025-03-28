@@ -198,7 +198,7 @@ export default function BatteryModificationDialog({
             if (!previousValue) {
                 return null;
             }
-            const newRccValues = previousValue?.reactiveCapabilityCurvePoints || [];
+            const newRccValues = previousValue?.reactiveCapabilityCurvePoints ?? [];
             if (action === REMOVE) {
                 newRccValues.splice(index, 1);
             } else {
