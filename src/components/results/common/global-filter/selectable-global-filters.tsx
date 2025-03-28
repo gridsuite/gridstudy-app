@@ -14,20 +14,24 @@ import React, { PropsWithChildren } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 
-export interface SelectableGlobalFiltersProps extends PropsWithChildren {
-    onClickGenericFilter: () => void;
-    categories: string[];
-}
-
 const XS_COLUMN1: number = 3.5;
 const XS_COLUMN2: number = 4;
 const XS_COLUMN3: number = 4.5;
+
+export interface SelectableGlobalFiltersProps extends PropsWithChildren {
+    onClickGenericFilter: () => void;
+    categories: string[];
+    filterGroupSelected: string;
+    setFilterGroupSelected: (value: ((prevState: string) => string) | string) => void;
+}
 
 // TODO ici se passe l'essentiel des changements
 function SelectableGlobalFilters({
     children,
     onClickGenericFilter,
     categories,
+    filterGroupSelected,
+    setFilterGroupSelected,
 }: Readonly<SelectableGlobalFiltersProps>) {
     return (
         <Paper sx={resultsGlobalFilterStyles.dropdown}>
@@ -39,12 +43,11 @@ function SelectableGlobalFilters({
                 <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellTitle}>
                     TODO
                 </Grid>
-
                 <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cell}>
                     <List sx={{ width: '100%' }}>
                         {categories.map((category) => {
                             return (
-                                <ListItemButton component="a" href="#" key={category}>
+                                <ListItemButton onClick={() => setFilterGroupSelected(category)} key={category}>
                                     <ListItemText
                                         primary={<FormattedMessage id={'results.globalFilter.' + category} />}
                                     />

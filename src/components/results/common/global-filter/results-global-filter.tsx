@@ -8,6 +8,7 @@
 import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import {
     Autocomplete,
+    AutocompleteCloseReason,
     AutocompleteRenderInputParams,
     Box,
     Chip,
@@ -121,6 +122,7 @@ function ResultsGlobalFilter({
     filters = emptyArray,
 }: Readonly<ResultsGlobalFilterProps>) {
     const intl = useIntl();
+    const [openedDropdown, setOpenedDropdown] = useState(false);
     const { snackError } = useSnackMessage();
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch<AppDispatch>();
@@ -135,6 +137,8 @@ function ResultsGlobalFilter({
         ])
     );
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
+    // may be a filter type or a recent filter or whatever category
+    const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
     const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>([]);
 
     const getOptionLabel = useCallback(
@@ -270,7 +274,8 @@ function ResultsGlobalFilter({
                         option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
                     return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
                 })
-                // display only a part of the options if there are too many (unless required by the user)
+                .filter((option: GlobalFilter) => option.filterType === filterGroupSelected) // TODO : gérer les récents comme groupe en soit
+                // display only a part of the options if there are too many (unless required by the user) // TODO : retirer ça ?
                 .filter((option: GlobalFilter) => {
                     if (option.recent || numberOfOptions.get(option.filterType) === -1) {
                         return true;
@@ -287,7 +292,7 @@ function ResultsGlobalFilter({
 
             return filteredOptions;
         },
-        [numberOfOptions, translate]
+        [filterGroupSelected, numberOfOptions, translate]
     );
 
     const options = useMemo(
@@ -315,11 +320,20 @@ function ResultsGlobalFilter({
         <>
             <Autocomplete
                 value={selectedGlobalFilters}
+                open={openedDropdown}
+                onOpen={() => setOpenedDropdown(true)}
+                onClose={(event, reason: AutocompleteCloseReason) => {
+                    if (reason !== 'selectOption' && reason !== 'blur') {
+                        // TODO : blur est peut-être excessif => trouver coment ne aps fermer la dropdown quand on clique dans la fenêtre
+                        setOpenedDropdown(false);
+                    }
+                }}
                 sx={resultsGlobalFilterStyles.autocomplete}
                 multiple
                 id="result-global-filter"
                 size="small"
                 limitTags={2}
+                openOnFocus
                 disableCloseOnSelect
                 options={options}
                 onChange={(_e, value) => handleChange(value)}
@@ -338,7 +352,6 @@ function ResultsGlobalFilter({
                 }
                 // renderGroup : the boxes below that are visible when we focus on the AutoComplete
                 renderGroup={(item) => {
-                    // TODO : ici n'afficher que le groupe sélectionné dans la partie de gauche
                     const { group, children } = item;
                     const recent: boolean = group === recentFilter;
                     const numOfGroupOptions: number = numberOfOptions.get(group) ?? 0;
@@ -386,6 +399,8 @@ function ResultsGlobalFilter({
                         categories={[recentFilter, ...Object.values(FilterType)]}
                         children={props.children}
                         onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
+                        filterGroupSelected={filterGroupSelected}
+                        setFilterGroupSelected={setFilterGroupSelected}
                     />
                 )}
             />
