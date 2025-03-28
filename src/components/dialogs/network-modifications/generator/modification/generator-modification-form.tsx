@@ -36,8 +36,8 @@ import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regul
 import { useWatch } from 'react-hook-form';
 import { SetPointsForm } from '../../../set-points/set-points-form';
 import { UUID } from 'crypto';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { GeneratorFormInfos } from '../generator-dialog.type';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 export interface GeneratorModificationFormProps {
     studyUuid: UUID;

@@ -16,7 +16,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
 import { isNodeExists } from 'services/study';
-import ModificationDialog from 'components/dialogs/commons/modificationDialog';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 export interface FormData {
     [NAME]: string;
@@ -27,7 +27,6 @@ interface BaseDialogProps {
     onSave: (data: FormData) => void;
     onClose: () => void;
     titleId: string;
-    dialogProps?: any;
     initialName?: string;
 }
 
@@ -47,8 +46,8 @@ const NodeNameEditDialog: React.FC<BaseDialogProps> = ({
     onSave,
     onClose,
     titleId,
-    dialogProps,
     initialName,
+    ...dialogProps
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -87,7 +86,7 @@ const NodeNameEditDialog: React.FC<BaseDialogProps> = ({
                 fullWidth
                 maxWidth={'xs'}
                 open={open}
-                onClose={onClose}
+                onDialogClose={onClose}
                 onClear={clear}
                 onSave={handleSave}
                 aria-labelledby="dialog-name-edit"

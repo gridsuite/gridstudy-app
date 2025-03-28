@@ -42,7 +42,7 @@ import { ActivePowerControlForm } from '../../../active-power-control/active-pow
 import { useWatch } from 'react-hook-form';
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 import { UUID } from 'crypto';
-import { CurrentTreeNode } from '../../../../../redux/reducer.js';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 export interface GeneratorCreationFormProps {
     studyUuid: UUID;

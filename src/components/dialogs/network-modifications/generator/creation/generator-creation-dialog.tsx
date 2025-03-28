@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
@@ -81,11 +81,11 @@ import {
 } from '../../../active-power-control/active-power-control-utils';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { GeneratorCreationInfos } from '../../../../../services/network-modification-types';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -346,7 +346,6 @@ export default function GeneratorCreationDialog({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-generator"
                 maxWidth={'md'}
                 titleId="CreateGenerator"
                 searchCopy={searchCopy}

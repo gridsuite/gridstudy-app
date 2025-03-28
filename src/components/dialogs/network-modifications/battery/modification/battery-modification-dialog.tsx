@@ -67,7 +67,6 @@ import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { FetchStatus } from '../../../../../services/utils.type';
 import { toModificationOperation } from '../../../../utils/utils';
@@ -76,9 +75,10 @@ import {
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
 import { BatteryModificationInfos } from '../../../../../services/network-modification-types';
-import ModificationDialog from '../../../commons/modificationDialog';
 import BatteryModificationForm from './battery-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
+import { ModificationDialog } from '../../../commons/modificationDialog';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -341,7 +341,6 @@ export default function BatteryModificationDialog({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modification-battery"
                 maxWidth={'md'}
                 titleId="ModifyBattery"
                 open={open}

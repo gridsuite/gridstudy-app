@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -93,11 +93,11 @@ import {
 } from '../../../active-power-control/active-power-control-utils';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { GeneratorModificationInfos } from '../../../../../services/network-modification-types';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
 import { toModificationOperation } from '../../../../utils/utils';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -433,7 +433,6 @@ export default function GeneratorModificationDialog({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modification-generator"
                 maxWidth={'md'}
                 titleId="ModifyGenerator"
                 open={open}
