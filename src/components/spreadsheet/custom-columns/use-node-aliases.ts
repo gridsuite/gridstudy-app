@@ -14,7 +14,8 @@ import { NodeAlias } from './node-alias.type';
 
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const [nodeAliases, setNodeAliases] = useState<NodeAlias[]>([]);
+    // init value is undefined until we have successfully made a fetch
+    const [nodeAliases, setNodeAliases] = useState<NodeAlias[]>();
 
     const { snackError } = useSnackMessage();
 
@@ -23,14 +24,14 @@ export const useNodeAliases = () => {
             getNodeAliases(studyUuid)
                 .then((_nodeAliases) => setNodeAliases(_nodeAliases))
                 .catch((error) => {
-                    setNodeAliases([]);
+                    setNodeAliases(undefined);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'nodeAliasesRetrievingError',
                     });
                 });
         } else {
-            setNodeAliases([]);
+            setNodeAliases(undefined);
         }
     }, [snackError, studyUuid]);
 
@@ -50,5 +51,19 @@ export const useNodeAliases = () => {
         [snackError, studyUuid]
     );
 
-    return { nodeAliases, updateNodeAliases };
+    const resetNodeAliases = useCallback(
+        (aliases: string[] | undefined) => {
+            let newNodeAliases: NodeAlias[] = [];
+            if (aliases) {
+                newNodeAliases = aliases.map((alias) => {
+                    let nodeAlias: NodeAlias = { id: undefined, name: undefined, alias: alias };
+                    return nodeAlias;
+                });
+            }
+            updateNodeAliases(newNodeAliases);
+        },
+        [updateNodeAliases]
+    );
+
+    return { nodeAliases, updateNodeAliases, resetNodeAliases };
 };

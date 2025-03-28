@@ -6,6 +6,7 @@
  */
 import { UUID } from 'crypto';
 import { BUILD_STATUS } from '../network/constants';
+import { Node } from '@xyflow/react';
 
 export enum NodeType {
     ROOT = 'ROOT',
@@ -22,6 +23,11 @@ export type AbstractNode = {
     reportUuid?: UUID;
     type: NodeType;
     columnPosition?: number;
+};
+
+export type StashedNodeProperties = {
+    first: AbstractNode;
+    second: number; // children size
 };
 
 export interface NodeBuildStatus {
@@ -48,3 +54,20 @@ export type NetworkModificationNodeData = AbstractNode & {
     stateEstimationResultUuid?: UUID;
     nodeBuildStatus?: NodeBuildStatus;
 };
+
+type NodeCommonData = {
+    label: string;
+    globalBuildStatus?: BUILD_STATUS;
+    description?: string;
+    readOnly?: boolean;
+};
+export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
+
+export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETWORK_MODIFICATION> & {
+    id: UUID;
+};
+
+export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
+export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
+
+export type CurrentTreeNode = ModificationNode | RootNode;

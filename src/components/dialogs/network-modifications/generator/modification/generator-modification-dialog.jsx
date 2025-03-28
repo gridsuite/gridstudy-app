@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -83,6 +83,14 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import {
+    getVoltageRegulationEmptyFormData,
+    getVoltageRegulationSchema,
+} from '../../../voltage-regulation/voltage-regulation-utils';
+import {
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
+} from '../../../active-power-control/active-power-control-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -98,6 +106,8 @@ const emptyFormData = {
     [FORCED_OUTAGE_RATE]: null,
     ...getConnectivityWithPositionEmptyFormData(true),
     ...getSetPointsEmptyFormData(true),
+    ...getVoltageRegulationEmptyFormData(true),
+    ...getActivePowerControlEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
     ...emptyProperties,
 };
@@ -126,6 +136,8 @@ const formSchema = yup
         [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         ...getConnectivityWithPositionValidationSchema(true),
         ...getSetPointsSchema(true),
+        ...getVoltageRegulationSchema(true),
+        ...getActivePowerControlSchema(true),
         ...getReactiveLimitsSchema(true),
     })
     .concat(modificationPropertiesSchema)
@@ -384,7 +396,6 @@ const GeneratorModificationDialog = ({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modification-generator"
                 maxWidth={'md'}
                 titleId="ModifyGenerator"
                 open={open}
@@ -397,9 +408,6 @@ const GeneratorModificationDialog = ({
             >
                 {selectedId == null && (
                     <EquipmentIdSelector
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.GENERATOR}

@@ -80,7 +80,7 @@ import {
     REGULATION_TYPES,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import TwoWindingsTransformerModificationDialogTabs from './two-windings-transformer-modification-dialog-tabs';
 import TwoWindingsTransformerCharacteristicsPane from '../characteristics-pane/two-windings-transformer-characteristics-pane';
 import {
@@ -644,16 +644,6 @@ const TwoWindingsTransformerModificationDialog = ({
         [editData]
     );
 
-    const getLoadRatioTapChangingCapabilities = useCallback(
-        (twt) => {
-            if (editData === undefined || editData?.ratioTapChanger?.hasLoadTapChangingCapabilities === undefined) {
-                return twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES];
-            }
-            return editData?.ratioTapChanger?.hasLoadTapChangingCapabilities?.value;
-        },
-        [editData]
-    );
-
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -700,7 +690,9 @@ const TwoWindingsTransformerModificationDialog = ({
                                 }),
                                 ...getRatioTapChangerFormData({
                                     enabled: isRatioTapChangerEnabled(twt),
-                                    hasLoadTapChangingCapabilities: getLoadRatioTapChangingCapabilities(twt),
+                                    hasLoadTapChangingCapabilities: getValues(
+                                        `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
+                                    ),
                                     regulationMode: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_MODE}`),
                                     regulationType: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_TYPE}`),
                                     regulationSide: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_SIDE}`),
@@ -759,7 +751,6 @@ const TwoWindingsTransformerModificationDialog = ({
             getValues,
             reset,
             isRatioTapChangerEnabled,
-            getLoadRatioTapChangingCapabilities,
             getRatioTapChangerSteps,
             isPhaseTapChangerEnabled,
             getPhaseTapChangerSteps,
@@ -796,7 +787,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 fullWidth
                 maxWidth="xl"
                 titleId="ModifyTwoWindingsTransformer"
-                aria-labelledby="dialog-modify-two-windings-transformer"
                 subtitle={selectedId != null ? headerAndTabs : undefined}
                 onClear={clear}
                 onSave={onSubmit}
@@ -815,9 +805,6 @@ const TwoWindingsTransformerModificationDialog = ({
             >
                 {selectedId == null && (
                     <EquipmentIdSelector
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}

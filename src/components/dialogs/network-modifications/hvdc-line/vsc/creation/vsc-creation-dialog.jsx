@@ -30,8 +30,8 @@ import { Box, Grid } from '@mui/material';
 import { filledTextField, sanitizeString } from '../../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../../commons/modificationDialog';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
+import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import {
     getVscHvdcLinePaneEmptyFormData,
@@ -48,7 +48,7 @@ import {
 } from '../converter-station/converter-station-utils';
 import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../../services/study/network-modifications';
-import { useFormSearchCopy } from '../../../../form-search-copy-hook';
+import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import {
     copyEquipmentPropertiesForCreation,
@@ -130,14 +130,7 @@ const VscCreationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: ExtendedEquipmentType.HVDC_LINE_VSC,
-    });
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, ExtendedEquipmentType.HVDC_LINE_VSC);
 
     const generatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
@@ -242,7 +235,6 @@ const VscCreationDialog = ({
                 onClear={clear}
                 onValidationError={onValidationError}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-vsc"
                 maxWidth={'md'}
                 titleId="CreateVsc"
                 subtitle={headersAndTabs}

@@ -6,10 +6,10 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
+import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -75,6 +75,14 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import {
+    getVoltageRegulationEmptyFormData,
+    getVoltageRegulationSchema,
+} from '../../../voltage-regulation/voltage-regulation-utils';
+import {
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
+} from '../../../active-power-control/active-power-control-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -90,6 +98,8 @@ const emptyFormData = {
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
     ...getSetPointsEmptyFormData(),
+    ...getVoltageRegulationEmptyFormData(),
+    ...getActivePowerControlEmptyFormData(),
     ...getReactiveLimitsEmptyFormData(),
     ...getConnectivityWithPositionEmptyFormData(),
     ...emptyProperties,
@@ -117,6 +127,8 @@ const formSchema = yup
         [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         ...getSetPointsSchema(),
+        ...getVoltageRegulationSchema(),
+        ...getActivePowerControlSchema(),
         ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
     })
@@ -191,14 +203,7 @@ const GeneratorCreationDialog = ({
         );
     };
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.GENERATOR,
-    });
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.GENERATOR);
 
     useEffect(() => {
         if (editData) {
@@ -322,7 +327,6 @@ const GeneratorCreationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-generator"
                 maxWidth={'md'}
                 titleId="CreateGenerator"
                 searchCopy={searchCopy}

@@ -19,6 +19,7 @@ import {
     resetEquipmentsPostLoadflow,
     setCurrentRootNetworkUuid,
     setCurrentTreeNode,
+    setRootNetworks,
     setStudyIndexationStatus,
     studyUpdated,
 } from '../redux/actions';
@@ -71,6 +72,7 @@ function useStudy(studyUuidRequest) {
                         if (rootNetworks && rootNetworks.length > 0) {
                             // Validate that currentRootNetworkUuid is set
                             dispatch(setCurrentRootNetworkUuid(rootNetworks[0].rootNetworkUuid));
+                            dispatch(setRootNetworks(rootNetworks));
                         } else {
                             // Handle case where no root networks are available
                             setErrMessage(
@@ -164,7 +166,7 @@ export function StudyContainer({ view, onChangeTab }) {
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
-            const rootNetworkUuidFromNotif = eventData.headers['rootNetwork'];
+            const rootNetworkUuidFromNotif = eventData.headers.rootNetwork;
 
             const userId = eventData.headers[USER_HEADER];
             if (userId != null && userId !== userName) {
@@ -249,7 +251,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const sendAlert = useCallback(
         (eventData) => {
             const userId = eventData.headers[USER_HEADER];
-            const rootNetworkUuidFromNotif = eventData.headers['rootNetwork'];
+            const rootNetworkUuidFromNotif = eventData.headers.rootNetwork;
             if (currentRootNetworkUuidRef.current !== rootNetworkUuidFromNotif && rootNetworkUuidFromNotif) {
                 return;
             }
@@ -572,7 +574,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers['rootNetwork'];
+            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetwork;
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
                 rootNetworkUuidFromNotif === currentRootNetworkUuidRef.current

@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -51,10 +51,6 @@ import {
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import {
-    getFrequencyRegulationEmptyFormData,
-    getFrequencyRegulationSchema,
-} from '../../../set-points/set-points-utils';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
@@ -71,6 +67,10 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import {
+    getActivePowerControlEmptyFormData,
+    getActivePowerControlSchema,
+} from '../../../active-power-control/active-power-control-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -80,7 +80,7 @@ const emptyFormData = {
     [REACTIVE_POWER_SET_POINT]: null,
     ...getConnectivityWithPositionEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
-    ...getFrequencyRegulationEmptyFormData(true),
+    ...getActivePowerControlEmptyFormData(true),
     ...emptyProperties,
 };
 
@@ -101,7 +101,7 @@ const formSchema = yup
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         ...getConnectivityWithPositionValidationSchema(true),
         ...getReactiveLimitsSchema(true),
-        ...getFrequencyRegulationSchema(true),
+        ...getActivePowerControlSchema(true),
     })
     .concat(modificationPropertiesSchema)
     .required();
@@ -316,7 +316,6 @@ const BatteryModificationDialog = ({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modification-battery"
                 maxWidth={'md'}
                 titleId="ModifyBattery"
                 open={open}
@@ -329,9 +328,6 @@ const BatteryModificationDialog = ({
             >
                 {selectedId == null && (
                     <EquipmentIdSelector
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.BATTERY}
