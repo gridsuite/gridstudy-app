@@ -6,7 +6,7 @@
  */
 
 import { useCallback } from 'react';
-import { FieldErrors, useFormContext } from 'react-hook-form';
+import { FieldErrors, FieldValues, useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
 import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
 
@@ -21,16 +21,19 @@ import { ModificationDialogContent, ModificationDialogContentProps } from './mod
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
  */
 
-export type ModificationDialogProps = Omit<ModificationDialogContentProps, 'closeAndClear' | 'submitButton'> & {
+export type ModificationDialogProps<TFieldValues extends FieldValues> = Omit<
+    ModificationDialogContentProps,
+    'closeAndClear' | 'submitButton'
+> & {
     disabledSave?: boolean;
     onClear: () => void;
     onClose: () => void;
-    onSave: (modificationData: any) => void;
+    onSave: (modificationData: TFieldValues) => void;
     onValidated?: () => void;
-    onValidationError?: (errors: FieldErrors) => void;
+    onValidationError?: (errors: FieldErrors<TFieldValues>) => void;
 };
 
-export function ModificationDialog({
+export function ModificationDialog<TFieldValues extends FieldValues>({
     disabledSave = false,
     onClear,
     onClose,
@@ -38,15 +41,15 @@ export function ModificationDialog({
     onValidated,
     onValidationError,
     ...dialogProps
-}: Readonly<ModificationDialogProps>) {
-    const { handleSubmit } = useFormContext();
+}: Readonly<ModificationDialogProps<TFieldValues>>) {
+    const { handleSubmit } = useFormContext<TFieldValues>();
 
     const closeAndClear = () => {
         onClear();
         onClose();
     };
 
-    const handleValidate = (data: any) => {
+    const handleValidate = (data: TFieldValues) => {
         onValidated && onValidated();
         onSave(data);
         // do not wait fetch response and close dialog, errors will be shown in snackbar.
@@ -71,7 +74,7 @@ export function ModificationDialog({
         return () => clearTimeout(timeoutId);
     }, []);
 
-    const handleValidationError = (errors: FieldErrors) => {
+    const handleValidationError = (errors: FieldErrors<TFieldValues>) => {
         onValidationError && onValidationError(errors);
         handleScrollWhenError();
     };
