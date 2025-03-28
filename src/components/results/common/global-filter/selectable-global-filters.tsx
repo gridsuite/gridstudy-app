@@ -5,14 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid, ListItemButton, Paper } from '@mui/material';
-import { resultsGlobalFilterStyles } from './global-filter-styles';
+import { Box, Chip, Grid, ListItemButton, Paper } from '@mui/material';
+import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import { FormattedMessage } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
 import React, { PropsWithChildren } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
+import { FilterType } from '../utils';
+import { GlobalFilter } from './global-filter-types';
+import { getOptionLabel } from './global-filter-utils';
+import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 
 const XS_COLUMN1: number = 3.5;
 const XS_COLUMN2: number = 4;
@@ -23,16 +27,19 @@ export interface SelectableGlobalFiltersProps extends PropsWithChildren {
     categories: string[];
     filterGroupSelected: string;
     setFilterGroupSelected: (value: ((prevState: string) => string) | string) => void;
+    selectedGlobalFilters: GlobalFilter[];
 }
 
-// TODO ici se passe l'essentiel des changements
 function SelectableGlobalFilters({
     children,
     onClickGenericFilter,
     categories,
     filterGroupSelected,
     setFilterGroupSelected,
+    selectedGlobalFilters,
 }: Readonly<SelectableGlobalFiltersProps>) {
+    const { translate } = useLocalizedCountries();
+
     return (
         <Paper sx={resultsGlobalFilterStyles.dropdown}>
             <Grid container>
@@ -58,9 +65,7 @@ function SelectableGlobalFilters({
                 </Grid>
                 <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
                     <Box>{children}</Box>
-                </Grid>
-                <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
-                    <Box>
+                    {filterGroupSelected === FilterType.GENERIC_FILTER && (
                         <Box
                             sx={{
                                 paddingLeft: 2,
@@ -79,7 +84,18 @@ function SelectableGlobalFilters({
                                 <FolderIcon />
                             </IconButton>
                         </Box>
-                    </Box>
+                    )}
+                </Grid>
+                <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
+                    <List sx={{ width: '100%' }}>
+                        {selectedGlobalFilters.map((element: GlobalFilter, index: number) => (
+                            <Chip
+                                size="small"
+                                label={getOptionLabel(element, translate)}
+                                sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                            />
+                        ))}
+                    </List>
                 </Grid>
             </Grid>
         </Paper>

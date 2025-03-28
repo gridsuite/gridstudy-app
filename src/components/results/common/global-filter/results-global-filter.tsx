@@ -41,6 +41,7 @@ import SelectableGlobalFilters from './selectable-global-filters';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { computeFullPath } from '../../../../utils/compute-title';
+import { getOptionLabel } from './global-filter-utils';
 
 const RECENT_FILTER: string = 'recent';
 
@@ -130,20 +131,6 @@ function ResultsGlobalFilter({
     // may be a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
     const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>([]);
-
-    const getOptionLabel = useCallback(
-        (option: GlobalFilter) => {
-            switch (option.filterType) {
-                case FilterType.COUNTRY:
-                    return translate(option.label);
-                case FilterType.VOLTAGE_LEVEL:
-                    return option.label + ' kV';
-                case FilterType.GENERIC_FILTER:
-                    return option.label;
-            }
-        },
-        [translate]
-    );
 
     const handleChange = useCallback(
         async (globalFilters: GlobalFilter[]): Promise<void> => {
@@ -324,7 +311,7 @@ function ResultsGlobalFilter({
                     filters.map((element: GlobalFilter, index: number) => (
                         <Chip
                             size="small"
-                            label={getOptionLabel(element)}
+                            label={getOptionLabel(element, translate)}
                             {...getTagsProps({ index })}
                             sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                         />
@@ -346,7 +333,7 @@ function ResultsGlobalFilter({
                         <Chip
                             {...otherProps}
                             component="li"
-                            label={getOptionLabel(option)}
+                            label={getOptionLabel(option, translate)}
                             size="small"
                             sx={getResultsGlobalFiltersChipStyle(option.filterType)}
                         />
@@ -366,6 +353,7 @@ function ResultsGlobalFilter({
                         onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
                         filterGroupSelected={filterGroupSelected}
                         setFilterGroupSelected={setFilterGroupSelected}
+                        selectedGlobalFilters={selectedGlobalFilters}
                     />
                 )}
             />
