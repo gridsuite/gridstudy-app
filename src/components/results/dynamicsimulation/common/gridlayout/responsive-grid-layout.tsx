@@ -8,16 +8,22 @@
 import './react-grid-layout.main.css'; // from /node_modules/react-grid-layout/css/styles.css
 import './react-grid-layout.custom.css';
 // TODO place these css at global or directly into useStyles for RGLResponsive
-import { Responsive as RGLResponsive } from 'react-grid-layout';
+import { Responsive as RGLResponsive, ResponsiveProps } from 'react-grid-layout';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
-const ResponsiveGridLayout = ({ computeRowHeight, ...rest }) => {
+export type ResponsiveGridLayoutProps = ResponsiveProps & {
+    computeRowHeight: (height: number) => number;
+};
+
+function ResponsiveGridLayout({ computeRowHeight, ...otherProps }: Readonly<ResponsiveGridLayoutProps>) {
     // use AutoSizer to make react-grid-layout Responsive component aware of width
     return (
         <AutoSizer>
-            {({ width, height }) => <RGLResponsive width={width} rowHeight={computeRowHeight(height)} {...rest} />}
+            {({ width, height }) => (
+                <RGLResponsive width={width} rowHeight={computeRowHeight(height)} {...otherProps} />
+            )}
         </AutoSizer>
     );
-};
+}
 
 export default ResponsiveGridLayout;
