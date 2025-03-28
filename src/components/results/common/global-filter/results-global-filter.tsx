@@ -25,12 +25,12 @@ import { AppState } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 import { FilterType } from '../utils';
 import {
-    ElementType,
-    TreeViewFinderNodeProps,
     DirectoryItemSelector,
-    fetchElementsInfos,
     ElementAttributes,
+    ElementType,
     fetchDirectoryElementPath,
+    fetchElementsInfos,
+    TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
@@ -42,7 +42,7 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { computeFullPath } from '../../../../utils/compute-title';
 
-const recentFilter: string = 'recent';
+const RECENT_FILTER: string = 'recent';
 
 const emptyArray: GlobalFilter[] = [];
 
@@ -126,15 +126,6 @@ function ResultsGlobalFilter({
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch<AppDispatch>();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
-    // Map <FilterType, number of options of this type>
-    // -1 number of options means that the user required everything to be displayed no matter the number of options
-    const [numberOfOptions, setNumberOfOptions] = useState<Map<string, number>>(
-        new Map([
-            [FilterType.COUNTRY, 0],
-            [FilterType.VOLTAGE_LEVEL, 0],
-            [FilterType.GENERIC_FILTER, 0],
-        ])
-    );
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
     // may be a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
@@ -265,27 +256,23 @@ function ResultsGlobalFilter({
 
     const filterOptions = useCallback(
         (options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
-            const numByGroup: Map<string, number> = new Map();
-            const filteredOptions: GlobalFilter[] = options
-                // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
-                .filter((option: GlobalFilter) => {
-                    const labelToMatch: string =
-                        option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
-                    return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
-                })
-                .filter((option: GlobalFilter) =>
-                    // recent filters are a group in itself
-                    option.recent ? filterGroupSelected === recentFilter : option.filterType === filterGroupSelected
-                );
-
-            // if the numberOfOptions has not been set yet :
-            if (Array.from(numberOfOptions.values()).find((number) => number !== 0) === undefined) {
-                setNumberOfOptions(numByGroup);
-            }
-
-            return filteredOptions;
+            return (
+                options
+                    // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
+                    .filter((option: GlobalFilter) => {
+                        const labelToMatch: string =
+                            option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
+                        return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
+                    })
+                    .filter((option: GlobalFilter) =>
+                        // recent filters are a group in itself
+                        option?.recent
+                            ? filterGroupSelected === RECENT_FILTER
+                            : option.filterType === filterGroupSelected
+                    )
+            );
         },
-        [filterGroupSelected, numberOfOptions, translate]
+        [filterGroupSelected, translate]
     );
 
     const options = useMemo(
@@ -330,7 +317,7 @@ function ResultsGlobalFilter({
                 disableCloseOnSelect
                 options={options}
                 onChange={(_e, value) => handleChange(value)}
-                groupBy={(option: GlobalFilter): string => (option.recent ? recentFilter : option.filterType)}
+                groupBy={(option: GlobalFilter): string => (option.recent ? RECENT_FILTER : option.filterType)}
                 renderInput={RenderInput}
                 // renderTags : the chips in the inputField
                 renderTags={(filters: GlobalFilter[], getTagsProps) =>
@@ -374,7 +361,7 @@ function ResultsGlobalFilter({
                 }
                 PaperComponent={(props: PropsWithChildren) => (
                     <SelectableGlobalFilters
-                        categories={[recentFilter, ...Object.values(FilterType)]}
+                        categories={[RECENT_FILTER, ...Object.values(FilterType)]}
                         children={props.children}
                         onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
                         filterGroupSelected={filterGroupSelected}
