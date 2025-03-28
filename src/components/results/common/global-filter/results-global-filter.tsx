@@ -17,7 +17,7 @@ import {
     TextField,
 } from '@mui/material';
 import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters, removeFromRecentGlobalFilters } from '../../../../redux/actions';
@@ -45,7 +45,6 @@ import { computeFullPath } from '../../../../utils/compute-title';
 const recentFilter: string = 'recent';
 
 const emptyArray: GlobalFilter[] = [];
-const DEFAULT_NB_OPTIONS_DISPLAYED: number = 10;
 
 // renderInput : the inputfield that contains the chips, adornments and label
 function RenderInput({
@@ -274,16 +273,10 @@ function ResultsGlobalFilter({
                         option.filterType === FilterType.COUNTRY ? translate(option.label) : option.label;
                     return labelToMatch.toLowerCase().includes(state.inputValue.toLowerCase());
                 })
-                .filter((option: GlobalFilter) => option.filterType === filterGroupSelected) // TODO : gérer les récents comme groupe en soit
-                // display only a part of the options if there are too many (unless required by the user) // TODO : retirer ça ?
-                .filter((option: GlobalFilter) => {
-                    if (option.recent || numberOfOptions.get(option.filterType) === -1) {
-                        return true;
-                    }
-                    const num = numByGroup.get(option.filterType) ?? 0;
-                    numByGroup.set(option.filterType, num + 1);
-                    return num < DEFAULT_NB_OPTIONS_DISPLAYED;
-                });
+                .filter((option: GlobalFilter) =>
+                    // recent filters are a group in itself
+                    option.recent ? filterGroupSelected === recentFilter : option.filterType === filterGroupSelected
+                );
 
             // if the numberOfOptions has not been set yet :
             if (Array.from(numberOfOptions.values()).find((number) => number !== 0) === undefined) {
@@ -350,26 +343,11 @@ function ResultsGlobalFilter({
                         />
                     ))
                 }
-                // renderGroup : the boxes below that are visible when we focus on the AutoComplete
                 renderGroup={(item) => {
                     const { group, children } = item;
-                    const recent: boolean = group === recentFilter;
-                    const numOfGroupOptions: number = numberOfOptions.get(group) ?? 0;
                     return (
                         <Box key={'keyBoxGroup_' + group} sx={resultsGlobalFilterStyles.chipBox}>
-                            <Box>
-                                <FormattedMessage id={'results.globalFilter.' + group} />
-                            </Box>
                             {children}
-                            {!recent && numOfGroupOptions - DEFAULT_NB_OPTIONS_DISPLAYED > 0 && (
-                                <Chip
-                                    component="li"
-                                    label={'+ ' + (numOfGroupOptions - DEFAULT_NB_OPTIONS_DISPLAYED)}
-                                    size="small"
-                                    sx={getResultsGlobalFiltersChipStyle(group)}
-                                    onClick={() => setNumberOfOptions(new Map([...numberOfOptions, [group, -1]]))}
-                                />
-                            )}
                         </Box>
                     );
                 }}
