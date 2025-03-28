@@ -1261,6 +1261,7 @@
     "InsertModificationFrom": "Insert from GridExplore",
     "SaveToGridexplore": "Save to GridExplore",
     "SaveToGridexploreError": "An error occurred while saving to GridExplore",
+    "EditNad" : "Edit",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
     "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {directory}",

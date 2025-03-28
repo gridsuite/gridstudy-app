@@ -181,9 +181,7 @@ const VscModificationDialog: React.FC<any> = ({
                                 setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable1,
                                     `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    getValues,
-                                    setValue,
-                                    isNodeBuilt(currentNode)
+                                    setValue
                                 );
                             }
 
@@ -193,9 +191,7 @@ const VscModificationDialog: React.FC<any> = ({
                                 setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable2,
                                     `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    getValues,
-                                    setValue,
-                                    isNodeBuilt(currentNode)
+                                    setValue
                                 );
                             }
                             setSelectedReactiveLimits(

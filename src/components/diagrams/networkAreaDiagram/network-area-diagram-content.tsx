@@ -169,6 +169,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
+    const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
 
     const nadIdentifier = useMemo(() => {
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
@@ -276,10 +277,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
                 null,
-                true,
+                isEditNadMode,
                 true,
                 dynamicCssRules,
-                OnToggleHoverCallback,
+                isEditNadMode ? null : OnToggleHoverCallback,
                 null,
                 false
             );
@@ -346,6 +347,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         OnToggleHoverCallback,
         nadIdentifier,
         onMoveTextNodeCallback,
+        isEditNadMode,
     ]);
 
     /**

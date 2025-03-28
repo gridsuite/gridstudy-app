@@ -139,7 +139,8 @@ export type AppActions =
     | SetAppTabIndexAction
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
-    | CancelLeaveParametersTabAction;
+    | CancelLeaveParametersTabAction
+    | SetEditNadModeAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -567,6 +568,18 @@ export function setReloadMapNeeded(reloadMapNeeded: boolean): SetReloadMapNeeded
     return {
         type: SET_RELOAD_MAP_NEEDED,
         reloadMapNeeded,
+    };
+}
+
+export const SET_EDIT_NAD_MODE = 'SET_EDIT_NAD_MODE';
+export type SetEditNadModeAction = Readonly<Action<typeof SET_EDIT_NAD_MODE>> & {
+    isEditMode: boolean;
+};
+
+export function setEditNadMode(isEditMode: boolean): SetEditNadModeAction {
+    return {
+        type: SET_EDIT_NAD_MODE,
+        isEditMode,
     };
 }
 
