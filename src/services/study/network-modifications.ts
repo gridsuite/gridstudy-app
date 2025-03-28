@@ -332,9 +332,7 @@ export function createBattery({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            ...batteryCreationInfos,
-        }),
+        body: JSON.stringify(batteryCreationInfos),
     });
 }
 
@@ -364,7 +362,7 @@ export function modifyBattery({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...batteryModificationInfos }),
+        body: JSON.stringify(batteryModificationInfos),
     });
 }
 
@@ -527,9 +525,7 @@ export function createGenerator({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            ...generatorCreationInfos,
-        }),
+        body: JSON.stringify(generatorCreationInfos),
     });
 }
 
