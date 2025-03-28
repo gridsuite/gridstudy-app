@@ -28,9 +28,11 @@ import {
 } from '../config/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection } from '../../../services/explore';
+import { NodeAlias } from '../custom-columns/node-alias.type';
 
 interface SpreadsheetCollectionSaveDialogProps {
     open: UseStateBooleanReturn;
+    nodeAliases: NodeAlias[] | undefined;
 }
 
 const styles = {
@@ -52,7 +54,10 @@ interface TableState {
     index: number;
 }
 
-export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetCollectionSaveDialogProps> = ({ open }) => {
+export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetCollectionSaveDialogProps> = ({
+    open,
+    nodeAliases,
+}) => {
     const { snackError, snackInfo } = useSnackMessage();
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
@@ -156,6 +161,7 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
             try {
                 const collection: SpreadsheetCollection = {
                     spreadsheetConfigs: selectedConfigs,
+                    nodeAliases: nodeAliases?.map((n) => n.alias),
                 };
 
                 await saveSpreadsheetCollection(collection, element.name, element.description, element.folderId);
@@ -173,7 +179,7 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                 });
             }
         },
-        [selectedConfigs, snackInfo, snackError]
+        [selectedConfigs, snackInfo, snackError, nodeAliases]
     );
 
     const isAllChecked = localTablesState.length > 0 && localTablesState.every((table) => table.selected);
