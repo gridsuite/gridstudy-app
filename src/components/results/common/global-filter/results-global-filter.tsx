@@ -291,7 +291,7 @@ function ResultsGlobalFilter({
                 onOpen={() => setOpenedDropdown(true)}
                 onClose={(event, reason: AutocompleteCloseReason) => {
                     if (reason !== 'selectOption' && reason !== 'blur') {
-                        // TODO : blur est peut-être excessif => trouver coment ne aps fermer la dropdown quand on clique dans la fenêtre
+                        // TODO : blur est peut-être excessif => trouver coment ne pas fermer la dropdown quand on clique dans la fenêtre
                         setOpenedDropdown(false);
                     }
                 }}

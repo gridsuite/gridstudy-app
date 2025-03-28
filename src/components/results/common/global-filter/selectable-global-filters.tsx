@@ -64,32 +64,28 @@ function SelectableGlobalFilters({
                     </List>
                 </Grid>
                 <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
-                    <Box>{children}</Box>
-                    {filterGroupSelected === FilterType.GENERIC_FILTER && (
-                        <Box
-                            sx={{
-                                paddingLeft: 2,
-                                paddingTop: 1.5,
-                            }}
-                        >
-                            <FormattedMessage id={'Filters'} />
+                    {filterGroupSelected === FilterType.GENERIC_FILTER ? (
+                        <Box sx={resultsGlobalFilterStyles.importFilterButton} onMouseDown={onClickGenericFilter}>
                             <IconButton
                                 color="primary"
                                 sx={{
                                     align: 'right',
                                     marginLeft: 'auto',
                                 }}
-                                onMouseDown={onClickGenericFilter}
                             >
                                 <FolderIcon />
                             </IconButton>
+                            <FormattedMessage id={'Filters'} />
                         </Box>
+                    ) : (
+                        children
                     )}
                 </Grid>
                 <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
                     <List sx={{ width: '100%' }}>
                         {selectedGlobalFilters.map((element: GlobalFilter, index: number) => (
                             <Chip
+                                key={index}
                                 size="small"
                                 label={getOptionLabel(element, translate)}
                                 sx={getResultsGlobalFiltersChipStyle(element.filterType)}

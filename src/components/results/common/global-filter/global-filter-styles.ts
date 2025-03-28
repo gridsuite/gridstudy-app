@@ -71,8 +71,16 @@ export const resultsGlobalFilterStyles = {
         color: theme.palette.text.secondary,
         fontSize: '1em',
         width: '100%',
-        border: '1px solid',
+        borderLeft: '1px solid',
         borderColor: theme.palette.divider,
+    }),
+    importFilterButton: (theme: Theme) => ({
+        color: theme.palette.text.secondary,
+        fontSize: '0.8em',
+        width: '100%',
+        borderTop: '1px solid',
+        borderColor: theme.palette.divider,
+        alignSelf: 'flex-end',
     }),
     chip: {
         '&.MuiChip-root': {
