@@ -279,9 +279,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 null,
                 isEditNadMode,
                 true,
-                !isEditNadMode,
                 dynamicCssRules,
-                OnToggleHoverCallback,
+                isEditNadMode ? null : OnToggleHoverCallback,
                 null,
                 false
             );
