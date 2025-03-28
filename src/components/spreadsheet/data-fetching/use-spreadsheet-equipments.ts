@@ -19,6 +19,7 @@ import { NodeAlias } from '../custom-columns/node-alias.type';
 import { isStatusBuilt } from '../../graph/util/model-functions';
 import { useFetchEquipment } from './use-fetch-equipment';
 import { NodeType } from '../../graph/tree-node.type';
+import { validAlias } from '../custom-columns/use-node-aliases';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -48,7 +49,7 @@ export const useSpreadsheetEquipments = (
         }
         let set = new Set<UUID>();
         const aliasedNodesIds = nodeAliases
-            .filter((nodeAlias) => nodeAlias.id !== undefined)
+            .filter((nodeAlias) => validAlias(nodeAlias))
             .map((nodeAlias) => nodeAlias.id);
         if (aliasedNodesIds.length > 0) {
             treeNodes?.forEach((treeNode) => {
