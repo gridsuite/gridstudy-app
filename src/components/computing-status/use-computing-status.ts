@@ -49,7 +49,7 @@ function isWorthUpdate(
     const updateType = headers?.updateType;
     const node = headers?.node;
     const nodes = headers?.nodes;
-    const rootNetworkUuidFromNotification = headers?.rootNetwork;
+    const rootNetworkUuidFromNotification = headers?.rootNetworkUuid;
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
     }

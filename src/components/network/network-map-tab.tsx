@@ -56,7 +56,7 @@ import {
     CurrentTreeNode,
     LoadflowResultEventData,
     NotificationType,
-    RootNetworkModifiedEventData,
+    RootNetworksUpdatedEventData,
 } from 'redux/reducer';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { isReactFlowRootNodeData } from 'redux/utils';
@@ -827,7 +827,7 @@ export const NetworkMapTab = ({
             const eventData = parsedEventData as LoadflowResultEventData;
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.LOADFLOW_RESULT) {
-                const rootNetworkUuidFromNotification = eventData.headers.rootNetwork;
+                const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
                 if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
                     dispatch(setMapDataLoading(true));
                     reloadMapEquipments(currentNodeRef.current, undefined)
@@ -851,10 +851,10 @@ export const NetworkMapTab = ({
                 return;
             }
             const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworkModifiedEventData;
+            const eventData = parsedEventData as RootNetworksUpdatedEventData;
             const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORK_MODIFIED) {
-                const rootNetworkUuidFromNotification = eventData.headers.rootNetwork;
+            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
+                const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
                 if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
                     setInitialized(false);
                     setIsRootNodeGeoDataLoaded(false);
