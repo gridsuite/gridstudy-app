@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -396,7 +396,6 @@ const GeneratorModificationDialog = ({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modification-generator"
                 maxWidth={'md'}
                 titleId="ModifyGenerator"
                 open={open}

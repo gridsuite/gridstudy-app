@@ -6,12 +6,15 @@
  */
 
 import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../tree-node.type';
+import { FetchStatus } from '../../../../services/utils.type';
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
     name: string;
     tag: string;
     isCreating: boolean;
 }
+
 export interface NetworkModificationMetadata {
     uuid: UUID;
     type: string;
@@ -20,6 +23,11 @@ export interface NetworkModificationMetadata {
     activated: boolean;
     messageType: string;
     messageValues: string;
+}
+
+export interface NetworkModificationInfos {
+    modificationInfos: NetworkModificationMetadata;
+    activationStatusByRootNetwork: Record<UUID, boolean>;
 }
 
 export enum NetworkModificationCopyType {
@@ -60,3 +68,14 @@ export interface NetworkModificationData {
     type: string;
     [key: string]: any;
 }
+
+// Cf withDefaultParams : common props for any modification available from the menu
+export type DefaultModificationDialogProps = {
+    currentNode: CurrentTreeNode;
+    studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    isUpdate: boolean;
+    editDataFetchStatus: FetchStatus;
+    onValidated: () => void;
+    onClose: () => void;
+};

@@ -154,6 +154,7 @@ import {
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
+    SET_ROOT_NETWORKS,
     SET_RELOAD_MAP_NEEDED,
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
@@ -168,6 +169,7 @@ import {
     SetOneBusShortcircuitAnalysisDiagramAction,
     SetOptionalServicesAction,
     SetParamsLoadedAction,
+    SetRootNetworksAction,
     SetReloadMapNeededAction,
     SetStudyDisplayModeAction,
     SetStudyIndexationStatusAction,
@@ -289,11 +291,9 @@ import {
     LineFlowMode,
 } from '@powsybl/network-viewer';
 import type { ValueOf } from 'type-fest';
-import { Node } from '@xyflow/react';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
-import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
+import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
-import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
@@ -304,6 +304,7 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
+import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
 
 export enum NotificationType {
@@ -448,23 +449,6 @@ export type StudyUpdated = {
     | RootNetworkDeletionStartedNotification
 );
 
-type NodeCommonData = {
-    label: string;
-    globalBuildStatus?: BUILD_STATUS;
-    description?: string;
-    readOnly?: boolean;
-};
-export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
-
-export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETWORK_MODIFICATION> & {
-    id: UUID;
-};
-
-export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
-export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
-
-export type CurrentTreeNode = ModificationNode | RootNode;
-
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
@@ -540,6 +524,7 @@ export interface AppState extends CommonStoreState {
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
     currentRootNetworkUuid: UUID | null;
+    rootNetworks: RootNetworkMetadata[];
     computingStatus: ComputingStatus;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
@@ -697,6 +682,7 @@ const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
     currentRootNetworkUuid: null,
+    rootNetworks: [],
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
@@ -1251,6 +1237,10 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
+    builder.addCase(SET_ROOT_NETWORKS, (state, action: SetRootNetworksAction) => {
+        state.rootNetworks = action.rootNetworks;
+    });
+
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
         const nodeSelectionForCopy = action.nodeSelectionForCopy;
         if (
@@ -1497,24 +1487,21 @@ export const reducer = createReducer(initialState, (builder) => {
                         diagram.state = newStateForNads;
                     }
                 });
+            } else if (diagramStates[diagramToPinToggleIndex].state !== ViewState.PINNED) {
+                // If the current SLD is minimized or opened, we pin it.
+                diagramStates[diagramToPinToggleIndex].state = ViewState.PINNED;
             } else {
-                if (diagramStates[diagramToPinToggleIndex].state !== ViewState.PINNED) {
-                    // If the current SLD is minimized or opened, we pin it.
-                    diagramStates[diagramToPinToggleIndex].state = ViewState.PINNED;
+                // If the current SLD is pinned, we check if there is already another SLD opened (there can only be one
+                // SLD opened -not pinned- at a time). If there is, then we minimize the current SLD. If none, we open it.
+                const currentlyOpenedDiagramIndex = diagramStates.findIndex(
+                    (diagram) =>
+                        diagram.state === ViewState.OPENED &&
+                        (diagram.svgType === DiagramType.SUBSTATION || diagram.svgType === DiagramType.VOLTAGE_LEVEL)
+                );
+                if (currentlyOpenedDiagramIndex >= 0) {
+                    diagramStates[diagramToPinToggleIndex].state = ViewState.MINIMIZED;
                 } else {
-                    // If the current SLD is pinned, we check if there is already another SLD opened (there can only be one
-                    // SLD opened -not pinned- at a time). If there is, then we minimize the current SLD. If none, we open it.
-                    const currentlyOpenedDiagramIndex = diagramStates.findIndex(
-                        (diagram) =>
-                            diagram.state === ViewState.OPENED &&
-                            (diagram.svgType === DiagramType.SUBSTATION ||
-                                diagram.svgType === DiagramType.VOLTAGE_LEVEL)
-                    );
-                    if (currentlyOpenedDiagramIndex >= 0) {
-                        diagramStates[diagramToPinToggleIndex].state = ViewState.MINIMIZED;
-                    } else {
-                        diagramStates[diagramToPinToggleIndex].state = ViewState.OPENED;
-                    }
+                    diagramStates[diagramToPinToggleIndex].state = ViewState.OPENED;
                 }
             }
         }
@@ -2043,7 +2030,7 @@ function updateEquipments(currentEquipments: Identifiable[], newOrUpdatedEquipme
 
 function synchCurrentTreeNode(state: Draft<AppState>, nextCurrentNodeUuid?: UUID) {
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
-        (node) => node?.id === nextCurrentNodeUuid
+        (node: CurrentTreeNode) => node?.id === nextCurrentNodeUuid
     );
 
     //  we need to overwrite state.currentTreeNode to consider label change for example.

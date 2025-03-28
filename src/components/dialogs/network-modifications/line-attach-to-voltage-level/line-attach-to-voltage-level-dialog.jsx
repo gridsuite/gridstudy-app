@@ -27,7 +27,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../commons/modificationDialog';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import {
     getConnectivityData,
     getConnectivityWithoutPositionEmptyFormData,
@@ -317,7 +317,6 @@ const LineAttachToVoltageLevelDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-attach-voltage-level-to-a-line"
                 titleId="LineAttachToVoltageLevel"
                 subtitle={<LineAttachToVoltageLevelIllustration />}
                 open={open}
