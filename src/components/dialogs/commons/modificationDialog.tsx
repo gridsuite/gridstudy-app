@@ -6,44 +6,54 @@
  */
 
 import { useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { useFormContext } from 'react-hook-form';
+import { FieldErrors, FieldValues, useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
-import ModificationDialogContent from './modification-dialog-content';
+import { ModificationDialogContent, ModificationDialogContentProps } from './modification-dialog-content';
 
 /**
  * Generic Modification Dialog which manage basic common behaviors with react
  * hook form validation.
- * @param {EventListener} onClose Event to close the dialog
  * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
  * @param {CallbackEvent} onSave callback when saving the modification
  * @param {Boolean} disabledSave to control disabled prop of the validate button
  * @param {CallbackEvent} onValidated callback when validation is successful
  * @param {CallbackEvent} onValidationError callback when validation failed
- * @param {Array} props props that are forwarded to the MUI Dialog component
+ * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
  */
-const ModificationDialog = ({
-    onClose,
-    onClear,
-    onSave,
+
+export type ModificationDialogProps<TFieldValues extends FieldValues> = Omit<
+    ModificationDialogContentProps,
+    'closeAndClear' | 'submitButton'
+> & {
+    disabledSave?: boolean;
+    onClear: () => void;
+    onClose: () => void;
+    onSave: (modificationData: TFieldValues) => void;
+    onValidated?: () => void;
+    onValidationError?: (errors: FieldErrors<TFieldValues>) => void;
+};
+
+export function ModificationDialog<TFieldValues extends FieldValues>({
     disabledSave = false,
-    showNodeNotBuiltWarning = false,
+    onClear,
+    onClose,
+    onSave,
     onValidated,
     onValidationError,
-    ...props
-}) => {
-    const { handleSubmit } = useFormContext();
+    ...dialogProps
+}: Readonly<ModificationDialogProps<TFieldValues>>) {
+    const { handleSubmit } = useFormContext<TFieldValues>();
 
-    const closeAndClear = (event, reason) => {
+    const closeAndClear = () => {
         onClear();
-        onClose(event, reason);
+        onClose();
     };
 
-    const handleValidate = (data) => {
+    const handleValidate = (data: TFieldValues) => {
         onValidated && onValidated();
         onSave(data);
         // do not wait fetch response and close dialog, errors will be shown in snackbar.
-        closeAndClear(data, 'validateButtonClick');
+        closeAndClear();
     };
 
     const handleScrollWhenError = useCallback(() => {
@@ -64,7 +74,7 @@ const ModificationDialog = ({
         return () => clearTimeout(timeoutId);
     }, []);
 
-    const handleValidationError = (errors) => {
+    const handleValidationError = (errors: FieldErrors<TFieldValues>) => {
         onValidationError && onValidationError(errors);
         handleScrollWhenError();
     };
@@ -77,32 +87,5 @@ const ModificationDialog = ({
         />
     );
 
-    return (
-        <ModificationDialogContent
-            submitButton={submitButton}
-            closeAndClear={closeAndClear}
-            showNodeNotBuiltWarning={showNodeNotBuiltWarning}
-            {...props}
-        />
-    );
-};
-
-ModificationDialog.propTypes = {
-    showNodeNotBuiltWarning: PropTypes.bool,
-    isDataFetching: PropTypes.bool,
-    onClose: PropTypes.func.isRequired,
-    onClear: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired,
-    searchCopy: PropTypes.object,
-    subtitle: PropTypes.object,
-    disabledSave: PropTypes.bool,
-    onValidated: PropTypes.func,
-    onValidationError: PropTypes.func,
-    fullWidth: PropTypes.bool,
-    open: PropTypes.bool,
-    titleId: PropTypes.string,
-    maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-    children: PropTypes.node,
-};
-
-export default ModificationDialog;
+    return <ModificationDialogContent closeAndClear={closeAndClear} submitButton={submitButton} {...dialogProps} />;
+}

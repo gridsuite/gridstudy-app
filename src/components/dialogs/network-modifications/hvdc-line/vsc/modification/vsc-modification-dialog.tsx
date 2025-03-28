@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { sanitizeString } from '../../../../dialog-utils';
@@ -336,7 +336,6 @@ const VscModificationDialog: React.FC<any> = ({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={handleSubmit(onSubmit)}
-                aria-labelledby="dialog-modify-vsc"
                 maxWidth={'md'}
                 titleId="ModifyVsc"
                 PaperProps={{

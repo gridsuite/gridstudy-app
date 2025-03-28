@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -315,7 +315,6 @@ const BatteryModificationDialog = ({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modification-battery"
                 maxWidth={'md'}
                 titleId="ModifyBattery"
                 open={open}
