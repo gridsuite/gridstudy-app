@@ -12,7 +12,7 @@ import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from './node-alias.type';
 
-// NodeAlias may have null/undefined id/name, in error cases
+// NodeAlias may have invalid id/name, in error cases
 export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
 
 export const useNodeAliases = () => {

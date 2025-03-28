@@ -47,7 +47,7 @@ export const useSpreadsheetEquipments = (
         if (!nodeAliases) {
             return;
         }
-        let set = new Set<UUID>();
+        let computedIds: UUID[] = [];
         const aliasedNodesIds = nodeAliases
             .filter((nodeAlias) => validAlias(nodeAlias))
             .map((nodeAlias) => nodeAlias.id);
@@ -57,7 +57,7 @@ export const useSpreadsheetEquipments = (
                     aliasedNodesIds.includes(treeNode.id) &&
                     (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
                 ) {
-                    set.add(treeNode.id);
+                    computedIds.push(treeNode.id);
                 }
             });
         }
@@ -65,7 +65,6 @@ export const useSpreadsheetEquipments = (
         setBuiltAliasedNodesIds((prevState) => {
             const currentIds = prevState;
             currentIds?.sort((a, b) => a.localeCompare(b));
-            const computedIds = Array.from(set);
             computedIds.sort((a, b) => a.localeCompare(b));
             if (JSON.stringify(currentIds) !== JSON.stringify(computedIds)) {
                 return computedIds;

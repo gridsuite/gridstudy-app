@@ -20,6 +20,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useFetchEquipment } from '../data-fetching/use-fetch-equipment';
 import { validAlias } from './use-node-aliases';
+import { NodeType } from '../../graph/tree-node.type';
+import { isStatusBuilt } from '../../graph/util/model-functions';
 
 const styles = {
     icon: {
@@ -50,6 +52,7 @@ export default function CustomColumnsNodesConfig({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.type);
+    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
 
     const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
 
@@ -58,20 +61,25 @@ export default function CustomColumnsNodesConfig({
         [nodeAliases]
     );
 
+    const isBuilt = useCallback(
+        (nodeId: string | undefined) =>
+            treeNodes?.find(
+                (node) =>
+                    node.id === nodeId && (node.type === NodeType.ROOT || isStatusBuilt(node.data?.globalBuildStatus))
+            ) !== undefined,
+        [treeNodes]
+    );
+
     const nodesToReload = useMemo(() => {
-        // Get all aliased nodes ids, except for Root and current node (both are always up-to-date)
-        console.log('DBG DBR nodesToReload IN=', nodeAliases);
-        console.log(
-            'DBG DBR nodesToReload RET=',
-            nodeAliases?.filter(
-                (node) => validAlias(node) && node.id !== currentNode?.id && node.name !== ROOT_NODE_LABEL
-            )
-        );
+        // Get all valid aliased nodes ids, except for Root and current node (both are always up-to-date), and only the built ones
         return nodeAliases?.filter(
             (nodeAlias) =>
-                validAlias(nodeAlias) && nodeAlias.id !== currentNode?.id && nodeAlias.name !== ROOT_NODE_LABEL
+                validAlias(nodeAlias) &&
+                nodeAlias.id !== currentNode?.id &&
+                nodeAlias.name !== ROOT_NODE_LABEL &&
+                isBuilt(nodeAlias.id)
         );
-    }, [currentNode?.id, nodeAliases]);
+    }, [currentNode?.id, isBuilt, nodeAliases]);
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
