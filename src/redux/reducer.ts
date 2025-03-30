@@ -206,6 +206,8 @@ import {
     RENAME_TABLE_DEFINITION,
     SET_CALCULATION_SELECTIONS,
     SetCalculationSelectionsAction,
+    SET_EDIT_NAD_MODE,
+    SetEditNadModeAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -557,6 +559,7 @@ export interface AppState extends CommonStoreState {
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
     reloadMapNeeded: boolean;
+    isEditMode: boolean;
     freezeMapUpdates: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
@@ -713,6 +716,7 @@ const initialState: AppState = {
     nadNodeMovements: [],
     nadTextNodeMovements: [],
     reloadMapNeeded: true,
+    isEditMode: false,
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -1198,6 +1202,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_RELOAD_MAP_NEEDED, (state, action: SetReloadMapNeededAction) => {
         state.reloadMapNeeded = action.reloadMapNeeded;
+    });
+
+    builder.addCase(SET_EDIT_NAD_MODE, (state, action: SetEditNadModeAction) => {
+        state.isEditMode = action.isEditMode;
     });
 
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {

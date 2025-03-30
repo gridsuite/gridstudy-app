@@ -1276,6 +1276,7 @@
     "diagramConfigUpdateMsg": "Network area diagram {item} updated",
     "diagramConfigCreationError": "Network area diagram creation error",
     "diagramConfigUpdateError": "Error while updating network area diagram {item}",
+    "EditNad" : "Edit",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
     "errUpdateModificationsMsg": "Error while updating Composite modification {item}",
