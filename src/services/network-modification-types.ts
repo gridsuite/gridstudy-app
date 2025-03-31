@@ -12,7 +12,7 @@ import {
     FieldValue,
 } from '../components/dialogs/network-modifications/by-filter/by-assignment/assignment/assignment.type';
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation.type';
+import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/lcc-type';
 import {
     AttributeModification,
     ConverterStationElementModificationInfos,

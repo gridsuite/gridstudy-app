@@ -8,8 +8,8 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { Box } from '@mui/material';
 import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../../utils/field-constants';
-import LccHvdcLine from './lcc-hvdc-line';
-import { LccCreationDialogTab } from './lcc-creation.type';
+import LccHvdcLine from '../lcc-hvdc-line';
+import { LccCreationDialogTab } from '../lcc-type';
 import LccConverterStation from './lcc-converter-station';
 
 interface LccCreationFormProps {

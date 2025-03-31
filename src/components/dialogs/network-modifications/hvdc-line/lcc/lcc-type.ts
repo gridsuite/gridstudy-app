@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Property } from '../../../common/properties/property-utils';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
+import { Property } from '../../common/properties/property-utils';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { ConnectablePositionInfos } from '../../../connectivity/connectivity.type';
 
 export const LccCreationDialogTab = {
     HVDC_LINE_TAB: 0,
