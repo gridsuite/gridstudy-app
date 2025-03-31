@@ -83,9 +83,9 @@ function SelectableGlobalFilters({
                 </Grid>
                 <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
                     <List sx={{ width: '100%' }}>
-                        {selectedGlobalFilters.map((element: GlobalFilter, index: number) => (
+                        {selectedGlobalFilters.map((element: GlobalFilter) => (
                             <Chip
-                                key={index}
+                                key={element.uuid}
                                 size="small"
                                 label={getOptionLabel(element, translate)}
                                 sx={getResultsGlobalFiltersChipStyle(element.filterType)}
