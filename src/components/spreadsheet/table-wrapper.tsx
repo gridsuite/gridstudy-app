@@ -13,7 +13,6 @@ import { Alert, Box, Button, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EquipmentTable } from './equipment-table';
 import { Identifiable, PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from './data-fetching/use-spreadsheet-equipments';
@@ -118,7 +117,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { nodeAliases, updateNodeAliases, resetNodeAliases } = useNodeAliases();
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
-    const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
@@ -527,21 +525,17 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             disabled={shouldDisableButtons || tableDefinition?.columns.length === 0}
                         />
                     </Grid>
-                    {developerMode && (
-                        <Grid item>
-                            <CustomColumnsConfig tabIndex={activeTabIndex} disabled={shouldDisableButtons} />
-                        </Grid>
-                    )}
-                    {developerMode && (
-                        <Grid item>
-                            <CustomColumnsNodesConfig
-                                disabled={shouldDisableButtons}
-                                tabIndex={activeTabIndex}
-                                nodeAliases={nodeAliases}
-                                updateNodeAliases={updateNodeAliases}
-                            />
-                        </Grid>
-                    )}
+                    <Grid item>
+                        <CustomColumnsConfig tabIndex={activeTabIndex} disabled={shouldDisableButtons} />
+                    </Grid>
+                    <Grid item>
+                        <CustomColumnsNodesConfig
+                            disabled={shouldDisableButtons}
+                            tabIndex={activeTabIndex}
+                            nodeAliases={nodeAliases}
+                            updateNodeAliases={updateNodeAliases}
+                        />
+                    </Grid>
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>
                         <Button
