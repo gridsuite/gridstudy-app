@@ -37,6 +37,7 @@ import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/com
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
+import { useDiagram } from '../use-diagram';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -143,11 +144,13 @@ type NetworkAreaDiagramContentProps = {
     readonly svg?: string;
     readonly svgMetadata?: DiagramMetadata;
     readonly svgScalingFactor?: number;
+    readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
     visible: boolean;
 };
+
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();
@@ -168,12 +171,20 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
     const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
+    const { loadNadFromConfigView } = useDiagram();
 
     const nadIdentifier = useMemo(() => {
+        if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
+            return props.diagramId;
+        }
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
-    }, [diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]);
+    }, [
+        diagramStates,
+        networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+        props.svgType,
+        props.diagramId,
+    ]);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
@@ -238,15 +249,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
-        const voltageLevelIds = diagramStates
-            .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
-            .map((diagram) => diagram.id);
         createDiagramConfig(
             {
-                depth: networkAreaDiagramDepth,
                 scalingFactor: props.svgScalingFactor,
-                radiusFactor: 300.0, // At the moment, we only use the default value
-                voltageLevelIds: voltageLevelIds,
+                voltageLevelIds: props.svgVoltageLevels ?? [],
                 positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
             },
             directoryData.name,
@@ -268,6 +274,13 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 })
             );
     };
+
+    const handleLoadFromConfig = useCallback(
+        (nadConfigUuid: string, nadName: string) => {
+            loadNadFromConfigView(nadConfigUuid, nadName);
+        },
+        [loadNadFromConfigView]
+    );
 
     /**
      * DIAGRAM CONTENT BUILDING
@@ -384,7 +397,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
-            <DiagramControls onSave={handleSaveNadConfig} />
+            <DiagramControls onSave={handleSaveNadConfig} onLoad={handleLoadFromConfig} />
         </>
     );
 }
