@@ -28,7 +28,7 @@ import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
 import AlertCustomMessageNode from '../utils/alert-custom-message-node';
 import { AppState } from 'redux/reducer';
-import { DiagramType } from './diagram.type';
+import { DiagramType, isNadType, isSldType } from './diagram.type';
 import { useDiagram } from './use-diagram';
 
 interface DiagramProps {
@@ -97,7 +97,7 @@ const Diagram: React.FC<DiagramProps> = ({
     const onCloseHandler = () => {
         dispatch(setFullScreenDiagram(null));
         closeDiagramView(diagramId, svgType);
-        if (svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+        if (isNadType(svgType)) {
             dispatch(resetNetworkAreaDiagramDepth());
             dispatch(setEditNadMode(false));
         }
@@ -152,7 +152,7 @@ const Diagram: React.FC<DiagramProps> = ({
                     diagramId={diagramId}
                     showMinimizeControl
                     onMinimize={onMinimizeHandler}
-                    showTogglePinControl={svgType !== DiagramType.NETWORK_AREA_DIAGRAM}
+                    showTogglePinControl={isSldType(svgType)}
                     onTogglePin={onTogglePinHandler}
                     pinned={pinned}
                     showCloseControl
