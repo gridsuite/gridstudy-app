@@ -67,7 +67,7 @@ export function createCompositeModifications(
     name: string,
     description: string,
     parentDirectoryUuid: UUID,
-    selectedModificationsUuid: (string | UUID)[]
+    selectedModificationsUuid: UUID[]
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
@@ -87,7 +87,7 @@ export function updateCompositeModifications(
     id: UUID,
     name: string,
     description: string,
-    selectedModificationsUuid: (string | UUID)[]
+    selectedModificationsUuid: UUID[]
 ) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
