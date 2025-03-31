@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
-import { ElementCreationDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
+import { ElementSaveDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
@@ -100,13 +100,14 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
                 </Button>
             </Box>
             {studyUuid && (
-                <ElementCreationDialog
+                <ElementSaveDialog
                     studyUuid={studyUuid}
                     onClose={handleCloseDialog}
                     onSave={handleSave}
                     open={isSaveDialogOpen}
                     type={ElementType.DIAGRAM_CONFIG}
                     titleId={'SaveToGridexplore'}
+                    createOnlyMode
                 />
             )}
         </>

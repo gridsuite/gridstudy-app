@@ -152,7 +152,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
@@ -252,12 +252,21 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             directoryData.name,
             directoryData.description,
             directoryData.folderId
-        ).catch((error) =>
-            snackError({
-                messageTxt: error.message,
-                headerId: 'SaveToGridexploreError',
+        )
+            .then(() => {
+                snackInfo({
+                    headerId: 'diagramConfigCreationMsg',
+                    headerValues: {
+                        directory: directoryData.folderName,
+                    },
+                });
             })
-        );
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'diagramConfigCreationError',
+                })
+            );
     };
 
     /**

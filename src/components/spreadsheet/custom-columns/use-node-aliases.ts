@@ -12,6 +12,9 @@ import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from './node-alias.type';
 
+// NodeAlias may have invalid id/name, in error cases
+export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
+
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     // init value is undefined until we have successfully made a fetch
