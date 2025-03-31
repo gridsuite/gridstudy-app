@@ -293,8 +293,8 @@ function ResultsGlobalFilter({
                 open={openedDropdown}
                 onOpen={() => setOpenedDropdown(true)}
                 onClose={(event, reason: AutocompleteCloseReason) => {
+                    // the user has to click on the arrow in order to close the dropdown
                     if (reason !== 'selectOption' && reason !== 'blur') {
-                        // TODO : blur est peut-être excessif => trouver coment ne pas fermer la dropdown quand on clique dans la fenêtre
                         setOpenedDropdown(false);
                     }
                 }}
@@ -320,14 +320,6 @@ function ResultsGlobalFilter({
                         />
                     ))
                 }
-                renderGroup={(item) => {
-                    const { group, children } = item;
-                    return (
-                        <Box key={'keyBoxGroup_' + group} sx={resultsGlobalFilterStyles.chipBox}>
-                            {children}
-                        </Box>
-                    );
-                }}
                 // renderOption : the checkboxes visible when we focus on the AutoComplete
                 renderOption={(props, option: GlobalFilter, { selected }) => {
                     const { key, children, color, ...otherProps } = props;
