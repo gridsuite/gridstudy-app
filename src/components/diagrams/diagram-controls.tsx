@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 import {
     DirectoryItemSelector,
-    ElementCreationDialog,
+    ElementSaveDialog,
     ElementType,
     IElementCreationDialog,
     TreeViewFinderNodeProps,
@@ -138,13 +138,14 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => 
             </Box>
             {studyUuid && (
                 <>
-                    <ElementCreationDialog
+                    <ElementSaveDialog
                         studyUuid={studyUuid}
                         onClose={handleCloseSaveDialog}
                         onSave={handleSave}
                         open={isSaveDialogOpen}
                         type={ElementType.DIAGRAM_CONFIG}
                         titleId={'SaveToGridexplore'}
+                        createOnlyMode
                     />
                     <Box minWidth="12em">
                         <DirectoryItemSelector

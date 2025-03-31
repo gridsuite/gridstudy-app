@@ -261,13 +261,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         )
             .then(() => {
                 snackInfo({
-                    messageId: 'NadSavedToGridexplore',
+                    headerId: 'diagramConfigCreationMsg',
+                    headerValues: {
+                        directory: directoryData.folderName,
+                    },
                 });
             })
             .catch((error) =>
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'SaveToGridexploreError',
+                    headerId: 'diagramConfigCreationError',
                 })
             );
     };
