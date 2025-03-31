@@ -1268,7 +1268,6 @@
     "GenerationAndLoad": "Generation and load",
     "InsertModificationFrom": "Insert from GridExplore",
     "SaveToGridexplore": "Save to GridExplore",
-    "NadSavedToGridexplore": "The network area diagram has been saved to GridExplore",
     "GenerateFromGridexplore": "Generate from GridExplore",
     "SaveToGridexploreError": "An error occurred while saving to GridExplore",
     "diagramConfigCreationMsg": "Network area diagram created in {directory}",

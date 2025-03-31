@@ -1265,7 +1265,6 @@
     "GenerationAndLoad": "Production et consommation",
     "InsertModificationFrom": "Insérer à partir de GridExplore",
     "SaveToGridexplore": "Enregistrer dans GridExplore",
-    "NadSavedToGridexplore": "L'image nodale de zone a été sauvegardée dans GridExplore",
     "GenerateFromGridexplore": "Générer à partir de GridExplore",
     "SaveToGridexploreError": "Une erreur est survenue lors de la sauvegarde dans GridExplore",
     "diagramConfigCreationMsg": "Création de l'image nodale de zone dans {directory}",
