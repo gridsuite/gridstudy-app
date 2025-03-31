@@ -33,7 +33,6 @@ import {
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
-    REMOVE_FROM_RECENT_GLOBAL_FILTERS,
     AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
     AddSortForNewSpreadsheetAction,
@@ -70,10 +69,12 @@ import {
     INIT_TABLE_DEFINITIONS,
     InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
+    LOAD_NAD_FROM_CONFIG,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
     LOADFLOW_RESULT_FILTER,
     LoadflowResultFilterAction,
+    LoadNadFromConfigAction,
     LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LogsFilterAction,
@@ -108,13 +109,17 @@ import {
     OpenNadListAction,
     OpenStudyAction,
     REMOVE_COLUMN_DEFINITION,
+    REMOVE_FROM_RECENT_GLOBAL_FILTERS,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
     REMOVE_TABLE_DEFINITION,
     RemoveColumnDefinitionAction,
+    RemoveFromRecentGlobalFiltersAction,
     RemoveNodeDataAction,
     RemoveNotificationByNodeAction,
     RemoveTableDefinitionAction,
+    RENAME_TABLE_DEFINITION,
+    RenameTableDefinitionAction,
     REORDER_TABLE_DEFINITIONS,
     ReorderTableDefinitionsAction,
     RESET_ALL_SPREADSHEET_GS_FILTERS,
@@ -144,6 +149,7 @@ import {
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SensitivityAnalysisResultFilterAction,
     SET_APP_TAB_INDEX,
+    SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
@@ -159,6 +165,7 @@ import {
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
     SetAppTabIndexAction,
+    SetCalculationSelectionsAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
     SetEventScenarioDrawerOpenAction,
@@ -199,13 +206,8 @@ import {
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
     UpdateTableDefinitionAction,
-    RenameTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    RemoveFromRecentGlobalFiltersAction,
-    RENAME_TABLE_DEFINITION,
-    SET_CALCULATION_SELECTIONS,
-    SetCalculationSelectionsAction,
     SET_EDIT_NAD_MODE,
     SetEditNadModeAction,
 } from './actions';
@@ -297,7 +299,7 @@ import {
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
-import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
+import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
 
@@ -475,6 +477,7 @@ export type DiagramState = {
     svgType: DiagramType;
     state: ViewState;
     needsToBlink?: boolean;
+    name?: string;
 };
 
 export type NadNodeMovement = {
@@ -1302,27 +1305,35 @@ export const reducer = createReducer(initialState, (builder) => {
      * The following functions' goal are to update state.diagramStates with nodes of the following type :
      * { id: 'diagramID', svgType: 'SvgType of the diagram', state: 'ViewState of the diagram' }
      *
-     * Depending on the diagram's svgType, the state.diagramStates is different.
-     * For Network Area Diagrams (SvgType.NETWORK_AREA_DIAGRAM), all the states should be the same.
-     * As an example, if one is PINNED, then all of them should be.
-     * For Single Line Diagrams (SvgType.VOLTAGE_LEVEL or SvgType.SUBSTATION), each diagram has its own state.
+     * Diagrams of NETWORK_AREA_DIAGRAM type should always share the same state (all of them opened, or all
+     * of them pinned, etc).
+     * The other types of diagrams all have their own state.
+     *
+     * There can only be one NAD (NETWORK_AREA_DIAGRAM or NAD_FROM_CONFIG) opened at once, but there can be
+     * multiple SLD (VOLTAGE_LEVEL or SUBSTATION) opened at the same time.
      */
     builder.addCase(OPEN_DIAGRAM, (state, action: OpenDiagramAction) => {
-        const diagramStates = state.diagramStates;
+        let diagramStates = state.diagramStates;
         const diagramToOpenIndex = diagramStates.findIndex(
             (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
         );
 
-        if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-            // First, we check if there is already a Network Area Diagram in the diagramStates.
-            const firstNadIndex = diagramStates.findIndex(
-                (diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-            );
+        if (isNadType(action.svgType)) {
+            // When opening a NETWORK_AREA_DIAGRAM, we remove all the NAD_FROM_CONFIG, and vice versa
+            if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+                diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NAD_FROM_CONFIG);
+            }
+            if (action.svgType === DiagramType.NAD_FROM_CONFIG) {
+                diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
+            }
+
+            // We check if there is already a NAD in the diagramStates.
+            const firstNadIndex = diagramStates.findIndex((diagram) => isNadType(diagram.svgType));
             if (firstNadIndex < 0) {
                 // If there is no NAD, then we add the new one.
                 diagramStates.push({
                     id: action.id as UUID,
-                    svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+                    svgType: action.svgType,
                     state: ViewState.OPENED,
                 });
 
@@ -1330,14 +1341,14 @@ export const reducer = createReducer(initialState, (builder) => {
                 if (state.fullScreenDiagram?.id) {
                     state.fullScreenDiagram = {
                         id: action.id,
-                        svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+                        svgType: action.svgType,
                     };
                 }
             } else {
                 // If there is already at least one NAD, and if it is minimized, then we change all of them to opened.
                 if (diagramStates[firstNadIndex].state === ViewState.MINIMIZED) {
                     diagramStates.forEach((diagram) => {
-                        if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+                        if (isNadType(diagram.svgType)) {
                             diagram.state = ViewState.OPENED;
                         }
                     });
@@ -1346,20 +1357,18 @@ export const reducer = createReducer(initialState, (builder) => {
                 if (diagramToOpenIndex < 0) {
                     diagramStates.push({
                         id: action.id as UUID,
-                        svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+                        svgType: action.svgType,
                         state: diagramStates[firstNadIndex].state,
                     });
                 }
 
                 // If there is a SLD in fullscreen, we have to display in fullscreen the new NAD.
                 // Because it is the first NAD displayed that counts for the fullscreen status, we put the fist nad's id there.
-                if (
-                    state.fullScreenDiagram?.svgType &&
-                    state.fullScreenDiagram?.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
-                ) {
+                // Note : for NAD_FROM_CONFIG, this should work as long as there is only one NAD in the diagramStates.
+                if (state.fullScreenDiagram?.svgType && isSldType(state.fullScreenDiagram?.svgType)) {
                     state.fullScreenDiagram = {
                         id: diagramStates[firstNadIndex].id,
-                        svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+                        svgType: action.svgType,
                     };
                 }
             }
@@ -1370,10 +1379,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 if (diagramStates[diagramToOpenIndex].state === ViewState.MINIMIZED) {
                     // We minimize all the other OPENED SLD.
                     diagramStates.forEach((diagram) => {
-                        if (
-                            diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
-                            diagram.state === ViewState.OPENED
-                        ) {
+                        if (isSldType(diagram.svgType) && diagram.state === ViewState.OPENED) {
                             diagram.state = ViewState.MINIMIZED;
                         }
                     });
@@ -1396,7 +1402,7 @@ export const reducer = createReducer(initialState, (builder) => {
             } else {
                 // We minimize all the other OPENED SLD.
                 diagramStates.forEach((diagram) => {
-                    if (diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && diagram.state === ViewState.OPENED) {
+                    if (isSldType(diagram.svgType) && diagram.state === ViewState.OPENED) {
                         diagram.state = ViewState.MINIMIZED;
                     }
                 });
@@ -1423,9 +1429,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const diagramStates = state.diagramStates;
         const uniqueIds = [...new Set(action.ids)];
         // remove all existing NAD from store, we replace them with lists passed as param
-        const diagramStatesWithoutNad = diagramStates.filter(
-            (diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
-        );
+        const diagramStatesWithoutNad = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
 
         state.diagramStates = diagramStatesWithoutNad.concat(
             uniqueIds.map((id) => ({
@@ -1440,14 +1444,14 @@ export const reducer = createReducer(initialState, (builder) => {
         const diagramStates = state.diagramStates;
 
         if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-            // For network area diagrams, the ID is irrelevant, we will minimize all the NAD in the state.diagramStates.
+            // For network area diagrams, the ID is irrelevant, we will minimize all the NETWORK_AREA_DIAGRAMs in the state.diagramStates.
             diagramStates.forEach((diagram) => {
                 if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                     diagram.state = ViewState.MINIMIZED;
                 }
             });
         } else {
-            // For single line diagram, we will update the corresponding diagram.
+            // For the other types of diagrams, we will update the corresponding diagram.
             const diagramToMinimizeIndex = diagramStates.findIndex(
                 (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
             );
@@ -1467,7 +1471,7 @@ export const reducer = createReducer(initialState, (builder) => {
         );
         if (diagramToPinToggleIndex >= 0) {
             if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                // If the current NAD is PINNED, we set all NAD to OPENED. Otherwise, we set them to PINNED.
+                // If the current NETWORK_AREA_DIAGRAM is PINNED, we set all NETWORK_AREA_DIAGRAM to OPENED. Otherwise, we set them to PINNED.
                 const newStateForNads =
                     diagramStates[diagramToPinToggleIndex].state === ViewState.PINNED
                         ? ViewState.OPENED
@@ -1503,10 +1507,10 @@ export const reducer = createReducer(initialState, (builder) => {
         let diagramStates = state.diagramStates;
 
         if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-            // If we close a NAD, we close all of them.
+            // If we close a NETWORK_AREA_DIAGRAM, we close all of them.
             diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
         } else {
-            // If we close a SLD, we only remove one.
+            // If we close another type of diagram, we only remove one.
             const diagramToCloseIndex = diagramStates.findIndex(
                 (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
             );
@@ -1521,6 +1525,31 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CLOSE_DIAGRAMS, (state, action: CloseDiagramsAction) => {
         const idsToClose = new Set(action.ids);
         state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
+    });
+
+    builder.addCase(LOAD_NAD_FROM_CONFIG, (state, action: LoadNadFromConfigAction) => {
+        // Reset depth to zero
+        state.networkAreaDiagramDepth = 0;
+
+        // Reset the potential movements stored for this particular NAD
+        state.nadNodeMovements = state.nadNodeMovements.filter(
+            (movement) => movement.nadIdentifier !== action.nadConfigUuid
+        );
+        state.nadTextNodeMovements = state.nadTextNodeMovements.filter(
+            (movement) => movement.nadIdentifier !== action.nadConfigUuid
+        );
+
+        // We close all the other NAD ...
+        let diagramStates = state.diagramStates;
+        diagramStates = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
+        // ... and create the new NAD
+        diagramStates.push({
+            id: action.nadConfigUuid as UUID,
+            name: action.nadName,
+            svgType: DiagramType.NAD_FROM_CONFIG,
+            state: ViewState.OPENED,
+        });
+        state.diagramStates = diagramStates;
     });
 
     builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {

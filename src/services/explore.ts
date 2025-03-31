@@ -222,9 +222,7 @@ export interface DiagramConfigPosition {
 }
 
 export interface DiagramConfig {
-    depth?: number;
     scalingFactor?: number;
-    radiusFactor?: number;
     voltageLevelIds: string[];
     positions: DiagramConfigPosition[];
 }
