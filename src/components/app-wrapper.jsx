@@ -5,10 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { useMemo } from 'react';
 import App from './app';
-import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { createTheme, CssBaseline, responsiveFontSizes, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
     LIGHT_THEME,
+    LANG_FRENCH,
     CardErrorBoundary,
     loginEn,
     loginFr,
@@ -76,7 +79,6 @@ import events_locale_en from '../translations/dynamic/events-locale-en';
 import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
 import { store } from '../redux/store';
-import CssBaseline from '@mui/material/CssBaseline';
 import {
     PARAM_THEME,
     basemap_style_theme_key,
@@ -93,7 +95,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 // Mark all grids as using legacy themes (migration to V33)
 provideGlobalGridOptions({ theme: 'legacy' });
 
-let lightTheme = createTheme({
+const lightTheme = createTheme({
     components: {
         MuiTab: {
             styleOverrides: {
@@ -162,23 +164,7 @@ let lightTheme = createTheme({
     },
 });
 
-lightTheme = createTheme(lightTheme, {
-    palette: {
-        cancelButtonColor: {
-            main: lightTheme.palette.text.secondary,
-        },
-        tabBackground: lightTheme.palette.background.default,
-    },
-    components: {
-        CancelButton: {
-            defaultProps: {
-                color: 'cancelButtonColor',
-            },
-        },
-    },
-});
-
-let darkTheme = createTheme({
+const darkTheme = createTheme({
     components: {
         MuiTab: {
             styleOverrides: {
@@ -246,29 +232,37 @@ let darkTheme = createTheme({
     },
 });
 
-darkTheme = createTheme(darkTheme, {
-    palette: {
-        cancelButtonColor: {
-            main: darkTheme.palette.text.secondary,
-        },
-        tabBackground: '#1e1e1e',
-    },
-    components: {
-        CancelButton: {
-            defaultProps: {
-                color: 'cancelButtonColor',
+// no other way to copy style: https://mui.com/material-ui/customization/theming/#api
+function createThemeWithComponents(baseTheme, ...args) {
+    return createTheme(
+        baseTheme,
+        {
+            palette: {
+                cancelButtonColor: {
+                    main: lightTheme.palette.text.secondary,
+                },
+                tabBackground: lightTheme.palette.background.default,
+            },
+            components: {
+                CancelButton: {
+                    defaultProps: {
+                        color: 'cancelButtonColor',
+                    },
+                },
             },
         },
-    },
-});
+        ...args
+    );
+}
 
-const getMuiTheme = (theme) => {
-    if (theme === LIGHT_THEME) {
-        return lightTheme;
-    } else {
-        return darkTheme;
-    }
-};
+function getMuiTheme(theme, locale) {
+    return responsiveFontSizes(
+        createThemeWithComponents(
+            theme === LIGHT_THEME ? lightTheme : darkTheme,
+            locale === LANG_FRENCH ? MuiCoreFrFR : MuiCoreEnUS // MUI core translations
+        )
+    );
+}
 
 const messages = {
     en: {
@@ -341,8 +335,8 @@ const basename = new URL(document.querySelector('base').href).pathname;
 
 const AppWrapperWithRedux = () => {
     const computedLanguage = useSelector((state) => state.computedLanguage);
-
     const theme = useSelector((state) => state[PARAM_THEME]);
+    const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
     const urlMapper = useNotificationsUrlGenerator();
 
@@ -350,7 +344,7 @@ const AppWrapperWithRedux = () => {
         <IntlProvider locale={computedLanguage} messages={messages[computedLanguage]}>
             <BrowserRouter basename={basename}>
                 <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={getMuiTheme(theme)}>
+                    <ThemeProvider theme={themeCompiled}>
                         <SnackbarProvider hideIconVariant={false}>
                             <CssBaseline />
                             <CardErrorBoundary>
