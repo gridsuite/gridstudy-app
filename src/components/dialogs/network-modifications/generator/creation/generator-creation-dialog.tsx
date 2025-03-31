@@ -183,7 +183,7 @@ export default function GeneratorCreationDialog({
                     generator?.regulatingTerminalId || generator?.regulatingTerminalConnectableId
                         ? REGULATION_TYPES.DISTANT.id
                         : REGULATION_TYPES.LOCAL.id,
-                [Q_PERCENT]: Number.isNaN(generator?.coordinatedReactiveControl?.qPercent)
+                [Q_PERCENT]: isNaN(Number(generator?.coordinatedReactiveControl?.qPercent))
                     ? null
                     : generator?.coordinatedReactiveControl?.qPercent,
                 ...getReactiveLimitsFormData({

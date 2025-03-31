@@ -189,7 +189,11 @@ export default function GeneratorModificationForm({
             name={TRANSFORMER_REACTANCE}
             label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
-            previousValue={generatorToModify?.generatorShortCircuit?.stepUpTransformerX ?? undefined}
+            previousValue={
+                !isNaN(Number(generatorToModify?.generatorShortCircuit?.stepUpTransformerX))
+                    ? generatorToModify?.generatorShortCircuit?.stepUpTransformerX ?? undefined
+                    : undefined
+            }
             clearable={true}
         />
     );
