@@ -12,6 +12,7 @@ import {
     decrementNetworkAreaDiagramDepth,
     incrementNetworkAreaDiagramDepth,
     resetNetworkAreaDiagramDepth,
+    setEditNadMode,
     setFullScreenDiagram,
 } from '../../redux/actions';
 import { useIntl } from 'react-intl';
@@ -98,6 +99,7 @@ const Diagram: React.FC<DiagramProps> = ({
         closeDiagramView(diagramId, svgType);
         if (isNadType(svgType)) {
             dispatch(resetNetworkAreaDiagramDepth());
+            dispatch(setEditNadMode(false));
         }
     };
 

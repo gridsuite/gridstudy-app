@@ -27,7 +27,7 @@ import {
 import yup from 'components/utils/yup-config';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from 'components/dialogs/commons/modificationDialog';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 import {
@@ -156,7 +156,6 @@ const LinesAttachToSplitLinesDialog = ({
                 maxWidth={'md'}
                 titleId="LinesAttachToSplitLines"
                 subtitle={<LineAttachToSplitLinesIllustration />}
-                aria-labelledby="dialog-attach-lines-to-split-lines"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}

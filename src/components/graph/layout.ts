@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CurrentTreeNode } from 'redux/reducer';
+import { CurrentTreeNode } from './tree-node.type';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;

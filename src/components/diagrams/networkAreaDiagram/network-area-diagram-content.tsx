@@ -171,6 +171,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
     const { loadNadFromConfigView } = useDiagram();
 
     const nadIdentifier = useMemo(() => {
@@ -295,10 +296,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
                 null,
-                true,
+                isEditNadMode,
                 true,
                 dynamicCssRules,
-                OnToggleHoverCallback,
+                isEditNadMode ? null : OnToggleHoverCallback,
                 null,
                 false
             );
@@ -365,6 +366,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         OnToggleHoverCallback,
         nadIdentifier,
         onMoveTextNodeCallback,
+        isEditNadMode,
     ]);
 
     /**

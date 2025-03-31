@@ -1264,6 +1264,7 @@
     "NadSavedToGridexplore": "The network area diagram has been saved to GridExplore",
     "GenerateFromGridexplore": "Generate from GridExplore",
     "SaveToGridexploreError": "An error occurred while saving to GridExplore",
+    "EditNad" : "Edit",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
     "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {directory}",

@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
+import { Box, BoxProps } from '@mui/material';
 
-const getStyle = (hidden) => {
+const getStyle = (hidden: boolean) => {
     if (hidden) {
         return {
             visibility: 'hidden',
@@ -20,19 +20,24 @@ const getStyle = (hidden) => {
     };
 };
 
-const Visibility = ({ children, value, index, visible = true, ...other }) => {
+export type VisibilityBoxProps = BoxProps & {
+    activeIndex: number;
+    boxIndex: number;
+    visible?: boolean;
+};
+
+function VisibilityBox({
+    children,
+    activeIndex,
+    boxIndex,
+    visible = true,
+    ...otherProps
+}: Readonly<VisibilityBoxProps>) {
     return (
-        <div style={getStyle(!visible || value !== index)} {...other}>
+        <Box sx={getStyle(!visible || activeIndex !== boxIndex)} {...otherProps}>
             {children}
-        </div>
+        </Box>
     );
-};
+}
 
-Visibility.propTypes = {
-    children: PropTypes.node,
-    value: PropTypes.number.isRequired,
-    index: PropTypes.number.isRequired,
-    visible: PropTypes.bool,
-};
-
-export default Visibility;
+export default VisibilityBox;

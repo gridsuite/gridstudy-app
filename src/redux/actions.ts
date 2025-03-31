@@ -22,7 +22,6 @@ import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
-    CurrentTreeNode,
     EquipmentUpdateType,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
@@ -45,7 +44,7 @@ import {
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
@@ -141,7 +140,8 @@ export type AppActions =
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
-    | LoadNadFromConfigAction;
+    | LoadNadFromConfigAction
+    | SetEditNadModeAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -569,6 +569,18 @@ export function setReloadMapNeeded(reloadMapNeeded: boolean): SetReloadMapNeeded
     return {
         type: SET_RELOAD_MAP_NEEDED,
         reloadMapNeeded,
+    };
+}
+
+export const SET_EDIT_NAD_MODE = 'SET_EDIT_NAD_MODE';
+export type SetEditNadModeAction = Readonly<Action<typeof SET_EDIT_NAD_MODE>> & {
+    isEditMode: boolean;
+};
+
+export function setEditNadMode(isEditMode: boolean): SetEditNadModeAction {
+    return {
+        type: SET_EDIT_NAD_MODE,
+        isEditMode,
     };
 }
 

@@ -20,7 +20,7 @@ import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../commons/modificationDialog';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
 import { deleteVoltageLevelOnLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
@@ -128,7 +128,6 @@ const DeleteVoltageLevelOnLineDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-delete-voltage-level-on-line"
                 titleId="DeleteVoltageLevelOnLine"
                 subtitle={<DeleteVoltageLevelOnLineIllustration />}
                 open={open}
