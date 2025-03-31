@@ -15,7 +15,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.09)', // from MUI code cf FilledInput.js
+        backgroundColor: theme.formFiller.background,
     }),
 };
 

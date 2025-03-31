@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NodeType } from '../components/graph/tree-node.type';
-import type { CurrentTreeNode, RootNode } from './reducer';
+import { CurrentTreeNode, NodeType, RootNode } from '../components/graph/tree-node.type';
 
 // type guard to check if the node is a Root
 export function isReactFlowRootNodeData(node: CurrentTreeNode): node is RootNode {

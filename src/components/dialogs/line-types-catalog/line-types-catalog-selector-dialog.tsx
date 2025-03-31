@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useRef, useMemo, useEffect, useState, FunctionComponent } from 'react';
-import BasicModificationDialog from '../commons/basicModificationDialog';
+import { BasicModificationDialog } from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
@@ -36,7 +36,6 @@ export interface LineTypesCatalogSelectorDialogProps {
     preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
-    dialogProps: any; // TODO use specific type when BasicModificationDialog is ts
 }
 
 const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelectorDialogProps> = ({
@@ -44,7 +43,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
     preselectedRowId,
     rowData,
     onClose,
-    dialogProps,
+    ...dialogProps
 }) => {
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
@@ -294,20 +293,19 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 
     return (
         <BasicModificationDialog
+            disabledSave={!selectedRow}
             fullWidth
             maxWidth="xl"
-            open={true}
-            onClose={onClose}
             onClear={handleClear}
+            onClose={onClose}
             onSave={handleSubmit}
-            disabledSave={!selectedRow}
-            aria-labelledby="dialog-lineTypes-catalog-selector"
-            subtitle={headerAndTabs}
+            open={true}
             PaperProps={{
                 sx: {
                     height: '95vh', // we want the dialog height to be fixed even when switching tabs
                 },
             }}
+            subtitle={headerAndTabs}
             titleId={'SelectType'}
             {...dialogProps}
         >

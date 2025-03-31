@@ -6,7 +6,7 @@
  */
 
 import { lighten, darken, Theme } from '@mui/material/styles';
-import { EditableTitle } from '../editable-title';
+import { EditableTitle } from '../network-modifications/editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setEventScenarioDrawerOpen } from '../../../../redux/actions';

@@ -7,8 +7,8 @@
 
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
-import ChildMenuItem from './create-child-menu-item';
-import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
+import ChildMenuItem from '../create-child-menu-item';
+import { CustomNestedMenuItem } from '../../../utils/custom-nested-menu';
 import { MenuDefinition } from './network-modification-menu.type';
 
 interface NetworkModificationMenuProps {

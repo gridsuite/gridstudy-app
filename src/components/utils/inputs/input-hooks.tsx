@@ -5,19 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import InputAdornment from '@mui/material/InputAdornment';
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { CircularProgress, TextField, Tooltip, Button, Grid, TextFieldProps } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
+import { TextField, Tooltip, Button, Grid, TextFieldProps } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import { styles } from '../../dialogs/dialog-utils';
-import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useCSVReader } from 'react-papaparse';
-import { isNodeExists } from '../../../services/study';
-import { UUID } from 'crypto';
 
 interface UseButtonWithTooltipProps {
     handleClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -80,94 +75,6 @@ export const useSimpleTextValue = ({ defaultValue, adornment, error, triggerRese
     useEffect(() => setValue(defaultValue), [defaultValue, triggerReset]);
 
     return [value, field] as const;
-};
-
-const inputAdornment = (content: ReactNode) => {
-    return {
-        endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
-    };
-};
-
-interface UseValidNodeName {
-    studyUuid: UUID | null;
-    defaultValue: string;
-    triggerReset: boolean;
-}
-
-export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }: UseValidNodeName) => {
-    const intl = useIntl();
-    const { snackError } = useSnackMessage();
-    const [isValidName, setIsValidName] = useState(false);
-    const [error, setError] = useState<string>();
-    const [checking, setChecking] = useState<boolean | undefined>(undefined);
-    const [adornment, setAdornment] = useState<TextFieldProps['InputProps']>();
-    const [name, field] = useSimpleTextValue({
-        defaultValue,
-        adornment,
-        error: !!error,
-        triggerReset,
-    });
-
-    const validName = useCallback(
-        (name: string) => {
-            if (!studyUuid) {
-                return;
-            }
-            if (name !== defaultValue) {
-                isNodeExists(studyUuid, name)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            setError(
-                                intl.formatMessage({
-                                    id: 'nodeNameAlreadyUsed',
-                                })
-                            );
-                            setIsValidName(false);
-                        } else {
-                            setIsValidName(true);
-                        }
-                        setChecking(false);
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'NodeUpdateError',
-                        });
-                    });
-            } else {
-                setChecking(undefined);
-            }
-        },
-        [studyUuid, intl, defaultValue, snackError]
-    );
-    const debouncedValidName = useDebounce(validName, 700);
-
-    useEffect(() => {
-        if (checking === undefined) {
-            setAdornment(undefined);
-        }
-        if (checking) {
-            setAdornment(inputAdornment(<CircularProgress size="1rem" />));
-        } else if (!isValidName) {
-            setAdornment(undefined);
-        } else {
-            setAdornment(inputAdornment(<CheckIcon style={{ color: 'green' }} />));
-        }
-    }, [checking, isValidName]);
-
-    useEffect(() => {
-        if (name === '') {
-            return;
-        } // initial render
-
-        setIsValidName(false);
-        setAdornment(undefined);
-        setChecking(true);
-        setError(undefined);
-        debouncedValidName(name);
-    }, [studyUuid, name, debouncedValidName, triggerReset]);
-
-    return [error, field, isValidName, name] as const;
 };
 
 interface UseCSVPickerProps {

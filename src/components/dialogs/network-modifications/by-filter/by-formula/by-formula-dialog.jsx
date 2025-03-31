@@ -17,7 +17,7 @@ import {
 import { useCallback, useEffect } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import ByFormulaForm from './by-formula-form';
@@ -188,7 +188,6 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-by-formula"
                 titleId="ModifyByFormula"
                 open={open}
                 maxWidth={'xl'}

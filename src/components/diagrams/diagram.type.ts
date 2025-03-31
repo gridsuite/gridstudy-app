@@ -23,4 +23,17 @@ export enum DiagramType {
     VOLTAGE_LEVEL = 'voltage-level',
     SUBSTATION = 'substation',
     NETWORK_AREA_DIAGRAM = 'network-area-diagram',
+    NAD_FROM_CONFIG = 'nad-from-config',
+}
+
+export type NAD = DiagramType.NETWORK_AREA_DIAGRAM | DiagramType.NAD_FROM_CONFIG;
+
+export function isNadType(type: DiagramType): type is NAD {
+    return type === DiagramType.NETWORK_AREA_DIAGRAM || type === DiagramType.NAD_FROM_CONFIG;
+}
+
+export type SLD = DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
+
+export function isSldType(type: DiagramType): type is SLD {
+    return type === DiagramType.VOLTAGE_LEVEL || type === DiagramType.SUBSTATION;
 }

@@ -5,17 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NotificationType, StudyUpdated } from '../../../../redux/reducer';
+import { NotificationType, StudyUpdated, StudyUpdatedEventData } from '../../../../redux/reducer';
 import { ComputingType, isValidComputingType } from '../../../computing-status/computing-type';
 
-export const UPDATE_TYPE_HEADER = 'updateType';
-export const COMPUTATION_TYPE_HEADER = 'computationType';
-
 export const isComputationParametersUpdated = (type: ComputingType, studyUpdated: StudyUpdated) => {
+    const studyUpdatedEventData = studyUpdated?.eventData as StudyUpdatedEventData;
+
     return (
-        studyUpdated.eventData.headers &&
-        studyUpdated.eventData.headers[UPDATE_TYPE_HEADER] === NotificationType.COMPUTATION_PARAMETERS_UPDATED &&
-        isValidComputingType(studyUpdated.eventData.headers[COMPUTATION_TYPE_HEADER]) &&
-        studyUpdated.eventData.headers[COMPUTATION_TYPE_HEADER] === type
+        studyUpdatedEventData.headers &&
+        studyUpdatedEventData.headers.updateType === NotificationType.COMPUTATION_PARAMETERS_UPDATED &&
+        isValidComputingType(studyUpdatedEventData.headers.computationType) &&
+        studyUpdatedEventData.headers.computationType === type
     );
 };

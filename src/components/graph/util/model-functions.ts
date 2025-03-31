@@ -8,8 +8,14 @@
 import { UUID } from 'crypto';
 import { BUILD_STATUS } from '../../network/constants';
 import type NetworkModificationTreeModel from '../network-modification-tree-model';
-import type { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from 'redux/reducer';
-import { NetworkModificationNodeData, NodeType, RootNodeData } from '../tree-node.type';
+import {
+    CurrentTreeNode,
+    NetworkModificationNodeData,
+    NodeType,
+    ReactFlowModificationNodeData,
+    ReactFlowRootNodeData,
+    RootNodeData,
+} from '../tree-node.type';
 
 export function getModificationNodeDataOrUndefined(node: NetworkModificationNodeData | RootNodeData) {
     if (isModificationNode(node)) {

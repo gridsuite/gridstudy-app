@@ -9,9 +9,9 @@ import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromLi
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 import { EquipmentType, ExtendedEquipmentType, Parameter } from '@gridsuite/commons-ui';
-import { NetworkModificationCopyInfo } from '../../components/graph/menus/network-modification-menu.type';
 import { ComputingType } from '../../components/computing-status/computing-type';
 import type { Svg } from 'components/diagrams/diagram-common';
+import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export function safeEncodeURIComponent(value: string | null | undefined): string {
     return value != null ? encodeURIComponent(value) : '';
@@ -65,6 +65,24 @@ export function getNetworkAreaDiagramUrl(
         new URLSearchParams({
             depth: depth.toString(),
             withGeoData: withGeoData.toString(),
+        })
+    );
+}
+
+export function getNetworkAreaDiagramUrlFromConfig(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    nadConfigUuid: UUID
+) {
+    console.info(
+        `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
+    );
+    return (
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network-area-diagram?' +
+        new URLSearchParams({
+            nadConfigUuid: nadConfigUuid,
         })
     );
 }
@@ -303,7 +321,9 @@ export function isNodeExists(studyUuid: UUID, nodeName: string) {
             nodeName: nodeName,
         });
     console.debug(existsNodeUrl);
-    return backendFetch(existsNodeUrl, { method: 'head' });
+    return backendFetch(existsNodeUrl, { method: 'head' }).then((response) => {
+        return response.status !== 204;
+    });
 }
 
 export function getUniqueNodeName(studyUuid: UUID) {

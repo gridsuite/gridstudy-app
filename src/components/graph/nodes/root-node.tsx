@@ -12,7 +12,8 @@ import { Handle, NodeProps, Position } from '@xyflow/react';
 import { useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
 import { BUILD_STATUS } from '../../network/constants';
-import { AppState, RootNode as RootNodeType } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
+import { RootNode as RootNodeType } from 'components/graph/tree-node.type';
 import { Theme } from '@mui/material/styles';
 
 const styles = {

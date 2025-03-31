@@ -67,11 +67,10 @@ export function fetchVoltageLevelEquipments(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     voltageLevelId: string,
-    substationsIds?: string[],
     inUpstreamBuiltParentNode?: boolean
 ): Promise<(Identifiable & { type: EquipmentType })[]> {
     console.info(
-        `Fetching equipments of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}' with substations ids '${substationsIds}'...`
+        `Fetching equipments of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}'`
     );
     const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
@@ -85,7 +84,6 @@ export function fetchVoltageLevelEquipments(
         encodeURIComponent(voltageLevelId) +
         '/equipments' +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId') +
         urlSearchParams.toString();
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);

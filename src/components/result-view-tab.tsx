@@ -17,7 +17,7 @@ import { computingTypeToRootTabRedirection, ResultTabIndexRedirection, useResult
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import { NonEvacuatedEnergyResultTab } from './results/sensitivity-analysis/non-evacuated-energy/non-evacuated-energy-result-tab';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { AppState, CurrentTreeNode } from '../redux/reducer';
+import { AppState } from '../redux/reducer';
 import { UUID } from 'crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
@@ -30,6 +30,7 @@ import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysi
 import { usePrevious } from '@gridsuite/commons-ui';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { IService } from './result-view-tab.type';
+import { CurrentTreeNode } from './graph/tree-node.type';
 
 const styles = {
     table: {

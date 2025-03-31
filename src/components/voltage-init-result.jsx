@@ -86,9 +86,7 @@ const VoltageInitResult = ({ result, status }) => {
     const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
     const { snackError } = useSnackMessage();
 
-    const [disabledApplyModifications, setDisableApplyModifications] = useState(
-        !result || !result.modificationsGroupUuid
-    );
+    const [disableApplyModifications, setDisableApplyModifications] = useState(!result?.modificationsGroupUuid);
     const [applyingModifications, setApplyingModifications] = useState(false);
     const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] = useState(false);
     const [voltageInitModification, setVoltageInitModification] = useState();
@@ -100,9 +98,6 @@ const VoltageInitResult = ({ result, status }) => {
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const closePreviewModificationsDialog = () => {
-        setPreviewModificationsDialogOpen(false);
-    };
     const gridRef = useRef();
     const defaultColDef = useMemo(
         () => ({
@@ -179,10 +174,9 @@ const VoltageInitResult = ({ result, status }) => {
                 currentNode={currentNode.id}
                 studyUuid={studyUuid}
                 editData={voltageInitModification}
-                onClose={() => closePreviewModificationsDialog(false)}
+                onClose={() => setPreviewModificationsDialogOpen(false)}
                 onPreviewModeSubmit={applyModifications}
                 editDataFetchStatus={FetchStatus.IDLE}
-                dialogProps={undefined}
                 disabledSave={autoApplyModifications}
             />
         );
@@ -340,17 +334,15 @@ const VoltageInitResult = ({ result, status }) => {
 
     function renderBusVoltagesTable(busVoltages) {
         return (
-            <>
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={busVoltagesColumnDefs}
-                    defaultColDef={defaultColDef}
-                    tableName={intl.formatMessage({ id: 'BusVoltages' })}
-                    rows={busVoltages}
-                    onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={false}
-                />
-            </>
+            <RenderTableAndExportCsv
+                gridRef={gridRef}
+                columns={busVoltagesColumnDefs}
+                defaultColDef={defaultColDef}
+                tableName={intl.formatMessage({ id: 'BusVoltages' })}
+                rows={busVoltages}
+                onRowDataUpdated={onRowDataUpdated}
+                skipColumnHeaders={false}
+            />
         );
     }
 
@@ -382,7 +374,7 @@ const VoltageInitResult = ({ result, status }) => {
                         <Button
                             variant="outlined"
                             onClick={previewModifications}
-                            disabled={!result || !result.modificationsGroupUuid || disabledApplyModifications}
+                            disabled={!result?.modificationsGroupUuid || disableApplyModifications}
                         >
                             <FormattedMessage id="previewModifications" />
                         </Button>

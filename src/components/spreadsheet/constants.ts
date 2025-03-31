@@ -18,6 +18,7 @@ export const DELETE = 'DELETE';
 type DialogComponent = FC<{
     open: UseStateBooleanReturn;
     resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
+    resetNodeAliases: (aliases?: string[]) => void;
 }>;
 
 export interface SpreadsheetOption {

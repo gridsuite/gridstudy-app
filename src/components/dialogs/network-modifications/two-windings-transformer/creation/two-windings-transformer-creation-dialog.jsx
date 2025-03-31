@@ -73,7 +73,7 @@ import {
     UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import {
     getPhaseTapChangerEmptyFormData,
@@ -621,7 +621,6 @@ const TwoWindingsTransformerCreationDialog = ({
                 onClear={clear}
                 onValidationError={onValidationError}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-two-windings-transformer"
                 maxWidth={dialogWidth}
                 titleId="CreateTwoWindingsTransformer"
                 subtitle={headerAndTabs}

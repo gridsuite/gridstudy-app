@@ -20,7 +20,7 @@ import { useSpreadsheetEquipments } from './data-fetching/use-spreadsheet-equipm
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
-import { AppState, CurrentTreeNode } from '../../redux/reducer';
+import { AppState } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { ColumnMovedEvent, ColumnState, RowClickedEvent } from 'ag-grid-community';
 import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './config/spreadsheet.type';
@@ -33,7 +33,7 @@ import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggr
 import { useEquipmentModification } from './equipment-modification/use-equipment-modification';
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
 import { initTableDefinitions, resetAllSpreadsheetGsFilters, updateTableDefinition } from 'redux/actions';
-import { NodeType } from '../graph/tree-node.type';
+import { CurrentTreeNode, NodeType } from '../graph/tree-node.type';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { reorderSpreadsheetColumns } from 'services/study-config';
 import { UUID } from 'crypto';
@@ -115,7 +115,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const [activeTabUuid, setActiveTabUuid] = useState<UUID | null>(null);
 
-    const { nodeAliases, updateNodeAliases } = useNodeAliases();
+    const { nodeAliases, updateNodeAliases, resetNodeAliases } = useNodeAliases();
+
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -470,8 +471,9 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 handleSwitchTab(tableDefinitions[0].uuid);
                 dispatch(resetAllSpreadsheetGsFilters());
             }
+            resetNodeAliases(collectionData.nodeAliases);
         });
-    }, [studyUuid, dispatch, handleSwitchTab]);
+    }, [studyUuid, dispatch, handleSwitchTab, resetNodeAliases]);
 
     // Reset the collection to the default one defined in the user profile
     const resetSpreadsheetCollection = useCallback(() => {
@@ -504,7 +506,12 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     return (
         <>
             <Grid container justifyContent={'space-between'}>
-                <EquipmentTabs disabled={disabled} selectedTabUuid={activeTabUuid} handleSwitchTab={handleSwitchTab} />
+                <EquipmentTabs
+                    disabled={disabled}
+                    selectedTabUuid={activeTabUuid}
+                    handleSwitchTab={handleSwitchTab}
+                    resetNodeAliases={resetNodeAliases}
+                />
                 <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.selectColumns}>
                         <SpreadsheetGsFilter
@@ -555,6 +562,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             tableName={tableDefinition?.name}
                             disabled={shouldDisableButtons}
                             dataSize={rowData ? rowData.length : 0}
+                            nodeAliases={nodeAliases}
                         />
                     </Grid>
                 </Grid>

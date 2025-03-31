@@ -38,10 +38,10 @@ import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { CustomMenuItem } from '../utils/custom-nested-menu';
 import { BaseEquipmentMenuProps, MapEquipment } from './base-equipment-menu';
-import { CurrentTreeNode } from 'redux/reducer';
 import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
 import { UUID } from 'crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import { CurrentTreeNode } from '../graph/tree-node.type';
 
 const styles = {
     menuItem: {

@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect } from 'react';
@@ -137,7 +137,6 @@ const SubstationCreationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-substation"
                 maxWidth={'md'}
                 titleId="CreateSubstation"
                 searchCopy={searchCopy}

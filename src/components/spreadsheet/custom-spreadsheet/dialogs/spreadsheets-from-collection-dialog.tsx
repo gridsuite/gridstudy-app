@@ -37,6 +37,7 @@ import { mapColumnsDto } from '../custom-spreadsheet-utils';
 interface SpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
     resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
+    resetNodeAliases: (aliases?: string[]) => void;
 }
 
 /**
@@ -45,6 +46,7 @@ interface SpreadsheetCollectionDialogProps {
 export default function SpreadsheetCollectionDialog({
     open,
     resetTabIndex,
+    resetNodeAliases,
 }: Readonly<SpreadsheetCollectionDialogProps>) {
     const dispatch = useDispatch();
     const intl = useIntl();
@@ -85,7 +87,7 @@ export default function SpreadsheetCollectionDialog({
                         columns: mapColumnsDto(spreadsheetConfig.columns),
                         type: spreadsheetConfig.sheetType,
                     }));
-
+                    resetNodeAliases(collectionData.nodeAliases);
                     dispatch(initTableDefinitions(collectionData.id, tableDefinitions || []));
                     resetTabIndex(tableDefinitions);
                 })
@@ -98,7 +100,7 @@ export default function SpreadsheetCollectionDialog({
             setConfirmationDialogOpen(false);
             open.setFalse();
         },
-        [studyUuid, dispatch, resetTabIndex, open, snackError]
+        [studyUuid, dispatch, resetTabIndex, open, snackError, resetNodeAliases]
     );
 
     const onSubmit = useCallback(

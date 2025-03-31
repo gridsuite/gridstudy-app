@@ -17,7 +17,7 @@ import {
 import { FC, useCallback, useEffect } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import ModificationByAssignmentForm from './modification-by-assignment-form';
@@ -133,7 +133,6 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-by-assignment-modification"
                 titleId="ModifyByAssignment"
                 open={open}
                 maxWidth={'xl'}
