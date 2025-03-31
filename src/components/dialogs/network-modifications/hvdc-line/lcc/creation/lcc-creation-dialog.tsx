@@ -28,7 +28,7 @@ import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LccCreationDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from './lcc-creation.type';
+import { LccCreationDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from '../lcc-type';
 import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
@@ -41,7 +41,7 @@ import { sanitizeString } from '../../../../dialog-utils';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { Grid } from '@mui/material';
 import LccCreationDialogHeader from './lcc-creation-dialog-header';
-import LccCreationDialogTabs from './lcc-creation-dialog-tabs';
+import LccTabs from '../lcc-tabs';
 import LccCreationForm from './lcc-creation-form';
 import { Connectivity } from '../../../../connectivity/connectivity.type';
 import {
@@ -54,7 +54,7 @@ import {
     getLccHvdcLineFromEditData,
     getLccHvdcLineFromSearchCopy,
     getLccHvdcLineSchema,
-} from './lcc-creation-utils';
+} from '../lcc-utils';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 export type LccCreationSchemaForm = {
@@ -223,11 +223,7 @@ export function LccCreationDialog({
     const headerAndTabs = (
         <Grid container spacing={2}>
             <LccCreationDialogHeader />
-            <LccCreationDialogTabs
-                tabIndex={tabIndex}
-                tabIndexesWithError={tabIndexesWithError}
-                setTabIndex={setTabIndex}
-            />
+            <LccTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Grid>
     );
 

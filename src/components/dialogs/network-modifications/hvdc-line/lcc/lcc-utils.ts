@@ -27,12 +27,12 @@ import {
     SHUNT_COMPENSATOR_NAME,
     SHUNT_COMPENSATOR_SELECTED,
     VOLTAGE_LEVEL,
-} from '../../../../../utils/field-constants';
+} from '../../../../utils/field-constants';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
-} from '../../../../connectivity/connectivity-form-utils';
-import yup from '../../../../../utils/yup-config';
+} from '../../../connectivity/connectivity-form-utils';
+import yup from '../../../../utils/yup-config';
 import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,
@@ -40,16 +40,17 @@ import {
     LccFormInfos,
     ShuntCompensatorFormSchema,
     ShuntCompensatorInfos,
-} from './lcc-creation.type';
+} from './lcc-type';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
-} from '../../../common/properties/property-utils';
+    modificationPropertiesSchema,
+} from '../../common/properties/property-utils';
 import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
-import { sanitizeString } from '../../../../dialog-utils';
+import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants';
+import { sanitizeString } from '../../../dialog-utils';
 import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 
@@ -87,6 +88,22 @@ export const getLccConverterStationSchema = () =>
         [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
     });
 
+export const getLccConverterStationModificationSchema = () =>
+    yup.object().shape({
+        [CONVERTER_STATION_ID]: yup.string().nullable(),
+        [CONVERTER_STATION_NAME]: yup.string().nullable(),
+        [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
+        [POWER_FACTOR]: yup.number().nullable().min(-1, 'powerFactorMinValueError').max(1, 'powerFactorMaxValueError'),
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]: yup.array().of(
+            yup.object().shape({
+                [SHUNT_COMPENSATOR_ID]: yup.string().required(),
+                [SHUNT_COMPENSATOR_NAME]: yup.string().nullable(),
+                [MAX_Q_AT_NOMINAL_V]: yup.number().nullable().min(0, 'qMaxAtNominalVMustBeGreaterThanZero').required(),
+                [SHUNT_COMPENSATOR_SELECTED]: yup.boolean().nullable(),
+            })
+        ),
+    });
+
 export const getEmptyShuntCompensatorOnSideFormData = () => ({
     [SHUNT_COMPENSATOR_ID]: null,
     [SHUNT_COMPENSATOR_NAME]: '',
@@ -105,6 +122,16 @@ export function getLccConverterStationEmptyFormData() {
         [POWER_FACTOR]: null,
         [FILTERS_SHUNT_COMPENSATOR_TABLE]: getEmptyFiltersShuntCompensatorTableFormData(),
         ...getConnectivityWithPositionEmptyFormData(),
+    };
+}
+
+export function getLccConverterStationModificationEmptyFormData() {
+    return {
+        [CONVERTER_STATION_ID]: null,
+        [CONVERTER_STATION_NAME]: null,
+        [LOSS_FACTOR]: null,
+        [POWER_FACTOR]: null,
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getEmptyFiltersShuntCompensatorTableFormData(),
     };
 }
 
@@ -227,6 +254,23 @@ export const getLccHvdcLineSchema = () =>
             [CONVERTERS_MODE]: yup.string().required(),
         })
         .concat(creationPropertiesSchema);
+
+export const getLccHvdcLineModificationSchema = () =>
+    yup
+        .object()
+        .shape({
+            [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVMustBeGreaterOrEqualToZero'),
+            [R]: yup.number().nullable().min(0, 'dcResistanceMustBeGreaterOrEqualToZero'),
+            [MAX_P]: yup.number().nullable().min(0, 'maxPMustBeGreaterOrEqualToZero'),
+            [ACTIVE_POWER_SETPOINT]: yup
+                .number()
+                .nullable()
+                .min(0, 'activePowerSetpointMinValueError')
+                .max(yup.ref(MAX_P), 'activePowerSetpointMaxValueError'),
+            [CONVERTERS_MODE]: yup.string().nullable(),
+        })
+        .concat(modificationPropertiesSchema)
+        .required();
 
 export function getLccHvdcLineEmptyFormData() {
     return {

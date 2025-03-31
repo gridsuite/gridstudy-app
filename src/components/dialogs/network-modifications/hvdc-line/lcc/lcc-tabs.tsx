@@ -7,8 +7,8 @@
 
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { getTabStyle } from '../../../../../utils/tab-utils';
-import { LccCreationDialogTab } from './lcc-creation.type';
+import { getTabStyle } from '../../../../utils/tab-utils';
+import { LccCreationDialogTab } from './lcc-type';
 
 export interface LccCreationDialogTabsProps {
     tabIndex: number;
@@ -16,11 +16,7 @@ export interface LccCreationDialogTabsProps {
     setTabIndex: (newValue: number) => void;
 }
 
-export default function LccCreationDialogTabs({
-    tabIndex,
-    tabIndexesWithError,
-    setTabIndex,
-}: Readonly<LccCreationDialogTabsProps>) {
+export default function LccTabs({ tabIndex, tabIndexesWithError, setTabIndex }: Readonly<LccCreationDialogTabsProps>) {
     return (
         <Grid container item>
             <Tabs value={tabIndex} onChange={(event, newValue) => setTabIndex(newValue)}>
