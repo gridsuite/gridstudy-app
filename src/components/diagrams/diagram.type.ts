@@ -34,6 +34,6 @@ export function isNadType(type: DiagramType): type is NAD {
 
 export type SLD = DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
 
-export function isSldType(type: DiagramType): type is NAD {
+export function isSldType(type: DiagramType): type is SLD {
     return type === DiagramType.VOLTAGE_LEVEL || type === DiagramType.SUBSTATION;
 }
