@@ -33,9 +33,9 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { IElementCreationDialog, IElementUpdateDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
-import { createDiagramConfig, updateDiagramConfig } from '../../../services/explore';
+import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 
 const dynamicCssRules: CSS_RULE[] = [
@@ -269,41 +269,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             );
     };
 
-    const handleUpdateNadConfig = (directoryData: IElementUpdateDialog) => {
-        const voltageLevelIds = diagramStates
-            .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
-            .map((diagram) => diagram.id);
-        updateDiagramConfig(
-            directoryData.id,
-            {
-                depth: networkAreaDiagramDepth,
-                scalingFactor: props.svgScalingFactor,
-                radiusFactor: 300.0, // At the moment, we only use the default value
-                voltageLevelIds: voltageLevelIds,
-                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
-            },
-            directoryData.name,
-            directoryData.description
-        )
-            .then(() => {
-                snackInfo({
-                    headerId: 'diagramConfigUpdateMsg',
-                    headerValues: {
-                        item: directoryData.elementFullPath,
-                    },
-                });
-            })
-            .catch((error) =>
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'diagramConfigUpdateError',
-                    headerValues: {
-                        item: directoryData.elementFullPath,
-                    },
-                })
-            );
-    };
-
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -419,7 +384,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
-            <DiagramControls onSave={handleSaveNadConfig} onUpdate={handleUpdateNadConfig} />
+            <DiagramControls onSave={handleSaveNadConfig} />
         </>
     );
 }
