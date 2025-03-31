@@ -11,6 +11,7 @@ import {
     AutocompleteCloseReason,
     AutocompleteRenderInputParams,
     Box,
+    Checkbox,
     Chip,
     FilterOptionsState,
     InputAdornment,
@@ -42,6 +43,8 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { computeFullPath } from '../../../../utils/compute-title';
 import { getOptionLabel } from './global-filter-utils';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 const RECENT_FILTER: string = 'recent';
 
@@ -325,18 +328,19 @@ function ResultsGlobalFilter({
                         </Box>
                     );
                 }}
-                // renderOption : the chips that are in the boxes that is visible when we focus on the AutoComplete
-                // TODO : ici afficher selon le cas des checkboxes ou autre
-                renderOption={(props, option: GlobalFilter) => {
-                    const { children, color, ...otherProps } = props;
+                // renderOption : the checkboxes visible when we focus on the AutoComplete
+                renderOption={(props, option: GlobalFilter, { selected }) => {
+                    const { key, children, color, ...otherProps } = props;
                     return (
-                        <Chip
-                            {...otherProps}
-                            component="li"
-                            label={getOptionLabel(option, translate)}
-                            size="small"
-                            sx={getResultsGlobalFiltersChipStyle(option.filterType)}
-                        />
+                        <Box component="li" key={key} {...otherProps} sx={resultsGlobalFilterStyles.listOfCheckBoxes}>
+                            <Checkbox
+                                size="small"
+                                icon={<CheckBoxOutlineBlankIcon />}
+                                checkedIcon={<CheckBoxIcon />}
+                                checked={selected}
+                            />
+                            {getOptionLabel(option, translate)}
+                        </Box>
                     );
                 }}
                 // Allows to find the corresponding chips without taking into account the recent status

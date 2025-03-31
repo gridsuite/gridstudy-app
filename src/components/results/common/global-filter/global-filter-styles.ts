@@ -82,6 +82,9 @@ export const resultsGlobalFilterStyles = {
         borderColor: theme.palette.divider,
         alignSelf: 'flex-end',
     }),
+    listOfCheckBoxes: () => ({
+        width: '100%',
+    }),
     chip: {
         '&.MuiChip-root': {
             borderRadius: '100px solid',
