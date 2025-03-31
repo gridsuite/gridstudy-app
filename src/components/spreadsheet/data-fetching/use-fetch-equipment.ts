@@ -89,7 +89,7 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
                         });
                     })
                     .finally(() => {
-                        onFetchingDone && onFetchingDone();
+                        onFetchingDone?.();
                     });
             }
         },
