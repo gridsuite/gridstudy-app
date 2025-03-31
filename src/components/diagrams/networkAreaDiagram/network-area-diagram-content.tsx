@@ -33,9 +33,9 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { IElementCreationDialog, IElementUpdateDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
-import { createDiagramConfig } from '../../../services/explore';
+import { createDiagramConfig, updateDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 
 const dynamicCssRules: CSS_RULE[] = [
@@ -152,7 +152,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
@@ -252,12 +252,56 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             directoryData.name,
             directoryData.description,
             directoryData.folderId
-        ).catch((error) =>
-            snackError({
-                messageTxt: error.message,
-                headerId: 'SaveToGridexploreError',
+        )
+            .then(() => {
+                snackInfo({
+                    headerId: 'diagramConfigCreationMsg',
+                    headerValues: {
+                        directory: directoryData.folderName,
+                    },
+                });
             })
-        );
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'diagramConfigCreationError',
+                })
+            );
+    };
+
+    const handleUpdateNadConfig = (directoryData: IElementUpdateDialog) => {
+        const voltageLevelIds = diagramStates
+            .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
+            .map((diagram) => diagram.id);
+        updateDiagramConfig(
+            directoryData.id,
+            {
+                depth: networkAreaDiagramDepth,
+                scalingFactor: props.svgScalingFactor,
+                radiusFactor: 300.0, // At the moment, we only use the default value
+                voltageLevelIds: voltageLevelIds,
+                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
+            },
+            directoryData.name,
+            directoryData.description
+        )
+            .then(() => {
+                snackInfo({
+                    headerId: 'diagramConfigUpdateMsg',
+                    headerValues: {
+                        item: directoryData.elementFullPath,
+                    },
+                });
+            })
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'diagramConfigUpdateError',
+                    headerValues: {
+                        item: directoryData.elementFullPath,
+                    },
+                })
+            );
     };
 
     /**
@@ -375,7 +419,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
-            <DiagramControls onSave={handleSaveNadConfig} />
+            <DiagramControls onSave={handleSaveNadConfig} onUpdate={handleUpdateNadConfig} />
         </>
     );
 }
