@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
-import { ElementCreationDialog, ElementType, IElementCreationDialog } from '@gridsuite/commons-ui';
+import { ElementSaveDialog, ElementType, IElementCreationDialog, IElementUpdateDialog } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
@@ -49,9 +49,10 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
+    onUpdate?: (data: IElementUpdateDialog) => void;
 }
 
-const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
+const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onUpdate }) => {
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isEditMode = useSelector((state: AppState) => state.isEditMode);
@@ -67,6 +68,12 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
     const handleSave = (data: IElementCreationDialog) => {
         if (onSave) {
             onSave(data);
+        }
+    };
+
+    const handleUpdate = (data: IElementUpdateDialog) => {
+        if (onUpdate) {
+            onUpdate(data);
         }
     };
 
@@ -99,14 +106,18 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave }) => {
                     <FormattedMessage id={isEditMode ? 'save' : 'EditNad'} />
                 </Button>
             </Box>
-            {studyUuid && (
-                <ElementCreationDialog
+            {studyUuid && isSaveDialogOpen && (
+                <ElementSaveDialog
                     studyUuid={studyUuid}
                     onClose={handleCloseDialog}
                     onSave={handleSave}
+                    OnUpdate={handleUpdate}
                     open={isSaveDialogOpen}
                     type={ElementType.DIAGRAM_CONFIG}
                     titleId={'SaveToGridexplore'}
+                    selectorTitleId="NetworkAreaDiagram"
+                    createLabelId="createDiagramConfigLabel"
+                    updateLabelId="updateDiagramConfigLabel"
                 />
             )}
         </>
