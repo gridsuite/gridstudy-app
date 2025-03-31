@@ -17,6 +17,8 @@ export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name !
 
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
+
     // init value is undefined until we have successfully made a fetch
     const [nodeAliases, setNodeAliases] = useState<NodeAlias[]>();
 
@@ -36,7 +38,7 @@ export const useNodeAliases = () => {
         } else {
             setNodeAliases(undefined);
         }
-    }, [snackError, studyUuid]);
+    }, [snackError, studyUuid, treeNodes]);
 
     const updateNodeAliases = useCallback(
         (newNodeAliases: NodeAlias[]) => {

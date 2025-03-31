@@ -57,7 +57,7 @@ export default function CustomColumnsNodesConfig({
     const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
 
     const showWarning = useMemo(
-        () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.every((n) => !validAlias(n)),
+        () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.some((n) => !validAlias(n)),
         [nodeAliases]
     );
 
