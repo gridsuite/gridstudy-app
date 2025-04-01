@@ -109,7 +109,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const dispatch = useDispatch();
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
-    const timerRef = useRef<NodeJS.Timeout>();
     const { snackError } = useSnackMessage();
 
     const [activeTabUuid, setActiveTabUuid] = useState<UUID | null>(null);
@@ -359,15 +358,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
-        // wait a moment  before removing the loading message.
-        timerRef.current = setTimeout(() => {
-            gridRef.current?.api?.hideOverlay();
-            if (rowData?.length === 0 && !isFetching) {
-                // we need to call showNoRowsOverlay in order to show message when rowData is empty
-                gridRef.current?.api?.showNoRowsOverlay();
-            }
-        }, 50);
-    }, [scrollToEquipmentIndex, isFetching, rowData]);
+    }, [scrollToEquipmentIndex]);
 
     // Create a map to store the original positions of all columns
     const originalColumnPositions = useMemo(() => {
