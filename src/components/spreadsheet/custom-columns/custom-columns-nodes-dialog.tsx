@@ -13,7 +13,7 @@ import { useForm } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
-import { AppState, CurrentTreeNode } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import {
     CustomColumnNodesForm,
     customColumnNodesFormSchema,
@@ -23,6 +23,7 @@ import {
 import NodeAliasTable from './node-alias-table';
 import { UUID } from 'crypto';
 import { NodeAlias } from './node-alias.type';
+import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 export type CustomColumnNodesDialogProps = {
     open: UseStateBooleanReturn;

@@ -11,7 +11,7 @@ import { FILTERS, ID, NAME, TYPE } from '../../../../utils/field-constants';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -52,7 +52,6 @@ const emptyFormData = {
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
- * @param onClose on modification dialog close
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
@@ -62,7 +61,6 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
     editData,
     isUpdate,
     editDataFetchStatus,
-    onClose,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -124,11 +122,9 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                maxWidth="md"
+                maxWidth={'md'}
                 onClear={clear}
-                onClose={onClose}
                 onSave={onSubmit}
-                aria-labelledby="dialog-by-filter-equipment-deletion"
                 titleId="DeleteEquipmentByFilter"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}

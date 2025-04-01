@@ -23,9 +23,9 @@ import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
 import DndTable from '../../utils/dnd-table/dnd-table';
 import TemporaryLimitsTable from './temporary-limits-table';
-import { CurrentTreeNode } from '../../../redux/reducer';
 import { ColumnNumeric, ColumnText, DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 import LimitsChart from './limitsChart';
+import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;

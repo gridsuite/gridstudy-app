@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
-import BasicModificationDialog from '../../commons/basicModificationDialog';
+import { BasicModificationDialog } from '../../commons/basicModificationDialog';
 import { BooleanCellRenderer, DefaultCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
@@ -30,6 +30,21 @@ import { AgGridReact } from 'ag-grid-react';
 import { FetchStatus } from '../../../../services/utils.type';
 import type { ColDef, RowDataUpdatedEvent } from 'ag-grid-community';
 import { suppressEventsToPreventEditMode } from '../../commons/utils';
+
+const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    csvExport: {
+        display: 'flex',
+        alignItems: 'baseline',
+    },
+    grid: {
+        flexGrow: '1',
+    },
+};
 
 const defaultColDef: ColDef = {
     filter: true,
@@ -60,14 +75,6 @@ const EquipmentTypeTabs = {
     SHUNT_COMPENSATOR_TAB: 4,
     BUS_TAB: 5,
 };
-
-interface CloseFunction {
-    (): void;
-}
-
-interface PreviewModeSubmitFunction {
-    (): void;
-}
 
 interface GeneratorRowData {
     ID: string;
@@ -156,27 +163,11 @@ interface EditData {
 
 interface VoltageInitModificationProps {
     editData: EditData;
-    onClose: CloseFunction;
-    onPreviewModeSubmit?: PreviewModeSubmitFunction;
+    onClose: () => void;
+    onPreviewModeSubmit?: () => void;
     editDataFetchStatus: FetchStatus;
     disabledSave: boolean;
-    dialogProps: any;
 }
-
-const styles = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
-    csvExport: {
-        display: 'flex',
-        alignItems: 'baseline',
-    },
-    grid: {
-        flexGrow: '1',
-    },
-};
 
 const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationProps> = ({
     editData,
@@ -184,13 +175,11 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
     onPreviewModeSubmit,
     editDataFetchStatus,
     disabledSave,
-    dialogProps,
+    ...dialogProps
 }) => {
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(EquipmentTypeTabs.GENERATOR_TAB);
-
-    const handleClear = useCallback(() => onClose && onClose(), [onClose]);
 
     const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
@@ -551,23 +540,22 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
 
     return (
         <BasicModificationDialog
-            fullWidth
-            maxWidth="md"
-            open={open}
-            onClose={onClose}
-            onClear={handleClear}
-            onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
             disabledSave={disabledSave || onPreviewModeSubmit === undefined || editData === undefined}
-            aria-labelledby="dialog-voltage-init-modification"
-            subtitle={equipmentTabs}
+            fullWidth
+            isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
+            maxWidth="md"
+            onClear={onClose}
+            onClose={onClose}
+            onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
+            open={open}
             PaperProps={{
                 sx: {
                     height: '90vh',
                 },
             }}
+            subtitle={equipmentTabs}
             titleId={'VoltageInitModification'}
             {...dialogProps}
-            isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
         >
             {displayTable(tabIndex)}
         </BasicModificationDialog>

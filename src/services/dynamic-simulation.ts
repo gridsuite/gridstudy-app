@@ -10,8 +10,8 @@ import { backendFetch, backendFetchJson, getRequestParamFromList } from './utils
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './study';
 import { UUID } from 'crypto';
 import {
+    SimpleTimeSeriesMetadata,
     TimelineEvent,
-    TimeSeriesMetadata,
 } from '../components/results/dynamicsimulation/types/dynamic-simulation-result.type';
 
 const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/dynamic-simulation';
@@ -32,7 +32,7 @@ export function fetchDynamicSimulationTimeSeriesMetadata(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID
-): Promise<TimeSeriesMetadata[] | null> {
+): Promise<SimpleTimeSeriesMetadata[] | null> {
     console.info(
         `Fetching dynamic simulation time series's metadata on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );

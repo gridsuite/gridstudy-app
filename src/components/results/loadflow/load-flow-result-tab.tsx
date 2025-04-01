@@ -48,6 +48,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { GlobalFilter, GlobalFilters } from '../common/global-filter/global-filter-types';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { UUID } from 'crypto';
 
 const styles = {
     flexWrapper: {
@@ -159,48 +160,42 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         [intl]
     );
 
-    const fetchLimitViolationsWithParameters = useCallback(() => {
-        const limitTypeValues =
-            tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE];
-        const initialFilters = filters || [];
-        let updatedFilters = convertFilterValues(initialFilters, intl);
-        let limitTypeFilter = initialFilters.find((f) => f.column === 'limitType');
+    const fetchLimitViolationsWithParameters = useMemo(
+        () => (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => {
+            const limitTypeValues =
+                tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE];
+            const initialFilters = filters || [];
+            let updatedFilters = convertFilterValues(initialFilters, intl);
+            let limitTypeFilter = initialFilters.find((f) => f.column === 'limitType');
 
-        // If 'limitType' filter does not exist or its value array is empty, add the default one
-        if (!limitTypeFilter || !(limitTypeFilter.value as LimitTypes[]).length) {
-            updatedFilters.push({
-                column: 'limitType',
-                dataType: FILTER_DATA_TYPES.TEXT,
-                type: FILTER_TEXT_COMPARATORS.EQUALS,
-                value: limitTypeValues,
+            // If 'limitType' filter does not exist or its value array is empty, add the default one
+            if (!limitTypeFilter || !(limitTypeFilter.value as LimitTypes[]).length) {
+                updatedFilters.push({
+                    column: 'limitType',
+                    dataType: FILTER_DATA_TYPES.TEXT,
+                    type: FILTER_TEXT_COMPARATORS.EQUALS,
+                    value: limitTypeValues,
+                });
+            }
+            return fetchLimitViolations(studyUuid, nodeUuid, currentRootNetworkUuid, {
+                sort: sortConfig.map((sort) => ({
+                    ...sort,
+                    colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
+                })),
+                filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
+                globalFilters: getGlobalFilterParameter(globalFilter),
             });
-        }
-        return fetchLimitViolations(studyUuid, nodeUuid, currentRootNetworkUuid, {
-            sort: sortConfig.map((sort) => ({
-                ...sort,
-                colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
-            })),
-            filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
-            globalFilters: getGlobalFilterParameter(globalFilter),
-        });
-    }, [
-        tabIndex,
-        filters,
-        intl,
-        studyUuid,
-        nodeUuid,
-        currentRootNetworkUuid,
-        sortConfig,
-        getGlobalFilterParameter,
-        globalFilter,
-    ]);
+        },
+        [tabIndex, filters, intl, sortConfig, getGlobalFilterParameter, globalFilter]
+    );
 
-    const fetchloadflowResultWithParameters = useCallback(() => {
-        return fetchLoadFlowResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
-            sort: sortConfig,
-            filters,
-        });
-    }, [studyUuid, nodeUuid, currentRootNetworkUuid, sortConfig, filters]);
+    const fetchloadflowResultWithParameters = useMemo(() => {
+        return (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) =>
+            fetchLoadFlowResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
+                sort: sortConfig,
+                filters,
+            });
+    }, [sortConfig, filters]);
 
     const fetchResult = useMemo(() => {
         if (tabIndex === 0 || tabIndex === 1) {
@@ -210,13 +205,17 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         }
     }, [tabIndex, fetchLimitViolationsWithParameters, fetchloadflowResultWithParameters]);
 
-    const [loadflowResult, isLoadingResult, setResult] = useNodeData(
+    const {
+        result: loadflowResult,
+        isLoading: isLoadingResult,
+        setResult,
+    } = useNodeData({
         studyUuid,
         nodeUuid,
-        currentRootNetworkUuid,
-        fetchResult,
-        loadflowResultInvalidations
-    );
+        rootNetworkUuid: currentRootNetworkUuid,
+        fetcher: fetchResult,
+        invalidations: loadflowResultInvalidations,
+    });
 
     const loadFlowLimitViolationsColumns = useMemo(() => {
         switch (tabIndex) {
@@ -275,7 +274,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     }, []);
 
     const result = useMemo(() => {
-        if (loadflowResult === RunningStatus.FAILED || !loadflowResult) {
+        if (!loadflowResult) {
             return [];
         }
         if (tabIndex === 0 || tabIndex === 1) {

@@ -24,7 +24,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../commons/modificationDialog';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import {
     getConnectivityData,
     getConnectivityWithoutPositionEmptyFormData,
@@ -272,7 +272,6 @@ const LineSplitWithVoltageLevelDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-voltage-level-amidst-a-line"
                 titleId="LineSplitWithVoltageLevel"
                 subtitle={<LineSplitWithVoltageLevelIllustration />}
                 open={open}

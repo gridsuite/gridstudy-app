@@ -45,6 +45,9 @@ declare module '@mui/material/styles' {
         severityChip: {
             disabledColor: string;
         };
+        formFiller: {
+            background: string;
+        };
     }
     export interface Theme extends MuiTheme, Required<ThemeExtension> {}
 

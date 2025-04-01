@@ -60,7 +60,6 @@ export const useEquipmentModification = ({ equipmentType }: UseEquipmentModifica
             return (
                 <Dialog
                     onClose={() => setModificationDialog(null)}
-                    onValidated={() => {}}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}

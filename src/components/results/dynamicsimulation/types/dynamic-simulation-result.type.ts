@@ -8,7 +8,24 @@
 // This type is derived from the {@link com.powsybl.timeseries.TimeSeriesMetadata}
 export type TimeSeriesMetadata = {
     name: string;
+    irregularIndex?: number[];
+    regularIndex?: {
+        startTime: number;
+        endTime: number;
+        spacing: number;
+    };
 };
+
+// DTO of timeseries
+export type Timeseries = {
+    index: number;
+    metadata: TimeSeriesMetadata;
+    chunks?: {
+        values: number[];
+    }[];
+};
+
+export type SimpleTimeSeriesMetadata = Pick<TimeSeriesMetadata, 'name'>;
 
 // This type is taken from the {@link com.powsybl.dynamicsimulation.TimelineEvent}
 export type TimelineEvent = {

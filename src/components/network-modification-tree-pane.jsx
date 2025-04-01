@@ -304,7 +304,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 updateNodes([studyUpdatedForce.eventData.headers['node']]);
             } else if (
                 studyUpdatedForce.eventData.headers.updateType === 'nodeBuildStatusUpdated' &&
-                studyUpdatedForce.eventData.headers['rootNetwork'] === currentRootNetworkUuidRef.current
+                studyUpdatedForce.eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current
             ) {
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (

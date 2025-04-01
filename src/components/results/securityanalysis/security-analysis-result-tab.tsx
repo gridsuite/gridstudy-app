@@ -153,14 +153,17 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         [page, tabIndex, rowsPerPage, sortConfig, currentRootNetworkUuid, filters, resultType, intl]
     );
 
-    const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(
+    const {
+        result,
+        isLoading: isLoadingResult,
+        setResult,
+    } = useNodeData({
         studyUuid,
         nodeUuid,
-        currentRootNetworkUuid,
-        fetchSecurityAnalysisResultWithQueryParams,
-        securityAnalysisResultInvalidations,
-        null
-    );
+        rootNetworkUuid: currentRootNetworkUuid,
+        fetcher: fetchSecurityAnalysisResultWithQueryParams,
+        invalidations: securityAnalysisResultInvalidations,
+    });
 
     const resetResultStates = useCallback(() => {
         setResult(null);
@@ -191,11 +194,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     }, []);
-
-    const result = useMemo(
-        () => (securityAnalysisResult === RunningStatus.FAILED ? [] : securityAnalysisResult),
-        [securityAnalysisResult]
-    );
 
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 

@@ -14,7 +14,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../utils/yup-config';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import ModificationDialog from '../commons/modificationDialog';
+import { ModificationDialog } from '../commons/modificationDialog';
 import { checkRootNetworkNameExistence, checkRootNetworkTagExistence } from 'services/root-network';
 import { RootNetworkCaseSelection } from './root-network-case-selection';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';
@@ -32,7 +32,6 @@ interface RootNetworkDialogProps {
     onSave: (data: FormData) => void;
     onClose: () => void;
     titleId: string;
-    dialogProps?: any;
     editableRootNetwork?: RootNetworkMetadata;
 }
 
@@ -70,8 +69,8 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
     onSave,
     onClose,
     titleId,
-    dialogProps,
     editableRootNetwork,
+    ...dialogProps
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [modifiedByUser, setModifiedByUser] = useState(false);
@@ -138,7 +137,6 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                 onClose={onClose}
                 onClear={clear}
                 onSave={handleSave}
-                aria-labelledby="dialog-root-network-creation"
                 {...dialogProps}
                 titleId={titleId}
                 disabledSave={!isFormValid}
@@ -152,6 +150,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             studyUuid={studyUuid}
                             elementExists={checkRootNetworkNameExistence}
                             errorMessageKey="nameAlreadyUsed"
+                            catchMessageKey="rootNetworknameValidityCheckError"
                             formProps={{ fullWidth: true }}
                             onManualChangeCallback={() => setModifiedByUser(true)}
                         />
@@ -165,6 +164,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             elementExists={checkRootNetworkTagExistence}
                             inputProps={{ maxLength: MAX_TAG_LENGTH }}
                             errorMessageKey="tagAlreadyUsed"
+                            catchMessageKey="rootNetworknameValidityCheckError"
                             max_length={MAX_TAG_LENGTH}
                         />
                     </Grid>

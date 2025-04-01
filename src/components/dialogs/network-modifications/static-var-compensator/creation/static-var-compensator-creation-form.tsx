@@ -16,7 +16,7 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import { UUID } from 'crypto';
 import GridItem from '../../../commons/grid-item';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 export interface StaticVarCompensatorCreationFormProps {
     studyUuid: UUID;

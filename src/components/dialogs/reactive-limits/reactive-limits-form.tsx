@@ -26,7 +26,7 @@ export interface ReactiveLimitsFormProps {
     id?: string;
     previousReactiveCapabilityCurvePoints?: ReactiveCapabilityCurvePoints[] | null;
     previousMinMaxReactiveLimits?: MinMaxReactiveLimitsFormInfos | null;
-    updatePreviousReactiveCapabilityCurveTable?: () => void;
+    updatePreviousReactiveCapabilityCurveTable?: (action: string, index: number) => void;
 }
 export function ReactiveLimitsForm({
     id = REACTIVE_LIMITS,

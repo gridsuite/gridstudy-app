@@ -36,8 +36,8 @@ import { UUID } from 'crypto';
 import {
     AppState,
     NotificationType,
-    RootNetworkDeletionStartedEventData,
-    RootNetworkModifiedEventData,
+    RootNetworksDeletionStartedEventData,
+    RootNetworksUpdatedEventData,
 } from 'redux/reducer';
 import { RootNetworkMetadata } from './network-modifications/network-modification-menu.type';
 
@@ -177,12 +177,9 @@ const RootNetworkNodeEditor = () => {
     const rootNetworkModifiedNotification = useCallback(
         (event: MessageEvent<string>) => {
             const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworkModifiedEventData;
+            const eventData = parsedEventData as RootNetworksUpdatedEventData;
             const updateTypeHeader = eventData.headers.updateType;
-            if (
-                updateTypeHeader === NotificationType.ROOT_NETWORK_MODIFIED ||
-                updateTypeHeader === NotificationType.ROOT_NETWORK_UPDATED
-            ) {
+            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
                 dofetchRootNetworks();
             }
         },
@@ -191,7 +188,7 @@ const RootNetworkNodeEditor = () => {
     const rootNetworksUpdateFailedNotification = useCallback(
         (event: MessageEvent<string>) => {
             const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworkModifiedEventData;
+            const eventData = parsedEventData as RootNetworksUpdatedEventData;
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATE_FAILED) {
                 dofetchRootNetworks();
@@ -206,23 +203,23 @@ const RootNetworkNodeEditor = () => {
     const rootNetworkDeletionStartedNotification = useCallback(
         (event: MessageEvent<string>) => {
             const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworkDeletionStartedEventData;
+            const eventData = parsedEventData as RootNetworksDeletionStartedEventData;
             const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORK_DELETION_STARTED) {
+            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_DELETION_STARTED) {
                 if (!rootNetworksRef.current) {
                     return;
                 }
                 // If the current root network isn't going to be deleted, we don't need to do anything
-                const deletedRootNetworkUuids = eventData.headers.rootNetworks;
+                const deletedRootNetworksUuids = eventData.headers.rootNetworksUuids;
                 if (
                     currentRootNetworkUuidRef.current &&
-                    !deletedRootNetworkUuids.includes(currentRootNetworkUuidRef.current)
+                    !deletedRootNetworksUuids.includes(currentRootNetworkUuidRef.current)
                 ) {
                     return;
                 }
                 // Choice: if the current root network is going to be deleted, we select the first root network that won't be deleted
                 const newSelectedRootNetwork = rootNetworksRef.current.find(
-                    (rootNetwork) => !deletedRootNetworkUuids.includes(rootNetwork.rootNetworkUuid)
+                    (rootNetwork) => !deletedRootNetworksUuids.includes(rootNetwork.rootNetworkUuid)
                 );
                 if (newSelectedRootNetwork) {
                     dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));

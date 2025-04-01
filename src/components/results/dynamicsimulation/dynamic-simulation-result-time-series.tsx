@@ -5,28 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { Box, LinearProgress } from '@mui/material';
+import { Box, LinearProgress, Theme } from '@mui/material';
 import DynamicSimulationResultChart from './timeseries/dynamic-simulation-result-chart';
-import { memo, useMemo, useState } from 'react';
+import { memo, SyntheticEvent, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import DroppableTabs from '../../utils/draggable-tab/droppable-tabs';
 import DraggableTab from '../../utils/draggable-tab/draggable-tab';
-import Visibility from './common/visibility';
+import VisibilityBox from './common/visibility-box';
 import TooltipIconButton from './common/tooltip-icon-button';
 import useResultTimeSeries from './hooks/useResultTimeSeries';
 import { useSelector } from 'react-redux';
 import ComputingType from '../../computing-status/computing-type';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import Overlay from '../common/Overlay';
+import { UUID } from 'crypto';
+import { AppState } from '../../../redux/reducer';
+import { DropResult } from 'react-beautiful-dnd';
 
 const styles = {
     root: {
         height: '100%',
     },
-    addButton: (theme) => ({
+    addButton: (theme: Theme) => ({
         borderRadius: '50%',
         marginRight: theme.spacing(10),
         color: theme.palette.primary.main,
@@ -36,15 +38,29 @@ const styles = {
     },
 };
 
-const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid, currentRootNetworkUuid }) => {
-    const [result, loadTimeSeries, isLoading] = useResultTimeSeries(nodeUuid, studyUuid, currentRootNetworkUuid);
+export type DynamicSimulationResultTimeSeriesProps = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+};
+
+const DynamicSimulationResultTimeSeries = memo(function ({
+    nodeUuid,
+    studyUuid,
+    currentRootNetworkUuid,
+}: Readonly<DynamicSimulationResultTimeSeriesProps>) {
+    const {
+        result,
+        lazyLoadTimeSeriesCb: loadTimeSeries,
+        isLoading,
+    } = useResultTimeSeries({ nodeUuid, studyUuid, rootNetworkUuid: currentRootNetworkUuid });
 
     // tab id is automatically increased and reset to zero when there is no tab.
-    const [tabIncId, setTabIncId] = useState(1);
+    const [tabIncId, setTabIncId] = useState<number>(1);
 
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
-    const [tabs, setTabs] = useState([{ id: tabIncId }]);
+    const [tabs, setTabs] = useState<{ id: number }[]>(() => [{ id: tabIncId }]);
 
     const intl = useIntl();
 
@@ -61,7 +77,7 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid, currentRo
         setTabIncId((prev) => prev + 1);
     };
 
-    const handleClose = (index) => {
+    const handleClose = (index: number) => {
         return () => {
             const newTabs = Array.from(tabs);
             newTabs.splice(index, 1);
@@ -74,21 +90,25 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid, currentRo
         };
     };
 
-    const handleDragEnd = (result) => {
+    const handleDragEnd = (result: DropResult) => {
         const newTabs = Array.from(tabs);
         const draggedTab = newTabs.splice(result.source.index, 1)[0];
         const destIndex = result.destination?.index;
-        newTabs.splice(destIndex, 0, draggedTab);
-        setSelectedIndex(destIndex);
-        setTabs(newTabs);
+        if (destIndex !== undefined) {
+            newTabs.splice(destIndex, 0, draggedTab);
+            setSelectedIndex(destIndex);
+            setTabs(newTabs);
+        }
     };
 
-    const handleTabsChange = (event, newTabIndex) => {
+    const handleTabsChange = (event: SyntheticEvent, newTabIndex: number) => {
         setSelectedIndex(newTabIndex);
     };
 
     // messages to show when no data
-    const dynamicSimulationStatus = useSelector((state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]);
+    const dynamicSimulationStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+    );
     const messages = useIntlResultStatusMessages(intl, true);
     const overlayMessage = useMemo(
         () => getNoRowsMessage(messages, result?.timeseriesMetadatas, dynamicSimulationStatus, !isLoading),
@@ -114,7 +134,7 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid, currentRo
                                 tabs.map((tab, index) => {
                                     return (
                                         <DraggableTab
-                                            key={index}
+                                            key={`tab-${tab.id}`}
                                             id={`tab-${index}`}
                                             index={index}
                                             value={index}
@@ -128,7 +148,7 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid, currentRo
                                                         id: 'DynamicSimulationResultTab',
                                                     })} ${tab.id}`}
                                                     <TooltipIconButton
-                                                        toolTip={intl.formatMessage({
+                                                        tooltip={intl.formatMessage({
                                                             id: 'DynamicSimulationCloseTab',
                                                         })}
                                                         size="small"
@@ -146,7 +166,7 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid, currentRo
                             onDragEnd={handleDragEnd}
                         />
                         <TooltipIconButton
-                            toolTip={intl.formatMessage({
+                            tooltip={intl.formatMessage({
                                 id: 'DynamicSimulationAddTab',
                             })}
                             sx={styles.addButton}
@@ -163,14 +183,14 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid, currentRo
                         }}
                     >
                         {tabs.map((tab, index) => (
-                            <Visibility key={`tab-${tab.id}`} value={selectedIndex} index={index}>
+                            <VisibilityBox key={`tab-${tab.id}`} activeIndex={selectedIndex} boxIndex={index}>
                                 <DynamicSimulationResultChart
                                     groupId={`${tab.id}`}
                                     timeseriesMetadatas={result?.timeseriesMetadatas}
                                     selected={selectedIndex === index}
                                     loadTimeSeries={loadTimeSeries}
                                 />
-                            </Visibility>
+                            </VisibilityBox>
                         ))}
                     </Box>
                 </Box>
@@ -178,11 +198,5 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid, currentRo
         </>
     );
 });
-
-DynamicSimulationResultTimeSeries.propTypes = {
-    nodeUuid: PropTypes.string,
-    studyUuid: PropTypes.string,
-    currentRootNetworkUuid: PropTypes.string,
-};
 
 export default DynamicSimulationResultTimeSeries;

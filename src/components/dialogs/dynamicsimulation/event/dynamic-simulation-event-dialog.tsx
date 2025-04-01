@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../commons/modificationDialog';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
@@ -184,7 +184,6 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
                 onClose={onClose}
                 onClear={handleClear}
                 onSave={handleSubmit}
-                aria-labelledby="dialog-event-configuration"
                 maxWidth={'xs'}
                 titleId={title}
                 open={open}
