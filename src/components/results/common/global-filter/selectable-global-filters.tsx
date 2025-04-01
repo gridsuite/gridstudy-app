@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Button, Chip, Grid, ListItemButton, Paper, Typography } from '@mui/material';
+import { Button, Chip, Grid, ListItemButton, Paper, Typography } from '@mui/material';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
-import IconButton from '@mui/material/IconButton';
-import FolderIcon from '@mui/icons-material/Folder';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import React, { Dispatch, PropsWithChildren, SetStateAction, useMemo } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
@@ -91,18 +90,10 @@ function SelectableGlobalFilters({
                 </Grid>
                 <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
                     {filterGroupSelected === FilterType.GENERIC_FILTER ? (
-                        <Box sx={resultsGlobalFilterStyles.importFilterButton} onMouseDown={onClickGenericFilter}>
-                            <IconButton
-                                color="primary"
-                                sx={{
-                                    align: 'right',
-                                    marginLeft: 'auto',
-                                }}
-                            >
-                                <FolderIcon />
-                            </IconButton>
-                            <FormattedMessage id={'Filters'} />
-                        </Box>
+                        <Button sx={resultsGlobalFilterStyles.importFilterButton} onMouseDown={onClickGenericFilter}>
+                            <FileUploadIcon />
+                            <FormattedMessage id={'results.globalFilter.loadFilter'} />
+                        </Button>
                     ) : (
                         children
                     )}

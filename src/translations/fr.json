@@ -512,6 +512,7 @@
 
     "results.globalFilter.categories": "Catégories",
     "results.globalFilter.clearAll": "Tout supprimer",
+    "results.globalFilter.loadFilter": "Charger filtre",
     "results.globalFilter.activeFilters": "{filtersCount} filtrages actifs",
     "results.globalFilter.activeFilter": "{filtersCount} filtrage actif",
     "results.globalFilter.fillerText": "Filtrage",
