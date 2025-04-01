@@ -119,14 +119,9 @@ export function setCurrentReactiveCapabilityCurveTable(
 }
 
 export function setCurrentReactiveCapabilityCurveChoice(
-    previousReactiveCapabilityCurveTable: ReactiveCapabilityCurvePoints,
+    previousReactiveCapabilityCurveTable: ReactiveCapabilityCurve,
     fieldKey: string,
-    getValues: UseFormGetValues<FieldValues>,
     setValue: UseFormSetValue<FieldValues>,
-    isNodeBuilt?: boolean
 ) {
-    const currentReactiveCapabilityCurveTable = getValues(fieldKey);
-    if (isNodeBuilt || !currentReactiveCapabilityCurveTable) {
-        setValue(`${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`, 'MINMAX');
-    }
+    setValue(`${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`, 'MINMAX');
 }

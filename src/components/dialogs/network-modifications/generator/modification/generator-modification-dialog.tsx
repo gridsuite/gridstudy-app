@@ -287,9 +287,7 @@ export default function GeneratorModificationDialog({
                                 setCurrentReactiveCapabilityCurveChoice(
                                     previousReactiveCapabilityCurveTable,
                                     `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    getValues,
-                                    setValue,
-                                    isNodeBuilt(currentNode)
+                                    setValue
                                 );
                             }
                             setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, value?.voltageLevelId);
