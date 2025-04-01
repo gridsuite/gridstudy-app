@@ -61,7 +61,7 @@ export function ActivePowerControlForm({
             name={DROOP}
             label={'Droop'}
             adornment={percentageTextField}
-            previousValue={Number.isNaN(previousValues?.droop) ? undefined : previousValues?.droop ?? undefined}
+            previousValue={isNaN(Number(previousValues?.droop)) ? undefined : previousValues?.droop ?? undefined}
             clearable={true}
         />
     );
