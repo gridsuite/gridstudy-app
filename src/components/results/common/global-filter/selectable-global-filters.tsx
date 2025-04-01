@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Chip, Grid, ListItemButton, Paper, Typography } from '@mui/material';
+import { Button, Chip, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -99,14 +99,20 @@ function SelectableGlobalFilters({
                     )}
                 </Grid>
                 <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
-                    <List sx={{ width: '100%' }}>
+                    <List>
                         {selectedGlobalFilters.map((element: GlobalFilter) => (
-                            <Chip
-                                key={element.uuid}
-                                size="small"
-                                label={getOptionLabel(element, translate)}
-                                sx={getResultsGlobalFiltersChipStyle(element.filterType)}
-                            />
+                            <ListItem key={element.label} sx={{ height: '1.8em' }}>
+                                <Chip
+                                    size="small"
+                                    label={getOptionLabel(element, translate)}
+                                    sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                                    onDelete={() => {
+                                        setSelectedGlobalFilters([
+                                            ...selectedGlobalFilters.filter((filter) => !(filter === element)),
+                                        ]);
+                                    }}
+                                />
+                            </ListItem>
                         ))}
                     </List>
                 </Grid>
