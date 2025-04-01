@@ -48,7 +48,7 @@ import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from 'components/dialogs/commons/modificationDialog';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
 import { controlCouplingOmnibusBetweenSections } from '../voltage-level-creation-utils';
@@ -327,7 +327,6 @@ const VoltageLevelCreationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-voltage-level"
                 maxWidth={'md'}
                 titleId="CreateVoltageLevel"
                 searchCopy={searchCopy}

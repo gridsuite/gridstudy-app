@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, Parameter, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 
 import {
     FileUpload,
@@ -28,13 +28,18 @@ import {
     Chip,
 } from '@mui/material';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
-import { AppState } from 'redux/reducer';
-import { RootNetworkMetadata } from './network-modification-menu.type';
+import {
+    AppState,
+    NotificationType,
+    RootNetworksDeletionStartedEventData,
+    RootNetworksUpdatedEventData,
+} from 'redux/reducer';
+import { RootNetworkMetadata } from './network-modifications/network-modification-menu.type';
 
 import {
     CaseImportParameters,
@@ -42,9 +47,10 @@ import {
     getCaseImportParameters,
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
-import { setCurrentRootNetworkUuid } from 'redux/actions';
-import { isChecked, isPartial } from './network-modification-node-editor-utils';
+import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
+import { isChecked, isPartial } from './network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
+import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },
@@ -125,7 +131,8 @@ const styles = {
 const RootNetworkNodeEditor = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
-    const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
+    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentRootNetworkUuidRef = useRef<UUID | null>(null);
@@ -137,7 +144,6 @@ const RootNetworkNodeEditor = () => {
     const [rootNetworkModificationDialogOpen, setRootNetworkModificationDialogOpen] = useState(false);
     const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
     const dispatch = useDispatch();
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
 
     const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
@@ -153,7 +159,7 @@ const RootNetworkNodeEditor = () => {
             fetchRootNetworks(studyUuid)
                 .then((res: RootNetworkMetadata[]) => {
                     updateSelectedItems(res);
-                    setRootNetworks(res);
+                    dispatch(setRootNetworks(res));
                     // This is used to hide the loader for creation, update and deletion of the root networks.
                     // All the root networks must be fully established before the loader can be safely removed.
                     if (res.every((network) => !network.isCreating)) {
@@ -166,43 +172,72 @@ const RootNetworkNodeEditor = () => {
                     });
                 });
         }
-    }, [studyUuid, updateSelectedItems, snackError]);
+    }, [studyUuid, updateSelectedItems, snackError, dispatch]);
 
-    useEffect(() => {
-        if (studyUpdatedForce?.eventData?.headers) {
-            const eventType = studyUpdatedForce.eventData.headers?.['updateType'];
-            if (eventType === 'rootNetworksUpdateFailed') {
+    const rootNetworkModifiedNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworksUpdatedEventData;
+            const updateTypeHeader = eventData.headers.updateType;
+            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
+                dofetchRootNetworks();
+            }
+        },
+        [dofetchRootNetworks]
+    );
+    const rootNetworksUpdateFailedNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworksUpdatedEventData;
+            const updateTypeHeader = eventData.headers.updateType;
+            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATE_FAILED) {
                 dofetchRootNetworks();
                 snackError({
                     messageId: 'importCaseFailure',
                     headerId: 'createRootNetworksError',
                 });
             }
-            if (eventType === 'rootNetworksUpdated' || eventType === 'rootNetworkModified') {
-                dofetchRootNetworks();
-            } else if (rootNetworksRef.current && eventType === 'rootNetworkDeletionStarted') {
+        },
+        [dofetchRootNetworks, snackError]
+    );
+    const rootNetworkDeletionStartedNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworksDeletionStartedEventData;
+            const updateTypeHeader = eventData.headers.updateType;
+            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_DELETION_STARTED) {
+                if (!rootNetworksRef.current) {
+                    return;
+                }
                 // If the current root network isn't going to be deleted, we don't need to do anything
-                const deletedRootNetworkUuids = studyUpdatedForce.eventData.headers.rootNetworks;
+                const deletedRootNetworksUuids = eventData.headers.rootNetworksUuids;
                 if (
                     currentRootNetworkUuidRef.current &&
-                    !deletedRootNetworkUuids.includes(currentRootNetworkUuidRef.current)
+                    !deletedRootNetworksUuids.includes(currentRootNetworkUuidRef.current)
                 ) {
                     return;
                 }
                 // Choice: if the current root network is going to be deleted, we select the first root network that won't be deleted
                 const newSelectedRootNetwork = rootNetworksRef.current.find(
-                    (rootNetwork) => !deletedRootNetworkUuids.includes(rootNetwork.rootNetworkUuid)
+                    (rootNetwork) => !deletedRootNetworksUuids.includes(rootNetwork.rootNetworkUuid)
                 );
                 if (newSelectedRootNetwork) {
                     dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
                 }
             }
-        }
-    }, [studyUpdatedForce, dofetchRootNetworks, dispatch, snackError]);
+        },
+        [dispatch]
+    );
 
-    useEffect(() => {
-        dofetchRootNetworks();
-    }, [dofetchRootNetworks]);
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+        listenerCallbackMessage: rootNetworkModifiedNotification,
+    });
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+        listenerCallbackMessage: rootNetworksUpdateFailedNotification,
+    });
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+        listenerCallbackMessage: rootNetworkDeletionStartedNotification,
+    });
 
     const openRootNetworkCreationDialog = useCallback(() => {
         setRootNetworkCreationDialogOpen(true);
