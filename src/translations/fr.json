@@ -511,6 +511,7 @@
     "ComputationResultsLogs": "Logs",
 
     "results.globalFilter.categories": "Catégories",
+    "results.globalFilter.clearAll": "Tout supprimer",
     "results.globalFilter.activeFilters": "{filtersCount} filtrages actifs",
     "results.globalFilter.activeFilter": "{filtersCount} filtrage actif",
     "results.globalFilter.fillerText": "Filtrage",

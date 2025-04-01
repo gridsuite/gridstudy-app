@@ -73,6 +73,17 @@ export const resultsGlobalFilterStyles = {
         borderLeft: '1px solid',
         borderColor: theme.palette.divider,
     }),
+    miniButton: (theme: Theme) => ({
+        color: theme.palette.text.primary,
+        border: '1px solid',
+        borderColor: theme.palette.text.primary,
+        padding: 0,
+        paddingLeft: 0.5,
+        paddingRight: 0.5,
+        position: 'absolute',
+        top: 12,
+        right: 8,
+    }),
     importFilterButton: (theme: Theme) => ({
         color: theme.palette.text.secondary,
         fontSize: '0.8em',

@@ -359,6 +359,7 @@ function ResultsGlobalFilter({
                         filterGroupSelected={filterGroupSelected}
                         setFilterGroupSelected={setFilterGroupSelected}
                         selectedGlobalFilters={selectedGlobalFilters}
+                        setSelectedGlobalFilters={setSelectedGlobalFilters}
                     />
                 )}
             />

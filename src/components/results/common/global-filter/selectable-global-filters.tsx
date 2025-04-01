@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Chip, Grid, ListItemButton, Paper, Typography } from '@mui/material';
+import { Box, Button, Chip, Grid, ListItemButton, Paper, Typography } from '@mui/material';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { Dispatch, PropsWithChildren, SetStateAction, useMemo } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType } from '../utils';
@@ -28,6 +28,7 @@ export interface SelectableGlobalFiltersProps extends PropsWithChildren {
     filterGroupSelected: string;
     setFilterGroupSelected: (value: ((prevState: string) => string) | string) => void;
     selectedGlobalFilters: GlobalFilter[];
+    setSelectedGlobalFilters: Dispatch<SetStateAction<GlobalFilter[]>>;
 }
 
 function SelectableGlobalFilters({
@@ -37,6 +38,7 @@ function SelectableGlobalFilters({
     filterGroupSelected,
     setFilterGroupSelected,
     selectedGlobalFilters,
+    setSelectedGlobalFilters,
 }: Readonly<SelectableGlobalFiltersProps>) {
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
@@ -64,6 +66,15 @@ function SelectableGlobalFilters({
                 <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellTitle} />
                 <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellTitle}>
                     <Typography variant="caption">{filtersMsg}</Typography>
+                    <Button
+                        size="small"
+                        onClick={() => setSelectedGlobalFilters([])}
+                        sx={resultsGlobalFilterStyles.miniButton}
+                    >
+                        <Typography variant="caption">
+                            <FormattedMessage id="results.globalFilter.clearAll" />
+                        </Typography>
+                    </Button>
                 </Grid>
                 <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cell}>
                     <List sx={{ width: '100%' }}>
