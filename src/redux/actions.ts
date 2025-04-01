@@ -22,7 +22,6 @@ import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
-    CurrentTreeNode,
     EquipmentUpdateType,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
@@ -45,7 +44,7 @@ import {
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
@@ -140,7 +139,9 @@ export type AppActions =
     | SetAppTabIndexAction
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
-    | CancelLeaveParametersTabAction;
+    | CancelLeaveParametersTabAction
+    | LoadNadFromConfigAction
+    | SetEditNadModeAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -571,6 +572,18 @@ export function setReloadMapNeeded(reloadMapNeeded: boolean): SetReloadMapNeeded
     };
 }
 
+export const SET_EDIT_NAD_MODE = 'SET_EDIT_NAD_MODE';
+export type SetEditNadModeAction = Readonly<Action<typeof SET_EDIT_NAD_MODE>> & {
+    isEditMode: boolean;
+};
+
+export function setEditNadMode(isEditMode: boolean): SetEditNadModeAction {
+    return {
+        type: SET_EDIT_NAD_MODE,
+        isEditMode,
+    };
+}
+
 export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
 export type MapEquipmentsInitializedAction = Readonly<Action<typeof MAP_EQUIPMENTS_INITIALIZED>> & {
     newValue: boolean;
@@ -836,6 +849,20 @@ export function closeDiagrams(ids: string[]): CloseDiagramsAction {
     return {
         type: CLOSE_DIAGRAMS,
         ids: ids,
+    };
+}
+
+export const LOAD_NAD_FROM_CONFIG = 'LOAD_NAD_FROM_CONFIG';
+export type LoadNadFromConfigAction = Readonly<Action<typeof LOAD_NAD_FROM_CONFIG>> & {
+    nadConfigUuid: string;
+    nadName: string;
+};
+
+export function loadNadFromConfig(nadConfigUuid: string, nadName: string): LoadNadFromConfigAction {
+    return {
+        type: LOAD_NAD_FROM_CONFIG,
+        nadConfigUuid: nadConfigUuid,
+        nadName: nadName,
     };
 }
 
@@ -1373,6 +1400,7 @@ export function setCalculationSelections(tabUuid: UUID, selections: string[]): S
 
 export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
 export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
+
 export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,

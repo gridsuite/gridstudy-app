@@ -35,7 +35,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/option/parameter': 'Paramétrer',
     'spreadsheet/custom_column/option/refresh': 'Recharger',
     'spreadsheet/custom_column/option/refresh/tooltip':
-        'Recharger les données de cette feuille pour les autres nœuds paramétrés ({aliases})',
+        'Recharger les données de cette feuille pour les autres nœuds réalisés et paramétrés ({aliases})',
     'spreadsheet/custom_column/parameter_nodes': 'Paramétrer les alias de nœuds',
     'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
     'spreadsheet/custom_column/creates_cyclic_dependency':
@@ -50,9 +50,18 @@ const spreadsheetFr = {
     'spreadsheet/save/dialog_title': 'Enregistrer un modèle de tableur',
     'spreadsheet/collection/save/collection_name_dialog_title': 'Enregistrer une collection de tableurs',
     'spreadsheet/save/error_message': 'Une erreur est survenue lors de la création du modèle de tableur',
+    'spreadsheet/save/update_error_message':
+        'Une erreur est survenue lors de la mise à jour du modèle de tableur {item}',
     'spreadsheet/collection/save/error': 'Une erreur est survenue lors de la création de la collection de tableurs',
     'spreadsheet/save/confirmation_message': "Création d'un modèle de tableur dans {folderName}",
+    'spreadsheet/save/update_confirmation_message': 'Modèle de tableur {item} mis à jour',
+    'spreadsheet/save/create_new_model': 'Créer un nouveau modèle',
+    'spreadsheet/save/replace_existing_model': 'Remplacer un modèle existant',
     'spreadsheet/collection/save/success': 'Collection de tableurs créée dans {folderName}',
+    'spreadsheet/collection/update/success': 'Collection de tableurs {item} mise à jour',
+    'spreadsheet/collection/update/error': 'Erreur lors de la mise à jour de la collection de tableurs {item}',
+    'spreadsheet/collection/save/create': 'Créer une nouvelle collection',
+    'spreadsheet/collection/save/replace': 'Remplacer une collection existante',
     'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Créer une feuille de calcul vide',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Appliquer un modèle de tableur',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection': 'Appliquer une collection de tableurs',

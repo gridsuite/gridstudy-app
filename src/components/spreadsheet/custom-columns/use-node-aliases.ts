@@ -12,6 +12,9 @@ import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from './node-alias.type';
 
+// NodeAlias may have invalid id/name, in error cases
+export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
+
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     // init value is undefined until we have successfully made a fetch
@@ -51,5 +54,19 @@ export const useNodeAliases = () => {
         [snackError, studyUuid]
     );
 
-    return { nodeAliases, updateNodeAliases };
+    const resetNodeAliases = useCallback(
+        (aliases: string[] | undefined) => {
+            let newNodeAliases: NodeAlias[] = [];
+            if (aliases) {
+                newNodeAliases = aliases.map((alias) => {
+                    let nodeAlias: NodeAlias = { id: undefined, name: undefined, alias: alias };
+                    return nodeAlias;
+                });
+            }
+            updateNodeAliases(newNodeAliases);
+        },
+        [updateNodeAliases]
+    );
+
+    return { nodeAliases, updateNodeAliases, resetNodeAliases };
 };

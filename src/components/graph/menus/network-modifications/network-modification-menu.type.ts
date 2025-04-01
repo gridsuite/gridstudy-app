@@ -6,6 +6,8 @@
  */
 
 import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../tree-node.type';
+import { FetchStatus } from '../../../../services/utils.type';
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
     name: string;
@@ -66,3 +68,14 @@ export interface NetworkModificationData {
     type: string;
     [key: string]: any;
 }
+
+// Cf withDefaultParams : common props for any modification available from the menu
+export type DefaultModificationDialogProps = {
+    currentNode: CurrentTreeNode;
+    studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    isUpdate: boolean;
+    editDataFetchStatus: FetchStatus;
+    onValidated: () => void;
+    onClose: () => void;
+};
