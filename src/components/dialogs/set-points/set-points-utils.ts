@@ -24,7 +24,7 @@ export const getSetPointsSchema = (isEquipmentModification = false) => ({
     ...getReactivePowerSetPointSchema(isEquipmentModification),
 });
 
-const getReactivePowerSetPointSchema = (isEquipmentModification: boolean) => ({
+export const getReactivePowerSetPointSchema = (isEquipmentModification = false) => ({
     [REACTIVE_POWER_SET_POINT]: yup
         .number()
         .nullable()
@@ -34,7 +34,7 @@ const getReactivePowerSetPointSchema = (isEquipmentModification: boolean) => ({
         }),
 });
 
-export const getActivePowerSetPointSchema = (isEquipmentModification: boolean) => ({
+export const getActivePowerSetPointSchema = (isEquipmentModification = false) => ({
     [ACTIVE_POWER_SET_POINT]: yup
         .number()
         .when([], {

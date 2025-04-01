@@ -9,9 +9,6 @@ import { useState, MouseEvent, useCallback, useMemo } from 'react';
 import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import CustomSpreadsheetSaveDialog from './custom-spreadsheet/custom-spreadsheet-save-dialog';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import { useCsvExport } from './csv-export/use-csv-export';
@@ -30,7 +27,6 @@ interface SpreadsheetSaveOption {
     id: SpreadsheetSaveOptionId;
     label: string;
     action: () => void;
-    showInDevMode?: boolean;
     disabled?: boolean;
 }
 
@@ -50,7 +46,6 @@ export default function SpreadsheetSave({
     nodeAliases,
 }: Readonly<SpreadsheetSaveProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const customSaveDialogOpen = useStateBoolean(false);
     const saveCollectionDialogOpen = useStateBoolean(false);
     const { downloadCSVData } = useCsvExport();
@@ -69,13 +64,11 @@ export default function SpreadsheetSave({
                 id: SpreadsheetSaveOptionId.SAVE_MODEL,
                 label: 'spreadsheet/save/options/model',
                 action: customSaveDialogOpen.setTrue,
-                showInDevMode: true,
             },
             [SpreadsheetSaveOptionId.SAVE_COLLECTION]: {
                 id: SpreadsheetSaveOptionId.SAVE_COLLECTION,
                 label: 'spreadsheet/save/options/collection',
                 action: saveCollectionDialogOpen.setTrue,
-                showInDevMode: true,
             },
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
@@ -105,16 +98,13 @@ export default function SpreadsheetSave({
 
     const renderMenuItem = useCallback(
         (option: SpreadsheetSaveOption) => {
-            if (option.showInDevMode && !developerMode) {
-                return null;
-            }
             return (
                 <MenuItem key={option.id} onClick={() => handleMenuItemClick(option.id)} disabled={option?.disabled}>
                     <FormattedMessage id={option.label} />
                 </MenuItem>
             );
         },
-        [developerMode, handleMenuItemClick]
+        [handleMenuItemClick]
     );
 
     return (

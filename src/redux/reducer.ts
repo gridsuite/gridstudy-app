@@ -308,10 +308,9 @@ export enum NotificationType {
     COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
     NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
     LOADFLOW_RESULT = 'loadflowResult',
-    ROOT_NETWORK_MODIFIED = 'rootNetworkModified',
-    ROOT_NETWORK_UPDATED = 'rootNetworksUpdated',
+    ROOT_NETWORKS_DELETION_STARTED = 'rootNetworksDeletionStarted',
+    ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
     ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
-    ROOT_NETWORK_DELETION_STARTED = 'rootNetworkDeletionStarted',
 }
 
 export enum StudyIndexationStatus {
@@ -328,11 +327,10 @@ export interface OneBusShortCircuitAnalysisDiagram {
 // Headers
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
+    updateType: string;
     parentNode: UUID;
-    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
-    rootNetworks: UUID[];
+    rootNetworkUuid: UUID;
     timestamp: number;
-    updateType?: string;
     node?: UUID;
     nodes?: UUID[];
     error?: string;
@@ -340,22 +338,23 @@ export interface StudyUpdatedEventDataHeader {
     computationType?: ComputingType;
 }
 
-interface RootNetworkDeletionStartedEventDataHeader {
+interface RootNetworksDeletionStartedEventDataHeader {
     studyUuid: UUID;
-    rootNetworks: UUID[];
     updateType: string;
+    rootNetworksUuids: UUID[];
 }
 
 interface LoadflowResultEventDataHeaders {
     studyUuid: UUID;
-    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
     updateType: string;
+    rootNetworkUuid: UUID;
 }
 
-interface RootNetworkModifiedEventDataHeaders {
+interface RootNetworksUpdatedEventDataHeaders {
     studyUuid: UUID;
-    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
     updateType: string;
+    rootNetworkUuid?: UUID; // all root networks if absent
+    error?: string;
 }
 
 // Payloads
@@ -386,13 +385,13 @@ export interface LoadflowResultEventData {
     payload: undefined;
 }
 
-export interface RootNetworkDeletionStartedEventData {
-    headers: RootNetworkDeletionStartedEventDataHeader;
+export interface RootNetworksDeletionStartedEventData {
+    headers: RootNetworksDeletionStartedEventDataHeader;
     payload: undefined;
 }
 
-export interface RootNetworkModifiedEventData {
-    headers: RootNetworkModifiedEventDataHeaders;
+export interface RootNetworksUpdatedEventData {
+    headers: RootNetworksUpdatedEventDataHeaders;
     payload: undefined;
 }
 
@@ -412,24 +411,19 @@ type LoadflowResultNotification = {
     eventData: LoadflowResultEventData;
 };
 
-type RootNetworkModifiedNotification = {
-    type: NotificationType.ROOT_NETWORK_MODIFIED;
-    eventData: RootNetworkModifiedEventData;
+type RootNetworksUpdatedNotification = {
+    type: NotificationType.ROOT_NETWORKS_UPDATED;
+    eventData: RootNetworksUpdatedEventData;
 };
 
-type RootNetworkUpdatedNotification = {
-    type: NotificationType.ROOT_NETWORK_UPDATED;
-    eventData: RootNetworkModifiedEventData;
-};
-
-type RootNetworkUpdateFailedNotification = {
+type RootNetworksUpdateFailedNotification = {
     type: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
-    eventData: RootNetworkModifiedEventData;
+    eventData: RootNetworksUpdatedEventData;
 };
 
 type RootNetworkDeletionStartedNotification = {
-    type: NotificationType.ROOT_NETWORK_DELETION_STARTED;
-    eventData: RootNetworkDeletionStartedEventData;
+    type: NotificationType.ROOT_NETWORKS_DELETION_STARTED;
+    eventData: RootNetworksDeletionStartedEventData;
 };
 
 // Redux state
@@ -439,9 +433,8 @@ export type StudyUpdated = {
     | StudyUpdatedUndefined
     | StudyUpdatedStudy
     | LoadflowResultNotification
-    | RootNetworkModifiedNotification
-    | RootNetworkUpdatedNotification
-    | RootNetworkUpdateFailedNotification
+    | RootNetworksUpdatedNotification
+    | RootNetworksUpdateFailedNotification
     | RootNetworkDeletionStartedNotification
 );
 

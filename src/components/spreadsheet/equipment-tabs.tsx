@@ -10,7 +10,6 @@ import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { AppDispatch } from 'redux/store';
 import { removeTableDefinition, renameTableDefinition, reorderTableDefinitions } from 'redux/actions';
 import {
@@ -57,7 +56,6 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
     disabled,
     resetNodeAliases,
 }) => {
-    const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
     const intl = useIntl();
@@ -201,15 +199,13 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
     return (
         <>
             <Grid container direction="row" wrap="nowrap" item>
-                {developerMode && (
-                    <Grid item padding={1}>
-                        <CustomSpreadsheetConfig
-                            disabled={disabled}
-                            resetTabIndex={resetTabSelection}
-                            resetNodeAliases={resetNodeAliases}
-                        />
-                    </Grid>
-                )}
+                <Grid item padding={1}>
+                    <CustomSpreadsheetConfig
+                        disabled={disabled}
+                        resetTabIndex={resetTabSelection}
+                        resetNodeAliases={resetNodeAliases}
+                    />
+                </Grid>
                 <Grid item sx={{ overflow: 'hidden' }}>
                     <DroppableTabs
                         id="equipment-tabs"
