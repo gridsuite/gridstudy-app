@@ -320,6 +320,15 @@ function ResultsGlobalFilter({
                         />
                     ))
                 }
+                // an "empty" renderGroup is needed in order to avoid the default behavior
+                renderGroup={(item) => {
+                    const { group, children } = item;
+                    return (
+                        <Box key={'keyBoxGroup_' + group} sx={resultsGlobalFilterStyles.chipBox}>
+                            {children}
+                        </Box>
+                    );
+                }}
                 // renderOption : the checkboxes visible when we focus on the AutoComplete
                 renderOption={(props, option: GlobalFilter, { selected }) => {
                     const { key, children, color, ...otherProps } = props;

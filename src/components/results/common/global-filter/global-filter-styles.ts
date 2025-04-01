@@ -51,7 +51,6 @@ export const resultsGlobalFilterStyles = {
         width: '100%',
         display: 'flex',
         flexWrap: 'wrap',
-        padding: '0.5em',
     },
     // from the expanded part :
     dropdown: () => ({
