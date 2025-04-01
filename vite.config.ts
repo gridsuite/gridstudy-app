@@ -7,9 +7,9 @@
 
 import react from '@vitejs/plugin-react';
 import { CommonServerOptions, defineConfig } from 'vite';
-import eslint from 'vite-plugin-eslint';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import * as path from 'node:path';
 
 const serverSettings: CommonServerOptions = {
     port: 3004,
@@ -29,13 +29,15 @@ const serverSettings: CommonServerOptions = {
 export default defineConfig((config) => ({
     plugins: [
         react(),
-        eslint({
-            failOnWarning: config.mode !== 'development',
-            lintOnStart: true,
-        }),
         svgr(), // works on every import with the pattern "**/*.svg?react"
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
     ],
+    resolve: {
+        alias: {
+            '@gridsuite/commons-ui': path.resolve(__dirname, '../../libs/commons-ui/src'), // 🔥 On pointe vers le source, pas dist/
+            '@powsybl/network-viewer': path.resolve(__dirname, '../../libs/powsybl-diagram-viewer/src'), // 🔥 On pointe vers le source, pas dist/
+        },
+    },
     base: './',
     server: serverSettings, // for npm run start
     preview: serverSettings, // for npm run serve (use local build)

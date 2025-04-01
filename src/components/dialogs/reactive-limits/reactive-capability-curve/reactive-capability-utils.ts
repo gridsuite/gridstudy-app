@@ -121,7 +121,7 @@ export function setCurrentReactiveCapabilityCurveTable(
 export function setCurrentReactiveCapabilityCurveChoice(
     previousReactiveCapabilityCurveTable: ReactiveCapabilityCurve,
     fieldKey: string,
-    setValue: UseFormSetValue<FieldValues>,
+    setValue: UseFormSetValue<FieldValues>
 ) {
     setValue(`${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`, 'MINMAX');
 }
