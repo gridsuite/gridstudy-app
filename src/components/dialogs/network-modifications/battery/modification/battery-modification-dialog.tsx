@@ -6,9 +6,8 @@
  */
 
 import { useForm } from 'react-hook-form';
-import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -38,19 +37,17 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialog-utils';
-import BatteryModificationForm from './battery-modification-form';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
-    getReactiveLimitsSchema,
+    getReactiveLimitsValidationSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
     getConcatenatedProperties,
@@ -61,22 +58,30 @@ import {
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
+    getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import { BatteryFormInfos, BatteryModificationDialogSchemaForm } from '../battery-dialog.type';
+import { DeepNullable } from '../../../../utils/ts-utils';
+import { FetchStatus } from '../../../../../services/utils.type';
+import { toModificationOperation } from '../../../../utils/utils';
 import {
     getActivePowerControlEmptyFormData,
     getActivePowerControlSchema,
 } from '../../../active-power-control/active-power-control-utils';
+import { BatteryModificationInfos } from '../../../../../services/network-modification-types';
+import BatteryModificationForm from './battery-modification-form';
+import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
+import { ModificationDialog } from '../../../commons/modificationDialog';
+import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
-    [ACTIVE_POWER_SET_POINT]: null,
-    [REACTIVE_POWER_SET_POINT]: null,
     ...getConnectivityWithPositionEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
+    ...getSetPointsEmptyFormData(true),
     ...getActivePowerControlEmptyFormData(true),
     ...emptyProperties,
 };
@@ -90,20 +95,23 @@ const formSchema = yup
             .number()
             .nullable()
             .when([MAXIMUM_ACTIVE_POWER], {
-                is: (maximumActivePower) => maximumActivePower != null,
+                is: (maximumActivePower: number) => maximumActivePower != null,
                 then: (schema) =>
                     schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
             }),
-        [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        ...getConnectivityWithPositionValidationSchema(true),
-        ...getReactiveLimitsSchema(true),
+        [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
+        [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
+        ...getSetPointsSchema(true),
         ...getActivePowerControlSchema(true),
     })
     .concat(modificationPropertiesSchema)
     .required();
 
-const BatteryModificationDialog = ({
+export type BatteryModificationDialogProps = EquipmentModificationDialogProps & {
+    editData?: BatteryModificationInfos;
+};
+
+export default function BatteryModificationDialog({
     editData,
     defaultIdValue,
     currentNode,
@@ -112,22 +120,22 @@ const BatteryModificationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: Readonly<BatteryModificationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
-    const [batteryToModify, setBatteryToModify] = useState();
+    const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
+    const [batteryToModify, setBatteryToModify] = useState<BatteryFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<BatteryModificationDialogSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<BatteryModificationDialogSchemaForm>>(formSchema),
     });
 
     const { reset, getValues, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (editData) => {
+        (editData: BatteryModificationInfos) => {
             if (editData?.equipmentId) {
                 setSelectedId(editData.equipmentId);
             }
@@ -142,19 +150,19 @@ const BatteryModificationDialog = ({
                 ...getConnectivityFormData({
                     voltageLevelId: editData?.voltageLevelId?.value ?? null,
                     busbarSectionId: editData?.busOrBusbarSectionId?.value ?? null,
-                    connectionName: editData?.connectionName?.value ?? '',
                     connectionDirection: editData?.connectionDirection?.value ?? null,
+                    connectionName: editData?.connectionName?.value ?? '',
                     connectionPosition: editData?.connectionPosition?.value ?? null,
-                    [CONNECTED]: editData?.terminalConnected?.value ?? null,
-                    isEquipmentModification: true,
+                    terminalConnected: editData?.terminalConnected?.value ?? null,
                 }),
                 ...getReactiveLimitsFormData({
+                    id: REACTIVE_LIMITS,
                     reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve?.value ? 'CURVE' : 'MINMAX',
                     maximumReactivePower: editData?.maxQ?.value ?? null,
                     minimumReactivePower: editData?.minQ?.value ?? null,
-                    reactiveCapabilityCurveTable: editData?.reactiveCapabilityCurvePoints ?? null,
+                    reactiveCapabilityCurvePoints: editData?.reactiveCapabilityCurvePoints ?? null,
                 }),
-                ...getPropertiesFromModification(editData.properties),
+                ...getPropertiesFromModification(editData?.properties ?? undefined),
             });
         },
         [reset]
@@ -174,36 +182,42 @@ const BatteryModificationDialog = ({
         [reset]
     );
 
-    const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
+    const updatePreviousReactiveCapabilityCurveTable = (action: string, index: number) => {
         setBatteryToModify((previousValue) => {
-            const newRccValues = previousValue?.reactiveCapabilityCurvePoints;
-            action === REMOVE
-                ? newRccValues.splice(index, 1)
-                : newRccValues.splice(index, 0, {
-                      [P]: null,
-                      [MIN_Q]: null,
-                      [MAX_Q]: null,
-                  });
+            if (!previousValue) {
+                return null;
+            }
+            const newRccValues = previousValue?.reactiveCapabilityCurvePoints ?? [];
+            if (action === REMOVE) {
+                newRccValues.splice(index, 1);
+            } else {
+                newRccValues.splice(index, 0, {
+                    [P]: null,
+                    [MIN_Q]: null,
+                    [MAX_Q]: null,
+                });
+            }
             return {
                 ...previousValue,
                 reactiveCapabilityCurvePoints: newRccValues,
             };
         });
     };
+
     const onEquipmentIdChange = useCallback(
-        (equipmentId) => {
+        (equipmentId: string) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.BATTERY,
+                    EquipmentType.BATTERY,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )
-                    .then((value) => {
+                    .then((value: BatteryFormInfos) => {
                         if (value) {
                             const previousReactiveCapabilityCurveTable = value?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable) {
@@ -220,7 +234,7 @@ const BatteryModificationDialog = ({
                             setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`, value?.busOrBusbarSectionId);
                             setBatteryToModify({
                                 ...value,
-                                reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable,
+                                reactiveCapabilityCurvePoints: previousReactiveCapabilityCurveTable,
                             });
                             reset((formValues) => ({
                                 ...formValues,
@@ -251,35 +265,44 @@ const BatteryModificationDialog = ({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (battery) => {
+        (battery: BatteryModificationDialogSchemaForm) => {
             const reactiveLimits = battery[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
-
+            const isReactiveCapabilityCurveOn = reactiveLimits?.[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const batteryModificationInfos = {
+                type: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
+                uuid: editData?.uuid ?? null,
+                equipmentId: selectedId,
+                equipmentName: toModificationOperation(sanitizeString(battery[EQUIPMENT_NAME])),
+                minP: toModificationOperation(battery[MINIMUM_ACTIVE_POWER]),
+                maxP: toModificationOperation(battery[MAXIMUM_ACTIVE_POWER]),
+                targetP: toModificationOperation(battery[ACTIVE_POWER_SET_POINT]),
+                targetQ: toModificationOperation(battery[REACTIVE_POWER_SET_POINT]),
+                voltageLevelId: toModificationOperation(battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID]),
+                busOrBusbarSectionId: toModificationOperation(battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID]),
+                connectionName: toModificationOperation(sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME])),
+                connectionDirection: toModificationOperation(battery[CONNECTIVITY]?.[CONNECTION_DIRECTION]),
+                connectionPosition: toModificationOperation(battery[CONNECTIVITY]?.[CONNECTION_POSITION]),
+                terminalConnected: toModificationOperation(battery[CONNECTIVITY]?.[CONNECTED]),
+                reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
+                participate: toModificationOperation(battery[FREQUENCY_REGULATION]),
+                droop: toModificationOperation(battery[DROOP]) ?? null,
+                maxQ: toModificationOperation(
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MAXIMUM_REACTIVE_POWER]
+                ),
+                minQ: toModificationOperation(
+                    isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MINIMUM_REACTIVE_POWER]
+                ),
+                reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
+                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null
+                    : null,
+                properties: toModificationProperties(battery) ?? null,
+            } satisfies BatteryModificationInfos;
             modifyBattery({
+                batteryModificationInfos: batteryModificationInfos,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
-                batteryId: selectedId,
-                name: sanitizeString(battery[EQUIPMENT_NAME]),
-                minP: battery[MINIMUM_ACTIVE_POWER],
-                maxP: battery[MAXIMUM_ACTIVE_POWER],
-                targetP: battery[ACTIVE_POWER_SET_POINT],
-                targetQ: battery[REACTIVE_POWER_SET_POINT],
-                voltageLevelId: battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                busOrBusbarSectionId: battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                connectionName: sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME]),
-                connectionDirection: battery[CONNECTIVITY]?.[CONNECTION_DIRECTION],
-                connectionPosition: battery[CONNECTIVITY]?.[CONNECTION_POSITION],
-                terminalConnected: battery[CONNECTIVITY]?.[CONNECTED],
-                participate: battery[FREQUENCY_REGULATION],
-                droop: battery[DROOP],
-                isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
-                maxQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER],
-                minQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER],
-                reactiveCapabilityCurve: isReactiveCapabilityCurveOn
-                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
-                    : null,
-                properties: toModificationProperties(battery),
+                modificationUuid: editData?.uuid ?? null,
+                isUpdate: !!editData,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -287,7 +310,7 @@ const BatteryModificationDialog = ({
                 });
             });
         },
-        [selectedId, studyUuid, currentNodeUuid, editData?.uuid, snackError]
+        [selectedId, studyUuid, currentNodeUuid, editData, snackError]
     );
 
     const open = useOpenShortWaitFetching({
@@ -324,7 +347,7 @@ const BatteryModificationDialog = ({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.BATTERY}
+                        equipmentType={EquipmentType.BATTERY}
                         fillerHeight={17}
                     />
                 )}
@@ -341,6 +364,4 @@ const BatteryModificationDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-export default BatteryModificationDialog;
+}

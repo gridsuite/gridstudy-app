@@ -53,7 +53,6 @@ export interface LoadCreationInfos {
     q0: number;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    busbarSectionName?: string;
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: number | null;
@@ -76,7 +75,6 @@ export interface LoadFormInfos {
     voltageLevelId: string;
     connectablePosition: ConnectablePositionInfos;
     busOrBusbarSectionId: string;
-    busbarSectionName: string;
     terminalConnected?: boolean | null;
     properties: Record<string, string> | undefined;
 }
