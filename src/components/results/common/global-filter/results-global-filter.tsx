@@ -362,6 +362,7 @@ function ResultsGlobalFilter({
                         setSelectedGlobalFilters={setSelectedGlobalFilters}
                     />
                 )}
+                noOptionsText={''}
             />
             {warningEquipmentTypeMessage && (
                 <WarningTooltip warningEquipmentTypeMessage={warningEquipmentTypeMessage} />
