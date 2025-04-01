@@ -8,7 +8,7 @@
 import StudyPane from './study-pane';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
