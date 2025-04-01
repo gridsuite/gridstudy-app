@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Chip, Grid, ListItemButton, Paper } from '@mui/material';
+import { Box, Chip, Grid, ListItemButton, Paper, Typography } from '@mui/material';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType } from '../utils';
@@ -39,6 +39,21 @@ function SelectableGlobalFilters({
     selectedGlobalFilters,
 }: Readonly<SelectableGlobalFiltersProps>) {
     const { translate } = useLocalizedCountries();
+    const intl = useIntl();
+
+    const filtersMsg: string = useMemo(
+        () =>
+            intl.formatMessage(
+                {
+                    id:
+                        selectedGlobalFilters.length < 2
+                            ? 'results.globalFilter.activeFilter'
+                            : 'results.globalFilter.activeFilters',
+                },
+                { filtersCount: selectedGlobalFilters.length }
+            ),
+        [intl, selectedGlobalFilters.length]
+    );
 
     return (
         <Paper sx={resultsGlobalFilterStyles.dropdown}>
@@ -48,7 +63,7 @@ function SelectableGlobalFilters({
                 </Grid>
                 <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellTitle} />
                 <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellTitle}>
-                    TODO
+                    <Typography variant="caption">{filtersMsg}</Typography>
                 </Grid>
                 <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cell}>
                     <List sx={{ width: '100%' }}>

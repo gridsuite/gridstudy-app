@@ -509,6 +509,8 @@
     "ComputationResultsLogs": "Logs",
 
     "results.globalFilter.categories": "Categories",
+    "results.globalFilter.activeFilters": "{filtersCount} active filters",
+    "results.globalFilter.activeFilter": "{filtersCount} active filter",
     "results.globalFilter.fillerText": "Filtering",
     "results.globalFilter.recent": "Recent",
     "results.globalFilter.genericFilter": "Filters",
