@@ -209,15 +209,17 @@ export interface SldSvg {
     svgUrl?: string | null;
 }
 
+export interface VoltageLevel {
+    id?: string;
+    substationId: UUID;
+    country?: string;
+    name?: string;
+}
+
 export interface DiagramAdditionalMetadata {
     nbVoltageLevels: number;
     scalingFactor: number;
-    voltageLevels: {
-        id: string;
-        substationId: UUID;
-        country: string;
-        name: string;
-    }[];
+    voltageLevels: VoltageLevel[];
 }
 
 export interface DiagramSvg {

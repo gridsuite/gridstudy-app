@@ -13,7 +13,6 @@ import {
     type GeoDataEquipment,
     type GeoDataLine,
     type GeoDataSubstation,
-    LineFlowColorMode,
     LineFlowMode,
     type MapHvdcLine,
     type MapLine,
@@ -51,13 +50,8 @@ import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
-import {
-    AppState,
-    CurrentTreeNode,
-    LoadflowResultEventData,
-    NotificationType,
-    RootNetworksUpdatedEventData,
-} from 'redux/reducer';
+import { AppState, LoadflowResultEventData, NotificationType, RootNetworksUpdatedEventData } from 'redux/reducer';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { isReactFlowRootNodeData } from 'redux/utils';
 
@@ -95,8 +89,6 @@ type NetworkMapTabProps = {
     lineFullPath: boolean;
     lineParallelPath: boolean;
     lineFlowMode: LineFlowMode;
-    lineFlowColorMode: LineFlowColorMode;
-    lineFlowAlertThreshold: number;
     openVoltageLevel: (idVoltageLevel: string) => void;
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
     onDrawPolygonModeActive: (active: DRAW_MODES) => void;
@@ -117,8 +109,6 @@ export const NetworkMapTab = ({
     lineFullPath,
     lineParallelPath,
     lineFlowMode,
-    lineFlowColorMode,
-    lineFlowAlertThreshold,
     /* callbacks */
     openVoltageLevel,
     showInSpreadsheet,
@@ -1088,8 +1078,6 @@ export const NetworkMapTab = ({
             lineFullPath={lineFullPath}
             lineParallelPath={lineParallelPath}
             lineFlowMode={lineFlowMode}
-            lineFlowColorMode={lineFlowColorMode}
-            lineFlowAlertThreshold={lineFlowAlertThreshold}
             useName={useName}
             visible={visible}
             disabled={disabled}
