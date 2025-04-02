@@ -7,17 +7,19 @@
 
 import type { AppState } from '../../../redux/reducer';
 import { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../services/study/node-alias';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from './node-alias.type';
+import { nodeAliasesToUpdate } from '../../../redux/actions';
 
 // NodeAlias may have invalid id/name, in error cases
 export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
 
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const _nodeAliasesToUpdate = useSelector((state: AppState) => state.nodeAliasesToUpdate);
+    const nodeAliasesToBeUpdated = useSelector((state: AppState) => state.nodeAliasesToUpdate);
+    const dispatch = useDispatch();
 
     // init value is undefined until we have successfully made a fetch
     const [nodeAliases, setNodeAliases] = useState<NodeAlias[]>();
@@ -26,25 +28,32 @@ export const useNodeAliases = () => {
 
     useEffect(() => {
         if (studyUuid) {
-            getNodeAliases(studyUuid)
-                .then((_nodeAliases) => setNodeAliases(_nodeAliases))
-                .catch((error) => {
-                    setNodeAliases(undefined);
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'nodeAliasesRetrievingError',
+            if (!nodeAliases || nodeAliasesToBeUpdated) {
+                getNodeAliases(studyUuid)
+                    .then((_nodeAliases) => setNodeAliases(_nodeAliases))
+                    .catch((error) => {
+                        setNodeAliases(undefined);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'nodeAliasesRetrievingError',
+                        });
+                    })
+                    .finally(() => {
+                        if (nodeAliasesToBeUpdated) {
+                            dispatch(nodeAliasesToUpdate(false));
+                        }
                     });
-                });
+            }
         } else {
             setNodeAliases(undefined);
         }
-    }, [snackError, studyUuid, _nodeAliasesToUpdate]);
+    }, [dispatch, nodeAliasesToBeUpdated, snackError, studyUuid]);
 
     const updateNodeAliases = useCallback(
         (newNodeAliases: NodeAlias[]) => {
             if (studyUuid) {
                 _updateNodeAlias(studyUuid, newNodeAliases)
-                    .then((r) => setNodeAliases(newNodeAliases))
+                    .then((_r) => setNodeAliases(newNodeAliases))
                     .catch((error) =>
                         snackError({
                             messageTxt: error.message,
