@@ -8,10 +8,7 @@
     ],
     "settings": {
         "import/parsers": {
-            "@typescript-eslint/parser": [
-                ".ts",
-                ".tsx"
-            ]
+            "@typescript-eslint/parser": [".ts", ".tsx"]
         },
         "import/resolver": {
             "typescript": {
@@ -24,10 +21,7 @@
     "rules": {
         "prettier/prettier": "warn",
         "curly": "error",
-        "react-refresh/only-export-components": [
-            "error",
-            { "allowConstantExport": true }
-        ],
+        "react-refresh/only-export-components": ["error", { "allowConstantExport": true }],
         "import/no-cycle": [
             "error",
             {

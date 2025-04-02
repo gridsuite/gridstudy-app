@@ -13,10 +13,12 @@ import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments }
 import { AppState, NotificationType } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
 import { NodeAlias } from '../custom-columns/node-alias.type';
+import { isStatusBuilt } from '../../graph/util/model-functions';
 import { useFetchEquipment } from './use-fetch-equipment';
+import { NodeType } from '../../graph/tree-node.type';
+import { validAlias } from '../custom-columns/use-node-aliases';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -32,56 +34,79 @@ export const useSpreadsheetEquipments = (
     );
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
+    const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>();
 
     const [isFetching, setIsFetching] = useState<boolean>();
 
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
+    // effect to keep builtAliasedNodesIds up-to-date (when we add/remove an alias or build/unbuild an aliased node)
+    useEffect(() => {
+        if (!nodeAliases) {
+            return;
+        }
+        let computedIds: UUID[] = [];
+        const aliasedNodesIds = nodeAliases
+            .filter((nodeAlias) => validAlias(nodeAlias))
+            .map((nodeAlias) => nodeAlias.id);
+        if (aliasedNodesIds.length > 0) {
+            treeNodes?.forEach((treeNode) => {
+                if (
+                    aliasedNodesIds.includes(treeNode.id) &&
+                    (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
+                ) {
+                    computedIds.push(treeNode.id);
+                }
+            });
+        }
+        // Because of treeNodes: update the state only on real values changes (to avoid multiple effects for the watchers)
+        setBuiltAliasedNodesIds((prevState) => {
+            const currentIds = prevState;
+            currentIds?.sort((a, b) => a.localeCompare(b));
+            computedIds.sort((a, b) => a.localeCompare(b));
+            if (JSON.stringify(currentIds) !== JSON.stringify(computedIds)) {
+                return computedIds;
+            }
+            return prevState;
+        });
+    }, [nodeAliases, treeNodes]);
+
     const nodesIdToFetch = useMemo(() => {
         let nodesIdToFetch = new Set<string>();
-        if (!equipments || !nodeAliases) {
+        if (!equipments || !builtAliasedNodesIds) {
             return nodesIdToFetch;
         }
         // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
         if (equipments.nodesId.find((nodeId) => nodeId === currentNode?.id) === undefined) {
             nodesIdToFetch.add(currentNode?.id as string);
         }
-        //Then we do the same for the other nodes we need the data of (the ones defined in aliases)
-        nodeAliases.forEach((nodeAlias) => {
-            if (nodeAlias.id) {
-                if (equipments.nodesId.find((nodeId) => nodeId === nodeAlias.id) === undefined) {
-                    nodesIdToFetch.add(nodeAlias.id);
-                }
+        // Then we do the same for the other nodes we need the data of (the ones defined in aliases)
+        builtAliasedNodesIds.forEach((builtAliasNodeId) => {
+            if (equipments.nodesId.find((nodeId) => nodeId === builtAliasNodeId) === undefined) {
+                nodesIdToFetch.add(builtAliasNodeId);
             }
         });
         return nodesIdToFetch;
-    }, [currentNode?.id, equipments, nodeAliases]);
+    }, [currentNode?.id, equipments, builtAliasedNodesIds]);
 
-    const shouldFetchEquipments = useMemo(() => nodesIdToFetch.size > 0, [nodesIdToFetch]);
-
+    // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
-        if (!nodeAliases) {
+        if (!allEquipments || !builtAliasedNodesIds) {
             return;
         }
         const currentNodeId = currentNode?.id as UUID;
-
         let unwantedFetchedNodes = new Set<string>();
         Object.values(allEquipments).forEach((value) => {
             unwantedFetchedNodes = new Set([...unwantedFetchedNodes, ...value.nodesId]);
         });
-        const usedNodesId = new Set(
-            nodeAliases.filter((nodeAlias) => nodeAlias.id !== undefined).map((nodeAlias) => nodeAlias.id)
-        );
+        const usedNodesId = new Set(builtAliasedNodesIds);
         usedNodesId.add(currentNodeId);
-        usedNodesId.forEach((nodeId) => {
-            if (nodeId) {
-                unwantedFetchedNodes.delete(nodeId);
-            }
-        });
+        usedNodesId.forEach((nodeId) => unwantedFetchedNodes.delete(nodeId));
         if (unwantedFetchedNodes.size !== 0) {
             dispatch(removeNodeData(Array.from(unwantedFetchedNodes)));
         }
-    }, [dispatch, nodeAliases, currentNode, allEquipments]);
+    }, [builtAliasedNodesIds, currentNode, dispatch, allEquipments]);
 
     const updateEquipmentsLocal = useCallback(
         (impactedSubstationsIds: string[], deletedEquipments: { equipmentType: string; equipmentId: string }[]) => {
@@ -132,7 +157,7 @@ export const useSpreadsheetEquipments = (
             if (updateTypeHeader === NotificationType.STUDY) {
                 const eventStudyUuid = eventData.headers.studyUuid;
                 const eventNodeUuid = eventData.headers.node;
-                const eventRootNetworkUuid = eventData.headers.rootNetwork;
+                const eventRootNetworkUuid = eventData.headers.rootNetworkUuid;
                 if (
                     studyUuid === eventStudyUuid &&
                     currentNode?.id === eventNodeUuid &&
@@ -156,17 +181,27 @@ export const useSpreadsheetEquipments = (
         setIsFetching(false);
     };
 
+    // Note: take care about the dependencies because any execution here implies equipment loading (large fetches).
+    // For example, we have 3 currentNode properties in deps rather than currentNode object itself.
     useEffect(() => {
-        if (shouldFetchEquipments && isNetworkModificationTreeModelUpToDate && isNodeBuilt(currentNode)) {
+        if (
+            currentNode?.id &&
+            currentRootNetworkUuid &&
+            nodesIdToFetch.size > 0 &&
+            isNetworkModificationTreeModelUpToDate &&
+            (currentNode?.type === NodeType.ROOT || isStatusBuilt(currentNode?.data.globalBuildStatus))
+        ) {
             setIsFetching(true);
-            fetchNodesEquipmentData(nodesIdToFetch, onFetchingDone);
+            fetchNodesEquipmentData(nodesIdToFetch, currentNode.id, currentRootNetworkUuid, onFetchingDone);
         }
     }, [
-        shouldFetchEquipments,
         isNetworkModificationTreeModelUpToDate,
-        nodesIdToFetch,
+        currentNode?.id,
+        currentNode?.type,
+        currentNode?.data.globalBuildStatus,
+        currentRootNetworkUuid,
         fetchNodesEquipmentData,
-        currentNode,
+        nodesIdToFetch,
     ]);
 
     return { equipments, isFetching };

@@ -13,7 +13,6 @@ import { Alert, Box, Button, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EquipmentTable } from './equipment-table';
 import { Identifiable, PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { ColumnsConfig } from './columns-config';
 import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from './data-fetching/use-spreadsheet-equipments';
@@ -110,7 +109,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const dispatch = useDispatch();
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
-    const timerRef = useRef<NodeJS.Timeout>();
     const { snackError } = useSnackMessage();
 
     const [activeTabUuid, setActiveTabUuid] = useState<UUID | null>(null);
@@ -118,7 +116,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { nodeAliases, updateNodeAliases, resetNodeAliases } = useNodeAliases();
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
-    const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
@@ -361,15 +358,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
-        // wait a moment  before removing the loading message.
-        timerRef.current = setTimeout(() => {
-            gridRef.current?.api?.hideOverlay();
-            if (rowData?.length === 0 && !isFetching) {
-                // we need to call showNoRowsOverlay in order to show message when rowData is empty
-                gridRef.current?.api?.showNoRowsOverlay();
-            }
-        }, 50);
-    }, [scrollToEquipmentIndex, isFetching, rowData]);
+    }, [scrollToEquipmentIndex]);
 
     // Create a map to store the original positions of all columns
     const originalColumnPositions = useMemo(() => {
@@ -527,21 +516,17 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             disabled={shouldDisableButtons || tableDefinition?.columns.length === 0}
                         />
                     </Grid>
-                    {developerMode && (
-                        <Grid item>
-                            <CustomColumnsConfig tabIndex={activeTabIndex} disabled={shouldDisableButtons} />
-                        </Grid>
-                    )}
-                    {developerMode && (
-                        <Grid item>
-                            <CustomColumnsNodesConfig
-                                disabled={shouldDisableButtons}
-                                tabIndex={activeTabIndex}
-                                nodeAliases={nodeAliases}
-                                updateNodeAliases={updateNodeAliases}
-                            />
-                        </Grid>
-                    )}
+                    <Grid item>
+                        <CustomColumnsConfig tabIndex={activeTabIndex} disabled={shouldDisableButtons} />
+                    </Grid>
+                    <Grid item>
+                        <CustomColumnsNodesConfig
+                            disabled={shouldDisableButtons}
+                            tabIndex={activeTabIndex}
+                            nodeAliases={nodeAliases}
+                            updateNodeAliases={updateNodeAliases}
+                        />
+                    </Grid>
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>
                         <Button
