@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { EQUIPMENT_NAME, LOAD_TYPE } from 'components/utils/field-constants';
+import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE } from 'components/utils/field-constants';
 import { Box, Grid, TextField } from '@mui/material';
 import { filledTextField } from 'components/dialogs/dialog-utils';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
@@ -35,7 +35,7 @@ const LoadDialogHeader: React.FC<LoadDialogHeaderProps> = ({
 }) => {
     const intl = useIntl();
 
-    const loadIdField = (
+    const loadIdField = isModification ? (
         <TextField
             size="small"
             fullWidth
@@ -47,6 +47,8 @@ const LoadDialogHeader: React.FC<LoadDialogHeaderProps> = ({
             disabled
             {...filledTextField}
         />
+    ) : (
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
     const loadNameField = (
