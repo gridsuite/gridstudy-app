@@ -42,7 +42,7 @@ const useNotificationsUrlGenerator = (): Record<NOTIFICATIONS_URL_KEYS, string |
             [NOTIFICATIONS_URL_KEYS.DIRECTORY_DELETE_STUDY]:
                 tokenId && studyUuid
                     ? getUrlWithToken(
-                          `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=delete&elementUuid=${encodeURIComponent(
+                          `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=deleteElement&elementUuid=${encodeURIComponent(
                               studyUuid
                           )}`
                       )
