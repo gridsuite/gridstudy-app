@@ -78,7 +78,7 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
                     .then(() => {
                         dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
                         console.debug(
-                            `Equipment data fetching and dispatch done for ${fetcherPromises.length} built nodes among ${nodeIds.size}`
+                            `Equipment data fetching and dispatch done for ${fetcherPromises.length} built nodes`
                         );
                     })
                     .catch((err) => {
