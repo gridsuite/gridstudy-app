@@ -9,6 +9,7 @@ import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteCloseReason,
+    AutocompleteRenderGroupParams,
     AutocompleteRenderInputParams,
     Box,
     Checkbox,
@@ -270,6 +271,12 @@ function ResultsGlobalFilter({
             ...recentGlobalFilters.map((filter) => {
                 return { ...filter, recent: true };
             }),
+            // recent generic filters are displayed 2 times : once in the recent filters (see above) and also in the generic filters :
+            ...recentGlobalFilters
+                .filter((filter) => filter.filterType === FilterType.GENERIC_FILTER)
+                .map((filter) => {
+                    return { ...filter, recent: false };
+                }),
             ...filters
                 .map((filter) => {
                     return { ...filter, recent: false };
@@ -321,7 +328,7 @@ function ResultsGlobalFilter({
                     ))
                 }
                 // an "empty" renderGroup is needed in order to avoid the default behavior
-                renderGroup={(item) => {
+                renderGroup={(item: AutocompleteRenderGroupParams) => {
                     const { group, children } = item;
                     return (
                         <Box key={'keyBoxGroup_' + group} sx={resultsGlobalFilterStyles.chipBox}>

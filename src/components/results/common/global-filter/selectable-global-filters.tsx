@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Chip, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
+import { Box, Button, Chip, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -89,14 +89,18 @@ function SelectableGlobalFilters({
                     </List>
                 </Grid>
                 <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
-                    {filterGroupSelected === FilterType.GENERIC_FILTER ? (
-                        <Button sx={resultsGlobalFilterStyles.importFilterButton} onMouseDown={onClickGenericFilter}>
-                            <FileUploadIcon />
-                            <FormattedMessage id={'results.globalFilter.loadFilter'} />
-                        </Button>
-                    ) : (
-                        children
-                    )}
+                    <Box>
+                        {children}
+                        {filterGroupSelected === FilterType.GENERIC_FILTER && (
+                            <Button
+                                sx={resultsGlobalFilterStyles.importFilterButton}
+                                onMouseDown={onClickGenericFilter}
+                            >
+                                <FileUploadIcon />
+                                <FormattedMessage id={'results.globalFilter.loadFilter'} />
+                            </Button>
+                        )}
+                    </Box>
                 </Grid>
                 <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
                     <List>
@@ -108,7 +112,7 @@ function SelectableGlobalFilters({
                                     sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                                     onDelete={() => {
                                         setSelectedGlobalFilters([
-                                            ...selectedGlobalFilters.filter((filter) => !(filter === element)),
+                                            ...selectedGlobalFilters.filter((filter) => filter !== element),
                                         ]);
                                     }}
                                 />
