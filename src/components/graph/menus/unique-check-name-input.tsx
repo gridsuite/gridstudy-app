@@ -111,7 +111,7 @@ export function UniqueCheckNameInput({
         const trimmedValue = value.trim();
 
         // if the name is unchanged, we don't do custom validation
-        if (!isDirty || defaultFieldValue.trim() === value.trim()) {
+        if (!isDirty || defaultFieldValue.trim() === trimmedValue) {
             clearErrors(name);
             return;
         }
