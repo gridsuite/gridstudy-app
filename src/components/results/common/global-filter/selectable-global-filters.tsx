@@ -76,7 +76,7 @@ function SelectableGlobalFilters({
                     </Button>
                 </Grid>
                 <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cell}>
-                    <List sx={{ width: '100%' }}>
+                    <List>
                         {categories.map((category) => {
                             return (
                                 <ListItemButton

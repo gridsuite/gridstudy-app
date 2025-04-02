@@ -28,6 +28,7 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
 
 const AUTOCOMPLETE_WIDTH: number = 420;
 const POPPER_EXTRA_WIDTH: number = 250;
+const CELL_HEIGHT: number = 400;
 
 export const resultsGlobalFilterStyles = {
     autocomplete: (theme: Theme) => ({
@@ -47,11 +48,6 @@ export const resultsGlobalFilterStyles = {
             width: 'auto',
         },
     }),
-    chipBox: {
-        width: '100%',
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
     // from the expanded part :
     dropdown: () => ({
         position: 'relative',
@@ -67,12 +63,22 @@ export const resultsGlobalFilterStyles = {
     }),
     cell: (theme: Theme) => ({
         display: 'flex',
+        flexDirection: 'column',
         color: theme.palette.text.secondary,
         fontSize: '1em',
         width: '100%',
         borderLeft: '1px solid',
         borderColor: theme.palette.divider,
-        height: '400px',
+        height: `${CELL_HEIGHT}px`,
+        overflow: 'auto',
+    }),
+    importFilterButton: (theme: Theme) => ({
+        color: theme.palette.text.secondary,
+        fontSize: '0.8em',
+        width: '100%',
+        borderTop: '1px solid',
+        borderColor: theme.palette.divider,
+        alignSelf: 'flex-end',
     }),
     miniButton: (theme: Theme) => ({
         color: theme.palette.text.primary,
@@ -84,17 +90,6 @@ export const resultsGlobalFilterStyles = {
         position: 'absolute',
         top: 12,
         right: 8,
-    }),
-    importFilterButton: (theme: Theme) => ({
-        color: theme.palette.text.secondary,
-        fontSize: '0.8em',
-        width: '100%',
-        borderTop: '1px solid',
-        borderColor: theme.palette.divider,
-        alignSelf: 'flex-end',
-    }),
-    listOfCheckBoxes: () => ({
-        width: '100%',
     }),
     chip: {
         '&.MuiChip-root': {

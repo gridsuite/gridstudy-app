@@ -16,6 +16,7 @@ import {
     Chip,
     FilterOptionsState,
     InputAdornment,
+    ListItemButton,
     TextField,
 } from '@mui/material';
 import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
@@ -46,6 +47,7 @@ import { computeFullPath } from '../../../../utils/compute-title';
 import { getOptionLabel } from './global-filter-utils';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import List from '@mui/material/List';
 
 const RECENT_FILTER: string = 'recent';
 
@@ -330,24 +332,22 @@ function ResultsGlobalFilter({
                 // an "empty" renderGroup is needed in order to avoid the default behavior
                 renderGroup={(item: AutocompleteRenderGroupParams) => {
                     const { group, children } = item;
-                    return (
-                        <Box key={'keyBoxGroup_' + group} sx={resultsGlobalFilterStyles.chipBox}>
-                            {children}
-                        </Box>
-                    );
+                    return <Box key={'keyBoxGroup_' + group}>{children}</Box>;
                 }}
                 // renderOption : the checkboxes visible when we focus on the AutoComplete
                 renderOption={(props, option: GlobalFilter, { selected }) => {
                     const { key, children, color, ...otherProps } = props;
                     return (
-                        <Box component="li" key={key} {...otherProps} sx={resultsGlobalFilterStyles.listOfCheckBoxes}>
-                            <Checkbox
-                                size="small"
-                                icon={<CheckBoxOutlineBlankIcon />}
-                                checkedIcon={<CheckBoxIcon />}
-                                checked={selected}
-                            />
-                            {getOptionLabel(option, translate)}
+                        <Box component="li" key={key} {...otherProps}>
+                            <ListItemButton selected={selected}>
+                                <Checkbox
+                                    size="small"
+                                    icon={<CheckBoxOutlineBlankIcon />}
+                                    checkedIcon={<CheckBoxIcon />}
+                                    checked={selected}
+                                />
+                                {getOptionLabel(option, translate)}
+                            </ListItemButton>
                         </Box>
                     );
                 }}
@@ -369,6 +369,8 @@ function ResultsGlobalFilter({
                         setSelectedGlobalFilters={setSelectedGlobalFilters}
                     />
                 )}
+                // removes all the default styles :
+                ListboxComponent={(props) => <List role="listbox">{props.children}</List>}
                 noOptionsText={''}
             />
             {warningEquipmentTypeMessage && (
