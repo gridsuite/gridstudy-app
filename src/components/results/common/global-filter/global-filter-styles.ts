@@ -72,6 +72,7 @@ export const resultsGlobalFilterStyles = {
         width: '100%',
         borderLeft: '1px solid',
         borderColor: theme.palette.divider,
+        height: '400px',
     }),
     miniButton: (theme: Theme) => ({
         color: theme.palette.text.primary,

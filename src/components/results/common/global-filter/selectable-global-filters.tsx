@@ -79,7 +79,11 @@ function SelectableGlobalFilters({
                     <List sx={{ width: '100%' }}>
                         {categories.map((category) => {
                             return (
-                                <ListItemButton onClick={() => setFilterGroupSelected(category)} key={category}>
+                                <ListItemButton
+                                    onClick={() => setFilterGroupSelected(category)}
+                                    key={category}
+                                    selected={category === filterGroupSelected}
+                                >
                                     <ListItemText
                                         primary={<FormattedMessage id={'results.globalFilter.' + category} />}
                                     />
@@ -88,8 +92,8 @@ function SelectableGlobalFilters({
                         })}
                     </List>
                 </Grid>
-                <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
-                    <Box>
+                <Grid item xs={XS_COLUMN2}>
+                    <Box sx={resultsGlobalFilterStyles.cell}>
                         {children}
                         {filterGroupSelected === FilterType.GENERIC_FILTER && (
                             <Button
