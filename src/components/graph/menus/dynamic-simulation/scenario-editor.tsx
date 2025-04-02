@@ -22,10 +22,7 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        background: (theme: Theme) =>
-            theme.palette.mode === 'light'
-                ? darken(theme.palette.background.paper, 0.1)
-                : lighten(theme.palette.background.paper, 0.2),
+        background: (theme: Theme) => theme.aggrid.backgroundColor,
     },
 };
 
