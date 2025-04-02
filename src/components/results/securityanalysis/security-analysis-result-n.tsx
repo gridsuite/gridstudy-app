@@ -26,7 +26,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
 
     const rows = useMemo(() => {
         return result?.length // check if it's not Page object
-            ? result?.map((preContingencyResult: PreContingencyResult) => {
+            ? (result?.map((preContingencyResult: PreContingencyResult) => {
                   const { limitViolation, subjectId } = preContingencyResult;
                   return {
                       subjectId: subjectId,
@@ -42,7 +42,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                       loading: limitViolation?.loading,
                       side: convertSide(limitViolation?.side || '', intl),
                   } as SecurityAnalysisNTableRow;
-              }) ?? []
+              }) ?? [])
             : [];
     }, [intl, result]);
 

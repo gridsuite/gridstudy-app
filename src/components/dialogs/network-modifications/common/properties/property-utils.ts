@@ -18,7 +18,7 @@ import { fetchStudyMetadata } from '@gridsuite/commons-ui';
 
 export type Property = {
     [NAME]: string;
-    [VALUE]: string | null;
+    [VALUE]?: string | null;
     [PREVIOUS_VALUE]?: string | null;
     [DELETION_MARK]: boolean;
     [ADDED]: boolean;
