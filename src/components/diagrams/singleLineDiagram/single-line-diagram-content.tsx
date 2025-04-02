@@ -460,6 +460,12 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     };
 
     const displayModificationDialog = () => {
+        // If currentNode is null or currentRootNetworkUuid is null, we should not display the dialog
+        if (!currentNode || !currentRootNetworkUuid) {
+            closeModificationDialog();
+            return <></>;
+        }
+
         let CurrentModificationDialog;
         switch (equipmentToModify?.equipmentType) {
             case EQUIPMENT_TYPES.BATTERY:

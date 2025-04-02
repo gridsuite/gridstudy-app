@@ -75,7 +75,7 @@ export type DefaultModificationDialogProps = {
     studyUuid: UUID;
     currentRootNetworkUuid: UUID;
     isUpdate: boolean;
-    editDataFetchStatus: FetchStatus;
-    onValidated: () => void;
+    editDataFetchStatus?: FetchStatus;
+    onValidated?: () => void;
     onClose: () => void;
 };

@@ -283,6 +283,7 @@ const GeneratorModificationForm = ({
                     activePower: generatorToModify?.targetP,
                     reactivePower: generatorToModify?.targetQ,
                 }}
+                isModification={true}
             />
             <Grid container spacing={2} paddingTop={2}>
                 <Box sx={{ width: '100%' }} />

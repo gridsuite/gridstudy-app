@@ -453,6 +453,9 @@ export const MEASUREMENT_P1 = 'measurementP1';
 export const MEASUREMENT_P2 = 'measurementP2';
 export const MEASUREMENT_Q1 = 'measurementQ1';
 export const MEASUREMENT_Q2 = 'measurementQ2';
+// Measurements common for the rest of the equipments
+export const MEASUREMENT_P = 'measurementP';
+export const MEASUREMENT_Q = 'measurementQ';
 export const VALIDITY = 'validity';
 // toBeEstimated specific to 2WT
 export const TO_BE_ESTIMATED = 'toBeEstimated';
