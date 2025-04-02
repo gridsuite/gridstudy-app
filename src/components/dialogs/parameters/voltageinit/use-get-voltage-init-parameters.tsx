@@ -19,7 +19,7 @@ import { UUID } from 'crypto';
 
 export const useGetVoltageInitParameters = (): [
     VoltageInitParam | null,
-    Dispatch<SetStateAction<VoltageInitParam | null>>
+    Dispatch<SetStateAction<VoltageInitParam | null>>,
 ] => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const studyUpdated = useSelector((state: AppState) => state.studyUpdated);

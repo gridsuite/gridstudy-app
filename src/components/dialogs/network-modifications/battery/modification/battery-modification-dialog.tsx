@@ -293,7 +293,7 @@ export default function BatteryModificationDialog({
                     isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MINIMUM_REACTIVE_POWER]
                 ),
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null
+                    ? (reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
                 properties: toModificationProperties(battery) ?? null,
             } satisfies BatteryModificationInfos;

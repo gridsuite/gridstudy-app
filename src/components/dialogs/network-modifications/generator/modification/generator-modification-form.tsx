@@ -191,7 +191,7 @@ export default function GeneratorModificationForm({
             adornment={OhmAdornment}
             previousValue={
                 !isNaN(Number(generatorToModify?.generatorShortCircuit?.stepUpTransformerX))
-                    ? generatorToModify?.generatorShortCircuit?.stepUpTransformerX ?? undefined
+                    ? (generatorToModify?.generatorShortCircuit?.stepUpTransformerX ?? undefined)
                     : undefined
             }
             clearable={true}
