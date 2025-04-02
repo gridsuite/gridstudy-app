@@ -370,7 +370,7 @@ function ResultsGlobalFilter({
                     />
                 )}
                 // removes all the default styles :
-                ListboxComponent={(props) => <List role="listbox">{props.children}</List>}
+                ListboxComponent={(props) => <List role="datalist">{props.children}</List>}
                 noOptionsText={''}
             />
             {warningEquipmentTypeMessage && (

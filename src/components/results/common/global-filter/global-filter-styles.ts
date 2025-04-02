@@ -28,7 +28,8 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
 
 const AUTOCOMPLETE_WIDTH: number = 420;
 const POPPER_EXTRA_WIDTH: number = 250;
-const CELL_HEIGHT: number = 400;
+export const GLOBAL_FILTERS_CELL_HEIGHT: number = 400;
+export const IMPORT_FILTER_HEIGHT: number = 40;
 
 export const resultsGlobalFilterStyles = {
     autocomplete: (theme: Theme) => ({
@@ -69,7 +70,7 @@ export const resultsGlobalFilterStyles = {
         width: '100%',
         borderLeft: '1px solid',
         borderColor: theme.palette.divider,
-        height: `${CELL_HEIGHT}px`,
+        height: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
         overflow: 'auto',
     }),
     importFilterButton: (theme: Theme) => ({
@@ -79,6 +80,7 @@ export const resultsGlobalFilterStyles = {
         borderTop: '1px solid',
         borderColor: theme.palette.divider,
         alignSelf: 'flex-end',
+        height: `${IMPORT_FILTER_HEIGHT}px`,
     }),
     miniButton: (theme: Theme) => ({
         color: theme.palette.text.primary,

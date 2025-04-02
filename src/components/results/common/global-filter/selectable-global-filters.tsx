@@ -6,7 +6,12 @@
  */
 
 import { Box, Button, Chip, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
-import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
+import {
+    GLOBAL_FILTERS_CELL_HEIGHT,
+    getResultsGlobalFiltersChipStyle,
+    IMPORT_FILTER_HEIGHT,
+    resultsGlobalFilterStyles,
+} from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import React, { Dispatch, PropsWithChildren, SetStateAction, useMemo } from 'react';
@@ -94,7 +99,18 @@ function SelectableGlobalFilters({
                 </Grid>
                 <Grid item xs={XS_COLUMN2}>
                     <Box sx={resultsGlobalFilterStyles.cell}>
-                        {children}
+                        <Box
+                            sx={
+                                filterGroupSelected === FilterType.GENERIC_FILTER
+                                    ? {
+                                          height: `${GLOBAL_FILTERS_CELL_HEIGHT - IMPORT_FILTER_HEIGHT}px`,
+                                          overflow: 'auto',
+                                      }
+                                    : undefined
+                            }
+                        >
+                            {children}
+                        </Box>
                         {filterGroupSelected === FilterType.GENERIC_FILTER && (
                             <Button
                                 sx={resultsGlobalFilterStyles.importFilterButton}
@@ -106,8 +122,8 @@ function SelectableGlobalFilters({
                         )}
                     </Box>
                 </Grid>
-                <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
-                    <List>
+                <Grid item xs={XS_COLUMN3}>
+                    <List sx={resultsGlobalFilterStyles.cell}>
                         {selectedGlobalFilters.map((element: GlobalFilter) => (
                             <ListItem key={element.label} sx={{ height: '1.8em' }}>
                                 <Chip
