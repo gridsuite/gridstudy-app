@@ -52,6 +52,7 @@ export function UniqueCheckNameInput({
     const {
         field: { onChange, onBlur, value, ref },
         fieldState: { error, isDirty },
+        formState: { defaultValues },
     } = useController({
         name,
     });
@@ -60,6 +61,7 @@ export function UniqueCheckNameInput({
         name,
         control,
     });
+    const defaultFieldValue = defaultValues?.[name];
 
     const {
         setError,
@@ -109,7 +111,7 @@ export function UniqueCheckNameInput({
         const trimmedValue = value.trim();
 
         // if the name is unchanged, we don't do custom validation
-        if (!isDirty) {
+        if (!isDirty || defaultFieldValue.trim() === value.trim()) {
             clearErrors(name);
             return;
         }
@@ -127,7 +129,7 @@ export function UniqueCheckNameInput({
                 message: 'FieldIsRequired',
             });
         }
-    }, [debouncedHandleCheckName, setError, clearErrors, name, value, isDirty]);
+    }, [debouncedHandleCheckName, setError, clearErrors, name, value, isDirty, defaultFieldValue]);
 
     // Handle on user's change
     const handleManualChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
