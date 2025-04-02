@@ -27,14 +27,14 @@ export function getInjectionActiveReactivePowerEmptyFormData(id: string) {
     };
 }
 
-export const getInjectionActiveReactivePowerValidationSchemaProperties = () => ({
-    ...getPowerWithValidityValidationSchema(MEASUREMENT_P),
-    ...getPowerWithValidityValidationSchema(MEASUREMENT_Q),
-});
+export const getInjectionActiveReactivePowerValidationSchemaProperties = () =>
+    yup.object().shape({
+        ...getPowerWithValidityValidationSchema(MEASUREMENT_P),
+        ...getPowerWithValidityValidationSchema(MEASUREMENT_Q),
+    });
+
 export const getInjectionActiveReactivePowerValidationSchema = (id: string) => ({
-    [id]: yup.object().shape({
-        ...getInjectionActiveReactivePowerValidationSchemaProperties(),
-    }),
+    [id]: getInjectionActiveReactivePowerValidationSchemaProperties(),
 });
 
 export function getInjectionActiveReactivePowerEditDataProperties(injectionData: any) {

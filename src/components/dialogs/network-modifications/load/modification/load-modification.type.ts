@@ -31,20 +31,20 @@ import { Property } from '../../common/properties/property-utils';
 
 export type LoadModificationSchemaForm = {
     [EQUIPMENT_NAME]?: string;
-    [LOAD_TYPE]: string | null;
-    [ACTIVE_POWER_SETPOINT]: number | null;
-    [REACTIVE_POWER_SET_POINT]: number | null;
-    [CONNECTIVITY]?: {
+    [LOAD_TYPE]?: string | null;
+    [ACTIVE_POWER_SETPOINT]?: number | null;
+    [REACTIVE_POWER_SET_POINT]?: number | null;
+    [CONNECTIVITY]: {
         [VOLTAGE_LEVEL]: { [ID]?: string };
         [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
         [CONNECTION_DIRECTION]?: string;
         [CONNECTION_NAME]?: string;
-        [CONNECTION_POSITION]?: string;
+        [CONNECTION_POSITION]?: number;
         [CONNECTED]?: boolean;
     };
     [STATE_ESTIMATION]?: {
-        [MEASUREMENT_P]: MeasurementInfo;
-        [MEASUREMENT_Q]: MeasurementInfo;
+        [MEASUREMENT_P]?: MeasurementInfo;
+        [MEASUREMENT_Q]?: MeasurementInfo;
     };
     // Properties
     [ADDITIONAL_PROPERTIES]?: Property[];

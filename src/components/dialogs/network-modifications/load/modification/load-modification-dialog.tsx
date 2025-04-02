@@ -50,12 +50,12 @@ import { fetchNetworkElementInfos } from '../../../../../services/study/network'
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
+    getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import {
     getInjectionActiveReactivePowerEditData,
     getInjectionActiveReactivePowerEmptyFormData,
-    getInjectionActiveReactivePowerValidationSchema,
+    getInjectionActiveReactivePowerValidationSchemaProperties,
 } from '../../common/measurements/injection-active-reactive-power-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { LoadDialogTab } from '../common/load-utils';
@@ -64,46 +64,35 @@ import { LoadModificationInfos, LoadModificationSchemaForm } from './load-modifi
 import LoadDialogHeader from '../common/load-dialog-header';
 import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
+import { DeepNullable } from 'components/utils/ts-utils';
+import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [LOAD_TYPE]: null,
-    [ACTIVE_POWER_SETPOINT]: null,
-    [REACTIVE_POWER_SET_POINT]: null,
+    ...getSetPointsEmptyFormData(true),
     ...getConnectivityWithPositionEmptyFormData(true),
     ...getInjectionActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
     ...emptyProperties,
 };
 
-const formSchema: yup.ObjectSchema<LoadModificationSchemaForm> = yup
+const formSchema: yup.ObjectSchema<DeepNullable<LoadModificationSchemaForm>> = yup
     .object()
     .shape({
-        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
         [LOAD_TYPE]: yup.string().nullable(),
-        [ACTIVE_POWER_SETPOINT]: yup.number().nullable(),
-        [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        ...getConnectivityWithPositionValidationSchema(true),
-        ...getInjectionActiveReactivePowerValidationSchema(STATE_ESTIMATION),
+        [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
+        [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
+        ...getSetPointsSchema(true),
     })
     .concat(modificationPropertiesSchema)
-    .required() as yup.ObjectSchema<LoadModificationSchemaForm>;
+    .required();
 
-type LoadModificationDialogProps = EquipmentModificationDialogProps & {
-    editData?: LoadModificationInfos | null;
-    defaultIdValue?: string | null;
+export type LoadModificationDialogProps = EquipmentModificationDialogProps & {
+    editData?: LoadModificationInfos;
 };
 
-/**
- * Dialog to create a load in the network
- * @param studyUuid the study we are currently working on
- * @param defaultIdValue the default load id
- * @param currentNode The node we are currently working on
- * @param editData the data to edit
- * @param isUpdate check if edition form
- * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param editDataFetchStatus indicates the status of fetching EditData
- */
-const LoadModificationDialog = ({
+export default function LoadModificationDialog({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
@@ -112,7 +101,7 @@ const LoadModificationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}: LoadModificationDialogProps) => {
+}: LoadModificationDialogProps) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
@@ -121,9 +110,9 @@ const LoadModificationDialog = ({
     const [loadToModify, setLoadToModify] = useState<LoadFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
 
-    const formMethods = useForm<LoadModificationSchemaForm>({
+    const formMethods = useForm<DeepNullable<LoadModificationSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<LoadModificationSchemaForm>>(formSchema),
     });
 
     const { reset, getValues, setValue } = formMethods;
@@ -148,7 +137,7 @@ const LoadModificationDialog = ({
                     isEquipmentModification: true,
                 }),
                 ...getInjectionActiveReactivePowerEditData(STATE_ESTIMATION, load),
-                ...getPropertiesFromModification(load.properties),
+                ...(getPropertiesFromModification(load.properties) ?? undefined),
             });
         },
         [reset]
@@ -161,7 +150,7 @@ const LoadModificationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onEquipmentIdChange = useCallback(
-        (equipmentId: string | null) => {
+        (equipmentId: string) => {
             if (!equipmentId) {
                 setLoadToModify(null);
                 reset(emptyFormData, { keepDefaultValues: true });
@@ -224,10 +213,10 @@ const LoadModificationDialog = ({
                 connectionDirection: load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 connectionPosition: load[CONNECTIVITY]?.[CONNECTION_POSITION],
                 terminalConnected: load[CONNECTIVITY]?.[CONNECTED],
-                pMeasurementValue: stateEstimationData?.[MEASUREMENT_P][VALUE],
-                pMeasurementValidity: stateEstimationData?.[MEASUREMENT_P][VALIDITY],
-                qMeasurementValue: stateEstimationData?.[MEASUREMENT_Q][VALUE],
-                qMeasurementValidity: stateEstimationData?.[MEASUREMENT_Q][VALIDITY],
+                pMeasurementValue: stateEstimationData?.[MEASUREMENT_P]?.[VALUE],
+                pMeasurementValidity: stateEstimationData?.[MEASUREMENT_P]?.[VALIDITY],
+                qMeasurementValue: stateEstimationData?.[MEASUREMENT_Q]?.[VALUE],
+                qMeasurementValidity: stateEstimationData?.[MEASUREMENT_Q]?.[VALIDITY],
                 properties: toModificationProperties(load) ?? null,
             }).catch((error: Error) => {
                 snackError({
@@ -324,6 +313,4 @@ const LoadModificationDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-export default LoadModificationDialog;
+}
