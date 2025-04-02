@@ -490,17 +490,20 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 return <></>;
         }
         return (
-            <CurrentModificationDialog
-                open={true}
-                studyUuid={studyUuid}
-                currentNode={currentNode}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                defaultIdValue={equipmentToModify?.equipmentId}
-                isUpdate={true}
-                onClose={() => closeModificationDialog()}
-                editData={undefined}
-                editDataFetchStatus={undefined}
-            />
+            currentNode &&
+            currentRootNetworkUuid && (
+                <CurrentModificationDialog
+                    open={true}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    defaultIdValue={equipmentToModify?.equipmentId}
+                    isUpdate={true}
+                    onClose={() => closeModificationDialog()}
+                    editData={undefined}
+                    editDataFetchStatus={undefined}
+                />
+            )
         );
     };
 

@@ -42,7 +42,7 @@ import {
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { LoadCreationInfos, LoadCreationSchemaForm } from './load-creation.type';
 import { FetchStatus } from '../../../../../services/utils.type';
-import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import LoadDialogHeader from '../common/load-dialog-header';
 import { LoadDialogTab } from '../common/load-utils';
 import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
@@ -80,7 +80,7 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export type LoadCreationDialogProps = DefaultModificationDialogProps & {
+export type LoadCreationDialogProps = NetworkModificationDialogProps & {
     editData: LoadCreationInfos;
 };
 

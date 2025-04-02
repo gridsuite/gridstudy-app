@@ -59,7 +59,7 @@ import {
 } from '../../common/measurements/injection-active-reactive-power-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { LoadDialogTab } from '../common/load-utils';
-import { DefaultModificationDialogProps } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { EquipmentModificationDialogProps } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { LoadModificationInfos, LoadModificationSchemaForm } from './load-modification.type';
 import LoadDialogHeader from '../common/load-dialog-header';
 import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
@@ -88,10 +88,10 @@ const formSchema: yup.ObjectSchema<LoadModificationSchemaForm> = yup
     .concat(modificationPropertiesSchema)
     .required() as yup.ObjectSchema<LoadModificationSchemaForm>;
 
-interface LoadModificationDialogProps extends DefaultModificationDialogProps {
+type LoadModificationDialogProps = EquipmentModificationDialogProps & {
     editData?: LoadModificationInfos | null;
     defaultIdValue?: string | null;
-}
+};
 
 /**
  * Dialog to create a load in the network
@@ -228,7 +228,7 @@ const LoadModificationDialog = ({
                 pMeasurementValidity: stateEstimationData?.[MEASUREMENT_P][VALIDITY],
                 qMeasurementValue: stateEstimationData?.[MEASUREMENT_Q][VALUE],
                 qMeasurementValidity: stateEstimationData?.[MEASUREMENT_Q][VALIDITY],
-                properties: toModificationProperties(load),
+                properties: toModificationProperties(load) ?? null,
             }).catch((error: Error) => {
                 snackError({
                     messageTxt: error.message,

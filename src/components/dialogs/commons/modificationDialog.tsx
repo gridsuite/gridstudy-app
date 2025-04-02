@@ -86,6 +86,5 @@ export function ModificationDialog<TFieldValues extends FieldValues>({
             disabled={disabledSave}
         />
     );
-
     return <ModificationDialogContent closeAndClear={closeAndClear} submitButton={submitButton} {...dialogProps} />;
 }

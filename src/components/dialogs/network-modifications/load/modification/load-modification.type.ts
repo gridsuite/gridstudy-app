@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { AttributeModification } from 'services/network-modification-types';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import {
     ACTIVE_POWER_SETPOINT,
@@ -27,7 +28,6 @@ import {
 } from '../../../../utils/field-constants';
 import { MeasurementInfo } from '../../common/measurements/measurement.type';
 import { Property } from '../../common/properties/property-utils';
-import { AttributeModification } from '../../hvdc-line/vsc/converter-station/converter-station-type';
 
 export type LoadModificationSchemaForm = {
     [EQUIPMENT_NAME]?: string;
