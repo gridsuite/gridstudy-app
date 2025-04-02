@@ -283,7 +283,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     resetNodeClipboard();
                 }
                 dispatch(networkModificationTreeNodesRemoved(studyUpdatedForce.eventData.headers['nodes']));
-                dispatch(nodeAliasesToUpdate(true));
+                dispatch(nodeAliasesToUpdate(studyUpdatedForce.eventData.headers['nodes']));
                 fetchStashedNodes(studyUuid).then((res) => {
                     setNodesToRestore(res);
                 });
@@ -303,8 +303,9 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     resetNodeClipboard();
                 }
             } else if (studyUpdatedForce.eventData.headers.updateType === 'nodeRenamed') {
-                updateNodes([studyUpdatedForce.eventData.headers['node']]);
-                dispatch(nodeAliasesToUpdate(true));
+                const nodeUuids = [studyUpdatedForce.eventData.headers['node']];
+                updateNodes(nodeUuids);
+                dispatch(nodeAliasesToUpdate(nodeUuids));
             } else if (
                 studyUpdatedForce.eventData.headers.updateType === 'nodeBuildStatusUpdated' &&
                 studyUpdatedForce.eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current

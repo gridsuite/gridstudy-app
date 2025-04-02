@@ -610,7 +610,7 @@ export interface AppState extends CommonStoreState {
     [LOGS_STORE_FIELD]: LogsFilterState;
 
     calculationSelections: Record<UUID, CalculationType[]>;
-    nodeAliasesToUpdate: boolean;
+    nodeAliasesToUpdate: UUID[];
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -733,7 +733,7 @@ const initialState: AppState = {
     })),
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
-    nodeAliasesToUpdate: false,
+    nodeAliasesToUpdate: [],
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),

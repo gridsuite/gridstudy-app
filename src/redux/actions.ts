@@ -1410,10 +1410,10 @@ export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersActi
 
 export const NODE_ALIASES_TO_UPDATE = 'NODE_ALIASES_TO_UPDATE';
 export type NodeAliasesToUpdateAction = Readonly<Action<typeof NODE_ALIASES_TO_UPDATE>> & {
-    nodeAliasesToUpdate: boolean;
+    nodeAliasesToUpdate: UUID[];
 };
 
-export function nodeAliasesToUpdate(nodeAliasesToUpdate: boolean): NodeAliasesToUpdateAction {
+export function nodeAliasesToUpdate(nodeAliasesToUpdate: UUID[]): NodeAliasesToUpdateAction {
     return {
         type: NODE_ALIASES_TO_UPDATE,
         nodeAliasesToUpdate,
