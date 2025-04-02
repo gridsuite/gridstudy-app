@@ -16,7 +16,7 @@ import {
     setNodeSelectionForCopy,
     resetLogsFilter,
     reorderNetworkModificationTreeNodes,
-    nodeAliasesToUpdate,
+    deletedOrRenamedNodes,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -283,7 +283,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     resetNodeClipboard();
                 }
                 dispatch(networkModificationTreeNodesRemoved(studyUpdatedForce.eventData.headers['nodes']));
-                dispatch(nodeAliasesToUpdate(studyUpdatedForce.eventData.headers['nodes']));
+                dispatch(deletedOrRenamedNodes(studyUpdatedForce.eventData.headers['nodes']));
                 fetchStashedNodes(studyUuid).then((res) => {
                     setNodesToRestore(res);
                 });
@@ -305,7 +305,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
             } else if (studyUpdatedForce.eventData.headers.updateType === 'nodeRenamed') {
                 const nodeUuids = [studyUpdatedForce.eventData.headers['node']];
                 updateNodes(nodeUuids);
-                dispatch(nodeAliasesToUpdate(nodeUuids));
+                dispatch(deletedOrRenamedNodes(nodeUuids));
             } else if (
                 studyUpdatedForce.eventData.headers.updateType === 'nodeBuildStatusUpdated' &&
                 studyUpdatedForce.eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current

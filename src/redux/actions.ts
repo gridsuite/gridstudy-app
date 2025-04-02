@@ -142,7 +142,7 @@ export type AppActions =
     | CancelLeaveParametersTabAction
     | LoadNadFromConfigAction
     | SetEditNadModeAction
-    | NodeAliasesToUpdateAction;
+    | DeletedOrRenamedNodesAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -1408,14 +1408,14 @@ export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersActi
     };
 }
 
-export const NODE_ALIASES_TO_UPDATE = 'NODE_ALIASES_TO_UPDATE';
-export type NodeAliasesToUpdateAction = Readonly<Action<typeof NODE_ALIASES_TO_UPDATE>> & {
-    nodeAliasesToUpdate: UUID[];
+export const DELETED_OR_RENAMED_NODES = 'DELETED_OR_RENAMED_NODES';
+export type DeletedOrRenamedNodesAction = Readonly<Action<typeof DELETED_OR_RENAMED_NODES>> & {
+    deletedOrRenamedNodes: UUID[];
 };
 
-export function nodeAliasesToUpdate(nodeAliasesToUpdate: UUID[]): NodeAliasesToUpdateAction {
+export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrRenamedNodesAction {
     return {
-        type: NODE_ALIASES_TO_UPDATE,
-        nodeAliasesToUpdate,
+        type: DELETED_OR_RENAMED_NODES,
+        deletedOrRenamedNodes,
     };
 }

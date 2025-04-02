@@ -12,14 +12,14 @@ import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from './node-alias.type';
 import { UUID } from 'crypto';
-import { nodeAliasesToUpdate } from 'redux/actions';
+import { deletedOrRenamedNodes } from 'redux/actions';
 
 // NodeAlias may have invalid id/name, in error cases
 export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
 
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const changedNodeUuids = useSelector((state: AppState) => state.nodeAliasesToUpdate);
+    const changedNodeUuids = useSelector((state: AppState) => state.deletedOrRenamedNodes);
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
@@ -63,7 +63,7 @@ export const useNodeAliases = () => {
         if (someAliasToRefresh) {
             // update state on node deletion/rename, if they are aliased
             fetchNodeAliases();
-            dispatch(nodeAliasesToUpdate([]));
+            dispatch(deletedOrRenamedNodes([]));
         }
     }, [dispatch, fetchNodeAliases, someAliasToRefresh]);
 

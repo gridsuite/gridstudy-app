@@ -210,8 +210,8 @@ import {
     UseNameAction,
     SET_EDIT_NAD_MODE,
     SetEditNadModeAction,
-    NODE_ALIASES_TO_UPDATE,
-    NodeAliasesToUpdateAction,
+    DELETED_OR_RENAMED_NODES,
+    DeletedOrRenamedNodesAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -610,7 +610,7 @@ export interface AppState extends CommonStoreState {
     [LOGS_STORE_FIELD]: LogsFilterState;
 
     calculationSelections: Record<UUID, CalculationType[]>;
-    nodeAliasesToUpdate: UUID[];
+    deletedOrRenamedNodes: UUID[];
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -733,7 +733,7 @@ const initialState: AppState = {
     })),
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
-    nodeAliasesToUpdate: [],
+    deletedOrRenamedNodes: [],
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -1922,8 +1922,8 @@ export const reducer = createReducer(initialState, (builder) => {
         state.gsFilterSpreadsheetState = {};
     });
 
-    builder.addCase(NODE_ALIASES_TO_UPDATE, (state, action: NodeAliasesToUpdateAction) => {
-        state.nodeAliasesToUpdate = action.nodeAliasesToUpdate;
+    builder.addCase(DELETED_OR_RENAMED_NODES, (state, action: DeletedOrRenamedNodesAction) => {
+        state.deletedOrRenamedNodes = action.deletedOrRenamedNodes;
     });
 });
 
