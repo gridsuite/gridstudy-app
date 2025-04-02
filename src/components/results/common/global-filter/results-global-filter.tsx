@@ -48,6 +48,7 @@ import { getOptionLabel } from './global-filter-utils';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import List from '@mui/material/List';
+import OverflowTooltip from './OverflowTooltip';
 
 const RECENT_FILTER: string = 'recent';
 
@@ -346,7 +347,7 @@ function ResultsGlobalFilter({
                                     checkedIcon={<CheckBoxIcon />}
                                     checked={selected}
                                 />
-                                {getOptionLabel(option, translate)}
+                                <OverflowTooltip label={getOptionLabel(option, translate) ?? ''} />
                             </ListItemButton>
                         </Box>
                     );
