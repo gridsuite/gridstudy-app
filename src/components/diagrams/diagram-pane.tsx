@@ -923,7 +923,7 @@ export function DiagramPane({
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
-            if (studyUpdatedEventData.headers.rootNetwork !== currentRootNetworkUuidRef.current) {
+            if (studyUpdatedEventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) {
                 return;
             }
             if (studyUpdatedEventData.headers.updateType === 'loadflowResult') {

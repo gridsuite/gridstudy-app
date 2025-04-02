@@ -21,7 +21,7 @@ import { ReactiveCapabilityCurvePoints } from './reactive-limits.type';
 
 export const getReactiveLimitsFormData = ({
     id = REACTIVE_LIMITS,
-    reactiveCapabilityCurveChoice = 'CURVE',
+    reactiveCapabilityCurveChoice,
     minimumReactivePower,
     maximumReactivePower,
     reactiveCapabilityCurvePoints,

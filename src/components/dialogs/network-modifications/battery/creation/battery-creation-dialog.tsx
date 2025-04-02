@@ -205,10 +205,10 @@ export default function BatteryCreationDialog({
                 minP: battery[MINIMUM_ACTIVE_POWER],
                 maxP: battery[MAXIMUM_ACTIVE_POWER],
                 reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-                minQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER] ?? null,
-                maxQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER] ?? null,
+                minQ: isReactiveCapabilityCurveOn ? null : (reactiveLimits[MINIMUM_REACTIVE_POWER] ?? null),
+                maxQ: isReactiveCapabilityCurveOn ? null : (reactiveLimits[MAXIMUM_REACTIVE_POWER] ?? null),
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null
+                    ? (reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
                 targetP: battery[ACTIVE_POWER_SET_POINT] ?? null,
                 targetQ: battery[REACTIVE_POWER_SET_POINT] ?? null,

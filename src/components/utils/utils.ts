@@ -83,7 +83,7 @@ export const areIdsEqual = (val1: Option, val2: Option) => {
 };
 
 export const getObjectId = (object: string | { id: string }) => {
-    return typeof object === 'string' ? object : object?.id ?? null;
+    return typeof object === 'string' ? object : (object?.id ?? null);
 };
 
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
