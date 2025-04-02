@@ -51,6 +51,7 @@ export default function CustomColumnsNodesConfig({
     const dialogOpen = useStateBoolean(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.type);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
 
@@ -90,11 +91,11 @@ export default function CustomColumnsNodesConfig({
     }, []);
 
     const handleRefresh = useCallback(() => {
-        if (nodesToReload?.length) {
+        if (currentNode?.id && currentRootNetworkUuid && nodesToReload?.length) {
             const nodesIdsToReload = new Set<string>(nodesToReload.map((n) => n.id as string));
-            fetchNodesEquipmentData(nodesIdsToReload);
+            fetchNodesEquipmentData(nodesIdsToReload, currentNode.id, currentRootNetworkUuid);
         }
-    }, [fetchNodesEquipmentData, nodesToReload]);
+    }, [currentNode?.id, currentRootNetworkUuid, fetchNodesEquipmentData, nodesToReload]);
 
     return (
         <>
