@@ -146,7 +146,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                     !item.acceptableDuration ||
                     (item.acceptableDuration && item.value && maxValuePermanentLimit >= item.value)
                         ? colorPermanentLimit
-                        : colors?.[colorIndex] ?? colors[colors.length - 1];
+                        : (colors?.[colorIndex] ?? colors[colors.length - 1]);
 
                 const incoherent = isIncoherent(
                     maxValuePermanentLimit,

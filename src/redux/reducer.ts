@@ -1668,7 +1668,7 @@ export const reducer = createReducer(initialState, (builder) => {
         // equipments : list of updated equipments of type <equipmentType>
         for (const [updateType, equipments] of Object.entries(updatedEquipments) as [
             EquipmentUpdateType,
-            Identifiable[]
+            Identifiable[],
         ][]) {
             const equipmentType = getEquipmentTypeFromUpdateType(updateType);
             const currentEquipment: Identifiable[] | undefined =
