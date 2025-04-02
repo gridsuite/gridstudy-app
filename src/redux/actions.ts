@@ -141,7 +141,8 @@ export type AppActions =
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
     | LoadNadFromConfigAction
-    | SetEditNadModeAction;
+    | SetEditNadModeAction
+    | NodeAliasesToUpdateAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -1404,5 +1405,17 @@ export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_AL
 export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
+    };
+}
+
+export const NODE_ALIASES_TO_UPDATE = 'NODE_ALIASES_TO_UPDATE';
+export type NodeAliasesToUpdateAction = Readonly<Action<typeof NODE_ALIASES_TO_UPDATE>> & {
+    nodeAliasesToUpdate: boolean;
+};
+
+export function nodeAliasesToUpdate(nodeAliasesToUpdate: boolean): NodeAliasesToUpdateAction {
+    return {
+        type: NODE_ALIASES_TO_UPDATE,
+        nodeAliasesToUpdate,
     };
 }

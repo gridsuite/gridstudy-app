@@ -210,6 +210,8 @@ import {
     UseNameAction,
     SET_EDIT_NAD_MODE,
     SetEditNadModeAction,
+    NODE_ALIASES_TO_UPDATE,
+    NodeAliasesToUpdateAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -615,6 +617,7 @@ export interface AppState extends CommonStoreState {
     [LOGS_STORE_FIELD]: LogsFilterState;
 
     calculationSelections: Record<UUID, CalculationType[]>;
+    nodeAliasesToUpdate: boolean;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -737,6 +740,7 @@ const initialState: AppState = {
     })),
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
+    nodeAliasesToUpdate: false,
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -1923,6 +1927,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGsFiltersAction) => {
         state.gsFilterSpreadsheetState = {};
+    });
+
+    builder.addCase(NODE_ALIASES_TO_UPDATE, (state, action: NodeAliasesToUpdateAction) => {
+        state.nodeAliasesToUpdate = action.nodeAliasesToUpdate;
     });
 });
 
