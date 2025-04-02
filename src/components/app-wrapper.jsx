@@ -159,6 +159,11 @@ let lightTheme = createTheme({
         overlay: {
             background: '#e6e6e6',
         },
+        backgroundColor: 'white',
+        border: 'solid 1px #68686e',
+    },
+    reactflow: {
+        backgroundColor: 'white',
     },
 });
 
@@ -243,6 +248,11 @@ let darkTheme = createTheme({
         overlay: {
             background: '#121212',
         },
+        backgroundColor: '#181d1f',
+        border: 'solid 1px #68686e',
+    },
+    reactflow: {
+        backgroundColor: '#414141',
     },
 });
 

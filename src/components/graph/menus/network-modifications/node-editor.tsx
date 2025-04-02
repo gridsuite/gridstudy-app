@@ -16,6 +16,7 @@ import { Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import { Panel } from 'react-resizable-panels';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -23,10 +24,7 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        background:
-            theme.palette.mode === 'light'
-                ? darken(theme.palette.background.paper, 0.1)
-                : lighten(theme.palette.background.paper, 0.2),
+        background: theme.aggrid.backgroundColor,
     }),
 };
 

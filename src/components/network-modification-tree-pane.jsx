@@ -44,15 +44,8 @@ import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/ind
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 import { StudyDisplayMode, CopyType, UpdateType } from './network-modification.type';
-
-const styles = {
-    container: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-    },
-};
+import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 // We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
 // But the MAP display is neutral for this computation: We need to know what was the last HYBRID or TREE display and its width.
@@ -550,25 +543,56 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
         },
         [studyUuid, dispatch, snackError]
     );
-    return (
-        <>
-            <Box sx={styles.container}>
-                <NetworkModificationTree
-                    onNodeContextMenu={onNodeContextMenu}
-                    studyUuid={studyUuid}
-                    studyMapTreeDisplay={studyMapTreeDisplay}
-                    isStudyDrawerOpen={isStudyDrawerOpen}
-                    prevTreeDisplay={prevTreeDisplay}
-                />
 
-                <StudyDrawer
-                    open={isStudyDrawerOpen}
-                    anchor={prevTreeDisplay?.display === StudyDisplayMode.TREE ? 'right' : 'left'}
-                >
-                    {isModificationsDrawerOpen && <NodeEditor />}
-                    {isEventScenarioDrawerOpen && <ScenarioEditor />}
-                </StudyDrawer>
-            </Box>
+    const rootNetworks = useSelector((state) => state.rootNetworks);
+    const panelRef = useRef();
+    const minSizePixel = 330;
+    const minSizePercentage = (minSizePixel / panelRef.current?.offsetWidth) * 100;
+
+    const defaultSizePixel = 320 + rootNetworks.length * 80;
+    const defaultSizePercentage = (defaultSizePixel / panelRef.current?.offsetWidth) * 100;
+
+    console.log('minSizePixel', minSizePixel, minSizePercentage, panelRef.current, panelRef.current?.offsetWidth);
+
+    return (
+        <Box width={'100%'} ref={panelRef}>
+            <PanelGroup direction="horizontal">
+                <Panel>
+                    <NetworkModificationTree
+                        onNodeContextMenu={onNodeContextMenu}
+                        studyUuid={studyUuid}
+                        studyMapTreeDisplay={studyMapTreeDisplay}
+                        isStudyDrawerOpen={isStudyDrawerOpen}
+                        prevTreeDisplay={prevTreeDisplay}
+                    />
+                </Panel>
+                {(isModificationsDrawerOpen || isEventScenarioDrawerOpen) && (
+                    <>
+                        <Box
+                            display={'flex'}
+                            sx={(theme) => ({
+                                backgroundColor: theme.aggrid.backgroundColor,
+                                borderLeft: theme.aggrid.border,
+                            })}
+                            alignItems={'center'}
+                        >
+                            <PanelResizeHandle>
+                                <DragIndicatorIcon fontSize="small" sx={{ padding: 0, margin: 0 }} />
+                            </PanelResizeHandle>
+                        </Box>
+
+                        <Panel minSize={minSizePercentage} defaultSize={defaultSizePercentage}>
+                            {/* <StudyDrawer
+                        open={isStudyDrawerOpen}
+                        anchor={prevTreeDisplay?.display === StudyDisplayMode.TREE ? 'right' : 'left'}
+                    > */}
+                            {isModificationsDrawerOpen && <NodeEditor />}
+                            {isEventScenarioDrawerOpen && <ScenarioEditor />}
+                            {/* </StudyDrawer> */}
+                        </Panel>
+                    </>
+                )}
+            </PanelGroup>
             {createNodeMenu.display && (
                 <CreateNodeMenu
                     position={createNodeMenu.position}
@@ -610,7 +634,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 />
             )}
             <iframe id={DownloadIframe} name={DownloadIframe} title={DownloadIframe} style={{ display: 'none' }} />
-        </>
+        </Box>
     );
 };
 

@@ -93,7 +93,10 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 colId: 'modificationName',
                 rowDrag: !isRowDragDisabled,
                 headerComponent: NetworkModificationEditorNameHeader,
-                headerComponentParams: { modificationCount: modifications?.length, ...nameHeaderProps },
+                headerComponentParams: {
+                    modificationCount: modifications?.length,
+                    ...nameHeaderProps,
+                },
                 cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
                     getModificationLabel(params?.data?.modificationInfos),
                 minWidth: 200,
@@ -105,8 +108,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 cellRendererParams: {
                     setModifications: setModifications,
                 },
-                maxWidth: 99,
-                width: 99,
+                maxWidth: 60,
+                width: 60,
             },
         ];
         const dynamicColumns: ColDef<NetworkModificationInfos>[] = enableDeveloperMode
@@ -126,7 +129,13 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                       minWidth: 72,
                       headerComponent: () =>
                           isCurrentRootNetwork && (
-                              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                              <Box
+                                  sx={{
+                                      width: '100%',
+                                      display: 'flex',
+                                      justifyContent: 'center',
+                                  }}
+                              >
                                   <Badge overlap="circular" color="primary" variant="dot">
                                       <RemoveRedEyeIcon />
                                   </Badge>
@@ -159,7 +168,24 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     }, []);
 
     return (
-        <div style={{ position: 'relative', flexGrow: 1, marginTop: theme.spacing(1) }}>
+        <Box
+            sx={{
+                position: 'relative',
+                flexGrow: 1,
+                marginTop: theme.spacing(1),
+                '& .ag-root-wrapper': {
+                    borderLeft: 'none',
+                    borderBottom: 'none',
+                },
+                '& .ag-row-even, & .ag-row-odd': {
+                    backgroundColor: theme.aggrid.backgroundColor,
+                    border: 'none',
+                },
+                '& .ag-header-row': {
+                    backgroundColor: theme.aggrid.backgroundColor,
+                },
+            }}
+        >
             <CustomAGGrid
                 rowData={modifications}
                 getRowId={getRowId}
@@ -175,13 +201,12 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 animateRows
                 columnDefs={columnDefs}
                 getRowStyle={getRowStyle}
-                rowClass="custom-row-class"
                 onRowDragEnter={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
                 rowDragManaged={!isRowDragDisabled}
                 suppressNoRowsOverlay={true}
             />
-        </div>
+        </Box>
     );
 };
 
