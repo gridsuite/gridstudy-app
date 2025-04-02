@@ -38,9 +38,9 @@ import { fetchBusesOrBusbarSectionsForVoltageLevel } from 'services/study/networ
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input';
 import { areIdsEqual, getObjectId } from '../../utils/utils';
 import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } from './connectivity-form-utils';
-import { CurrentTreeNode } from '../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectablePositionFormInfos } from './connectivity.type';
+import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
