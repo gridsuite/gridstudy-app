@@ -19,7 +19,7 @@ import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analys
 
 export type UseGetShortCircuitParametersProps = [
     ShortCircuitParametersInfos | null,
-    React.Dispatch<React.SetStateAction<ShortCircuitParametersInfos | null>>
+    React.Dispatch<React.SetStateAction<ShortCircuitParametersInfos | null>>,
 ];
 
 export const useGetShortCircuitParameters = (): UseGetShortCircuitParametersProps => {

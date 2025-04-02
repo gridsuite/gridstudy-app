@@ -112,7 +112,9 @@ export function VoltageRegulationForm({
             name={Q_PERCENT}
             label={'QPercentText'}
             adornment={percentageTextField}
-            previousValue={!isNaN(Number(previousValues?.qPercent)) ? previousValues?.qPercent ?? undefined : undefined}
+            previousValue={
+                !Number.isNaN(Number(previousValues?.qPercent)) ? (previousValues?.qPercent ?? undefined) : undefined
+            }
             clearable={true}
         />
     );

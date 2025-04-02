@@ -60,7 +60,10 @@ import {
     getReactiveLimitsValidationSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import {
+    REMOVE,
+    setCurrentReactiveCapabilityCurveChoice,
+} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
@@ -280,6 +283,12 @@ export default function GeneratorModificationDialog({
                                     `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     previousReactiveCapabilityCurveTable
                                 );
+                            } else {
+                                setCurrentReactiveCapabilityCurveChoice(
+                                    previousReactiveCapabilityCurveTable,
+                                    `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                    setValue
+                                );
                             }
                             setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, value?.voltageLevelId);
                             setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`, value?.busOrBusbarSectionId);
@@ -378,7 +387,7 @@ export default function GeneratorModificationDialog({
                     isReactiveCapabilityCurveOn ? null : reactiveLimits?.[MINIMUM_REACTIVE_POWER]
                 ),
                 reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
-                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null
+                    ? (reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
                 properties: toModificationProperties(generator) ?? null,
             } satisfies GeneratorModificationInfos;

@@ -1271,7 +1271,7 @@
     "diagramConfigUpdateMsg": "Mise à jour de l'image nodale de zone {item}",
     "diagramConfigCreationError": "Une erreur est survenue lors de la création de l'image nodale de zone",
     "diagramConfigUpdateError": "Une erreur est survenue lors de la mise à jour de l'image nodale de zone {item}",
-    "EditNad" : "Éditer",
+    "EditNad": "Éditer",
     "ModificationsSelection": "Sélection des modifications",
     "errCreateModificationsMsg": "Une erreur est survenue lors de la création des modifications",
     "errUpdateModificationsMsg": "Une erreur est survenue lors de la mise à jour de la modification composite {item}",

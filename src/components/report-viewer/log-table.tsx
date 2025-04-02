@@ -115,7 +115,7 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick, onFilter
                         message: log.message,
                         parentId: log.parentId,
                         backgroundColor: log.severity.colorName,
-                    } as unknown as ReportLog)
+                    }) as unknown as ReportLog
             );
             setSelectedRowIndex(-1);
             setRowData(transformedLogs);

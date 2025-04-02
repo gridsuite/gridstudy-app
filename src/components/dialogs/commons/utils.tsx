@@ -7,11 +7,11 @@
 import { KeyCode, SuppressKeyboardEventParams } from 'ag-grid-community';
 
 export function getIdOrValue(value: any) {
-    return typeof value !== 'string' ? value?.id ?? null : value;
+    return typeof value !== 'string' ? (value?.id ?? null) : value;
 }
 
 export function getLabelOrValue(value: any) {
-    return typeof value !== 'string' ? value?.label ?? null : value;
+    return typeof value !== 'string' ? (value?.label ?? null) : value;
 }
 
 const ALLOWED_KEYS: readonly string[] = [KeyCode.ESCAPE, KeyCode.DOWN, KeyCode.UP, KeyCode.LEFT, KeyCode.RIGHT];
