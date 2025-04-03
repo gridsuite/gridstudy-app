@@ -8,7 +8,7 @@
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
 
-export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) => string) => {
+export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) => string): string => {
     switch (option.filterType) {
         case FilterType.COUNTRY:
             return translate(option.label);
@@ -17,4 +17,5 @@ export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) =>
         case FilterType.GENERIC_FILTER:
             return option.label;
     }
+    return '';
 };

@@ -51,6 +51,8 @@ import List from '@mui/material/List';
 import OverflowTooltip from './overflow-tooltip';
 
 const RECENT_FILTER: string = 'recent';
+const TAG_lIMIT_NUMBER: number = 4;
+const TAG_LABEL_LENGTH_lIMIT: number = 5;
 
 const emptyArray: GlobalFilter[] = [];
 
@@ -320,16 +322,25 @@ function ResultsGlobalFilter({
                 groupBy={(option: GlobalFilter): string => (option.recent ? RECENT_FILTER : option.filterType)}
                 renderInput={RenderInput}
                 // renderTags : the chips in the inputField
-                renderTags={(filters: GlobalFilter[], getTagsProps) =>
-                    filters.map((element: GlobalFilter, index: number) => (
-                        <Chip
-                            size="small"
-                            label={getOptionLabel(element, translate)}
-                            {...getTagsProps({ index })}
-                            sx={getResultsGlobalFiltersChipStyle(element.filterType)}
-                        />
-                    ))
-                }
+                // only a small subset is displayed because all of them are displayed in the dropdown when the field is focused
+                renderTags={(filters: GlobalFilter[], getTagsProps) => {
+                    const tooManyTags = filters.length > TAG_lIMIT_NUMBER;
+                    const maxLabelLength = tooManyTags ? TAG_LABEL_LENGTH_lIMIT : TAG_LABEL_LENGTH_lIMIT + 2;
+                    return filters.map((element: GlobalFilter, index: number) => {
+                        const label = getOptionLabel(element, translate);
+                        const truncate = label.length >= maxLabelLength;
+                        return index < TAG_lIMIT_NUMBER ? (
+                            <Chip
+                                size="small"
+                                label={truncate ? `${label.slice(0, maxLabelLength)}` : label}
+                                {...getTagsProps({ index })}
+                                sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                            />
+                        ) : index === TAG_lIMIT_NUMBER ? (
+                            <Chip size="small" label={`+${filters.length - TAG_lIMIT_NUMBER}`} />
+                        ) : undefined;
+                    });
+                }}
                 // an "empty" renderGroup is needed in order to avoid the default behavior
                 renderGroup={(item: AutocompleteRenderGroupParams) => {
                     const { group, children } = item;
