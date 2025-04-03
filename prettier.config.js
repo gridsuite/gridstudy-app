@@ -5,9 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { Config } from 'prettier';
-
-export default {
+// @ts-check
+/**
+ * @see https://prettier.io/docs/configuration
+ * @type {import("prettier").Config}
+ * @todo Pass this file in typescript when the IDEs plugins support it<ul>
+ *       <li>https://github.com/prettier/prettier-vscode/issues/3623</li>
+ *       <li>https://youtrack.jetbrains.com/issue/WEB-71713/Support-for-prettier.config.ts</li></ul>
+ */
+const config = {
     trailingComma: 'es5',
     tabWidth: 4,
     printWidth: 120,
@@ -24,4 +30,5 @@ export default {
             options: { tabWidth: 2 },
         },
     ],
-} satisfies Config;
+};
+export default config;
