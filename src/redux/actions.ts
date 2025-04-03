@@ -141,7 +141,8 @@ export type AppActions =
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
     | LoadNadFromConfigAction
-    | SetEditNadModeAction;
+    | SetEditNadModeAction
+    | DeletedOrRenamedNodesAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -1404,5 +1405,17 @@ export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_AL
 export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
+    };
+}
+
+export const DELETED_OR_RENAMED_NODES = 'DELETED_OR_RENAMED_NODES';
+export type DeletedOrRenamedNodesAction = Readonly<Action<typeof DELETED_OR_RENAMED_NODES>> & {
+    deletedOrRenamedNodes: UUID[];
+};
+
+export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrRenamedNodesAction {
+    return {
+        type: DELETED_OR_RENAMED_NODES,
+        deletedOrRenamedNodes,
     };
 }
