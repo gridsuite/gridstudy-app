@@ -27,7 +27,7 @@ const XS_COLUMN2: number = 4;
 const XS_COLUMN3: number = 4.5;
 
 export interface SelectableGlobalFiltersProps extends PropsWithChildren {
-    onClickGenericFilter: () => void;
+    onClickGenericFilterButton: () => void;
     categories: string[];
     filterGroupSelected: string;
     setFilterGroupSelected: (value: ((prevState: string) => string) | string) => void;
@@ -37,7 +37,7 @@ export interface SelectableGlobalFiltersProps extends PropsWithChildren {
 
 function SelectableGlobalFilters({
     children,
-    onClickGenericFilter,
+    onClickGenericFilterButton,
     categories,
     filterGroupSelected,
     setFilterGroupSelected,
@@ -64,11 +64,11 @@ function SelectableGlobalFilters({
     return (
         <Paper sx={resultsGlobalFilterStyles.dropdown}>
             <Grid container>
-                <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cellTitle}>
+                <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cellHeader}>
                     <FormattedMessage id={'results.globalFilter.categories'} />
                 </Grid>
-                <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellTitle} />
-                <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellTitle}>
+                <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellHeader} />
+                <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellHeader}>
                     <Typography variant="caption">{filtersMsg}</Typography>
                     <Button size="small" onClick={() => updateFilters([])} sx={resultsGlobalFilterStyles.miniButton}>
                         <Typography variant="caption">
@@ -110,7 +110,7 @@ function SelectableGlobalFilters({
                         {filterGroupSelected === FilterType.GENERIC_FILTER && (
                             <Button
                                 sx={resultsGlobalFilterStyles.importFilterButton}
-                                onMouseDown={onClickGenericFilter}
+                                onMouseDown={onClickGenericFilterButton}
                             >
                                 <FileUploadIcon />
                                 <FormattedMessage id={'results.globalFilter.loadFilter'} />

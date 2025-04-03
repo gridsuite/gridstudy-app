@@ -48,7 +48,7 @@ import { getOptionLabel } from './global-filter-utils';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import List from '@mui/material/List';
-import OverflowTooltip from './OverflowTooltip';
+import OverflowTooltip from './overflow-tooltip';
 
 const RECENT_FILTER: string = 'recent';
 
@@ -184,7 +184,7 @@ function ResultsGlobalFilter({
             setSelectedGlobalFilters(globalFilters);
             // Updates the "recent" filters unless they have not been found
             dispatch(addToRecentGlobalFilters(globalFiltersToAddToRecents));
-            // notify "father" of the change
+            // notify "father component" of the change
             onChange(globalFilters);
         },
         [dispatch, onChange, snackError]
@@ -303,7 +303,7 @@ function ResultsGlobalFilter({
                 value={selectedGlobalFilters}
                 open={openedDropdown}
                 onOpen={() => setOpenedDropdown(true)}
-                onClose={(event, reason: AutocompleteCloseReason) => {
+                onClose={(_event, reason: AutocompleteCloseReason) => {
                     // the user has to click on the arrow in order to close the dropdown
                     if (reason !== 'selectOption' && reason !== 'blur') {
                         setOpenedDropdown(false);
@@ -364,7 +364,7 @@ function ResultsGlobalFilter({
                     <SelectableGlobalFilters
                         categories={[RECENT_FILTER, ...Object.values(FilterType)]}
                         children={props.children}
-                        onClickGenericFilter={() => setDirectoryItemSelectorOpen(true)}
+                        onClickGenericFilterButton={() => setDirectoryItemSelectorOpen(true)}
                         filterGroupSelected={filterGroupSelected}
                         setFilterGroupSelected={setFilterGroupSelected}
                         selectedGlobalFilters={selectedGlobalFilters}

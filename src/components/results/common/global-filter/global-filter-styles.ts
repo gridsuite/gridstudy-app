@@ -55,7 +55,7 @@ export const resultsGlobalFilterStyles = {
         left: `-${POPPER_EXTRA_WIDTH / 2}px`,
         width: `${AUTOCOMPLETE_WIDTH + POPPER_EXTRA_WIDTH}px`,
     }),
-    cellTitle: (theme: Theme) => ({
+    cellHeader: (theme: Theme) => ({
         color: theme.palette.text.secondary,
         fontSize: '1em',
         padding: 1,
