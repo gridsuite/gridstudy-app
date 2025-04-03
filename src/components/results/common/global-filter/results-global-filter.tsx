@@ -349,19 +349,23 @@ function ResultsGlobalFilter({
                 // renderOption : the checkboxes visible when we focus on the AutoComplete
                 renderOption={(props, option: GlobalFilter, { selected }) => {
                     const { key, children, color, ...otherProps } = props;
+                    // recent selected options are not displayed in the recent tab :
+                    const hideOption = selected && option.recent;
                     return (
-                        <Box component="li" key={key} {...otherProps}>
-                            <ListItemButton selected={selected}>
-                                <Checkbox
-                                    size="small"
-                                    icon={<CheckBoxOutlineBlankIcon />}
-                                    checkedIcon={<CheckBoxIcon />}
-                                    checked={selected}
-                                    sx={{ paddingLeft: '0px' }}
-                                />
-                                <OverflowTooltip label={getOptionLabel(option, translate) ?? ''} />
-                            </ListItemButton>
-                        </Box>
+                        !hideOption && (
+                            <Box component="li" key={key} {...otherProps}>
+                                <ListItemButton selected={selected}>
+                                    <Checkbox
+                                        size="small"
+                                        icon={<CheckBoxOutlineBlankIcon />}
+                                        checkedIcon={<CheckBoxIcon />}
+                                        checked={selected}
+                                        sx={{ paddingLeft: '0px' }}
+                                    />
+                                    <OverflowTooltip label={getOptionLabel(option, translate) ?? ''} />
+                                </ListItemButton>
+                            </Box>
+                        )
                     );
                 }}
                 // Allows to find the corresponding chips without taking into account the recent status
