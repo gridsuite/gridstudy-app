@@ -11,6 +11,7 @@ import EmptySpreadsheetDialog from './custom-spreadsheet/dialogs/empty-spreadshe
 import SpreadsheetFromModelDialog from './custom-spreadsheet/dialogs/spreadsheet-from-model-dialog';
 import SpreadsheetCollectionDialog from './custom-spreadsheet/dialogs/spreadsheets-from-collection-dialog';
 import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
+import { ResetNodeAliasCallback } from './custom-columns/use-node-aliases';
 
 export const UPDATE = 'UPDATE';
 export const DELETE = 'DELETE';
@@ -18,7 +19,7 @@ export const DELETE = 'DELETE';
 type DialogComponent = FC<{
     open: UseStateBooleanReturn;
     resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
-    resetNodeAliases: (aliases?: string[]) => void;
+    resetNodeAliases: ResetNodeAliasCallback;
 }>;
 
 export interface SpreadsheetOption {

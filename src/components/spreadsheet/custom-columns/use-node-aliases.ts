@@ -17,6 +17,8 @@ import { deletedOrRenamedNodes } from 'redux/actions';
 // NodeAlias may have invalid id/name, in error cases
 export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
 
+export type ResetNodeAliasCallback = (appendMode: boolean, aliases?: string[]) => void;
+
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const changedNodeUuids = useSelector((state: AppState) => state.deletedOrRenamedNodes);
@@ -83,18 +85,43 @@ export const useNodeAliases = () => {
         [snackError, studyUuid]
     );
 
-    const resetNodeAliases = useCallback(
-        (aliases: string[] | undefined) => {
+    const resetNodeAliases: ResetNodeAliasCallback = useCallback(
+        (appendMode: boolean, aliases?: string[]) => {
+            console.log('ResetNodeAliasCallback', appendMode, aliases);
             let newNodeAliases: NodeAlias[] = [];
-            if (aliases) {
+            if (appendMode && nodeAliases?.length) {
+                console.log('ResetNodeAliasCallback cas 1');
+                // Append mode: keep existing aliases, but reset the imported/appended ones
+                newNodeAliases = nodeAliases;
+                if (aliases?.length) {
+                    const currentAliasNames = nodeAliases.map((n) => n.alias);
+                    console.log(
+                        'ResetNodeAliasCallback cas 1 test',
+                        currentAliasNames,
+                        aliases.filter((alias) => !currentAliasNames?.includes(alias))
+                    );
+                    // we add imported alias and set them undefined, only if the alias is not already used
+                    const appendedNodeAliases = aliases
+                        .filter((alias) => !currentAliasNames?.includes(alias))
+                        .map((alias) => {
+                            let nodeAlias: NodeAlias = { id: undefined, name: undefined, alias: alias };
+                            return nodeAlias;
+                        });
+                    console.log('ResetNodeAliasCallback cas 1 append', appendedNodeAliases, newNodeAliases);
+                    newNodeAliases = newNodeAliases.concat(appendedNodeAliases);
+                }
+            } else if (aliases?.length) {
+                console.log('ResetNodeAliasCallback cas 2');
+                // Replace mode: we reset alias list with incoming one, keeping only the 'alias' prop
                 newNodeAliases = aliases.map((alias) => {
                     let nodeAlias: NodeAlias = { id: undefined, name: undefined, alias: alias };
                     return nodeAlias;
                 });
             }
+            console.log('ResetNodeAliasCallback RES=', newNodeAliases);
             updateNodeAliases(newNodeAliases);
         },
-        [updateNodeAliases]
+        [nodeAliases, updateNodeAliases]
     );
 
     return { nodeAliases, updateNodeAliases, resetNodeAliases };

@@ -11,6 +11,7 @@ import yup from '../../utils/yup-config';
 export const SPREADSHEET_NAME = 'spreadsheetName';
 export const SPREADSHEET_MODEL = 'spreadsheetModel';
 export const SPREADSHEET_COLLECTION = 'spreadsheetCollection';
+export const SPREADSHEET_COLLECTION_IMPORT_MODE = 'spreadsheetCollectionMode';
 
 export const initialEmptySpreadsheetForm: EmptySpreadsheetForm = {
     [SPREADSHEET_NAME]: '',
@@ -22,8 +23,14 @@ export const initialSpreadsheetFromModelForm: SpreadsheetFromModelForm = {
     [SPREADSHEET_MODEL]: [],
 };
 
+export enum SpreadsheetCollectionImportMode {
+    REPLACE = 'REPLACE',
+    APPEND = 'APPEND',
+}
+
 export const initialSpreadsheetCollectionForm: SpreadsheetCollectionForm = {
     [SPREADSHEET_COLLECTION]: [],
+    [SPREADSHEET_COLLECTION_IMPORT_MODE]: SpreadsheetCollectionImportMode.REPLACE,
 };
 
 export const getEmptySpreadsheetFormSchema = (tablesNames: string[]) => {
@@ -64,6 +71,7 @@ export const getSpreadsheetFromModelFormSchema = (tablesNames: string[]) => {
 
 export const getSpreadsheetCollectionFormSchema = () => {
     return yup.object().shape({
+        [SPREADSHEET_COLLECTION_IMPORT_MODE]: yup.mixed<keyof typeof SpreadsheetCollectionImportMode>().required(),
         [SPREADSHEET_COLLECTION]: yup
             .array()
             .of(
@@ -79,6 +87,5 @@ export const getSpreadsheetCollectionFormSchema = () => {
 };
 
 export type SpreadsheetFromModelForm = yup.InferType<ReturnType<typeof getSpreadsheetFromModelFormSchema>>;
-
 export type EmptySpreadsheetForm = yup.InferType<ReturnType<typeof getEmptySpreadsheetFormSchema>>;
 export type SpreadsheetCollectionForm = yup.InferType<ReturnType<typeof getSpreadsheetCollectionFormSchema>>;

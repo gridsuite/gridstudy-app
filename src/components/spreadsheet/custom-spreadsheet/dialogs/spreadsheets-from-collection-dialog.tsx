@@ -13,6 +13,7 @@ import {
     DirectoryItemsInput,
     ElementType,
     PopupConfirmationDialog,
+    RadioInput,
     SubmitButton,
     UseStateBooleanReturn,
     useSnackMessage,
@@ -26,6 +27,9 @@ import {
     SPREADSHEET_COLLECTION,
     getSpreadsheetCollectionFormSchema,
     initialSpreadsheetCollectionForm,
+    SPREADSHEET_COLLECTION_IMPORT_MODE,
+    SpreadsheetCollectionImportMode,
+    SpreadsheetCollectionForm,
 } from '../custom-spreadsheet-form';
 import { updateStudySpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions } from 'redux/actions';
@@ -33,11 +37,12 @@ import { UUID } from 'crypto';
 import { dialogStyles } from './styles';
 import { SpreadsheetCollectionDto, SpreadsheetTabDefinition } from 'components/spreadsheet/config/spreadsheet.type';
 import { mapColumnsDto } from '../custom-spreadsheet-utils';
+import { ResetNodeAliasCallback } from 'components/spreadsheet/custom-columns/use-node-aliases';
 
 interface SpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
     resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
-    resetNodeAliases: (aliases?: string[]) => void;
+    resetNodeAliases: ResetNodeAliasCallback;
 }
 
 /**
@@ -53,7 +58,7 @@ export default function SpreadsheetCollectionDialog({
     const { snackError } = useSnackMessage();
 
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-    const [collectionToImport, setCollectionToImport] = useState<any>(null);
+    const [collectionToImport, setCollectionToImport] = useState<SpreadsheetCollectionForm>();
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -73,12 +78,13 @@ export default function SpreadsheetCollectionDialog({
     }, [open.value, reset]);
 
     const importCollection = useCallback(
-        (collection: { id: UUID; name: string }) => {
-            if (!collection?.id || !studyUuid) {
+        (formData: SpreadsheetCollectionForm | undefined) => {
+            if (!studyUuid || !formData || formData.spreadsheetCollection.length === 0) {
                 return;
             }
-
-            updateStudySpreadsheetConfigCollection(studyUuid, collection.id)
+            const collectionId = formData.spreadsheetCollection[0].id as UUID;
+            const appendMode = formData.spreadsheetCollectionMode === SpreadsheetCollectionImportMode.APPEND;
+            updateStudySpreadsheetConfigCollection(studyUuid, collectionId, appendMode)
                 .then((collectionData: SpreadsheetCollectionDto) => {
                     const tableDefinitions = collectionData.spreadsheetConfigs.map((spreadsheetConfig, index) => ({
                         uuid: spreadsheetConfig.id,
@@ -87,7 +93,7 @@ export default function SpreadsheetCollectionDialog({
                         columns: mapColumnsDto(spreadsheetConfig.columns),
                         type: spreadsheetConfig.sheetType,
                     }));
-                    resetNodeAliases(collectionData.nodeAliases);
+                    resetNodeAliases(appendMode, collectionData.nodeAliases);
                     dispatch(initTableDefinitions(collectionData.id, tableDefinitions || []));
                     resetTabIndex(tableDefinitions);
                 })
@@ -104,19 +110,42 @@ export default function SpreadsheetCollectionDialog({
     );
 
     const onSubmit = useCallback(
-        (formData: any) => {
-            const collection = formData[SPREADSHEET_COLLECTION][0];
-
-            if (tablesDefinitions.length > 0) {
-                // Show confirmation dialog if tables already exist
-                setCollectionToImport(collection);
-                setConfirmationDialogOpen(true);
-            } else {
-                // Import directly if no tables exist
-                importCollection(collection);
+        (formData: SpreadsheetCollectionForm) => {
+            if (formData.spreadsheetCollection.length > 0) {
+                if (
+                    tablesDefinitions.length > 0 &&
+                    formData.spreadsheetCollectionMode === SpreadsheetCollectionImportMode.REPLACE
+                ) {
+                    // Show confirmation dialog if tables already exist and we are about to replace them
+                    setCollectionToImport(formData);
+                    setConfirmationDialogOpen(true);
+                } else {
+                    // Import directly if no tables exist, or in append mode
+                    importCollection(formData);
+                }
             }
         },
         [tablesDefinitions.length, importCollection]
+    );
+
+    const updateModeSelectionField = (
+        <RadioInput
+            name={SPREADSHEET_COLLECTION_IMPORT_MODE}
+            options={[
+                {
+                    id: SpreadsheetCollectionImportMode.REPLACE,
+                    label: intl.formatMessage({
+                        id: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace',
+                    }),
+                },
+                {
+                    id: SpreadsheetCollectionImportMode.APPEND,
+                    label: intl.formatMessage({
+                        id: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append',
+                    }),
+                },
+            ]}
+        />
     );
 
     return (
@@ -135,6 +164,7 @@ export default function SpreadsheetCollectionDialog({
 
                     <DialogContent dividers>
                         <Grid container spacing={2} direction="column">
+                            <Grid item>{updateModeSelectionField}</Grid>
                             <Grid item xs>
                                 <DirectoryItemsInput
                                     name={SPREADSHEET_COLLECTION}
