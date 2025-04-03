@@ -184,6 +184,7 @@ function ResultsGlobalFilter({
             setSelectedGlobalFilters(globalFilters);
             // Updates the "recent" filters unless they have not been found
             dispatch(addToRecentGlobalFilters(globalFiltersToAddToRecents));
+            // notify "father" of the change
             onChange(globalFilters);
         },
         [dispatch, onChange, snackError]
@@ -367,7 +368,7 @@ function ResultsGlobalFilter({
                         filterGroupSelected={filterGroupSelected}
                         setFilterGroupSelected={setFilterGroupSelected}
                         selectedGlobalFilters={selectedGlobalFilters}
-                        setSelectedGlobalFilters={setSelectedGlobalFilters}
+                        updateFilters={handleChange}
                     />
                 )}
                 // removes all the default styles :

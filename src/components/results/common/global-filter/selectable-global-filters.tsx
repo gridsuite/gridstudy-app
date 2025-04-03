@@ -14,7 +14,7 @@ import {
 } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import React, { Dispatch, PropsWithChildren, SetStateAction, useMemo } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType } from '../utils';
@@ -32,7 +32,7 @@ export interface SelectableGlobalFiltersProps extends PropsWithChildren {
     filterGroupSelected: string;
     setFilterGroupSelected: (value: ((prevState: string) => string) | string) => void;
     selectedGlobalFilters: GlobalFilter[];
-    setSelectedGlobalFilters: Dispatch<SetStateAction<GlobalFilter[]>>;
+    updateFilters: (globalFilters: GlobalFilter[]) => Promise<void>;
 }
 
 function SelectableGlobalFilters({
@@ -42,7 +42,7 @@ function SelectableGlobalFilters({
     filterGroupSelected,
     setFilterGroupSelected,
     selectedGlobalFilters,
-    setSelectedGlobalFilters,
+    updateFilters,
 }: Readonly<SelectableGlobalFiltersProps>) {
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
@@ -70,11 +70,7 @@ function SelectableGlobalFilters({
                 <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellTitle} />
                 <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellTitle}>
                     <Typography variant="caption">{filtersMsg}</Typography>
-                    <Button
-                        size="small"
-                        onClick={() => setSelectedGlobalFilters([])}
-                        sx={resultsGlobalFilterStyles.miniButton}
-                    >
+                    <Button size="small" onClick={() => updateFilters([])} sx={resultsGlobalFilterStyles.miniButton}>
                         <Typography variant="caption">
                             <FormattedMessage id="results.globalFilter.clearAll" />
                         </Typography>
@@ -131,9 +127,9 @@ function SelectableGlobalFilters({
                                     label={getOptionLabel(element, translate)}
                                     sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                                     onDelete={() => {
-                                        setSelectedGlobalFilters([
+                                        updateFilters([
                                             ...selectedGlobalFilters.filter((filter) => filter !== element),
-                                        ]);
+                                        ]).then();
                                     }}
                                 />
                             </ListItem>
