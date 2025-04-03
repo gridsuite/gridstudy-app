@@ -520,7 +520,7 @@
     "results.globalFilter.activeFilter": "{filtersCount} filtrage actif",
     "results.globalFilter.fillerText": "Filtrage",
     "results.globalFilter.recent": "Récents",
-    "results.globalFilter.genericFilter": "Filtres",
+    "results.globalFilter.genericFilter": "Générique",
     "results.globalFilter.country": "Pays",
     "results.globalFilter.voltageLevel": "Niveaux de tension",
     "results.globalFilter.nonApplicable": "Le filtrage {filterName} n'est pas applicable pour le tableau de résultats courant et est inactif",

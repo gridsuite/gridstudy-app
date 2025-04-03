@@ -313,7 +313,6 @@ function ResultsGlobalFilter({
                 multiple
                 id="result-global-filter"
                 size="small"
-                limitTags={2}
                 openOnFocus
                 disableCloseOnSelect
                 options={options}
@@ -347,6 +346,7 @@ function ResultsGlobalFilter({
                                     icon={<CheckBoxOutlineBlankIcon />}
                                     checkedIcon={<CheckBoxIcon />}
                                     checked={selected}
+                                    sx={{ paddingLeft: '0px' }}
                                 />
                                 <OverflowTooltip label={getOptionLabel(option, translate) ?? ''} />
                             </ListItemButton>

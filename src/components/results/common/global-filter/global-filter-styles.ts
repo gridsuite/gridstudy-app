@@ -26,7 +26,7 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
     return mergeSx(resultsGlobalFilterStyles.chip, chipStyle);
 };
 
-const AUTOCOMPLETE_WIDTH: number = 420;
+const AUTOCOMPLETE_WIDTH: number = 500;
 const POPPER_EXTRA_WIDTH: number = 250;
 export const GLOBAL_FILTERS_CELL_HEIGHT: number = 400;
 export const IMPORT_FILTER_HEIGHT: number = 40;
@@ -52,7 +52,7 @@ export const resultsGlobalFilterStyles = {
     // from the expanded part :
     dropdown: () => ({
         position: 'relative',
-        left: `-${POPPER_EXTRA_WIDTH / 2}px`,
+        left: `0px`,
         width: `${AUTOCOMPLETE_WIDTH + POPPER_EXTRA_WIDTH}px`,
     }),
     cellHeader: (theme: Theme) => ({
@@ -76,11 +76,11 @@ export const resultsGlobalFilterStyles = {
     importFilterButton: (theme: Theme) => ({
         color: theme.palette.text.secondary,
         fontSize: '0.8em',
-        width: '100%',
         borderTop: '1px solid',
         borderColor: theme.palette.divider,
-        alignSelf: 'flex-end',
         height: `${IMPORT_FILTER_HEIGHT}px`,
+        justifyContent: 'flex-start',
+        paddingLeft: '24px',
     }),
     miniButton: (theme: Theme) => ({
         color: theme.palette.text.primary,

@@ -109,10 +109,11 @@ function SelectableGlobalFilters({
                         </Box>
                         {filterGroupSelected === FilterType.GENERIC_FILTER && (
                             <Button
+                                startIcon={<FileUploadIcon />}
+                                fullWidth={true}
                                 sx={resultsGlobalFilterStyles.importFilterButton}
                                 onMouseDown={onClickGenericFilterButton}
                             >
-                                <FileUploadIcon />
                                 <FormattedMessage id={'results.globalFilter.loadFilter'} />
                             </Button>
                         )}

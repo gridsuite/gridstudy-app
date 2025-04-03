@@ -519,7 +519,7 @@
     "results.globalFilter.activeFilter": "{filtersCount} active filter",
     "results.globalFilter.fillerText": "Filtering",
     "results.globalFilter.recent": "Recent",
-    "results.globalFilter.genericFilter": "Filters",
+    "results.globalFilter.genericFilter": "Generic",
     "results.globalFilter.country": "Countries",
     "results.globalFilter.voltageLevel": "Voltage levels",
     "results.globalFilter.nonApplicable": "Filtering {filterName} is not applicable for the current results table and is inactive",
