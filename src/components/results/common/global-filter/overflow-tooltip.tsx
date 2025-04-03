@@ -21,7 +21,7 @@ function OverflowTooltip({ label }: Readonly<OverflowTooltipProps>) {
 
     const compareSize = () => {
         if (textElementRef.current) {
-            const compare = textElementRef.current.scrollWidth <= textElementRef.current.clientWidth;
+            const compare = textElementRef.current.scrollWidth > textElementRef.current.clientWidth;
             setDisplayTooltip(compare);
         }
     };
@@ -39,7 +39,7 @@ function OverflowTooltip({ label }: Readonly<OverflowTooltipProps>) {
     );
 
     return (
-        <Tooltip title={label} arrow disableHoverListener={displayTooltip}>
+        <Tooltip title={label} arrow disableHoverListener={!displayTooltip}>
             <Box
                 ref={textElementRef}
                 component="span"
