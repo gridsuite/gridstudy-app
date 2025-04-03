@@ -18,9 +18,9 @@ import {
     GridOptions,
     RowStyle,
 } from 'ag-grid-community';
-import { AppState, CurrentTreeNode } from '../../redux/reducer';
+import { AppState } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
-import { NodeType } from 'components/graph/tree-node.type';
+import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
 import { CalculationRowType } from './utils/calculation.type';
 import { isCalculationRow } from './utils/calculation-utils';
 import { useSelector } from 'react-redux';

@@ -22,15 +22,29 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
+import { UUID } from 'crypto';
+import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
+import { BatteryFormInfos } from '../battery-dialog.type';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
-const BatteryModificationForm = ({
+export interface BatteryModificationFormProps {
+    studyUuid: UUID;
+    editData?: BatteryCreationInfos;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    batteryToModify: BatteryFormInfos | null;
+    updatePreviousReactiveCapabilityCurveTable: (action: string, index: number) => void;
+    equipmentId: string;
+}
+
+export default function BatteryModificationForm({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
     batteryToModify,
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
-}) => {
+}: Readonly<BatteryModificationFormProps>) {
     const batteryIdField = (
         <TextField
             size="small"
@@ -102,7 +116,10 @@ const BatteryModificationForm = ({
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
-            previousValues={batteryToModify}
+            previousValues={{
+                connectablePosition: batteryToModify?.connectablePosition,
+                terminalConnected: batteryToModify?.terminalConnected,
+            }}
         />
     );
 
@@ -146,7 +163,6 @@ const BatteryModificationForm = ({
                 previousMinMaxReactiveLimits={batteryToModify?.minMaxReactiveLimits}
                 updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
-            {/* Set points part */}
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
                 <GridItem size={4}>{activePowerSetPointField}</GridItem>
@@ -161,6 +177,4 @@ const BatteryModificationForm = ({
             <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>
     );
-};
-
-export default BatteryModificationForm;
+}

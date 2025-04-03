@@ -6,9 +6,10 @@
  */
 
 import {
-    ElementCreationDialog,
+    ElementSaveDialog,
     ElementType,
     IElementCreationDialog,
+    IElementUpdateDialog,
     MODIFICATION_TYPES,
     NetworkModificationMetadata,
     usePrevious,
@@ -72,7 +73,7 @@ import ImportModificationDialog from 'components/dialogs/import-modification-dia
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
 import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
-import { createCompositeModifications } from '../../../../services/explore';
+import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { fetchNetworkModification } from '../../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
@@ -406,7 +407,7 @@ const NetworkModificationNodeEditor = () => {
         {
             id: 'VOLTAGE_INIT_MODIFICATION',
             label: 'VoltageInitModification',
-            hide: true,
+            hide: true, // this modification is not visible in the creation menu
             action: () => withDefaultParams(VoltageInitModificationDialog),
         },
     ];
@@ -689,6 +690,39 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
+    const doUpdateCompositeModificationsElements = ({
+        id,
+        name,
+        description,
+        elementFullPath,
+    }: IElementUpdateDialog) => {
+        const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.modificationInfos.uuid);
+
+        setSaveInProgress(true);
+        updateCompositeModifications(id, name, description, selectedModificationsUuid)
+            .then(() => {
+                snackInfo({
+                    headerId: 'infoUpdateModificationsMsg',
+                    headerValues: {
+                        nbModifications: String(selectedNetworkModifications.length),
+                        item: elementFullPath,
+                    },
+                });
+            })
+            .catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errUpdateModificationsMsg',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
+                });
+            })
+            .finally(() => {
+                setSaveInProgress(false);
+            });
+    };
+
     const selectedModificationsIds = useCallback(() => {
         const allModificationsIds = modifications.map((m) => m.modificationInfos.uuid);
         // sort the selected modifications in the same order as they appear in the whole modifications list
@@ -835,14 +869,18 @@ const NetworkModificationNodeEditor = () => {
     const renderCreateCompositeNetworkModificationsDialog = () => {
         return (
             studyUuid && (
-                <ElementCreationDialog
+                <ElementSaveDialog
                     open={createCompositeModificationDialogOpen}
                     onSave={doCreateCompositeModificationsElements}
+                    OnUpdate={doUpdateCompositeModificationsElements}
                     onClose={() => setCreateCompositeModificationDialogOpen(false)}
                     type={ElementType.MODIFICATION}
                     titleId="CreateCompositeModification"
                     prefixIdForGeneratedName="GeneratedModification"
                     studyUuid={studyUuid}
+                    selectorTitleId="SelectCompositeModificationTitle"
+                    createLabelId="CreateCompositeModificationLabel"
+                    updateLabelId="UpdateCompositeModificationLabel"
                 />
             )
         );

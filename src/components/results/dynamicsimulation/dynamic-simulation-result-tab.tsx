@@ -5,14 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
 import TabPanelLazy from '../common/tab-panel-lazy';
-import DynamicSimulationResultTimeSeries from './dynamic-simulation-result-time-series';
+import DynamicSimulationResultTimeSeries from './dynamic-simulation-result-time-series.js';
 import DynamicSimulationResultSynthesis from './dynamic-simulation-result-synthesis';
 import DynamicSimulationResultTimeline from './dynamic-simulation-result-timeline';
 import DynamicSimulationResultLogs from './dynamic-simulation-result-logs';
+import { UUID } from 'crypto';
 
 const styles = {
     resultContainer: {
@@ -25,12 +26,22 @@ const TAB_INDEX_TIMELINE = 'DynamicSimulationTabTimeline';
 const TAB_INDEX_STATUS = 'DynamicSimulationTabStatus';
 const TAB_INDEX_LOGS = 'ComputationResultsLogs';
 
-const DynamicSimulationResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUuid }) => {
+export type DynamicSimulationResultTabProps = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+};
+
+function DynamicSimulationResultTab({
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
+}: Readonly<DynamicSimulationResultTabProps>) {
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(TAB_INDEX_TIME_SERIES);
 
-    const handleTabChange = (_, newTabIndex) => {
+    const handleTabChange = (_: SyntheticEvent, newTabIndex: string) => {
         setTabIndex(newTabIndex);
     };
 
@@ -92,6 +103,6 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUui
             </Box>
         </>
     );
-};
+}
 
 export default DynamicSimulationResultTab;
