@@ -89,7 +89,7 @@ export function useOneBusShortcircuitAnalysisLoader(
         if (studyUpdatedForce.eventData.headers) {
             const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
 
-            if (studyUpdatedEventData.headers.rootNetwork !== rootNetworkUuid) {
+            if (studyUpdatedEventData.headers.rootNetworkUuid !== rootNetworkUuid) {
                 return;
             }
             if (

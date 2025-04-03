@@ -69,6 +69,24 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
+export function getNetworkAreaDiagramUrlFromConfig(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    nadConfigUuid: UUID
+) {
+    console.info(
+        `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
+    );
+    return (
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network-area-diagram?' +
+        new URLSearchParams({
+            nadConfigUuid: nadConfigUuid,
+        })
+    );
+}
+
 export function fetchParentNodesReport(
     studyUuid: UUID | null,
     nodeUuid: UUID,
@@ -303,7 +321,9 @@ export function isNodeExists(studyUuid: UUID, nodeName: string) {
             nodeName: nodeName,
         });
     console.debug(existsNodeUrl);
-    return backendFetch(existsNodeUrl, { method: 'head' });
+    return backendFetch(existsNodeUrl, { method: 'head' }).then((response) => {
+        return response.status !== 204;
+    });
 }
 
 export function getUniqueNodeName(studyUuid: UUID) {

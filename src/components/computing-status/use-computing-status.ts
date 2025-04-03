@@ -20,10 +20,10 @@ interface UseComputingStatusProps {
         studyUuid: UUID,
         nodeUuid: UUID,
         currentRootNetworkUuid: UUID,
-        fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string>,
+        fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
         invalidations: string[],
         completions: string[],
-        resultConversion: (x: string) => RunningStatus,
+        resultConversion: (x: string | null) => RunningStatus,
         computingType: ComputingType,
         optionalServiceAvailabilityStatus?: OptionalServicesStatus
     ): void;
@@ -31,12 +31,12 @@ interface UseComputingStatusProps {
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
-    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string>;
+    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>;
 }
 
 function isWorthUpdate(
     studyUpdatedForce: StudyUpdated,
-    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string>,
+    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
     lastUpdateRef: RefObject<LastUpdateProps>,
     nodeUuidRef: RefObject<UUID>,
     rootNetworkUuidRef: RefObject<UUID>,
@@ -49,7 +49,7 @@ function isWorthUpdate(
     const updateType = headers?.updateType;
     const node = headers?.node;
     const nodes = headers?.nodes;
-    const rootNetworkUuidFromNotification = headers?.rootNetwork;
+    const rootNetworkUuidFromNotification = headers?.rootNetworkUuid;
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
     }
@@ -129,7 +129,7 @@ export const useComputingStatus: UseComputingStatusProps = (
         nodeUuidRef.current = nodeUuid;
         rootNetworkUuidRef.current = currentRootNetworkUuid;
         fetcher(studyUuid, nodeUuid, currentRootNetworkUuid)
-            .then((res: string) => {
+            .then((res: string | null) => {
                 if (
                     !canceledRequest &&
                     nodeUuidRef.current === nodeUuid &&

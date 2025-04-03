@@ -26,6 +26,8 @@ const styles = {
     },
 };
 
+export const COL_STATUS = 'status';
+
 export const StatusCellRender = (cellData: ICellRendererParams) => {
     const status = cellData.value;
     const color = status === 'CONVERGED' || status === 'SUCCEED' ? styles.succeed : styles.fail;
