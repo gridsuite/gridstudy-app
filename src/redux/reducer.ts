@@ -210,6 +210,8 @@ import {
     UseNameAction,
     SET_EDIT_NAD_MODE,
     SetEditNadModeAction,
+    DELETED_OR_RENAMED_NODES,
+    DeletedOrRenamedNodesAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -608,6 +610,7 @@ export interface AppState extends CommonStoreState {
     [LOGS_STORE_FIELD]: LogsFilterState;
 
     calculationSelections: Record<UUID, CalculationType[]>;
+    deletedOrRenamedNodes: UUID[];
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -730,6 +733,7 @@ const initialState: AppState = {
     })),
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
+    deletedOrRenamedNodes: [],
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -1916,6 +1920,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGsFiltersAction) => {
         state.gsFilterSpreadsheetState = {};
+    });
+
+    builder.addCase(DELETED_OR_RENAMED_NODES, (state, action: DeletedOrRenamedNodesAction) => {
+        state.deletedOrRenamedNodes = action.deletedOrRenamedNodes;
     });
 });
 
