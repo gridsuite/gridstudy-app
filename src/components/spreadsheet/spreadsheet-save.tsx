@@ -73,7 +73,11 @@ export default function SpreadsheetSave({
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
                 label: 'spreadsheet/save/options/csv',
-                action: () => downloadCSVData({ gridRef, columns, tableName }),
+                action: () => {
+                    // Filter out the rowIndex column before exporting to CSV
+                    const columnsForExport = columns.filter((col) => col.colId !== 'rowIndex');
+                    downloadCSVData({ gridRef, columns: columnsForExport, tableName });
+                },
                 disabled: dataSize === 0,
             },
         }),
