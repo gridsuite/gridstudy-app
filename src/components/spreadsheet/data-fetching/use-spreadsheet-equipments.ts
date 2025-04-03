@@ -13,7 +13,6 @@ import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments }
 import { AppState, NotificationType } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
 import { NodeAlias } from '../custom-columns/node-alias.type';
 import { isStatusBuilt } from '../../graph/util/model-functions';
@@ -182,12 +181,28 @@ export const useSpreadsheetEquipments = (
         setIsFetching(false);
     };
 
+    // Note: take care about the dependencies because any execution here implies equipment loading (large fetches).
+    // For example, we have 3 currentNode properties in deps rather than currentNode object itself.
     useEffect(() => {
-        if (nodesIdToFetch.size > 0 && isNetworkModificationTreeModelUpToDate && isNodeBuilt(currentNode)) {
+        if (
+            currentNode?.id &&
+            currentRootNetworkUuid &&
+            nodesIdToFetch.size > 0 &&
+            isNetworkModificationTreeModelUpToDate &&
+            (currentNode?.type === NodeType.ROOT || isStatusBuilt(currentNode?.data.globalBuildStatus))
+        ) {
             setIsFetching(true);
-            fetchNodesEquipmentData(nodesIdToFetch, onFetchingDone);
+            fetchNodesEquipmentData(nodesIdToFetch, currentNode.id, currentRootNetworkUuid, onFetchingDone);
         }
-    }, [isNetworkModificationTreeModelUpToDate, nodesIdToFetch, fetchNodesEquipmentData, currentNode]);
+    }, [
+        isNetworkModificationTreeModelUpToDate,
+        currentNode?.id,
+        currentNode?.type,
+        currentNode?.data.globalBuildStatus,
+        currentRootNetworkUuid,
+        fetchNodesEquipmentData,
+        nodesIdToFetch,
+    ]);
 
     return { equipments, isFetching };
 };
