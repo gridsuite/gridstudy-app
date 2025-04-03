@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Grid } from "@mui/material";
 import {
     ENABLED,
     LOAD_TAP_CHANGING_CAPABILITIES,
@@ -15,21 +15,22 @@ import {
     REGULATION_SIDE,
     REGULATION_TYPE,
     TARGET_DEADBAND,
-    TARGET_V,
-} from 'components/utils/field-constants';
-import { useEffect, useMemo } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { VoltageAdornment } from '../../../../dialog-utils';
-import { SwitchInput, FloatInput, SelectInput } from '@gridsuite/commons-ui';
-import { RegulatingTerminalForm } from '../../../../regulating-terminal/regulating-terminal-form';
-import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
-import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
-import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
-import { getComputedPreviousRatioRegulationType } from './ratio-tap-changer-pane-utils';
-import GridItem from '../../../../commons/grid-item';
+    TARGET_V
+} from "components/utils/field-constants";
+import { useEffect, useMemo } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
+import { useIntl } from "react-intl";
+import { VoltageAdornment } from "../../../../dialog-utils";
+import { FloatInput, SelectInput, SwitchInput } from "@gridsuite/commons-ui";
+import { RegulatingTerminalForm } from "../../../../regulating-terminal/regulating-terminal-form";
+import RatioTapChangerPaneSteps from "./ratio-tap-changer-pane-steps";
+import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from "components/network/constants";
+import { EQUIPMENT_TYPES } from "components/utils/equipment-types";
+import CheckboxNullableInput from "components/utils/rhf-inputs/boolean-nullable-input";
+import { getTapChangerEquipmentSectionTypeValue } from "components/utils/utils";
+import { getComputedPreviousRatioRegulationType } from "./ratio-tap-changer-pane-utils";
+import GridItem from "../../../../commons/grid-item";
+import GridSection from "../../../../commons/grid-section";
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
@@ -219,70 +220,74 @@ const RatioTapChangerPane = ({
     );
 
     return (
-        <>
-            <Grid container spacing={2}>
-                <Grid item container xs={4}>
-                    {ratioTapLoadTapChangingCapabilitiesField}
-                </Grid>
-                {isRatioTapLoadTapChangingCapabilitiesOn && (
-                    <>
-                        <Grid item container spacing={2}>
-                            <Grid item xs={4}>
-                                {regulationModeField}
-                            </Grid>
+      <Grid>
+          {/* Ratio Tap Load Tap Changing Capabilities */}
+          <Grid item xs={12}>
+              {ratioTapLoadTapChangingCapabilitiesField}
+          </Grid>
 
-                            <>
-                                <Grid item xs={4}>
-                                    {targetVoltage1Field}
-                                </Grid>
-                                <Grid item xs={4}>
-                                    {targetDeadbandField}
-                                </Grid>
-                            </>
-                        </Grid>
-                        <Grid item container spacing={2}>
-                            <Grid
-                                item
-                                xs={4}
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'flex-end',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <FormattedMessage id="RegulatedTerminal" disabled={true} />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {regulationTypeField}
-                            </Grid>
-                            {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
-                        </Grid>
-                        {regulationType === REGULATION_TYPES.DISTANT.id && (
-                            <Grid
-                                item
-                                container
-                                columns={3}
-                                direction="row"
-                                sx={{
-                                    justifyContent: 'flex-end',
-                                    marginLeft: '10px',
-                                }}
-                            >
-                                <GridItem size={2}>{regulatingTerminalField}</GridItem>
-                            </Grid>
-                        )}
-                    </>
+          {/* Conditional Rendering for Tap Changing Capabilities */}
+          {isRatioTapLoadTapChangingCapabilitiesOn && (
+            <Grid item container xs={12} spacing={2}>
+                {/* Regulated Terminal Section */}
+                <Grid item xs={12}>
+                    <GridSection title="RegulatedTerminal" heading={4} />
+                </Grid>
+                {/* Regulation Type Selection */}
+                <GridItem size={4}>
+                    {regulationTypeField}
+                </GridItem>
+
+                {/* Local Regulation Type Options */}
+                {regulationType === REGULATION_TYPES.LOCAL.id && (
+                  <Grid item container xs={12} spacing={2}>
+                  <GridItem size={4}>{sideField}</GridItem>
+                  </Grid>
                 )}
 
-                <RatioTapChangerPaneSteps
-                    disabled={!ratioTapChangerEnabledWatcher}
-                    previousValues={previousValues?.[RATIO_TAP_CHANGER]}
-                    editData={editData?.[RATIO_TAP_CHANGER]}
-                    currentNode={currentNode}
-                    isModification={isModification}
-                />
+                {/* Distant Regulation Type Options */}
+                {regulationType === REGULATION_TYPES.DISTANT.id && (
+                  <Grid item container xs={12} spacing={2}>
+                      <GridItem size={8}>{regulatingTerminalField}</GridItem>
+                      <GridItem size={4}>{sideField}</GridItem>
+                  </Grid>
+                )}
+
+                {/* Regulation Parameters Section */}
+                <Grid item xs={12}>
+                    <GridSection title="RegulationSection" heading={4} />
+                </Grid>
+                <Grid item container spacing={2} xs={12}>
+                    <GridItem size={4}>
+                        {regulationModeField}
+                    </GridItem>
+
+                    <GridItem size={4}>
+                        {targetVoltage1Field}
+                    </GridItem>
+
+                    <GridItem size={4}>
+                        {targetDeadbandField}
+                    </GridItem>
+                </Grid>
             </Grid>
-        </>
+          )}
+
+          {/* Ratio Tap Changer Steps Section */}
+          <Grid item xs={12}>
+              <GridSection title="TapsSection" heading={4} />
+          </Grid>
+
+          <Grid item xs={12}>
+              <RatioTapChangerPaneSteps
+                disabled={!ratioTapChangerEnabledWatcher}
+                previousValues={previousValues?.[RATIO_TAP_CHANGER]}
+                editData={editData?.[RATIO_TAP_CHANGER]}
+                currentNode={currentNode}
+                isModification={isModification}
+              />
+          </Grid>
+      </Grid>
     );
 };
 

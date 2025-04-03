@@ -999,6 +999,8 @@
     "HighTapPositionError": "High tap position must be between low tap and 100",
     "TapPositionMustBeBetweenLowAndHighTapPositionValue": "Tap position must be between Low tap position and High tap position",
     "RegulatedTerminal": "Regulated terminal",
+    "RegulationSection": "Regulation",
+    "TapsSection": "Taps",
     "GenerateRatioTapRowsError": "Please generate the ratio changer steps",
     "GeneratePhaseTapRowsError": "Please generate the phase changer steps",
     "IncoherentRatioTapPositionError": "The Tap position value is not consistent with the ratio tap changer steps data",

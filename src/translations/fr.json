@@ -995,6 +995,8 @@
     "HighTapPositionError": "La valeur de la prise max doit être comprise entre la prise min et 100",
     "TapPositionMustBeBetweenLowAndHighTapPositionValue": "La valeur de la prise courante doit être comprise entre la valeur de Prise min et Prise max",
     "RegulatedTerminal": "Terminal réglé",
+    "RegulationSection": "Réglage",
+    "TapsSection": "Prises",
     "GenerateRatioTapRowsError": "Veuillez générer les prises du régleur",
     "GeneratePhaseTapRowsError": "Veuillez générer les prises du déphaseur",
     "IncoherentRatioTapPositionError": "La valeur du champ Prise courante du régleur n'est pas présente dans les données de ses prises",
