@@ -29,6 +29,7 @@ import {
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
 } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import ComputingType from 'components/computing-status/computing-type';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -67,22 +68,28 @@ const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
 type LogTableProps = {
     selectedReport: SelectedReportLog;
-    reportType: string;
+    reportType: ComputingType;
     severities: SeverityLevel[] | undefined;
     onRowClick: (data: ReportLog) => void;
     onFiltersChanged: () => void;
+    resetFilters?: boolean;
 };
 
-const LogTable = ({ selectedReport, reportType, severities, onRowClick, onFiltersChanged }: LogTableProps) => {
+const LogTable = ({
+    selectedReport,
+    reportType,
+    severities,
+    onRowClick,
+    onFiltersChanged,
+    resetFilters = false,
+}: LogTableProps) => {
     const intl = useIntl();
 
     const theme = useTheme<Theme>();
 
     const dispatch = useDispatch();
 
-    const [, , fetchReportLogs, fetchNodeSeverities] = useReportFetcher(
-        reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
-    );
+    const [, , fetchReportLogs] = useReportFetcher(reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE);
     const { filters } = useFilterSelector(FilterType.Logs, reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
@@ -91,6 +98,8 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick, onFilter
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const gridRef = useRef<AgGridReact>(null);
+
+    const [filtersInitialized, setFiltersInitialized] = useState(false);
 
     const severityFilter = useMemo(() => getColumnFilterValue(filters, 'severity') ?? [], [filters]);
     const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);
@@ -125,18 +134,26 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick, onFilter
 
     useEffect(() => {
         if (severities && severities.length > 0) {
-            dispatch(
-                setLogsFilter(reportType, [
-                    {
-                        column: 'severity',
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        type: FILTER_TEXT_COMPARATORS.EQUALS,
-                        value: getDefaultSeverityFilter(severities),
-                    },
-                ])
-            );
+            // Reset filters will trigger initialization regardless of current filter state
+            // Otherwise, only initialize if not already done and no filters present :
+            // This is to avoid overwriting filters when user unchecks all severities manually
+            const needsInitialization = resetFilters || (!filtersInitialized && severityFilter.length === 0);
+
+            if (needsInitialization) {
+                dispatch(
+                    setLogsFilter(reportType, [
+                        {
+                            column: 'severity',
+                            dataType: FILTER_DATA_TYPES.TEXT,
+                            type: FILTER_TEXT_COMPARATORS.EQUALS,
+                            value: getDefaultSeverityFilter(severities),
+                        },
+                    ])
+                );
+                setFiltersInitialized(true);
+            }
         }
-    }, [severities, dispatch, reportType, fetchNodeSeverities]);
+    }, [severities, dispatch, reportType, resetFilters, filtersInitialized, severityFilter.length]);
 
     useEffect(() => {
         if (selectedReport.id && selectedReport.type) {

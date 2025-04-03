@@ -12,12 +12,23 @@ import { VirtualizedTreeview } from './virtualized-treeview';
 import { ReportItem } from './treeview-item';
 import { Report, ReportLog, ReportTree, ReportType, SelectedReportLog, SeverityLevel } from 'utils/report/report.type';
 import { GLOBAL_REPORT_NODE_LABEL } from '../../utils/report/report.constant';
+import ComputingType from 'components/computing-status/computing-type';
 
-type ReportViewerProps = { report: Report; reportType: string; severities: SeverityLevel[] | undefined };
+type ReportViewerProps = {
+    report: Report;
+    reportType: ComputingType;
+    severities: SeverityLevel[] | undefined;
+    resetFilters?: boolean;
+};
 
 const DEFAULT_CONTAINER_HEIGHT_OFFSET = 170; // The value 170px is fine, but leaves a gap below the report.
 
-export default function ReportViewer({ report, reportType, severities = [] }: Readonly<ReportViewerProps>) {
+export default function ReportViewer({
+    report,
+    reportType,
+    severities = [],
+    resetFilters = false,
+}: Readonly<ReportViewerProps>) {
     const [expandedTreeReports, setExpandedTreeReports] = useState<string[]>([]);
     const [highlightedReportId, setHighlightedReportId] = useState<string>();
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number>(
@@ -116,6 +127,7 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
                     severities={severities}
                     onRowClick={onLogRowClick}
                     onFiltersChanged={onFiltersChanged}
+                    resetFilters={resetFilters}
                 />
             </Grid>
         </Grid>
