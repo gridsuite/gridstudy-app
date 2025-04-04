@@ -111,18 +111,16 @@ export default function SpreadsheetCollectionDialog({
 
     const onSubmit = useCallback(
         (formData: SpreadsheetCollectionForm) => {
-            if (formData.spreadsheetCollection.length > 0) {
-                if (
-                    tablesDefinitions.length > 0 &&
-                    formData.spreadsheetCollectionMode === SpreadsheetCollectionImportMode.REPLACE
-                ) {
-                    // Show confirmation dialog if tables already exist and we are about to replace them
-                    setCollectionToImport(formData);
-                    setConfirmationDialogOpen(true);
-                } else {
-                    // Import directly if no tables exist, or in append mode
-                    importCollection(formData);
-                }
+            if (
+                tablesDefinitions.length > 0 &&
+                formData.spreadsheetCollectionMode === SpreadsheetCollectionImportMode.REPLACE
+            ) {
+                // Show confirmation dialog if tables already exist and we are about to replace them
+                setCollectionToImport(formData);
+                setConfirmationDialogOpen(true);
+            } else {
+                // Import directly if no tables exist, or in append mode
+                importCollection(formData);
             }
         },
         [tablesDefinitions.length, importCollection]
