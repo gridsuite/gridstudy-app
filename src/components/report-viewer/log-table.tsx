@@ -17,7 +17,12 @@ import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { ReportLog, SelectedReportLog, SeverityLevel } from 'utils/report/report.type';
+import {
+    ComputingAndNetworkModificationType,
+    ReportLog,
+    SelectedReportLog,
+    SeverityLevel,
+} from 'utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -29,7 +34,6 @@ import {
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
 } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import ComputingType from 'components/computing-status/computing-type';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -68,7 +72,7 @@ const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
 type LogTableProps = {
     selectedReport: SelectedReportLog;
-    reportType: ComputingType;
+    reportType: ComputingAndNetworkModificationType;
     severities: SeverityLevel[] | undefined;
     onRowClick: (data: ReportLog) => void;
     onFiltersChanged: () => void;

@@ -10,13 +10,20 @@ import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { VirtualizedTreeview } from './virtualized-treeview';
 import { ReportItem } from './treeview-item';
-import { Report, ReportLog, ReportTree, ReportType, SelectedReportLog, SeverityLevel } from 'utils/report/report.type';
+import {
+    ComputingAndNetworkModificationType,
+    Report,
+    ReportLog,
+    ReportTree,
+    ReportType,
+    SelectedReportLog,
+    SeverityLevel,
+} from 'utils/report/report.type';
 import { GLOBAL_REPORT_NODE_LABEL } from '../../utils/report/report.constant';
-import ComputingType from 'components/computing-status/computing-type';
 
 type ReportViewerProps = {
     report: Report;
-    reportType: ComputingType;
+    reportType: ComputingAndNetworkModificationType;
     severities: SeverityLevel[] | undefined;
     resetFilters?: boolean;
 };
