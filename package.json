@@ -11,7 +11,7 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
-        "@gridsuite/commons-ui": "0.92.1",
+        "@gridsuite/commons-ui": "0.92.2",
         "@hookform/resolvers": "^4.0.0",
         "@mui/icons-material": "^5.16.14",
         "@mui/lab": "5.0.0-alpha.175",
@@ -30,7 +30,6 @@
         "localized-countries": "^2.0.0",
         "mathjs": "^14.2.1",
         "mui-nested-menu": "^4.0.0",
-        "notistack": "^3.0.2",
         "plotly.js-basic-dist-min": "^2.35.3",
         "qs": "^6.14.0",
         "react": "^18.3.1",
