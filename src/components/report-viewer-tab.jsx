@@ -44,6 +44,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     const [report, setReport] = useState();
     const [severities, setSeverities] = useState();
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
+    const [resetFilters, setResetFilters] = useState(false);
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
     const intl = useIntl();
     const [isReportLoading, fetchReport, , fetchReportSeverities] = useReportFetcher(
@@ -52,7 +53,14 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
 
     const handleChangeNodeOnlySwitch = useCallback((event) => {
         setNodeOnlyReport(event.target.checked);
+        setResetFilters(true);
     }, []);
+
+    useEffect(() => {
+        if (resetFilters && severities) {
+            setResetFilters(false);
+        }
+    }, [resetFilters, severities]);
 
     const rootNodeId = useMemo(() => {
         const rootNode = treeModel.treeNodes.find((node) => node?.data?.label === ROOT_NODE_LABEL);
@@ -109,6 +117,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                         report={report}
                         reportType={COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION}
                         severities={severities}
+                        resetFilters={resetFilters}
                     />
                 )}
             </Paper>
