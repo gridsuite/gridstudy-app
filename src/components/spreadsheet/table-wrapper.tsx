@@ -460,7 +460,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 handleSwitchTab(tableDefinitions[0].uuid);
                 dispatch(resetAllSpreadsheetGsFilters());
             }
-            resetNodeAliases(collectionData.nodeAliases);
+            resetNodeAliases(false, collectionData.nodeAliases);
         });
     }, [studyUuid, dispatch, handleSwitchTab, resetNodeAliases]);
 
@@ -521,7 +521,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     </Grid>
                     <Grid item>
                         <CustomColumnsNodesConfig
-                            disabled={shouldDisableButtons}
+                            disabled={disabled}
                             tabIndex={activeTabIndex}
                             nodeAliases={nodeAliases}
                             updateNodeAliases={updateNodeAliases}

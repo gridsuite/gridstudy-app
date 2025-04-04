@@ -32,7 +32,7 @@ export function setNetworkVisualizationParameters(studyUuid: UUID, newParams: Ne
     });
 }
 
-export function getSpreadsheetConfigCollection(studyUuid: UUID) {
+export function getSpreadsheetConfigCollection(studyUuid: UUID): Promise<SpreadsheetCollectionDto> {
     console.info('get spreadsheet config collection');
     const url = getStudyUrl(studyUuid) + '/spreadsheet-config-collection';
     console.debug(url);
@@ -53,9 +53,12 @@ export function setSpreadsheetConfigCollection(studyUuid: UUID, spreadsheetColle
     });
 }
 
-export function updateStudySpreadsheetConfigCollection(studyUuid: UUID, collectionUuid: UUID) {
+export function updateStudySpreadsheetConfigCollection(studyUuid: UUID, collectionUuid: UUID, appendMode: boolean) {
     console.info('update study spreadsheet config collection');
-    const url = getStudyUrl(studyUuid) + `/spreadsheet-config-collection?collectionUuid=${collectionUuid}`;
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('collectionUuid', collectionUuid);
+    urlSearchParams.append('append', String(appendMode));
+    const url = getStudyUrl(studyUuid) + `/spreadsheet-config-collection?${urlSearchParams.toString()}`;
     console.debug(url);
     return backendFetchJson(url, {
         method: 'PUT',
