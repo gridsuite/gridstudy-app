@@ -12,7 +12,7 @@ import {
     OptionalServicesNames,
     OptionalServicesStatus,
 } from './utils/optional-services';
-import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
     AuthenticationRouter,
     CardErrorBoundary,

@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
