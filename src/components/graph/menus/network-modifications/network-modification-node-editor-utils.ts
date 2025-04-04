@@ -30,8 +30,8 @@ export const styles = {
         alignItems: 'center',
         margin: theme.spacing(0),
         padding: theme.spacing(1),
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText,
+        borderTop: theme.aggrid.border,
+        borderBottom: theme.aggrid.border,
         overflow: 'hidden',
     }),
     toolbar: (theme: Theme) => ({
