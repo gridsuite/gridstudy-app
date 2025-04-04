@@ -521,7 +521,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     </Grid>
                     <Grid item>
                         <CustomColumnsNodesConfig
-                            disabled={shouldDisableButtons}
+                            disabled={disabled}
                             tabIndex={activeTabIndex}
                             nodeAliases={nodeAliases}
                             updateNodeAliases={updateNodeAliases}
