@@ -27,12 +27,16 @@ import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
-import { AutocompleteInput, CheckboxInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    CheckboxInput,
+    DirectoryItemsInput,
+    ErrorInput,
+    FieldErrorAlert,
+    RawReadOnlyInput,
+} from '@gridsuite/commons-ui';
 import { SELECTED } from '../field-constants';
-import { ErrorInput } from '@gridsuite/commons-ui';
-import { FieldErrorAlert } from '@gridsuite/commons-ui';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
 import { ColumnBase, DndColumn, DndColumnType } from './dnd-table.type';
 
@@ -183,9 +187,9 @@ interface DndTableBaseProps {
 
 interface DndTableWithLeftButtonsProps extends DndTableBaseProps {
     withLeftButtons?: true;
-    handleUploadButton: () => void;
+    handleUploadButton?: () => void;
     uploadButtonMessageId: string;
-    handleResetButton: () => void;
+    handleResetButton?: () => void;
     resetButtonMessageId: string;
 }
 

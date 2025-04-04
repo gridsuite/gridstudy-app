@@ -20,8 +20,23 @@ import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
 import { RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
+import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 
-const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {
+export type RatioTapChangerPaneStepsProps = {
+    disabled: boolean;
+    previousValues: any;
+    editData?: any;
+    currentNode: CurrentTreeNode;
+    isModification: boolean;
+};
+
+export default function RatioTapChangerPaneSteps({
+    disabled,
+    previousValues,
+    editData,
+    currentNode,
+    isModification = false,
+}: Readonly<RatioTapChangerPaneStepsProps>) {
     const intl = useIntl();
 
     const COLUMNS_DEFINITIONS = useMemo(() => {
@@ -90,7 +105,7 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
         ];
     }, [intl]);
 
-    const handleImportRow = (val) => {
+    const handleImportRow = (val: any) => {
         return {
             [STEPS_RESISTANCE]: parseIntData(
                 val[
@@ -149,6 +164,4 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
             isModification={isModification}
         />
     );
-};
-
-export default RatioTapChangerPaneSteps;
+}

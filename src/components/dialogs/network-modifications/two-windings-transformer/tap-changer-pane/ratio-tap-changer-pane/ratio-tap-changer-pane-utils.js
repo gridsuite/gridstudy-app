@@ -34,7 +34,7 @@ import {
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { areNumbersOrdered, areArrayElementsUnique } from 'components/utils/utils';
+import { areArrayElementsUnique, areNumbersOrdered } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
@@ -347,6 +347,48 @@ export const getComputedTapSideId = (twt) => {
     }
     if (ratioTapChangerValues?.regulatingTerminalConnectableId === twt?.id) {
         return ratioTapChangerValues?.regulatingTerminalVlId === twt?.voltageLevelId1 ? SIDE.SIDE1.id : SIDE.SIDE2.id;
+    } else {
+        return null;
+    }
+};
+
+export const getPreviousRegulationKey = (ratioTapChanger) => {
+    if (ratioTapChanger?.[LOAD_TAP_CHANGING_CAPABILITIES]) {
+        return 'On';
+    }
+    if (ratioTapChanger?.[LOAD_TAP_CHANGING_CAPABILITIES] === false) {
+        return 'Off';
+    }
+    return null;
+};
+
+export const getRatioTapChangerRegulationModeKey = (ratioTapChangerFormValues) => {
+    if (!ratioTapChangerFormValues) {
+        return null;
+    }
+    if (ratioTapChangerFormValues?.[REGULATING]) {
+        return RATIO_REGULATION_MODES.VOLTAGE_REGULATION.label;
+    } else {
+        return RATIO_REGULATION_MODES.FIXED_RATIO.label;
+    }
+};
+
+export const getRegulationTypeKey = (twt, tap) => {
+    if (tap?.regulatingTerminalConnectableId != null) {
+        return tap?.regulatingTerminalConnectableId === twt?.id
+            ? REGULATION_TYPES.LOCAL.label
+            : REGULATION_TYPES.DISTANT.label;
+    } else {
+        return null;
+    }
+};
+
+export const getTapSideKey = (twt, tap) => {
+    if (!tap || !twt) {
+        return null;
+    }
+    if (tap?.regulatingTerminalConnectableId === twt?.id) {
+        return tap?.regulatingTerminalVlId === twt?.voltageLevelId1 ? SIDE.SIDE1.label : SIDE.SIDE2.label;
     } else {
         return null;
     }

@@ -127,7 +127,7 @@ export const percentageTextField = {
     text: PERCENTAGE,
 };
 
-export function parseIntData(val: string, defaultValue: string) {
+export function parseIntData(val: string, defaultValue: number) {
     const intValue = parseInt(val);
     return isNaN(intValue) ? defaultValue : intValue;
 }
