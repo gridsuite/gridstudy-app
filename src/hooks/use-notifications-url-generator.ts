@@ -7,6 +7,7 @@
 import {
     NOTIFICATIONS_URL_KEYS,
     PREFIX_CONFIG_NOTIFICATION_WS,
+    PREFIX_DIRECTORY_NOTIFICATION_WS,
     PREFIX_STUDY_NOTIFICATION_WS,
 } from 'components/utils/notificationsProvider-utils';
 import { useMemo } from 'react';
@@ -38,6 +39,17 @@ const useNotificationsUrlGenerator = (): Record<NOTIFICATIONS_URL_KEYS, string |
                           `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(studyUuid)}`
                       )
                     : undefined,
+            [NOTIFICATIONS_URL_KEYS.DIRECTORY_DELETE_STUDY]:
+                tokenId && studyUuid
+                    ? getUrlWithToken(
+                          `${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=deleteElement&elementUuid=${encodeURIComponent(
+                              studyUuid
+                          )}`
+                      )
+                    : undefined,
+            [NOTIFICATIONS_URL_KEYS.DIRECTORY]: tokenId
+                ? getUrlWithToken(`${wsBase}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=directories`)
+                : undefined,
         }),
         [tokenId, wsBase, studyUuid]
     );
