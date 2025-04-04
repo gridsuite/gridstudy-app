@@ -248,7 +248,7 @@ let darkTheme = createTheme({
         overlay: {
             background: '#121212',
         },
-        backgroundColor: '#181d1f',
+        backgroundColor: '#252525',
         border: 'solid 1px #68686e',
     },
     reactflow: {

@@ -176,12 +176,11 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 '& .ag-root-wrapper': {
                     borderLeft: 'none',
                     borderBottom: 'none',
-                },
-                '& .ag-row-even, & .ag-row-odd': {
+                    borderRight: 'none',
+                    marginRight: 1,
                     backgroundColor: theme.aggrid.backgroundColor,
-                    border: 'none',
                 },
-                '& .ag-header-row': {
+                '& .ag-row-even, & .ag-row-odd, & .ag-header-row': {
                     backgroundColor: theme.aggrid.backgroundColor,
                 },
             }}

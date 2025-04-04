@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { lighten, darken, Theme } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles';
 import { EditableTitle } from '../network-modifications/editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 

@@ -6,11 +6,12 @@
  */
 
 import { Box, Theme } from '@mui/material';
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, useRef } from 'react';
 import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { usePanelsSize } from './spreadsheet/network-modification-tree-pane-panels-handlers';
 
 interface NetworkModificationTreePanePanelsProps {
     leftComponent: ReactNode;
@@ -29,45 +30,42 @@ export const NetworkModificationTreePanePanels = ({
     const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
 
-    const rightComponentMinSizePixel = 350;
-    const rightComponentMinSizePercentage = containerRef.current?.offsetWidth
-        ? (rightComponentMinSizePixel / containerRef.current?.offsetWidth) * 100
-        : 20;
-
     const rightComponentDefaultSizePixel = 320 + rootNetworks.length * 80;
-    const rightComponentDefaultSizePercentage = containerRef.current?.offsetWidth
-        ? (rightComponentDefaultSizePixel / containerRef.current?.offsetWidth) * 100
-        : 50;
 
-    useEffect(() => {
-        if (showRightPanel) {
-            panelGroupRef.current?.setLayout([
-                100 - rightComponentDefaultSizePercentage,
-                rightComponentDefaultSizePercentage,
-            ]);
-        }
-    }, [rightComponentDefaultSizePercentage, showRightPanel]);
+    // we want to set sizes in pixel, but Panel only deals with sizes in %
+    // this makes the conversion, and handle the resizing when the layout is updated
+    const { rightPanelPercentSize, rightComponentMinSizePercentage, onDragging } = usePanelsSize({
+        containerRef: containerRef,
+        panelGroupRef: panelGroupRef,
+        rightComponentDefaultSizePixel: rightComponentDefaultSizePixel,
+        rightComponentMinSizePixel: 350,
+        showRightPanel: showRightPanel,
+    });
+
     return (
         <Box width={'100%'} ref={containerRef}>
             <PanelGroup direction="horizontal" ref={panelGroupRef}>
-                <Panel minSize={10}>{leftComponent}</Panel>
+                <Panel id={'left-panel'} order={0} minSize={10}>
+                    {leftComponent}
+                </Panel>
                 {showRightPanel && (
                     <>
                         <Box
                             display={'flex'}
                             sx={(theme: Theme) => ({
                                 backgroundColor: theme.aggrid.backgroundColor,
-                                borderLeft: theme.aggrid.border,
                             })}
                             alignItems={'center'}
                         >
-                            <PanelResizeHandle>
+                            <PanelResizeHandle onDragging={onDragging}>
                                 <DragIndicatorIcon fontSize="small" sx={{ padding: 0, margin: 0 }} />
                             </PanelResizeHandle>
                         </Box>
                         <Panel
+                            id={'right-panel'}
+                            order={1}
                             minSize={rightComponentMinSizePercentage}
-                            defaultSize={rightComponentDefaultSizePercentage}
+                            defaultSize={rightPanelPercentSize}
                         >
                             {rightComponent}
                         </Panel>
