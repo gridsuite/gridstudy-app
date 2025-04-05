@@ -20,23 +20,6 @@ const getStyle = (hidden: boolean) => {
     };
 };
 
-<<<<<<<< HEAD:src/components/results/dynamicsimulation/common/visibility.tsx
-export type VisibilityProps = BoxProps & {
-    value: number;
-    index: number;
-    visible?: boolean;
-};
-
-function Visibility({ children, value, index, visible = true, ...otherProps }: Readonly<VisibilityProps>) {
-    return (
-        <Box sx={getStyle(!visible || value !== index)} {...otherProps}>
-            {children}
-        </Box>
-    );
-}
-
-export default Visibility;
-========
 export type VisibilityBoxProps = BoxProps & {
     activeIndex: number;
     boxIndex: number;
@@ -58,4 +41,3 @@ function VisibilityBox({
 }
 
 export default VisibilityBox;
->>>>>>>> main:src/components/results/dynamicsimulation/common/visibility-box.tsx
