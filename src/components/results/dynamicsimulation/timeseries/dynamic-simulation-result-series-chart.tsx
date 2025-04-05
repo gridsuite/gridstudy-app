@@ -49,8 +49,8 @@ export type DynamicSimulationResultSeriesChartProps = {
     groupId: string;
     index: number;
     selected: boolean;
-    leftSeries: Series[] | undefined;
-    rightSeries: Series[] | undefined;
+    leftSeries?: Series[];
+    rightSeries?: Series[];
     onClose: (index: number) => void;
     onSelect: (index: number) => void;
     sync: boolean;

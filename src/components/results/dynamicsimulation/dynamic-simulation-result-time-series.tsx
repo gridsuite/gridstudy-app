@@ -13,7 +13,7 @@ import { memo, SyntheticEvent, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import DroppableTabs from '../../utils/draggable-tab/droppable-tabs';
 import DraggableTab from '../../utils/draggable-tab/draggable-tab';
-import Visibility from './common/visibility';
+import VisibilityBox from './common/visibility-box';
 import TooltipIconButton from './common/tooltip-icon-button';
 import useResultTimeSeries from './hooks/useResultTimeSeries';
 import { useSelector } from 'react-redux';
@@ -183,14 +183,14 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                         }}
                     >
                         {tabs.map((tab, index) => (
-                            <Visibility key={`tab-${tab.id}`} value={selectedIndex} index={index}>
+                            <VisibilityBox key={`tab-${tab.id}`} activeIndex={selectedIndex} boxIndex={index}>
                                 <DynamicSimulationResultChart
                                     groupId={`${tab.id}`}
                                     timeseriesMetadatas={result?.timeseriesMetadatas}
                                     selected={selectedIndex === index}
                                     loadTimeSeries={loadTimeSeries}
                                 />
-                            </Visibility>
+                            </VisibilityBox>
                         ))}
                     </Box>
                 </Box>

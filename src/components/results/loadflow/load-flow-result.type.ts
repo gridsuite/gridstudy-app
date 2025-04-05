@@ -81,9 +81,3 @@ export interface OverloadedEquipmentFromBack {
     side: BranchSide | '';
     limitType: LimitTypes;
 }
-
-export interface GlobalFilter {
-    nominalV?: string[];
-    countryCode?: string[];
-    limitViolationsTypes?: LimitTypes[];
-}

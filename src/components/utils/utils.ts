@@ -7,11 +7,16 @@
 
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
-import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
+import {
+    AttributeModification,
+    CurrentLimits,
+    OperationalLimitsGroup,
+    OperationType,
+    TemporaryLimit,
+} from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
 import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
-import { AttributeModification } from '../dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -78,7 +83,7 @@ export const areIdsEqual = (val1: Option, val2: Option) => {
 };
 
 export const getObjectId = (object: string | { id: string }) => {
-    return typeof object === 'string' ? object : object?.id ?? null;
+    return typeof object === 'string' ? object : (object?.id ?? null);
 };
 
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
@@ -94,15 +99,23 @@ export const buildNewBusbarSections = (equipmentId: string, sectionCount: number
     return newBusbarSections;
 };
 
-export function toModificationOperation<T>(value: T): AttributeModification<T> | null {
-    return value === 0 || value === false || value ? { value: value, op: 'SET' } : null;
+export function toModificationOperation<T>(
+    value: T
+): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
+    return value === 0 || value === false || value
+        ? { value: value as Exclude<Exclude<T, null>, undefined>, op: OperationType.SET }
+        : null;
 }
 
-export function toModificationUnsetOperation<T>(value: T): AttributeModification<T> | null {
+export function toModificationUnsetOperation<T>(
+    value: T
+): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
     if (value === null) {
         return null;
     }
-    return value === 0 || value === false || value ? { value: value, op: 'SET' } : { op: 'UNSET' };
+    return value === 0 || value === false || value
+        ? { value: value as Exclude<Exclude<T, null>, undefined>, op: OperationType.SET }
+        : { op: OperationType.UNSET };
 }
 
 export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]) =>
@@ -264,6 +277,8 @@ export const StudyView = {
     LOGS: 'Logs',
     PARAMETERS: 'Parameters',
 };
+
+export type StudyViewType = (typeof StudyView)[keyof typeof StudyView];
 
 export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
     return rows?.map((row) => {

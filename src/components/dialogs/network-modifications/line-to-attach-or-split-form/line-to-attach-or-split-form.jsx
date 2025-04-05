@@ -70,13 +70,11 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode, current
     );
     const percentageArea = <PercentageArea upperLeftText={'Line1'} upperRightText={'Line2'} />;
     return (
-        <>
-            <Grid container spacing={2} alignItems="center">
-                <GridItem size={5}>{lineToAttachOrSplitField}</GridItem>
-                <GridItem size={1}>{<Typography>{line1Substation}</Typography>}</GridItem>
-                <GridItem size={5}>{percentageArea}</GridItem>
-                <GridItem size={1}>{<Typography>{line2Substation}</Typography>}</GridItem>
-            </Grid>
-        </>
+        <Grid container spacing={2} alignItems="center">
+            <GridItem size={5}>{lineToAttachOrSplitField}</GridItem>
+            <GridItem size={1}>{<Typography>{line1Substation}</Typography>}</GridItem>
+            <GridItem size={5}>{percentageArea}</GridItem>
+            <GridItem size={1}>{<Typography>{line2Substation}</Typography>}</GridItem>
+        </Grid>
     );
 };

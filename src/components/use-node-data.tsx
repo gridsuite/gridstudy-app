@@ -8,32 +8,50 @@
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { UUID } from 'crypto';
-import { AppState, StudyUpdated } from '../redux/reducer';
+import { AppState, StudyUpdated, StudyUpdatedEventData } from '../redux/reducer';
 import { identity } from '@gridsuite/commons-ui';
 
 export const UPDATE_TYPE_HEADER = 'updateType';
 
-function isWorthUpdate<T>(
-    studyUpdatedForce: StudyUpdated,
-    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<T>,
-    lastUpdateRef: RefObject<
-        | {
-              studyUpdatedForce: StudyUpdated;
-              fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<T>;
-          }
-        | undefined
-    >,
-    nodeUuidRef: RefObject<UUID | undefined>,
-    rootNetworkUuidRef: RefObject<UUID | undefined>,
-    nodeUuid: UUID,
-    rootNetworkUuid: UUID,
-    invalidations: string[]
-) {
-    const headers = studyUpdatedForce?.eventData?.headers;
+export type ResultFetcher<T> = (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<T | null>;
+
+type LastUpdateParams<T> = {
+    studyUpdatedForce: StudyUpdated;
+    fetcher: ResultFetcher<T>;
+};
+
+/**
+ * Parameters for checking whether it should perform a fetch to get new result.
+ *
+ * @template T - The type of result returned by the fetch.
+ */
+type ShouldUpdateParams<T> = {
+    studyUpdatedForce: StudyUpdated;
+    nodeUuid: UUID;
+    rootNetworkUuid: UUID;
+    fetcher: ResultFetcher<T>;
+    invalidations: string[];
+    lastUpdateRef: RefObject<LastUpdateParams<T> | undefined>;
+    nodeUuidRef: RefObject<UUID | undefined>;
+    rootNetworkUuidRef: RefObject<UUID | undefined>;
+};
+
+function shouldUpdate<T>({
+    studyUpdatedForce,
+    nodeUuid,
+    rootNetworkUuid,
+    fetcher,
+    invalidations,
+    lastUpdateRef,
+    nodeUuidRef,
+    rootNetworkUuidRef,
+}: ShouldUpdateParams<T>) {
+    const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData; // TODO narrowing by predicate
+    const headers = studyUpdatedEventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
-    const node = headers?.['node'];
-    const nodes = headers?.['nodes'];
-    const rootNetworkFromNotif = headers?.['rootNetwork'];
+    const nodeUuidFromNotif = headers?.node;
+    const nodeUuidsFromNotif = headers?.nodes;
+    const rootNetworkFromNotif = headers?.rootNetworkUuid;
 
     if (rootNetworkFromNotif && rootNetworkFromNotif !== rootNetworkUuid) {
         return false;
@@ -56,15 +74,31 @@ function isWorthUpdate<T>(
     if (invalidations.indexOf(updateType) <= -1) {
         return false;
     }
-    if (node === undefined && nodes === undefined) {
+    if (nodeUuidFromNotif === undefined && nodeUuidsFromNotif === undefined) {
         return true;
     }
-    if (node === nodeUuid || nodes?.indexOf(nodeUuid) !== -1) {
+    if (nodeUuidFromNotif === nodeUuid || nodeUuidsFromNotif?.indexOf(nodeUuid) !== -1) {
         return true;
     }
 
     return false;
 }
+
+/**
+ * Parameters for fetching and processing results.
+ *
+ * @template T - The type of result returned by the fetch.
+ * @template R - The type of result after conversion (defaults to `T` if no conversion is provided).
+ */
+export type UseNodeDataParams<T, R = T> = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    rootNetworkUuid: UUID;
+    fetcher: ResultFetcher<T> | undefined;
+    invalidations: string[];
+    defaultValue?: R;
+    resultConverter?: (fetchedResult: T | null) => R | null;
+};
 
 export function useNodeData<T, R = T>({
     studyUuid,
@@ -73,26 +107,15 @@ export function useNodeData<T, R = T>({
     fetcher,
     invalidations,
     defaultValue,
-    resultConversion = identity,
-}: {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    rootNetworkUuid: UUID;
-    fetcher?: (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<T | null>;
-    invalidations: string[];
-    defaultValue?: R;
-    resultConversion?: (fetchedResult: T | null) => R | null;
-}) {
+    resultConverter = identity,
+}: UseNodeDataParams<T, R>) {
     const [result, setResult] = useState<R | undefined>(defaultValue);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
     const nodeUuidRef = useRef<UUID>();
     const rootNetworkUuidRef = useRef<UUID>();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const lastUpdateRef = useRef<{
-        studyUpdatedForce: StudyUpdated;
-        fetcher: (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<T | null>;
-    }>();
+    const lastUpdateRef = useRef<LastUpdateParams<T>>();
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
@@ -102,30 +125,30 @@ export function useNodeData<T, R = T>({
         fetcher?.(studyUuid, nodeUuid, rootNetworkUuid)
             .then((res) => {
                 if (nodeUuidRef.current === nodeUuid && rootNetworkUuidRef.current === rootNetworkUuid) {
-                    setResult(resultConversion(res) ?? undefined);
+                    setResult(resultConverter(res) ?? undefined);
                 }
             })
             .catch((err) => {
                 setErrorMessage(err.message);
             })
             .finally(() => setIsLoading(false));
-    }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConversion]);
+    }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter]);
 
     /* initial fetch and update */
     useEffect(() => {
         if (!studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
             return;
         }
-        const isUpdateForUs = isWorthUpdate(
+        const isUpdateForUs = shouldUpdate({
             studyUpdatedForce,
+            rootNetworkUuid,
+            nodeUuid,
             fetcher,
+            invalidations,
             lastUpdateRef,
             nodeUuidRef,
             rootNetworkUuidRef,
-            nodeUuid,
-            rootNetworkUuid,
-            invalidations
-        );
+        });
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (nodeUuidRef.current !== nodeUuid || rootNetworkUuidRef.current !== rootNetworkUuid || isUpdateForUs) {
             update();

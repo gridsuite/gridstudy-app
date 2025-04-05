@@ -18,9 +18,9 @@ import {
     GridOptions,
     RowStyle,
 } from 'ag-grid-community';
-import { AppState, CurrentTreeNode } from '../../redux/reducer';
+import { AppState } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
-import { NodeType } from 'components/graph/tree-node.type';
+import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
 import { CalculationRowType } from './utils/calculation.type';
 import { isCalculationRow } from './utils/calculation-utils';
 import { useSelector } from 'react-redux';
@@ -65,6 +65,7 @@ interface EquipmentTableProps {
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
     onModelUpdated: GridOptions['onModelUpdated'];
+    isDataEditable: boolean;
 }
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
@@ -80,6 +81,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     isExternalFilterPresent,
     doesExternalFilterPass,
     onModelUpdated,
+    isDataEditable,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -89,7 +91,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {
             const isRootNode = currentNode?.type === NodeType.ROOT;
-            const cursorStyle = isRootNode ? 'initial' : 'pointer';
+            const cursorStyle = isRootNode || !isDataEditable ? 'initial' : 'pointer';
 
             if (isCalculationRow(params.data?.rowType)) {
                 if (params.data?.rowType === CalculationRowType.CALCULATION) {
@@ -118,7 +120,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
                 cursor: cursorStyle,
             };
         },
-        [currentNode?.type, theme]
+        [currentNode?.type, theme, isDataEditable]
     );
 
     const gridContext = useMemo(

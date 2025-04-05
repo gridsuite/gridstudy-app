@@ -53,7 +53,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 
 import {
     addModificationTypeToTemporaryLimits,
@@ -455,7 +455,6 @@ const LineModificationDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 onValidationError={onValidationError}
-                aria-labelledby="dialog-modify-line"
                 maxWidth={'md'}
                 titleId="ModifyLine"
                 subtitle={selectedId != null ? headerAndTabs : undefined}
@@ -475,9 +474,6 @@ const LineModificationDialog = ({
             >
                 {selectedId == null && (
                     <EquipmentIdSelector
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.LINE}

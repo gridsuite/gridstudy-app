@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Button, Tooltip } from '@mui/material';
+import { Badge, Button, Tooltip } from '@mui/material';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnNodesDialog from './custom-columns-nodes-dialog';
 import BuildIcon from '@mui/icons-material/Build';
@@ -19,6 +19,9 @@ import { AppState } from '../../../redux/reducer';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useFetchEquipment } from '../data-fetching/use-fetch-equipment';
+import { validAlias } from './use-node-aliases';
+import { NodeType } from '../../graph/tree-node.type';
+import { isStatusBuilt } from '../../graph/util/model-functions';
 
 const styles = {
     icon: {
@@ -48,14 +51,36 @@ export default function CustomColumnsNodesConfig({
     const dialogOpen = useStateBoolean(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.type);
+    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
 
     const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
 
+    const showWarning = useMemo(
+        () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.some((n) => !validAlias(n)),
+        [nodeAliases]
+    );
+
+    const isBuilt = useCallback(
+        (nodeId: string | undefined) =>
+            treeNodes?.find(
+                (node) =>
+                    node.id === nodeId && (node.type === NodeType.ROOT || isStatusBuilt(node.data?.globalBuildStatus))
+            ) !== undefined,
+        [treeNodes]
+    );
+
     const nodesToReload = useMemo(() => {
-        // Get all aliased nodes ids, except for Root and current node (both are always up-to-date)
-        return nodeAliases?.filter((node) => node.id !== currentNode?.id && node.name !== ROOT_NODE_LABEL);
-    }, [currentNode?.id, nodeAliases]);
+        // Get all valid aliased nodes ids, except for Root and current node (both are always up-to-date), and only the built ones
+        return nodeAliases?.filter(
+            (nodeAlias) =>
+                validAlias(nodeAlias) &&
+                nodeAlias.id !== currentNode?.id &&
+                nodeAlias.name !== ROOT_NODE_LABEL &&
+                isBuilt(nodeAlias.id)
+        );
+    }, [currentNode?.id, isBuilt, nodeAliases]);
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -66,17 +91,25 @@ export default function CustomColumnsNodesConfig({
     }, []);
 
     const handleRefresh = useCallback(() => {
-        if (nodesToReload?.length) {
+        if (currentNode?.id && currentRootNetworkUuid && nodesToReload?.length) {
             const nodesIdsToReload = new Set<string>(nodesToReload.map((n) => n.id as string));
-            fetchNodesEquipmentData(nodesIdsToReload, undefined);
+            fetchNodesEquipmentData(nodesIdsToReload, currentNode.id, currentRootNetworkUuid);
         }
-    }, [fetchNodesEquipmentData, nodesToReload]);
+    }, [currentNode?.id, currentRootNetworkUuid, fetchNodesEquipmentData, nodesToReload]);
 
     return (
         <>
             <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
                 <BuildIcon sx={styles.icon} />
                 <FormattedMessage id="spreadsheet/custom_column/nodes" />
+                {showWarning && (
+                    <Badge
+                        badgeContent="!"
+                        color="warning"
+                        overlap="circular"
+                        style={{ transform: 'translate(10px, -15px)' }}
+                    ></Badge>
+                )}
             </Button>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem

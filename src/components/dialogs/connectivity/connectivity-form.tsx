@@ -38,9 +38,9 @@ import { fetchBusesOrBusbarSectionsForVoltageLevel } from 'services/study/networ
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input';
 import { areIdsEqual, getObjectId } from '../../utils/utils';
 import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } from './connectivity-form-utils';
-import { CurrentTreeNode } from '../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectablePositionFormInfos } from './connectivity.type';
+import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -266,13 +266,13 @@ export function ConnectivityForm({
             name={`${id}.${CONNECTION_NAME}`}
             label="ConnectionName"
             previousValue={
-                isEquipmentModification ? previousValues?.connectablePosition?.connectionName ?? undefined : undefined
+                isEquipmentModification ? (previousValues?.connectablePosition?.connectionName ?? undefined) : undefined
             }
         />
     );
 
     const previousConnectionDirectionLabel = isEquipmentModification
-        ? getConnectionDirectionLabel(previousValues?.connectablePosition?.connectionDirection) ?? null
+        ? (getConnectionDirectionLabel(previousValues?.connectablePosition?.connectionDirection) ?? null)
         : null;
 
     const newConnectionDirectionField = (
@@ -306,7 +306,7 @@ export function ConnectivityForm({
             label="ConnectionPosition"
             previousValue={
                 isEquipmentModification
-                    ? previousValues?.connectablePosition?.connectionPosition ?? undefined
+                    ? (previousValues?.connectablePosition?.connectionPosition ?? undefined)
                     : undefined
             }
             clearable={true}

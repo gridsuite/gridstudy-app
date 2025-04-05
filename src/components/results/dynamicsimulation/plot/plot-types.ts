@@ -23,5 +23,5 @@ export type Plot = {
 
 export type GridLayout = {
     items: Layout[];
-    cols: number;
+    numColumns: number;
 };

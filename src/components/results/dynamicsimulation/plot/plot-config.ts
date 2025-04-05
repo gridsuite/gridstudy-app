@@ -23,7 +23,7 @@ export const defaultLayout: Partial<Layout> = {
     xaxis: {
         gridcolor: 'rgba(255,255,255,0.2)',
         griddash: 'dot',
-        // nticks: 20, set auto
+        // nticks: 20, switch to auto, open the comment if needed
         tick0: 0,
         tickprefix: 'X = ',
         ticksuffix: 's',
@@ -32,14 +32,14 @@ export const defaultLayout: Partial<Layout> = {
     yaxis: {
         gridcolor: 'rgba(255,255,255,0.2)',
         griddash: 'dot',
-        // nticks: 20, set auto
+        // nticks: 20, switch to auto, open the comment if needed
         tick0: 0,
         automargin: true,
     },
     yaxis2: {
         gridcolor: 'rgba(255,255,255,0.2)',
         griddash: 'dot',
-        // nticks: 20, set auto
+        // nticks: 20, switch to auto, open the comment if needed
         tick0: 0,
         automargin: true,
         side: 'right',
