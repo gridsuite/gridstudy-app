@@ -30,6 +30,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { UUID } from 'crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
+import { ROW_INDEX_COLUMN_ID } from '../constants';
 
 export const textColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {
@@ -180,7 +181,7 @@ export const booleanColumnDefinition = (displayName: string, tab: string): ColDe
 
 export const rowIndexColumnDefinition = (tabUuid: UUID): CustomColDef => {
     return {
-        colId: 'rowIndex',
+        colId: ROW_INDEX_COLUMN_ID,
         headerName: '',
         cellRenderer: (params: any) => {
             // For pinned rows, use the RowIndexCellRenderer which handles the calculate icon
