@@ -327,12 +327,14 @@ function ResultsGlobalFilter({
         ) => {
             const label = getOptionLabel(element, translate);
             const truncate = label.length >= maxLabelLength;
+            const key: string = `inputFieldChip_${element.label}`;
             if (index < TAG_lIMIT_NUMBER) {
                 return (
                     <Chip
                         size="small"
                         label={truncate ? `${label.slice(0, maxLabelLength)}` : label}
                         {...getTagsProps({ index })}
+                        key={key}
                         sx={getResultsGlobalFiltersChipStyle(element.filterType)}
                     />
                 );
@@ -340,7 +342,7 @@ function ResultsGlobalFilter({
 
             // the last chip displayed, with a +, the following are hidden
             if (index === TAG_lIMIT_NUMBER) {
-                return <Chip size="small" label={`+${filtersNumber - TAG_lIMIT_NUMBER}`} />;
+                return <Chip size="small" label={`+${filtersNumber - TAG_lIMIT_NUMBER}`} key={key} />;
             }
 
             return undefined;
