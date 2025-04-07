@@ -12,6 +12,7 @@ import SpreadsheetFromModelDialog from './custom-spreadsheet/dialogs/spreadsheet
 import SpreadsheetCollectionDialog from './custom-spreadsheet/dialogs/spreadsheets-from-collection-dialog';
 import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 
+export const ROW_INDEX_COLUMN_ID = 'rowIndex';
 export const UPDATE = 'UPDATE';
 export const DELETE = 'DELETE';
 

@@ -16,6 +16,7 @@ import { CsvExportProps } from './csv-export/csv-export.type';
 import { spreadsheetStyles } from './utils/style';
 import { SpreadsheetCollectionSaveDialog } from './custom-spreadsheet/spreadsheet-collection-save-dialog';
 import { NodeAlias } from './custom-columns/node-alias.type';
+import { ROW_INDEX_COLUMN_ID } from './constants';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
@@ -75,7 +76,7 @@ export default function SpreadsheetSave({
                 label: 'spreadsheet/save/options/csv',
                 action: () => {
                     // Filter out the rowIndex column before exporting to CSV
-                    const columnsForExport = columns.filter((col) => col.colId !== 'rowIndex');
+                    const columnsForExport = columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID);
                     downloadCSVData({ gridRef, columns: columnsForExport, tableName });
                 },
                 disabled: dataSize === 0,
