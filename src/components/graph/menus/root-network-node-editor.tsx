@@ -24,7 +24,6 @@ import {
     Typography,
     Badge,
     IconButton,
-    Stack,
     Chip,
 } from '@mui/material';
 
@@ -53,40 +52,9 @@ import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/roo
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 
 const styles = {
-    checkBoxLabel: { flexGrow: '1' },
-    checkboxListItem: {
-        display: 'flex',
-        alignItems: 'flex-start',
-        paddingRight: '16px',
-        '& .MuiListItemSecondaryAction-root': {
-            paddingLeft: '4px',
-            position: 'relative',
-            top: 0,
-            right: 0,
-            transform: 'translateX(0px)',
-        },
-    },
-    // TODO WHY it doesn't work with using the Theme here ?????
-    // checkboxListItem: (theme: Theme) => ({
-    //     display: 'flex',
-    //     alignItems: 'flex-start',
-    //     paddingRight: theme.spacing(4),
-    //     '& .MuiListItemSecondaryAction-root': {
-    //         position: 'relative',
-    //         top: 0,
-    //         right: 0,
-    //         transform: 'translateX(0px)',
-    //     },
-    // }),
-    checkbox: { paddingTop: '4px' },
-    // checkbox: (theme: Theme) => ({ paddingTop: theme.spacing(1) }),
-    checkBoxIcon: { minWidth: 0, padding: 0, marginLeft: 2 },
-    checkboxButton: {
-        padding: 0.5,
-        margin: 0,
-        display: 'flex',
-        alignItems: 'center',
-    },
+    checkboxListItem: (theme: Theme) => ({
+        paddingRight: theme.spacing(1),
+    }),
     rootNetworksTitle: (theme: Theme) => ({
         display: 'flex',
         padding: theme.spacing(1),
@@ -268,7 +236,6 @@ const RootNetworkNodeEditor = () => {
 
             return (
                 <IconButton
-                    size="small"
                     onClick={() => {
                         dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
                     }}
@@ -293,13 +260,7 @@ const RootNetworkNodeEditor = () => {
                 isDisabled={(_rootNetwork) => isRootNetworksProcessing}
                 sx={{
                     items: () => ({
-                        label: {
-                            ...styles.checkBoxLabel,
-                        },
                         checkboxListItem: styles.checkboxListItem,
-                        checkbox: styles.checkbox,
-                        checkBoxIcon: styles.checkBoxIcon,
-                        checkboxButton: styles.checkboxButton,
                     }),
                 }}
                 onItemClick={(rootNetwork) => {
@@ -310,16 +271,8 @@ const RootNetworkNodeEditor = () => {
                 onSelectionChange={setSelectedItems}
                 items={rootNetworks}
                 getItemId={(val) => val.rootNetworkUuid}
-                getItemLabel={(val) => {
-                    return (
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            {val.name}
-                            <Stack direction="row" spacing={1}>
-                                <Chip size="small" label={val.tag} color="primary" />
-                            </Stack>
-                        </Box>
-                    );
-                }}
+                getItemLabel={(val) => val.name}
+                getItemLabelSecondary={(val) => <Chip size="small" label={val.tag} color="primary" />}
                 secondaryAction={handleSecondaryAction}
             />
         );
@@ -482,19 +435,23 @@ const RootNetworkNodeEditor = () => {
                     </span>
                 </Tooltip>
 
-                <IconButton
-                    onClick={doDeleteRootNetwork}
-                    size={'small'}
-                    sx={styles.toolbarIcon}
-                    disabled={
-                        selectedItems.length === 0 ||
-                        !currentNode ||
-                        rootNetworks.length === selectedItems.length ||
-                        isRootNetworksProcessing
-                    }
-                >
-                    <DeleteIcon />
-                </IconButton>
+                <Tooltip title={<FormattedMessage id={'deleteNetwork'} values={{ count: selectedItems.length }} />}>
+                    <span>
+                        <IconButton
+                            onClick={doDeleteRootNetwork}
+                            size={'small'}
+                            sx={styles.toolbarIcon}
+                            disabled={
+                                selectedItems.length === 0 ||
+                                !currentNode ||
+                                rootNetworks.length === selectedItems.length ||
+                                isRootNetworksProcessing
+                            }
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
             </Toolbar>
             {rootNetworkCreationDialogOpen && renderRootNetworkCreationDialog()}
             {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}

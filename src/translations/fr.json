@@ -1502,6 +1502,7 @@
 
     "chooseCase": "Choisir une situation",
     "addNetwork": "Ajouter un réseau",
+    "deleteNetwork": "{count, plural,=0 {aucun réseau à supprimer} =1 {supprimer le réseau} other {supprimer les # réseaux}}",
     "updateNetwork": "Modifier un réseau",
     "rootName": "Nom du réseau",
     "rootTag": "Balise du réseau",
