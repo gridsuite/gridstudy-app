@@ -129,8 +129,7 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
 
 // "cleaned" ListboxComponent in order to remove all the default styles :
 const EmptyListboxComponent: JSXElementConstructor<HTMLAttributes<HTMLElement>> = forwardRef(
-    function ListboxComponent(props, ref) {
-        const { children, ...other } = props;
+    function ListboxComponent(props, _ref) {
         return <List role="listbox">{props.children}</List>;
     }
 );
