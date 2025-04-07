@@ -21,11 +21,28 @@ import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
 import { PHASE_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
+import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
+import { PhaseTapChangerStepData } from './phase-tap-changer.type';
+import { IColomn } from '../../two-windings-transformer-utils';
 
-const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {
+export type PhaseTapChangerPaneStepsProps = {
+    disabled: boolean;
+    previousValues?: PhaseTapChangerStepData[];
+    editData?: PhaseTapChangerStepData[];
+    currentNode: CurrentTreeNode;
+    isModification: boolean;
+};
+
+export default function PhaseTapChangerPaneSteps({
+    disabled,
+    previousValues,
+    editData,
+    currentNode,
+    isModification = false,
+}: Readonly<PhaseTapChangerPaneStepsProps>) {
     const intl = useIntl();
 
-    const COLUMNS_DEFINITIONS = useMemo(() => {
+    const COLUMNS_DEFINITIONS: IColomn[] = useMemo(() => {
         return [
             {
                 label: 'Tap',
@@ -100,7 +117,7 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
         ];
     }, [intl]);
 
-    const handleImportRow = (val) => {
+    const handleImportRow = (val: any) => {
         return {
             [STEPS_RESISTANCE]: parseIntData(
                 val[
@@ -170,12 +187,10 @@ const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentN
             resetButtonMessageId="ResetRegulationRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
-            previousValues={previousValues}
-            editData={editData?.[PHASE_TAP_CHANGER]}
+            previousValuesSteps={previousValues}
+            editData={editData}
             currentNode={currentNode}
             isModification={isModification}
         />
     );
-};
-
-export default PhaseTapChangerPaneSteps;
+}

@@ -23,23 +23,38 @@ import {
     STEPS_TAP,
     TAP_POSITION,
 } from 'components/utils/field-constants';
-import { compareStepsWithPreviousValues, computeHighTapPosition } from 'components/utils/utils';
+import { compareStepsWithPreviousValues } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { IColomn } from '../two-windings-transformer-utils';
+import { DndColumn } from '../../../../utils/dnd-table/dnd-table.type';
 
+export type TapChangerStepData = {
+    index: number;
+    rho: number;
+    r: number;
+    x: number;
+    g: number;
+    b: number;
+} & Partial<{
+    alpha: number;
+}>;
 export type TapChangerStepsProps = {
-    tapChanger: any;
-    ruleType: any;
-    createTapRuleColumn: any;
-    columnsDefinition: any;
-    csvColumns: any;
-    createRuleMessageId: any;
-    createRuleAllowNegativeValues: any;
-    importRuleMessageId: any;
-    resetButtonMessageId: any;
-    handleImportRow: any;
-    disabled: any;
-    previousValues: any;
+    tapChanger: string;
+    ruleType: string;
+    createTapRuleColumn: string;
+    columnsDefinition: IColomn[];
+    csvColumns: string[];
+    createRuleMessageId: string;
+    createRuleAllowNegativeValues: boolean;
+    importRuleMessageId: string;
+    resetButtonMessageId: string;
+    handleImportRow: (val: Record<string, unknown>) => Record<string, unknown>;
+    disabled: boolean;
+    previousValuesSteps?: TapChangerStepData[];
+    previousValuesLowTapPosition?: number;
+    previousValuesHighTapPosition?: number;
+    previousValuesTapPosition?: number;
     editData: any;
     currentNode: CurrentTreeNode;
     isModification: boolean;
@@ -57,7 +72,10 @@ export default function TapChangerSteps({
     resetButtonMessageId,
     handleImportRow,
     disabled,
-    previousValues,
+    previousValuesSteps,
+    previousValuesLowTapPosition,
+    previousValuesHighTapPosition,
+    previousValuesTapPosition,
     editData,
     currentNode,
     isModification = false,
@@ -83,8 +101,8 @@ export default function TapChangerSteps({
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
 
     const disableAddingRows = useMemo(() => {
-        return isModification && lowTapPosition === null && previousValues?.[LOW_TAP_POSITION] === undefined;
-    }, [isModification, lowTapPosition, previousValues]);
+        return isModification && lowTapPosition === null && previousValuesLowTapPosition === undefined;
+    }, [isModification, lowTapPosition, previousValuesLowTapPosition]);
 
     function allowedToAddTapRows() {
         // triggering validation on low tap position before generating rows (the field is required)
@@ -133,16 +151,16 @@ export default function TapChangerSteps({
         if (editData?.[STEPS] && isNodeBuilt(currentNode)) {
             return true;
         } else {
-            return !compareStepsWithPreviousValues(tapStepsWatcher, previousValues?.[STEPS]);
+            return !compareStepsWithPreviousValues(tapStepsWatcher, previousValuesSteps);
         }
-    }, [currentNode, editData, previousValues, tapStepsWatcher]);
+    }, [currentNode, editData, previousValuesSteps, tapStepsWatcher]);
 
     const resetTapNumbers = useCallback(
         (tapSteps: any, isModification: boolean) => {
             const currentTapRows = tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
 
             const currentLowTapPosition =
-                isModification && lowTapPosition === null ? previousValues?.[LOW_TAP_POSITION] : lowTapPosition;
+                isModification && lowTapPosition === null ? previousValuesLowTapPosition : lowTapPosition;
 
             for (
                 let tapPosition = currentLowTapPosition, index = 0;
@@ -156,7 +174,7 @@ export default function TapChangerSteps({
                 currentTapRows.length !== 0 ? currentLowTapPosition + currentTapRows.length - 1 : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
-        [getValues, tapChanger, lowTapPosition, previousValues, setValue]
+        [getValues, tapChanger, lowTapPosition, previousValuesLowTapPosition, setValue]
     );
 
     // Adjust high tap position when low tap position change + remove red if value fixed
@@ -174,10 +192,10 @@ export default function TapChangerSteps({
     }, [tapSteps, resetTapNumbers, isModification]);
 
     const handleResetButton = useCallback(() => {
-        replace(previousValues?.[STEPS] ?? []);
+        replace(previousValuesSteps ?? []);
         setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
         clearErrors(`${tapChanger}.${STEPS}`);
-    }, [clearErrors, previousValues, replace, setValue, tapChanger]);
+    }, [clearErrors, previousValuesSteps, replace, setValue, tapChanger]);
 
     const handleCreateTapRule = (lowTap: number, highTap: number) => {
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
@@ -186,7 +204,7 @@ export default function TapChangerSteps({
             let interval = (highTap - lowTap) / (currentTapRows.length - 1);
             let current = lowTap;
 
-            currentTapRows.forEach((row: any, index: number) => {
+            currentTapRows.forEach((index: number) => {
                 currentTapRows[index][createTapRuleColumn] = current;
                 current += interval;
             });
@@ -202,7 +220,7 @@ export default function TapChangerSteps({
         });
     }
 
-    const handleImportTapRule = (selectedFile: any, setFileParseError: any) => {
+    const handleImportTapRule = (selectedFile: string, setFileParseError: any) => {
         Papa.parse(selectedFile, {
             header: true,
             skipEmptyLines: true,
@@ -211,10 +229,15 @@ export default function TapChangerSteps({
                     setFileParseError(intl.formatMessage({ id: 'TapPositionValueError' }, { value: MAX_ROWS_NUMBER }));
                     return;
                 }
-                let rows = results.data.map((val) => ({
-                    ...handleImportRow(val),
-                    [SELECTED]: false,
-                }));
+                const data = results.data as Record<string, unknown>[];
+                let rows = data.map((val) => {
+                    const rowData = handleImportRow(val) as Record<string, unknown>;
+                    return {
+                        ...rowData,
+                        [SELECTED]: false,
+                    };
+                });
+
                 if (rows && rows.length > 0) {
                     replace(rows);
                 }
@@ -229,7 +252,7 @@ export default function TapChangerSteps({
             formProps={{
                 disabled: disabled,
             }}
-            previousValue={previousValues?.[LOW_TAP_POSITION]}
+            previousValue={previousValuesLowTapPosition}
         />
     );
 
@@ -240,7 +263,7 @@ export default function TapChangerSteps({
             formProps={{
                 disabled: true,
             }}
-            previousValue={computeHighTapPosition(previousValues?.[STEPS]) ?? undefined}
+            previousValue={previousValuesHighTapPosition}
         />
     );
 
@@ -251,7 +274,7 @@ export default function TapChangerSteps({
             formProps={{
                 disabled: disabled,
             }}
-            previousValue={previousValues?.[TAP_POSITION]}
+            previousValue={previousValuesTapPosition}
         />
     );
 
@@ -270,7 +293,7 @@ export default function TapChangerSteps({
         </Tooltip>
     );
 
-    const completedColumnsDefinition = columnsDefinition;
+    const completedColumnsDefinition: DndColumn[] = columnsDefinition as unknown as DndColumn[];
     completedColumnsDefinition[completedColumnsDefinition.length - 1] = {
         ...completedColumnsDefinition[completedColumnsDefinition.length - 1],
         extra: createRuleButton,
@@ -313,7 +336,7 @@ export default function TapChangerSteps({
                 uploadButtonMessageId={importRuleMessageId}
                 handleResetButton={isModification ? handleResetButton : undefined}
                 resetButtonMessageId={resetButtonMessageId}
-                previousValues={previousValues?.[STEPS]}
+                previousValues={previousValuesSteps}
                 getPreviousValue={getTapPreviousValue}
                 isValueModified={isTapModified}
                 withResetButton={isModification && areStepsModified}

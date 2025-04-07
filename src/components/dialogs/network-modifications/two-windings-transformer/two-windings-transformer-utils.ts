@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { DndColumnType } from '../../../utils/dnd-table/dnd-table.type';
 
 export const TwoWindingsTransformerCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -20,3 +21,21 @@ export const TwoWindingsTransformerModificationDialogTab = {
     RATIO_TAP_TAB: 4,
     PHASE_TAP_TAB: 5,
 };
+
+export type IColomn =
+    | {
+          label: string;
+          dataKey: string;
+          type: DndColumnType;
+          initialValue?: undefined;
+          editable?: undefined;
+          clearable?: undefined;
+      }
+    | {
+          label: string;
+          dataKey: string;
+          initialValue: number;
+          editable: boolean;
+          type: DndColumnType;
+          clearable: boolean;
+      };

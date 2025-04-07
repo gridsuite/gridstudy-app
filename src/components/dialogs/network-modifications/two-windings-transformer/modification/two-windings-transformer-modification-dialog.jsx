@@ -17,7 +17,6 @@ import { Box, Grid } from '@mui/material';
 import {
     ADDITIONAL_PROPERTIES,
     B,
-    STATE_ESTIMATION,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
     CONNECTED,
@@ -57,6 +56,7 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
+    STATE_ESTIMATION,
     STEPS,
     TAP_POSITION,
     TARGET_DEADBAND,
@@ -91,12 +91,12 @@ import {
 import { LimitsPane } from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
     getLimitsEmptyFormData,
-    getSelectedLimitsFormData,
     getLimitsValidationSchema,
+    getSelectedLimitsFormData,
     sanitizeLimitNames,
     updateTemporaryLimits,
-    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -856,8 +856,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                 currentNode={currentNode}
                                 currentRootNetworkUuid={currentRootNetworkUuid}
                                 voltageLevelOptions={voltageLevelOptions}
-                                previousValues={twtToModify}
-                                editData={editData}
+                                previousValues={twtToModify?.ratioTapChanger}
+                                editData={editData?.ratioTapChanger}
+                                equipmentId={selectedId}
+                                voltageLevelId1={twtToModify?.voltageLevelId1}
                                 isModification={true}
                             />
                         </Box>
@@ -867,8 +869,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                 currentNode={currentNode}
                                 currentRootNetworkUuid={currentRootNetworkUuid}
                                 voltageLevelOptions={voltageLevelOptions}
-                                previousValues={twtToModify}
-                                editData={editData}
+                                previousValues={twtToModify?.phaseTapChanger}
+                                editData={editData?.phaseTapChanger}
+                                equipmentId={selectedId}
+                                voltageLevelId1={twtToModify?.voltageLevelId1}
                                 isModification={true}
                             />
                         </Box>

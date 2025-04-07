@@ -16,6 +16,8 @@ import { ShuntCompensatorInfos } from '../components/dialogs/network-modificatio
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 import { ModificationType } from '@gridsuite/commons-ui';
+import { PhaseTapChangerStepData } from '../components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer.type';
+import { RatioTapChangerStepData } from '../components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer.type';
 
 export enum OperationType {
     SET = 'SET',
@@ -278,6 +280,32 @@ export interface CurrentLimits {
     id?: string;
     permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
+}
+
+export interface PhaseTapChangerInfos {
+    lowTapPosition: number;
+    tapPosition: number;
+    isRegulating: boolean;
+    regulationMode: string;
+    regulatingTerminalConnectableId: string;
+    regulatingTerminalConnectableType: string;
+    regulatingTerminalVlId: string;
+    targetDeadband: number | null;
+    regulationValue: number | null;
+    steps: PhaseTapChangerStepData[];
+}
+
+export interface RatioTapChangerInfos {
+    lowTapPosition: number;
+    tapPosition: number;
+    regulatingTerminalConnectableId: string;
+    regulatingTerminalConnectableType: string;
+    regulatingTerminalVlId: string;
+    targetV: number;
+    targetDeadband: number;
+    isRegulating: boolean;
+    hasLoadTapChangingCapabilities: boolean;
+    steps: RatioTapChangerStepData[];
 }
 
 export interface SubstationModificationInfo {
@@ -579,8 +607,8 @@ export interface TwoWindingsTransformerCreationInfo {
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
     busOrBusbarSectionId2: string;
-    ratioTapChanger: any;
-    phaseTapChanger: any;
+    ratioTapChanger: RatioTapChangerInfos[];
+    phaseTapChanger: PhaseTapChangerInfos[];
     connectionName1: string | null;
     connectionDirection1: string | null;
     connectionName2: string | null;

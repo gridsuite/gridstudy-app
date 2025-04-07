@@ -21,18 +21,23 @@ import { parseIntData } from '../../../../dialog-utils';
 import { RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
+import { RatioTapChangerStepData } from './ratio-tap-changer.type';
 
 export type RatioTapChangerPaneStepsProps = {
     disabled: boolean;
-    previousValues: any;
-    editData?: any;
+    previousValuesSteps?: RatioTapChangerStepData[];
+    previousValuesLowTapPosition?: number;
+    previousValuesHighTapPosition?: number;
+    editData?: RatioTapChangerStepData[];
     currentNode: CurrentTreeNode;
     isModification: boolean;
 };
 
 export default function RatioTapChangerPaneSteps({
     disabled,
-    previousValues,
+    previousValuesSteps,
+    previousValuesLowTapPosition,
+    previousValuesHighTapPosition,
     editData,
     currentNode,
     isModification = false,
@@ -158,8 +163,10 @@ export default function RatioTapChangerPaneSteps({
             resetButtonMessageId="ResetRegulationRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
-            previousValues={previousValues}
-            editData={editData?.[RATIO_TAP_CHANGER]}
+            previousValuesSteps={previousValuesSteps}
+            previousValuesLowTapPosition={previousValuesLowTapPosition}
+            previousValuesHighTapPosition={previousValuesHighTapPosition}
+            editData={editData}
             currentNode={currentNode}
             isModification={isModification}
         />
