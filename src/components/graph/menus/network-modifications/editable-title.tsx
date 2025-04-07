@@ -16,7 +16,7 @@ import NodeNameEditDialog from '../node-name-edit-dialog';
 
 const styles = {
     header: (theme: Theme) => ({
-        backgroundColor: theme.aggrid.backgroundColor,
+        backgroundColor: theme.networkModificationPanel.backgroundColor,
         padding: theme.spacing(1),
         color: theme.palette.getContrastText(
             theme.palette.mode === 'light'

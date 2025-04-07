@@ -248,6 +248,8 @@ let darkTheme = createTheme({
         overlay: {
             background: '#121212',
         },
+    },
+    networkModificationPanel: {
         backgroundColor: '#252525',
         border: 'solid 1px #68686e',
     },

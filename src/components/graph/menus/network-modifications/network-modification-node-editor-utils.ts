@@ -30,8 +30,8 @@ export const styles = {
         alignItems: 'center',
         margin: theme.spacing(0),
         padding: theme.spacing(1),
-        borderTop: theme.aggrid.border,
-        borderBottom: theme.aggrid.border,
+        borderTop: theme.networkModificationPanel.border,
+        borderBottom: theme.networkModificationPanel.border,
         overflow: 'hidden',
     }),
     toolbar: (theme: Theme) => ({

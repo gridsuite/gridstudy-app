@@ -43,10 +43,10 @@ const styles = {
             borderBottom: 'none',
             borderRight: 'none',
             marginRight: 1,
-            backgroundColor: theme.aggrid.backgroundColor,
+            backgroundColor: theme.networkModificationPanel.backgroundColor,
         },
         '& .ag-row-even, & .ag-row-odd, & .ag-header-row': {
-            backgroundColor: theme.aggrid.backgroundColor,
+            backgroundColor: theme.networkModificationPanel.backgroundColor,
         },
     }),
 };

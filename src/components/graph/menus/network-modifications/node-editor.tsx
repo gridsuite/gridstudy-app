@@ -23,7 +23,7 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        background: theme.aggrid.backgroundColor,
+        background: theme.networkModificationPanel.backgroundColor,
     }),
 };
 
