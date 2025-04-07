@@ -19,7 +19,7 @@ import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType } from '../utils';
 import { GlobalFilter } from './global-filter-types';
-import { getOptionLabel } from './global-filter-utils';
+import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 
@@ -29,7 +29,6 @@ const XS_COLUMN3: number = 4.5;
 
 export interface SelectableGlobalFiltersProps extends PropsWithChildren {
     onClickGenericFilterButton: () => void;
-    categories: string[];
     filterGroupSelected: string;
     setFilterGroupSelected: (value: ((prevState: string) => string) | string) => void;
     selectedGlobalFilters: GlobalFilter[];
@@ -41,7 +40,6 @@ export interface SelectableGlobalFiltersProps extends PropsWithChildren {
 function SelectableGlobalFilters({
     children,
     onClickGenericFilterButton,
-    categories,
     filterGroupSelected,
     setFilterGroupSelected,
     selectedGlobalFilters,
@@ -51,6 +49,7 @@ function SelectableGlobalFilters({
 }: Readonly<SelectableGlobalFiltersProps>) {
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
+    const categories: string[] = useMemo(() => [RECENT_FILTER, ...Object.values(FilterType)], []);
 
     const filtersMsg: string = useMemo(
         () =>

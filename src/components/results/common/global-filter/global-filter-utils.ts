@@ -8,6 +8,8 @@
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
 
+export const RECENT_FILTER: string = 'recent';
+
 export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) => string): string => {
     switch (option.filterType) {
         case FilterType.COUNTRY:

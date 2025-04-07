@@ -53,13 +53,11 @@ import SelectableGlobalFilters from './selectable-global-filters';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { computeFullPath } from '../../../../utils/compute-title';
-import { getOptionLabel } from './global-filter-utils';
+import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import List from '@mui/material/List';
 import OverflowTooltip from './overflow-tooltip';
-
-const RECENT_FILTER: string = 'recent';
 const TAG_lIMIT_NUMBER: number = 4;
 const TAG_LABEL_LENGTH_lIMIT: number = 5;
 
@@ -218,7 +216,7 @@ function ResultsGlobalFilter({
                 const newlySelectedFilters: GlobalFilter[] = [];
 
                 elements.forEach((element: ElementAttributes) => {
-                    // ignore already selected filters and non generic filters :
+                    // ignore already selected filters and non-generic filters :
                     if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
                         // add the others
                         newlySelectedFilters.push({
@@ -418,7 +416,6 @@ function ResultsGlobalFilter({
                 // dropdown :
                 PaperComponent={(props: PropsWithChildren) => (
                     <SelectableGlobalFilters
-                        categories={[RECENT_FILTER, ...Object.values(FilterType)]}
                         children={props.children}
                         onClickGenericFilterButton={() => setDirectoryItemSelectorOpen(true)}
                         filterGroupSelected={filterGroupSelected}
