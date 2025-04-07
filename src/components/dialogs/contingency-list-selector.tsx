@@ -16,7 +16,6 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { updateConfigParameter } from '../../services/config';
 import { fetchContingencyAndFiltersLists } from '../../services/directory';
 import { fetchContingencyCount } from '../../services/study';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
@@ -24,8 +23,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { UUID } from 'crypto';
 import { toggleElementFromList } from 'components/utils/utils';
-import { Grid, DialogActions, Button, DialogTitle, Typography, Dialog, DialogContent, Alert } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from '@mui/material';
 import { AppState } from '../../redux/reducer';
+import { useParameterState } from './parameters/use-parameters-state';
 
 function makeButton(onClick: () => void, message: string, disabled: boolean) {
     return (
@@ -51,7 +51,10 @@ interface ContingencyListSelectorProps {
 }
 
 export function ContingencyListSelector({ open, onClose, onStart }: Readonly<ContingencyListSelectorProps>) {
-    const favoriteContingencyListUuids = useSelector((state: AppState) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]);
+    const [favoriteContingencyListUuids, saveFavorites] = useParameterState(
+        PARAM_FAVORITE_CONTINGENCY_LISTS,
+        (newList) => newList.join()
+    );
     const studyUuid = useSelector((state: AppState) => state.studyUuid as UUID);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -75,20 +78,6 @@ export function ContingencyListSelector({ open, onClose, onStart }: Readonly<Con
     const handleStart = () => {
         onStart(checkedContingencyList.map((c) => c.id));
     };
-
-    const saveFavorites = useCallback(
-        (newList: UUID[]) => {
-            updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList.join())
-                .then()
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsChangingError',
-                    });
-                });
-        },
-        [snackError]
-    );
 
     useEffect(() => {
         if (!open || !currentNode || !currentRootNetworkUuid || !isNodeBuilt(currentNode)) {

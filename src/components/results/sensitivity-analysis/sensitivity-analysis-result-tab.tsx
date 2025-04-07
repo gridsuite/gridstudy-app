@@ -23,13 +23,7 @@ import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { AppState } from '../../../redux/reducer';
 import { UUID } from 'crypto';
-import {
-    COMPUTATION_RESULTS_LOGS,
-    SensiTab,
-    SENSITIVITY_AT_NODE,
-    SENSITIVITY_IN_DELTA_A,
-    SENSITIVITY_IN_DELTA_MW,
-} from './sensitivity-analysis-result.type';
+import { COMPUTATION_RESULTS_LOGS, SensiTab, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 
 function getDisplayedColumns(params) {
     return params.api.getColumnDefs()?.map((c) => c.headerComponentParams.displayName);
@@ -80,8 +74,6 @@ function SensitivityAnalysisResultTab({
         isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING,
         delay: RESULTS_LOADING_DELAY,
     });
-
-    const sensiResultKind = [SENSITIVITY_IN_DELTA_MW, SENSITIVITY_IN_DELTA_A, SENSITIVITY_AT_NODE];
 
     const [csvHeaders, setCsvHeaders] = useState([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);

@@ -11,32 +11,50 @@ import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { updateConfigParameter } from 'services/config';
 import type { AppState } from 'redux/reducer';
+import { ALL_CONFIG_PARAMS_KEYS_TYPE } from '../../../utils/config-params';
 
-export type UseParameterStateParamName = keyof AppState;
+const simpleStringConverter = <T>(value: T) => `${value}`;
 
-export function useParameterState(paramName: UseParameterStateParamName) {
+// Overload for primitive types: paramValueUpdateConvertor is optional
+export function useParameterState<K extends ALL_CONFIG_PARAMS_KEYS_TYPE>(
+    paramName: K
+): AppState[K] extends boolean | number | string ? [AppState[K], (value: AppState[K]) => void] : never;
+
+// Overload for non-primitive types, e.g. object, array: paramValueUpdateConvertor is required
+export function useParameterState<K extends ALL_CONFIG_PARAMS_KEYS_TYPE>(
+    paramName: K,
+    paramValueUpdateConvertor: (value: AppState[K]) => string
+): [AppState[K], (value: AppState[K]) => void];
+
+// Implementation
+export function useParameterState<K extends ALL_CONFIG_PARAMS_KEYS_TYPE>(
+    paramName: K,
+    paramValueUpdateConvertor?: (value: AppState[K]) => string
+): [AppState[K], (value: AppState[K]) => void] {
     const { snackError } = useSnackMessage();
 
-    const paramGlobalState: any = useSelector((state: AppState) => state[paramName]);
+    const paramGlobalState = useSelector<AppState, AppState[K]>((state) => state[paramName]);
 
-    const [paramLocalState, setParamLocalState] = useState(paramGlobalState);
+    const [paramLocalState, setParamLocalState] = useState<AppState[K]>(paramGlobalState);
 
     useEffect(() => {
         setParamLocalState(paramGlobalState);
     }, [paramGlobalState]);
 
     const handleChangeParamLocalState = useCallback(
-        (value: any) => {
+        (value: AppState[K]) => {
             setParamLocalState(value);
-            updateConfigParameter(paramName, value).catch((error) => {
-                setParamLocalState(paramGlobalState);
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
-            });
+            updateConfigParameter(paramName, (paramValueUpdateConvertor ?? simpleStringConverter)(value)).catch(
+                (error) => {
+                    setParamLocalState(paramGlobalState);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsChangingError',
+                    });
+                }
+            );
         },
-        [paramName, snackError, paramGlobalState]
+        [paramName, snackError, paramGlobalState, paramValueUpdateConvertor]
     );
 
     return [paramLocalState, handleChangeParamLocalState];

@@ -11,10 +11,9 @@ import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { sanitizePercentageValue } from 'components/dialogs/percentage-area/percentage-area-utils';
 import { styles } from '../parameters-style';
-import { UseParameterStateParamName } from '../use-parameters-state';
 
 type SliderParameterLineProps = {
-    readonly paramNameId: UseParameterStateParamName;
+    name: string;
     disabled?: boolean;
     label: string;
     marks: boolean | Mark[];
@@ -23,13 +22,13 @@ type SliderParameterLineProps = {
 };
 
 const ParameterLineSlider = ({
-    paramNameId,
+    name,
     label,
     marks,
     disabled = false,
     minValue = 0,
     maxValue = 100,
-}: SliderParameterLineProps) => {
+}: Readonly<SliderParameterLineProps>) => {
     return (
         <>
             <Grid item xs={8} sx={styles.parameterName}>
@@ -37,7 +36,7 @@ const ParameterLineSlider = ({
             </Grid>
             <Grid item container xs={4} sx={mergeSx(styles.controlItem, { paddingRight: 2 })}>
                 <SliderInput
-                    name={paramNameId}
+                    name={name}
                     min={minValue}
                     max={maxValue}
                     valueLabelDisplay="auto"

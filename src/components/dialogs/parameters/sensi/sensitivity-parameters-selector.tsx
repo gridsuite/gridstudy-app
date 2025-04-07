@@ -14,8 +14,8 @@ import { Box, Tab, Tabs, Theme } from '@mui/material';
 import { TabPanel } from '../parameters';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as sensiParam from './columns-definitions';
-import { IColumnsDef } from './columns-definitions';
 import {
+    IColumnsDef,
     SensiHvdcs,
     SensiInjection,
     SensiInjectionsSet,
@@ -81,7 +81,7 @@ const SensitivityParametersSelector: FunctionComponent<SensitivityParametersSele
 }) => {
     const intl = useIntl();
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE) as [boolean];
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
     const [subTabValue, setSubTabValue] = useState(TAB_VALUES.SensiInjectionsSet);

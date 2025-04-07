@@ -60,7 +60,7 @@ const LoadFlowParametersContent = ({
                                 <LimitReductionsTableForm limits={params?.limitReductions ?? defaultLimitReductions} />
                             ) : (
                                 <ParameterLineSlider
-                                    paramNameId={PARAM_LIMIT_REDUCTION}
+                                    name={PARAM_LIMIT_REDUCTION}
                                     label="LimitReduction"
                                     marks={alertThresholdMarks}
                                     minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}

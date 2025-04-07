@@ -20,7 +20,7 @@ import {
 
 export type SensitivityAnalysisTabsProps = {
     sensiTab: SensiTab;
-    setSensiTab: (sensiKind: SensiTab) => void;
+    setSensiTab: (sensiTab: SensiTab) => void;
 };
 function SensitivityAnalysisTabs({ sensiTab, setSensiTab }: Readonly<SensitivityAnalysisTabsProps>) {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -28,14 +28,14 @@ function SensitivityAnalysisTabs({ sensiTab, setSensiTab }: Readonly<Sensitivity
     const sensiTabs = [
         SENSITIVITY_IN_DELTA_MW,
         SENSITIVITY_IN_DELTA_A,
-        ...((enableDeveloperMode && [SENSITIVITY_AT_NODE]) || []),
+        ...((enableDeveloperMode && ([SENSITIVITY_AT_NODE] as const satisfies Partial<SensiTab>[])) || []),
         COMPUTATION_RESULTS_LOGS,
-    ];
+    ] as const satisfies Partial<SensiTab>[];
 
     return (
-        <Tabs value={sensiTabs.indexOf(sensiTab)} onChange={(_, newTabIndex) => setSensiTab(sensiTabs[newTabIndex])}>
-            {sensiTabs.map((sensiKind) => (
-                <Tab label={<FormattedMessage id={sensiKind} />} key={sensiKind} />
+        <Tabs value={sensiTab} onChange={(_, newSensiTab) => setSensiTab(newSensiTab)}>
+            {sensiTabs.map((sensiTab) => (
+                <Tab label={<FormattedMessage id={sensiTab} />} key={sensiTab} />
             ))}
         </Tabs>
     );
