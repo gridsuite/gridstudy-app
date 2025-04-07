@@ -36,7 +36,7 @@
         "react-beautiful-dnd": "^13.1.1",
         "react-csv-downloader": "^3.3.0",
         "react-dom": "^18.3.1",
-        "react-grid-layout": "^1.5.0",
+        "react-grid-layout": "^1.5.1",
         "react-hook-form": "^7.54.2",
         "react-intl": "^7.1.6",
         "react-papaparse": "^4.4.0",
