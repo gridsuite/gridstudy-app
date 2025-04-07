@@ -19,7 +19,7 @@ import {
     RowStyle,
 } from 'ag-grid-community';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
-import { Badge, Box, useTheme } from '@mui/material';
+import { Badge, Box, Theme, useTheme } from '@mui/material';
 import { NetworkModificationInfos } from './network-modification-menu.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -32,6 +32,24 @@ import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
 import SwitchCellRenderer from './switch-cell-renderer';
+
+const styles = {
+    container: (theme: Theme) => ({
+        position: 'relative',
+        flexGrow: 1,
+        marginTop: theme.spacing(1),
+        '& .ag-root-wrapper': {
+            borderLeft: 'none',
+            borderBottom: 'none',
+            borderRight: 'none',
+            marginRight: 1,
+            backgroundColor: theme.aggrid.backgroundColor,
+        },
+        '& .ag-row-even, & .ag-row-odd, & .ag-header-row': {
+            backgroundColor: theme.aggrid.backgroundColor,
+        },
+    }),
+};
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationInfos[];
@@ -168,23 +186,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     }, []);
 
     return (
-        <Box
-            sx={{
-                position: 'relative',
-                flexGrow: 1,
-                marginTop: theme.spacing(1),
-                '& .ag-root-wrapper': {
-                    borderLeft: 'none',
-                    borderBottom: 'none',
-                    borderRight: 'none',
-                    marginRight: 1,
-                    backgroundColor: theme.aggrid.backgroundColor,
-                },
-                '& .ag-row-even, & .ag-row-odd, & .ag-header-row': {
-                    backgroundColor: theme.aggrid.backgroundColor,
-                },
-            }}
-        >
+        <Box sx={styles.container}>
             <CustomAGGrid
                 rowData={modifications}
                 getRowId={getRowId}

@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ImperativePanelGroupHandle } from 'react-resizable-panels';
 
@@ -24,7 +31,6 @@ export const usePanelsSize = (props: UsePanelsSize) => {
         ? pixelsToPercents(rightComponentMinSizePixel, containerRef.current.offsetWidth)
         : 20;
 
-    // const rightComponentDefaultSizePixel = 320 + rootNetworks.length * 80;
     const rightComponentDefaultSizePercentage = containerRef.current?.offsetWidth
         ? pixelsToPercents(rightComponentDefaultSizePixel, containerRef.current.offsetWidth)
         : 50;
@@ -36,13 +42,13 @@ export const usePanelsSize = (props: UsePanelsSize) => {
         () =>
             containerRef?.current?.offsetWidth
                 ? pixelsToPercents(rightPanelPixelSize, containerRef?.current?.offsetWidth)
-                : 50,
-        [rightPanelPixelSize, containerRef]
+                : rightComponentDefaultSizePercentage,
+        [rightPanelPixelSize, rightComponentDefaultSizePercentage, containerRef]
     );
 
     /**
      * If panel is open, an observer on container size is created
-     *  This is used to update the layout when container size is updated
+     * This is used to update the layout when container size is updated
      */
     useEffect(() => {
         if (!containerRef.current || !showRightPanel) {
@@ -67,7 +73,7 @@ export const usePanelsSize = (props: UsePanelsSize) => {
 
     /**
      * If right panel isn't collapsed, and user hasn't manually resized the Panel :
-     *  when rightComponentDefaultSizePercentage is updated, the layout is updated as well
+     * when rightComponentDefaultSizePercentage is updated, the layout is updated as well
      */
     useEffect(() => {
         if (showRightPanel && !hasUserInterracted) {
@@ -85,6 +91,10 @@ export const usePanelsSize = (props: UsePanelsSize) => {
      */
     const onDragging = useCallback(
         (isDragging: boolean) => {
+            // panelGroupRef.current?.getLayout() returns the current layout of PanelGroup
+            // the result is a array of numbers, each number being the size in % of each panel
+            // panelGroupRef.current?.getLayout()[1] represents the size in % of the right panel
+            // since the right panel can be hidden, we need to check its size is not nullish before running the code below
             if (!panelGroupRef.current?.getLayout()[1] || !containerRef.current || isDragging) {
                 return;
             }

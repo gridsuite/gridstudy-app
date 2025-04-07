@@ -19,6 +19,11 @@ interface NetworkModificationTreePanePanelsProps {
     showRightPanel?: boolean;
 }
 
+const styles = {
+    panelHandlerContainer: (theme: Theme) => ({
+        backgroundColor: theme.aggrid.backgroundColor,
+    }),
+};
 export const NetworkModificationTreePanePanels = ({
     leftComponent,
     rightComponent,
@@ -50,13 +55,7 @@ export const NetworkModificationTreePanePanels = ({
                 </Panel>
                 {showRightPanel && (
                     <>
-                        <Box
-                            display={'flex'}
-                            sx={(theme: Theme) => ({
-                                backgroundColor: theme.aggrid.backgroundColor,
-                            })}
-                            alignItems={'center'}
-                        >
+                        <Box display={'flex'} sx={styles.panelHandlerContainer} alignItems={'center'}>
                             <PanelResizeHandle onDragging={onDragging}>
                                 <DragIndicatorIcon fontSize="small" sx={{ padding: 0, margin: 0 }} />
                             </PanelResizeHandle>
