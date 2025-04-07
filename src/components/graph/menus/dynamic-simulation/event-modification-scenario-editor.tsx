@@ -14,7 +14,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
-import { EVENT_CRUD_FINISHED, EventCrudType } from 'components/network/constants.type';
 import { UUID } from 'crypto';
 import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { deleteDynamicSimulationEvents, fetchDynamicSimulationEvents } from '../../../../services/dynamic-simulation';
@@ -23,9 +22,18 @@ import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulati
 import { isChecked, isPartial, styles } from '../network-modifications/network-modification-node-editor-utils';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
-import { AppState, StudyUpdated, StudyUpdatedEventData } from '../../../../redux/reducer';
+import { AppState, StudyUpdated } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import {
+    EVENT_CRUD_NOTIFICATION_TYPES,
+    EventCreatingInProgressEventData,
+    EventDeletingInProgressEventData,
+    EventUpdatingInProgressEventData,
+    isEventCrudFinishedNotification,
+    isEventNotification,
+    NotificationType,
+} from 'types/notification-types';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
@@ -59,33 +67,38 @@ const EventModificationScenarioEditor = () => {
     };
 
     const fillNotification = useCallback(
-        (study: StudyUpdated, messageId: string) => {
+        (
+            eventData:
+                | EventCreatingInProgressEventData
+                | EventUpdatingInProgressEventData
+                | EventDeletingInProgressEventData,
+            messageId: string
+        ) => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
-            const studyUpdatedEventData = study?.eventData as StudyUpdatedEventData;
 
-            dispatch(
-                addNotification([
-                    studyUpdatedEventData.headers.parentNode,
-                    ...(studyUpdatedEventData.headers.nodes ?? []),
-                ])
-            );
+            dispatch(addNotification([eventData.headers.parentNode, ...(eventData.headers.nodes ?? [])]));
         },
         [dispatch]
     );
 
     const manageNotification = useCallback(
-        (study: StudyUpdated) => {
+        (
+            eventData:
+                | EventCreatingInProgressEventData
+                | EventUpdatingInProgressEventData
+                | EventDeletingInProgressEventData
+        ) => {
             let messageId = '';
-            if (study.eventData.headers.updateType === EventCrudType.EVENT_CREATING_IN_PROGRESS) {
+            if (eventData.headers.updateType === NotificationType.EVENT_CREATING_IN_PROGRESS) {
                 messageId = 'DynamicSimulationEventCreating';
-            } else if (study.eventData.headers.updateType === EventCrudType.EVENT_UPDATING_IN_PROGRESS) {
+            } else if (eventData.headers.updateType === NotificationType.EVENT_UPDATING_IN_PROGRESS) {
                 messageId = 'DynamicSimulationEventUpdating';
-            } else if (study.eventData.headers.updateType === EventCrudType.EVENT_DELETING_IN_PROGRESS) {
+            } else if (eventData.headers.updateType === NotificationType.EVENT_DELETING_IN_PROGRESS) {
                 messageId = 'DynamicSimulationEventDeleting';
             }
-            fillNotification(study, messageId);
+            fillNotification(eventData, messageId);
         },
         [fillNotification]
     );
@@ -137,32 +150,30 @@ const EventModificationScenarioEditor = () => {
     }, [currentNode, doFetchEvents]);
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
+        if (isEventNotification(studyUpdatedForce.eventData)) {
+            const studyUpdatedEventData = studyUpdatedForce?.eventData;
 
             if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
                 return;
             }
 
-            if (Object.values<string>(EventCrudType).includes(studyUpdatedEventData.headers.updateType ?? '')) {
-                dispatch(setModificationsInProgress(true));
-                setPendingState(true);
-                manageNotification(studyUpdatedForce);
-            }
+            dispatch(setModificationsInProgress(true));
+            setPendingState(true);
+            manageNotification(studyUpdatedEventData);
+        } else if (isEventCrudFinishedNotification(studyUpdatedForce.eventData)) {
+            const studyUpdatedEventData = studyUpdatedForce?.eventData;
             // notify  finished action (success or error => we remove the loader)
             // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-            if (studyUpdatedEventData.headers.updateType === EVENT_CRUD_FINISHED) {
-                // fetch events because it must have changed
-                // Do not clear the events list, because currentNode is the concerned one
-                // this allows to append new events to the existing list.
-                doFetchEvents();
-                dispatch(
-                    removeNotificationByNode([
-                        studyUpdatedEventData.headers.parentNode,
-                        ...(studyUpdatedEventData.headers.nodes ?? []),
-                    ])
-                );
-            }
+            // fetch events because it must have changed
+            // Do not clear the events list, because currentNode is the concerned one
+            // this allows to append new events to the existing list.
+            doFetchEvents();
+            dispatch(
+                removeNotificationByNode([
+                    studyUpdatedEventData.headers.parentNode,
+                    ...(studyUpdatedEventData.headers.nodes ?? []),
+                ])
+            );
         }
     }, [dispatch, doFetchEvents, manageNotification, studyUpdatedForce]);
 

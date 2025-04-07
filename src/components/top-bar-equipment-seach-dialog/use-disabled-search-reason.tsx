@@ -7,8 +7,9 @@
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { AppState, StudyIndexationStatus } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { StudyDisplayMode } from '../network-modification.type';
+import { StudyIndexationStatus } from 'types/notification-types';
 
 export const useDisabledSearchReason = () => {
     const intl = useIntl();

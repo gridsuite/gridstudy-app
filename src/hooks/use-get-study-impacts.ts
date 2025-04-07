@@ -6,8 +6,9 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { DeletedEquipment, NetworkImpactsInfos, AppState, NotificationType } from '../redux/reducer';
+import { AppState } from '../redux/reducer';
 import { UUID } from 'crypto';
+import { DeletedEquipment, isStudyNotification, NetworkImpactsInfos } from 'types/notification-types';
 
 interface StudyImpactsWithReset extends NetworkImpactsInfos {
     resetImpactedSubstationsIds: () => void;
@@ -40,8 +41,8 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     }, []);
 
     useEffect(() => {
-        if (studyUpdatedForce.type === NotificationType.STUDY) {
-            const rootNetworkUuid = studyUpdatedForce?.eventData?.headers?.rootNetworkUuid;
+        if (isStudyNotification(studyUpdatedForce?.eventData)) {
+            const rootNetworkUuid = studyUpdatedForce.eventData.headers.rootNetworkUuid;
             if (rootNetworkUuid && rootNetworkUuid !== currentRootNetworkUuid) {
                 return;
             }

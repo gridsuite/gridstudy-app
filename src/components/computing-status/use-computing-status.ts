@@ -10,10 +10,14 @@ import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from './computing-type';
-import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState, StudyUpdated } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
+import {
+    isContainingNodeInformationNotification,
+    isContainingNodesInformationNotification,
+} from 'types/notification-types';
 
 interface UseComputingStatusProps {
     (
@@ -34,6 +38,58 @@ interface LastUpdateProps {
     fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>;
 }
 
+function isNotificationWorthUpdate(
+    studyUpdatedForce: StudyUpdated,
+    lastUpdateRef: RefObject<LastUpdateProps>,
+    nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    invalidations: string[]
+): boolean {
+    if (studyUpdatedForce && lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce) {
+        return false;
+    }
+    const studyUpdatedEventData = studyUpdatedForce.eventData;
+    const commonHeaders = studyUpdatedEventData.headers;
+    const updateType = commonHeaders.updateType;
+    if (invalidations.indexOf(updateType) >= 0) {
+        return true;
+    }
+    // TODO if containing rr info
+
+    if (isContainingNodesInformationNotification(studyUpdatedEventData)) {
+        const headers = studyUpdatedEventData.headers;
+        const nodes = headers.nodes;
+        if (headers.rootNetworkUuid) {
+            const rootNetworkUuidFromNotification = headers.rootNetworkUuid;
+
+            if (rootNetworkUuidFromNotification && rootNetworkUuidFromNotification !== currentRootNetworkUuid) {
+                return false;
+            }
+        }
+
+        // ok if one notification concerns the current node we must update status
+        if (nodes?.indexOf(nodeUuid) !== -1) {
+            return true;
+        }
+        return false;
+    }
+    if (isContainingNodeInformationNotification(studyUpdatedEventData)) {
+        const headers = studyUpdatedEventData.headers;
+        const node = headers.node;
+        const rootNetworkUuidFromNotification = headers.rootNetworkUuid;
+
+        if (rootNetworkUuidFromNotification && rootNetworkUuidFromNotification !== currentRootNetworkUuid) {
+            return false;
+        }
+        // ok if one notification concerns the current node we must update status
+        if (node === nodeUuid) {
+            return true;
+        }
+        return false;
+    }
+    return false;
+}
+
 function isWorthUpdate(
     studyUpdatedForce: StudyUpdated,
     fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
@@ -44,40 +100,18 @@ function isWorthUpdate(
     currentRootNetworkUuid: UUID,
     invalidations: string[]
 ): boolean {
-    const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
-    const headers = studyUpdatedEventData?.headers;
-    const updateType = headers?.updateType;
-    const node = headers?.node;
-    const nodes = headers?.nodes;
-    const rootNetworkUuidFromNotification = headers?.rootNetworkUuid;
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
     }
     if (rootNetworkUuidRef.current !== currentRootNetworkUuid) {
         return true;
     }
-    if (rootNetworkUuidFromNotification && rootNetworkUuidFromNotification !== currentRootNetworkUuid) {
-        return false;
-    }
     if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
         return true;
     }
-    if (studyUpdatedForce && lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce) {
-        return false;
-    }
-    if (!updateType) {
-        return false;
-    }
-    if (invalidations.indexOf(updateType) <= -1) {
-        return false;
-    }
-    if (node === undefined && nodes === undefined) {
+    if (isNotificationWorthUpdate(studyUpdatedForce, lastUpdateRef, nodeUuid, currentRootNetworkUuid, invalidations)) {
         return true;
     }
-    if (node === nodeUuid || nodes?.indexOf(nodeUuid) !== -1) {
-        return true;
-    }
-
     return false;
 }
 

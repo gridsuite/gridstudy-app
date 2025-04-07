@@ -50,10 +50,11 @@ import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
-import { AppState, LoadflowResultEventData, NotificationType, RootNetworksUpdatedEventData } from 'redux/reducer';
-import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { AppState } from 'redux/reducer';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { isReactFlowRootNodeData } from 'redux/utils';
+import { isLoadflowResultNotification, isRootNetworkModifiedNotification } from 'types/notification-types';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -813,10 +814,8 @@ export const NetworkMapTab = ({
             if (!isInitialized) {
                 return;
             }
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as LoadflowResultEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.LOADFLOW_RESULT) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isLoadflowResultNotification(eventData)) {
                 const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
                 if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
                     dispatch(setMapDataLoading(true));
@@ -840,10 +839,8 @@ export const NetworkMapTab = ({
             if (!isInitialized) {
                 return;
             }
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworkModifiedNotification(eventData)) {
                 const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
                 if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
                     setInitialized(false);

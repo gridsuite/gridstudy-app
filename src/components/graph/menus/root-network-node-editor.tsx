@@ -33,12 +33,7 @@ import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
-import {
-    AppState,
-    NotificationType,
-    RootNetworksDeletionStartedEventData,
-    RootNetworksUpdatedEventData,
-} from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { RootNetworkMetadata } from './network-modifications/network-modification-menu.type';
 
 import {
@@ -51,6 +46,11 @@ import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
 import { isChecked, isPartial } from './network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
+import {
+    isRootNetworkDeletionStartedNotification,
+    isRootNetworkModifiedNotification,
+    isRootNetworkUpdateFailedNotification,
+} from 'types/notification-types';
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },
@@ -176,10 +176,8 @@ const RootNetworkNodeEditor = () => {
 
     const rootNetworkModifiedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworkModifiedNotification(eventData)) {
                 dofetchRootNetworks();
             }
         },
@@ -187,10 +185,9 @@ const RootNetworkNodeEditor = () => {
     );
     const rootNetworksUpdateFailedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATE_FAILED) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworkUpdateFailedNotification(eventData)) {
+                // TODO print eventData.error ?
                 dofetchRootNetworks();
                 snackError({
                     messageId: 'importCaseFailure',
@@ -202,10 +199,8 @@ const RootNetworkNodeEditor = () => {
     );
     const rootNetworkDeletionStartedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksDeletionStartedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_DELETION_STARTED) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworkDeletionStartedNotification(eventData)) {
                 if (!rootNetworksRef.current) {
                     return;
                 }

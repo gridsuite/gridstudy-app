@@ -12,7 +12,7 @@ import { SingleLineDiagramParameters } from './single-line-diagram-parameters';
 import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
 import { MapParameters } from './map-parameters';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, NotificationType } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -41,6 +41,7 @@ import { fetchNetworkVisualizationsParameters } from '../../../../services/study
 import { User } from 'oidc-client';
 import { getAvailableComponentLibraries } from 'services/study';
 import { styles } from '../parameters-style';
+import { isNetworkVisualizationParametersUpdatedNotification } from 'types/notification-types';
 
 const useGetAvailableComponentLibraries = (user: User | null) => {
     const [componentLibraries, setComponentLibraries] = useState<string[]>([]);
@@ -99,10 +100,7 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
     }, [reset, networkVisualizationsParameters]);
 
     useEffect(() => {
-        if (
-            studyUpdated.eventData.headers &&
-            studyUpdated.eventData.headers.updateType === NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED
-        ) {
+        if (isNetworkVisualizationParametersUpdatedNotification(studyUpdated.eventData)) {
             getNetworkVisualizationParameters(studyUuid as UUID)
                 .then((params: NetworkVisualizationParameters) => {
                     dispatch(setUpdateNetworkVisualizationParameters(params));

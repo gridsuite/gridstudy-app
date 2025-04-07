@@ -248,7 +248,6 @@ import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-st
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
-import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
@@ -287,7 +286,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import { EQUIPMENT_TYPES as NetworkViewerEquipmentType, LineFlowMode } from '@powsybl/network-viewer';
+import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import type { ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
@@ -304,141 +303,17 @@ import { ExpertFilter } from '../services/study/filter';
 import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
+import { StudyIndexationStatus, NodeInsertModes, StudyUpdateNotification } from 'types/notification-types';
 
-export enum NotificationType {
-    STUDY = 'study',
-    COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
-    NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
-    LOADFLOW_RESULT = 'loadflowResult',
-    ROOT_NETWORKS_DELETION_STARTED = 'rootNetworksDeletionStarted',
-    ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
-    ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
-}
-
-export enum StudyIndexationStatus {
-    NOT_INDEXED = 'NOT_INDEXED',
-    INDEXING_ONGOING = 'INDEXING_ONGOING',
-    INDEXED = 'INDEXED',
-}
+// Redux state
+export type StudyUpdated = {
+    force: number; //IntRange<0, 1>;
+} & StudyUpdateNotification;
 
 export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
     nodeId: UUID;
 }
-
-// Headers
-export interface StudyUpdatedEventDataHeader {
-    studyUuid: UUID;
-    updateType: string;
-    parentNode: UUID;
-    rootNetworkUuid: UUID;
-    timestamp: number;
-    node?: UUID;
-    nodes?: UUID[];
-    error?: string;
-    userId?: string;
-    computationType?: ComputingType;
-}
-
-interface RootNetworksDeletionStartedEventDataHeader {
-    studyUuid: UUID;
-    updateType: string;
-    rootNetworksUuids: UUID[];
-}
-
-interface LoadflowResultEventDataHeaders {
-    studyUuid: UUID;
-    updateType: string;
-    rootNetworkUuid: UUID;
-}
-
-interface RootNetworksUpdatedEventDataHeaders {
-    studyUuid: UUID;
-    updateType: string;
-    rootNetworkUuid?: UUID; // all root networks if absent
-    error?: string;
-}
-
-// Payloads
-export interface DeletedEquipment {
-    equipmentId: string;
-    equipmentType: NetworkViewerEquipmentType;
-}
-
-export interface NetworkImpactsInfos {
-    impactedSubstationsIds: UUID[];
-    deletedEquipments: DeletedEquipment[];
-    impactedElementTypes: string[];
-}
-
-// EventData
-export interface StudyUpdatedEventData {
-    headers: StudyUpdatedEventDataHeader;
-    payload: NetworkImpactsInfos;
-}
-
-interface StudyUpdatedEventDataUnknown {
-    headers: StudyUpdatedEventDataHeader;
-    payload: string;
-}
-
-export interface LoadflowResultEventData {
-    headers: LoadflowResultEventDataHeaders;
-    payload: undefined;
-}
-
-export interface RootNetworksDeletionStartedEventData {
-    headers: RootNetworksDeletionStartedEventDataHeader;
-    payload: undefined;
-}
-
-export interface RootNetworksUpdatedEventData {
-    headers: RootNetworksUpdatedEventDataHeaders;
-    payload: undefined;
-}
-
-// Notification types
-type StudyUpdatedStudy = {
-    type: NotificationType.STUDY;
-    eventData: StudyUpdatedEventData;
-};
-
-type StudyUpdatedUndefined = {
-    type: undefined;
-    eventData: StudyUpdatedEventDataUnknown;
-};
-
-type LoadflowResultNotification = {
-    type: NotificationType.LOADFLOW_RESULT;
-    eventData: LoadflowResultEventData;
-};
-
-type RootNetworksUpdatedNotification = {
-    type: NotificationType.ROOT_NETWORKS_UPDATED;
-    eventData: RootNetworksUpdatedEventData;
-};
-
-type RootNetworksUpdateFailedNotification = {
-    type: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
-    eventData: RootNetworksUpdatedEventData;
-};
-
-type RootNetworkDeletionStartedNotification = {
-    type: NotificationType.ROOT_NETWORKS_DELETION_STARTED;
-    eventData: RootNetworksDeletionStartedEventData;
-};
-
-// Redux state
-export type StudyUpdated = {
-    force: number; //IntRange<0, 1>;
-} & (
-    | StudyUpdatedUndefined
-    | StudyUpdatedStudy
-    | LoadflowResultNotification
-    | RootNetworksUpdatedNotification
-    | RootNetworksUpdateFailedNotification
-    | RootNetworkDeletionStartedNotification
-);
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;

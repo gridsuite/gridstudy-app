@@ -11,7 +11,6 @@ import { useIntl } from 'react-intl';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import ChildMenuItem from './create-child-menu-item';
-import { NodeInsertModes } from '../nodes/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 import { BUILD_STATUS } from '../../network/constants';
@@ -20,6 +19,7 @@ import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
 import { CurrentTreeNode, NodeType } from '../tree-node.type';
+import { NodeInsertModes } from 'types/notification-types';
 
 type SubMenuItem = {
     onRoot: boolean;
