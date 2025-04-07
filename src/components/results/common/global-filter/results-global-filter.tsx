@@ -17,6 +17,7 @@ import {
 import {
     Autocomplete,
     AutocompleteCloseReason,
+    AutocompleteRenderGetTagProps,
     AutocompleteRenderGroupParams,
     AutocompleteRenderInputParams,
     Box,
@@ -130,7 +131,7 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
 // "cleaned" ListboxComponent in order to remove all the default styles :
 const EmptyListboxComponent: JSXElementConstructor<HTMLAttributes<HTMLElement>> = forwardRef(
     function ListboxComponent(props, _ref) {
-        return <List role="listbox">{props.children}</List>;
+        return <List role="datalist">{props.children}</List>;
     }
 );
 
@@ -316,6 +317,37 @@ function ResultsGlobalFilter({
         [filters, recentGlobalFilters, translate]
     );
 
+    const inputFieldChip = useCallback(
+        (
+            element: GlobalFilter,
+            maxLabelLength: number,
+            index: number,
+            getTagsProps: AutocompleteRenderGetTagProps,
+            filtersNumber: number
+        ) => {
+            const label = getOptionLabel(element, translate);
+            const truncate = label.length >= maxLabelLength;
+            if (index < TAG_lIMIT_NUMBER) {
+                return (
+                    <Chip
+                        size="small"
+                        label={truncate ? `${label.slice(0, maxLabelLength)}` : label}
+                        {...getTagsProps({ index })}
+                        sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                    />
+                );
+            }
+
+            // the last chip displayed, with a +, the following are hidden
+            if (index === TAG_lIMIT_NUMBER) {
+                return <Chip size="small" label={`+${filtersNumber - TAG_lIMIT_NUMBER}`} />;
+            }
+
+            return undefined;
+        },
+        [translate]
+    );
+
     return (
         <>
             <Autocomplete
@@ -340,22 +372,11 @@ function ResultsGlobalFilter({
                 renderInput={RenderInput}
                 // renderTags : the chips in the inputField
                 // only a small subset is displayed because all of them are displayed in the dropdown when the field is focused
-                renderTags={(filters: GlobalFilter[], getTagsProps) => {
+                renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
                     const tooManyTags = filters.length > TAG_lIMIT_NUMBER;
                     const maxLabelLength = tooManyTags ? TAG_LABEL_LENGTH_lIMIT : TAG_LABEL_LENGTH_lIMIT + 2;
                     return filters.map((element: GlobalFilter, index: number) => {
-                        const label = getOptionLabel(element, translate);
-                        const truncate = label.length >= maxLabelLength;
-                        return index < TAG_lIMIT_NUMBER ? (
-                            <Chip
-                                size="small"
-                                label={truncate ? `${label.slice(0, maxLabelLength)}` : label}
-                                {...getTagsProps({ index })}
-                                sx={getResultsGlobalFiltersChipStyle(element.filterType)}
-                            />
-                        ) : index === TAG_lIMIT_NUMBER ? (
-                            <Chip size="small" label={`+${filters.length - TAG_lIMIT_NUMBER}`} />
-                        ) : undefined;
+                        return inputFieldChip(element, maxLabelLength, index, getTagsProps, filters.length);
                     });
                 }}
                 // an "empty" renderGroup is needed in order to avoid the default behavior
