@@ -13,6 +13,7 @@ import SpreadsheetCollectionDialog from './custom-spreadsheet/dialogs/spreadshee
 import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import { ResetNodeAliasCallback } from './custom-columns/use-node-aliases';
 
+export const ROW_INDEX_COLUMN_ID = 'rowIndex';
 export const UPDATE = 'UPDATE';
 export const DELETE = 'DELETE';
 
