@@ -43,6 +43,7 @@ import { spreadsheetStyles } from './utils/style';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
 import { mapColumnsDto } from './custom-spreadsheet/custom-spreadsheet-utils';
+import { ROW_INDEX_COLUMN_ID } from './constants';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -189,7 +190,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         // Start with the row index column which should always be pinned left
         const lockedColumnsConfig: ColumnState[] = [
             {
-                colId: 'rowIndex',
+                colId: ROW_INDEX_COLUMN_ID,
                 pinned: 'left',
             },
         ];
