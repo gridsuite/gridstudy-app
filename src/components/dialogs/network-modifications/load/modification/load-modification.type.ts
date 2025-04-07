@@ -1,10 +1,11 @@
 /**
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { AttributeModification } from 'services/network-modification-types';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import {
     ACTIVE_POWER_SETPOINT,
@@ -15,22 +16,24 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     ID,
     LOAD_TYPE,
+    MEASUREMENT_P,
+    MEASUREMENT_Q,
     NAME,
     REACTIVE_POWER_SET_POINT,
+    STATE_ESTIMATION,
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
+import { MeasurementInfo } from '../../common/measurements/measurement.type';
 import { Property } from '../../common/properties/property-utils';
 
-export type LoadCreationSchemaForm = {
-    [EQUIPMENT_ID]: string;
+export type LoadModificationSchemaForm = {
     [EQUIPMENT_NAME]?: string;
-    [LOAD_TYPE]?: string;
-    [ACTIVE_POWER_SETPOINT]: number;
-    [REACTIVE_POWER_SET_POINT]: number;
+    [LOAD_TYPE]?: string | null;
+    [ACTIVE_POWER_SETPOINT]?: number | null;
+    [REACTIVE_POWER_SET_POINT]?: number | null;
     [CONNECTIVITY]: {
         [VOLTAGE_LEVEL]: { [ID]?: string };
         [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
@@ -39,23 +42,28 @@ export type LoadCreationSchemaForm = {
         [CONNECTION_POSITION]?: number;
         [CONNECTED]?: boolean;
     };
+    [STATE_ESTIMATION]?: {
+        [MEASUREMENT_P]?: MeasurementInfo;
+        [MEASUREMENT_Q]?: MeasurementInfo;
+    };
     // Properties
     [ADDITIONAL_PROPERTIES]?: Property[];
 };
 
-export interface LoadCreationInfos {
+export interface LoadModificationInfos {
     uuid: string;
     equipmentType: EQUIPMENT_TYPES;
     equipmentId: string;
-    equipmentName: string;
-    loadType: string;
-    p0: number;
-    q0: number;
-    voltageLevelId: string;
-    busOrBusbarSectionId: string;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: number | null;
-    terminalConnected?: boolean | null;
+    equipmentName: AttributeModification<string>;
+    loadType: AttributeModification<string>;
+    p0: AttributeModification<number>;
+    q0: AttributeModification<number>;
+    voltageLevelId: AttributeModification<string>;
+    busOrBusbarSectionId: AttributeModification<string>;
+    busbarSectionName?: string;
+    connectionDirection: AttributeModification<string>;
+    connectionName?: AttributeModification<string>;
+    connectionPosition?: AttributeModification<number>;
+    terminalConnected?: AttributeModification<boolean>;
     properties?: Property[];
 }
