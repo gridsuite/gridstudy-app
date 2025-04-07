@@ -26,7 +26,7 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
     return mergeSx(resultsGlobalFilterStyles.chip, chipStyle);
 };
 
-const AUTOCOMPLETE_WIDTH: number = 500;
+const AUTOCOMPLETE_WIDTH: number = 520;
 const POPPER_EXTRA_WIDTH: number = 250;
 export const GLOBAL_FILTERS_CELL_HEIGHT: number = 400;
 export const IMPORT_FILTER_HEIGHT: number = 40;

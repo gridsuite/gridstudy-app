@@ -5,7 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
+import {
+    forwardRef,
+    HTMLAttributes,
+    JSXElementConstructor,
+    PropsWithChildren,
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import {
     Autocomplete,
     AutocompleteCloseReason,
@@ -119,6 +127,14 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
     );
 }
 
+// "cleaned" ListboxComponent in order to remove all the default styles :
+const EmptyListboxComponent: JSXElementConstructor<HTMLAttributes<HTMLElement>> = forwardRef(
+    function ListboxComponent(props, ref) {
+        const { children, ...other } = props;
+        return <List role="listbox">{props.children}</List>;
+    }
+);
+
 export interface ResultsGlobalFilterProps {
     onChange: (filters: GlobalFilter[]) => void;
     filterableEquipmentTypes: EQUIPMENT_TYPES[];
@@ -218,6 +234,7 @@ function ResultsGlobalFilter({
                     return setDirectoryItemSelectorOpen(false);
                 });
             });
+            setOpenedDropdown(true);
         },
         [handleChange, selectedGlobalFilters]
     );
@@ -299,6 +316,7 @@ function ResultsGlobalFilter({
         ],
         [filters, recentGlobalFilters, translate]
     );
+
     return (
         <>
             <Autocomplete
@@ -306,7 +324,7 @@ function ResultsGlobalFilter({
                 open={openedDropdown}
                 onOpen={() => setOpenedDropdown(true)}
                 onClose={(_event, reason: AutocompleteCloseReason) => {
-                    // the user has to click on the arrow in order to close the dropdown
+                    // the 'blur' (click away) closing of the dropdown is controlled by the PaperComponent (which is the dropdown itself)
                     if (reason !== 'selectOption' && reason !== 'blur') {
                         setOpenedDropdown(false);
                     }
@@ -375,6 +393,7 @@ function ResultsGlobalFilter({
                 filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
                     filterOptions(options, state)
                 }
+                // dropdown :
                 PaperComponent={(props: PropsWithChildren) => (
                     <SelectableGlobalFilters
                         categories={[RECENT_FILTER, ...Object.values(FilterType)]}
@@ -384,10 +403,11 @@ function ResultsGlobalFilter({
                         setFilterGroupSelected={setFilterGroupSelected}
                         selectedGlobalFilters={selectedGlobalFilters}
                         updateFilters={handleChange}
+                        lockClosing={directoryItemSelectorOpen}
+                        setOpenedDropdown={setOpenedDropdown}
                     />
                 )}
-                // removes all the default styles :
-                ListboxComponent={(props) => <List role="datalist">{props.children}</List>}
+                ListboxComponent={EmptyListboxComponent}
                 noOptionsText={''}
             />
             {warningEquipmentTypeMessage && (
