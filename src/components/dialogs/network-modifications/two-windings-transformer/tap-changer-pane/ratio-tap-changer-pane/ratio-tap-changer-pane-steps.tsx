@@ -5,22 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    RATIO_TAP_CHANGER,
-    STEPS_CONDUCTANCE,
-    STEPS_RATIO,
-    STEPS_REACTANCE,
-    STEPS_RESISTANCE,
-    STEPS_SUSCEPTANCE,
-} from 'components/utils/field-constants';
+import { RATIO_TAP_CHANGER, STEPS_RATIO } from 'components/utils/field-constants';
 import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
-import { parseIntData } from '../../../../dialog-utils';
 import { RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 import { RatioTapChangerStepData } from './ratio-tap-changer.type';
 import { useColumnDefinitions } from '../use-column-definitions';
+import { getBaseCsvColumns, getBaseImportRowData } from '../tap-changer-pane-utils';
 
 export type RatioTapChangerPaneStepsProps = {
     disabled: boolean;
@@ -48,53 +41,11 @@ export default function RatioTapChangerPaneSteps({
     const COLUMNS_DEFINITIONS = useColumnDefinitions();
 
     const csvColumns = useMemo(() => {
-        return [
-            intl.formatMessage({ id: 'ImportFileResistance' }),
-            intl.formatMessage({ id: 'ImportFileReactance' }),
-            intl.formatMessage({ id: 'ImportFileConductance' }),
-            intl.formatMessage({ id: 'ImportFileSusceptance' }),
-            intl.formatMessage({ id: 'Ratio' }),
-        ];
+        return getBaseCsvColumns(intl);
     }, [intl]);
 
     const handleImportRow = (val: any) => {
-        return {
-            [STEPS_RESISTANCE]: parseIntData(
-                val[
-                    intl.formatMessage({
-                        id: 'ImportFileResistance',
-                    })
-                ],
-                0
-            ),
-            [STEPS_REACTANCE]: parseIntData(
-                val[
-                    intl.formatMessage({
-                        id: 'ImportFileReactance',
-                    })
-                ],
-                0
-            ),
-            [STEPS_CONDUCTANCE]: parseIntData(
-                val[
-                    intl.formatMessage({
-                        id: 'ImportFileConductance',
-                    })
-                ],
-                0
-            ),
-            [STEPS_SUSCEPTANCE]: parseIntData(
-                val[
-                    intl.formatMessage({
-                        id: 'ImportFileSusceptance',
-                    })
-                ],
-                0
-            ),
-            [STEPS_RATIO]: isNaN(parseFloat(val[intl.formatMessage({ id: 'Ratio' })]))
-                ? 1
-                : parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),
-        };
+        return getBaseImportRowData(val, intl);
     };
 
     return (

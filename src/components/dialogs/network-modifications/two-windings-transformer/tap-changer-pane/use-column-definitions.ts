@@ -7,14 +7,15 @@
 import { useIntl } from 'react-intl';
 import { useMemo } from 'react';
 import { DndColumnType } from '../../../../utils/dnd-table/dnd-table.type';
-
-export const STEPS_TAP = 'tap';
-export const STEPS_RESISTANCE = 'resistance';
-export const STEPS_REACTANCE = 'reactance';
-export const STEPS_CONDUCTANCE = 'conductance';
-export const STEPS_SUSCEPTANCE = 'susceptance';
-export const STEPS_RATIO = 'ratio';
-export const STEPS_ALPHA = 'alpha';
+import {
+    STEPS_ALPHA,
+    STEPS_CONDUCTANCE,
+    STEPS_RATIO,
+    STEPS_REACTANCE,
+    STEPS_RESISTANCE,
+    STEPS_SUSCEPTANCE,
+    STEPS_TAP,
+} from '../../../../utils/field-constants';
 
 export interface ColumnDefinition {
     label: string;

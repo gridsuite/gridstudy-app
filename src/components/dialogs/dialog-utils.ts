@@ -132,6 +132,11 @@ export function parseIntData(val: string, defaultValue: number) {
     return isNaN(intValue) ? defaultValue : intValue;
 }
 
+export const parseFloatData = (value: string, defaultValue: number): number => {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? defaultValue : parsed;
+};
+
 export function sanitizeString(val: string | null | undefined) {
     const trimedValue = val?.trim();
     return trimedValue === '' ? null : trimedValue;
