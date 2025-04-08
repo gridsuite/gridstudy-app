@@ -277,10 +277,7 @@ export default function PhaseTapChangerPane({
                         <GridItem size={4}>{regulationTypeField}</GridItem>
                         {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
                         {regulationType === REGULATION_TYPES.DISTANT.id && (
-                            <Grid item container spacing={1}>
-                                <GridItem size={8}>{regulatingTerminalField}</GridItem>
-                                <GridItem size={4}>{sideField}</GridItem>
-                            </Grid>
+                            <GridItem size={8}>{regulatingTerminalField}</GridItem>
                         )}
                     </Grid>
                 </>
