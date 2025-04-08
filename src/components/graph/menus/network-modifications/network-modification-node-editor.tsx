@@ -55,7 +55,6 @@ import VoltageLevelModificationDialog from 'components/dialogs/network-modificat
 import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/creation/vsc-creation-dialog';
 import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications/network-modifications-menu';
-import { UPDATE_TYPE } from 'components/network/constants';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
@@ -72,7 +71,7 @@ import { RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
-import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { fetchNetworkModification } from '../../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../../services/study';
@@ -99,6 +98,18 @@ import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-l
 import { styles } from './network-modification-node-editor-utils';
 import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
+import {
+    isModificationsDeleteFinishedNotification,
+    isModificationsUpdateFinishedNotification,
+    isNodeDeletedNotification,
+    isPendingModificationNotification,
+    ModificationsCreationInProgressEventData,
+    ModificationsDeletingInProgressEventData,
+    ModificationsRestoringInProgressEventData,
+    ModificationsStashingInProgressEventData,
+    ModificationsUpdatingInProgressEventData,
+    NotificationType,
+} from 'types/notification-types';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -421,37 +432,51 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const fillNotification = useCallback(
-        (study: StudyUpdated, messageId: string) => {
+        (
+            eventData:
+                | ModificationsCreationInProgressEventData
+                | ModificationsUpdatingInProgressEventData
+                | ModificationsStashingInProgressEventData
+                | ModificationsRestoringInProgressEventData
+                | ModificationsDeletingInProgressEventData,
+            messageId: string
+        ) => {
             // (work for all users)
             // specific message id for each action type
-            const studyUpdatedEventData = study?.eventData as StudyUpdatedEventData;
 
             setNotificationMessageId(messageId);
-            dispatch(addNotification([studyUpdatedEventData.headers.parentNode ?? []]));
+            dispatch(addNotification([eventData.headers.parentNode ?? []]));
         },
         [dispatch]
     );
 
     const manageNotification = useCallback(
-        (study: StudyUpdated) => {
+        (
+            eventData:
+                | ModificationsCreationInProgressEventData
+                | ModificationsUpdatingInProgressEventData
+                | ModificationsStashingInProgressEventData
+                | ModificationsRestoringInProgressEventData
+                | ModificationsDeletingInProgressEventData
+        ) => {
             let messageId;
-            switch (study.eventData.headers.updateType) {
-                case 'creatingInProgress':
+            switch (eventData.headers.updateType) {
+                case NotificationType.MODIFICATIONS_CREATION_IN_PROGRESS:
                     messageId = 'network_modifications.creatingModification';
                     break;
-                case 'updatingInProgress':
+                case NotificationType.MODIFICATIONS_UPDATING_IN_PROGRESS:
                     messageId = 'network_modifications.updatingModification';
                     break;
-                case 'stashingInProgress':
+                case NotificationType.MODIFICATIONS_STASHING_IN_PROGRESS:
                     messageId = 'network_modifications.stashingModification';
                     break;
-                case 'restoringInProgress':
+                case NotificationType.MODIFICATIONS_RESTORING_IN_PROGRESS:
                     messageId = 'network_modifications.restoringModification';
                     break;
                 default:
                     messageId = '';
             }
-            fillNotification(study, messageId);
+            fillNotification(eventData, messageId);
         },
         [fillNotification]
     );
@@ -557,56 +582,57 @@ const NetworkModificationNodeEditor = () => {
     ]);
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            const studyUpdatedEventData = studyUpdatedForce.eventData as StudyUpdatedEventData;
+        if (isNodeDeletedNotification(studyUpdatedForce.eventData)) {
+            const studyUpdatedEventData = studyUpdatedForce.eventData;
 
-            if (studyUpdatedEventData.headers.updateType === 'nodeDeleted') {
-                if (
-                    copyInfosRef.current &&
-                    studyUpdatedEventData.headers.nodes?.some(
-                        (nodeId) => nodeId === copyInfosRef.current?.originNodeUuid
-                    )
-                ) {
-                    // Must clean modifications clipboard if the origin Node is removed
-                    cleanClipboard();
-                }
+            if (
+                copyInfosRef.current &&
+                studyUpdatedEventData.headers.nodes.some((nodeId) => nodeId === copyInfosRef.current?.originNodeUuid)
+            ) {
+                // Must clean modifications clipboard if the origin Node is removed
+                cleanClipboard();
             }
+        }
+
+        if (isPendingModificationNotification(studyUpdatedForce.eventData)) {
+            const studyUpdatedEventData = studyUpdatedForce.eventData;
             if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
                 return;
             }
-
-            if (
-                studyUpdatedEventData.headers.updateType &&
-                // @ts-expect-error TS2345: Argument of type string is not assignable to parameter of type UPDATE_TYPE (a restrained array of strings)
-                UPDATE_TYPE.includes(studyUpdatedEventData.headers.updateType)
-            ) {
-                if (studyUpdatedEventData.headers.updateType === 'deletingInProgress') {
-                    // deleting means removing from trashcan (stashed elements) so there is no network modification
-                    setDeleteInProgress(true);
-                } else {
-                    dispatch(setModificationsInProgress(true));
-                    setPendingState(true);
-                    manageNotification(studyUpdatedForce);
-                }
+            if (studyUpdatedEventData.headers.updateType === NotificationType.MODIFICATIONS_DELETING_IN_PROGRESS) {
+                // deleting means removing from trashcan (stashed elements) so there is no network modification
+                setDeleteInProgress(true);
+            } else {
+                dispatch(setModificationsInProgress(true));
+                setPendingState(true);
+                manageNotification(studyUpdatedEventData);
             }
-            // notify  finished action (success or error => we remove the loader)
-            // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-            if (studyUpdatedEventData.headers.updateType === 'UPDATE_FINISHED') {
-                // fetch modifications because it must have changed
-                // Do not clear the modifications list, because currentNode is the concerned one
-                // this allows to append new modifications to the existing list.
-                dofetchNetworkModifications();
-                dispatch(
-                    removeNotificationByNode([
-                        studyUpdatedEventData.headers.parentNode,
-                        ...(studyUpdatedEventData.headers.nodes ?? []),
-                    ])
-                );
+        }
+        // notify  finished action (success or error => we remove the loader)
+        // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
+        if (isModificationsUpdateFinishedNotification(studyUpdatedForce.eventData)) {
+            const studyUpdatedEventData = studyUpdatedForce.eventData;
+            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
+                return;
             }
-            if (studyUpdatedEventData.headers.updateType === 'DELETE_FINISHED') {
-                setDeleteInProgress(false);
-                dofetchNetworkModifications();
+            // fetch modifications because it must have changed
+            // Do not clear the modifications list, because currentNode is the concerned one
+            // this allows to append new modifications to the existing list.
+            dofetchNetworkModifications();
+            dispatch(
+                removeNotificationByNode([
+                    studyUpdatedEventData.headers.parentNode,
+                    ...(studyUpdatedEventData.headers.nodes ?? []),
+                ])
+            );
+        }
+        if (isModificationsDeleteFinishedNotification(studyUpdatedForce.eventData)) {
+            const studyUpdatedEventData = studyUpdatedForce.eventData;
+            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
+                return;
             }
+            setDeleteInProgress(false);
+            dofetchNetworkModifications();
         }
     }, [dispatch, dofetchNetworkModifications, manageNotification, studyUpdatedForce, cleanClipboard]);
 

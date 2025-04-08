@@ -10,14 +10,15 @@ import { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments } from 'redux/actions';
-import { AppState, NotificationType } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
 import { NodeAlias } from '../custom-columns/node-alias.type';
 import { isStatusBuilt } from '../../graph/util/model-functions';
 import { useFetchEquipment } from './use-fetch-equipment';
-import { NodeType } from '../../graph/tree-node.type';
+import { isStudyNotification } from 'types/notification-types';
+import { NodeType } from 'components/graph/tree-node.type';
 import { validAlias } from '../custom-columns/use-node-aliases';
 
 export const useSpreadsheetEquipments = (
@@ -153,8 +154,7 @@ export const useSpreadsheetEquipments = (
     const listenerUpdateEquipmentsLocal = useCallback(
         (event: MessageEvent) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.STUDY) {
+            if (isStudyNotification(eventData)) {
                 const eventStudyUuid = eventData.headers.studyUuid;
                 const eventNodeUuid = eventData.headers.node;
                 const eventRootNetworkUuid = eventData.headers.rootNetworkUuid;
@@ -163,7 +163,7 @@ export const useSpreadsheetEquipments = (
                     currentNode?.id === eventNodeUuid &&
                     currentRootNetworkUuid === eventRootNetworkUuid
                 ) {
-                    const payload = JSON.parse(eventData.payload);
+                    const payload = eventData.payload;
                     const impactedSubstationsIds = payload.impactedSubstationsIds;
                     const deletedEquipments = payload.deletedEquipments;
                     updateEquipmentsLocal(impactedSubstationsIds, deletedEquipments);
