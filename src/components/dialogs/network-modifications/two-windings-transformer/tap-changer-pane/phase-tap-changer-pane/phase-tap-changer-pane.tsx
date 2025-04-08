@@ -106,7 +106,7 @@ export default function PhaseTapChangerPane({
 
     const regulationType = useMemo(() => {
         return regulationTypeWatch || getComputedPreviousPhaseRegulationType(equipmentId, previousValues);
-    }, [regulationTypeWatch, previousValues]);
+    }, [regulationTypeWatch, equipmentId, previousValues]);
 
     const regulationMode = useMemo(() => {
         return (
