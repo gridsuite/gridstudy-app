@@ -65,6 +65,8 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Créer une feuille de calcul vide',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Appliquer un modèle de tableur',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection': 'Appliquer une collection de tableurs',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace': 'Remplacer',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append': 'Ajouter',
     'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
         "Vous êtes sur le point de remplacer le contenu actuel de l'onglet 'Tableur'. Ce contenu sera perdu si vous ne le sauvegardez pas d'abord dans GridExplore. Souhaitez-vous poursuivre sans sauvegarder le contenu actuel?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Ajouter feuille de calcul',

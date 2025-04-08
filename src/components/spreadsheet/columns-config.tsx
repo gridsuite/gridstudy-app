@@ -14,7 +14,7 @@ import { SelectOptionsDialog } from 'utils/dialogs';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { AppState } from '../../redux/reducer';
 import { updateTableDefinition } from 'redux/actions';
@@ -264,7 +264,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                     id: 'spreadsheet/column/dialog/title',
                 })}
                 child={checkListColumnsNames()}
-                //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beautiful-dnd warning related to nested scroll containers
+                //Replacing overflow default value 'auto' by 'visible' in order to prevent a @hello-pangea/dnd warning related to nested scroll containers
                 style={{
                     '& .MuiPaper-root': {
                         overflowY: 'visible',
