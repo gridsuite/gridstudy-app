@@ -25,10 +25,6 @@ import { AppState } from '../../../redux/reducer';
 import { UUID } from 'crypto';
 import { COMPUTATION_RESULTS_LOGS, SensiTab, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 
-function getDisplayedColumns(params) {
-    return params.api.getColumnDefs()?.map((c) => c.headerComponentParams.displayName);
-}
-
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
     nodeUuid: UUID;
@@ -44,9 +40,9 @@ function SensitivityAnalysisResultTab({
     const intl = useIntl();
     const [nOrNkIndex, setNOrNkIndex] = useState<number>(0);
     const [sensiTab, setSensiTab] = useState<SensiTab>(SENSITIVITY_IN_DELTA_MW);
-    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
-    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
-    const [page, setPage] = useState(0);
+    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState<boolean>(false);
+    const [isCsvExportLoading, setIsCsvExportLoading] = useState<boolean>(false);
+    const [page, setPage] = useState<number>(0);
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
@@ -75,20 +71,8 @@ function SensitivityAnalysisResultTab({
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const [csvHeaders, setCsvHeaders] = useState([]);
+    const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
-
-    const handleGridColumnsChanged = useCallback((params: any) => {
-        if (params?.api) {
-            setCsvHeaders(getDisplayedColumns(params));
-        }
-    }, []);
-
-    const handleRowDataUpdated = useCallback((params: any) => {
-        if (params?.api) {
-            setIsCsvButtonDisabled(params.api.getDisplayedRowCount() === 0);
-        }
-    }, []);
 
     const handleExportResultAsCsv = useCallback(() => {
         setIsCsvExportLoading(true);
@@ -148,8 +132,8 @@ function SensitivityAnalysisResultTab({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         page={page}
                         setPage={setPage}
-                        onGridColumnsChanged={handleGridColumnsChanged}
-                        onRowDataUpdated={handleRowDataUpdated}
+                        setCsvHeaders={setCsvHeaders}
+                        setIsCsvButtonDisabled={setIsCsvButtonDisabled}
                     />
                 </>
             )}

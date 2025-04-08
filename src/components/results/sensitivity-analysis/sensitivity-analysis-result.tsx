@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo, useRef } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
@@ -18,36 +17,85 @@ import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
 import { mappingTabs, SUFFIX_TYPES } from './sensitivity-analysis-result-utils.js';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAGGrid, CustomAGGridProps } from '@gridsuite/commons-ui';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
+import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
+import type { GridReadyEvent } from 'ag-grid-community/dist/types/src/events';
+import { ColDef, ColGroupDef, GridApi, GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { Sensitivity } from '../../../services/study/sensitivity-analysis';
 
-function makeRows(resultRecord) {
-    // Replace NaN values by empty string
-    return resultRecord.map((obj) => {
-        return Object.entries(obj).reduce((acc, [key, value]) => {
-            acc[key] = value === 'NaN' ? '' : value;
-            return acc;
-        }, {});
+function isColDef(col: ColDef | ColGroupDef): col is ColDef {
+    return (col as ColDef).field !== undefined;
+}
+
+function getDisplayedColumns(gridApi: GridApi) {
+    return gridApi.getColumnDefs()?.map((c) => {
+        if (isColDef(c)) {
+            return c.headerComponentParams?.displayName;
+        }
+        return '';
     });
 }
 
-const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, onFilter, isLoading, ...props }) => {
+function makeRows(resultRecord: Sensitivity[]) {
+    return resultRecord.map((row: Sensitivity) => sanitizeRecord(row));
+}
+
+function sanitizeRecord<T extends Sensitivity>(record: T): T {
+    return Object.entries(record).reduce((acc, [key, value]) => {
+        (acc as any)[key] = typeof value === 'string' && isNaN(Number(value)) ? '' : value;
+        return acc;
+    }, {} as T);
+}
+
+type SensitivityAnalysisResultProps = CustomAGGridProps & {
+    result: Sensitivity[];
+    nOrNkIndex: number;
+    sensiKind: SensiKind;
+    filtersDef: { field: string; options: string[] }[];
+    isLoading: boolean;
+    onFilter: () => void;
+    setCsvHeaders: (newHeaders: string[]) => void;
+    setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
+};
+
+const SensitivityAnalysisResult = ({
+    result,
+    nOrNkIndex = 0,
+    sensiKind = SENSITIVITY_IN_DELTA_MW,
+    filtersDef,
+    onFilter,
+    isLoading,
+    setCsvHeaders,
+    setIsCsvButtonDisabled,
+    ...props
+}: Readonly<SensitivityAnalysisResultProps>) => {
     const gridRef = useRef(null);
     const intl = useIntl();
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-    const { onGridColumnsChanged } = props;
 
     const messages = useIntlResultStatusMessages(intl, true);
 
     const makeColumn = useCallback(
-        ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
+        ({
+            field,
+            labelId,
+            isNum = false,
+            pinned = false,
+            maxWidth,
+        }: {
+            field: string;
+            labelId: string;
+            isNum?: boolean;
+            pinned?: boolean;
+            maxWidth?: number;
+        }) => {
             const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
 
             return makeAgGridCustomHeaderColumn({
@@ -61,7 +109,7 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
                         table: SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
                         tab: mappingTabs(sensiKind, nOrNkIndex),
                     },
-                    filterComponent: isNum ? null : CustomAggridAutocompleteFilter,
+                    filterComponent: isNum ? undefined : CustomAggridAutocompleteFilter,
                     filterComponentParams: {
                         filterParams: {
                             type: AgGridFilterType.SensitivityAnalysis,
@@ -160,14 +208,32 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
         []
     );
 
-    const handleGridReady = useCallback(
-        (params) => {
-            if (params.api) {
-                params.api.sizeColumnsToFit();
-                onGridColumnsChanged && onGridColumnsChanged(params);
+    const handleGridColumnsChanged = useCallback(
+        (event: GridColumnsChangedEvent) => {
+            if (event?.api) {
+                setCsvHeaders(getDisplayedColumns(event.api) ?? []);
             }
         },
-        [onGridColumnsChanged]
+        [setCsvHeaders]
+    );
+
+    const handleRowDataUpdated = useCallback(
+        (event: RowDataUpdatedEvent) => {
+            if (event?.api) {
+                setIsCsvButtonDisabled(event.api.getDisplayedRowCount() === 0);
+            }
+        },
+        [setIsCsvButtonDisabled]
+    );
+
+    const handleGridReady = useCallback(
+        (event: GridReadyEvent) => {
+            if (event.api) {
+                event.api.sizeColumnsToFit();
+                setCsvHeaders(getDisplayedColumns(event.api) ?? []);
+            }
+        },
+        [setCsvHeaders]
     );
 
     const message = getNoRowsMessage(messages, rows, sensitivityAnalysisStatus, !isLoading);
@@ -189,24 +255,12 @@ const SensitivityAnalysisResult = ({ result, nOrNkIndex, sensiKind, filtersDef, 
                 onGridReady={handleGridReady}
                 tooltipShowDelay={TOOLTIP_DELAY}
                 overlayNoRowsTemplate={message}
+                onGridColumnsChanged={handleGridColumnsChanged}
+                onRowDataUpdated={handleRowDataUpdated}
                 {...props}
             />
         </div>
     );
-};
-
-SensitivityAnalysisResult.defaultProps = {
-    result: null,
-    nOrNkIndex: 0,
-    sensiKind: 0,
-};
-
-SensitivityAnalysisResult.propTypes = {
-    result: PropTypes.array,
-    nOrNkIndex: PropTypes.number,
-    sensiKind: PropTypes.string,
-    isLoading: PropTypes.bool,
-    onFilter: PropTypes.func,
 };
 
 export default SensitivityAnalysisResult;

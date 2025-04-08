@@ -5,31 +5,64 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { SensitivityAnalysisParametersInfos } from './sensitivity-analysis.type';
 
 const GET_PARAMETERS_PREFIX = import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';
 
-interface SelectorFilterOptions {
+type SelectorFilterOptions = {
     tabSelection: string;
     functionType: string;
-}
+};
 
-interface SensitivityAnalysisFactorsCountParameters {
+type SensitivityAnalysisFactorsCountParameters = {
     injections?: string[];
     monitoredBranches?: string[];
     contingencies?: string[];
     hvdcs?: string[];
     psts?: string[];
-}
+};
 
-interface CsvConfig {
+type CsvConfig = {
     csvHeaders: string[];
     resultTab: string;
     sensitivityFunctionType?: string;
-}
+};
+
+export type SensitivityOfTo = {
+    type: 'SensitivityOfTo' | 'SensitivityWithContingency'; // discrimination field
+    funcId: string;
+    varId: string;
+    varIsAFilter: boolean;
+    value: number;
+    functionReference: number;
+};
+
+export type SensitivityWithContingency = SensitivityOfTo & {
+    contingencyId: string;
+    valueAfter: number;
+    functionReferenceAfter: number;
+};
+
+export type Sensitivity = SensitivityOfTo | SensitivityWithContingency;
+
+export type SensitivityResult = {
+    resultTab: string; // should be enum ResultTab
+    functionType: string; // should be enum SensitivityFunctionType
+    requestedChunkSize: number;
+    chunkOffset: number;
+    totalSensitivitiesCount: number;
+    filteredSensitivitiesCount: number;
+    sensitivities: Sensitivity[];
+};
+
+export type SensitivityResultFilterOptions = {
+    allContingencyIds?: string[];
+    allFunctionIds?: string[];
+    allVariableIds?: string[];
+};
 
 export function startSensitivityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
@@ -73,7 +106,7 @@ export function fetchSensitivityAnalysisResult(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     selector: any
-) {
+): Promise<SensitivityResult | null> {
     console.info(
         `Fetching sensitivity analysis on ${studyUuid}  for root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
     );
@@ -96,7 +129,7 @@ export function fetchSensitivityAnalysisFilterOptions(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     selector: SelectorFilterOptions
-) {
+): Promise<SensitivityResultFilterOptions | null> {
     console.info(
         `Fetching sensitivity analysis filter options on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
     );
