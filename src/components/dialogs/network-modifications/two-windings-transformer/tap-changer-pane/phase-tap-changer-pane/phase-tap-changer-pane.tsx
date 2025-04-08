@@ -32,6 +32,7 @@ import {
     getComputedPreviousPhaseRegulationType,
 } from './phase-tap-changer-pane-utils';
 import { useMemo } from 'react';
+import { getRegulationTypeLabel, getTapSideLabel } from '../tap-changer-pane-utils';
 
 export type PhaseTapChangerPaneProps = NetworkModificationDialogProps & {
     id?: string;
@@ -75,22 +76,6 @@ export default function PhaseTapChangerPane({
             return intl.formatMessage({
                 id: computedRegulationMode?.label,
             });
-        }
-    };
-
-    const getRegulationTypeLabel = (regulatingTerminalConnectableId?: string) => {
-        if (regulatingTerminalConnectableId != null) {
-            return regulatingTerminalConnectableId === equipmentId
-                ? intl.formatMessage({ id: REGULATION_TYPES.LOCAL.label })
-                : intl.formatMessage({ id: REGULATION_TYPES.DISTANT.label });
-        }
-    };
-
-    const getTapSideLabel = (regulatingTerminalConnectableId?: string, regulatingTerminalVlId?: string) => {
-        if (regulatingTerminalConnectableId === equipmentId) {
-            return regulatingTerminalVlId === voltageLevelId1
-                ? intl.formatMessage({ id: SIDE.SIDE1.label })
-                : intl.formatMessage({ id: SIDE.SIDE2.label });
         }
     };
 
@@ -142,7 +127,11 @@ export default function PhaseTapChangerPane({
             size={'small'}
             disableClearable={!isModification}
             previousValue={
-                isModification ? getRegulationTypeLabel(previousValues?.regulatingTerminalConnectableId) : undefined
+                isModification
+                    ? intl.formatMessage({
+                          id: getRegulationTypeLabel(equipmentId, previousValues?.regulatingTerminalConnectableId),
+                      })
+                    : undefined
             }
         />
     );
@@ -157,10 +146,14 @@ export default function PhaseTapChangerPane({
             disableClearable={!isModification}
             previousValue={
                 isModification
-                    ? getTapSideLabel(
-                          previousValues?.regulatingTerminalConnectableId,
-                          previousValues?.regulatingTerminalVlId
-                      )
+                    ? intl.formatMessage({
+                          id: getTapSideLabel(
+                              equipmentId,
+                              voltageLevelId1,
+                              previousValues?.regulatingTerminalConnectableId,
+                              previousValues?.regulatingTerminalVlId
+                          ),
+                      })
                     : undefined
             }
         />

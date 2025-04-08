@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -26,8 +26,8 @@ import {
 import { compareStepsWithPreviousValues } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { IColomn } from '../two-windings-transformer-utils';
 import { DndColumn } from '../../../../utils/dnd-table/dnd-table.type';
+import { ColumnDefinition } from './use-column-definitions';
 
 export type TapChangerStepData = {
     index: number;
@@ -43,7 +43,7 @@ export type TapChangerStepsProps = {
     tapChanger: string;
     ruleType: string;
     createTapRuleColumn: string;
-    columnsDefinition: IColomn[];
+    columnsDefinition: ColumnDefinition[];
     csvColumns: string[];
     createRuleMessageId: string;
     createRuleAllowNegativeValues: boolean;

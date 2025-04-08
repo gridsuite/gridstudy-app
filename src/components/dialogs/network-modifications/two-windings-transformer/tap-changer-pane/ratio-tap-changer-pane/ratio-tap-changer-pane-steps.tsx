@@ -12,16 +12,15 @@ import {
     STEPS_REACTANCE,
     STEPS_RESISTANCE,
     STEPS_SUSCEPTANCE,
-    STEPS_TAP,
 } from 'components/utils/field-constants';
 import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
 import { RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
-import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 import { RatioTapChangerStepData } from './ratio-tap-changer.type';
+import { useColumnDefinitions } from '../use-column-definitions';
 
 export type RatioTapChangerPaneStepsProps = {
     disabled: boolean;
@@ -46,61 +45,7 @@ export default function RatioTapChangerPaneSteps({
 }: Readonly<RatioTapChangerPaneStepsProps>) {
     const intl = useIntl();
 
-    const COLUMNS_DEFINITIONS = useMemo(() => {
-        return [
-            {
-                label: 'Tap',
-                dataKey: STEPS_TAP,
-                type: DndColumnType.TEXT,
-            },
-            {
-                label: 'DeltaResistance',
-                dataKey: STEPS_RESISTANCE,
-                initialValue: 0,
-                editable: true,
-                type: DndColumnType.NUMERIC,
-                clearable: false,
-            },
-            {
-                label: 'DeltaReactance',
-                dataKey: STEPS_REACTANCE,
-                initialValue: 0,
-                editable: true,
-                type: DndColumnType.NUMERIC,
-                clearable: false,
-            },
-            {
-                label: 'DeltaConductance',
-                dataKey: STEPS_CONDUCTANCE,
-                initialValue: 0,
-                editable: true,
-                type: DndColumnType.NUMERIC,
-                clearable: false,
-            },
-            {
-                label: 'DeltaSusceptance',
-                dataKey: STEPS_SUSCEPTANCE,
-                initialValue: 0,
-                editable: true,
-                type: DndColumnType.NUMERIC,
-                clearable: false,
-            },
-            {
-                label: 'Ratio',
-                dataKey: STEPS_RATIO,
-                initialValue: 1,
-                editable: true,
-                type: DndColumnType.NUMERIC,
-                clearable: false,
-            },
-        ].map((column) => ({
-            ...column,
-            label: intl
-                .formatMessage({ id: column.label })
-                .toLowerCase()
-                .replace(/^\w/, (c) => c.toUpperCase()),
-        }));
-    }, [intl]);
+    const COLUMNS_DEFINITIONS = useColumnDefinitions();
 
     const csvColumns = useMemo(() => {
         return [
