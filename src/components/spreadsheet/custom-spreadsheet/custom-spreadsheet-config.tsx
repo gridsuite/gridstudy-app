@@ -12,11 +12,12 @@ import { useStateBoolean } from '@gridsuite/commons-ui';
 import { NEW_SPREADSHEET_CREATION_OPTIONS, SpreadsheetOption } from '../constants';
 import { FormattedMessage } from 'react-intl';
 import { SpreadsheetTabDefinition } from '../config/spreadsheet.type';
+import { ResetNodeAliasCallback } from '../custom-columns/use-node-aliases';
 
 interface CustomSpreadsheetConfigProps {
     disabled: boolean;
     resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
-    resetNodeAliases: (aliases?: string[]) => void;
+    resetNodeAliases: ResetNodeAliasCallback;
 }
 
 const styles = {

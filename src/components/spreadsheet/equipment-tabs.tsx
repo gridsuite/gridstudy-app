@@ -26,6 +26,7 @@ import { UUID } from 'crypto';
 import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import TabLabel from './tab-label';
+import { ResetNodeAliasCallback } from './custom-columns/use-node-aliases';
 
 const draggableTabStyles = {
     container: {
@@ -47,7 +48,7 @@ interface EquipmentTabsProps {
     selectedTabUuid: UUID | null;
     handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
-    resetNodeAliases: (aliases?: string[]) => void;
+    resetNodeAliases: ResetNodeAliasCallback;
 }
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
