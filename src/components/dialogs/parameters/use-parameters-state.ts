@@ -10,39 +10,40 @@ import { useSelector } from 'react-redux';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { updateConfigParameter } from 'services/config';
-import type { AppState } from 'redux/reducer';
-import { ALL_CONFIG_PARAMS_KEYS_TYPE } from '../../../utils/config-params';
+import { AppConfigState } from 'redux/reducer';
 
 const simpleStringConverter = <T>(value: T) => `${value}`;
 
 // Overload for primitive types: paramValueUpdateConvertor is optional
-export function useParameterState<K extends ALL_CONFIG_PARAMS_KEYS_TYPE>(
+export function useParameterState<K extends keyof AppConfigState>(
     paramName: K
-): AppState[K] extends boolean | number | string ? [AppState[K], (value: AppState[K]) => void] : never;
+): AppConfigState[K] extends boolean | number | string
+    ? [AppConfigState[K], (value: AppConfigState[K]) => void]
+    : never;
 
 // Overload for non-primitive types, e.g. object, array: paramValueUpdateConvertor is required
-export function useParameterState<K extends ALL_CONFIG_PARAMS_KEYS_TYPE>(
+export function useParameterState<K extends keyof AppConfigState>(
     paramName: K,
-    paramValueUpdateConvertor: (value: AppState[K]) => string
-): [AppState[K], (value: AppState[K]) => void];
+    paramValueUpdateConvertor: (value: AppConfigState[K]) => string
+): [AppConfigState[K], (value: AppConfigState[K]) => void];
 
 // Implementation
-export function useParameterState<K extends ALL_CONFIG_PARAMS_KEYS_TYPE>(
+export function useParameterState<K extends keyof AppConfigState>(
     paramName: K,
-    paramValueUpdateConvertor?: (value: AppState[K]) => string
-): [AppState[K], (value: AppState[K]) => void] {
+    paramValueUpdateConvertor?: (value: AppConfigState[K]) => string
+): [AppConfigState[K], (value: AppConfigState[K]) => void] {
     const { snackError } = useSnackMessage();
 
-    const paramGlobalState = useSelector<AppState, AppState[K]>((state) => state[paramName]);
+    const paramGlobalState = useSelector<AppConfigState, AppConfigState[K]>((state) => state[paramName]);
 
-    const [paramLocalState, setParamLocalState] = useState<AppState[K]>(paramGlobalState);
+    const [paramLocalState, setParamLocalState] = useState<AppConfigState[K]>(paramGlobalState);
 
     useEffect(() => {
         setParamLocalState(paramGlobalState);
     }, [paramGlobalState]);
 
     const handleChangeParamLocalState = useCallback(
-        (value: AppState[K]) => {
+        (value: AppConfigState[K]) => {
             setParamLocalState(value);
             updateConfigParameter(paramName, (paramValueUpdateConvertor ?? simpleStringConverter)(value)).catch(
                 (error) => {

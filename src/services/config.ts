@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ALL_CONFIG_PARAMS_KEYS_TYPE, getAppName } from '../utils/config-params';
+import { getAppName } from '../utils/config-params';
 import { backendFetch, backendFetchJson } from './utils';
 
 const PREFIX_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/config';
@@ -15,14 +15,14 @@ export function fetchConfigParameters(appName: string) {
     return backendFetchJson(fetchParams);
 }
 
-export function fetchConfigParameter<K extends ALL_CONFIG_PARAMS_KEYS_TYPE>(name: K) {
+export function fetchConfigParameter(name: string) {
     const appName = getAppName(name);
     console.info("Fetching UI config parameter '%s' for app '%s' ", name, appName);
     const fetchParams = PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters/${name}`;
     return backendFetch(fetchParams).then((response) => (response.status === 204 ? null : response.json()));
 }
 
-export function updateConfigParameter<K extends ALL_CONFIG_PARAMS_KEYS_TYPE>(name: K, value: string) {
+export function updateConfigParameter(name: string, value: string) {
     const appName = getAppName(name);
     console.info("Updating config parameter '%s=%s' for app '%s' ", name, value, appName);
     const updateParams =
