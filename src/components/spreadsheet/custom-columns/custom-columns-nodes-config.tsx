@@ -137,7 +137,7 @@ export default function CustomColumnsNodesConfig({
                             handleClose();
                             handleRefresh();
                         }}
-                        disabled={nodesToReload ? nodesToReload.length === 0 : true}
+                        disabled={tableType && nodesToReload ? nodesToReload.length === 0 : true}
                     >
                         <FormattedMessage id={'spreadsheet/custom_column/option/refresh'} />
                     </MenuItem>

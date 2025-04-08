@@ -62,6 +62,8 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Create an empty spreadsheet',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Apply a spreadsheet model',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection': 'Apply a spreadsheet collection',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace': 'Replace',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append': 'Append',
     'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
         "You are about to replace the current content of the 'Spreadsheet' tab. This content will be lost if you do not save it to GridExplore first. Would you like to pursue without saving the current content?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Add spreadsheet',
