@@ -530,6 +530,11 @@ export function StudyContainer({ view, onChangeTab }) {
 
             checkNetworkExistenceAndRecreateIfNotFound(successCallback);
         } else if (studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] === UPDATE_TYPE_INDEXATION_STATUS) {
+            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetworkUuid;
+            if (currentRootNetworkUuidRef.current && rootNetworkUuidFromNotif !== currentRootNetworkUuidRef.current) {
+                return;
+            }
+
             dispatch(setStudyIndexationStatus(studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS]));
             if (studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] === StudyIndexationStatus.INDEXED) {
                 snackInfo({
