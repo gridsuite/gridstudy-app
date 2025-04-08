@@ -84,8 +84,6 @@ export default function RatioTapChangerPane({
             return regulatingTerminalConnectableId === equipmentId
                 ? intl.formatMessage({ id: REGULATION_TYPES.LOCAL.label })
                 : intl.formatMessage({ id: REGULATION_TYPES.DISTANT.label });
-        } else {
-            return null;
         }
     };
 
@@ -94,8 +92,6 @@ export default function RatioTapChangerPane({
             return regulatingTerminalVlId === voltageLevelId1
                 ? intl.formatMessage({ id: SIDE.SIDE1.label })
                 : intl.formatMessage({ id: SIDE.SIDE2.label });
-        } else {
-            return null;
         }
     };
 
@@ -159,7 +155,9 @@ export default function RatioTapChangerPane({
             options={Object.values(RATIO_REGULATION_MODES)}
             size={'small'}
             disabled={!ratioTapChangerEnabledWatcher}
-            previousValue={getRatioTapChangerRegulationModeLabel(previousValues?.isRegulating ?? undefined)}
+            previousValue={
+                isModification ? getRatioTapChangerRegulationModeLabel(previousValues?.isRegulating) : undefined
+            }
         />
     );
 
@@ -171,7 +169,7 @@ export default function RatioTapChangerPane({
             disabled={!ratioTapChangerEnabledWatcher}
             size={'small'}
             previousValue={
-                getRegulationTypeLabel(previousValues?.regulatingTerminalConnectableId ?? undefined) ?? undefined
+                isModification ? getRegulationTypeLabel(previousValues?.regulatingTerminalConnectableId) : undefined
             }
         />
     );
@@ -184,10 +182,12 @@ export default function RatioTapChangerPane({
             disabled={!ratioTapChangerEnabledWatcher}
             size={'small'}
             previousValue={
-                getTapSideLabel(
-                    previousValues?.regulatingTerminalVlId,
-                    previousValues?.regulatingTerminalConnectableId
-                ) ?? undefined
+                isModification
+                    ? getTapSideLabel(
+                          previousValues?.regulatingTerminalVlId,
+                          previousValues?.regulatingTerminalConnectableId
+                      )
+                    : undefined
             }
         />
     );
@@ -200,7 +200,7 @@ export default function RatioTapChangerPane({
             formProps={{
                 disabled: !ratioTapChangerEnabledWatcher,
             }}
-            previousValue={previousValues?.targetV}
+            previousValue={isModification ? previousValues?.targetV : undefined}
         />
     );
 
@@ -212,7 +212,7 @@ export default function RatioTapChangerPane({
             formProps={{
                 disabled: !ratioTapChangerEnabledWatcher,
             }}
-            previousValue={previousValues?.targetDeadband}
+            previousValue={isModification ? previousValues?.targetDeadband : undefined}
         />
     );
 
@@ -227,10 +227,12 @@ export default function RatioTapChangerPane({
             voltageLevelOptions={voltageLevelOptions}
             regulatingTerminalVlId={previousValues?.regulatingTerminalVlId ?? undefined}
             equipmentSectionType={
-                previousValues?.regulatingTerminalConnectableType
-                    ? previousValues?.regulatingTerminalConnectableType +
-                      ' : ' +
-                      previousValues?.regulatingTerminalConnectableId
+                isModification
+                    ? previousValues?.regulatingTerminalConnectableType
+                        ? previousValues?.regulatingTerminalConnectableType +
+                          ' : ' +
+                          previousValues?.regulatingTerminalConnectableId
+                        : undefined
                     : undefined
             }
         />
@@ -245,9 +247,7 @@ export default function RatioTapChangerPane({
                     <GridSection title="RegulatedTerminal" heading={4} />
                     <Grid item container spacing={1}>
                         <GridItem size={4}>{regulationTypeField}</GridItem>
-
                         {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
-
                         {regulationType === REGULATION_TYPES.DISTANT.id && (
                             <GridItem size={8}>{regulatingTerminalField}</GridItem>
                         )}
@@ -268,6 +268,7 @@ export default function RatioTapChangerPane({
                 previousValuesSteps={previousValues?.steps ?? undefined}
                 previousValuesLowTapPosition={previousValues?.lowTapPosition}
                 previousValuesHighTapPosition={previousValues?.highTapPosition}
+                previousValuesTapPosition={previousValues?.tapPosition}
                 editData={editData?.steps}
                 currentNode={currentNode}
                 isModification={isModification}

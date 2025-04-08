@@ -83,8 +83,6 @@ export default function PhaseTapChangerPane({
             return regulatingTerminalConnectableId === equipmentId
                 ? intl.formatMessage({ id: REGULATION_TYPES.LOCAL.label })
                 : intl.formatMessage({ id: REGULATION_TYPES.DISTANT.label });
-        } else {
-            return null;
         }
     };
 
@@ -93,8 +91,6 @@ export default function PhaseTapChangerPane({
             return regulatingTerminalVlId === voltageLevelId1
                 ? intl.formatMessage({ id: SIDE.SIDE1.label })
                 : intl.formatMessage({ id: SIDE.SIDE2.label });
-        } else {
-            return null;
         }
     };
 
@@ -104,17 +100,12 @@ export default function PhaseTapChangerPane({
                 field === FLOW_SET_POINT_REGULATING_VALUE) ||
             (regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id && field === CURRENT_LIMITER_REGULATING_VALUE)
         ) {
-            return regulationValue;
-        } else {
-            return null;
+            return regulationValue ?? undefined;
         }
     };
 
     const regulationType = useMemo(() => {
-        return (
-            regulationTypeWatch ||
-            getComputedPreviousPhaseRegulationType(previousValues?.regulatingTerminalConnectableId)
-        );
+        return regulationTypeWatch || getComputedPreviousPhaseRegulationType(equipmentId, previousValues);
     }, [regulationTypeWatch, previousValues]);
 
     const regulationMode = useMemo(() => {
@@ -131,10 +122,14 @@ export default function PhaseTapChangerPane({
             options={Object.values(PHASE_REGULATION_MODES)}
             disabled={!phaseTapChangerEnabledWatch}
             size={'small'}
-            previousValue={getPhaseTapChangerRegulationModeLabel(
-                previousValues?.regulationMode,
-                previousValues?.isRegulating
-            )}
+            previousValue={
+                isModification
+                    ? getPhaseTapChangerRegulationModeLabel(
+                          previousValues?.regulationMode,
+                          previousValues?.isRegulating
+                      )
+                    : undefined
+            }
         />
     );
 
@@ -146,7 +141,9 @@ export default function PhaseTapChangerPane({
             disabled={!phaseTapChangerEnabledWatch}
             size={'small'}
             disableClearable={!isModification}
-            previousValue={getRegulationTypeLabel(previousValues?.regulatingTerminalConnectableId) ?? undefined}
+            previousValue={
+                isModification ? getRegulationTypeLabel(previousValues?.regulatingTerminalConnectableId) : undefined
+            }
         />
     );
 
@@ -159,10 +156,12 @@ export default function PhaseTapChangerPane({
             size={'small'}
             disableClearable={!isModification}
             previousValue={
-                getTapSideLabel(
-                    previousValues?.regulatingTerminalConnectableId,
-                    previousValues?.regulatingTerminalVlId
-                ) ?? undefined
+                isModification
+                    ? getTapSideLabel(
+                          previousValues?.regulatingTerminalConnectableId,
+                          previousValues?.regulatingTerminalVlId
+                      )
+                    : undefined
             }
         />
     );
@@ -176,11 +175,13 @@ export default function PhaseTapChangerPane({
             }}
             adornment={AmpereAdornment}
             previousValue={
-                getRegulatingPreviousValue(
-                    CURRENT_LIMITER_REGULATING_VALUE,
-                    previousValues?.regulationMode,
-                    previousValues?.regulationValue
-                ) ?? undefined
+                isModification
+                    ? getRegulatingPreviousValue(
+                          CURRENT_LIMITER_REGULATING_VALUE,
+                          previousValues?.regulationMode,
+                          previousValues?.regulationValue
+                      )
+                    : undefined
             }
         />
     );
@@ -194,11 +195,13 @@ export default function PhaseTapChangerPane({
                 disabled: !phaseTapChangerEnabledWatch,
             }}
             previousValue={
-                getRegulatingPreviousValue(
-                    FLOW_SET_POINT_REGULATING_VALUE,
-                    previousValues?.regulationMode,
-                    previousValues?.regulationValue
-                ) ?? undefined
+                isModification
+                    ? getRegulatingPreviousValue(
+                          FLOW_SET_POINT_REGULATING_VALUE,
+                          previousValues?.regulationMode,
+                          previousValues?.regulationValue
+                      )
+                    : undefined
             }
         />
     );
@@ -230,10 +233,12 @@ export default function PhaseTapChangerPane({
             voltageLevelOptions={voltageLevelOptions}
             regulatingTerminalVlId={previousValues?.regulatingTerminalVlId ?? undefined}
             equipmentSectionType={
-                previousValues?.regulatingTerminalConnectableType
-                    ? previousValues?.regulatingTerminalConnectableType +
-                      ' : ' +
-                      previousValues?.regulatingTerminalConnectableId
+                isModification
+                    ? previousValues?.regulatingTerminalConnectableType
+                        ? previousValues?.regulatingTerminalConnectableType +
+                          ' : ' +
+                          previousValues?.regulatingTerminalConnectableId
+                        : undefined
                     : undefined
             }
         />
@@ -264,7 +269,7 @@ export default function PhaseTapChangerPane({
                     <Grid item container spacing={1}>
                         <GridItem size={4}>{regulationTypeField}</GridItem>
                         {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
-                        {phaseTapChangerEnabledWatch && regulationType === REGULATION_TYPES.DISTANT.id && (
+                        {regulationType === REGULATION_TYPES.DISTANT.id && (
                             <GridItem size={8}>{regulatingTerminalField}</GridItem>
                         )}
                     </Grid>
@@ -273,7 +278,10 @@ export default function PhaseTapChangerPane({
             <GridSection title="TapsSection" heading={4} />
             <PhaseTapChangerPaneSteps
                 disabled={!phaseTapChangerEnabledWatch}
-                previousValues={previousValues?.steps ?? undefined}
+                previousValuesSteps={previousValues?.steps ?? undefined}
+                previousValuesLowTapPosition={previousValues?.lowTapPosition}
+                previousValuesHighTapPosition={previousValues?.highTapPosition}
+                previousValuesTapPosition={previousValues?.tapPosition}
                 editData={editData?.steps ?? undefined}
                 currentNode={currentNode}
                 isModification={isModification}

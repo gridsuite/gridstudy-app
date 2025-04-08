@@ -252,7 +252,7 @@ export default function TapChangerSteps({
             formProps={{
                 disabled: disabled,
             }}
-            previousValue={previousValuesLowTapPosition}
+            previousValue={isModification ? previousValuesLowTapPosition : undefined}
         />
     );
 
@@ -263,7 +263,7 @@ export default function TapChangerSteps({
             formProps={{
                 disabled: true,
             }}
-            previousValue={previousValuesHighTapPosition}
+            previousValue={isModification ? previousValuesHighTapPosition : undefined}
         />
     );
 
@@ -274,7 +274,7 @@ export default function TapChangerSteps({
             formProps={{
                 disabled: disabled,
             }}
-            previousValue={previousValuesTapPosition}
+            previousValue={isModification ? previousValuesTapPosition : undefined}
         />
     );
 

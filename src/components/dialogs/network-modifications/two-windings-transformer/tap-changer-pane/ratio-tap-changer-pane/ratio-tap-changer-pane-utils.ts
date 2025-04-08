@@ -339,7 +339,7 @@ export const getComputedRegulationMode = (ratioTapChangerFormInfos: RatioTapChan
     if (!ratioTapChangerFormInfos) {
         return null;
     }
-    if (ratioTapChangerFormInfos.isRegulating) {
+    if (ratioTapChangerFormInfos?.isRegulating) {
         return RATIO_REGULATION_MODES.VOLTAGE_REGULATION;
     } else {
         return RATIO_REGULATION_MODES.FIXED_RATIO;

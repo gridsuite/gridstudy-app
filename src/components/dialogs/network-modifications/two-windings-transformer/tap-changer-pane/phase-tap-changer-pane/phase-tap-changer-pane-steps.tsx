@@ -27,7 +27,10 @@ import { IColomn } from '../../two-windings-transformer-utils';
 
 export type PhaseTapChangerPaneStepsProps = {
     disabled: boolean;
-    previousValues?: PhaseTapChangerStepData[];
+    previousValuesSteps?: PhaseTapChangerStepData[];
+    previousValuesLowTapPosition?: number;
+    previousValuesHighTapPosition?: number;
+    previousValuesTapPosition?: number;
     editData?: PhaseTapChangerStepData[];
     currentNode: CurrentTreeNode;
     isModification: boolean;
@@ -35,7 +38,10 @@ export type PhaseTapChangerPaneStepsProps = {
 
 export default function PhaseTapChangerPaneSteps({
     disabled,
-    previousValues,
+    previousValuesSteps,
+    previousValuesLowTapPosition,
+    previousValuesHighTapPosition,
+    previousValuesTapPosition,
     editData,
     currentNode,
     isModification = false,
@@ -187,7 +193,10 @@ export default function PhaseTapChangerPaneSteps({
             resetButtonMessageId="ResetRegulationRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
-            previousValuesSteps={previousValues}
+            previousValuesSteps={previousValuesSteps}
+            previousValuesLowTapPosition={previousValuesLowTapPosition}
+            previousValuesHighTapPosition={previousValuesHighTapPosition}
+            previousValuesTapPosition={previousValuesTapPosition}
             editData={editData}
             currentNode={currentNode}
             isModification={isModification}

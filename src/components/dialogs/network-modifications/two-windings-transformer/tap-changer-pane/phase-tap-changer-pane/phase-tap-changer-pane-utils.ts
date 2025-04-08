@@ -309,26 +309,32 @@ export const getPhaseTapRegulationSideId = (
     }
 };
 
-export const getComputedPhaseRegulationType = (equipmentId?: string, regulatingTerminalConnectableId?: string) => {
-    if (!regulatingTerminalConnectableId) {
+export const getComputedPhaseRegulationType = (
+    equipmentId?: string,
+    phaseTapChangerFormInfos?: PhaseTapChangerFormInfos
+) => {
+    if (!phaseTapChangerFormInfos) {
         return null;
     }
-    if (regulatingTerminalConnectableId !== equipmentId) {
+    if (phaseTapChangerFormInfos?.regulatingTerminalConnectableId !== equipmentId) {
         return REGULATION_TYPES.DISTANT;
     } else {
         return REGULATION_TYPES.LOCAL;
     }
 };
 
-export const getComputedPhaseRegulationTypeId = (equipmentId?: string, regulatingTerminalConnectableId?: string) => {
-    const regulationType = getComputedPhaseRegulationType(equipmentId, regulatingTerminalConnectableId);
+export const getComputedPhaseRegulationTypeId = (
+    equipmentId?: string,
+    phaseTapChangerFormInfos?: PhaseTapChangerFormInfos
+) => {
+    const regulationType = getComputedPhaseRegulationType(equipmentId, phaseTapChangerFormInfos);
     return regulationType?.id || null;
 };
 
 export const getComputedPreviousPhaseRegulationType = (
     equipmentId?: string,
-    regulatingTerminalConnectableId?: string
+    phaseTapChangerFormInfos?: PhaseTapChangerFormInfos
 ) => {
-    const previousRegulationType = getComputedPhaseRegulationType(equipmentId, regulatingTerminalConnectableId);
+    const previousRegulationType = getComputedPhaseRegulationType(equipmentId, phaseTapChangerFormInfos);
     return previousRegulationType?.id || null;
 };

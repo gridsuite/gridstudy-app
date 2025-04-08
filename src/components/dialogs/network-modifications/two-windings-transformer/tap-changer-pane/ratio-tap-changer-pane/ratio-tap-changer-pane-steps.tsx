@@ -28,6 +28,7 @@ export type RatioTapChangerPaneStepsProps = {
     previousValuesSteps?: RatioTapChangerStepData[];
     previousValuesLowTapPosition?: number;
     previousValuesHighTapPosition?: number;
+    previousValuesTapPosition?: number;
     editData?: RatioTapChangerStepData[];
     currentNode: CurrentTreeNode;
     isModification: boolean;
@@ -38,6 +39,7 @@ export default function RatioTapChangerPaneSteps({
     previousValuesSteps,
     previousValuesLowTapPosition,
     previousValuesHighTapPosition,
+    previousValuesTapPosition,
     editData,
     currentNode,
     isModification = false,
@@ -166,6 +168,7 @@ export default function RatioTapChangerPaneSteps({
             previousValuesSteps={previousValuesSteps}
             previousValuesLowTapPosition={previousValuesLowTapPosition}
             previousValuesHighTapPosition={previousValuesHighTapPosition}
+            previousValuesTapPosition={previousValuesTapPosition}
             editData={editData}
             currentNode={currentNode}
             isModification={isModification}
