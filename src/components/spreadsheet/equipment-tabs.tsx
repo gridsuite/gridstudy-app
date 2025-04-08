@@ -19,7 +19,7 @@ import {
 } from 'services/study-config';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { DropResult } from 'react-beautiful-dnd';
+import { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
 import { UUID } from 'crypto';
