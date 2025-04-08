@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from '../../../../network/constants';
+import { PHASE_REGULATION_MODES, REGULATION_TYPES } from '../../../../network/constants';
 import { IntlShape } from 'react-intl';
 import {
     ENABLED,
@@ -117,22 +117,3 @@ export const getBaseImportRowData = (val: any, intl: IntlShape) => ({
     [STEPS_SUSCEPTANCE]: parseIntData(val[intl.formatMessage({ id: 'ImportFileSusceptance' })], 0),
     [STEPS_RATIO]: parseFloatData(val[intl.formatMessage({ id: 'Ratio' })], 1),
 });
-
-export const getRegulationTypeLabel = (equipmentId?: string, regulatingTerminalConnectableId?: string) => {
-    if (regulatingTerminalConnectableId != null) {
-        return regulatingTerminalConnectableId === equipmentId
-            ? REGULATION_TYPES.LOCAL.label
-            : REGULATION_TYPES.DISTANT.label;
-    }
-};
-
-export const getTapSideLabel = (
-    equipmentId?: string,
-    voltageLevelId1?: string,
-    regulatingTerminalVlId?: string,
-    regulatingTerminalConnectableId?: string
-) => {
-    if (regulatingTerminalConnectableId === equipmentId) {
-        return regulatingTerminalVlId === voltageLevelId1 ? SIDE.SIDE1.label : SIDE.SIDE2.label;
-    }
-};

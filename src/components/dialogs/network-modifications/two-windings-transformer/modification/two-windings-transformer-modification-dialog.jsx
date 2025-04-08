@@ -858,7 +858,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify?.ratioTapChanger}
                                 editData={editData?.ratioTapChanger}
-                                equipmentId={selectedId}
+                                equipmentId={twtToModify?.equipmentId}
                                 voltageLevelId1={twtToModify?.voltageLevelId1}
                                 isModification={true}
                             />
@@ -871,7 +871,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify?.phaseTapChanger}
                                 editData={editData?.phaseTapChanger}
-                                equipmentId={selectedId}
+                                equipmentId={twtToModify?.equipmentId}
                                 voltageLevelId1={twtToModify?.voltageLevelId1}
                                 isModification={true}
                             />

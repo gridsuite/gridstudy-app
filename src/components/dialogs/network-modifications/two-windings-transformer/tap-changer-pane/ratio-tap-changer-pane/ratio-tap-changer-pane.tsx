@@ -31,7 +31,6 @@ import { NetworkModificationDialogProps } from '../../../../../graph/menus/netwo
 import { RatioTapChangerFormInfos } from './ratio-tap-changer.type';
 import { useIntl } from 'react-intl';
 import { RatioTapChangerInfos } from '../../../../../../services/network-modification-types';
-import { getRegulationTypeLabel, getTapSideLabel } from '../tap-changer-pane-utils';
 
 export type RatioTapChangerPaneProps = NetworkModificationDialogProps & {
     id?: string;
@@ -105,6 +104,27 @@ export default function RatioTapChangerPane({
         return regulationTypeWatch || getComputedPreviousRatioRegulationType(equipmentId, previousValues);
     }, [equipmentId, previousValues, regulationTypeWatch]);
 
+    const getRegulationTypeLabel = (regulatingTerminalConnectableId?: string) => {
+        if (regulatingTerminalConnectableId != null && equipmentId != null) {
+            return intl.formatMessage({
+                id:
+                    regulatingTerminalConnectableId === equipmentId
+                        ? REGULATION_TYPES.LOCAL.label
+                        : REGULATION_TYPES.DISTANT.label,
+            });
+        }
+        return undefined;
+    };
+
+    const getTapSideLabel = (regulatingTerminalVlId?: string, regulatingTerminalConnectableId?: string) => {
+        if (regulatingTerminalConnectableId != null && equipmentId != null) {
+            return intl.formatMessage({
+                id: regulatingTerminalVlId === voltageLevelId1 ? SIDE.SIDE1.label : SIDE.SIDE2.label,
+            });
+        }
+        return undefined;
+    };
+
     // we want to update the validation of these fields when they become optionals to remove the red alert
     useEffect(() => {
         if (regulationModeWatch === RATIO_REGULATION_MODES.FIXED_RATIO.id) {
@@ -141,7 +161,9 @@ export default function RatioTapChangerPane({
             size={'small'}
             disabled={!ratioTapChangerEnabledWatcher}
             previousValue={
-                isModification ? getRatioTapChangerRegulationModeLabel(previousValues?.isRegulating) : undefined
+                isModification
+                    ? (getRatioTapChangerRegulationModeLabel(previousValues?.isRegulating) ?? undefined)
+                    : undefined
             }
         />
     );
@@ -155,9 +177,7 @@ export default function RatioTapChangerPane({
             size={'small'}
             previousValue={
                 isModification
-                    ? intl.formatMessage({
-                          id: getRegulationTypeLabel(equipmentId, previousValues?.regulatingTerminalConnectableId),
-                      })
+                    ? (getRegulationTypeLabel(previousValues?.regulatingTerminalConnectableId) ?? undefined)
                     : undefined
             }
         />
@@ -172,14 +192,10 @@ export default function RatioTapChangerPane({
             size={'small'}
             previousValue={
                 isModification
-                    ? intl.formatMessage({
-                          id: getTapSideLabel(
-                              equipmentId,
-                              voltageLevelId1,
-                              previousValues?.regulatingTerminalVlId,
-                              previousValues?.regulatingTerminalConnectableId
-                          ),
-                      })
+                    ? (getTapSideLabel(
+                          previousValues?.regulatingTerminalVlId,
+                          previousValues?.regulatingTerminalConnectableId
+                      ) ?? undefined)
                     : undefined
             }
         />

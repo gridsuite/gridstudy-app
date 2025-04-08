@@ -32,7 +32,6 @@ import {
     getComputedPreviousPhaseRegulationType,
 } from './phase-tap-changer-pane-utils';
 import { useMemo } from 'react';
-import { getRegulationTypeLabel, getTapSideLabel } from '../tap-changer-pane-utils';
 
 export type PhaseTapChangerPaneProps = NetworkModificationDialogProps & {
     id?: string;
@@ -100,6 +99,27 @@ export default function PhaseTapChangerPane({
         );
     }, [regulationModeWatch, previousValues]);
 
+    const getRegulationTypeLabel = (regulatingTerminalConnectableId?: string) => {
+        if (regulatingTerminalConnectableId != null && equipmentId != null) {
+            return intl.formatMessage({
+                id:
+                    regulatingTerminalConnectableId === equipmentId
+                        ? REGULATION_TYPES.LOCAL.label
+                        : REGULATION_TYPES.DISTANT.label,
+            });
+        }
+        return undefined;
+    };
+
+    const getTapSideLabel = (regulatingTerminalVlId?: string, regulatingTerminalConnectableId?: string) => {
+        if (regulatingTerminalConnectableId != null && equipmentId != null) {
+            return intl.formatMessage({
+                id: regulatingTerminalVlId === voltageLevelId1 ? SIDE.SIDE1.label : SIDE.SIDE2.label,
+            });
+        }
+        return undefined;
+    };
+
     const regulationModeField = (
         <SelectInput
             name={`${id}.${REGULATION_MODE}`}
@@ -109,10 +129,10 @@ export default function PhaseTapChangerPane({
             size={'small'}
             previousValue={
                 isModification
-                    ? getPhaseTapChangerRegulationModeLabel(
+                    ? (getPhaseTapChangerRegulationModeLabel(
                           previousValues?.regulationMode,
                           previousValues?.isRegulating
-                      )
+                      ) ?? undefined)
                     : undefined
             }
         />
@@ -128,9 +148,7 @@ export default function PhaseTapChangerPane({
             disableClearable={!isModification}
             previousValue={
                 isModification
-                    ? intl.formatMessage({
-                          id: getRegulationTypeLabel(equipmentId, previousValues?.regulatingTerminalConnectableId),
-                      })
+                    ? (getRegulationTypeLabel(previousValues?.regulatingTerminalConnectableId) ?? undefined)
                     : undefined
             }
         />
@@ -146,14 +164,10 @@ export default function PhaseTapChangerPane({
             disableClearable={!isModification}
             previousValue={
                 isModification
-                    ? intl.formatMessage({
-                          id: getTapSideLabel(
-                              equipmentId,
-                              voltageLevelId1,
-                              previousValues?.regulatingTerminalConnectableId,
-                              previousValues?.regulatingTerminalVlId
-                          ),
-                      })
+                    ? (getTapSideLabel(
+                          previousValues?.regulatingTerminalVlId,
+                          previousValues?.regulatingTerminalConnectableId
+                      ) ?? undefined)
                     : undefined
             }
         />
@@ -169,11 +183,11 @@ export default function PhaseTapChangerPane({
             adornment={AmpereAdornment}
             previousValue={
                 isModification
-                    ? getRegulatingPreviousValue(
+                    ? (getRegulatingPreviousValue(
                           CURRENT_LIMITER_REGULATING_VALUE,
                           previousValues?.regulationMode,
                           previousValues?.regulationValue
-                      )
+                      ) ?? undefined)
                     : undefined
             }
         />
@@ -189,11 +203,11 @@ export default function PhaseTapChangerPane({
             }}
             previousValue={
                 isModification
-                    ? getRegulatingPreviousValue(
+                    ? (getRegulatingPreviousValue(
                           FLOW_SET_POINT_REGULATING_VALUE,
                           previousValues?.regulationMode,
                           previousValues?.regulationValue
-                      )
+                      ) ?? undefined)
                     : undefined
             }
         />
