@@ -58,25 +58,15 @@ export default function RatioTapChangerPane({
     const intl = useIntl();
 
     const previousRegulation = (hasLoadTapChangingCapabilities?: boolean) => {
-        if (hasLoadTapChangingCapabilities) {
-            return intl.formatMessage({ id: 'On' });
-        }
-        if (!hasLoadTapChangingCapabilities) {
-            return intl.formatMessage({ id: 'Off' });
-        }
-        return null;
+        return intl.formatMessage({ id: hasLoadTapChangingCapabilities ? 'On' : 'Off' });
     };
 
     const getRatioTapChangerRegulationModeLabel = (isRegulating?: boolean) => {
-        if (isRegulating) {
-            return intl.formatMessage({
-                id: RATIO_REGULATION_MODES.VOLTAGE_REGULATION.label,
-            });
-        } else {
-            return intl.formatMessage({
-                id: RATIO_REGULATION_MODES.FIXED_RATIO.label,
-            });
-        }
+        return intl.formatMessage({
+            id: isRegulating
+                ? RATIO_REGULATION_MODES.VOLTAGE_REGULATION.label
+                : RATIO_REGULATION_MODES.FIXED_RATIO.label,
+        });
     };
 
     const ratioTapChangerEnabledWatcher = useWatch({
@@ -105,24 +95,25 @@ export default function RatioTapChangerPane({
     }, [equipmentId, previousValues, regulationTypeWatch]);
 
     const getRegulationTypeLabel = (regulatingTerminalConnectableId?: string) => {
-        if (regulatingTerminalConnectableId != null && equipmentId != null) {
-            return intl.formatMessage({
-                id:
-                    regulatingTerminalConnectableId === equipmentId
-                        ? REGULATION_TYPES.LOCAL.label
-                        : REGULATION_TYPES.DISTANT.label,
-            });
-        }
-        return undefined;
+        return intl.formatMessage({
+            id:
+                regulatingTerminalConnectableId != null &&
+                equipmentId != null &&
+                regulatingTerminalConnectableId === equipmentId
+                    ? REGULATION_TYPES.LOCAL.label
+                    : REGULATION_TYPES.DISTANT.label,
+        });
     };
 
     const getTapSideLabel = (regulatingTerminalVlId?: string, regulatingTerminalConnectableId?: string) => {
-        if (regulatingTerminalConnectableId != null && equipmentId != null) {
-            return intl.formatMessage({
-                id: regulatingTerminalVlId === voltageLevelId1 ? SIDE.SIDE1.label : SIDE.SIDE2.label,
-            });
-        }
-        return undefined;
+        return intl.formatMessage({
+            id:
+                regulatingTerminalConnectableId != null &&
+                equipmentId != null &&
+                regulatingTerminalVlId === voltageLevelId1
+                    ? SIDE.SIDE1.label
+                    : SIDE.SIDE2.label,
+        });
     };
 
     // we want to update the validation of these fields when they become optionals to remove the red alert
