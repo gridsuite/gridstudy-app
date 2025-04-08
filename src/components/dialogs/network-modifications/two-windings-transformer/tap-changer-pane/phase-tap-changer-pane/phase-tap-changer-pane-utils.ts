@@ -254,7 +254,7 @@ export const getComputedPhaseRegulationTypeId = (
     phaseTapChangerFormInfos?: PhaseTapChangerFormInfos
 ) => {
     const regulationType = getComputedPhaseRegulationType(equipmentId, phaseTapChangerFormInfos);
-    return regulationType?.id || null;
+    return regulationType?.id ?? null;
 };
 
 export const getComputedPreviousPhaseRegulationType = (
@@ -262,5 +262,5 @@ export const getComputedPreviousPhaseRegulationType = (
     phaseTapChangerFormInfos?: PhaseTapChangerFormInfos
 ) => {
     const previousRegulationType = getComputedPhaseRegulationType(equipmentId, phaseTapChangerFormInfos);
-    return previousRegulationType?.id || null;
+    return previousRegulationType?.id ?? null;
 };

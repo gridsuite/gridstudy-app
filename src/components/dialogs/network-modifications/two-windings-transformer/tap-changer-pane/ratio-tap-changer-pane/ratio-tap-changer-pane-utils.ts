@@ -246,7 +246,7 @@ export const getComputedRegulationTypeId = (
     ratioTapChangerFormInfos: RatioTapChangerFormInfos
 ) => {
     const regulationType = getComputedRegulationType(equipmentId, ratioTapChangerFormInfos);
-    return regulationType?.id || null;
+    return regulationType?.id ?? null;
 };
 
 export const getComputedRegulationType = (
@@ -284,7 +284,7 @@ export const getInitialTwtRatioRegulationModeId = (ratioTapChangerFormInfos: Rat
     }
     //otherwise, we compute it
     const computedRegulationMode = getComputedRegulationMode(ratioTapChangerFormInfos);
-    return computedRegulationMode?.id || null;
+    return computedRegulationMode?.id ?? null;
 };
 
 export const getComputedPreviousRatioRegulationType = (
@@ -292,7 +292,7 @@ export const getComputedPreviousRatioRegulationType = (
     ratioTapChangerFormInfos?: RatioTapChangerFormInfos
 ) => {
     const previousRegulationType = getComputedRegulationType(equipmentId, ratioTapChangerFormInfos);
-    return previousRegulationType?.id || null;
+    return previousRegulationType?.id ?? null;
 };
 
 export const getComputedTapSideId = (
