@@ -19,13 +19,14 @@ import {
 } from 'services/study-config';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { DropResult } from 'react-beautiful-dnd';
+import { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
 import { UUID } from 'crypto';
 import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import TabLabel from './tab-label';
+import { ResetNodeAliasCallback } from './custom-columns/use-node-aliases';
 
 const draggableTabStyles = {
     container: {
@@ -47,7 +48,7 @@ interface EquipmentTabsProps {
     selectedTabUuid: UUID | null;
     handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
-    resetNodeAliases: (aliases?: string[]) => void;
+    resetNodeAliases: ResetNodeAliasCallback;
 }
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({

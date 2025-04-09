@@ -14,15 +14,16 @@ import GridSection from '../commons/grid-section';
 
 interface SetPointsFormProps {
     previousValues?: { activePower?: number | null; reactivePower?: number | null };
+    isModification?: boolean;
 }
-export function SetPointsForm({ previousValues }: Readonly<SetPointsFormProps>) {
+export function SetPointsForm({ previousValues, isModification = false }: Readonly<SetPointsFormProps>) {
     const activePowerSetPointField = (
         <FloatInput
             name={ACTIVE_POWER_SET_POINT}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={previousValues?.activePower ?? undefined}
-            clearable={true}
+            clearable={isModification}
         />
     );
 
@@ -32,7 +33,7 @@ export function SetPointsForm({ previousValues }: Readonly<SetPointsFormProps>) 
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
             previousValue={previousValues?.reactivePower ?? undefined}
-            clearable={true}
+            clearable={isModification}
         />
     );
 

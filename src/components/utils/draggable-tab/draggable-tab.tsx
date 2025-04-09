@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Draggable } from 'react-beautiful-dnd';
+import { Draggable } from '@hello-pangea/dnd';
 import Tab, { TabProps } from '@mui/material/Tab';
 import { Box } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
