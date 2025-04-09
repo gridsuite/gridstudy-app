@@ -42,14 +42,12 @@ function getDisplayedColumns(gridApi: GridApi) {
 }
 
 function makeRows(resultRecord: Sensitivity[]) {
-    return resultRecord.map((row: Sensitivity) => sanitizeRecord(row));
+    return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
 }
 
-function sanitizeRecord<T extends Sensitivity>(record: T): T {
-    return Object.entries(record).reduce((acc, [key, value]) => {
-        (acc as any)[key] = typeof value === 'string' && isNaN(Number(value)) ? '' : value;
-        return acc;
-    }, {} as T);
+// Replace NaN values by empty string
+function sanitizeObject(record: Object): Object {
+    return Object.fromEntries(Object.entries(record).map(([key, value]) => [key, value === 'NaN' ? '' : value]));
 }
 
 type SensitivityAnalysisResultProps = CustomAGGridProps & {

@@ -144,13 +144,11 @@ const PagedSensitivityAnalysisResult = ({
     const fetchResult = useCallback(() => {
         const sortSelector = sortConfig?.length
             ? {
-                  sortKeysWithWeightAndDirection: sortConfig.reduce(
-                      (acc, value) => ({
-                          ...acc,
-                          [DATA_KEY_TO_SORT_KEY[value.colId as keyof typeof DATA_KEY_TO_SORT_KEY]]:
-                              value.sort === SortWay.DESC ? -1 : 1,
-                      }),
-                      {}
+                  sortKeysWithWeightAndDirection: Object.fromEntries(
+                      sortConfig.map((value) => [
+                          DATA_KEY_TO_SORT_KEY[value.colId as keyof typeof DATA_KEY_TO_SORT_KEY],
+                          value.sort === SortWay.DESC ? -1 : 1,
+                      ])
                   ),
               }
             : {};
@@ -158,15 +156,14 @@ const PagedSensitivityAnalysisResult = ({
         const selector = {
             tabSelection: SensitivityResultTabs[nOrNkIndex].id,
             functionType: FUNCTION_TYPES[sensiKind],
-            offset: page * rowsPerPage,
-            pageSize: rowsPerPage,
+            offset: typeof rowsPerPage === 'number' ? page * rowsPerPage : rowsPerPage.value,
+            pageSize: typeof rowsPerPage === 'number' ? rowsPerPage : rowsPerPage.value,
             pageNumber: page,
-            ...filters?.reduce(
-                (acc, curr) => ({
-                    ...acc,
-                    [DATA_KEY_TO_FILTER_KEY[curr.column as keyof typeof DATA_KEY_TO_FILTER_KEY]]: curr.value,
-                }),
-                {}
+            ...Object.fromEntries(
+                filters?.map((elem) => [
+                    DATA_KEY_TO_FILTER_KEY[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY],
+                    elem.value,
+                ])
             ),
             ...sortSelector,
         };
@@ -228,7 +225,7 @@ const PagedSensitivityAnalysisResult = ({
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
                 count={count}
-                rowsPerPage={rowsPerPage}
+                rowsPerPage={typeof rowsPerPage === 'number' ? rowsPerPage : rowsPerPage.value}
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
