@@ -167,7 +167,7 @@ export function LoadCreationDialog({
                 nodeUuid: currentNodeUuid,
                 id: load[EQUIPMENT_ID],
                 name: sanitizeString(load[EQUIPMENT_NAME]),
-                loadType: !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
+                loadType: load[LOAD_TYPE] ?? UNDEFINED_LOAD_TYPE,
                 p0: load[ACTIVE_POWER_SETPOINT],
                 q0: load[REACTIVE_POWER_SET_POINT],
                 voltageLevelId: load.connectivity.voltageLevel.id,
