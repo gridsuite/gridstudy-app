@@ -9,7 +9,7 @@ import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/c
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ACTIVE_POWER_SETPOINT,
-    CHARACTERISTICS,
+    ADDITIONAL_PROPERTIES,
     CONNECTIVITY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -199,7 +199,11 @@ export function LoadCreationDialog({
 
     const onValidationError = (errors: FieldErrors) => {
         let tabsInError: number[] = [];
-        if (errors?.[CHARACTERISTICS] !== undefined) {
+        if (
+            errors?.[ACTIVE_POWER_SETPOINT] !== undefined ||
+            errors?.[REACTIVE_POWER_SET_POINT] !== undefined ||
+            errors?.[ADDITIONAL_PROPERTIES] !== undefined
+        ) {
             tabsInError.push(LoadDialogTab.CHARACTERISTICS_TAB);
         }
         if (errors?.[CONNECTIVITY] !== undefined) {
