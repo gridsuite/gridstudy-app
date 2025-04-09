@@ -47,6 +47,7 @@ import LoadDialogHeader from '../common/load-dialog-header';
 import { LoadDialogTab } from '../common/load-utils';
 import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
+import useVoltageLevelsListInfos from 'hooks/use-voltage-levels-list-infos';
 
 /**
  * Dialog to create a load in the network
@@ -97,6 +98,7 @@ export function LoadCreationDialog({
     const { snackError } = useSnackMessage();
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const formMethods = useForm<DeepNullable<LoadCreationSchemaForm>>({
         defaultValues: emptyFormData,
@@ -233,6 +235,7 @@ export function LoadCreationDialog({
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     tabIndex={tabIndex}
+                    voltageLevelOptions={voltageLevelOptions}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
