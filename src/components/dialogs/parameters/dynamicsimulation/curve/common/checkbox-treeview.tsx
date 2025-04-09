@@ -7,11 +7,9 @@
 
 import * as React from 'react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { alpha, Checkbox, SxProps, Theme, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { treeItemClasses, TreeView, TreeItem } from '@mui/x-tree-view';
+import { treeItemClasses, SimpleTreeView, TreeItem } from '@mui/x-tree-view';
 
 import { ModelVariable } from '../../dynamic-simulation.type';
 
@@ -35,7 +33,7 @@ const BorderedTreeItem = styled(TreeItem)(({ root }: { root: boolean }) => {
             top: 20,
             borderBottom: root ? 'none' : border,
         },
-        [`& .${treeItemClasses.group}`]: {
+        [`& .${treeItemClasses.groupTransition}`]: {
             marginLeft: 15,
             paddingLeft: 18,
             borderLeft: border,
@@ -209,7 +207,7 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             return itemsToRender.map((elem) => (
                 <BorderedTreeItem
                     key={elem.id}
-                    nodeId={elem.id}
+                    itemId={elem.id}
                     onClick={handleExpand}
                     root={!elem.parentId}
                     label={
@@ -228,11 +226,7 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             ));
         };
 
-        return (
-            <TreeView defaultCollapseIcon={<ExpandMoreIcon />} defaultExpandIcon={<ChevronRightIcon />} {...rest}>
-                {renderItems(items)}
-            </TreeView>
-        );
+        return <SimpleTreeView {...rest}>{renderItems(items)}</SimpleTreeView>;
     }
 );
 
