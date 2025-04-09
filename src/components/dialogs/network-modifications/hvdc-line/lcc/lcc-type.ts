@@ -6,7 +6,26 @@
  */
 import { Property } from '../../common/properties/property-utils';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
-import { ConnectablePositionInfos } from '../../../connectivity/connectivity.type';
+import { ConnectablePositionInfos, Connectivity } from '../../../connectivity/connectivity.type';
+import {
+    ACTIVE_POWER_SETPOINT,
+    ADDITIONAL_PROPERTIES,
+    CONNECTIVITY,
+    CONVERTER_STATION_1,
+    CONVERTER_STATION_2,
+    CONVERTER_STATION_ID,
+    CONVERTER_STATION_NAME,
+    CONVERTERS_MODE,
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
+    FILTERS_SHUNT_COMPENSATOR_TABLE,
+    HVDC_LINE_TAB,
+    LOSS_FACTOR,
+    MAX_P,
+    NOMINAL_V,
+    POWER_FACTOR,
+    R,
+} from '../../../../utils/field-constants';
 
 export const LccCreationDialogTab = {
     HVDC_LINE_TAB: 0,
@@ -14,7 +33,37 @@ export const LccCreationDialogTab = {
     CONVERTER_STATION_2: 2,
 };
 
-export interface LccCreationInfos {
+export type LccModificationSchemaForm = {
+    [CONVERTER_STATION_1]: ConverterStationBaseType;
+    [CONVERTER_STATION_2]: ConverterStationBaseType;
+} & Partial<LccBaseSchemaForm>;
+
+export type LccCreationSchemaForm = {
+    [EQUIPMENT_ID]: string;
+    [CONVERTER_STATION_1]: { [CONVERTER_STATION_ID]: string; [CONNECTIVITY]: Connectivity } & ConverterStationBaseType;
+    [CONVERTER_STATION_2]: { [CONVERTER_STATION_ID]: string; [CONNECTIVITY]: Connectivity } & ConverterStationBaseType;
+} & LccBaseSchemaForm;
+
+export type LccBaseSchemaForm = {
+    [EQUIPMENT_NAME]?: string;
+    [HVDC_LINE_TAB]: {
+        [NOMINAL_V]: number;
+        [R]: number;
+        [MAX_P]: number;
+        [CONVERTERS_MODE]: string;
+        [ACTIVE_POWER_SETPOINT]: number;
+        [ADDITIONAL_PROPERTIES]?: Property[];
+    };
+};
+
+interface ConverterStationBaseType {
+    [CONVERTER_STATION_NAME]?: string;
+    [LOSS_FACTOR]: number;
+    [POWER_FACTOR]: number;
+    [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorFormSchema[];
+}
+
+export interface LccInfos {
     uuid: string;
     equipmentType: EQUIPMENT_TYPES;
     equipmentId: string;

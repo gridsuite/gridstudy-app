@@ -23,6 +23,7 @@ import {
     GeneratorCreationInfos,
     GeneratorModificationInfos,
     LCCCreationInfo,
+    LCCModificationInfo,
     LineCreationInfo,
     LineModificationInfo,
     LinesAttachToSplitLinesInfo,
@@ -1701,6 +1702,52 @@ export function createLcc({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.LCC_CREATION.type,
+            equipmentId: id,
+            equipmentName: name,
+            nominalV: nominalV,
+            r: r,
+            maxP: maxP,
+            convertersMode: convertersMode,
+            activePowerSetpoint: activePowerSetpoint,
+            converterStation1: converterStation1,
+            converterStation2: converterStation2,
+            properties: properties,
+        }),
+    });
+}
+export function modifyLcc({
+    studyUuid,
+    nodeUuid,
+    id,
+    name,
+    nominalV,
+    r,
+    maxP,
+    convertersMode,
+    activePowerSetpoint,
+    converterStation1,
+    converterStation2,
+    properties,
+    isUpdate = false,
+    modificationUuid,
+}: LCCModificationInfo) {
+    let modifyLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (isUpdate) {
+        modifyLccUrl += '/' + safeEncodeURIComponent(modificationUuid);
+        console.info('Updating lcc hvdc line creation');
+    } else {
+        console.info('Creating lcc hvdc line creation');
+    }
+
+    return backendFetchText(modifyLccUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.LCC_MODIFICATION.type,
             equipmentId: id,
             equipmentName: name,
             nominalV: nominalV,

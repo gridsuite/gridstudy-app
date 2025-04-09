@@ -36,7 +36,7 @@ import yup from '../../../../utils/yup-config';
 import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,
-    LccCreationInfos,
+    LccInfos,
     LccFormInfos,
     ShuntCompensatorFormSchema,
     ShuntCompensatorInfos,
@@ -94,14 +94,21 @@ export const getLccConverterStationModificationSchema = () =>
         [CONVERTER_STATION_NAME]: yup.string().nullable(),
         [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
         [POWER_FACTOR]: yup.number().nullable().min(-1, 'powerFactorMinValueError').max(1, 'powerFactorMaxValueError'),
-        [FILTERS_SHUNT_COMPENSATOR_TABLE]: yup.array().of(
-            yup.object().shape({
-                [SHUNT_COMPENSATOR_ID]: yup.string().required(),
-                [SHUNT_COMPENSATOR_NAME]: yup.string().nullable(),
-                [MAX_Q_AT_NOMINAL_V]: yup.number().nullable().min(0, 'qMaxAtNominalVMustBeGreaterThanZero').required(),
-                [SHUNT_COMPENSATOR_SELECTED]: yup.boolean().nullable(),
-            })
-        ),
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [SHUNT_COMPENSATOR_ID]: yup.string().nullable().required(),
+                    [SHUNT_COMPENSATOR_NAME]: yup.string().nullable(),
+                    [MAX_Q_AT_NOMINAL_V]: yup
+                        .number()
+                        .nullable()
+                        .min(0, 'qMaxAtNominalVMustBeGreaterThanZero')
+                        .required(),
+                    [SHUNT_COMPENSATOR_SELECTED]: yup.boolean().nullable(),
+                })
+            )
+            .nullable(),
     });
 
 export const getEmptyShuntCompensatorOnSideFormData = () => ({
@@ -238,6 +245,24 @@ export function getLccConverterStationCreationData(converterStation: {
     };
 }
 
+export function getLccConverterStationModificationData(converterStation: {
+    converterStationId: string;
+    converterStationName?: string;
+    lossFactor: number;
+    powerFactor: number;
+    connectivity: Connectivity;
+    shuntCompensatorInfos?: ShuntCompensatorFormSchema[];
+}) {
+    return {
+        type: MODIFICATION_TYPES.LCC_CONVERTER_STATION_MODIFICATION.type,
+        equipmentId: converterStation[CONVERTER_STATION_ID],
+        equipmentName: converterStation[CONVERTER_STATION_NAME],
+        lossFactor: converterStation[LOSS_FACTOR],
+        powerFactor: converterStation[POWER_FACTOR],
+        shuntCompensatorsOnSide: getShuntCompensatorOnSideCreateData(converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE]),
+    };
+}
+
 export const getLccHvdcLineSchema = () =>
     yup
         .object()
@@ -267,10 +292,9 @@ export const getLccHvdcLineModificationSchema = () =>
                 .nullable()
                 .min(0, 'activePowerSetpointMinValueError')
                 .max(yup.ref(MAX_P), 'activePowerSetpointMaxValueError'),
-            [CONVERTERS_MODE]: yup.string().nullable(),
+            [CONVERTERS_MODE]: yup.string(),
         })
-        .concat(modificationPropertiesSchema)
-        .required();
+        .concat(modificationPropertiesSchema);
 
 export function getLccHvdcLineEmptyFormData() {
     return {
@@ -294,7 +318,7 @@ export function getLccHvdcLineFromSearchCopy(hvdcLine: LccFormInfos) {
     };
 }
 
-export function getLccHvdcLineFromEditData(hvdcLine: LccCreationInfos) {
+export function getLccHvdcLineFromEditData(hvdcLine: LccInfos) {
     return {
         [NOMINAL_V]: hvdcLine.nominalV,
         [R]: hvdcLine.r,
