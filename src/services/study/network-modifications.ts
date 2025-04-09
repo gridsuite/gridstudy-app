@@ -433,6 +433,10 @@ export function modifyLoad({
     connectionDirection = undefined,
     connectionPosition = undefined,
     terminalConnected = undefined,
+    pMeasurementValue,
+    pMeasurementValidity,
+    qMeasurementValue,
+    qMeasurementValidity,
     properties,
 }: LoadModificationInfo) {
     let modifyLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
@@ -464,6 +468,10 @@ export function modifyLoad({
             q0: toModificationOperation(q0),
             voltageLevelId: toModificationOperation(voltageLevelId),
             busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+            pMeasurementValue: toModificationOperation(pMeasurementValue),
+            pMeasurementValidity: toModificationOperation(pMeasurementValidity),
+            qMeasurementValue: toModificationOperation(qMeasurementValue),
+            qMeasurementValidity: toModificationOperation(qMeasurementValidity),
             properties,
         }),
     });
