@@ -263,10 +263,10 @@ export default function PhaseTapChangerPane({
                     </>
                 )}
                 {regulationMode === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id && (
-                    <>
+                    <Grid item container spacing={1}>
                         <GridItem size={4}>{flowSetPointRegulatingValueField}</GridItem>
                         <GridItem size={4}>{targetDeadbandField}</GridItem>
-                    </>
+                    </Grid>
                 )}
             </Grid>
 
