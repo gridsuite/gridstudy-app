@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -73,12 +73,12 @@ interface TabInfo {
     subTabs?: { label: string }[];
 }
 
-const SensitivityParametersSelector: FunctionComponent<SensitivityParametersSelectorProps> = ({
+function SensitivityParametersSelector({
     onFormChanged,
     onChangeParams,
     launchLoader,
     analysisComputeComplexity,
-}) => {
+}: Readonly<SensitivityParametersSelectorProps>) {
     const intl = useIntl();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -297,6 +297,6 @@ const SensitivityParametersSelector: FunctionComponent<SensitivityParametersSele
             </Grid>
         </>
     );
-};
+}
 
 export default SensitivityParametersSelector;

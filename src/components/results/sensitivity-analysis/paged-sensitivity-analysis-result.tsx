@@ -47,7 +47,7 @@ export type PagedSensitivityAnalysisResultProps = {
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
 };
 
-const PagedSensitivityAnalysisResult = ({
+function PagedSensitivityAnalysisResult({
     nOrNkIndex,
     sensiKind,
     studyUuid,
@@ -57,7 +57,7 @@ const PagedSensitivityAnalysisResult = ({
     setPage,
     setCsvHeaders,
     setIsCsvButtonDisabled,
-}: Readonly<PagedSensitivityAnalysisResultProps>) => {
+}: Readonly<PagedSensitivityAnalysisResultProps>) {
     const intl = useIntl();
 
     const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_COUNT);
@@ -232,6 +232,6 @@ const PagedSensitivityAnalysisResult = ({
             />
         </>
     );
-};
+}
 
 export default PagedSensitivityAnalysisResult;

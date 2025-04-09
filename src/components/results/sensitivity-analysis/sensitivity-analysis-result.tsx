@@ -61,7 +61,7 @@ type SensitivityAnalysisResultProps = CustomAGGridProps & {
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
 };
 
-const SensitivityAnalysisResult = ({
+function SensitivityAnalysisResult({
     result,
     nOrNkIndex = 0,
     sensiKind = SENSITIVITY_IN_DELTA_MW,
@@ -71,7 +71,7 @@ const SensitivityAnalysisResult = ({
     setCsvHeaders,
     setIsCsvButtonDisabled,
     ...props
-}: Readonly<SensitivityAnalysisResultProps>) => {
+}: Readonly<SensitivityAnalysisResultProps>) {
     const gridRef = useRef(null);
     const intl = useIntl();
     const sensitivityAnalysisStatus = useSelector(
@@ -259,6 +259,6 @@ const SensitivityAnalysisResult = ({
             />
         </div>
     );
-};
+}
 
 export default SensitivityAnalysisResult;
