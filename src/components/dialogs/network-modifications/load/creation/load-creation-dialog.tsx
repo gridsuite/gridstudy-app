@@ -9,7 +9,7 @@ import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/c
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ACTIVE_POWER_SETPOINT,
-    CHARACTERISTICS,
+    ADDITIONAL_PROPERTIES,
     CONNECTIVITY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -47,6 +47,7 @@ import LoadDialogHeader from '../common/load-dialog-header';
 import { LoadDialogTab } from '../common/load-utils';
 import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
+import useVoltageLevelsListInfos from 'hooks/use-voltage-levels-list-infos';
 
 /**
  * Dialog to create a load in the network
@@ -97,6 +98,7 @@ export function LoadCreationDialog({
     const { snackError } = useSnackMessage();
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const formMethods = useForm<DeepNullable<LoadCreationSchemaForm>>({
         defaultValues: emptyFormData,
@@ -165,7 +167,7 @@ export function LoadCreationDialog({
                 nodeUuid: currentNodeUuid,
                 id: load[EQUIPMENT_ID],
                 name: sanitizeString(load[EQUIPMENT_NAME]),
-                loadType: !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
+                loadType: load[LOAD_TYPE] ?? UNDEFINED_LOAD_TYPE,
                 p0: load[ACTIVE_POWER_SETPOINT],
                 q0: load[REACTIVE_POWER_SET_POINT],
                 voltageLevelId: load.connectivity.voltageLevel.id,
@@ -197,7 +199,11 @@ export function LoadCreationDialog({
 
     const onValidationError = (errors: FieldErrors) => {
         let tabsInError: number[] = [];
-        if (errors?.[CHARACTERISTICS] !== undefined) {
+        if (
+            errors?.[ACTIVE_POWER_SETPOINT] !== undefined ||
+            errors?.[REACTIVE_POWER_SET_POINT] !== undefined ||
+            errors?.[ADDITIONAL_PROPERTIES] !== undefined
+        ) {
             tabsInError.push(LoadDialogTab.CHARACTERISTICS_TAB);
         }
         if (errors?.[CONNECTIVITY] !== undefined) {
@@ -233,6 +239,7 @@ export function LoadCreationDialog({
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     tabIndex={tabIndex}
+                    voltageLevelOptions={voltageLevelOptions}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
