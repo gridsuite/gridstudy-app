@@ -159,45 +159,36 @@ function ResultsGlobalFilter({
     const handleChange = useCallback(
         async (globalFilters: GlobalFilter[]): Promise<void> => {
             let globalFiltersToAddToRecents: GlobalFilter[] = [...globalFilters];
-            const fetchFiltersPromises: Promise<UUID | null>[] = globalFilters
-                // checks if the generic filters still exist, and sets their path value
-                .filter((globalFilter: GlobalFilter) => globalFilter.filterType === FilterType.GENERIC_FILTER)
-                .map(async (fetchedGlobalFilter: GlobalFilter): Promise<UUID | null> => {
-                    if (fetchedGlobalFilter.uuid) {
-                        try {
-                            const response: ElementAttributes[] = await fetchDirectoryElementPath(
-                                fetchedGlobalFilter.uuid
-                            );
-                            const parentDirectoriesNames = response.map((parent) => parent.elementName);
-                            const path = computeFullPath(parentDirectoriesNames);
-                            const fetchedFilter: GlobalFilter | undefined = globalFilters.find(
-                                (globalFilter) => globalFilter.uuid === fetchedGlobalFilter.uuid
-                            );
-                            if (fetchedFilter && !fetchedFilter.path) {
-                                fetchedFilter.path = path;
-                            }
-                        } catch (error) {
-                            return fetchedGlobalFilter.uuid;
-                        }
+            // @ts-ignore : eslint don't take the filter into account and therefore don't get correctly the type of globalFiltersUuids
+            const globalFiltersUuids: UUID[] = globalFilters
+                .map((globalFilter) => globalFilter.uuid)
+                .filter((globalFilterUUID) => globalFilterUUID !== undefined);
+
+            for (const globalFilterUuid of globalFiltersUuids) {
+                try {
+                    // checks if the generic filters still exist, and sets their path value
+                    const response: ElementAttributes[] = await fetchDirectoryElementPath(globalFilterUuid);
+                    const parentDirectoriesNames = response.map((parent) => parent.elementName);
+                    const path = computeFullPath(parentDirectoriesNames);
+                    const fetchedFilter: GlobalFilter | undefined = globalFilters.find(
+                        (globalFilter) => globalFilter.uuid === globalFilterUuid
+                    );
+                    if (fetchedFilter && !fetchedFilter.path) {
+                        fetchedFilter.path = path;
                     }
-                    return null;
-                });
-            const missingFiltersUuids = await Promise.all(fetchFiltersPromises);
-            // remove those missing filters from recent global filters
-            missingFiltersUuids
-                .filter((uuid: UUID | null) => uuid != null)
-                .forEach((missingFiltersuuid) => {
-                    if (missingFiltersuuid != null) {
-                        dispatch(removeFromRecentGlobalFilters(missingFiltersuuid));
-                    }
+                } catch (error) {
+                    // remove those missing filters from recent global filters
+                    dispatch(removeFromRecentGlobalFilters(globalFilterUuid));
                     globalFiltersToAddToRecents = globalFiltersToAddToRecents.filter(
-                        (globalFilter) => globalFilter.uuid !== missingFiltersuuid
+                        (globalFilter) => globalFilter.uuid !== globalFilterUuid
                     );
                     snackError({
-                        messageTxt: globalFilters.find((filter) => filter.uuid === missingFiltersuuid)?.path,
+                        messageTxt: globalFilters.find((filter) => filter.uuid === globalFilterUuid)?.path,
                         headerId: 'ComputationFilterResultsError',
                     });
-                });
+                }
+            }
+
             setSelectedGlobalFilters(globalFilters);
             // Updates the "recent" filters unless they have not been found
             dispatch(addToRecentGlobalFilters(globalFiltersToAddToRecents));
