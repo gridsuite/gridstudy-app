@@ -22,8 +22,6 @@ import CustomTablePagination from '../../utils/custom-table-pagination';
 import {
     fetchSensitivityAnalysisFilterOptions,
     fetchSensitivityAnalysisResult,
-    SensitivityResult,
-    SensitivityResultFilterOptions,
 } from '../../../services/study/sensitivity-analysis';
 import { useSelector } from 'react-redux';
 import { ComputingType } from 'components/computing-status/computing-type';
@@ -34,6 +32,7 @@ import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-a
 import { UUID } from 'crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
+import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;

@@ -12,7 +12,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { updateConfigParameter } from 'services/config';
 import { AppConfigState } from 'redux/reducer';
 
-const simpleStringConverter = <T>(value: T) => `${value}`;
+import { simpleConverterToString } from '../../../utils/types-utils';
 
 // Overload for primitive types: paramValueUpdateConvertor is optional
 export function useParameterState<K extends keyof AppConfigState>(
@@ -45,7 +45,7 @@ export function useParameterState<K extends keyof AppConfigState>(
     const handleChangeParamLocalState = useCallback(
         (value: AppConfigState[K]) => {
             setParamLocalState(value);
-            updateConfigParameter(paramName, (paramValueUpdateConvertor ?? simpleStringConverter)(value)).catch(
+            updateConfigParameter(paramName, (paramValueUpdateConvertor ?? simpleConverterToString)(value)).catch(
                 (error) => {
                     setParamLocalState(paramGlobalState);
                     snackError({

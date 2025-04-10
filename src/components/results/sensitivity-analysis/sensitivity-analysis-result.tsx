@@ -26,26 +26,29 @@ import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensi
 import { AppState } from '../../../redux/reducer';
 import type { GridReadyEvent } from 'ag-grid-community/dist/types/src/events';
 import { ColDef, ColGroupDef, GridApi, GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
-import { Sensitivity } from '../../../services/study/sensitivity-analysis';
+
+import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 
 function isColDef(col: ColDef | ColGroupDef): col is ColDef {
     return (col as ColDef).field !== undefined;
 }
 
-function getDisplayedColumns(gridApi: GridApi) {
-    return gridApi.getColumnDefs()?.map((c) => {
-        if (isColDef(c)) {
-            return c.headerComponentParams?.displayName;
-        }
-        return '';
-    });
+function getColumnHeaderDisplayNames(gridApi: GridApi): string[] {
+    return (
+        gridApi.getColumnDefs()?.map((c) => {
+            if (isColDef(c)) {
+                return c.headerComponentParams?.displayName;
+            }
+            return '';
+        }) ?? []
+    );
 }
 
 function makeRows(resultRecord: Sensitivity[]) {
     return resultRecord.map((row: Sensitivity) => sanitizeObject(row));
 }
 
-// Replace NaN values by empty string
+// Replace NaN values with an empty string
 function sanitizeObject(record: Object): Object {
     return Object.fromEntries(Object.entries(record).map(([key, value]) => [key, value === 'NaN' ? '' : value]));
 }
@@ -209,7 +212,7 @@ function SensitivityAnalysisResult({
     const handleGridColumnsChanged = useCallback(
         (event: GridColumnsChangedEvent) => {
             if (event?.api) {
-                setCsvHeaders(getDisplayedColumns(event.api) ?? []);
+                setCsvHeaders(getColumnHeaderDisplayNames(event.api) ?? []);
             }
         },
         [setCsvHeaders]
@@ -228,7 +231,7 @@ function SensitivityAnalysisResult({
         (event: GridReadyEvent) => {
             if (event.api) {
                 event.api.sizeColumnsToFit();
-                setCsvHeaders(getDisplayedColumns(event.api) ?? []);
+                setCsvHeaders(getColumnHeaderDisplayNames(event.api) ?? []);
             }
         },
         [setCsvHeaders]

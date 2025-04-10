@@ -21,14 +21,14 @@ type SliderParameterLineProps = {
     maxValue?: number; //default = 100;
 };
 
-const ParameterLineSlider = ({
+function ParameterLineSlider({
     name,
     label,
     marks,
     disabled = false,
     minValue = 0,
     maxValue = 100,
-}: Readonly<SliderParameterLineProps>) => {
+}: Readonly<SliderParameterLineProps>) {
     return (
         <>
             <Grid item xs={8} sx={styles.parameterName}>
@@ -49,6 +49,6 @@ const ParameterLineSlider = ({
             </Grid>
         </>
     );
-};
+}
 
 export default ParameterLineSlider;
