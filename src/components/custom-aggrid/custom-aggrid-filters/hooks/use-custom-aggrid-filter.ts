@@ -113,7 +113,7 @@ export const useCustomAggridFilter = (
             const filterObject = filters?.find((filter) => filter.column === colId);
             if (filterObject) {
                 setSelectedFilterData(filterObject.value);
-                setSelectedFilterComparator(selectedFilterComparator || filterObject.type || '');
+                setSelectedFilterComparator((selectedFilterComparator || filterObject.type) ?? '');
             } else {
                 setSelectedFilterData(undefined);
             }
