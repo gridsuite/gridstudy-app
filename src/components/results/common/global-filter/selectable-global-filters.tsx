@@ -22,6 +22,7 @@ import { GlobalFilter } from './global-filter-types';
 import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 const XS_COLUMN1: number = 3.5;
 const XS_COLUMN2: number = 4;
@@ -110,33 +111,29 @@ function SelectableGlobalFilters({
                         </List>
                     </Grid>
                     <Grid item xs={XS_COLUMN2}>
-                        <Box sx={resultsGlobalFilterStyles.cell}>
-                            <Box
-                                sx={
+                        <Box
+                            sx={mergeSx(resultsGlobalFilterStyles.cell, {
+                                height:
                                     filterGroupSelected === FilterType.GENERIC_FILTER
-                                        ? {
-                                              height: `${GLOBAL_FILTERS_CELL_HEIGHT - IMPORT_FILTER_HEIGHT}px`,
-                                              overflow: 'auto',
-                                          }
-                                        : undefined
-                                }
-                            >
-                                {children}
-                            </Box>
-                            {filterGroupSelected === FilterType.GENERIC_FILTER && (
-                                <Button
-                                    startIcon={<FileUploadIcon />}
-                                    fullWidth={true}
-                                    sx={resultsGlobalFilterStyles.importFilterButton}
-                                    onMouseDown={onClickGenericFilterButton}
-                                >
-                                    <FormattedMessage id={'results.globalFilter.loadFilter'} />
-                                </Button>
-                            )}
+                                        ? `${GLOBAL_FILTERS_CELL_HEIGHT - IMPORT_FILTER_HEIGHT}px`
+                                        : `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+                            })}
+                        >
+                            {children}
                         </Box>
+                        {filterGroupSelected === FilterType.GENERIC_FILTER && (
+                            <Button
+                                startIcon={<FileUploadIcon />}
+                                fullWidth={true}
+                                sx={resultsGlobalFilterStyles.importFilterButton}
+                                onMouseDown={onClickGenericFilterButton}
+                            >
+                                <FormattedMessage id={'results.globalFilter.loadFilter'} />
+                            </Button>
+                        )}
                     </Grid>
                     <Grid item xs={XS_COLUMN3}>
-                        <List sx={resultsGlobalFilterStyles.cell}>
+                        <List sx={mergeSx(resultsGlobalFilterStyles.cell, { overflow: 'auto' })}>
                             {selectedGlobalFilters.map((element: GlobalFilter) => (
                                 <ListItem key={element.label} sx={{ height: '1.8em' }}>
                                     <Chip

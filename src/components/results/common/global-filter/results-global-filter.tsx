@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { forwardRef, HTMLAttributes, JSXElementConstructor, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteCloseReason,
@@ -48,12 +48,9 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { computeFullPath } from '../../../../utils/compute-title';
 import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import List from '@mui/material/List';
 
-const TAG_lIMIT_NUMBER: number = 4;
-const TAG_LABEL_LENGTH_lIMIT: number = 5;
+const TAG_LIMIT_NUMBER: number = 4;
+const TAG_LABEL_LENGTH_LIMIT: number = 5;
 
 const emptyArray: GlobalFilter[] = [];
 
@@ -119,13 +116,6 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
         </Tooltip>
     );
 }
-
-// "cleaned" ListboxComponent in order to remove all the default styles :
-const EmptyListboxComponent: JSXElementConstructor<HTMLAttributes<HTMLElement>> = forwardRef(
-    function ListboxComponent(props, _ref) {
-        return <List role="datalist">{props.children}</List>;
-    }
-);
 
 export interface ResultsGlobalFilterProps {
     onChange: (filters: GlobalFilter[]) => void;
@@ -311,7 +301,7 @@ function ResultsGlobalFilter({
             const label = getOptionLabel(element, translate);
             const truncate = label.length >= maxLabelLength;
             const key: string = `inputFieldChip_${element.label}`;
-            if (index < TAG_lIMIT_NUMBER) {
+            if (index < TAG_LIMIT_NUMBER) {
                 return (
                     <Chip
                         size="small"
@@ -324,8 +314,8 @@ function ResultsGlobalFilter({
             }
 
             // the last chip displayed, with a +, the following are hidden
-            if (index === TAG_lIMIT_NUMBER) {
-                return <Chip size="small" label={`+${filtersNumber - TAG_lIMIT_NUMBER}`} key={key} />;
+            if (index === TAG_LIMIT_NUMBER) {
+                return <Chip size="small" label={`+${filtersNumber - TAG_LIMIT_NUMBER}`} key={key} />;
             }
 
             return undefined;
@@ -374,8 +364,8 @@ function ResultsGlobalFilter({
                 // renderTags : the chips in the inputField
                 // only a small subset is displayed because all of them are displayed in the dropdown when the field is focused
                 renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
-                    const tooManyTags = filters.length > TAG_lIMIT_NUMBER;
-                    const maxLabelLength = tooManyTags ? TAG_LABEL_LENGTH_lIMIT : TAG_LABEL_LENGTH_lIMIT + 2;
+                    const tooManyTags = filters.length > TAG_LIMIT_NUMBER;
+                    const maxLabelLength = tooManyTags ? TAG_LABEL_LENGTH_LIMIT : TAG_LABEL_LENGTH_LIMIT + 2;
                     return filters.map((element: GlobalFilter, index: number) => {
                         return inputFieldChip(element, maxLabelLength, index, getTagsProps, filters.length);
                     });
@@ -392,18 +382,10 @@ function ResultsGlobalFilter({
                     const hideOption = selected && option.recent;
                     return (
                         !hideOption && (
-                            <Box component="li" key={key} {...otherProps}>
-                                <ListItemButton selected={selected}>
-                                    <Checkbox
-                                        size="small"
-                                        icon={<CheckBoxOutlineBlankIcon />}
-                                        checkedIcon={<CheckBoxIcon />}
-                                        checked={selected}
-                                        sx={{ paddingLeft: '0px' }}
-                                    />
-                                    <OverflowableText text={getOptionLabel(option, translate) ?? ''} />
-                                </ListItemButton>
-                            </Box>
+                            <ListItemButton key={key} selected={selected} component="li" {...otherProps}>
+                                <Checkbox size="small" checked={selected} />
+                                <OverflowableText text={getOptionLabel(option, translate) ?? ''} />
+                            </ListItemButton>
                         )
                     );
                 }}
@@ -416,7 +398,13 @@ function ResultsGlobalFilter({
                 }
                 // dropdown :
                 PaperComponent={CustomSelectableGlobalFilters}
-                ListboxComponent={EmptyListboxComponent}
+                ListboxProps={{
+                    sx: {
+                        '& .MuiAutocomplete-option': {
+                            paddingLeft: 0,
+                        },
+                    },
+                }}
                 noOptionsText={''}
             />
             {warningEquipmentTypeMessage && (

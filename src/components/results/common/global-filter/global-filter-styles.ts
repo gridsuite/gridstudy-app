@@ -71,7 +71,6 @@ export const resultsGlobalFilterStyles = {
         borderLeft: '1px solid',
         borderColor: theme.palette.divider,
         height: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
-        overflow: 'auto',
     }),
     importFilterButton: (theme: Theme) => ({
         color: theme.palette.text.secondary,
