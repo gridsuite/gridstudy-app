@@ -42,6 +42,7 @@ import {
     ElementType,
     fetchDirectoryElementPath,
     fetchElementsInfos,
+    OverflowableText,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -57,7 +58,7 @@ import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import List from '@mui/material/List';
-import OverflowTooltip from './overflow-tooltip';
+
 const TAG_lIMIT_NUMBER: number = 4;
 const TAG_LABEL_LENGTH_lIMIT: number = 5;
 
@@ -400,7 +401,7 @@ function ResultsGlobalFilter({
                                         checked={selected}
                                         sx={{ paddingLeft: '0px' }}
                                     />
-                                    <OverflowTooltip label={getOptionLabel(option, translate) ?? ''} />
+                                    <OverflowableText text={getOptionLabel(option, translate) ?? ''} />
                                 </ListItemButton>
                             </Box>
                         )
