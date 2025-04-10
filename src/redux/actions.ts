@@ -22,7 +22,6 @@ import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
-    CurrentTreeNode,
     EquipmentUpdateType,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
@@ -45,7 +44,7 @@ import {
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
@@ -57,6 +56,7 @@ import { NetworkVisualizationParameters } from '../components/dialogs/parameters
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { ExpertFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
+import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export type TableValue<TValue = unknown> = {
     index: number;
@@ -139,7 +139,10 @@ export type AppActions =
     | SetAppTabIndexAction
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
-    | CancelLeaveParametersTabAction;
+    | CancelLeaveParametersTabAction
+    | LoadNadFromConfigAction
+    | SetEditNadModeAction
+    | DeletedOrRenamedNodesAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -570,6 +573,18 @@ export function setReloadMapNeeded(reloadMapNeeded: boolean): SetReloadMapNeeded
     };
 }
 
+export const SET_EDIT_NAD_MODE = 'SET_EDIT_NAD_MODE';
+export type SetEditNadModeAction = Readonly<Action<typeof SET_EDIT_NAD_MODE>> & {
+    isEditMode: boolean;
+};
+
+export function setEditNadMode(isEditMode: boolean): SetEditNadModeAction {
+    return {
+        type: SET_EDIT_NAD_MODE,
+        isEditMode,
+    };
+}
+
 export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
 export type MapEquipmentsInitializedAction = Readonly<Action<typeof MAP_EQUIPMENTS_INITIALIZED>> & {
     newValue: boolean;
@@ -645,6 +660,18 @@ export function setCurrentRootNetworkUuid(currentRootNetworkUuid: UUID): Current
     return {
         type: CURRENT_ROOT_NETWORK_UUID,
         currentRootNetworkUuid: currentRootNetworkUuid,
+    };
+}
+
+export const SET_ROOT_NETWORKS = 'SET_ROOT_NETWORKS';
+export type SetRootNetworksAction = Readonly<Action<typeof SET_ROOT_NETWORKS>> & {
+    rootNetworks: RootNetworkMetadata[];
+};
+
+export function setRootNetworks(rootNetworks: RootNetworkMetadata[]): SetRootNetworksAction {
+    return {
+        type: SET_ROOT_NETWORKS,
+        rootNetworks: rootNetworks,
     };
 }
 
@@ -823,6 +850,20 @@ export function closeDiagrams(ids: string[]): CloseDiagramsAction {
     return {
         type: CLOSE_DIAGRAMS,
         ids: ids,
+    };
+}
+
+export const LOAD_NAD_FROM_CONFIG = 'LOAD_NAD_FROM_CONFIG';
+export type LoadNadFromConfigAction = Readonly<Action<typeof LOAD_NAD_FROM_CONFIG>> & {
+    nadConfigUuid: string;
+    nadName: string;
+};
+
+export function loadNadFromConfig(nadConfigUuid: string, nadName: string): LoadNadFromConfigAction {
+    return {
+        type: LOAD_NAD_FROM_CONFIG,
+        nadConfigUuid: nadConfigUuid,
+        nadName: nadName,
     };
 }
 
@@ -1360,8 +1401,21 @@ export function setCalculationSelections(tabUuid: UUID, selections: string[]): S
 
 export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
 export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
+
 export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
+    };
+}
+
+export const DELETED_OR_RENAMED_NODES = 'DELETED_OR_RENAMED_NODES';
+export type DeletedOrRenamedNodesAction = Readonly<Action<typeof DELETED_OR_RENAMED_NODES>> & {
+    deletedOrRenamedNodes: UUID[];
+};
+
+export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrRenamedNodesAction {
+    return {
+        type: DELETED_OR_RENAMED_NODES,
+        deletedOrRenamedNodes,
     };
 }

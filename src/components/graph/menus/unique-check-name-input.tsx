@@ -28,6 +28,7 @@ export interface UniqueCheckNameInputProps {
     inputProps?: TextFieldProps['inputProps'];
     elementExists: (studyUuid: UUID, elementName: string) => Promise<boolean>;
     errorMessageKey: string;
+    catchMessageKey: string;
     max_length?: number;
 }
 
@@ -45,11 +46,13 @@ export function UniqueCheckNameInput({
     inputProps,
     elementExists,
     errorMessageKey,
+    catchMessageKey,
     max_length,
 }: Readonly<UniqueCheckNameInputProps>) {
     const {
         field: { onChange, onBlur, value, ref },
         fieldState: { error, isDirty },
+        formState: { defaultValues },
     } = useController({
         name,
     });
@@ -58,6 +61,7 @@ export function UniqueCheckNameInput({
         name,
         control,
     });
+    const defaultFieldValue = defaultValues?.[name];
 
     const {
         setError,
@@ -84,7 +88,7 @@ export function UniqueCheckNameInput({
                     .catch((e) => {
                         setError(name, {
                             type: 'validate',
-                            message: 'rootNetworknameValidityCheckError',
+                            message: catchMessageKey,
                         });
                         console.error(e?.message);
                     })
@@ -97,7 +101,7 @@ export function UniqueCheckNameInput({
                     });
             }
         },
-        [studyUuid, elementExists, setError, name, errorMessageKey, clearErrors, trigger]
+        [studyUuid, elementExists, setError, name, errorMessageKey, catchMessageKey, clearErrors, trigger]
     );
 
     const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
@@ -107,7 +111,7 @@ export function UniqueCheckNameInput({
         const trimmedValue = value.trim();
 
         // if the name is unchanged, we don't do custom validation
-        if (!isDirty) {
+        if (!isDirty || defaultFieldValue.trim() === trimmedValue) {
             clearErrors(name);
             return;
         }
@@ -120,8 +124,12 @@ export function UniqueCheckNameInput({
             debouncedHandleCheckName(trimmedValue);
         } else {
             clearErrors('root.isValidating');
+            setError(name, {
+                type: 'validate',
+                message: 'FieldIsRequired',
+            });
         }
-    }, [debouncedHandleCheckName, setError, clearErrors, name, value, isDirty]);
+    }, [debouncedHandleCheckName, setError, clearErrors, name, value, isDirty, defaultFieldValue]);
 
     // Handle on user's change
     const handleManualChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -129,7 +137,7 @@ export function UniqueCheckNameInput({
         onManualChangeCallback?.();
     };
 
-    const translatedLabel = <FormattedMessage id={label} />;
+    const translatedLabel = label ? <FormattedMessage id={label} /> : null;
 
     const translatedError = error && <FormattedMessage id={error.message} />;
 
@@ -150,7 +158,7 @@ export function UniqueCheckNameInput({
             value={value}
             name={name}
             inputRef={ref}
-            label={translatedLabel}
+            label={label ? translatedLabel : null}
             type="text"
             autoFocus={autoFocus}
             margin="dense"

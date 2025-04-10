@@ -77,7 +77,6 @@ export function RegulatingTerminalForm({
                 currentNodeUuid,
                 currentRootNetworkUuid,
                 watchVoltageLevelId,
-                undefined,
                 true
             ).then((equipments) => {
                 setEquipmentsOptions(
@@ -119,7 +118,7 @@ export function RegulatingTerminalForm({
                         disabled={disabled}
                         id="voltage-level"
                         options={vlOptions}
-                        getOptionLabel={(vl) => (typeof vl !== 'string' ? vl?.id ?? '' : '')}
+                        getOptionLabel={(vl) => (typeof vl !== 'string' ? (vl?.id ?? '') : '')}
                         onChangeCallback={resetEquipment}
                         previousValue={regulatingTerminalVlId ?? undefined}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
@@ -171,7 +170,7 @@ export function RegulatingTerminalForm({
                         previousValue={equipmentSectionType}
                         options={equipmentsOptions}
                         getOptionLabel={(equipment) => {
-                            return typeof equipment !== 'string' ? equipment?.id ?? '' : '';
+                            return typeof equipment !== 'string' ? (equipment?.id ?? '') : '';
                         }}
                         renderOption={(props, option) => {
                             const { key, ...optionProps } = props;

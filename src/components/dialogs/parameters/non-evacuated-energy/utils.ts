@@ -40,7 +40,7 @@ import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/
 
 export type UseGetNonEvacuatedEnergyParametersReturnProps = [
     NonEvacuatedEnergyParametersInfos | null,
-    React.Dispatch<React.SetStateAction<NonEvacuatedEnergyParametersInfos | null>>
+    React.Dispatch<React.SetStateAction<NonEvacuatedEnergyParametersInfos | null>>,
 ];
 
 export const getGenerationStagesDefinitionFormSchema = () => ({

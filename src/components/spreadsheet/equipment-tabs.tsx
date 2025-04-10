@@ -10,7 +10,6 @@ import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { AppDispatch } from 'redux/store';
 import { removeTableDefinition, renameTableDefinition, reorderTableDefinitions } from 'redux/actions';
 import {
@@ -20,13 +19,14 @@ import {
 } from 'services/study-config';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { DropResult } from 'react-beautiful-dnd';
+import { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
 import { UUID } from 'crypto';
 import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import TabLabel from './tab-label';
+import { ResetNodeAliasCallback } from './custom-columns/use-node-aliases';
 
 const draggableTabStyles = {
     container: {
@@ -48,14 +48,15 @@ interface EquipmentTabsProps {
     selectedTabUuid: UUID | null;
     handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
+    resetNodeAliases: ResetNodeAliasCallback;
 }
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
     selectedTabUuid,
     handleSwitchTab,
     disabled,
+    resetNodeAliases,
 }) => {
-    const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
     const intl = useIntl();
@@ -199,11 +200,13 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
     return (
         <>
             <Grid container direction="row" wrap="nowrap" item>
-                {developerMode && (
-                    <Grid item padding={1}>
-                        <CustomSpreadsheetConfig disabled={disabled} resetTabIndex={resetTabSelection} />
-                    </Grid>
-                )}
+                <Grid item padding={1}>
+                    <CustomSpreadsheetConfig
+                        disabled={disabled}
+                        resetTabIndex={resetTabSelection}
+                        resetNodeAliases={resetNodeAliases}
+                    />
+                </Grid>
                 <Grid item sx={{ overflow: 'hidden' }}>
                     <DroppableTabs
                         id="equipment-tabs"

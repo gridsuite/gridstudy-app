@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { sanitizeString } from '../../../../dialog-utils';
@@ -181,9 +181,7 @@ const VscModificationDialog: React.FC<any> = ({
                                 setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable1,
                                     `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    getValues,
-                                    setValue,
-                                    isNodeBuilt(currentNode)
+                                    setValue
                                 );
                             }
 
@@ -193,9 +191,7 @@ const VscModificationDialog: React.FC<any> = ({
                                 setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable2,
                                     `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    getValues,
-                                    setValue,
-                                    isNodeBuilt(currentNode)
+                                    setValue
                                 );
                             }
                             setSelectedReactiveLimits(
@@ -338,7 +334,6 @@ const VscModificationDialog: React.FC<any> = ({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={handleSubmit(onSubmit)}
-                aria-labelledby="dialog-modify-vsc"
                 maxWidth={'md'}
                 titleId="ModifyVsc"
                 PaperProps={{
