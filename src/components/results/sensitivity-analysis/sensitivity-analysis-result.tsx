@@ -212,7 +212,7 @@ function SensitivityAnalysisResult({
     const handleGridColumnsChanged = useCallback(
         (event: GridColumnsChangedEvent) => {
             if (event?.api) {
-                setCsvHeaders(getColumnHeaderDisplayNames(event.api) ?? []);
+                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
             }
         },
         [setCsvHeaders]
@@ -231,7 +231,7 @@ function SensitivityAnalysisResult({
         (event: GridReadyEvent) => {
             if (event.api) {
                 event.api.sizeColumnsToFit();
-                setCsvHeaders(getColumnHeaderDisplayNames(event.api) ?? []);
+                setCsvHeaders(getColumnHeaderDisplayNames(event.api));
             }
         },
         [setCsvHeaders]
