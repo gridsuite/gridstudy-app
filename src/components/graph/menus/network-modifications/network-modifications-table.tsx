@@ -19,7 +19,7 @@ import {
     RowStyle,
 } from 'ag-grid-community';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
-import { Badge, Box, Theme, useTheme } from '@mui/material';
+import { Badge, Box, Theme } from '@mui/material';
 import { NetworkModificationInfos } from './network-modification-menu.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -73,7 +73,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     onRowSelected,
     ...nameHeaderProps
 }) => {
-    const theme = useTheme();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 

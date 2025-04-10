@@ -20,9 +20,7 @@ import {
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Box } from '@mui/material';
 import NetworkModificationTree from './network-modification-tree';
-import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/network-modifications/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -45,8 +43,6 @@ import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/ind
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 import { StudyDisplayMode, CopyType, UpdateType } from './network-modification.type';
-import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { NetworkModificationTreePanePanels } from './network-modification-tree-pane-panels';
 
 // We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
