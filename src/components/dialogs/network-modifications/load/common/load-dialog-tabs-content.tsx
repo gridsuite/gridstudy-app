@@ -16,6 +16,7 @@ import React from 'react';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { LoadFormInfos } from './load.type';
+import { Identifiable } from '@gridsuite/commons-ui';
 
 interface LoadDialogTabsContentProps {
     studyUuid: UUID;
@@ -23,6 +24,7 @@ interface LoadDialogTabsContentProps {
     currentRootNetworkUuid: UUID;
     loadToModify?: LoadFormInfos | null;
     tabIndex: number;
+    voltageLevelOptions?: Identifiable[];
     isModification?: boolean;
 }
 
@@ -32,12 +34,14 @@ const LoadDialogTabsContent: React.FC<LoadDialogTabsContentProps> = ({
     currentRootNetworkUuid,
     loadToModify,
     tabIndex,
+    voltageLevelOptions,
     isModification = false,
 }) => {
     return (
         <>
             <Box hidden={tabIndex !== LoadDialogTab.CONNECTIVITY_TAB} p={1}>
                 <ConnectivityForm
+                    voltageLevelOptions={voltageLevelOptions}
                     withPosition={true}
                     studyUuid={studyUuid}
                     currentNode={currentNode}
