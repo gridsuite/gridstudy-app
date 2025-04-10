@@ -5,15 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    forwardRef,
-    HTMLAttributes,
-    JSXElementConstructor,
-    PropsWithChildren,
-    useCallback,
-    useMemo,
-    useState,
-} from 'react';
+import { forwardRef, HTMLAttributes, JSXElementConstructor, useCallback, useMemo, useState } from 'react';
 import {
     Autocomplete,
     AutocompleteCloseReason,
@@ -26,6 +18,7 @@ import {
     FilterOptionsState,
     InputAdornment,
     ListItemButton,
+    PaperProps,
     TextField,
 } from '@mui/material';
 import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
@@ -340,6 +333,22 @@ function ResultsGlobalFilter({
         [translate]
     );
 
+    const CustomSelectableGlobalFilters = useCallback(
+        (props: PaperProps) => (
+            <SelectableGlobalFilters
+                children={props.children}
+                onClickGenericFilterButton={() => setDirectoryItemSelectorOpen(true)}
+                filterGroupSelected={filterGroupSelected}
+                setFilterGroupSelected={setFilterGroupSelected}
+                selectedGlobalFilters={selectedGlobalFilters}
+                updateFilters={handleChange}
+                lockClosing={directoryItemSelectorOpen}
+                setOpenedDropdown={setOpenedDropdown}
+            />
+        ),
+        [directoryItemSelectorOpen, filterGroupSelected, handleChange, selectedGlobalFilters]
+    );
+
     return (
         <>
             <Autocomplete
@@ -406,18 +415,7 @@ function ResultsGlobalFilter({
                     filterOptions(options, state)
                 }
                 // dropdown :
-                PaperComponent={(props: PropsWithChildren) => (
-                    <SelectableGlobalFilters
-                        children={props.children}
-                        onClickGenericFilterButton={() => setDirectoryItemSelectorOpen(true)}
-                        filterGroupSelected={filterGroupSelected}
-                        setFilterGroupSelected={setFilterGroupSelected}
-                        selectedGlobalFilters={selectedGlobalFilters}
-                        updateFilters={handleChange}
-                        lockClosing={directoryItemSelectorOpen}
-                        setOpenedDropdown={setOpenedDropdown}
-                    />
-                )}
+                PaperComponent={CustomSelectableGlobalFilters}
                 ListboxComponent={EmptyListboxComponent}
                 noOptionsText={''}
             />
