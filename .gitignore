@@ -6,7 +6,9 @@
 
 # webstorm
 /.idea
-/coverage
+
+# vscode
+/.vscode
 
 # misc
 .env.local
@@ -14,5 +16,5 @@
 .env.test.local
 .env.production.local
 
-#vscode
-/.vscode
+# jest
+/coverage
