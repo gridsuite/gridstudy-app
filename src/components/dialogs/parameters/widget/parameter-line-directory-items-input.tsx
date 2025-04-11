@@ -18,13 +18,13 @@ type DirectoryItemsInputLineProps = {
     hideErrorMessage: boolean;
 };
 
-const ParameterLineDirectoryItemsInput = ({
+function ParameterLineDirectoryItemsInput({
     label,
     name,
     equipmentTypes,
     elementType,
     hideErrorMessage,
-}: DirectoryItemsInputLineProps) => {
+}: Readonly<DirectoryItemsInputLineProps>) {
     return (
         <Grid item container spacing={1} paddingTop={1} paddingBottom={1}>
             <Grid item xs={7} sx={styles.parameterName}>
@@ -43,6 +43,6 @@ const ParameterLineDirectoryItemsInput = ({
             </Grid>
         </Grid>
     );
-};
+}
 
 export default ParameterLineDirectoryItemsInput;
