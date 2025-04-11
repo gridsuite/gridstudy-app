@@ -13,7 +13,6 @@ import {
     ACTIVE_POWER_SETPOINT,
     ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
-    CHARACTERISTICS,
     CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
@@ -242,7 +241,11 @@ export default function LoadModificationDialog({
 
     const onValidationError = (errors: FieldErrors) => {
         let tabsInError: number[] = [];
-        if (errors?.[CHARACTERISTICS] !== undefined) {
+        if (
+            errors?.[ACTIVE_POWER_SETPOINT] !== undefined ||
+            errors?.[REACTIVE_POWER_SET_POINT] !== undefined ||
+            errors?.[ADDITIONAL_PROPERTIES] !== undefined
+        ) {
             tabsInError.push(LoadDialogTab.CHARACTERISTICS_TAB);
         }
         if (errors?.[CONNECTIVITY] !== undefined) {
