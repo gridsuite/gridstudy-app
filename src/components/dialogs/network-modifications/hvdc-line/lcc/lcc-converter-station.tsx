@@ -24,6 +24,7 @@ import GridItem from '../../../commons/grid-item';
 import FiltersShuntCompensatorTable from './creation/filters-shunt-compensator-table';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { LccModificationConverterStation } from '../../../../../services/network-modification-types';
+import TextField from '@mui/material/TextField';
 
 interface LccConverterStationProps {
     id: string;
@@ -46,21 +47,24 @@ export default function LccConverterStation({
 }: Readonly<LccConverterStationProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
-    console.log('previousValues', previousValues);
-
-    const stationIdField = (
-        <TextInput
+    const stationIdField = previousValues ? (
+        <TextField
+            size="small"
+            fullWidth
             name={`${id}.${CONVERTER_STATION_ID}`}
             label={'converterStationId'}
-            previousValue={previousValues?.equipmentId}
+            value={previousValues?.id}
+            disabled
         />
+    ) : (
+        <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />
     );
 
     const stationNameField = (
         <TextInput
             name={`${id}.${CONVERTER_STATION_NAME}`}
             label={'converterStationName'}
-            previousValue={previousValues?.equipmentName}
+            previousValue={previousValues?.name}
         />
     );
     const connectivityForm = (

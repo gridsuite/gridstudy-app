@@ -386,8 +386,8 @@ export interface LCCCreationConverterStation {
 
 export interface LccModificationConverterStation {
     type: string;
-    equipmentId: string;
-    equipmentName?: string;
+    id: string;
+    name?: string;
     lossFactor?: number;
     powerFactor?: number;
     voltageLevelId?: string;
