@@ -94,7 +94,7 @@ function SelectableGlobalFilters({
                         </Button>
                     </Grid>
                     <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cell}>
-                        <List>
+                        <List sx={resultsGlobalFilterStyles.list}>
                             {categories.map((category) => {
                                 return (
                                     <ListItemButton
@@ -110,9 +110,9 @@ function SelectableGlobalFilters({
                             })}
                         </List>
                     </Grid>
-                    <Grid item xs={XS_COLUMN2}>
+                    <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
                         <Box
-                            sx={mergeSx(resultsGlobalFilterStyles.cell, {
+                            sx={mergeSx(resultsGlobalFilterStyles.list, {
                                 height:
                                     filterGroupSelected === FilterType.GENERIC_FILTER
                                         ? `${GLOBAL_FILTERS_CELL_HEIGHT - IMPORT_FILTER_HEIGHT}px`
@@ -132,8 +132,8 @@ function SelectableGlobalFilters({
                             </Button>
                         )}
                     </Grid>
-                    <Grid item xs={XS_COLUMN3}>
-                        <List sx={mergeSx(resultsGlobalFilterStyles.cell, { overflow: 'auto' })}>
+                    <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
+                        <List sx={mergeSx(resultsGlobalFilterStyles.list, { overflowY: 'auto' })}>
                             {selectedGlobalFilters.map((element: GlobalFilter) => (
                                 <ListItem key={element.label} sx={{ height: '1.8em' }}>
                                     <Chip

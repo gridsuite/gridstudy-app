@@ -63,14 +63,16 @@ export const resultsGlobalFilterStyles = {
         borderColor: theme.palette.divider,
     }),
     cell: (theme: Theme) => ({
+        borderLeft: '1px solid',
+        borderColor: theme.palette.divider,
+    }),
+    list: (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
         color: theme.palette.text.secondary,
         fontSize: '1em',
         width: '100%',
-        borderLeft: '1px solid',
-        borderColor: theme.palette.divider,
-        height: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+        maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
     }),
     importFilterButton: (theme: Theme) => ({
         color: theme.palette.text.secondary,

@@ -141,7 +141,7 @@ function ResultsGlobalFilter({
 
     const handleChange = useCallback(
         async (globalFilters: GlobalFilter[]): Promise<void> => {
-            let globalFiltersToAddToRecents: GlobalFilter[] = [...globalFilters];
+            const missingFilterUuids: UUID[] = [];
             // @ts-ignore : eslint don't take the filter into account and therefore don't get correctly the type of globalFiltersUuids
             const globalFiltersUuids: UUID[] = globalFilters
                 .map((globalFilter) => globalFilter.uuid)
@@ -162,9 +162,7 @@ function ResultsGlobalFilter({
                 } catch (error) {
                     // remove those missing filters from recent global filters
                     dispatch(removeFromRecentGlobalFilters(globalFilterUuid));
-                    globalFiltersToAddToRecents = globalFiltersToAddToRecents.filter(
-                        (globalFilter) => globalFilter.uuid !== globalFilterUuid
-                    );
+                    missingFilterUuids.push(globalFilterUuid);
                     snackError({
                         messageTxt: globalFilters.find((filter) => filter.uuid === globalFilterUuid)?.path,
                         headerId: 'ComputationFilterResultsError',
@@ -174,6 +172,9 @@ function ResultsGlobalFilter({
 
             setSelectedGlobalFilters(globalFilters);
             // Updates the "recent" filters unless they have not been found
+            const globalFiltersToAddToRecents: GlobalFilter[] = globalFilters.filter(
+                (filter) => !filter.uuid || !missingFilterUuids.includes(filter.uuid)
+            );
             dispatch(addToRecentGlobalFilters(globalFiltersToAddToRecents));
             // notify "father component" of the change
             onChange(globalFilters);
@@ -403,6 +404,8 @@ function ResultsGlobalFilter({
                         '& .MuiAutocomplete-option': {
                             paddingLeft: 0,
                         },
+                        height: '100%',
+                        overflowY: 'auto',
                     },
                 }}
                 noOptionsText={''}
