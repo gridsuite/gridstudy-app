@@ -13,7 +13,7 @@ export interface ParameterSwitchProps extends Pick<SwitchProps, 'onChange'> {
     key?: string;
 }
 
-export const ParameterSwitch = ({ label, value, onChange, key }: ParameterSwitchProps) => {
+export function ParameterSwitch({ label, value, onChange, key }: Readonly<ParameterSwitchProps>) {
     return (
         <>
             <Grid container spacing={1} paddingTop={1} key={key} justifyContent={'space-between'}>
@@ -21,4 +21,4 @@ export const ParameterSwitch = ({ label, value, onChange, key }: ParameterSwitch
             </Grid>
         </>
     );
-};
+}
