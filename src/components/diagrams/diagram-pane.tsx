@@ -56,6 +56,9 @@ import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { DiagramType, isNadType, isSldType, ViewState } from './diagram.type';
 import { useDiagram } from './use-diagram';
 import { CurrentTreeNode } from '../graph/tree-node.type';
+import { Layouts, Responsive, WidthProvider } from 'react-grid-layout';
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRootNetworkUuid: UUID) => {
@@ -415,6 +418,7 @@ export function DiagramPane({
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [views, setViews] = useState<DiagramView[]>([]);
+    const [layouts, setLayouts] = useState<Layouts>({});
     const fullScreenDiagram = useSelector((state: AppState) => state.fullScreenDiagram);
     const createView = useDisplayView(studyUuid, currentNode, currentRootNetworkUuid);
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
@@ -496,6 +500,14 @@ export function DiagramPane({
                 setViews((views) => {
                     const updatedViews = views.concat(diagramsToAdd);
                     return updatedViews;
+                });
+                setLayouts((old_layouts) => {
+                    old_layouts.lg = old_layouts.lg.concat(
+                        diagramsToAdd.map((d) => {
+                            return { i: d.svgType + d.id, x: 0, y: 0, w: 1, h: 1 };
+                        })
+                    );
+                    return old_layouts;
                 });
 
                 // Then we add the data when the fetch is finished
@@ -805,8 +817,15 @@ export function DiagramPane({
     ]);
 
     const displayedDiagrams = views
-        .filter((view) => [ViewState.OPENED, ViewState.PINNED].includes(view.state))
+        // .filter((view) => [ViewState.OPENED, ViewState.PINNED].includes(view.state))
         .sort(makeDiagramSorter(diagramStates));
+
+    // const layouts = {
+    //     lg: displayedDiagrams.map((d, index) => {
+    //         return { i: d.svgType + d.id, x: index, y: 0, w: 1, h: 1 };
+    //     }),
+    // };
+    console.log('SBO layouts', layouts);
     const minimizedDiagrams = views.filter((view) => [ViewState.MINIMIZED].includes(view.state));
 
     /**
@@ -1128,15 +1147,26 @@ export function DiagramPane({
         },
         [currentNode]
     );
+
     return (
         // see : https://github.com/bvaughn/react-virtualized-auto-sizer/blob/master/src/AutoSizer.ts#L111
         // AutoSizer "Avoid rendering children before the initial measurements have been collected."
         // Then when width or height equals 0.
         // This unmount diagrams each time diagramPane is not visible
         // We set doNotBailOutOnEmptyChildren to force keeping components mounted
-        <AutoSizer doNotBailOutOnEmptyChildren>
-            {({ width, height }) => (
-                <Box
+        // Test with Width Provider
+        // <AutoSizer doNotBailOutOnEmptyChildren>
+        //     {({ width, height }) => (
+        <div style={{ width: '100%' }}>
+            <ResponsiveGridLayout
+                className="layout"
+                layouts={layouts}
+                breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+                cols={{ lg: 4, md: 2, sm: 2, xs: 1, xxs: 1 }}
+                compactType={undefined}
+                onLayoutChange={(c, allLayouts) => setLayouts(allLayouts)}
+            >
+                {/* <Box // Use Layout here
                     sx={mergeSx(
                         styles.availableDiagramSurfaceArea,
                         fullScreenDiagram?.id ? styles.fullscreen : undefined
@@ -1146,96 +1176,80 @@ export function DiagramPane({
                         height: height + 'px',
                         display: visible ? 'inline-flex' : 'none',
                     }}
-                >
-                    {displayedDiagrams.map((diagramView, index, array) => (
-                        <Fragment key={diagramView.svgType + diagramView.id}>
-                            {
-                                // We put a space (a separator) before the first right aligned diagram.
-                                // This space takes all the remaining space on screen and "pushes" the right aligned
-                                // diagrams to the right of the screen.
-                                array[index]?.align === 'right' &&
-                                    (index === 0 || array[index - 1]?.align === 'left') && (
-                                        <Box sx={styles.separator}></Box>
-                                    )
-                            }
-                            <Diagram
-                                align={diagramView.align}
+                > */}
+                {displayedDiagrams.map((diagramView, index, array) => {
+                    if (isSldType(diagramView.svgType)) {
+                        return (
+                            <div key={diagramView.svgType + diagramView.id} style={{ backgroundColor: 'lightpink' }}>
+                                {diagramView.id}
+                                {/* // use this component */}
+                                <SingleLineDiagramContent
+                                    showInSpreadsheet={showInSpreadsheet}
+                                    studyUuid={studyUuid}
+                                    diagramId={diagramView.id}
+                                    svg={diagramView.svg}
+                                    svgType={diagramView.svgType}
+                                    svgMetadata={diagramView.metadata}
+                                    loadingState={diagramView.loadingState}
+                                    diagramSizeSetter={setDiagramSize}
+                                    visible={visible}
+                                    key={diagramView.svgType + diagramView.id}
+                                />
+                            </div>
+                        );
+                    }
+                    if (isNadType(diagramView.svgType)) {
+                        return (
+                            <NetworkAreaDiagramContent
                                 diagramId={diagramView.id}
-                                diagramTitle={getDiagramTitle(diagramView)}
-                                warningToDisplay={handleWarningToDisplay(diagramView)}
-                                pinned={diagramView.state === ViewState.PINNED}
+                                svg={diagramView.svg}
                                 svgType={diagramView.svgType}
-                                width={getWidthForPaneDisplay(diagramView.id, diagramView.svgType)}
-                                height={getHeightForPaneDisplay(diagramView.svgType, width, height)}
-                                fullscreenWidth={width}
-                                fullscreenHeight={height}
+                                svgMetadata={diagramView.nadMetadata}
+                                svgScalingFactor={diagramView.additionalMetadata?.scalingFactor}
+                                svgVoltageLevels={diagramView.additionalMetadata?.voltageLevels?.map(
+                                    (n: Identifiable) => n.id
+                                )}
                                 loadingState={diagramView.loadingState}
-                            >
-                                {isSldType(diagramView.svgType) && (
-                                    <SingleLineDiagramContent
-                                        showInSpreadsheet={showInSpreadsheet}
-                                        studyUuid={studyUuid}
-                                        diagramId={diagramView.id}
-                                        svg={diagramView.svg}
-                                        svgType={diagramView.svgType}
-                                        svgMetadata={diagramView.metadata}
-                                        loadingState={diagramView.loadingState}
-                                        diagramSizeSetter={setDiagramSize}
-                                        visible={visible}
-                                    />
-                                )}
-                                {isNadType(diagramView.svgType) && (
-                                    <NetworkAreaDiagramContent
-                                        diagramId={diagramView.id}
-                                        svg={diagramView.svg}
-                                        svgType={diagramView.svgType}
-                                        svgMetadata={diagramView.nadMetadata}
-                                        svgScalingFactor={diagramView.additionalMetadata?.scalingFactor}
-                                        svgVoltageLevels={diagramView.additionalMetadata?.voltageLevels?.map(
-                                            (n: Identifiable) => n.id
-                                        )}
-                                        loadingState={diagramView.loadingState}
-                                        diagramSizeSetter={setDiagramSize}
-                                        visible={visible}
-                                    />
-                                )}
-                            </Diagram>
-                        </Fragment>
-                    ))}
-                    <Stack
-                        direction={{ xs: 'column', sm: 'row' }}
-                        spacing={1}
-                        sx={styles.minimizedDiagram}
-                        style={{
-                            display: !fullScreenDiagram?.id ? '' : 'none', // We hide this stack if a diagram is in fullscreen
-                        }}
-                    >
-                        {minimizedDiagrams.map((diagramView) => (
-                            <Chip
+                                diagramSizeSetter={setDiagramSize}
+                                visible={visible}
                                 key={diagramView.svgType + diagramView.id}
-                                icon={
-                                    isNadType(diagramView.svgType) ? (
-                                        <>
-                                            <ArrowUpwardIcon />
-                                            <TimelineIcon />
-                                        </>
-                                    ) : (
-                                        <ArrowUpwardIcon />
-                                    )
-                                }
-                                label={
-                                    <OverflowableText
-                                        sx={styles.minimizedDiagramTitle}
-                                        text={getDiagramTitle(diagramView)}
-                                    />
-                                }
-                                onClick={() => handleOpenDiagramView(diagramView.id, diagramView.svgType)}
-                                onDelete={() => handleCloseDiagramView(diagramView.id, diagramView.svgType)}
                             />
-                        ))}
-                    </Stack>
-                </Box>
-            )}
-        </AutoSizer>
+                        );
+                    }
+                    return undefined;
+                })}
+            </ResponsiveGridLayout>
+            <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={1}
+                sx={styles.minimizedDiagram}
+                style={{
+                    display: !fullScreenDiagram?.id ? '' : 'none', // We hide this stack if a diagram is in fullscreen
+                }}
+            >
+                {minimizedDiagrams.map((diagramView) => (
+                    <Chip
+                        key={diagramView.svgType + diagramView.id}
+                        icon={
+                            isNadType(diagramView.svgType) ? (
+                                <>
+                                    <ArrowUpwardIcon />
+                                    <TimelineIcon />
+                                </>
+                            ) : (
+                                <ArrowUpwardIcon />
+                            )
+                        }
+                        label={
+                            <OverflowableText sx={styles.minimizedDiagramTitle} text={getDiagramTitle(diagramView)} />
+                        }
+                        onClick={() => handleOpenDiagramView(diagramView.id, diagramView.svgType)}
+                        onDelete={() => handleCloseDiagramView(diagramView.id, diagramView.svgType)}
+                    />
+                ))}
+            </Stack>
+        </div>
+        // )}
+        // </AutoSizer>
     );
 }
