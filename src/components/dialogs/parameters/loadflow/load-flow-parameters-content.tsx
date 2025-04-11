@@ -23,19 +23,21 @@ import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
 import { SpecificParameterInfos } from '../parameters.type';
 import { styles } from '../parameters-style';
 
-const LoadFlowParametersContent = ({
-    selectedTab,
-    currentProvider,
-    specificParameters,
-    params,
-    defaultLimitReductions,
-}: {
+type LoadFlowParametersContentProps = {
     selectedTab: TAB_VALUES;
     currentProvider: string;
     specificParameters: SpecificParameterInfos[];
     params: LoadFlowParametersInfos | null;
     defaultLimitReductions: ILimitReductionsByVoltageLevel[];
-}) => {
+};
+
+function LoadFlowParametersContent({
+    selectedTab,
+    currentProvider,
+    specificParameters,
+    params,
+    defaultLimitReductions,
+}: Readonly<LoadFlowParametersContentProps>) {
     return (
         <Box
             sx={{
@@ -60,7 +62,7 @@ const LoadFlowParametersContent = ({
                                 <LimitReductionsTableForm limits={params?.limitReductions ?? defaultLimitReductions} />
                             ) : (
                                 <ParameterLineSlider
-                                    paramNameId={PARAM_LIMIT_REDUCTION}
+                                    name={PARAM_LIMIT_REDUCTION}
                                     label="LimitReduction"
                                     marks={alertThresholdMarks}
                                     minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
@@ -73,6 +75,6 @@ const LoadFlowParametersContent = ({
             </Grid>
         </Box>
     );
-};
+}
 
 export default LoadFlowParametersContent;

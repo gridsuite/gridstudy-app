@@ -159,8 +159,10 @@ let lightTheme = createTheme({
         overlay: {
             background: '#e6e6e6',
         },
+    },
+    networkModificationPanel: {
         backgroundColor: 'white',
-        border: 'solid 1px #68686e',
+        border: 'solid 1px #babfc7',
     },
     reactflow: {
         backgroundColor: 'white',
