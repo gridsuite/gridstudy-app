@@ -13,9 +13,9 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import { useIntl } from 'react-intl';
 
 interface DndTableBottomLeftButtonsProps {
-    handleUploadButton: () => void;
+    handleUploadButton?: () => void;
     uploadButtonMessageId: string;
-    handleResetButton: () => void;
+    handleResetButton?: () => void;
     resetButtonMessageId: string;
     withResetButton?: boolean;
     disableUploadButton?: boolean;
@@ -45,7 +45,7 @@ const DndTableBottomLeftButtons = ({
                     <span>
                         <IconButton
                             color="primary"
-                            onClick={() => handleUploadButton()}
+                            onClick={() => handleUploadButton?.()}
                             disabled={disabled || disableUploadButton}
                         >
                             <UploadIcon />
@@ -62,7 +62,7 @@ const DndTableBottomLeftButtons = ({
                         placement="top"
                     >
                         <span>
-                            <IconButton color="primary" onClick={() => handleResetButton()} disabled={disabled}>
+                            <IconButton color="primary" onClick={() => handleResetButton?.()} disabled={disabled}>
                                 <ReplayIcon />
                             </IconButton>
                         </span>

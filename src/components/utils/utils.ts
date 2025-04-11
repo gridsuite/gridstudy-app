@@ -17,6 +17,8 @@ import {
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
 import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
+import { PhaseTapChangerStepData } from '../dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer.type';
+import { RatioTapChangerStepData } from '../dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer.type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -30,7 +32,7 @@ export const isFieldRequired = (fieldName: string, schema: any, values: unknown)
 
 export const areArrayElementsUnique = (array: unknown[]) => {
     let uniqueAlphaValues = [...new Set(array)];
-    return uniqueAlphaValues.length === array.length;
+    return uniqueAlphaValues?.length === array?.length;
 };
 
 /**
@@ -154,8 +156,8 @@ export const computeHighTapPosition = (steps: { index: number }[]) => {
 };
 
 export const compareStepsWithPreviousValues = (
-    tapSteps: Record<string, number>[],
-    previousValues: Record<string, number>[]
+    tapSteps: RatioTapChangerStepData[] | PhaseTapChangerStepData[],
+    previousValues?: RatioTapChangerStepData[] | PhaseTapChangerStepData[]
 ) => {
     if (previousValues === undefined) {
         return false;
@@ -165,8 +167,11 @@ export const compareStepsWithPreviousValues = (
     }
     return tapSteps.every((step, index) => {
         const previousStep = previousValues[index];
-        return Object.getOwnPropertyNames(previousStep).every((key) => {
-            return step[key] === previousStep[key];
+        return Object.getOwnPropertyNames(previousStep).every((key: any) => {
+            return (
+                step[key as keyof (RatioTapChangerStepData | PhaseTapChangerStepData)] ===
+                previousStep[key as keyof (RatioTapChangerStepData | PhaseTapChangerStepData)]
+            );
         });
     });
 };
@@ -176,14 +181,6 @@ interface TapChangerInfos {
     regulatingTerminalConnectableId: string;
     regulatingTerminalVlId: string;
 }
-
-export const getTapChangerEquipmentSectionTypeValue = (tapChanger: TapChangerInfos) => {
-    if (!tapChanger?.regulatingTerminalConnectableType) {
-        return null;
-    } else {
-        return tapChanger?.regulatingTerminalConnectableType + ' : ' + tapChanger?.regulatingTerminalConnectableId;
-    }
-};
 
 export const getTapChangerRegulationTerminalValue = (tapChanger: TapChangerInfos) => {
     let regulatingTerminalGeneratorValue = tapChanger?.regulatingTerminalConnectableId ?? '';
