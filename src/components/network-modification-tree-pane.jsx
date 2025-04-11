@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
@@ -545,24 +545,34 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
         [studyUuid, dispatch, snackError]
     );
 
+    const networkModificationTreeComponent = useMemo(
+        () => (
+            <NetworkModificationTree
+                onNodeContextMenu={onNodeContextMenu}
+                studyUuid={studyUuid}
+                studyMapTreeDisplay={studyMapTreeDisplay}
+                isStudyDrawerOpen={isStudyDrawerOpen}
+                prevTreeDisplay={prevTreeDisplay}
+            />
+        ),
+        [studyUuid, onNodeContextMenu, studyMapTreeDisplay, isStudyDrawerOpen, prevTreeDisplay]
+    );
+
+    const networkModificationPanelComponent = useMemo(
+        () => (
+            <>
+                {isModificationsDrawerOpen && <NodeEditor />}
+                {isEventScenarioDrawerOpen && <ScenarioEditor />}
+            </>
+        ),
+        [isModificationsDrawerOpen, isEventScenarioDrawerOpen]
+    );
+
     return (
         <>
             <NetworkModificationTreePanePanels
-                leftComponent={
-                    <NetworkModificationTree
-                        onNodeContextMenu={onNodeContextMenu}
-                        studyUuid={studyUuid}
-                        studyMapTreeDisplay={studyMapTreeDisplay}
-                        isStudyDrawerOpen={isStudyDrawerOpen}
-                        prevTreeDisplay={prevTreeDisplay}
-                    />
-                }
-                rightComponent={
-                    <>
-                        {isModificationsDrawerOpen && <NodeEditor />}
-                        {isEventScenarioDrawerOpen && <ScenarioEditor />}
-                    </>
-                }
+                leftComponent={networkModificationTreeComponent}
+                rightComponent={networkModificationPanelComponent}
                 showRightPanel={isModificationsDrawerOpen || isEventScenarioDrawerOpen}
             />
             {createNodeMenu.display && (
