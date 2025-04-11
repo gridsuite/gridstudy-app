@@ -405,7 +405,7 @@ function ResultsGlobalFilter({
                             paddingLeft: 0,
                         },
                         height: '100%',
-                        maxHeight: 'none',
+                        maxHeight: '100%',
                         overflowY: 'auto',
                     },
                 }}
