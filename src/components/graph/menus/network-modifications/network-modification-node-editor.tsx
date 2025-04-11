@@ -99,6 +99,7 @@ import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-l
 import { styles } from './network-modification-node-editor-utils';
 import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
+import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification /lcc-modification-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -312,6 +313,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.VSC_MODIFICATION.type,
                     label: 'VSC',
                     action: () => withDefaultParams(VscModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LCC_MODIFICATION.type,
+                    label: 'LCC',
+                    action: () => withDefaultParams(LccModificationDialog),
                 },
             ],
         },

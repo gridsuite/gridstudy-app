@@ -12,17 +12,17 @@ import {
     CONVERTER_STATION_NAME,
     LOSS_FACTOR,
     POWER_FACTOR,
-} from '../../../../../utils/field-constants';
-import { percentageTextField } from '../../../../dialog-utils';
+} from '../../../../utils/field-constants';
+import { percentageTextField } from '../../../dialog-utils';
 import { UUID } from 'crypto';
-import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
-import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import GridSection from '../../../../commons/grid-section';
-import GridItem from '../../../../commons/grid-item';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import GridSection from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
 
-import FiltersShuntCompensatorTable from './filters-shunt-compensator-table';
-import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
+import FiltersShuntCompensatorTable from './creation/filters-shunt-compensator-table';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 interface LccConverterStationProps {
     id: string;
@@ -30,6 +30,7 @@ interface LccConverterStationProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
+    isModification?: boolean;
 }
 
 export default function LccConverterStation({
@@ -38,13 +39,13 @@ export default function LccConverterStation({
     currentNode,
     studyUuid,
     currentRootNetworkUuid,
+    isModification,
 }: Readonly<LccConverterStationProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const stationIdField = <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />;
 
     const stationNameField = <TextInput name={`${id}.${CONVERTER_STATION_NAME}`} label={'converterStationName'} />;
-
     const connectivityForm = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
@@ -61,6 +62,15 @@ export default function LccConverterStation({
         <FloatInput name={`${id}.${LOSS_FACTOR}`} label={'lossFactorLabel'} adornment={percentageTextField} />
     );
 
+    const connectivitySection = (
+        <>
+            <GridSection title={'Connectivity'} />
+            <Grid container spacing={2}>
+                <GridItem size={12}>{connectivityForm}</GridItem>
+            </Grid>
+        </>
+    );
+
     const powerFactorField = <FloatInput name={`${id}.${POWER_FACTOR}`} label={'powerFactorLabel'} />;
 
     return (
@@ -70,18 +80,12 @@ export default function LccConverterStation({
                 <GridItem size={4}>{stationIdField}</GridItem>
                 <GridItem size={4}>{stationNameField}</GridItem>
             </Grid>
-
-            <GridSection title={'Connectivity'} />
-            <Grid container spacing={2}>
-                <GridItem size={12}>{connectivityForm}</GridItem>
-            </Grid>
-
+            {!isModification && connectivitySection}
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
                 <GridItem size={4}>{lossFactorField}</GridItem>
                 <GridItem size={4}>{powerFactorField}</GridItem>
             </Grid>
-
             <GridSection title={'Filters'} />
             <FiltersShuntCompensatorTable id={`${id}`} />
         </Grid>

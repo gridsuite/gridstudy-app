@@ -6,13 +6,13 @@
  */
 
 import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
-import { ACTIVE_POWER_SETPOINT, CONVERTERS_MODE, MAX_P, NOMINAL_V, R } from '../../../../../utils/field-constants';
-import { ActivePowerAdornment, OhmAdornment, VoltageAdornment } from '../../../../dialog-utils';
+import { ACTIVE_POWER_SETPOINT, CONVERTERS_MODE, MAX_P, NOMINAL_V, R } from '../../../../utils/field-constants';
+import { ActivePowerAdornment, OhmAdornment, VoltageAdornment } from '../../../dialog-utils';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
 import { Grid } from '@mui/material';
 import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
-import GridSection from '../../../../commons/grid-section';
-import GridItem from '../../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
 
 interface LccHvdcLineProps {
     id: string;

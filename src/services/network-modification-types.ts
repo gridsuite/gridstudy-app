@@ -12,7 +12,7 @@ import {
     FieldValue,
 } from '../components/dialogs/network-modifications/by-filter/by-assignment/assignment/assignment.type';
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation.type';
+import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/lcc-type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 import { ModificationType } from '@gridsuite/commons-ui';
@@ -384,6 +384,17 @@ export interface LCCCreationConverterStation {
     shuntCompensatorsOnSide: ShuntCompensatorInfos[];
 }
 
+export interface LCCModificationConverterStation {
+    type: string;
+    equipmentId: string;
+    equipmentName?: AttributeModification<string>;
+    lossFactor?: AttributeModification<number>;
+    powerFactor?: AttributeModification<number>;
+    voltageLevelId?: AttributeModification<string>;
+    busOrBusbarSectionId?: AttributeModification<string>;
+    shuntCompensatorsOnSide: ShuntCompensatorInfos[];
+}
+
 export interface VSCModificationConverterStation {
     voltageSetpoint: AttributeModification<number> | null;
     lossFactor: AttributeModification<number> | null;
@@ -700,6 +711,23 @@ export interface LCCCreationInfo {
     activePowerSetpoint: number;
     converterStation1: LCCCreationConverterStation;
     converterStation2: LCCCreationConverterStation;
+    properties?: Property[];
+    isUpdate: boolean;
+    modificationUuid?: string;
+}
+
+export interface LCCModificationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    id: string;
+    name?: string | null;
+    nominalV?: number;
+    r: number;
+    maxP: number;
+    convertersMode: string;
+    activePowerSetpoint: number;
+    converterStation1: any;
+    converterStation2: any;
     properties?: Property[];
     isUpdate: boolean;
     modificationUuid?: string;

@@ -1,29 +1,24 @@
-/**
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
 import { UUID } from 'crypto';
-import { Box } from '@mui/material';
-import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../../utils/field-constants';
-import LccHvdcLine from '../lcc-hvdc-line';
-import { LccCreationDialogTab } from '../lcc-type';
-import LccConverterStation from '../lcc-converter-station';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
+import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../../utils/field-constants';
+import { LccCreationDialogTab } from '../lcc-type';
+import { Box } from '@mui/material';
+import LccHvdcLine from '../lcc-hvdc-line';
+import LccConverterStation from '../lcc-converter-station';
 
-interface LccCreationFormProps {
+interface LccModificationFormProps {
     tabIndex: number;
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
 }
-export default function LccCreationForm({
+
+export function LccModificationForm({
     tabIndex,
     studyUuid,
     currentRootNetworkUuid,
     currentNode,
-}: Readonly<LccCreationFormProps>) {
+}: Readonly<LccModificationFormProps>) {
     return (
         <>
             <Box hidden={tabIndex !== LccCreationDialogTab.HVDC_LINE_TAB} p={1}>
@@ -36,6 +31,7 @@ export default function LccCreationForm({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     id={CONVERTER_STATION_1}
                     stationLabel={'converterStation1'}
+                    isModification
                 />
             </Box>
             <Box hidden={tabIndex !== LccCreationDialogTab.CONVERTER_STATION_2} p={1}>
@@ -45,6 +41,7 @@ export default function LccCreationForm({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     id={CONVERTER_STATION_2}
                     stationLabel={'converterStation2'}
+                    isModification
                 />
             </Box>
         </>
