@@ -27,7 +27,7 @@ import {
     R,
 } from '../../../../utils/field-constants';
 
-export const LccCreationDialogTab = {
+export const LccDialogTab = {
     HVDC_LINE_TAB: 0,
     CONVERTER_STATION_1: 1,
     CONVERTER_STATION_2: 2,
@@ -101,7 +101,7 @@ export interface ShuntCompensatorInfos {
 
 export interface LccConverterStationFormInfos {
     id: string;
-    name: string | null;
+    name?: string;
     lossFactor: number;
     powerFactor: number;
     voltageLevelId: string;

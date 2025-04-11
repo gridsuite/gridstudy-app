@@ -23,7 +23,7 @@ import {
     GeneratorCreationInfos,
     GeneratorModificationInfos,
     LCCCreationInfo,
-    LCCModificationInfo,
+    LccModificationInfo,
     LineCreationInfo,
     LineModificationInfo,
     LinesAttachToSplitLinesInfo,
@@ -1733,12 +1733,12 @@ export function modifyLcc({
     maxP,
     convertersMode,
     activePowerSetpoint,
-    converterStation1,
-    converterStation2,
+    lccConverterStation1,
+    lccConverterStation2,
     properties,
     isUpdate = false,
     modificationUuid,
-}: LCCModificationInfo) {
+}: LccModificationInfo) {
     let modifyLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1763,8 +1763,8 @@ export function modifyLcc({
             maxP: maxP,
             convertersMode: convertersMode,
             activePowerSetpoint: activePowerSetpoint,
-            converterStation1: converterStation1,
-            converterStation2: converterStation2,
+            converterStation1: lccConverterStation1,
+            converterStation2: lccConverterStation2,
             properties: properties,
         }),
     });

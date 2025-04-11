@@ -23,6 +23,7 @@ import GridItem from '../../../commons/grid-item';
 
 import FiltersShuntCompensatorTable from './creation/filters-shunt-compensator-table';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { LccModificationConverterStation } from '../../../../../services/network-modification-types';
 
 interface LccConverterStationProps {
     id: string;
@@ -30,7 +31,8 @@ interface LccConverterStationProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
-    isModification?: boolean;
+    hideConnectityForm?: boolean;
+    previousValues?: LccModificationConverterStation;
 }
 
 export default function LccConverterStation({
@@ -39,13 +41,28 @@ export default function LccConverterStation({
     currentNode,
     studyUuid,
     currentRootNetworkUuid,
-    isModification,
+    hideConnectityForm,
+    previousValues,
 }: Readonly<LccConverterStationProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
-    const stationIdField = <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />;
+    console.log('previousValues', previousValues);
 
-    const stationNameField = <TextInput name={`${id}.${CONVERTER_STATION_NAME}`} label={'converterStationName'} />;
+    const stationIdField = (
+        <TextInput
+            name={`${id}.${CONVERTER_STATION_ID}`}
+            label={'converterStationId'}
+            previousValue={previousValues?.equipmentId}
+        />
+    );
+
+    const stationNameField = (
+        <TextInput
+            name={`${id}.${CONVERTER_STATION_NAME}`}
+            label={'converterStationName'}
+            previousValue={previousValues?.equipmentName}
+        />
+    );
     const connectivityForm = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
@@ -59,7 +76,12 @@ export default function LccConverterStation({
     );
 
     const lossFactorField = (
-        <FloatInput name={`${id}.${LOSS_FACTOR}`} label={'lossFactorLabel'} adornment={percentageTextField} />
+        <FloatInput
+            name={`${id}.${LOSS_FACTOR}`}
+            label={'lossFactorLabel'}
+            adornment={percentageTextField}
+            previousValue={previousValues?.lossFactor}
+        />
     );
 
     const connectivitySection = (
@@ -71,7 +93,13 @@ export default function LccConverterStation({
         </>
     );
 
-    const powerFactorField = <FloatInput name={`${id}.${POWER_FACTOR}`} label={'powerFactorLabel'} />;
+    const powerFactorField = (
+        <FloatInput
+            name={`${id}.${POWER_FACTOR}`}
+            label={'powerFactorLabel'}
+            previousValue={previousValues?.powerFactor}
+        />
+    );
 
     return (
         <Grid container spacing={2}>
@@ -80,7 +108,7 @@ export default function LccConverterStation({
                 <GridItem size={4}>{stationIdField}</GridItem>
                 <GridItem size={4}>{stationNameField}</GridItem>
             </Grid>
-            {!isModification && connectivitySection}
+            {!hideConnectityForm && connectivitySection}
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
                 <GridItem size={4}>{lossFactorField}</GridItem>

@@ -53,6 +53,7 @@ import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialog-utils';
 import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
+import { AttributeModification } from '../../../../../services/network-modification-types';
 
 export const getLccConverterStationSchema = () =>
     yup.object().shape({
@@ -139,6 +140,7 @@ export function getLccConverterStationModificationEmptyFormData() {
         [LOSS_FACTOR]: null,
         [POWER_FACTOR]: null,
         [FILTERS_SHUNT_COMPENSATOR_TABLE]: getEmptyFiltersShuntCompensatorTableFormData(),
+        ...getConnectivityWithPositionEmptyFormData(),
     };
 }
 
@@ -245,12 +247,13 @@ export function getLccConverterStationCreationData(converterStation: {
     };
 }
 
+/* busOrBusbarSectionId?: AttributeModification<string>; */
+
 export function getLccConverterStationModificationData(converterStation: {
     converterStationId: string;
-    converterStationName?: string;
-    lossFactor: number;
-    powerFactor: number;
-    connectivity: Connectivity;
+    converterStationName?: AttributeModification<string>;
+    lossFactor: AttributeModification<number>;
+    powerFactor: AttributeModification<number>;
     shuntCompensatorInfos?: ShuntCompensatorFormSchema[];
 }) {
     return {

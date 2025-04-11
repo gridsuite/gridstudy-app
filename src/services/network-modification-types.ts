@@ -384,14 +384,18 @@ export interface LCCCreationConverterStation {
     shuntCompensatorsOnSide: ShuntCompensatorInfos[];
 }
 
-export interface LCCModificationConverterStation {
+export interface LccModificationConverterStation {
     type: string;
     equipmentId: string;
-    equipmentName?: AttributeModification<string>;
-    lossFactor?: AttributeModification<number>;
-    powerFactor?: AttributeModification<number>;
-    voltageLevelId?: AttributeModification<string>;
-    busOrBusbarSectionId?: AttributeModification<string>;
+    equipmentName?: string;
+    lossFactor?: number;
+    powerFactor?: number;
+    voltageLevelId?: string;
+    busOrBusbarSectionId?: string;
+    connectionName?: string | null;
+    connectionDirection?: string;
+    connectionPosition?: number;
+    terminalConnected?: boolean;
     shuntCompensatorsOnSide: ShuntCompensatorInfos[];
 }
 
@@ -716,7 +720,7 @@ export interface LCCCreationInfo {
     modificationUuid?: string;
 }
 
-export interface LCCModificationInfo {
+export interface LccModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
     id: string;
@@ -726,8 +730,8 @@ export interface LCCModificationInfo {
     maxP: number;
     convertersMode: string;
     activePowerSetpoint: number;
-    converterStation1: any;
-    converterStation2: any;
+    lccConverterStation1: LccModificationConverterStation;
+    lccConverterStation2: LccModificationConverterStation;
     properties?: Property[];
     isUpdate: boolean;
     modificationUuid?: string;

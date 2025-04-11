@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {
     ACTIVE_POWER_SETPOINT,
     CONVERTER_STATION_1,
@@ -15,12 +22,9 @@ import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gri
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccModificationForm } from './lcc-modification-form';
-import { LccCreationDialogTab, LccInfos } from '../lcc-type';
+import { LccDialogTab, LccInfos } from '../lcc-type';
 import { useCallback, useEffect, useState } from 'react';
-import LccCreationDialogHeader from '../creation/lcc-creation-dialog-header';
-import LccTabs from '../lcc-tabs';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { FetchStatus } from 'services/utils.type';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import {
@@ -38,7 +42,10 @@ import { toModificationProperties } from '../../../common/properties/property-ut
 import { EquipmentModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
-import Grid from '@mui/material/Grid';
+import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
+import { EQUIPMENT_INFOS_TYPES } from '../../../../../utils/equipment-types';
+import { LccModificationInfo } from '../../../../../../services/network-modification-types';
+import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -65,27 +72,56 @@ const formSchema = yup
 
 export const LccModificationDialog = ({
     editData,
+    defaultIdValue,
     currentNode,
     studyUuid,
     currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
-    onClose,
-    defaultIdValue,
     ...dialogProps
 }: Readonly<LccModificationDialogProps>) => {
+    const [tabIndex, setTabIndex] = useState<number>(LccDialogTab.HVDC_LINE_TAB);
+    const [lccToModify, setLccToModify] = useState<LccModificationInfo | null>(null);
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
+    const [equipmentId, setEquipmentId] = useState<string | null>(defaultIdValue ?? null);
+
     const currentNodeUuid = currentNode?.id;
-    const [tabIndex, setTabIndex] = useState<number>(LccCreationDialogTab.HVDC_LINE_TAB);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const { snackError } = useSnackMessage();
-    const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
 
     const formMethods = useForm<any>({
         defaultValues: emptyFormData,
         resolver: yupResolver<any>(formSchema),
     });
+    const { reset, handleSubmit } = formMethods;
 
-    const { reset } = useForm();
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
+
+    const fromEditDataToFormValues = useCallback(
+        (lccModificationInfos: LccInfos) => {
+            if (editData?.equipmentId) {
+                setEquipmentId(editData.equipmentId);
+            }
+
+            reset({
+                [EQUIPMENT_ID]: lccModificationInfos.equipmentId,
+                [EQUIPMENT_NAME]: lccModificationInfos.equipmentName,
+                [HVDC_LINE_TAB]: getLccHvdcLineFromEditData(lccModificationInfos),
+                [CONVERTER_STATION_1]: getLccConverterStationFromEditData(lccModificationInfos.converterStation1),
+                [CONVERTER_STATION_2]: getLccConverterStationFromEditData(lccModificationInfos.converterStation2),
+            });
+        },
+        [editData, reset]
+    );
+
+    useEffect(() => {
+        if (editData) {
+            fromEditDataToFormValues(editData);
+        }
+    }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
         (lccHvdcLine: any) => {
@@ -102,8 +138,8 @@ export const LccModificationDialog = ({
                 maxP: hvdcLineTab[MAX_P],
                 convertersMode: hvdcLineTab[CONVERTERS_MODE],
                 activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
-                converterStation1: converterStation1,
-                converterStation2: converterStation2,
+                lccConverterStation1: converterStation1,
+                lccConverterStation2: converterStation2,
                 properties: toModificationProperties(hvdcLineTab),
                 isUpdate: !!editData,
                 modificationUuid: editData ? editData.uuid : undefined,
@@ -117,71 +153,55 @@ export const LccModificationDialog = ({
         [editData, studyUuid, currentNodeUuid, snackError]
     );
 
-    const headerAndTabs = (
-        <Grid container spacing={2}>
-            <LccCreationDialogHeader />
-            <LccTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
-        </Grid>
+    const clear = useCallback(
+        (customData = {}, keepDefaultValues = false) => {
+            reset({ ...emptyFormData, ...customData }, { keepDefaultValues: keepDefaultValues });
+        },
+        [reset]
     );
 
-    const fromEditDataToFormValues = useCallback(
-        (lccModificationInfos: LccInfos) => {
-            if (editData?.equipmentId) {
-                setSelectedId(editData.equipmentId);
+    const onEquipmentIdChange = useCallback(
+        (equipmentId: string | null) => {
+            if (!equipmentId) {
+                clear();
+                setLccToModify(null);
+            } else {
+                setDataFetchStatus(FetchStatus.RUNNING);
+                fetchNetworkElementInfos(
+                    studyUuid,
+                    currentNode.id,
+                    currentRootNetworkUuid,
+                    ExtendedEquipmentType.HVDC_LINE_LCC,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
+                    equipmentId,
+                    true
+                )
+                    .then((value: LccModificationInfo | null) => {
+                        if (value) {
+                            setLccToModify({ ...value });
+                            reset((formValues: any) => ({
+                                ...formValues,
+                            }));
+                        }
+                        setDataFetchStatus(FetchStatus.SUCCEED);
+                    })
+                    .catch(() => {
+                        setDataFetchStatus(FetchStatus.FAILED);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setLccToModify(null);
+                            reset(emptyFormData);
+                        }
+                    });
             }
-
-            reset({
-                [EQUIPMENT_ID]: lccModificationInfos.equipmentId,
-                [EQUIPMENT_NAME]: lccModificationInfos.equipmentName ?? '',
-                [HVDC_LINE_TAB]: getLccHvdcLineFromEditData(lccModificationInfos),
-                [CONVERTER_STATION_1]: getLccConverterStationFromEditData(lccModificationInfos.converterStation1),
-                [CONVERTER_STATION_2]: getLccConverterStationFromEditData(lccModificationInfos.converterStation2),
-            });
         },
-        [editData, reset]
+        [clear, currentNode.id, currentRootNetworkUuid, editData?.equipmentId, reset, studyUuid]
     );
 
     useEffect(() => {
-        if (editData) {
-            fromEditDataToFormValues(editData);
+        if (equipmentId) {
+            onEquipmentIdChange(equipmentId);
         }
-    }, [fromEditDataToFormValues, editData]);
-
-    const onValidationError = useCallback(
-        (errors: any) => {
-            const tabsInError = [];
-            if (errors?.[HVDC_LINE_TAB]) {
-                tabsInError.push(LccCreationDialogTab.HVDC_LINE_TAB);
-            }
-            if (errors?.[CONVERTER_STATION_1]) {
-                tabsInError.push(LccCreationDialogTab.CONVERTER_STATION_1);
-            }
-            if (errors?.[CONVERTER_STATION_2]) {
-                tabsInError.push(LccCreationDialogTab.CONVERTER_STATION_2);
-            }
-
-            if (tabsInError.includes(tabIndex)) {
-                // error in current tab => do not change tab systematically but remove current tab in error list
-                setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
-            } else if (tabsInError.length > 0) {
-                // switch to the first tab in the list then remove the tab in the error list
-                setTabIndex(tabsInError[0]);
-                setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
-            }
-        },
-        [tabIndex]
-    );
-
-    const open = useOpenShortWaitFetching({
-        isDataFetched:
-            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
-        delay: FORM_LOADING_DELAY,
-    });
-
-    const clear = useCallback(() => {
-        console.log('---------Clear');
-        reset(emptyFormData);
-    }, [reset]);
+    }, [equipmentId, onEquipmentIdChange]);
 
     return (
         <CustomFormProvider
@@ -192,35 +212,41 @@ export const LccModificationDialog = ({
         >
             <ModificationDialog
                 fullWidth
-                maxWidth="md"
-                titleId="ModifyLcc"
                 onClear={clear}
-                onSave={onSubmit}
-                subtitle={headerAndTabs}
-                onValidationError={onValidationError}
-                open={open}
-                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                // @ts-ignore
+                onSave={handleSubmit(onSubmit)}
+                maxWidth={'md'}
+                titleId="ModifyLcc"
                 PaperProps={{
                     sx: {
-                        height: '95vh',
+                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
+                open={open}
+                keepMounted={true}
+                showNodeNotBuiltWarning={equipmentId != null}
+                isDataFetching={
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
+                }
                 {...dialogProps}
             >
-                {selectedId === null && (
+                {equipmentId === null && (
                     <EquipmentIdSelector
-                        defaultValue={selectedId}
-                        setSelectedId={setSelectedId}
+                        defaultValue={equipmentId}
+                        setSelectedId={setEquipmentId}
                         equipmentType={ExtendedEquipmentType.HVDC_LINE_LCC}
                         fillerHeight={17}
                     />
                 )}
-                {selectedId !== null && (
+                {equipmentId !== null && (
                     <LccModificationForm
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         tabIndex={tabIndex}
+                        setTabIndex={setTabIndex}
+                        tabIndexesWithError={[]}
+                        lccToModify={lccToModify}
                     />
                 )}
             </ModificationDialog>

@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { TextInput } from '@gridsuite/commons-ui';
-import { EQUIPMENT_ID, EQUIPMENT_NAME } from '../../../../../utils/field-constants';
+import { EQUIPMENT_ID, EQUIPMENT_NAME } from '../../../../utils/field-constants';
 import { Grid } from '@mui/material';
-import GridItem from '../../../../commons/grid-item';
-import { filledTextField } from '../../../../dialog-utils';
+import GridItem from '../../../commons/grid-item';
+import { filledTextField } from '../../../dialog-utils';
 
 export default function LccCreationDialogHeader() {
     const LccIdField = (
