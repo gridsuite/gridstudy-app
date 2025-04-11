@@ -5,43 +5,154 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Paper } from '@mui/material';
-import { resultsGlobalFilterStyles } from './global-filter-styles';
+import { Box, Button, Chip, Grid, ListItem, ListItemButton, Paper, Typography } from '@mui/material';
+import {
+    GLOBAL_FILTERS_CELL_HEIGHT,
+    getResultsGlobalFiltersChipStyle,
+    IMPORT_FILTER_HEIGHT,
+    resultsGlobalFilterStyles,
+} from './global-filter-styles';
+import { FormattedMessage, useIntl } from 'react-intl';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import React, { PropsWithChildren, useMemo } from 'react';
+import ListItemText from '@mui/material/ListItemText';
+import List from '@mui/material/List';
+import { FilterType } from '../utils';
+import { GlobalFilter } from './global-filter-types';
+import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
+import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { mergeSx } from '@gridsuite/commons-ui';
-import { FormattedMessage } from 'react-intl';
-import IconButton from '@mui/material/IconButton';
-import FolderIcon from '@mui/icons-material/Folder';
-import React, { PropsWithChildren } from 'react';
+
+const XS_COLUMN1: number = 3.5;
+const XS_COLUMN2: number = 4;
+const XS_COLUMN3: number = 4.5;
 
 export interface SelectableGlobalFiltersProps extends PropsWithChildren {
-    onClickGenericFilter: () => void;
+    onClickGenericFilterButton: () => void;
+    filterGroupSelected: string;
+    setFilterGroupSelected: (value: ((prevState: string) => string) | string) => void;
+    selectedGlobalFilters: GlobalFilter[];
+    updateFilters: (globalFilters: GlobalFilter[]) => Promise<void>;
+    lockClosing: boolean; // prevent this component from being closed
+    setOpenedDropdown: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function SelectableGlobalFilters({ children, onClickGenericFilter }: Readonly<SelectableGlobalFiltersProps>) {
+function SelectableGlobalFilters({
+    children,
+    onClickGenericFilterButton,
+    filterGroupSelected,
+    setFilterGroupSelected,
+    selectedGlobalFilters,
+    updateFilters,
+    lockClosing,
+    setOpenedDropdown,
+}: Readonly<SelectableGlobalFiltersProps>) {
+    const { translate } = useLocalizedCountries();
+    const intl = useIntl();
+    const categories: string[] = useMemo(() => [RECENT_FILTER, ...Object.values(FilterType)], []);
+
+    const filtersMsg: string = useMemo(
+        () =>
+            intl.formatMessage(
+                {
+                    id:
+                        selectedGlobalFilters.length < 2
+                            ? 'results.globalFilter.activeFilter'
+                            : 'results.globalFilter.activeFilters',
+                },
+                { filtersCount: selectedGlobalFilters.length }
+            ),
+        [intl, selectedGlobalFilters.length]
+    );
+
     return (
-        <Paper>
-            {children}
-            <Box sx={resultsGlobalFilterStyles.filterTypeBox}>
-                <Box
-                    sx={mergeSx(resultsGlobalFilterStyles.groupLabel, {
-                        paddingLeft: 2,
-                        paddingTop: 1.5,
-                    })}
-                >
-                    <FormattedMessage id={'Filters'} />
-                    <IconButton
-                        color="primary"
-                        sx={{
-                            align: 'right',
-                            marginLeft: 'auto',
-                        }}
-                        onMouseDown={onClickGenericFilter}
-                    >
-                        <FolderIcon />
-                    </IconButton>
-                </Box>
-            </Box>
-        </Paper>
+        <ClickAwayListener
+            mouseEvent="onMouseDown"
+            onClickAway={() => {
+                if (!lockClosing) {
+                    setOpenedDropdown(false);
+                }
+            }}
+        >
+            <Paper sx={resultsGlobalFilterStyles.dropdown}>
+                <Grid container>
+                    <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cellHeader}>
+                        <FormattedMessage id={'results.globalFilter.categories'} />
+                    </Grid>
+                    <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cellHeader} />
+                    <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cellHeader}>
+                        <Typography variant="caption">{filtersMsg}</Typography>
+                        <Button
+                            size="small"
+                            onClick={() => updateFilters([])}
+                            sx={resultsGlobalFilterStyles.miniButton}
+                        >
+                            <Typography variant="caption">
+                                <FormattedMessage id="results.globalFilter.clearAll" />
+                            </Typography>
+                        </Button>
+                    </Grid>
+                    <Grid item xs={XS_COLUMN1} sx={resultsGlobalFilterStyles.cell}>
+                        <List sx={resultsGlobalFilterStyles.list}>
+                            {categories.map((category) => {
+                                return (
+                                    <ListItemButton
+                                        onClick={() => setFilterGroupSelected(category)}
+                                        key={category}
+                                        selected={category === filterGroupSelected}
+                                    >
+                                        <ListItemText
+                                            primary={<FormattedMessage id={'results.globalFilter.' + category} />}
+                                        />
+                                    </ListItemButton>
+                                );
+                            })}
+                        </List>
+                    </Grid>
+                    <Grid item xs={XS_COLUMN2} sx={resultsGlobalFilterStyles.cell}>
+                        <Box
+                            sx={mergeSx(resultsGlobalFilterStyles.list, {
+                                height:
+                                    filterGroupSelected === FilterType.GENERIC_FILTER
+                                        ? `${GLOBAL_FILTERS_CELL_HEIGHT - IMPORT_FILTER_HEIGHT}px`
+                                        : `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+                            })}
+                        >
+                            {children}
+                        </Box>
+                        {filterGroupSelected === FilterType.GENERIC_FILTER && (
+                            <Button
+                                startIcon={<FileUploadIcon />}
+                                fullWidth={true}
+                                sx={resultsGlobalFilterStyles.importFilterButton}
+                                onMouseDown={onClickGenericFilterButton}
+                            >
+                                <FormattedMessage id={'results.globalFilter.loadFilter'} />
+                            </Button>
+                        )}
+                    </Grid>
+                    <Grid item xs={XS_COLUMN3} sx={resultsGlobalFilterStyles.cell}>
+                        <List sx={mergeSx(resultsGlobalFilterStyles.list, { overflowY: 'auto' })}>
+                            {selectedGlobalFilters.map((element: GlobalFilter) => (
+                                <ListItem key={element.label} sx={{ height: '1.8em' }}>
+                                    <Chip
+                                        size="small"
+                                        label={getOptionLabel(element, translate)}
+                                        sx={getResultsGlobalFiltersChipStyle(element.filterType)}
+                                        onDelete={() => {
+                                            updateFilters([
+                                                ...selectedGlobalFilters.filter((filter) => filter !== element),
+                                            ]).then();
+                                        }}
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Grid>
+                </Grid>
+            </Paper>
+        </ClickAwayListener>
     );
 }
 
