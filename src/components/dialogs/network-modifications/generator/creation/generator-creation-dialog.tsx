@@ -114,7 +114,7 @@ const formSchema = yup
         [ENERGY_SOURCE]: yup.string().nullable().required(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
         [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [RATED_NOMINAL_POWER]: yup.number().nullable(),
+        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [TRANSFORMER_REACTANCE]: yup.number().nullable(),
         [TRANSIENT_REACTANCE]: yup
             .number()

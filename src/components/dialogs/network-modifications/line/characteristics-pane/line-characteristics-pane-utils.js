@@ -24,12 +24,14 @@ import {
 
 const characteristicsValidationSchema = (id, displayConnectivity, modification) => ({
     [id]: yup.object().shape({
-        [R]: modification ? yup.number().nullable() : yup.number().nullable().required(),
+        [R]: modification
+            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
+            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
         [X]: modification ? yup.number().nullable() : yup.number().nullable().required(),
         [B1]: yup.number().nullable(),
-        [G1]: yup.number().nullable(),
+        [G1]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [B2]: yup.number().nullable(),
-        [G2]: yup.number().nullable(),
+        [G2]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_1)),
         ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_2)),
     }),

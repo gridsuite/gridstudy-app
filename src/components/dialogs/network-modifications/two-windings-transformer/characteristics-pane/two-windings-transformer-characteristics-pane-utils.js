@@ -10,13 +10,21 @@ import yup from 'components/utils/yup-config';
 
 const characteristicsValidationSchema = (isModification, additionalFields) => ({
     [CHARACTERISTICS]: yup.object().shape({
-        [R]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
+        [R]: isModification
+            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
+            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
         [X]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
-        [G]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
+        [G]: isModification
+            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
+            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
         [B]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
         [RATED_S]: yup.number().nullable().positive('RatedNominalPowerMustBeGreaterThanZero'),
-        [RATED_U1]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
-        [RATED_U2]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
+        [RATED_U1]: isModification
+            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
+            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+        [RATED_U2]: isModification
+            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
+            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
         ...additionalFields,
     }),
 });
