@@ -22,6 +22,7 @@ interface NetworkModificationTreePanePanelsProps {
 const styles = {
     panelHandlerContainer: (theme: Theme) => ({
         backgroundColor: theme.networkModificationPanel.backgroundColor,
+        borderLeft: theme.networkModificationPanel.border,
     }),
 };
 export const NetworkModificationTreePanePanels = ({
