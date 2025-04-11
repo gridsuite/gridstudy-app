@@ -283,7 +283,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return loadflowResult;
     }, [tabIndex, loadflowResult, intl]);
 
-    const getFilterableEquipmentTypes = useCallback(() => {
+    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
         switch (tabIndex) {
             case 0:
                 return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
@@ -292,6 +292,17 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         }
         return [];
     }, [tabIndex]);
+
+    const globalFilters = useMemo(
+        () => (
+            <ResultsGlobalFilter
+                onChange={handleGlobalFilterChange}
+                filters={[...voltageLevelsFilter, ...countriesFilter]}
+                filterableEquipmentTypes={filterableEquipmentTypes}
+            />
+        ),
+        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter]
+    );
 
     return (
         <>
@@ -303,11 +314,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
-                    <ResultsGlobalFilter
-                        onChange={handleGlobalFilterChange}
-                        filters={[...voltageLevelsFilter, ...countriesFilter]}
-                        filterableEquipmentTypes={getFilterableEquipmentTypes()}
-                    />
+                    {globalFilters}
                 </Box>
                 <Box sx={styles.emptySpace}></Box>
             </Box>
