@@ -8,7 +8,7 @@
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Checkbox, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, Theme } from '@mui/material';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSelector } from 'react-redux';
 import {
@@ -16,7 +16,8 @@ import {
     UseStateBooleanReturn,
     useSnackMessage,
     IElementCreationDialog,
-    ElementCreationDialog,
+    ElementSaveDialog,
+    IElementUpdateDialog,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer';
 import { SelectOptionsDialog } from '../../../utils/dialogs';
@@ -27,10 +28,12 @@ import {
     SpreadsheetEquipmentType,
 } from '../config/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
-import { saveSpreadsheetCollection } from '../../../services/explore';
+import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../services/explore';
+import { NodeAlias } from '../custom-columns/node-alias.type';
 
 interface SpreadsheetCollectionSaveDialogProps {
     open: UseStateBooleanReturn;
+    nodeAliases: NodeAlias[] | undefined;
 }
 
 const styles = {
@@ -52,7 +55,10 @@ interface TableState {
     index: number;
 }
 
-export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetCollectionSaveDialogProps> = ({ open }) => {
+export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetCollectionSaveDialogProps> = ({
+    open,
+    nodeAliases,
+}) => {
     const { snackError, snackInfo } = useSnackMessage();
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
@@ -156,6 +162,7 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
             try {
                 const collection: SpreadsheetCollection = {
                     spreadsheetConfigs: selectedConfigs,
+                    nodeAliases: nodeAliases?.map((n) => n.alias),
                 };
 
                 await saveSpreadsheetCollection(collection, element.name, element.description, element.folderId);
@@ -173,7 +180,36 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                 });
             }
         },
-        [selectedConfigs, snackInfo, snackError]
+        [selectedConfigs, snackInfo, snackError, nodeAliases]
+    );
+
+    const handleUpdateCollection = useCallback(
+        async ({ id, name, description, elementFullPath }: IElementUpdateDialog) => {
+            try {
+                const collection: SpreadsheetCollection = {
+                    spreadsheetConfigs: selectedConfigs,
+                    nodeAliases: nodeAliases?.map((n) => n.alias),
+                };
+
+                await updateSpreadsheetCollection(id, collection, name, description);
+                snackInfo({
+                    headerId: 'spreadsheet/collection/update/success',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
+                });
+                setShowElementCreationDialog(false);
+            } catch (error) {
+                snackError({
+                    headerId: 'spreadsheet/collection/update/error',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
+                    messageTxt: error instanceof Error ? error.message : String(error),
+                });
+            }
+        },
+        [selectedConfigs, nodeAliases, snackInfo, snackError]
     );
 
     const isAllChecked = localTablesState.length > 0 && localTablesState.every((table) => table.selected);
@@ -244,13 +280,17 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                 disabled={!hasSelectedTables}
             />
             {showElementCreationDialog && studyUuid && (
-                <ElementCreationDialog
+                <ElementSaveDialog
                     open={showElementCreationDialog}
                     onClose={() => setShowElementCreationDialog(false)}
                     onSave={handleSaveCollection}
+                    OnUpdate={handleUpdateCollection}
                     type={ElementType.SPREADSHEET_CONFIG_COLLECTION}
                     titleId={'spreadsheet/collection/save/collection_name_dialog_title'}
                     studyUuid={studyUuid}
+                    selectorTitleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
+                    createLabelId="spreadsheet/collection/save/create"
+                    updateLabelId="spreadsheet/collection/save/replace"
                 />
             )}
         </>

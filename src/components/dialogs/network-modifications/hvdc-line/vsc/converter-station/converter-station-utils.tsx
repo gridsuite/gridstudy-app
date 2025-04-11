@@ -41,12 +41,9 @@ import {
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { sanitizeString } from '../../../../dialog-utils';
 import { toModificationOperation } from '../../../../../utils/utils';
-import {
-    AttributeModification,
-    ConverterStationElementInfos,
-    ConverterStationElementModificationInfos,
-    ReactiveCapabilityCurvePointsData,
-} from './converter-station-type';
+import { ConverterStationElementInfos, ConverterStationElementModificationInfos } from './converter-station-type';
+import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
+import { AttributeModification } from '../../../../../../services/network-modification-types';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -70,7 +67,7 @@ export interface ConverterStationInterfaceEditData {
     connectionName?: string | null;
     connectionPosition?: number | null;
     terminalConnected?: boolean | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
@@ -90,7 +87,7 @@ export interface ConverterStationModificationInterfaceEditData {
     connectionName?: AttributeModification<string> | null;
     connectionPosition?: AttributeModification<number> | null;
     terminalConnected?: AttributeModification<boolean> | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: AttributeModification<boolean> | null;
     minQ: AttributeModification<number> | null;
     maxQ: AttributeModification<number> | null;
@@ -258,13 +255,13 @@ function getConverterStationReactiveLimits(converterStation: ConverterStationInt
               reactiveCapabilityCurveChoice: 'CURVE',
               minimumReactivePower: null,
               maximumReactivePower: null,
-              reactiveCapabilityCurveTable: converterStation.reactiveCapabilityCurvePoints,
+              reactiveCapabilityCurvePoints: converterStation.reactiveCapabilityCurvePoints,
           })
         : getReactiveLimitsFormData({
               reactiveCapabilityCurveChoice: 'MINMAX',
               minimumReactivePower: converterStation.minQ,
               maximumReactivePower: converterStation.maxQ,
-              reactiveCapabilityCurveTable: converterStation?.reactiveCapabilityCurvePoints ?? null,
+              reactiveCapabilityCurvePoints: converterStation?.reactiveCapabilityCurvePoints ?? null,
           });
 }
 
@@ -278,7 +275,7 @@ function getConverterStationModificationReactiveLimits(
                 : 'MINMAX',
             maximumReactivePower: converterStationEditData?.maxQ?.value ?? null,
             minimumReactivePower: converterStationEditData?.minQ?.value ?? null,
-            reactiveCapabilityCurveTable: converterStationEditData?.reactiveCapabilityCurvePoints ?? null,
+            reactiveCapabilityCurvePoints: converterStationEditData?.reactiveCapabilityCurvePoints ?? null,
         }),
     };
 }
@@ -304,7 +301,7 @@ export function getConverterStationFromSearchCopy(id: string, converterStation: 
                 reactiveCapabilityCurveChoice: converterStation?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
                 minimumReactivePower: converterStation?.minMaxReactiveLimits?.minQ,
                 maximumReactivePower: converterStation?.minMaxReactiveLimits?.maxQ,
-                reactiveCapabilityCurveTable: converterStation.reactiveCapabilityCurvePoints ?? null,
+                reactiveCapabilityCurvePoints: converterStation.reactiveCapabilityCurvePoints ?? null,
             }),
         },
     };

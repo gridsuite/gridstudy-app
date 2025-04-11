@@ -12,7 +12,7 @@ import {
     OptionalServicesNames,
     OptionalServicesStatus,
 } from './utils/optional-services';
-import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
     AuthenticationRouter,
     CardErrorBoundary,
@@ -40,6 +40,7 @@ import { fetchConfigParameter, fetchConfigParameters } from '../services/config'
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
+    attemptLeaveParametersTab,
     initTableDefinitions,
     selectComputedLanguage,
     selectEnableDeveloperMode,
@@ -47,6 +48,7 @@ import {
     selectLanguage,
     selectTheme,
     selectUseName,
+    setAppTabIndex,
     setOptionalServices,
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
@@ -62,6 +64,7 @@ const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, St
 const App = () => {
     const { snackError } = useSnackMessage();
 
+    const appTabIndex = useSelector((state) => state.appTabIndex);
     const user = useSelector((state) => state.user);
     const studyUuid = useSelector((state) => state.studyUuid);
     const signInCallbackError = useSelector((state) => state.signInCallbackError);
@@ -75,8 +78,6 @@ const App = () => {
     const dispatch = useDispatch();
 
     const location = useLocation();
-
-    const [tabIndex, setTabIndex] = useState(0);
 
     const updateNetworkVisualizationsParams = useCallback(
         (params) => {
@@ -288,9 +289,19 @@ const App = () => {
         }
     }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams]);
 
-    const onChangeTab = useCallback((newTabIndex) => {
-        setTabIndex(newTabIndex);
-    }, []);
+    const onChangeTab = useCallback(
+        (newTabIndex) => {
+            const parametersTabIndex = STUDY_VIEWS.indexOf(StudyView.PARAMETERS);
+
+            //check if we are leaving the parameters tab
+            if (appTabIndex === parametersTabIndex && newTabIndex !== parametersTabIndex) {
+                dispatch(attemptLeaveParametersTab(newTabIndex));
+            } else {
+                dispatch(setAppTabIndex(newTabIndex));
+            }
+        },
+        [dispatch, appTabIndex]
+    );
 
     return (
         <div
@@ -300,7 +311,7 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar user={user} tabIndex={tabIndex} onChangeTab={onChangeTab} userManager={userManager} />
+            <AppTopBar user={user} onChangeTab={onChangeTab} userManager={userManager} />
             <CardErrorBoundary>
                 <div
                     className="singlestretch-parent"
@@ -322,7 +333,7 @@ const App = () => {
                         <Routes>
                             <Route
                                 path="/studies/:studyUuid"
-                                element={<StudyContainer view={STUDY_VIEWS[tabIndex]} onChangeTab={onChangeTab} />}
+                                element={<StudyContainer view={STUDY_VIEWS[appTabIndex]} onChangeTab={onChangeTab} />}
                             />
                             <Route
                                 path="/sign-in-callback"

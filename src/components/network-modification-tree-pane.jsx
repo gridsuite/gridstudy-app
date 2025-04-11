@@ -16,17 +16,16 @@ import {
     setNodeSelectionForCopy,
     resetLogsFilter,
     reorderNetworkModificationTreeNodes,
+    deletedOrRenamedNodes,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Box } from '@mui/material';
 import NetworkModificationTree from './network-modification-tree';
-import { StudyDrawer } from './study-drawer';
-import NodeEditor from './graph/menus/node-editor';
+import NodeEditor from './graph/menus/network-modifications/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useStore } from '@xyflow/react';
-import ExportDialog from './dialogs/export-dialog';
+import { ExportNetworkDialog } from './dialogs/export-network-dialog';
 import { BUILD_STATUS, UPDATE_TYPE } from './network/constants';
 import {
     copySubtree,
@@ -41,18 +40,10 @@ import {
     fetchStashedNodes,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
-import RestoreNodesDialog from './dialogs/restore-node-dialog';
+import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 import { StudyDisplayMode, CopyType, UpdateType } from './network-modification.type';
-
-const styles = {
-    container: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-    },
-};
+import { NetworkModificationTreePanePanels } from './network-modification-tree-pane-panels';
 
 // We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
 // But the MAP display is neutral for this computation: We need to know what was the last HYBRID or TREE display and its width.
@@ -77,7 +68,6 @@ const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 
 export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
-    const intlRef = useIntlRef();
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
     const DownloadIframe = 'downloadIframe';
     const isInitiatingCopyTab = useRef(false);
@@ -215,7 +205,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers['updateType'] === UpdateType.NODE_CREATED) {
+            if (studyUpdatedForce.eventData.headers.updateType === UpdateType.NODE_CREATED) {
                 fetchNetworkModificationTreeNode(
                     studyUuid,
                     studyUpdatedForce.eventData.headers['newNode'],
@@ -237,7 +227,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 fetchStashedNodes(studyUuid).then((res) => {
                     setNodesToRestore(res);
                 });
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'subtreeCreated') {
+            } else if (studyUpdatedForce.eventData.headers.updateType === 'subtreeCreated') {
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers['newNode']).then(
                     (nodes) => {
                         dispatch(
@@ -245,12 +235,12 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         );
                     }
                 );
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodesColumnPositionsChanged') {
+            } else if (studyUpdatedForce.eventData.headers.updateType === 'nodesColumnPositionsChanged') {
                 reorderSubtree(
                     studyUpdatedForce.eventData.headers['parentNode'],
                     JSON.parse(studyUpdatedForce.eventData.payload)
                 );
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeMoved') {
+            } else if (studyUpdatedForce.eventData.headers.updateType === 'nodeMoved') {
                 fetchNetworkModificationTreeNode(
                     studyUuid,
                     studyUpdatedForce.eventData.headers['movedNode'],
@@ -265,7 +255,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         )
                     );
                 });
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'subtreeMoved') {
+            } else if (studyUpdatedForce.eventData.headers.updateType === 'subtreeMoved') {
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers['movedNode']).then(
                     (nodes) => {
                         dispatch(
@@ -273,7 +263,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         );
                     }
                 );
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === UpdateType.NODE_DELETED) {
+            } else if (studyUpdatedForce.eventData.headers.updateType === UpdateType.NODE_DELETED) {
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) => nodeId === nodeSelectionForCopyRef.current.nodeId
@@ -283,10 +273,11 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     resetNodeClipboard();
                 }
                 dispatch(networkModificationTreeNodesRemoved(studyUpdatedForce.eventData.headers['nodes']));
+                dispatch(deletedOrRenamedNodes(studyUpdatedForce.eventData.headers['nodes']));
                 fetchStashedNodes(studyUuid).then((res) => {
                     setNodesToRestore(res);
                 });
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeUpdated') {
+            } else if (studyUpdatedForce.eventData.headers.updateType === 'nodeUpdated') {
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some((nodeId) => nodeId === currentNodeRef.current?.id)
@@ -301,11 +292,13 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 ) {
                     resetNodeClipboard();
                 }
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeRenamed') {
-                updateNodes([studyUpdatedForce.eventData.headers['node']]);
+            } else if (studyUpdatedForce.eventData.headers.updateType === 'nodeRenamed') {
+                const nodeUuids = [studyUpdatedForce.eventData.headers['node']];
+                updateNodes(nodeUuids);
+                dispatch(deletedOrRenamedNodes(nodeUuids));
             } else if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'nodeBuildStatusUpdated' &&
-                studyUpdatedForce.eventData.headers['rootNetwork'] === currentRootNetworkUuidRef.current
+                studyUpdatedForce.eventData.headers.updateType === 'nodeBuildStatusUpdated' &&
+                studyUpdatedForce.eventData.headers.rootNetworkUuid === currentRootNetworkUuidRef.current
             ) {
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
@@ -316,7 +309,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     dispatch(resetLogsFilter());
                 }
                 //creating, updating or deleting modifications must invalidate the node clipboard
-            } else if (UPDATE_TYPE.includes(studyUpdatedForce.eventData.headers['updateType'])) {
+            } else if (UPDATE_TYPE.includes(studyUpdatedForce.eventData.headers.updateType)) {
                 if (
                     studyUpdatedForce.eventData.headers['parentNode'] === nodeSelectionForCopyRef.current.nodeId ||
                     isSubtreeImpacted([studyUpdatedForce.eventData.headers['parentNode']])
@@ -460,7 +453,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
 
-    const handleClickExportStudy = (url) => {
+    const handleClickExportNodeNetwork = (url) => {
         window.open(url, DownloadIframe);
         setOpenExportDialog(false);
     };
@@ -551,25 +544,27 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
         },
         [studyUuid, dispatch, snackError]
     );
+
     return (
         <>
-            <Box sx={styles.container}>
-                <NetworkModificationTree
-                    onNodeContextMenu={onNodeContextMenu}
-                    studyUuid={studyUuid}
-                    studyMapTreeDisplay={studyMapTreeDisplay}
-                    isStudyDrawerOpen={isStudyDrawerOpen}
-                    prevTreeDisplay={prevTreeDisplay}
-                />
-
-                <StudyDrawer
-                    open={isStudyDrawerOpen}
-                    anchor={prevTreeDisplay?.display === StudyDisplayMode.TREE ? 'right' : 'left'}
-                >
-                    {isModificationsDrawerOpen && <NodeEditor />}
-                    {isEventScenarioDrawerOpen && <ScenarioEditor />}
-                </StudyDrawer>
-            </Box>
+            <NetworkModificationTreePanePanels
+                leftComponent={
+                    <NetworkModificationTree
+                        onNodeContextMenu={onNodeContextMenu}
+                        studyUuid={studyUuid}
+                        studyMapTreeDisplay={studyMapTreeDisplay}
+                        isStudyDrawerOpen={isStudyDrawerOpen}
+                        prevTreeDisplay={prevTreeDisplay}
+                    />
+                }
+                rightComponent={
+                    <>
+                        {isModificationsDrawerOpen && <NodeEditor />}
+                        {isEventScenarioDrawerOpen && <ScenarioEditor />}
+                    </>
+                }
+                showRightPanel={isModificationsDrawerOpen || isEventScenarioDrawerOpen}
+            />
             {createNodeMenu.display && (
                 <CreateNodeMenu
                     position={createNodeMenu.position}
@@ -593,16 +588,13 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 />
             )}
             {openExportDialog && (
-                <ExportDialog
+                <ExportNetworkDialog
                     open={openExportDialog}
                     onClose={() => setOpenExportDialog(false)}
-                    onClick={handleClickExportStudy}
+                    onClick={handleClickExportNodeNetwork}
                     studyUuid={studyUuid}
                     rootNetworkUuid={currentRootNetworkUuid}
                     nodeUuid={activeNode?.id}
-                    title={intlRef.current.formatMessage({
-                        id: 'exportNetwork',
-                    })}
                 />
             )}
             {openRestoreDialog && (

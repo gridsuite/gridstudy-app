@@ -35,7 +35,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/option/parameter': 'Paramétrer',
     'spreadsheet/custom_column/option/refresh': 'Recharger',
     'spreadsheet/custom_column/option/refresh/tooltip':
-        'Recharger les données de cette feuille pour les autres nœuds paramétrés ({aliases})',
+        'Recharger les données de cette feuille pour les autres nœuds réalisés et paramétrés ({aliases})',
     'spreadsheet/custom_column/parameter_nodes': 'Paramétrer les alias de nœuds',
     'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
     'spreadsheet/custom_column/creates_cyclic_dependency':
@@ -43,18 +43,30 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/error_saving_or_updating_column':
         'Erreur lors de la sauvegarde ou de la mise à jour de la colonne',
     'spreadsheet/save/button': 'Enregistrer',
+    'spreadsheet/reset/button': 'Réinitialiser',
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/collection': 'Collection',
     'spreadsheet/save/options/csv': 'Export CSV',
     'spreadsheet/save/dialog_title': 'Enregistrer un modèle de tableur',
     'spreadsheet/collection/save/collection_name_dialog_title': 'Enregistrer une collection de tableurs',
     'spreadsheet/save/error_message': 'Une erreur est survenue lors de la création du modèle de tableur',
+    'spreadsheet/save/update_error_message':
+        'Une erreur est survenue lors de la mise à jour du modèle de tableur {item}',
     'spreadsheet/collection/save/error': 'Une erreur est survenue lors de la création de la collection de tableurs',
     'spreadsheet/save/confirmation_message': "Création d'un modèle de tableur dans {folderName}",
+    'spreadsheet/save/update_confirmation_message': 'Modèle de tableur {item} mis à jour',
+    'spreadsheet/save/create_new_model': 'Créer un nouveau modèle',
+    'spreadsheet/save/replace_existing_model': 'Remplacer un modèle existant',
     'spreadsheet/collection/save/success': 'Collection de tableurs créée dans {folderName}',
+    'spreadsheet/collection/update/success': 'Collection de tableurs {item} mise à jour',
+    'spreadsheet/collection/update/error': 'Erreur lors de la mise à jour de la collection de tableurs {item}',
+    'spreadsheet/collection/save/create': 'Créer une nouvelle collection',
+    'spreadsheet/collection/save/replace': 'Remplacer une collection existante',
     'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Créer une feuille de calcul vide',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Appliquer un modèle de tableur',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection': 'Appliquer une collection de tableurs',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace': 'Remplacer',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append': 'Ajouter',
     'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
         "Vous êtes sur le point de remplacer le contenu actuel de l'onglet 'Tableur'. Ce contenu sera perdu si vous ne le sauvegardez pas d'abord dans GridExplore. Souhaitez-vous poursuivre sans sauvegarder le contenu actuel?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Ajouter feuille de calcul',
@@ -77,6 +89,8 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/error_loading_collection':
         'Erreur lors de la récupération de la collection de tableurs',
     'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': "Erreur lors de l'ajout du tableur",
+    'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
+        'Erreur lors de la réinitialisation de la collection de tableurs',
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',
@@ -89,6 +103,21 @@ const spreadsheetFr = {
     'spreadsheet/remove_spreadsheet_error': 'Erreur lors de la suppression du tableur',
     'spreadsheet/reorder_columns/error': 'Erreur lors du réordonnancement des colonnes',
     'spreadsheet/reorder_tabs_error': 'Erreur lors du réordonnancement des onglets',
+    'spreadsheet/rename/label': 'Renommer',
+    'spreadsheet/delete/label': 'Supprimer',
+    'spreadsheet/rename_spreadsheet_error': 'Erreur lors du renommage du tableur',
+    'spreadsheet/rename_dialog_title': 'Renommer le tableur',
+    'spreadsheet/spreadsheet_name_le_60': 'Le nom du tableur ne peut dépasser 60 caractères',
+
+    // calculations
+    'spreadsheet/calculation/sum': 'Somme',
+    'spreadsheet/calculation/average': 'Moyenne',
+    'spreadsheet/calculation/min': 'Minimum',
+    'spreadsheet/calculation/max': 'Maximum',
+    'spreadsheet/calculation/sum_abbrev': 'Som',
+    'spreadsheet/calculation/average_abbrev': 'Moy',
+    'spreadsheet/calculation/min_abbrev': 'Min',
+    'spreadsheet/calculation/max_abbrev': 'Max',
 
     // Column types
     TEXT: 'Texte',

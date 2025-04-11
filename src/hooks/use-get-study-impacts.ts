@@ -41,7 +41,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
 
     useEffect(() => {
         if (studyUpdatedForce.type === NotificationType.STUDY) {
-            const rootNetworkUuid = studyUpdatedForce?.eventData?.headers?.['rootNetwork'];
+            const rootNetworkUuid = studyUpdatedForce?.eventData?.headers?.rootNetworkUuid;
             if (rootNetworkUuid && rootNetworkUuid !== currentRootNetworkUuid) {
                 return;
             }

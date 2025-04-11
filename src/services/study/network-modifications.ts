@@ -5,23 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
-import { toModificationOperation, toModificationUnsetOperation } from '../../components/utils/utils';
+import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { toModificationOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { getStudyUrlWithNodeUuid, safeEncodeURIComponent } from './index';
+import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import { UUID } from 'crypto';
 import {
     Assignment,
     AttachLineInfo,
-    BatteryCreationInfo,
-    BatteryModificationInfo,
+    BatteryCreationInfos,
+    BatteryModificationInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
-    GeneratorCreationInfo,
-    GeneratorModificationInfo,
+    GeneratorCreationInfos,
+    GeneratorModificationInfos,
     LCCCreationInfo,
     LineCreationInfo,
     LineModificationInfo,
@@ -42,6 +42,7 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
+import { NetworkModificationInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
@@ -85,6 +86,27 @@ export function setModificationActivated(
     urlSearchParams.append('uuids', String([modificationUuid]));
     const modificationUpdateActiveUrl =
         getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    console.debug(modificationUpdateActiveUrl);
+    return backendFetch(modificationUpdateActiveUrl, {
+        method: 'PUT',
+    });
+}
+
+export function updateModificationStatusByRootNetwork(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    rootNetworkUuid: UUID,
+    modificationUuid: UUID,
+    activated: boolean
+) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('activated', String(activated));
+    urlSearchParams.append('uuids', String([modificationUuid]));
+    const modificationUpdateActiveUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
+        '/network-modifications' +
+        '?' +
+        urlSearchParams.toString();
     console.debug(modificationUpdateActiveUrl);
     return backendFetch(modificationUpdateActiveUrl, {
         method: 'PUT',
@@ -285,133 +307,62 @@ export function generatorScaling(
 }
 
 export function createBattery({
+    batteryCreationInfos,
     studyUuid,
     nodeUuid,
-    id,
-    name,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    connectionName,
-    connectionDirection,
-    connectionPosition,
-    terminalConnected,
-    minP,
-    maxP,
-    isReactiveCapabilityCurveOn,
-    minQ,
-    maxQ,
-    reactiveCapabilityCurve,
-    targetP,
-    targetQ,
-    participate,
-    droop,
-    isUpdate = false,
     modificationUuid,
-    properties,
-}: BatteryCreationInfo) {
+    isUpdate,
+}: {
+    batteryCreationInfos: BatteryCreationInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
     let createBatteryUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (isUpdate) {
+    if (modificationUuid) {
         createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating battery creation');
     } else {
         console.info('Creating battery creation');
     }
-
     return backendFetchText(createBatteryUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.BATTERY_CREATION.type,
-            equipmentId: id,
-            equipmentName: name,
-            voltageLevelId,
-            busOrBusbarSectionId,
-            connectionName,
-            connectionDirection,
-            connectionPosition,
-            terminalConnected,
-            minP,
-            maxP,
-            reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-            minQ,
-            maxQ,
-            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
-            targetP,
-            targetQ,
-            participate,
-            droop,
-            properties,
-        }),
+        body: JSON.stringify(batteryCreationInfos),
     });
 }
 
 export function modifyBattery({
+    batteryModificationInfos,
     studyUuid,
     nodeUuid,
-    modificationUuid = undefined,
-    batteryId,
-    name,
-    minP,
-    maxP,
-    targetP,
-    targetQ,
-    voltageLevelId = undefined,
-    busOrBusbarSectionId = undefined,
-    connectionName = undefined,
-    connectionDirection = undefined,
-    connectionPosition = undefined,
-    terminalConnected = undefined,
-    participate,
-    droop,
-    isReactiveCapabilityCurveOn = undefined,
-    maxQ = undefined,
-    minQ = undefined,
-    reactiveCapabilityCurve = undefined,
-    properties,
-}: BatteryModificationInfo) {
+    modificationUuid,
+    isUpdate,
+}: {
+    batteryModificationInfos: BatteryModificationInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+    modificationUuid: string | null;
+    isUpdate: boolean;
+}) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
+    if (modificationUuid) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating battery modification');
     } else {
         console.info('Creating battery modification');
     }
-
-    const batteryModification = {
-        type: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
-        equipmentId: batteryId,
-        equipmentName: toModificationOperation(name),
-        voltageLevelId: toModificationOperation(voltageLevelId),
-        busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
-        connectionName: toModificationOperation(connectionName),
-        connectionDirection: toModificationOperation(connectionDirection),
-        connectionPosition: toModificationOperation(connectionPosition),
-        terminalConnected: toModificationOperation(terminalConnected),
-        minP: toModificationOperation(minP),
-        maxP: toModificationOperation(maxP),
-        targetP: toModificationOperation(targetP),
-        targetQ: toModificationOperation(targetQ),
-        reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
-        participate: toModificationOperation(participate),
-        droop: toModificationOperation(droop),
-        maxQ: toModificationOperation(maxQ),
-        minQ: toModificationOperation(minQ),
-        reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
-        properties,
-    };
     return backendFetchText(modificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(batteryModification),
+        body: JSON.stringify(batteryModificationInfos),
     });
 }
 
@@ -481,6 +432,10 @@ export function modifyLoad({
     connectionDirection = undefined,
     connectionPosition = undefined,
     terminalConnected = undefined,
+    pMeasurementValue,
+    pMeasurementValidity,
+    qMeasurementValue,
+    qMeasurementValidity,
     properties,
 }: LoadModificationInfo) {
     let modifyLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
@@ -512,197 +467,73 @@ export function modifyLoad({
             q0: toModificationOperation(q0),
             voltageLevelId: toModificationOperation(voltageLevelId),
             busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+            pMeasurementValue: toModificationOperation(pMeasurementValue),
+            pMeasurementValidity: toModificationOperation(pMeasurementValidity),
+            qMeasurementValue: toModificationOperation(qMeasurementValue),
+            qMeasurementValidity: toModificationOperation(qMeasurementValidity),
             properties,
         }),
     });
 }
 
 export function modifyGenerator({
+    generatorModificationInfos,
     studyUuid,
     nodeUuid,
-    modificationUuid = undefined,
-    generatorId,
-    name,
-    energySource,
-    minP,
-    maxP,
-    ratedS = undefined,
-    targetP,
-    targetQ,
-    voltageRegulation,
-    targetV,
-    voltageLevelId = undefined,
-    busOrBusbarSectionId = undefined,
-    connectionName = undefined,
-    connectionDirection = undefined,
-    connectionPosition = undefined,
-    terminalConnected = undefined,
-    qPercent,
-    plannedActivePowerSetPoint,
-    marginalCost,
-    plannedOutageRate,
-    forcedOutageRate,
-    directTransX,
-    stepUpTransformerX,
-    voltageRegulationType,
-    regulatingTerminalId,
-    regulatingTerminalType,
-    regulatingTerminalVlId,
-    isReactiveCapabilityCurveOn = undefined,
-    participate,
-    droop,
-    maxQ = undefined,
-    minQ = undefined,
-    reactiveCapabilityCurve = undefined,
-    properties,
-}: GeneratorModificationInfo) {
+    modificationUuid,
+    isUpdate,
+}: {
+    generatorModificationInfos: GeneratorModificationInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+    modificationUuid: string | null;
+    isUpdate: boolean;
+}) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
+    if (modificationUuid) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating generator modification');
     } else {
         console.info('Creating generator modification');
     }
-
-    const generatorModification = {
-        type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
-        equipmentId: generatorId,
-        equipmentName: toModificationOperation(name),
-        energySource: toModificationOperation(energySource),
-        minP: toModificationOperation(minP),
-        maxP: toModificationOperation(maxP),
-        ratedS: toModificationOperation(ratedS),
-        targetP: toModificationOperation(targetP),
-        targetQ: toModificationUnsetOperation(targetQ),
-        voltageRegulationOn: toModificationOperation(voltageRegulation),
-        targetV: toModificationUnsetOperation(targetV),
-        voltageLevelId: toModificationOperation(voltageLevelId),
-        busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
-        connectionName: toModificationOperation(connectionName),
-        connectionDirection: toModificationOperation(connectionDirection),
-        connectionPosition: toModificationOperation(connectionPosition),
-        terminalConnected: toModificationOperation(terminalConnected),
-        qPercent: toModificationOperation(qPercent),
-        plannedActivePowerSetPoint: toModificationOperation(plannedActivePowerSetPoint),
-        marginalCost: toModificationOperation(marginalCost),
-        plannedOutageRate: toModificationOperation(plannedOutageRate),
-        forcedOutageRate: toModificationOperation(forcedOutageRate),
-        directTransX: toModificationOperation(directTransX),
-        stepUpTransformerX: toModificationOperation(stepUpTransformerX),
-        voltageRegulationType: toModificationOperation(voltageRegulationType),
-        regulatingTerminalId: toModificationOperation(regulatingTerminalId),
-        regulatingTerminalType: toModificationOperation(regulatingTerminalType),
-        regulatingTerminalVlId: toModificationOperation(regulatingTerminalVlId),
-        reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
-        participate: toModificationOperation(participate),
-        droop: toModificationOperation(droop),
-        maxQ: toModificationOperation(maxQ),
-        minQ: toModificationOperation(minQ),
-        reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
-        properties,
-    };
     return backendFetchText(modificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(generatorModification),
+        body: JSON.stringify(generatorModificationInfos),
     });
 }
 
 export function createGenerator({
+    generatorCreationInfos,
     studyUuid,
     nodeUuid,
-    id,
-    name,
-    energySource,
-    minP,
-    maxP,
-    ratedS,
-    targetP,
-    targetQ,
-    voltageRegulationOn,
-    targetV,
-    qPercent,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    isUpdate = false,
     modificationUuid,
-    plannedActivePowerSetPoint,
-    marginalCost,
-    plannedOutageRate,
-    forcedOutageRate,
-    directTransX,
-    stepUpTransformerX,
-    regulatingTerminalId,
-    regulatingTerminalType,
-    regulatingTerminalVlId,
-    isReactiveCapabilityCurveOn,
-    participate,
-    droop,
-    maxQ,
-    minQ,
-    reactiveCapabilityCurve,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties,
-}: GeneratorCreationInfo) {
+    isUpdate,
+}: {
+    generatorCreationInfos: GeneratorCreationInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
     let createGeneratorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
-    if (isUpdate) {
+    if (modificationUuid) {
         createGeneratorUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating generator creation');
     } else {
         console.info('Creating generator creation');
     }
-
     return backendFetchText(createGeneratorUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.GENERATOR_CREATION.type,
-            equipmentId: id,
-            equipmentName: name,
-            energySource: energySource,
-            minP: minP,
-            maxP: maxP,
-            ratedS: ratedS,
-            targetP: targetP,
-            targetQ: targetQ,
-            voltageRegulationOn: voltageRegulationOn,
-            targetV: targetV,
-            qPercent: qPercent,
-            voltageLevelId: voltageLevelId,
-            busOrBusbarSectionId: busOrBusbarSectionId,
-            plannedActivePowerSetPoint: plannedActivePowerSetPoint,
-            marginalCost: marginalCost,
-            plannedOutageRate: plannedOutageRate,
-            forcedOutageRate: forcedOutageRate,
-            directTransX: directTransX,
-            stepUpTransformerX: stepUpTransformerX,
-            regulatingTerminalId: regulatingTerminalId,
-            regulatingTerminalType: regulatingTerminalType,
-            regulatingTerminalVlId: regulatingTerminalVlId,
-            reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
-            participate: participate,
-            droop: droop,
-            maxQ: maxQ,
-            minQ: minQ,
-            connectionDirection: connectionDirection,
-            connectionName: connectionName,
-            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
-            connectionPosition: connectionPosition,
-            terminalConnected: terminalConnected,
-            properties,
-        }),
+        body: JSON.stringify(generatorCreationInfos),
     });
 }
 
@@ -1812,7 +1643,11 @@ export function deleteEquipmentByFilter(
     });
 }
 
-export function fetchNetworkModifications(studyUuid: UUID | null, nodeUuid: string, onlyStashed: boolean) {
+export function fetchNetworkModifications(
+    studyUuid: UUID | null,
+    nodeUuid: string,
+    onlyStashed: boolean
+): Promise<NetworkModificationInfos[]> {
     console.info('Fetching network modifications (metadata) for nodeUuid : ', nodeUuid);
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('onlyStashed', onlyStashed.toString());

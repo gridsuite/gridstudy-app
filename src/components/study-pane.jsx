@@ -128,7 +128,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                 />
             </TabPanelLazy>
             <TabPanelLazy key={`parameters-${currentNode?.id}`} selected={props.view === StudyView.PARAMETERS}>
-                <ParametersTabs studyId={studyUuid} />
+                <ParametersTabs view={props.view} />
             </TabPanelLazy>
         </>
     );
@@ -136,12 +136,10 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
 
 StudyPane.defaultProps = {
     view: StudyView.MAP,
-    lineFlowAlertThreshold: 100,
 };
 
 StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
-    lineFlowAlertThreshold: PropTypes.number.isRequired,
     onChangeTab: PropTypes.func,
 };
 
