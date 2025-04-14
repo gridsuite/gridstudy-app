@@ -50,7 +50,7 @@ import {
     NotificationsProvider,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
@@ -160,6 +160,13 @@ let lightTheme = createTheme({
             background: '#e6e6e6',
         },
     },
+    networkModificationPanel: {
+        backgroundColor: 'white',
+        border: 'solid 1px #babfc7',
+    },
+    reactflow: {
+        backgroundColor: 'white',
+    },
 });
 
 lightTheme = createTheme(lightTheme, {
@@ -243,6 +250,13 @@ let darkTheme = createTheme({
         overlay: {
             background: '#121212',
         },
+    },
+    networkModificationPanel: {
+        backgroundColor: '#252525',
+        border: 'solid 1px #68686e',
+    },
+    reactflow: {
+        backgroundColor: '#414141',
     },
 });
 
