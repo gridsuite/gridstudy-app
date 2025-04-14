@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -14,8 +14,8 @@ import { Box, Tab, Tabs, Theme } from '@mui/material';
 import { TabPanel } from '../parameters';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as sensiParam from './columns-definitions';
-import { IColumnsDef } from './columns-definitions';
 import {
+    IColumnsDef,
     SensiHvdcs,
     SensiInjection,
     SensiInjectionsSet,
@@ -73,15 +73,15 @@ interface TabInfo {
     subTabs?: { label: string }[];
 }
 
-const SensitivityParametersSelector: FunctionComponent<SensitivityParametersSelectorProps> = ({
+function SensitivityParametersSelector({
     onFormChanged,
     onChangeParams,
     launchLoader,
     analysisComputeComplexity,
-}) => {
+}: Readonly<SensitivityParametersSelectorProps>) {
     const intl = useIntl();
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE) as [boolean];
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
     const [subTabValue, setSubTabValue] = useState(TAB_VALUES.SensiInjectionsSet);
@@ -297,6 +297,6 @@ const SensitivityParametersSelector: FunctionComponent<SensitivityParametersSele
             </Grid>
         </>
     );
-};
+}
 
 export default SensitivityParametersSelector;

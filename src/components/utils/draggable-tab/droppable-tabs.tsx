@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DragDropContext, Droppable, OnDragEndResponder } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, OnDragEndResponder } from '@hello-pangea/dnd';
 import { Tabs } from '@mui/material';
 import { ReactNode, SyntheticEvent } from 'react';
 

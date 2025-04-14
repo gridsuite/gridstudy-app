@@ -11,3 +11,4 @@ export const isNonEmptyStringOrArray = (value: unknown): value is string | unkno
     }
     return Array.isArray(value) && value.length > 0;
 };
+export const simpleConverterToString = <T>(value: T) => `${value}`;
