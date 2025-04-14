@@ -24,9 +24,14 @@ import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggri
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
-import type { GridReadyEvent } from 'ag-grid-community/dist/types/src/events';
-import { ColDef, ColGroupDef, GridApi, GridColumnsChangedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
-
+import type {
+    ColDef,
+    ColGroupDef,
+    GridApi,
+    GridColumnsChangedEvent,
+    GridReadyEvent,
+    RowDataUpdatedEvent,
+} from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 
 function isColDef(col: ColDef | ColGroupDef): col is ColDef {

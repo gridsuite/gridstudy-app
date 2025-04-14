@@ -1,6 +1,6 @@
 {
     "name": "gridstudy-app",
-    "version": "2.16.0-SNAPSHOT",
+    "version": "2.17.0-SNAPSHOT",
     "license": "MPL-2.0",
     "private": true,
     "type": "module",
@@ -123,9 +123,9 @@
         "ts-node": "^10.9.2",
         "type-fest": "^4.34.1",
         "typescript": "~5.5.4",
-        "vite": "^5.4.14",
+        "vite": "^6.2.2",
         "vite-plugin-eslint": "^1.8.1",
         "vite-plugin-svgr": "^4.3.0",
-        "vite-tsconfig-paths": "^4.3.2"
+        "vite-tsconfig-paths": "^5.1.4"
     }
 }
