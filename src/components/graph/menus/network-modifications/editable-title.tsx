@@ -16,10 +16,7 @@ import NodeNameEditDialog from '../node-name-edit-dialog';
 
 const styles = {
     header: (theme: Theme) => ({
-        backgroundColor:
-            theme.palette.mode === 'light'
-                ? darken(theme.palette.background.paper, 0.1)
-                : lighten(theme.palette.background.paper, 0.2),
+        backgroundColor: theme.networkModificationPanel.backgroundColor,
         padding: theme.spacing(1),
         color: theme.palette.getContrastText(
             theme.palette.mode === 'light'

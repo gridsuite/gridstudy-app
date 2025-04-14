@@ -7,12 +7,16 @@
 
 import { useIntl } from 'react-intl';
 import { useCallback, useState } from 'react';
-import { EquipmentType, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import {
+    type EquipmentInfos,
+    type EquipmentType,
+    type ExtendedEquipmentType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { EQUIPMENT_INFOS_TYPES, type EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { EquipmentInfos } from '@gridsuite/commons-ui/dist/utils/types/equipmentType';
 
 // TODO fetchNetworkElementInfos has no type
 type FetchResponse = Awaited<ReturnType<typeof fetchNetworkElementInfos>>;
