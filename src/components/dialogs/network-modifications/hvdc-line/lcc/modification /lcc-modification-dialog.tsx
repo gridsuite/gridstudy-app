@@ -7,11 +7,13 @@
 
 import {
     ACTIVE_POWER_SETPOINT,
+    ADDITIONAL_PROPERTIES,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTERS_MODE,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    FILTERS_SHUNT_COMPENSATOR_TABLE,
     HVDC_LINE_TAB,
     MAX_P,
     NOMINAL_V,
@@ -22,7 +24,7 @@ import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gri
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccModificationForm } from './lcc-modification-form';
-import { LccDialogTab, LccInfos } from '../lcc-type';
+import { LccDialogTab, LccFormInfos, LccInfos } from '../common/lcc-type';
 import { useCallback, useEffect, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { FetchStatus } from 'services/utils.type';
@@ -35,16 +37,16 @@ import {
     getLccHvdcLineEmptyFormData,
     getLccHvdcLineFromEditData,
     getLccHvdcLineModificationSchema,
-} from '../lcc-utils';
+    getShuntCompensatorOnSideFormData,
+} from '../common/lcc-utils';
 import { modifyLcc } from 'services/study/network-modifications';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
-import { toModificationProperties } from '../../../common/properties/property-utils';
+import { getConcatenatedProperties, toModificationProperties } from '../../../common/properties/property-utils';
 import { EquipmentModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
 import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from '../../../../../utils/equipment-types';
-import { LccModificationInfo } from '../../../../../../services/network-modification-types';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 
 const emptyFormData = {
@@ -81,7 +83,7 @@ export const LccModificationDialog = ({
     ...dialogProps
 }: Readonly<LccModificationDialogProps>) => {
     const [tabIndex, setTabIndex] = useState<number>(LccDialogTab.HVDC_LINE_TAB);
-    const [lccToModify, setLccToModify] = useState<LccModificationInfo | null>(null);
+    const [lccToModify, setLccToModify] = useState<LccFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [equipmentId, setEquipmentId] = useState<string | null>(defaultIdValue ?? null);
 
@@ -92,7 +94,9 @@ export const LccModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver<any>(formSchema),
     });
-    const { reset, handleSubmit } = formMethods;
+    const { reset, handleSubmit, getValues, formState } = formMethods;
+
+    console.log('-------formState : ', formState);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -176,11 +180,28 @@ export const LccModificationDialog = ({
                     equipmentId,
                     true
                 )
-                    .then((value: LccModificationInfo | null) => {
+                    .then((value: LccFormInfos | null) => {
+                        console.log('value : ', value);
                         if (value) {
                             setLccToModify({ ...value });
                             reset((formValues: any) => ({
                                 ...formValues,
+                                [HVDC_LINE_TAB]: {
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues, HVDC_LINE_TAB),
+                                },
+                                [CONVERTER_STATION_1]: {
+                                    ...formValues,
+                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormData(
+                                        value.lccConverterStation1.shuntCompensatorsOnSide
+                                    ),
+                                },
+                                [CONVERTER_STATION_2]: {
+                                    ...formValues,
+                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormData(
+                                        value.lccConverterStation2.shuntCompensatorsOnSide
+                                    ),
+                                },
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -194,7 +215,7 @@ export const LccModificationDialog = ({
                     });
             }
         },
-        [clear, currentNode.id, currentRootNetworkUuid, editData?.equipmentId, reset, studyUuid]
+        [clear, currentNode.id, currentRootNetworkUuid, editData?.equipmentId, getValues, reset, studyUuid]
     );
 
     useEffect(() => {

@@ -27,12 +27,12 @@ import {
     SHUNT_COMPENSATOR_NAME,
     SHUNT_COMPENSATOR_SELECTED,
     VOLTAGE_LEVEL,
-} from '../../../../utils/field-constants';
+} from '../../../../../utils/field-constants';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils';
-import yup from '../../../../utils/yup-config';
+} from '../../../../connectivity/connectivity-form-utils';
+import yup from '../../../../../utils/yup-config';
 import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,
@@ -47,13 +47,13 @@ import {
     emptyProperties,
     getPropertiesFromModification,
     modificationPropertiesSchema,
-} from '../../common/properties/property-utils';
+} from '../../../common/properties/property-utils';
 import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants';
-import { sanitizeString } from '../../../dialog-utils';
+import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
+import { sanitizeString } from '../../../../dialog-utils';
 import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
-import { AttributeModification } from '../../../../../services/network-modification-types';
+import { AttributeModification } from '../../../../../../services/network-modification-types';
 
 export const getLccConverterStationSchema = () =>
     yup.object().shape({
@@ -179,6 +179,7 @@ export function getLccConverterStationFromSearchCopy(lccConverterStationFormInfo
 export const getShuntCompensatorOnSideFormData = (
     shuntCompensatorInfos?: ShuntCompensatorInfos[]
 ): ShuntCompensatorFormSchema[] => {
+    console.log('shuntCompensatorInfos : ', shuntCompensatorInfos);
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
             [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
@@ -295,7 +296,7 @@ export const getLccHvdcLineModificationSchema = () =>
                 .nullable()
                 .min(0, 'activePowerSetpointMinValueError')
                 .max(yup.ref(MAX_P), 'activePowerSetpointMaxValueError'),
-            [CONVERTERS_MODE]: yup.string(),
+            [CONVERTERS_MODE]: yup.string().nullable(),
         })
         .concat(modificationPropertiesSchema);
 

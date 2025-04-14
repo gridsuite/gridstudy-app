@@ -7,7 +7,7 @@
 
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { getTabStyle } from '../../../../utils/tab-utils';
+import { getTabStyle } from '../../../../../utils/tab-utils';
 import { LccDialogTab } from './lcc-type';
 
 export interface LccCreationDialogTabsProps {

@@ -12,19 +12,19 @@ import {
     CONVERTER_STATION_NAME,
     LOSS_FACTOR,
     POWER_FACTOR,
-} from '../../../../utils/field-constants';
-import { percentageTextField } from '../../../dialog-utils';
+} from '../../../../../utils/field-constants';
+import { percentageTextField } from '../../../../dialog-utils';
 import { UUID } from 'crypto';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
-import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import GridSection from '../../../commons/grid-section';
-import GridItem from '../../../commons/grid-item';
+import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
+import GridSection from '../../../../commons/grid-section';
+import GridItem from '../../../../commons/grid-item';
 
-import FiltersShuntCompensatorTable from './creation/filters-shunt-compensator-table';
-import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { LccModificationConverterStation } from '../../../../../services/network-modification-types';
+import FiltersShuntCompensatorTable from '../creation/filters-shunt-compensator-table';
+import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 import TextField from '@mui/material/TextField';
+import { LccConverterStationFormInfos } from './lcc-type';
 
 interface LccConverterStationProps {
     id: string;
@@ -33,7 +33,8 @@ interface LccConverterStationProps {
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
     hideConnectityForm?: boolean;
-    previousValues?: LccModificationConverterStation;
+    previousValues?: LccConverterStationFormInfos;
+    isModification?: boolean;
 }
 
 export default function LccConverterStation({
@@ -44,6 +45,7 @@ export default function LccConverterStation({
     currentRootNetworkUuid,
     hideConnectityForm,
     previousValues,
+    isModification,
 }: Readonly<LccConverterStationProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
@@ -119,7 +121,11 @@ export default function LccConverterStation({
                 <GridItem size={4}>{powerFactorField}</GridItem>
             </Grid>
             <GridSection title={'Filters'} />
-            <FiltersShuntCompensatorTable id={`${id}`} />
+            <FiltersShuntCompensatorTable
+                id={`${id}`}
+                isModification={isModification}
+                previousValues={previousValues?.shuntCompensatorsOnSide}
+            />
         </Grid>
     );
 }

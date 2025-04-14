@@ -12,7 +12,7 @@ import {
     FieldValue,
 } from '../components/dialogs/network-modifications/by-filter/by-assignment/assignment/assignment.type';
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/lcc-type';
+import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/common/lcc-type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 import { ModificationType } from '@gridsuite/commons-ui';

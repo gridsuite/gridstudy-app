@@ -21,7 +21,7 @@ import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LccDialogTab, LccInfos, LccCreationSchemaForm, LccFormInfos } from '../lcc-type';
+import { LccDialogTab, LccInfos, LccCreationSchemaForm, LccFormInfos } from '../common/lcc-type';
 import { toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
@@ -33,8 +33,8 @@ import { createLcc } from '../../../../../../services/study/network-modification
 import { sanitizeString } from '../../../../dialog-utils';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { Grid } from '@mui/material';
-import LccCreationDialogHeader from '../lcc-creation-dialog-header';
-import LccTabs from '../lcc-tabs';
+import LccCreationDialogHeader from './lcc-creation-dialog-header';
+import LccTabs from '../common/lcc-tabs';
 import LccCreationForm from './lcc-creation-form';
 import {
     getLccConverterStationCreationData,
@@ -46,7 +46,7 @@ import {
     getLccHvdcLineFromEditData,
     getLccHvdcLineFromSearchCopy,
     getLccHvdcLineSchema,
-} from '../lcc-utils';
+} from '../common/lcc-utils';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 const emptyFormData = {

@@ -21,11 +21,20 @@ import {
 } from '../../../../../utils/field-constants';
 import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import { ReactivePowerAdornment } from '../../../../dialog-utils';
+import TextField from '@mui/material/TextField';
+import { ShuntCompensatorInfos } from '../common/lcc-type';
 
 interface FiltersShuntCompensatorTableProps {
     id: string;
+    isModification?: boolean;
+    previousValues?: ShuntCompensatorInfos[];
 }
-export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShuntCompensatorTableProps>) {
+export default function FiltersShuntCompensatorTable({
+    id,
+    isModification,
+    previousValues,
+}: Readonly<FiltersShuntCompensatorTableProps>) {
+    console.log('shunt compensator table previousValues : ', previousValues);
     const intl = useIntl();
     const {
         fields: rows,
@@ -114,11 +123,20 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
                         >
                             {columnsDefinition.map((column) => (
                                 <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
-                                    {column.dataKey === SHUNT_COMPENSATOR_ID && (
-                                        <TextInput
-                                            name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`}
-                                        />
-                                    )}
+                                    {column.dataKey === SHUNT_COMPENSATOR_ID &&
+                                        (isModification ? (
+                                            <TextField
+                                                fullWidth
+                                                size="small"
+                                                value={previousValues?.[index]?.id ?? ''}
+                                                name={``}
+                                                disabled
+                                            />
+                                        ) : (
+                                            <TextInput
+                                                name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`}
+                                            />
+                                        ))}
                                     {column.dataKey === SHUNT_COMPENSATOR_NAME && (
                                         <TextInput
                                             name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_NAME}`}

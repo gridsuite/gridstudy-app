@@ -13,14 +13,15 @@ import { Grid } from '@mui/material';
 import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
-import { LccModificationInfo } from '../../../../../../services/network-modification-types';
+import { LccFormInfos } from '../common/lcc-type';
 
 interface LccHvdcLineProps {
     id: string;
-    previousValues?: LccModificationInfo | null;
+    previousValues?: LccFormInfos | null;
+    isModification?: boolean;
 }
 
-export default function LccHvdcLine({ id, previousValues }: Readonly<LccHvdcLineProps>) {
+export default function LccHvdcLine({ id, previousValues, isModification }: Readonly<LccHvdcLineProps>) {
     const dcNominalVoltageField = (
         <FloatInput
             name={`${id}.${NOMINAL_V}`}
@@ -82,7 +83,7 @@ export default function LccHvdcLine({ id, previousValues }: Readonly<LccHvdcLine
                 <GridItem>{activePowerField}</GridItem>
             </Grid>
 
-            <PropertiesForm id={id} />
+            <PropertiesForm id={id} isModification={isModification} />
         </Grid>
     );
 }

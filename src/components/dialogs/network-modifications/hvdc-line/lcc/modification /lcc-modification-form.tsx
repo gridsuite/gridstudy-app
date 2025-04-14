@@ -13,15 +13,14 @@ import {
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
 } from '../../../../../utils/field-constants';
-import { LccDialogTab } from '../lcc-type';
+import { LccDialogTab, LccFormInfos } from '../common/lcc-type';
 import { Box, Grid, TextField } from '@mui/material';
 import LccHvdcLine from '../creation/lcc-hvdc-line';
-import LccConverterStation from '../lcc-converter-station';
-import LccTabs from '../lcc-tabs';
+import LccConverterStation from '../common/lcc-converter-station';
+import LccTabs from '../common/lcc-tabs';
 import { TextInput } from '@gridsuite/commons-ui';
 import { filledTextField } from '../../../../dialog-utils';
 import GridItem from '../../../../commons/grid-item';
-import { LccModificationInfo } from '../../../../../../services/network-modification-types';
 
 interface LccModificationFormProps {
     tabIndex: number;
@@ -30,11 +29,11 @@ interface LccModificationFormProps {
     currentRootNetworkUuid: UUID;
     setTabIndex: (tabIndex: number) => void;
     tabIndexesWithError: number[];
-    lccToModify: LccModificationInfo | null;
+    lccToModify: LccFormInfos | null;
 }
 
 interface LccModificationHeaderProps {
-    lccToModify: LccModificationInfo | null;
+    lccToModify: LccFormInfos | null;
 }
 
 function LccModificationDialogHeader({ lccToModify }: LccModificationHeaderProps) {
@@ -56,7 +55,7 @@ function LccModificationDialogHeader({ lccToModify }: LccModificationHeaderProps
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-            previousValue={lccToModify?.name ?? ''}
+            previousValue={lccToModify?.name ?? undefined}
             clearable={true}
         />
     );
@@ -84,15 +83,11 @@ export function LccModificationForm({
         </Grid>
     );
 
-    console.log('lccToModify : ', lccToModify);
-    console.log('lccToModify.converterStation1 : ', lccToModify?.lccConverterStation1);
-    console.log('lccToModify.converterStation2 : ', lccToModify?.lccConverterStation2);
-
     return (
         <>
             <Box>{headerAndTabs}</Box>
             <Box hidden={tabIndex !== LccDialogTab.HVDC_LINE_TAB} p={1}>
-                <LccHvdcLine id={HVDC_LINE_TAB} previousValues={lccToModify} />
+                <LccHvdcLine id={HVDC_LINE_TAB} previousValues={lccToModify} isModification />
             </Box>
             <Box hidden={tabIndex !== LccDialogTab.CONVERTER_STATION_1} p={1}>
                 <LccConverterStation
@@ -103,6 +98,7 @@ export function LccModificationForm({
                     stationLabel={'converterStation1'}
                     hideConnectityForm
                     previousValues={lccToModify?.lccConverterStation1}
+                    isModification
                 />
             </Box>
             <Box hidden={tabIndex !== LccDialogTab.CONVERTER_STATION_2} p={1}>
@@ -114,6 +110,7 @@ export function LccModificationForm({
                     stationLabel={'converterStation2'}
                     hideConnectityForm
                     previousValues={lccToModify?.lccConverterStation2}
+                    isModification
                 />
             </Box>
         </>
