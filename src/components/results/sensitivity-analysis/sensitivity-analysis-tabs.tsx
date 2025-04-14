@@ -5,44 +5,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl/lib';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import {
     COMPUTATION_RESULTS_LOGS,
+    SensiTab,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
-} from './sensitivity-analysis-result-utils';
-import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+} from './sensitivity-analysis-result.type';
 
-const SensitivityAnalysisTabs = ({ sensiKind, setSensiKind }) => {
+export type SensitivityAnalysisTabsProps = {
+    sensiTab: SensiTab;
+    setSensiTab: (sensiTab: SensiTab) => void;
+};
+function SensitivityAnalysisTabs({ sensiTab, setSensiTab }: Readonly<SensitivityAnalysisTabsProps>) {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const sensiKindTabs = [
+    const sensiTabs = [
         SENSITIVITY_IN_DELTA_MW,
         SENSITIVITY_IN_DELTA_A,
-        ...((enableDeveloperMode && [SENSITIVITY_AT_NODE]) || []),
+        ...((enableDeveloperMode && ([SENSITIVITY_AT_NODE] as const satisfies Partial<SensiTab>[])) || []),
         COMPUTATION_RESULTS_LOGS,
-    ];
+    ] as const satisfies Partial<SensiTab>[];
 
     return (
-        <Tabs
-            value={sensiKindTabs.indexOf(sensiKind)}
-            onChange={(_, newTabIndex) => setSensiKind(sensiKindTabs[newTabIndex])}
-        >
-            {sensiKindTabs.map((sensiKind) => (
-                <Tab label={<FormattedMessage id={sensiKind} />} key={sensiKind} />
+        <Tabs value={sensiTab} onChange={(_, newSensiTab) => setSensiTab(newSensiTab)}>
+            {sensiTabs.map((sensiTab) => (
+                <Tab label={<FormattedMessage id={sensiTab} />} value={sensiTab} key={sensiTab} />
             ))}
         </Tabs>
     );
-};
-
-SensitivityAnalysisTabs.propTypes = {
-    setSensiKind: PropTypes.func.isRequired,
-    sensiKind: PropTypes.string.isRequired,
-};
+}
 
 export default SensitivityAnalysisTabs;

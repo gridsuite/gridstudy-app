@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { lighten, darken, Theme } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EditableTitle } from './editable-title';
@@ -23,10 +23,7 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        background:
-            theme.palette.mode === 'light'
-                ? darken(theme.palette.background.paper, 0.1)
-                : lighten(theme.palette.background.paper, 0.2),
+        background: theme.networkModificationPanel.backgroundColor,
     }),
 };
 

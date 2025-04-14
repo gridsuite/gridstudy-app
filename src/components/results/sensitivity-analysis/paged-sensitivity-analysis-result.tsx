@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
     DATA_KEY_TO_FILTER_KEY,
@@ -14,10 +13,9 @@ import {
     FUNCTION_TYPES,
     mappingTabs,
     PAGE_OPTIONS,
-    SENSITIVITY_AT_NODE,
     SensitivityResultTabs,
 } from './sensitivity-analysis-result-utils';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
@@ -31,8 +29,24 @@ import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
+import { UUID } from 'crypto';
+import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
+import { AppState } from '../../../redux/reducer';
+import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 
-const PagedSensitivityAnalysisResult = ({
+export type PagedSensitivityAnalysisResultProps = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    nOrNkIndex: number;
+    sensiKind: SensiKind;
+    page: number;
+    setPage: (newPage: number) => void;
+    setCsvHeaders: (newHeaders: string[]) => void;
+    setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
+};
+
+function PagedSensitivityAnalysisResult({
     nOrNkIndex,
     sensiKind,
     studyUuid,
@@ -40,19 +54,20 @@ const PagedSensitivityAnalysisResult = ({
     currentRootNetworkUuid,
     page,
     setPage,
-    ...props
-}) => {
+    setCsvHeaders,
+    setIsCsvButtonDisabled,
+}: Readonly<PagedSensitivityAnalysisResultProps>) {
     const intl = useIntl();
 
     const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_COUNT);
-    const [count, setCount] = useState(0);
-    const [result, setResult] = useState(null);
-    const [options, setOptions] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const sensiStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
+    const [count, setCount] = useState<number>(0);
+    const [result, setResult] = useState<SensitivityResult | null>(null);
+    const [options, setOptions] = useState<SensitivityResultFilterOptions | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const sensiStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
 
     const sortConfig = useSelector(
-        (state) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
+        (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
     );
 
     const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
@@ -87,14 +102,14 @@ const PagedSensitivityAnalysisResult = ({
     const { snackError } = useSnackMessage();
 
     const handleChangePage = useCallback(
-        (_, newPage) => {
+        (_: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
             setPage(newPage);
         },
         [setPage]
     );
 
     const handleChangeRowsPerPage = useCallback(
-        (event) => {
+        (event: ChangeEvent<HTMLInputElement>) => {
             setRowsPerPage(parseInt(event.target.value, 10));
             setPage(0);
         },
@@ -128,12 +143,11 @@ const PagedSensitivityAnalysisResult = ({
     const fetchResult = useCallback(() => {
         const sortSelector = sortConfig?.length
             ? {
-                  sortKeysWithWeightAndDirection: sortConfig.reduce(
-                      (acc, value) => ({
-                          ...acc,
-                          [DATA_KEY_TO_SORT_KEY[value.colId]]: value.sort === SortWay.DESC ? -1 : 1,
-                      }),
-                      {}
+                  sortKeysWithWeightAndDirection: Object.fromEntries(
+                      sortConfig.map((value) => [
+                          DATA_KEY_TO_SORT_KEY[value.colId as keyof typeof DATA_KEY_TO_SORT_KEY],
+                          value.sort === SortWay.DESC ? -1 : 1,
+                      ])
                   ),
               }
             : {};
@@ -141,13 +155,15 @@ const PagedSensitivityAnalysisResult = ({
         const selector = {
             tabSelection: SensitivityResultTabs[nOrNkIndex].id,
             functionType: FUNCTION_TYPES[sensiKind],
-            offset: page * rowsPerPage,
-            pageSize: rowsPerPage,
+            offset: typeof rowsPerPage === 'number' ? page * rowsPerPage : rowsPerPage.value,
+            pageSize: typeof rowsPerPage === 'number' ? rowsPerPage : rowsPerPage.value,
             pageNumber: page,
-            ...filters?.reduce((acc, curr) => {
-                acc[DATA_KEY_TO_FILTER_KEY[curr.column]] = curr.value;
-                return acc;
-            }, {}),
+            ...Object.fromEntries(
+                filters?.map((elem) => [
+                    DATA_KEY_TO_FILTER_KEY[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY],
+                    elem.value,
+                ])
+            ),
             ...sortSelector,
         };
         setIsLoading(true);
@@ -202,27 +218,19 @@ const PagedSensitivityAnalysisResult = ({
                 onFilter={onFilter}
                 filtersDef={filtersDef}
                 isLoading={isLoading}
-                {...props}
+                setCsvHeaders={setCsvHeaders}
+                setIsCsvButtonDisabled={setIsCsvButtonDisabled}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
                 count={count}
-                rowsPerPage={rowsPerPage}
+                rowsPerPage={typeof rowsPerPage === 'number' ? rowsPerPage : rowsPerPage.value}
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
         </>
     );
-};
-
-PagedSensitivityAnalysisResult.propTypes = {
-    nOrNkIndex: PropTypes.number.isRequired,
-    sensiKind: PropTypes.string.isRequired,
-    studyUuid: PropTypes.string.isRequired,
-    nodeUuid: PropTypes.string.isRequired,
-    page: PropTypes.number.isRequired,
-    setPage: PropTypes.func.isRequired,
-};
+}
 
 export default PagedSensitivityAnalysisResult;
