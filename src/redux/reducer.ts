@@ -212,6 +212,8 @@ import {
     SetEditNadModeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
+    SET_ROOT_NETWORK_PANEL_MINIMIZED,
+    RootNetworkPanelMinimizedAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -573,6 +575,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isModificationsInProgress: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;
+    isRootNetworkPanelMinimized: boolean;
     freezeMapUpdates: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
@@ -710,6 +713,7 @@ const initialState: AppState = {
     nadTextNodeMovements: [],
     reloadMapNeeded: true,
     isEditMode: false,
+    isRootNetworkPanelMinimized: false,
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -1198,6 +1202,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_EDIT_NAD_MODE, (state, action: SetEditNadModeAction) => {
         state.isEditMode = action.isEditMode;
+    });
+
+    builder.addCase(SET_ROOT_NETWORK_PANEL_MINIMIZED, (state, action: RootNetworkPanelMinimizedAction) => {
+        state.isRootNetworkPanelMinimized = action.isRootNetworkPanelMinimized;
     });
 
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {

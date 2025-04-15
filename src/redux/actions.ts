@@ -585,6 +585,17 @@ export function setEditNadMode(isEditMode: boolean): SetEditNadModeAction {
     };
 }
 
+export const SET_ROOT_NETWORK_PANEL_MINIMIZED = 'SET_ROOT_NETWORK_PANEL_MINIMIZED';
+export type RootNetworkPanelMinimizedAction = Readonly<Action<typeof SET_ROOT_NETWORK_PANEL_MINIMIZED>> & {
+    isRootNetworkPanelMinimized: boolean;
+};
+export function setRootNetworkPanelMinimized(isRootNetworkPanelMinimized: boolean): RootNetworkPanelMinimizedAction {
+    return {
+        type: SET_ROOT_NETWORK_PANEL_MINIMIZED,
+        isRootNetworkPanelMinimized,
+    };
+}
+
 export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
 export type MapEquipmentsInitializedAction = Readonly<Action<typeof MAP_EQUIPMENTS_INITIALIZED>> & {
     newValue: boolean;
