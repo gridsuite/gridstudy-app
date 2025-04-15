@@ -1743,9 +1743,9 @@ export function modifyLcc({
 
     if (isUpdate) {
         modifyLccUrl += '/' + safeEncodeURIComponent(modificationUuid);
-        console.info('Updating lcc hvdc line creation');
+        console.info('Updating lcc hvdc line modification');
     } else {
-        console.info('Creating lcc hvdc line creation');
+        console.info('Creating lcc hvdc line modification');
     }
 
     return backendFetchText(modifyLccUrl, {
@@ -1757,12 +1757,12 @@ export function modifyLcc({
         body: JSON.stringify({
             type: MODIFICATION_TYPES.LCC_MODIFICATION.type,
             equipmentId: id,
-            equipmentName: name,
-            nominalV: nominalV,
-            r: r,
-            maxP: maxP,
-            convertersMode: convertersMode,
-            activePowerSetpoint: activePowerSetpoint,
+            equipmentName: toModificationOperation(name),
+            nominalV: toModificationOperation(nominalV),
+            r: toModificationOperation(r),
+            maxP: toModificationOperation(maxP),
+            convertersMode: toModificationOperation(convertersMode),
+            activePowerSetpoint: toModificationOperation(activePowerSetpoint),
             converterStation1: lccConverterStation1,
             converterStation2: lccConverterStation2,
             properties: properties,

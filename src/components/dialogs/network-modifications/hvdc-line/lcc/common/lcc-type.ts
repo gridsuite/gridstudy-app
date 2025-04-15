@@ -26,6 +26,7 @@ import {
     POWER_FACTOR,
     R,
 } from '../../../../../utils/field-constants';
+import { AttributeModification } from '../../../../../../services/network-modification-types';
 
 export const LccDialogTab = {
     HVDC_LINE_TAB: 0,
@@ -99,6 +100,13 @@ export interface ShuntCompensatorInfos {
     connectedToHvdc?: boolean;
 }
 
+export interface ShuntCompensatorModificationInfos {
+    id: string;
+    name?: AttributeModification<string> | null;
+    maxQAtNominalV: AttributeModification<number> | null;
+    connectedToHvdc?: AttributeModification<boolean> | null;
+}
+
 export interface LccConverterStationFormInfos {
     id: string;
     name?: string;
@@ -126,6 +134,13 @@ export interface LccFormInfos {
 
 // this type used instead of ShuntCompensatorInfos because RHF uses 'id' to manage array, see useFieldArray
 export interface ShuntCompensatorFormSchema {
+    shuntCompensatorId: string;
+    shuntCompensatorName?: string | null;
+    maxQAtNominalV: number;
+    connectedToHvdc?: boolean;
+}
+
+export interface ShuntCompensatorModificationFormSchema {
     shuntCompensatorId: string;
     shuntCompensatorName?: string | null;
     maxQAtNominalV: number;

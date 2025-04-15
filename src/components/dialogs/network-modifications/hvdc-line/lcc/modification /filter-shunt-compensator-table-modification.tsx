@@ -1,9 +1,10 @@
 /**
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
@@ -15,17 +16,26 @@ import { useFieldArray } from 'react-hook-form';
 import {
     FILTERS_SHUNT_COMPENSATOR_TABLE,
     MAX_Q_AT_NOMINAL_V,
+    PREVIOUS_SHUNT_COMPENSATOR_SELECTED,
     SHUNT_COMPENSATOR_ID,
     SHUNT_COMPENSATOR_NAME,
     SHUNT_COMPENSATOR_SELECTED,
 } from '../../../../../utils/field-constants';
-import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import { ReactivePowerAdornment } from '../../../../dialog-utils';
+import TextField from '@mui/material/TextField';
+import { ShuntCompensatorInfos } from '../common/lcc-type';
+import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 
-interface FiltersShuntCompensatorTableProps {
+interface ModificationFiltersShuntCompensatorTableProps {
     id: string;
+    previousValues?: ShuntCompensatorInfos[];
 }
-export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShuntCompensatorTableProps>) {
+export function ModificationFiltersShuntCompensatorTable({
+    id,
+    previousValues,
+}: Readonly<ModificationFiltersShuntCompensatorTableProps>) {
+    console.log('shunt compensator table previousValues : ', previousValues);
     const intl = useIntl();
     const {
         fields: rows,
@@ -39,30 +49,37 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
             [rowIndex]: hoverState,
         }));
     };
+
     const columnsDefinition = useMemo(() => {
         return [
             {
                 label: 'shuntCompensatorId',
                 dataKey: SHUNT_COMPENSATOR_ID,
                 initialValue: '',
-                width: '30%',
+                width: '25%',
             },
             {
                 label: 'shuntCompensatorName',
                 dataKey: SHUNT_COMPENSATOR_NAME,
                 initialValue: '',
-                width: '30%',
+                width: '20%',
             },
             {
                 label: 'maxQAtNominalV',
                 dataKey: MAX_Q_AT_NOMINAL_V,
                 initialValue: null,
-                width: '30%',
+                width: '25%',
+            },
+            {
+                label: 'previousConnection',
+                dataKey: PREVIOUS_SHUNT_COMPENSATOR_SELECTED,
+                initialValue: null,
+                width: '20%',
             },
             {
                 label: 'connected',
                 dataKey: SHUNT_COMPENSATOR_SELECTED,
-                initialValue: true,
+                initialValue: null,
                 width: '10%',
             },
         ].map((column) => ({
@@ -78,6 +95,25 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
         });
         return newRowData;
     }, [columnsDefinition]);
+
+    const PreviousConnexion = (index: number) => {
+        const previousValue = previousValues?.[index]?.connectedToHvdc;
+        const value = previousValue
+            ? intl.formatMessage({ id: 'connected' })
+            : previousValue === false
+              ? intl.formatMessage({ id: 'disconnected' })
+              : '';
+
+        return (
+            <TextField
+                size="small"
+                fullWidth
+                value={value}
+                name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
+                disabled
+            />
+        );
+    };
 
     return (
         <TableContainer>
@@ -115,8 +151,12 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
                             {columnsDefinition.map((column) => (
                                 <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
                                     {column.dataKey === SHUNT_COMPENSATOR_ID && (
-                                        <TextInput
-                                            name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`}
+                                        <TextField
+                                            fullWidth
+                                            size="small"
+                                            value={previousValues?.[index]?.id ?? ''}
+                                            name={``}
+                                            disabled
                                         />
                                     )}
                                     {column.dataKey === SHUNT_COMPENSATOR_NAME && (
@@ -130,9 +170,11 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
                                             adornment={ReactivePowerAdornment}
                                         />
                                     )}
+                                    {column.dataKey === PREVIOUS_SHUNT_COMPENSATOR_SELECTED && PreviousConnexion(index)}
                                     {column.dataKey === SHUNT_COMPENSATOR_SELECTED && (
-                                        <SwitchInput
+                                        <CheckboxNullableInput
                                             name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
+                                            label=""
                                         />
                                     )}
                                 </TableCell>

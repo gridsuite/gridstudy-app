@@ -25,6 +25,7 @@ import FiltersShuntCompensatorTable from '../creation/filters-shunt-compensator-
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 import TextField from '@mui/material/TextField';
 import { LccConverterStationFormInfos } from './lcc-type';
+import { ModificationFiltersShuntCompensatorTable } from '../modification /filter-shunt-compensator-table-modification';
 
 interface LccConverterStationProps {
     id: string;
@@ -107,6 +108,15 @@ export default function LccConverterStation({
         />
     );
 
+    const ShuntCompensatorField = isModification ? (
+        <ModificationFiltersShuntCompensatorTable
+            id={`${id}`}
+            previousValues={previousValues?.shuntCompensatorsOnSide}
+        />
+    ) : (
+        <FiltersShuntCompensatorTable id={`${id}`} />
+    );
+
     return (
         <Grid container spacing={2}>
             <GridSection title={stationLabel} />
@@ -121,11 +131,7 @@ export default function LccConverterStation({
                 <GridItem size={4}>{powerFactorField}</GridItem>
             </Grid>
             <GridSection title={'Filters'} />
-            <FiltersShuntCompensatorTable
-                id={`${id}`}
-                isModification={isModification}
-                previousValues={previousValues?.shuntCompensatorsOnSide}
-            />
+            {ShuntCompensatorField}
         </Grid>
     );
 }

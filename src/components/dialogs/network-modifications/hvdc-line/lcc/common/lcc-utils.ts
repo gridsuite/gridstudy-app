@@ -40,6 +40,7 @@ import {
     LccFormInfos,
     ShuntCompensatorFormSchema,
     ShuntCompensatorInfos,
+    ShuntCompensatorModificationInfos,
 } from './lcc-type';
 import {
     copyEquipmentPropertiesForCreation,
@@ -54,6 +55,7 @@ import { sanitizeString } from '../../../../dialog-utils';
 import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 import { AttributeModification } from '../../../../../../services/network-modification-types';
+import { toModificationOperation } from '../../../../../utils/utils';
 
 export const getLccConverterStationSchema = () =>
     yup.object().shape({
@@ -224,6 +226,19 @@ export const getShuntCompensatorOnSideCreateData = (
     );
 };
 
+export const getShuntCompensatorOnSideModifyData = (
+    shuntCompensatorInfos?: ShuntCompensatorFormSchema[]
+): ShuntCompensatorModificationInfos[] => {
+    return (
+        shuntCompensatorInfos?.map((shuntCp) => ({
+            id: shuntCp[SHUNT_COMPENSATOR_ID],
+            name: toModificationOperation(shuntCp[SHUNT_COMPENSATOR_NAME]),
+            maxQAtNominalV: toModificationOperation(shuntCp[MAX_Q_AT_NOMINAL_V]),
+            connectedToHvdc: toModificationOperation(shuntCp[SHUNT_COMPENSATOR_SELECTED]),
+        })) ?? []
+    );
+};
+
 export function getLccConverterStationCreationData(converterStation: {
     converterStationId: string;
     converterStationName?: string;
@@ -260,10 +275,10 @@ export function getLccConverterStationModificationData(converterStation: {
     return {
         type: MODIFICATION_TYPES.LCC_CONVERTER_STATION_MODIFICATION.type,
         equipmentId: converterStation[CONVERTER_STATION_ID],
-        equipmentName: converterStation[CONVERTER_STATION_NAME],
-        lossFactor: converterStation[LOSS_FACTOR],
-        powerFactor: converterStation[POWER_FACTOR],
-        shuntCompensatorsOnSide: getShuntCompensatorOnSideCreateData(converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE]),
+        equipmentName: toModificationOperation(converterStation[CONVERTER_STATION_NAME]),
+        lossFactor: toModificationOperation(converterStation[LOSS_FACTOR]),
+        powerFactor: toModificationOperation(converterStation[POWER_FACTOR]),
+        shuntCompensatorsOnSide: getShuntCompensatorOnSideModifyData(converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE]),
     };
 }
 

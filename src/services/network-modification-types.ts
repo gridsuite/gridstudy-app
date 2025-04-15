@@ -723,15 +723,15 @@ export interface LCCCreationInfo {
 export interface LccModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
-    id: string;
+    id: string | null;
     name?: string | null;
-    nominalV?: number;
+    nominalV: number;
     r: number;
     maxP: number;
     convertersMode: string;
     activePowerSetpoint: number;
-    lccConverterStation1: LccModificationConverterStation;
-    lccConverterStation2: LccModificationConverterStation;
+    lccConverterStation1: any;
+    lccConverterStation2: any;
     properties?: Property[];
     isUpdate: boolean;
     modificationUuid?: string;
