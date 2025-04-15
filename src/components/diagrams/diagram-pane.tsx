@@ -8,7 +8,8 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../utils/config-params';
-import { Box, Chip, Stack, Theme } from '@mui/material';
+import { Box, Chip, IconButton, Stack, Theme, Typography } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import {
@@ -57,6 +58,7 @@ import { DiagramType, isNadType, isSldType, ViewState } from './diagram.type';
 import { useDiagram } from './use-diagram';
 import { CurrentTreeNode } from '../graph/tree-node.type';
 import { Layouts, Responsive, WidthProvider } from 'react-grid-layout';
+import { e } from 'mathjs';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -375,6 +377,20 @@ const styles = {
     fullscreen: {
         paddingRight: 0,
     },
+    header: (theme: Theme) => ({
+        // // prevent header from making the window wider, prevent bugs when displaying a lot of different voltage levels
+        // position: 'absolute',
+        // width: '100%',
+        // ////
+        padding: theme.spacing(0.5),
+        display: 'flex',
+        alignItems: 'center',
+        // flexDirection: 'row',
+        // wordBreak: 'break-all',
+        backgroundColor: theme.palette.background.default,
+        borderBottom: 'solid 1px',
+        borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
+    }),
 };
 
 interface DiagramPaneProps {
@@ -1157,7 +1173,7 @@ export function DiagramPane({
         // Test with Width Provider
         // <AutoSizer doNotBailOutOnEmptyChildren>
         //     {({ width, height }) => (
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <ResponsiveGridLayout
                 className="layout"
                 layouts={layouts}
@@ -1165,6 +1181,14 @@ export function DiagramPane({
                 cols={{ lg: 4, md: 2, sm: 2, xs: 1, xxs: 1 }}
                 compactType={undefined}
                 onLayoutChange={(c, allLayouts) => setLayouts(allLayouts)}
+                style={{ flexGrow: 1, overflow: 'auto' }}
+                draggableHandle=".react-grid-dragHandle"
+                onDragStart={(layout, oldItem, newItem, placeholder, e, element) => {
+                    e.target.style.cursor = 'grabbing';
+                }}
+                onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
+                    e.target.style.cursor = 'default';
+                }}
             >
                 {/* <Box // Use Layout here
                     sx={mergeSx(
@@ -1181,9 +1205,24 @@ export function DiagramPane({
                     if (isSldType(diagramView.svgType)) {
                         return (
                             <div key={diagramView.svgType + diagramView.id} style={{ backgroundColor: 'lightpink' }}>
-                                {diagramView.id}
+                                <Box sx={styles.header}>
+                                    <OverflowableText
+                                        className="react-grid-dragHandle"
+                                        sx={{ flexGrow: '1' }}
+                                        text={diagramView.id}
+                                    />
+                                    <IconButton
+                                        size={'small'}
+                                        onClick={(e) => {
+                                            closeDiagramView(diagramView.id, diagramView.svgType);
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <CloseIcon fontSize='small'/>
+                                    </IconButton>
+                                </Box>
                                 {/* // use this component */}
-                                <SingleLineDiagramContent
+                                {/* <SingleLineDiagramContent
                                     showInSpreadsheet={showInSpreadsheet}
                                     studyUuid={studyUuid}
                                     diagramId={diagramView.id}
@@ -1194,13 +1233,24 @@ export function DiagramPane({
                                     diagramSizeSetter={setDiagramSize}
                                     visible={visible}
                                     key={diagramView.svgType + diagramView.id}
-                                />
+                                /> */}
                             </div>
                         );
                     }
                     if (isNadType(diagramView.svgType)) {
                         return (
-                            <NetworkAreaDiagramContent
+                            <div key={diagramView.svgType + diagramView.id} style={{ backgroundColor: 'lightblue' }}>
+                                <Box className="react-grid-dragHandle" sx={styles.header}>
+                                    <OverflowableText sx={{ flexGrow: '1' }} text={diagramView.id} />
+                                    <IconButton
+                                        size={'small'}
+                                        onClick={() => closeDiagramView(diagramView.id, diagramView.svgType)}
+                                    >
+                                        <CloseIcon fontSize='small' />
+                                    </IconButton>
+                                </Box>
+                                {/* <Typography variant="h6" component={"div"} color={'black'}>{diagramView.id}</Typography> */}
+                                {/* <NetworkAreaDiagramContent
                                 diagramId={diagramView.id}
                                 svg={diagramView.svg}
                                 svgType={diagramView.svgType}
@@ -1213,7 +1263,8 @@ export function DiagramPane({
                                 diagramSizeSetter={setDiagramSize}
                                 visible={visible}
                                 key={diagramView.svgType + diagramView.id}
-                            />
+                            /> */}
+                            </div>
                         );
                     }
                     return undefined;
