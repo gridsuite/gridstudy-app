@@ -30,21 +30,21 @@ export default function GlobalFilterProvider({
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
     const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>([]);
 
-    const checkGenericFiltersPromise = useCallback(
-        async (selectedGlobalFilters: GlobalFilter[]) => {
-            const notFoundFilterUuids: UUID[] = [];
-            const globalFiltersUuids: UUID[] = selectedGlobalFilters
+    const checkSelectedFiltersPromise = useCallback(
+        async (selectedFilters: GlobalFilter[]) => {
+            const notFoundGenericFilterUuids: UUID[] = [];
+            const genericFiltersUuids: UUID[] = selectedFilters
                 .map((globalFilter) => globalFilter.uuid)
                 .filter((globalFilterUUID) => globalFilterUUID !== undefined);
 
-            for (const globalFilterUuid of globalFiltersUuids) {
+            for (const genericFilterUuid of genericFiltersUuids) {
                 try {
-                    // checks if the generic filters still exist, and sets their path value
-                    const response: ElementAttributes[] = await fetchDirectoryElementPath(globalFilterUuid);
+                    // checks if the generic filters still exist, and update their path value
+                    const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
                     const parentDirectoriesNames = response.map((parent) => parent.elementName);
                     const path = computeFullPath(parentDirectoriesNames);
-                    const fetchedFilter: GlobalFilter | undefined = selectedGlobalFilters.find(
-                        (globalFilter) => globalFilter.uuid === globalFilterUuid
+                    const fetchedFilter: GlobalFilter | undefined = selectedFilters.find(
+                        (globalFilter) => globalFilter.uuid === genericFilterUuid
                     );
                     if (fetchedFilter && !fetchedFilter.path) {
                         fetchedFilter.path = path;
@@ -53,10 +53,10 @@ export default function GlobalFilterProvider({
                     const error = responseError as Error & { status: number };
                     if (error.status === HttpStatusCode.NOT_FOUND) {
                         // not found => remove those missing filters from recent global filters
-                        dispatch(removeFromRecentGlobalFilters(globalFilterUuid));
-                        notFoundFilterUuids.push(globalFilterUuid);
+                        dispatch(removeFromRecentGlobalFilters(genericFilterUuid));
+                        notFoundGenericFilterUuids.push(genericFilterUuid);
                         snackError({
-                            messageTxt: selectedGlobalFilters.find((filter) => filter.uuid === globalFilterUuid)?.path,
+                            messageTxt: selectedFilters.find((filter) => filter.uuid === genericFilterUuid)?.path,
                             headerId: 'ComputationFilterResultsError',
                         });
                     } else {
@@ -70,26 +70,26 @@ export default function GlobalFilterProvider({
             }
 
             // Updates the "recent" filters unless they have not been found
-            const validSelectedGlobalFilters: GlobalFilter[] = selectedGlobalFilters.filter(
-                (filter) => !filter.uuid || !notFoundFilterUuids.includes(filter.uuid)
+            const validSelectedFilters: GlobalFilter[] = selectedFilters.filter(
+                (filter) => !filter.uuid || !notFoundGenericFilterUuids.includes(filter.uuid)
             );
-            dispatch(addToRecentGlobalFilters(validSelectedGlobalFilters));
+            dispatch(addToRecentGlobalFilters(validSelectedFilters));
 
-            return validSelectedGlobalFilters;
+            return validSelectedFilters;
         },
         [dispatch, snackError]
     );
 
     const onChange = useCallback(
-        (selectedGlobalFilters: GlobalFilter[]) => {
-            // call promise to check not found filters and remove them from the favorite list
-            checkGenericFiltersPromise(selectedGlobalFilters).then((validSelectedGlobalFilters) => {
+        (selectedFilters: GlobalFilter[]) => {
+            // call promise to check the existence of generic filters and remove missing ones from the favorite list
+            checkSelectedFiltersPromise(selectedFilters).then((validSelectedGlobalFilters) => {
                 setSelectedGlobalFilters(validSelectedGlobalFilters);
                 // propagate only valid selected filters
                 handleChange(validSelectedGlobalFilters);
             });
         },
-        [checkGenericFiltersPromise, setSelectedGlobalFilters, handleChange]
+        [checkSelectedFiltersPromise, setSelectedGlobalFilters, handleChange]
     );
 
     const value = {
