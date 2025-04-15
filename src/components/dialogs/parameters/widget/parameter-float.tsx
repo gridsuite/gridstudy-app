@@ -18,7 +18,7 @@ export interface ParameterFloatProps {
     inputSize: number;
 }
 
-export const ParameterFloat = ({
+export function ParameterFloat({
     name,
     label,
     style,
@@ -26,7 +26,7 @@ export const ParameterFloat = ({
     tooltip,
     labelSize,
     inputSize,
-}: ParameterFloatProps) => {
+}: Readonly<ParameterFloatProps>) {
     const content = (
         <Grid item container direction={'row'} spacing={1} paddingTop={3}>
             <Grid item xs={labelSize} sx={style}>
@@ -42,4 +42,4 @@ export const ParameterFloat = ({
         return <Tooltip title={<FormattedMessage id={tooltip} />}>{content}</Tooltip>;
     }
     return content;
-};
+}

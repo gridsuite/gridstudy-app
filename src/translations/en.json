@@ -512,9 +512,14 @@
     "LoadFlowResultsStatus": "Status",
     "ComputationResultsLogs": "Logs",
 
+    "results.globalFilter.categories": "Categories",
+    "results.globalFilter.clearAll": "Clear all",
+    "results.globalFilter.loadFilter": "Load filter",
+    "results.globalFilter.activeFilters": "{filtersCount} active filters",
+    "results.globalFilter.activeFilter": "{filtersCount} active filter",
     "results.globalFilter.fillerText": "Filtering",
     "results.globalFilter.recent": "Recent",
-    "results.globalFilter.filter": "Filters",
+    "results.globalFilter.genericFilter": "Generic",
     "results.globalFilter.country": "Countries",
     "results.globalFilter.voltageLevel": "Voltage levels",
     "results.globalFilter.nonApplicable": "Filtering {filterName} is not applicable for the current results table and is inactive",
@@ -1571,5 +1576,6 @@
     "qmin": "Min Q",
     "qmax": "Max Q",
     "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
-    "nodeAliasesUpdateError": "An error occured while updating node aliases"
+    "nodeAliasesUpdateError": "An error occured while updating node aliases",
+    "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0"
 }

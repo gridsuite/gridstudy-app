@@ -13,16 +13,18 @@ import {
     SENSITIVITY_IN_DELTA_MW_N,
     SENSITIVITY_IN_DELTA_MW_N_K,
 } from 'utils/store-sort-filter-fields';
+import {
+    SensiKind,
+    SensiTab,
+    SENSITIVITY_AT_NODE,
+    SENSITIVITY_IN_DELTA_A,
+    SENSITIVITY_IN_DELTA_MW,
+} from './sensitivity-analysis-result.type';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
     { id: 'N_K', label: 'N-K' },
 ];
-
-export const SENSITIVITY_IN_DELTA_MW = 'SensitivityInDeltaMW';
-export const SENSITIVITY_IN_DELTA_A = 'SensitivityInDeltaA';
-export const SENSITIVITY_AT_NODE = 'SensitivityAtNode';
-export const COMPUTATION_RESULTS_LOGS = 'ComputationResultsLogs';
 
 export const FUNCTION_TYPES = {
     [SENSITIVITY_IN_DELTA_MW]: 'BRANCH_ACTIVE_POWER_1',
@@ -51,7 +53,7 @@ export const DATA_KEY_TO_SORT_KEY = {
     functionReferenceAfter: 'POST_REFERENCE',
     valueAfter: 'POST_SENSITIVITY',
 };
-export const mappingTabs = (sensiResultKind, nOrNkIndex) => {
+export const mappingTabs = (sensiResultKind: SensiKind, nOrNkIndex: number) => {
     switch (sensiResultKind) {
         case SENSITIVITY_IN_DELTA_MW:
             return nOrNkIndex === 0 ? SENSITIVITY_IN_DELTA_MW_N : SENSITIVITY_IN_DELTA_MW_N_K;
@@ -63,3 +65,10 @@ export const mappingTabs = (sensiResultKind, nOrNkIndex) => {
             return '';
     }
 };
+
+// utility to type guard SensiKind from SensiTab
+export const SENSI_KINDS = [SENSITIVITY_IN_DELTA_MW, SENSITIVITY_IN_DELTA_A, SENSITIVITY_AT_NODE] as const;
+
+export function isSensiKind(sensiTab: SensiTab): sensiTab is SensiKind {
+    return SENSI_KINDS.includes(sensiTab as SensiKind);
+}

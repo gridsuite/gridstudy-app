@@ -22,7 +22,7 @@ import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggri
 import Overlay from '../common/Overlay';
 import { UUID } from 'crypto';
 import { AppState } from '../../../redux/reducer';
-import { DropResult } from 'react-beautiful-dnd';
+import { DropResult } from '@hello-pangea/dnd';
 
 const styles = {
     root: {
