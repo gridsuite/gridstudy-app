@@ -125,7 +125,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 cellRendererParams: {
                     setModifications: setModifications,
                 },
-                maxWidth: 60,
                 width: 60,
             },
         ];
@@ -142,8 +141,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                       },
                       cellStyle: { textAlign: 'center' },
                       headerStyle: { padding: 0 },
-                      maxWidth: 72,
-                      minWidth: 72,
+                      width: 72,
                       headerComponent: () =>
                           isCurrentRootNetwork && (
                               <Box
