@@ -21,3 +21,6 @@
 
 # jest
 /coverage
+
+# sonar
+/.scannerwork
