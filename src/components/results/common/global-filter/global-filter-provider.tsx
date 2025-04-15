@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropsWithChildren, useCallback, useState } from 'react';
+import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
 import { UUID } from 'crypto';
@@ -92,17 +92,20 @@ export default function GlobalFilterProvider({
         [checkSelectedFiltersPromise, setSelectedGlobalFilters, handleChange]
     );
 
-    const value = {
-        openedDropdown,
-        setOpenedDropdown,
-        directoryItemSelectorOpen,
-        setDirectoryItemSelectorOpen,
-        filterGroupSelected,
-        setFilterGroupSelected,
-        selectedGlobalFilters,
-        setSelectedGlobalFilters,
-        onChange,
-    };
+    const value = useMemo(
+        () => ({
+            openedDropdown,
+            setOpenedDropdown,
+            directoryItemSelectorOpen,
+            setDirectoryItemSelectorOpen,
+            filterGroupSelected,
+            setFilterGroupSelected,
+            selectedGlobalFilters,
+            setSelectedGlobalFilters,
+            onChange,
+        }),
+        [openedDropdown, directoryItemSelectorOpen, filterGroupSelected, selectedGlobalFilters, onChange]
+    );
 
     return <GlobalFilterContext.Provider value={value}>{children}</GlobalFilterContext.Provider>;
 }

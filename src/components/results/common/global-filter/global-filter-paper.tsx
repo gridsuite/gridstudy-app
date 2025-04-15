@@ -67,31 +67,31 @@ function GlobalFilterPaper({ children }: Readonly<PropsWithChildren>) {
     );
 
     const addSelectedFilters = useCallback(
-        (values: TreeViewFinderNodeProps[] | undefined) => {
+        async (values: TreeViewFinderNodeProps[] | undefined) => {
             if (!values) {
                 return;
             }
 
-            fetchElementsInfos(values.map((value) => value.id)).then((elements: ElementAttributes[]) => {
-                const newlySelectedFilters: GlobalFilter[] = [];
-
-                elements.forEach((element: ElementAttributes) => {
-                    // ignore already selected filters and non-generic filters :
-                    if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
-                        // add the others
-                        newlySelectedFilters.push({
-                            uuid: element.elementUuid,
-                            equipmentType: element.specificMetadata?.equipmentType,
-                            label: element.elementName,
-                            filterType: FilterType.GENERIC_FILTER,
-                            recent: true,
-                        });
-                    }
-                });
-                onChange([...selectedGlobalFilters, ...newlySelectedFilters]);
-                setDirectoryItemSelectorOpen(false);
-            });
             setOpenedDropdown(true);
+
+            const elements: ElementAttributes[] = await fetchElementsInfos(values.map((value) => value.id));
+            const newlySelectedFilters: GlobalFilter[] = [];
+            elements.forEach((element: ElementAttributes) => {
+                // ignore already selected filters and non-generic filters :
+                if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
+                    // add the others
+                    newlySelectedFilters.push({
+                        uuid: element.elementUuid,
+                        equipmentType: element.specificMetadata?.equipmentType,
+                        label: element.elementName,
+                        filterType: FilterType.GENERIC_FILTER,
+                        recent: true,
+                    });
+                }
+            });
+
+            onChange([...selectedGlobalFilters, ...newlySelectedFilters]);
+            setDirectoryItemSelectorOpen(false);
         },
         [onChange, selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown]
     );
