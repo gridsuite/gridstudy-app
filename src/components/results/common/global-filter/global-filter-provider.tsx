@@ -15,6 +15,7 @@ import { addToRecentGlobalFilters, removeFromRecentGlobalFilters } from '../../.
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../../redux/store';
 import { GlobalFilterContext } from './global-filter-context';
+import { HttpStatusCode } from '../../../../utils/http-status-code';
 
 export default function GlobalFilterProvider({
     children,
@@ -29,10 +30,10 @@ export default function GlobalFilterProvider({
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
     const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>([]);
 
-    const checkAndRemoveMissingFiltersPromise = useCallback(
-        async (globalFilters: GlobalFilter[]) => {
-            const missingFilterUuids: UUID[] = [];
-            const globalFiltersUuids: UUID[] = globalFilters
+    const checkGenericFiltersPromise = useCallback(
+        async (selectedGlobalFilters: GlobalFilter[]) => {
+            const notFoundFilterUuids: UUID[] = [];
+            const globalFiltersUuids: UUID[] = selectedGlobalFilters
                 .map((globalFilter) => globalFilter.uuid)
                 .filter((globalFilterUUID) => globalFilterUUID !== undefined);
 
@@ -42,26 +43,35 @@ export default function GlobalFilterProvider({
                     const response: ElementAttributes[] = await fetchDirectoryElementPath(globalFilterUuid);
                     const parentDirectoriesNames = response.map((parent) => parent.elementName);
                     const path = computeFullPath(parentDirectoriesNames);
-                    const fetchedFilter: GlobalFilter | undefined = globalFilters.find(
+                    const fetchedFilter: GlobalFilter | undefined = selectedGlobalFilters.find(
                         (globalFilter) => globalFilter.uuid === globalFilterUuid
                     );
                     if (fetchedFilter && !fetchedFilter.path) {
                         fetchedFilter.path = path;
                     }
-                } catch (error) {
-                    // remove those missing filters from recent global filters
-                    dispatch(removeFromRecentGlobalFilters(globalFilterUuid));
-                    missingFilterUuids.push(globalFilterUuid);
-                    snackError({
-                        messageTxt: globalFilters.find((filter) => filter.uuid === globalFilterUuid)?.path,
-                        headerId: 'ComputationFilterResultsError',
-                    });
+                } catch (responseError) {
+                    const error = responseError as Error & { status: number };
+                    if (error.status === HttpStatusCode.NOT_FOUND) {
+                        // not found => remove those missing filters from recent global filters
+                        dispatch(removeFromRecentGlobalFilters(globalFilterUuid));
+                        notFoundFilterUuids.push(globalFilterUuid);
+                        snackError({
+                            messageTxt: selectedGlobalFilters.find((filter) => filter.uuid === globalFilterUuid)?.path,
+                            headerId: 'ComputationFilterResultsError',
+                        });
+                    } else {
+                        // or whatever error => do nothing except showing error message
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'ComputationFilterResultsError',
+                        });
+                    }
                 }
             }
 
             // Updates the "recent" filters unless they have not been found
-            const validSelectedGlobalFilters: GlobalFilter[] = globalFilters.filter(
-                (filter) => !filter.uuid || !missingFilterUuids.includes(filter.uuid)
+            const validSelectedGlobalFilters: GlobalFilter[] = selectedGlobalFilters.filter(
+                (filter) => !filter.uuid || !notFoundFilterUuids.includes(filter.uuid)
             );
             dispatch(addToRecentGlobalFilters(validSelectedGlobalFilters));
 
@@ -71,14 +81,15 @@ export default function GlobalFilterProvider({
     );
 
     const onChange = useCallback(
-        (globalFilters: GlobalFilter[]) => {
-            // call promise to check missing filters then update internal state and propagate change to parent
-            checkAndRemoveMissingFiltersPromise(globalFilters).then((validSelectedGlobalFilters) => {
+        (selectedGlobalFilters: GlobalFilter[]) => {
+            // call promise to check not found filters and remove them from the favorite list
+            checkGenericFiltersPromise(selectedGlobalFilters).then((validSelectedGlobalFilters) => {
                 setSelectedGlobalFilters(validSelectedGlobalFilters);
+                // propagate only valid selected filters
                 handleChange(validSelectedGlobalFilters);
             });
         },
-        [checkAndRemoveMissingFiltersPromise, setSelectedGlobalFilters, handleChange]
+        [checkGenericFiltersPromise, setSelectedGlobalFilters, handleChange]
     );
 
     const value = {
