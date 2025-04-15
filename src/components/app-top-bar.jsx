@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { LIGHT_THEME, logout, OverflowableText, TopBar } from '@gridsuite/commons-ui';
+import { LIGHT_THEME, logout, OverflowableText, TopBar, useNotificationsListener } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
 import { Badge, Box, Button, Tab, Tabs, Tooltip } from '@mui/material';
@@ -30,6 +30,7 @@ import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
 import { useDiagram } from './diagrams/use-diagram';
+import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils.js';
 
 const styles = {
     currentNodeBox: {
@@ -84,6 +85,32 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
     const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
+    const [announcementInfos, setAnnouncementInfos] = useState(null);
+
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.GLOBAL_CONFIG, {
+        listenerCallbackMessage: (event) => {
+            const eventData = JSON.parse(event.data);
+            if (eventData.headers.messageType === 'announcement') {
+                if (
+                    announcementInfos != null &&
+                    announcementInfos.announcementId === eventData.headers.announcementId
+                ) {
+                    // If we receive a notification for an announcement that we already received we ignore it
+                    return;
+                }
+                const announcement = {
+                    announcementId: eventData.headers.announcementId,
+                    message: eventData.payload,
+                    severity: eventData.headers.severity,
+                    duration: eventData.headers.duration,
+                };
+                setAnnouncementInfos(announcement);
+            } else if (eventData.headers.messageType === 'cancelAnnouncement') {
+                setAnnouncementInfos(null);
+            }
+        },
+    });
+
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
@@ -126,6 +153,7 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
                 equipmentLabelling={useNameLocal}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
+                announcementInfos={announcementInfos}
             >
                 {/* Add current Node name between Logo and Tabs */}
                 {user && currentNode && (

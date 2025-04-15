@@ -33,6 +33,9 @@ const useNotificationsUrlGenerator = (): Record<NOTIFICATIONS_URL_KEYS, string |
                       })}`
                   )
                 : undefined,
+            [NOTIFICATIONS_URL_KEYS.GLOBAL_CONFIG]: tokenId
+                ? getUrlWithToken(`${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/global`)
+                : undefined,
             [NOTIFICATIONS_URL_KEYS.STUDY]:
                 tokenId && studyUuid
                     ? getUrlWithToken(
