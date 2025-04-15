@@ -1576,4 +1576,5 @@
     "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds",
     "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",
     "previousConnection" : "Connexion préc."
+
 }

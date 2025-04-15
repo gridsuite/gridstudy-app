@@ -18,7 +18,7 @@
         "@mui/lab": "5.0.0-alpha.175",
         "@mui/material": "^5.16.14",
         "@mui/x-charts": "^7.25.0",
-        "@mui/x-tree-view": "^6.17.0",
+        "@mui/x-tree-view": "^7.28.1",
         "@powsybl/network-viewer": "1.8.0",
         "@reduxjs/toolkit": "^2.5.1",
         "@svgdotjs/svg.js": "^3.2.4",

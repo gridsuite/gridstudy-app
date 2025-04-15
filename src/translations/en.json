@@ -1580,4 +1580,5 @@
     "nodeAliasesUpdateError": "An error occured while updating node aliases",
     "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
     "previousConnection" : "Prev. connection"
+
 }
