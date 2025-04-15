@@ -43,7 +43,7 @@ export default function SpreadsheetGsFilter({ equipmentType, index, name, uuid }
 
     const handleChange = useCallback(
         (values: ExpertFilter[]) => {
-            const filters = values.map(({ id, name }) => ({ id, name }) as SpreadsheetGlobalFilter);
+            const filters = values.map(({ id, name }) => ({ id, name }) satisfies SpreadsheetGlobalFilter);
             dispatch(saveSpreadsheetGsFilters(uuid, filters));
         },
         [dispatch, uuid]
