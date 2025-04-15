@@ -22,5 +22,5 @@
 # jest
 /coverage
 
-# sonar
-/.scannerwork
+# GitHub Actions
+/.scannerwork/
