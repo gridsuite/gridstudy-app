@@ -31,7 +31,6 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { GlobalFilterContext } from './global-filter-context';
-import { UUID } from 'crypto';
 
 const XS_COLUMN1: number = 3.5;
 const XS_COLUMN2: number = 4;
@@ -73,7 +72,7 @@ function GlobalFilterPaper({ children }: Readonly<PropsWithChildren>) {
                 return;
             }
 
-            fetchElementsInfos(values.map((value) => value.id as UUID)).then((elements: ElementAttributes[]) => {
+            fetchElementsInfos(values.map((value) => value.id)).then((elements: ElementAttributes[]) => {
                 const newlySelectedFilters: GlobalFilter[] = [];
 
                 elements.forEach((element: ElementAttributes) => {
