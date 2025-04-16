@@ -688,7 +688,7 @@ const initialState: AppState = {
     mapEquipments: undefined,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
-    // used when switching root network, will be set to false as long as the tree has not been updated
+    // used when switching root network, will be set to false as long as the tree has not been updated test
     isNetworkModificationTreeModelUpToDate: false,
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,

@@ -1048,7 +1048,7 @@ export function setOneBusShortcircuitAnalysisDiagram(
     return {
         type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
         diagramId: diagramId,
-        // @ts-expect-error: function overload protect call
+        // @ts-expect-error: function overload protect call test
         nodeId: nodeId,
     };
 }
