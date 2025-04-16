@@ -89,6 +89,7 @@ export type AppActions =
     | StudyUpdatedAction
     | MapDataLoadingAction
     | MapEquipmentsInitializedAction
+    | RootNetworkPanelMinimizedAction
     | SetFullscreenDiagramAction
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
@@ -596,6 +597,17 @@ export function setMapEquipementsInitialized(newValue: boolean): MapEquipmentsIn
     };
 }
 
+export const ROOT_NETWORK_PANEL_MINIMIZED = 'ROOT_NETWORK_PANEL_MINIMIZED';
+export type RootNetworkPanelMinimizedAction = Readonly<Action<typeof ROOT_NETWORK_PANEL_MINIMIZED>> & {
+    newValue: boolean;
+};
+
+export function setRootNetworkPanelMinimized(newValue: boolean): RootNetworkPanelMinimizedAction {
+    return {
+        type: ROOT_NETWORK_PANEL_MINIMIZED,
+        newValue,
+    };
+}
 export const SET_FULLSCREEN_DIAGRAM = 'SET_FULLSCREEN_DIAGRAM';
 export type SetFullscreenDiagramAction = Readonly<Action<typeof SET_FULLSCREEN_DIAGRAM>> &
     (
