@@ -89,7 +89,6 @@ export type AppActions =
     | StudyUpdatedAction
     | MapDataLoadingAction
     | MapEquipmentsInitializedAction
-    | RootNetworkPanelMinimizedAction
     | SetFullscreenDiagramAction
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
@@ -144,6 +143,7 @@ export type AppActions =
     | LoadNadFromConfigAction
     | SetEditNadModeAction
     | DeletedOrRenamedNodesAction;
+
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
     tabIndex: number;
@@ -597,17 +597,6 @@ export function setMapEquipementsInitialized(newValue: boolean): MapEquipmentsIn
     };
 }
 
-export const ROOT_NETWORK_PANEL_MINIMIZED = 'ROOT_NETWORK_PANEL_MINIMIZED';
-export type RootNetworkPanelMinimizedAction = Readonly<Action<typeof ROOT_NETWORK_PANEL_MINIMIZED>> & {
-    newValue: boolean;
-};
-
-export function setRootNetworkPanelMinimized(newValue: boolean): RootNetworkPanelMinimizedAction {
-    return {
-        type: ROOT_NETWORK_PANEL_MINIMIZED,
-        newValue,
-    };
-}
 export const SET_FULLSCREEN_DIAGRAM = 'SET_FULLSCREEN_DIAGRAM';
 export type SetFullscreenDiagramAction = Readonly<Action<typeof SET_FULLSCREEN_DIAGRAM>> &
     (
@@ -1058,7 +1047,7 @@ export function setOneBusShortcircuitAnalysisDiagram(
     return {
         type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
         diagramId: diagramId,
-        // @ts-expect-error: function overload protect call test
+        // @ts-expect-error: function overload protect call
         nodeId: nodeId,
     };
 }

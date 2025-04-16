@@ -573,7 +573,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isModificationsInProgress: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;
-    isRootNetworkPanelMinimized: boolean;
     freezeMapUpdates: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
@@ -688,7 +687,7 @@ const initialState: AppState = {
     mapEquipments: undefined,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
-    // used when switching root network, will be set to false as long as the tree has not been updated test
+    // used when switching root network, will be set to false as long as the tree has not been updated
     isNetworkModificationTreeModelUpToDate: false,
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
@@ -711,7 +710,6 @@ const initialState: AppState = {
     nadTextNodeMovements: [],
     reloadMapNeeded: true,
     isEditMode: false,
-    isRootNetworkPanelMinimized: false,
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
