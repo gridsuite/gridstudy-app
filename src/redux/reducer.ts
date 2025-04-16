@@ -210,6 +210,8 @@ import {
     UseNameAction,
     SET_EDIT_NAD_MODE,
     SetEditNadModeAction,
+    SET_EDIT_NAD_MODEE,
+    SetEditNadModeeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
 } from './actions';
@@ -573,6 +575,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isModificationsInProgress: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;
+    isEditModee: boolean;
     freezeMapUpdates: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
@@ -710,6 +713,7 @@ const initialState: AppState = {
     nadTextNodeMovements: [],
     reloadMapNeeded: true,
     isEditMode: false,
+    isEditModee: false,
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -1198,6 +1202,9 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_EDIT_NAD_MODE, (state, action: SetEditNadModeAction) => {
         state.isEditMode = action.isEditMode;
+    });
+    builder.addCase(SET_EDIT_NAD_MODEE, (state, action: SetEditNadModeeAction) => {
+        state.isEditModee = action.isEditModee;
     });
 
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {

@@ -142,6 +142,7 @@ export type AppActions =
     | CancelLeaveParametersTabAction
     | LoadNadFromConfigAction
     | SetEditNadModeAction
+    | SetEditNadModeeAction
     | DeletedOrRenamedNodesAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
@@ -1399,6 +1400,18 @@ export function setCalculationSelections(tabUuid: UUID, selections: string[]): S
         type: SET_CALCULATION_SELECTIONS,
         tabUuid,
         selections,
+    };
+}
+
+export const SET_EDIT_NAD_MODEE = 'SET_EDIT_NAD_MODEE';
+export type SetEditNadModeeAction = Readonly<Action<typeof SET_EDIT_NAD_MODEE>> & {
+    isEditModee: boolean;
+};
+
+export function setEditNadModee(isEditModee: boolean): SetEditNadModeeAction {
+    return {
+        type: SET_EDIT_NAD_MODEE,
+        isEditModee,
     };
 }
 
