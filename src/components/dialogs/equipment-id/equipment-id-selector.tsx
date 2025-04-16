@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react';
 import { filledTextField } from '../dialog-utils';
 import { UUID } from 'crypto';
-import { Autocomplete, TextField, Grid, CircularProgress, Box } from '@mui/material';
+import { Autocomplete, Box, CircularProgress, Grid, TextField } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EquipmentType, ExtendedEquipmentType, FieldLabel } from '@gridsuite/commons-ui';
 import { FormFiller } from './formFiller.js';
@@ -38,7 +38,11 @@ interface EquipmentIdSelectorProps {
     fillerHeight?: number;
     fillerMessageId?: string;
     loading?: boolean;
+    allowFreeInput?: boolean;
+    enableAutoSelect?: boolean;
+    enableAutoHighlight?: boolean;
 }
+
 export function EquipmentIdSelector({
     defaultValue,
     setSelectedId,
@@ -47,6 +51,9 @@ export function EquipmentIdSelector({
     fillerHeight,
     fillerMessageId = 'idSelector.idNeeded',
     loading = false,
+    allowFreeInput = true,
+    enableAutoSelect = false,
+    enableAutoHighlight = false,
 }: Readonly<EquipmentIdSelectorProps>) {
     const [equipmentOptions, setEquipmentOptions] = useState<string[]>([]);
     const [selectedValue, setSelectedValue] = useState<string>();
@@ -82,15 +89,16 @@ export function EquipmentIdSelector({
     const equipmentIdField = (
         <Autocomplete
             value={defaultValue}
-            freeSolo
+            freeSolo={allowFreeInput}
             size="small"
             autoComplete
             blurOnSelect
-            autoSelect={false}
+            autoSelect={enableAutoSelect}
             forcePopupIcon
             onChange={(_, data, reason) => handleChange(data, reason)}
             onInputChange={(_, data, reason) => handleChange(data, reason)}
             options={equipmentOptions}
+            autoHighlight={enableAutoHighlight}
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     label={FieldLabel({
