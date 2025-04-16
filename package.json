@@ -29,6 +29,7 @@
         "core-js": "^3.40.0",
         "eventemitter3": "^5.0.1",
         "localized-countries": "^2.0.0",
+        "lucide-react": "^0.488.0",
         "mathjs": "^14.2.1",
         "mui-nested-menu": "^4.0.0",
         "plotly.js-basic-dist-min": "^2.35.3",

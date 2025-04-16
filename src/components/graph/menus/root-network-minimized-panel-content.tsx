@@ -25,8 +25,13 @@ const styles = {
     minimizedPanel: (theme: Theme) => ({
         flexGrow: 1,
         fontWeight: 'bold',
-        marginLeft: theme.spacing(3),
+        marginLeft: theme.spacing(2),
     }),
+    icon: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 };
 
 const RootNetworkMinimizedPanelContent = () => {
@@ -40,20 +45,14 @@ const RootNetworkMinimizedPanelContent = () => {
     return (
         <Box sx={styles.minimizedPanel}>
             <Box sx={styles.header}>
-                <Stack direction="row" spacing={1}>
+                <Stack direction="row" spacing={1.5}>
                     <Chip size="small" label={currentRootNetwork?.tag} color="primary" />
+                    <Box sx={styles.icon}>
+                        <Badge overlap="circular" color="primary" variant="dot">
+                            <RemoveRedEyeIcon />
+                        </Badge>
+                    </Box>
                 </Stack>
-                <Box
-                    sx={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <Badge overlap="circular" color="primary" variant="dot">
-                        <RemoveRedEyeIcon />
-                    </Badge>
-                </Box>
             </Box>
         </Box>
     );

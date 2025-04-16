@@ -21,6 +21,7 @@ import {
     getCaseImportParameters,
 } from 'services/network-conversion';
 import { setRootNetworkPanelMinimized } from 'redux/actions';
+import { PanelLeftOpen, PanelRightOpen } from 'lucide-react';
 
 const styles = {
     headerPanel: (theme: Theme) => ({
@@ -28,13 +29,13 @@ const styles = {
         alignItems: 'center',
         padding: theme.spacing(1),
     }),
-    toolbarIcon: (theme: Theme) => ({
-        marginRight: theme.spacing(1),
-    }),
     rootNameTitle: (theme: Theme) => ({
         flexGrow: 1,
         fontWeight: 'bold',
         marginLeft: theme.spacing(2),
+    }),
+    uploadButton: (theme: Theme) => ({
+        marginRight: theme.spacing(14),
     }),
 };
 interface RootNetworkPanelHeaderProps {
@@ -125,7 +126,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
 
     return (
         <>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                 <Box sx={styles.headerPanel}>
                     <OverflowableText text={intl.formatMessage({ id: 'root' })} sx={styles.rootNameTitle} />
 
@@ -134,23 +135,18 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                             <IconButton
                                 onClick={openRootNetworkCreationDialog}
                                 size={'small'}
-                                sx={{ marginLeft: 1 }}
+                                sx={isPanelMinimized ? undefined : styles.uploadButton}
                                 disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
                             >
                                 <FileUpload />
                             </IconButton>
                         </span>
                     </Tooltip>
-                </Box>
 
-                <IconButton
-                    onClick={minimizeRootNetworkPanel}
-                    size={'small'}
-                    sx={styles.toolbarIcon}
-                    disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
-                >
-                    <FileUpload />
-                </IconButton>
+                    <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
+                        {isPanelMinimized ? <PanelLeftOpen /> : <PanelRightOpen />}
+                    </IconButton>
+                </Box>
             </Box>
             {rootNetworkCreationDialogOpen && renderRootNetworkCreationDialog()}
         </>
