@@ -85,7 +85,7 @@ const PhaseTapChangerPane = ({
     }, [regulationTypeWatch, previousValues]);
 
     const regulationMode = useMemo(() => {
-        return regulationModeWatch || getComputedPhaseTapChangerRegulationMode(previousValues?.[PHASE_TAP_CHANGER])?.id;
+        return regulationModeWatch || getComputedPhaseTapChangerRegulationMode(previousValues?.phaseTapChanger)?.id;
     }, [regulationModeWatch, previousValues]);
 
     const regulationModeField = (
@@ -95,7 +95,7 @@ const PhaseTapChangerPane = ({
             options={Object.values(PHASE_REGULATION_MODES)}
             disabled={!phaseTapChangerEnabledWatch}
             size="small"
-            previousValue={getPhaseTapChangerRegulationModeLabel(previousValues?.[PHASE_TAP_CHANGER])}
+            previousValue={getPhaseTapChangerRegulationModeLabel(previousValues?.phaseTapChanger)}
         />
     );
 
@@ -107,7 +107,7 @@ const PhaseTapChangerPane = ({
             disabled={!phaseTapChangerEnabledWatch}
             size="small"
             disableClearable={!isModification}
-            previousValue={getRegulationTypeLabel(previousValues, previousValues?.[PHASE_TAP_CHANGER], intl)}
+            previousValue={getRegulationTypeLabel(previousValues, previousValues?.phaseTapChanger, intl)}
         />
     );
 
@@ -119,7 +119,7 @@ const PhaseTapChangerPane = ({
             disabled={!phaseTapChangerEnabledWatch}
             size="small"
             disableClearable={!isModification}
-            previousValue={getTapSideLabel(previousValues, previousValues?.[PHASE_TAP_CHANGER], intl)}
+            previousValue={getTapSideLabel(previousValues, previousValues?.phaseTapChanger, intl)}
         />
     );
 
@@ -133,7 +133,7 @@ const PhaseTapChangerPane = ({
             adornment={AmpereAdornment}
             previousValue={getRegulatingPreviousValue(
                 CURRENT_LIMITER_REGULATING_VALUE,
-                previousValues?.[PHASE_TAP_CHANGER]
+                previousValues?.phaseTapChanger
             )}
         />
     );
@@ -146,10 +146,7 @@ const PhaseTapChangerPane = ({
             formProps={{
                 disabled: !phaseTapChangerEnabledWatch,
             }}
-            previousValue={getRegulatingPreviousValue(
-                FLOW_SET_POINT_REGULATING_VALUE,
-                previousValues?.[PHASE_TAP_CHANGER]
-            )}
+            previousValue={getRegulatingPreviousValue(FLOW_SET_POINT_REGULATING_VALUE, previousValues?.phaseTapChanger)}
         />
     );
 
@@ -165,7 +162,7 @@ const PhaseTapChangerPane = ({
             formProps={{
                 disabled: !phaseTapChangerEnabledWatch,
             }}
-            previousValue={previousValues?.[PHASE_TAP_CHANGER]?.targetDeadband}
+            previousValue={previousValues?.phaseTapChanger?.targetDeadband}
         />
     );
 
@@ -177,11 +174,8 @@ const PhaseTapChangerPane = ({
             studyUuid={studyUuid}
             currentNodeUuid={currentNode?.id}
             currentRootNetworkUuid={currentRootNetworkUuid}
-            voltageLevelOptions={voltageLevelOptions}
-            previousRegulatingTerminalValue={previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId}
-            previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
-                previousValues?.[PHASE_TAP_CHANGER]
-            )}
+            regulatingTerminalVlId={previousValues?.phaseTapChanger?.regulatingTerminalVlId}
+            equipmentSectionType={getTapChangerEquipmentSectionTypeValue(previousValues?.phaseTapChanger)}
         />
     );
 
@@ -219,7 +213,7 @@ const PhaseTapChangerPane = ({
             <GridSection title="TapsSection" heading={4} />
             <PhaseTapChangerPaneSteps
                 disabled={!phaseTapChangerEnabledWatch}
-                previousValues={previousValues?.[PHASE_TAP_CHANGER]}
+                previousValues={previousValues?.phaseTapChanger}
                 editData={editData}
                 currentNode={currentNode}
                 isModification={isModification}

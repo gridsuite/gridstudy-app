@@ -10,7 +10,6 @@ import {
     ENABLED,
     LOAD_TAP_CHANGING_CAPABILITIES,
     RATIO_TAP_CHANGER,
-    REGULATING,
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
@@ -47,10 +46,10 @@ const RatioTapChangerPane = ({
     const intl = useIntl();
 
     const previousRegulation = () => {
-        if (previousValues?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES]) {
+        if (previousValues?.ratioTapChanger?.hasLoadTapChangingCapabilities) {
             return intl.formatMessage({ id: 'On' });
         }
-        if (previousValues?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES] === false) {
+        if (previousValues?.ratioTapChanger?.hasLoadTapChangingCapabilities === false) {
             return intl.formatMessage({ id: 'Off' });
         }
         return null;
@@ -60,7 +59,7 @@ const RatioTapChangerPane = ({
         if (!ratioTapChangerFormValues) {
             return null;
         }
-        if (ratioTapChangerFormValues?.[REGULATING]) {
+        if (ratioTapChangerFormValues?.isRegulating) {
             return intl.formatMessage({
                 id: RATIO_REGULATION_MODES.VOLTAGE_REGULATION.label,
             });
@@ -82,7 +81,7 @@ const RatioTapChangerPane = ({
     const isRatioTapLoadTapChangingCapabilitiesOn =
         ratioTapLoadTapChangingCapabilitiesWatcher ||
         (ratioTapLoadTapChangingCapabilitiesWatcher === null &&
-            previousValues?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES] === true);
+            previousValues?.ratioTapChanger?.[LOAD_TAP_CHANGING_CAPABILITIES] === true);
 
     const regulationModeWatch = useWatch({
         name: `${id}.${REGULATION_MODE}`,
@@ -131,7 +130,7 @@ const RatioTapChangerPane = ({
             options={Object.values(RATIO_REGULATION_MODES)}
             size="small"
             disabled={!ratioTapChangerEnabledWatcher}
-            previousValue={getRatioTapChangerRegulationModeLabel(previousValues?.[RATIO_TAP_CHANGER])}
+            previousValue={getRatioTapChangerRegulationModeLabel(previousValues?.ratioTapChanger)}
         />
     );
 
@@ -142,7 +141,7 @@ const RatioTapChangerPane = ({
             options={Object.values(REGULATION_TYPES)}
             disabled={!ratioTapChangerEnabledWatcher}
             size="small"
-            previousValue={getRegulationTypeLabel(previousValues, previousValues?.[RATIO_TAP_CHANGER], intl)}
+            previousValue={getRegulationTypeLabel(previousValues, previousValues?.ratioTapChanger, intl)}
         />
     );
 
@@ -153,7 +152,7 @@ const RatioTapChangerPane = ({
             options={Object.values(SIDE)}
             disabled={!ratioTapChangerEnabledWatcher}
             size="small"
-            previousValue={getTapSideLabel(previousValues, previousValues?.[RATIO_TAP_CHANGER], intl)}
+            previousValue={getTapSideLabel(previousValues, previousValues?.ratioTapChanger, intl)}
         />
     );
 
@@ -165,7 +164,7 @@ const RatioTapChangerPane = ({
             formProps={{
                 disabled: !ratioTapChangerEnabledWatcher,
             }}
-            previousValue={previousValues?.[RATIO_TAP_CHANGER]?.[TARGET_V]}
+            previousValue={previousValues?.ratioTapChanger?.targetV}
         />
     );
 
@@ -177,7 +176,7 @@ const RatioTapChangerPane = ({
             formProps={{
                 disabled: !ratioTapChangerEnabledWatcher,
             }}
-            previousValue={previousValues?.[RATIO_TAP_CHANGER]?.targetDeadband}
+            previousValue={previousValues?.ratioTapChanger?.targetDeadband}
         />
     );
 
@@ -190,10 +189,8 @@ const RatioTapChangerPane = ({
             currentNodeUuid={currentNode?.id}
             currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
-            previousRegulatingTerminalValue={previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId}
-            previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
-                previousValues?.[RATIO_TAP_CHANGER]
-            )}
+            regulatingTerminalVlId={previousValues?.ratioTapChanger?.regulatingTerminalVlId}
+            equipmentSectionType={getTapChangerEquipmentSectionTypeValue(previousValues?.ratioTapChanger)}
         />
     );
 
@@ -224,8 +221,8 @@ const RatioTapChangerPane = ({
             <GridSection title="TapsSection" heading={4} />
             <RatioTapChangerPaneSteps
                 disabled={!ratioTapChangerEnabledWatcher}
-                previousValues={previousValues?.[RATIO_TAP_CHANGER]}
-                editData={editData?.[RATIO_TAP_CHANGER]}
+                previousValues={previousValues?.ratioTapChanger}
+                editData={editData?.ratioTapChanger}
                 currentNode={currentNode}
                 isModification={isModification}
             />
