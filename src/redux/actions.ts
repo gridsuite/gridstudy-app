@@ -584,8 +584,6 @@ export function setEditNadMode(isEditMode: boolean): SetEditNadModeAction {
     };
 }
 
-
-
 export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
 export type MapEquipmentsInitializedAction = Readonly<Action<typeof MAP_EQUIPMENTS_INITIALIZED>> & {
     newValue: boolean;
