@@ -212,8 +212,6 @@ import {
     SetEditNadModeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
-    SET_MINIMIZE_ROOT_NETWORK_PANEL,
-    SetMinimizeRootNetworkPanelAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -1202,10 +1200,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_EDIT_NAD_MODE, (state, action: SetEditNadModeAction) => {
         state.isEditMode = action.isEditMode;
-    });
-
-    builder.addCase(SET_MINIMIZE_ROOT_NETWORK_PANEL, (state, action: SetMinimizeRootNetworkPanelAction) => {
-        state.isRootNetworkPanelMinimized = action.isRootNetworkPanelMinimized;
     });
 
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {
