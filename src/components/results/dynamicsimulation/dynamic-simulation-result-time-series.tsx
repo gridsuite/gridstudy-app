@@ -124,10 +124,10 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                 </Box>
             )}
             <Overlay message={overlayMessage}>
-                <Grid sx={styles.root}>
+                <Grid container sx={styles.root}>
                     {/* tab headers */}
-                    <Grid container direction="row" wrap="nowrap" item>
-                        <Grid item sx={{ overflow: 'hidden' }}>
+                    <Grid container direction="row" wrap="nowrap">
+                        <Grid sx={{ overflow: 'hidden' }}>
                             <DroppableTabs
                                 id={'1'}
                                 value={selectedIndex}
@@ -168,7 +168,7 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                                 onDragEnd={handleDragEnd}
                             />
                         </Grid>
-                        <Grid item padding={1}>
+                        <Grid padding={1}>
                             <TooltipIconButton
                                 tooltip={intl.formatMessage({
                                     id: 'DynamicSimulationAddTab',
