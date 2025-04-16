@@ -39,7 +39,7 @@ import {
 } from 'redux/reducer';
 import { RootNetworkMetadata } from './network-modifications/network-modification-menu.type';
 
-import { CaseImportParameters, getCaseImportParameters } from 'services/network-conversion';
+import { getCaseImportParameters } from 'services/network-conversion';
 import { deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
 import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
 import { isChecked, isPartial } from './network-modifications/network-modification-node-editor-utils';
@@ -47,6 +47,7 @@ import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/roo
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import RootNetworkPanelHeader from 'components/root-network-panel-header';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
+import { customizeCurrentParameters, formatCaseImportParameters } from '../util/case-import-parameters';
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },
@@ -351,29 +352,6 @@ const RootNetworkNodeEditor = () => {
             />
         );
     };
-
-    function formatCaseImportParameters(params: CaseImportParameters[]): CaseImportParameters[] {
-        // sort possible values alphabetically to display select options sorted
-        return params?.map((parameter) => ({
-            ...parameter,
-            possibleValues: parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b)),
-        }));
-    }
-
-    function customizeCurrentParameters(params: Parameter[]): Record<string, string> {
-        return params.reduce(
-            (obj, parameter) => {
-                // we check if the parameter is for extensions. If so, we select all possible values by default.
-                // the only way for the moment to check if the parameter is for extension, is by checking his name.
-                // TODO: implement a cleaner way to determine the extensions field
-                if (parameter.type === 'STRING_LIST' && parameter.name?.endsWith('extensions')) {
-                    return { ...obj, [parameter.name]: parameter.possibleValues.toString() };
-                }
-                return obj;
-            },
-            {} as Record<string, string>
-        );
-    }
 
     const doUpdateRootNetwork = async ({ name, tag, caseName, caseId }: FormData) => {
         if (!studyUuid || !editedRootNetwork) {

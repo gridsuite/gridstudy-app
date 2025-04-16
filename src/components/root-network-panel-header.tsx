@@ -15,13 +15,10 @@ import { FileUpload } from '@mui/icons-material';
 import RootNetworkDialog, { FormData } from './dialogs/root-network/root-network-dialog';
 import { createRootNetwork } from 'services/root-network';
 import { UUID } from 'crypto';
-import {
-    CaseImportParameters,
-    GetCaseImportParametersReturn,
-    getCaseImportParameters,
-} from 'services/network-conversion';
+import { GetCaseImportParametersReturn, getCaseImportParameters } from 'services/network-conversion';
 import { setRootNetworkPanelMinimized } from 'redux/actions';
 import { PanelLeftOpen, PanelRightOpen } from 'lucide-react';
+import { customizeCurrentParameters, formatCaseImportParameters } from './graph/util/case-import-parameters';
 
 const styles = {
     headerPanel: (theme: Theme) => ({
@@ -69,28 +66,6 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
         );
     };
 
-    function formatCaseImportParameters(params: CaseImportParameters[]): CaseImportParameters[] {
-        // sort possible values alphabetically to display select options sorted
-        return params?.map((parameter) => ({
-            ...parameter,
-            possibleValues: parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b)),
-        }));
-    }
-
-    function customizeCurrentParameters(params: Parameter[]): Record<string, string> {
-        return params.reduce(
-            (obj, parameter) => {
-                // we check if the parameter is for extensions. If so, we select all possible values by default.
-                // the only way for the moment to check if the parameter is for extension, is by checking his name.
-                // TODO: implement a cleaner way to determine the extensions field
-                if (parameter.type === 'STRING_LIST' && parameter.name?.endsWith('extensions')) {
-                    return { ...obj, [parameter.name]: parameter.possibleValues.toString() };
-                }
-                return obj;
-            },
-            {} as Record<string, string>
-        );
-    }
     const doCreateRootNetwork = ({ name, tag, caseName, caseId }: FormData) => {
         if (!studyUuid) {
             return;
