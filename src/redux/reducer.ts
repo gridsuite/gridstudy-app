@@ -313,6 +313,7 @@ export enum NotificationType {
     ROOT_NETWORKS_DELETION_STARTED = 'rootNetworksDeletionStarted',
     ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
     ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
+    SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
 }
 
 export enum StudyIndexationStatus {
