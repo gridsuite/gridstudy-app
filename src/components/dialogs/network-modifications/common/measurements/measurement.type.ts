@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FieldType } from '@gridsuite/commons-ui/dist/utils/types/fieldType';
+import { type FieldType } from '@gridsuite/commons-ui';
 
 export interface BranchActiveReactivePowerMeasurementsFormProps {
     equipmentToModify: any;
