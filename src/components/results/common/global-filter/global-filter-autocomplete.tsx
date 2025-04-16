@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import {
     Autocomplete,
     AutocompleteCloseReason,
@@ -18,36 +18,23 @@ import {
     FilterOptionsState,
     InputAdornment,
     ListItemButton,
-    PaperProps,
     TextField,
 } from '@mui/material';
 import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { useDispatch, useSelector } from 'react-redux';
-import { addToRecentGlobalFilters, removeFromRecentGlobalFilters } from '../../../../redux/actions';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { AppDispatch } from '../../../../redux/store';
 import { FilterType } from '../utils';
-import {
-    DirectoryItemSelector,
-    ElementAttributes,
-    ElementType,
-    fetchDirectoryElementPath,
-    fetchElementsInfos,
-    OverflowableText,
-    TreeViewFinderNodeProps,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { OverflowableText } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { UUID } from 'crypto';
 import { GlobalFilter } from './global-filter-types';
 import { getResultsGlobalFiltersChipStyle, resultsGlobalFilterStyles } from './global-filter-styles';
-import SelectableGlobalFilters from './selectable-global-filters';
+import GlobalFilterPaper from './global-filter-paper';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import { computeFullPath } from '../../../../utils/compute-title';
 import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
+import { GlobalFilterContext } from './global-filter-context';
 
 const TAG_LIMIT_NUMBER: number = 4;
 const TAG_LABEL_LENGTH_LIMIT: number = 5;
@@ -117,101 +104,20 @@ function WarningTooltip({ warningEquipmentTypeMessage }: Readonly<WarningTooltip
     );
 }
 
-export interface ResultsGlobalFilterProps {
-    onChange: (filters: GlobalFilter[]) => void;
+export type GlobalFilterAutocompleteProps = {
     filterableEquipmentTypes: EQUIPMENT_TYPES[];
     filters: GlobalFilter[];
-}
+};
 
-function ResultsGlobalFilter({
-    onChange,
+function GlobalFilterAutocomplete({
     filterableEquipmentTypes,
     filters = emptyArray,
-}: Readonly<ResultsGlobalFilterProps>) {
+}: Readonly<GlobalFilterAutocompleteProps>) {
+    const { openedDropdown, setOpenedDropdown, filterGroupSelected, selectedGlobalFilters, onChange } =
+        useContext(GlobalFilterContext);
     const intl = useIntl();
-    const [openedDropdown, setOpenedDropdown] = useState(false);
-    const { snackError } = useSnackMessage();
     const { translate } = useLocalizedCountries();
-    const dispatch = useDispatch<AppDispatch>();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
-    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
-    // may be a filter type or a recent filter or whatever category
-    const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
-    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>([]);
-
-    const handleChange = useCallback(
-        async (globalFilters: GlobalFilter[]): Promise<void> => {
-            const missingFilterUuids: UUID[] = [];
-            // @ts-ignore : eslint don't take the filter into account and therefore don't get correctly the type of globalFiltersUuids
-            const globalFiltersUuids: UUID[] = globalFilters
-                .map((globalFilter) => globalFilter.uuid)
-                .filter((globalFilterUUID) => globalFilterUUID !== undefined);
-
-            for (const globalFilterUuid of globalFiltersUuids) {
-                try {
-                    // checks if the generic filters still exist, and sets their path value
-                    const response: ElementAttributes[] = await fetchDirectoryElementPath(globalFilterUuid);
-                    const parentDirectoriesNames = response.map((parent) => parent.elementName);
-                    const path = computeFullPath(parentDirectoriesNames);
-                    const fetchedFilter: GlobalFilter | undefined = globalFilters.find(
-                        (globalFilter) => globalFilter.uuid === globalFilterUuid
-                    );
-                    if (fetchedFilter && !fetchedFilter.path) {
-                        fetchedFilter.path = path;
-                    }
-                } catch (error) {
-                    // remove those missing filters from recent global filters
-                    dispatch(removeFromRecentGlobalFilters(globalFilterUuid));
-                    missingFilterUuids.push(globalFilterUuid);
-                    snackError({
-                        messageTxt: globalFilters.find((filter) => filter.uuid === globalFilterUuid)?.path,
-                        headerId: 'ComputationFilterResultsError',
-                    });
-                }
-            }
-
-            setSelectedGlobalFilters(globalFilters);
-            // Updates the "recent" filters unless they have not been found
-            const globalFiltersToAddToRecents: GlobalFilter[] = globalFilters.filter(
-                (filter) => !filter.uuid || !missingFilterUuids.includes(filter.uuid)
-            );
-            dispatch(addToRecentGlobalFilters(globalFiltersToAddToRecents));
-            // notify "father component" of the change
-            onChange(globalFilters);
-        },
-        [dispatch, onChange, snackError]
-    );
-
-    const addSelectedFilters = useCallback(
-        (values: TreeViewFinderNodeProps[] | undefined) => {
-            if (!values) {
-                return;
-            }
-
-            fetchElementsInfos(values.map((value) => value.id as UUID)).then((elements: ElementAttributes[]) => {
-                const newlySelectedFilters: GlobalFilter[] = [];
-
-                elements.forEach((element: ElementAttributes) => {
-                    // ignore already selected filters and non-generic filters :
-                    if (!selectedGlobalFilters.find((filter) => filter.uuid && filter.uuid === element.elementUuid)) {
-                        // add the others
-                        newlySelectedFilters.push({
-                            uuid: element.elementUuid,
-                            equipmentType: element.specificMetadata?.equipmentType,
-                            label: element.elementName,
-                            filterType: FilterType.GENERIC_FILTER,
-                            recent: true,
-                        });
-                    }
-                });
-                handleChange([...selectedGlobalFilters, ...newlySelectedFilters]).then(() => {
-                    return setDirectoryItemSelectorOpen(false);
-                });
-            });
-            setOpenedDropdown(true);
-        },
-        [handleChange, selectedGlobalFilters]
-    );
 
     // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
@@ -324,22 +230,6 @@ function ResultsGlobalFilter({
         [translate]
     );
 
-    const CustomSelectableGlobalFilters = useCallback(
-        (props: PaperProps) => (
-            <SelectableGlobalFilters
-                children={props.children}
-                onClickGenericFilterButton={() => setDirectoryItemSelectorOpen(true)}
-                filterGroupSelected={filterGroupSelected}
-                setFilterGroupSelected={setFilterGroupSelected}
-                selectedGlobalFilters={selectedGlobalFilters}
-                updateFilters={handleChange}
-                lockClosing={directoryItemSelectorOpen}
-                setOpenedDropdown={setOpenedDropdown}
-            />
-        ),
-        [directoryItemSelectorOpen, filterGroupSelected, handleChange, selectedGlobalFilters]
-    );
-
     return (
         <>
             <Autocomplete
@@ -359,7 +249,7 @@ function ResultsGlobalFilter({
                 openOnFocus
                 disableCloseOnSelect
                 options={options}
-                onChange={(_e, value) => handleChange(value)}
+                onChange={(_e, value) => onChange(value)}
                 groupBy={(option: GlobalFilter): string => (option.recent ? RECENT_FILTER : option.filterType)}
                 renderInput={RenderInput}
                 // renderTags : the chips in the inputField
@@ -397,8 +287,8 @@ function ResultsGlobalFilter({
                 filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
                     filterOptions(options, state)
                 }
-                // dropdown :
-                PaperComponent={CustomSelectableGlobalFilters}
+                // dropdown paper
+                PaperComponent={GlobalFilterPaper}
                 ListboxProps={{
                     sx: {
                         '& .MuiAutocomplete-option': {
@@ -414,15 +304,8 @@ function ResultsGlobalFilter({
             {warningEquipmentTypeMessage && (
                 <WarningTooltip warningEquipmentTypeMessage={warningEquipmentTypeMessage} />
             )}
-            <DirectoryItemSelector
-                open={directoryItemSelectorOpen}
-                onClose={addSelectedFilters}
-                types={[ElementType.FILTER]}
-                title={intl.formatMessage({ id: 'Filters' })}
-                multiSelect
-            />
         </>
     );
 }
 
-export default ResultsGlobalFilter;
+export default GlobalFilterAutocomplete;
