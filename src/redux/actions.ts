@@ -142,7 +142,8 @@ export type AppActions =
     | CancelLeaveParametersTabAction
     | LoadNadFromConfigAction
     | SetEditNadModeAction
-    | DeletedOrRenamedNodesAction;
+    | DeletedOrRenamedNodesAction
+    | RootNetworkPanelMinimizedAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
