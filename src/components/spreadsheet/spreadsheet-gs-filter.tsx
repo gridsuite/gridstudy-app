@@ -22,7 +22,7 @@ import {
 } from './utils/spreadsheet-gs-filter-utils';
 import { SPREADSHEET_GS_FILTER } from '../utils/field-constants';
 import { AppState } from '../../redux/reducer';
-import { ExpertFilter } from '../../services/study/filter';
+import { ExpertFilter, SpreadsheetGlobalFilter } from '../../services/study/filter';
 
 export type SpreadsheetGsFilterProps = {
     equipmentType: SpreadsheetEquipmentType;
@@ -43,9 +43,8 @@ export default function SpreadsheetGsFilter({ equipmentType, index, name, uuid }
 
     const handleChange = useCallback(
         (values: ExpertFilter[]) => {
-            //Converts readonly values to a mutable one, prevents read-only type error
-            const mutableValues = values.map((f) => ({ ...f }));
-            dispatch(saveSpreadsheetGsFilters(uuid, mutableValues));
+            const filters = values.map(({ id, name }) => ({ id, name }) as SpreadsheetGlobalFilter);
+            dispatch(saveSpreadsheetGsFilters(uuid, filters));
         },
         [dispatch, uuid]
     );

@@ -96,7 +96,6 @@ export default function CustomColumnDialog({
     const watchColumnType = useWatch({ control, name: COLUMN_TYPE });
     const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
     const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
-    const tableName = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.name);
     const { snackError } = useSnackMessage();
     const columnDefinition = useMemo(
         () => columnsDefinitions?.find((column) => column?.uuid === colUuid),
@@ -156,7 +155,7 @@ export default function CustomColumnDialog({
         />
     );
 
-    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, tableName);
+    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
 
     const validateParams = (
         columnsDefinitions: ColumnDefinition[],
