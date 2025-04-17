@@ -20,8 +20,8 @@ import { AppState } from '../../redux/reducer';
 import { updateTableDefinition } from 'redux/actions';
 import { spreadsheetStyles } from './utils/style';
 import { UUID } from 'crypto';
-import { reorderSpreadsheetColumns } from 'services/study-config';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { reorderSpreadsheetColumns } from 'services/study/study-config';
 
 const MAX_LOCKS_PER_TAB = 5;
 
@@ -53,6 +53,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
 
@@ -81,12 +82,14 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
         const hasOrderChanged = tableDefinition.columns.some((col, index) => col.uuid !== localColumns[index].uuid);
 
         // create a Promise chain that conditionally includes the reorder request
-        const updatePromise = hasOrderChanged
-            ? reorderSpreadsheetColumns(
-                  tableDefinition.uuid,
-                  localColumns.map((col) => col.uuid)
-              )
-            : Promise.resolve();
+        const updatePromise =
+            hasOrderChanged && studyUuid
+                ? reorderSpreadsheetColumns(
+                      studyUuid,
+                      tableDefinition.uuid,
+                      localColumns.map((col) => col.uuid)
+                  )
+                : Promise.resolve();
 
         updatePromise
             .then(() => {
@@ -105,7 +108,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
             });
 
         handleCloseColumnsSettingDialog();
-    }, [tableDefinition, localColumns, handleCloseColumnsSettingDialog, dispatch, snackError]);
+    }, [tableDefinition, studyUuid, localColumns, handleCloseColumnsSettingDialog, dispatch, snackError]);
 
     const handleToggle = (value: UUID) => () => {
         const newLocalColumns = localColumns.map((col) => {

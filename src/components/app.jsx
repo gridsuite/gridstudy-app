@@ -58,7 +58,10 @@ import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
 import { StudyView } from './utils/utils';
 import { NotificationType } from '../redux/reducer.js';
-import { getSpreadsheetModel } from '../services/study-config.js';
+import {
+    getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
+    getSpreadsheetModel,
+} from '../services/study-config.js';
 
 const noUserManager = { instance: null, error: null };
 
@@ -142,34 +145,84 @@ const App = () => {
         listenerCallbackMessage: updateConfig,
     });
 
-    const updateSpreadsheet = useCallback(
+    const mapColumns = (columns) => {
+        return columns.map((column) => {
+            return {
+                ...column,
+                dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
+            };
+        });
+    };
+
+    const resetTableDefinitions = useCallback(
+        (collection) => {
+            const tableDefinitions = collection.spreadsheetConfigs.map((spreadsheetConfig, index) => {
+                return {
+                    uuid: spreadsheetConfig.id,
+                    index: index,
+                    name: spreadsheetConfig.name,
+                    columns: mapColumns(spreadsheetConfig.columns),
+                    type: spreadsheetConfig.sheetType,
+                };
+            });
+            dispatch(initTableDefinitions(collection.id, tableDefinitions));
+        },
+        [dispatch]
+    );
+
+    const updateSpreadsheetTabOnNotification = useCallback(
+        (configUuid) => {
+            console.debug('Update spreadsheet tab on notification', configUuid);
+            getSpreadsheetModel(configUuid)
+                .then((model) => {
+                    dispatch(updateTableColumns(model));
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error,
+                        headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
+                    });
+                });
+        },
+        [dispatch, snackError]
+    );
+
+    const updateSpreadsheetCollectionOnNotification = useCallback(
+        (collectionUuid) => {
+            console.debug('Reset spreadsheet collection on notification', collectionUuid);
+            getSpreadsheetConfigCollectionFromId(collectionUuid)
+                .then((collection) => {
+                    resetTableDefinitions(collection);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error,
+                        headerId: 'spreadsheet/create_new_spreadsheet/error_loading_collection',
+                    });
+                });
+        },
+        [resetTableDefinitions, snackError]
+    );
+
+    const onSpreadsheetNotification = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
-            console.log('DBG DBR updateStudy ..?', eventData);
-            if (
-                eventData.headers.updateType === NotificationType.SPREADSHEET_TABS_UPDATED &&
-                eventData.headers.studyUuid === studyUuid
-            ) {
+            if (eventData.headers.studyUuid !== studyUuid) {
+                return;
+            }
+            if (eventData.headers.updateType === NotificationType.SPREADSHEET_TAB_UPDATED) {
                 const configUuid = eventData.payload;
-                console.log('DBG DBR updateStudy YES id=', configUuid);
-                getSpreadsheetModel(configUuid)
-                    .then((model) => {
-                        console.log('DBG DBR updateStudy res', model);
-                        dispatch(updateTableColumns(model));
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error,
-                            headerId: 'todoErr',
-                        });
-                    });
+                updateSpreadsheetTabOnNotification(configUuid);
+            } else if (eventData.headers.updateType === NotificationType.SPREADSHEET_COLLECTION_UPDATED) {
+                const collectionUuid = eventData.payload;
+                updateSpreadsheetCollectionOnNotification(collectionUuid);
             }
         },
-        [dispatch, snackError, studyUuid]
+        [studyUuid, updateSpreadsheetCollectionOnNotification, updateSpreadsheetTabOnNotification]
     );
 
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
-        listenerCallbackMessage: updateSpreadsheet,
+        listenerCallbackMessage: onSpreadsheetNotification,
     });
 
     // Can't use lazy initializer because useRouteMatch is a hook
@@ -244,26 +297,8 @@ const App = () => {
                 });
             });
 
-            const mapColumns = (columns) => {
-                return columns.map((column) => {
-                    return {
-                        ...column,
-                        dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
-                    };
-                });
-            };
-
-            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((config) => {
-                const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                    return {
-                        uuid: spreadsheetConfig.id,
-                        index: index,
-                        name: spreadsheetConfig.name,
-                        columns: mapColumns(spreadsheetConfig.columns),
-                        type: spreadsheetConfig.sheetType,
-                    };
-                });
-                dispatch(initTableDefinitions(config.id, tableDefinitions));
+            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((collection) => {
+                resetTableDefinitions(collection);
             });
 
             const fetchOptionalServices = getOptionalServices()
@@ -320,7 +355,7 @@ const App = () => {
                     })
                 );
         }
-    }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams]);
+    }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams, resetTableDefinitions]);
 
     const onChangeTab = useCallback(
         (newTabIndex) => {

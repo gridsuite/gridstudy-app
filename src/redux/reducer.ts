@@ -317,7 +317,8 @@ export enum NotificationType {
     ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
     ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
-    SPREADSHEET_TABS_UPDATED = 'spreadsheetTabsUpdated',
+    SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
+    SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
 }
 
 export enum StudyIndexationStatus {
@@ -944,32 +945,21 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
         const { spreadsheetConfigDto } = action;
-        // we update only tab name and tab columns definitions
         const existingTableDefinition = state.tables.definitions.find(
             (tabDef) => tabDef.uuid === spreadsheetConfigDto.id
         );
-        console.log('DBG DBR UPDATE_TABLE_COLUMNS', existingTableDefinition);
         if (existingTableDefinition) {
-            const newTableDefinition = (existingTableDefinition.columns = spreadsheetConfigDto.columns.map((column) => {
+            existingTableDefinition.name = spreadsheetConfigDto.name;
+            existingTableDefinition.columns = spreadsheetConfigDto.columns.map((column) => {
                 const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
                 const colDef: ColumnDefinition = {
                     ...column,
                     dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
                     visible: existingColDef ? existingColDef.visible : true,
-                    locked: false, // order may have changed, so don't preserve locking
+                    locked: existingColDef ? existingColDef.locked : false,
                 };
                 return colDef;
-            }));
-            // update store if different (so the origin session won't update on associated notification)
-            if (JSON.stringify(newTableDefinition) !== JSON.stringify(existingTableDefinition.columns)) {
-                existingTableDefinition.columns = newTableDefinition;
-                console.log('DBG DBR UPDATE_TABLE_COLUMNS tables set');
-            }
-            if (existingTableDefinition.name !== spreadsheetConfigDto.name) {
-                console.log('DBG DBR UPDATE_TABLE_COLUMNS name set');
-                existingTableDefinition.name = spreadsheetConfigDto.name;
-            }
-            console.log('DBG DBR UPDATE_TABLE_COLUMNS end.');
+            });
         }
     });
 
