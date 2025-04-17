@@ -54,11 +54,7 @@ export const useIntlResultStatusMessages = (intl: IntlShape, hasNoData: boolean 
         if (hasNoData) {
             return { noData: intl.formatMessage({ id: 'grid.noRowsToShow' }) };
         }
-        return {
-            noLimitViolation: intl.formatMessage({
-                id: 'grid.noLimitViolation',
-            }),
-        };
+        return { noLimitViolation: intl.formatMessage({ id: 'grid.noLimitViolation' }) };
     }, [intl, hasNoData]);
 
     return useMemo(() => {
