@@ -24,7 +24,7 @@ import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gri
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccModificationForm } from './lcc-modification-form';
-import { LccDialogTab, LccFormInfos, LccInfos } from '../common/lcc-type';
+import { LccDialogTab, LccFormInfos, LccCreationInfos, LccModificationInfos } from '../common/lcc-type';
 import { useCallback, useEffect, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { FetchStatus } from 'services/utils.type';
@@ -35,7 +35,7 @@ import {
     getLccConverterStationModificationEmptyFormData,
     getLccConverterStationModificationSchema,
     getLccHvdcLineEmptyFormData,
-    getLccHvdcLineFromEditData,
+    getLccHvdcLineFromModificationEditData,
     getLccHvdcLineModificationSchema,
     getShuntCompensatorOnSideFormData,
 } from '../common/lcc-utils';
@@ -58,7 +58,7 @@ const emptyFormData = {
 };
 
 export type LccModificationDialogProps = EquipmentModificationDialogProps & {
-    editData?: LccInfos;
+    editData?: LccCreationInfos;
 };
 
 const formSchema = yup
@@ -103,15 +103,17 @@ export const LccModificationDialog = ({
     });
 
     const fromEditDataToFormValues = useCallback(
-        (lccModificationInfos: LccInfos) => {
+        (lccModificationInfos: LccModificationInfos) => {
             if (editData?.equipmentId) {
                 setEquipmentId(editData.equipmentId);
             }
 
+            console.log('----------lccModificationInfos : ', lccModificationInfos);
+
             reset({
                 [EQUIPMENT_ID]: lccModificationInfos.equipmentId,
                 [EQUIPMENT_NAME]: lccModificationInfos.equipmentName,
-                [HVDC_LINE_TAB]: getLccHvdcLineFromEditData(lccModificationInfos),
+                [HVDC_LINE_TAB]: getLccHvdcLineFromModificationEditData(lccModificationInfos),
                 [CONVERTER_STATION_1]: getLccConverterStationFromEditData(lccModificationInfos.converterStation1),
                 [CONVERTER_STATION_2]: getLccConverterStationFromEditData(lccModificationInfos.converterStation2),
             });

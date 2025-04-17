@@ -26,7 +26,7 @@ import {
     POWER_FACTOR,
     R,
 } from '../../../../../utils/field-constants';
-import { ShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
+import { AttributeModification, ShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
 
 export const LccDialogTab = {
     HVDC_LINE_TAB: 0,
@@ -64,7 +64,7 @@ interface ConverterStationBaseType {
     [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorFormSchema[];
 }
 
-export interface LccInfos {
+export interface LccCreationInfos {
     uuid: string;
     equipmentType: EQUIPMENT_TYPES;
     equipmentId: string;
@@ -74,6 +74,21 @@ export interface LccInfos {
     maxP: number;
     convertersMode: string;
     activePowerSetpoint: number;
+    converterStation1: LccConverterStationCreationInfos;
+    converterStation2: LccConverterStationCreationInfos;
+    properties?: Property[];
+}
+
+export interface LccModificationInfos {
+    uuid: string;
+    equipmentType: EQUIPMENT_TYPES;
+    equipmentId: string;
+    equipmentName: AttributeModification<string> | null;
+    nominalV: AttributeModification<number> | null;
+    r: AttributeModification<number> | null;
+    maxP: AttributeModification<number> | null;
+    convertersMode: AttributeModification<string> | null;
+    activePowerSetpoint: AttributeModification<number> | null;
     converterStation1: LccConverterStationCreationInfos;
     converterStation2: LccConverterStationCreationInfos;
     properties?: Property[];

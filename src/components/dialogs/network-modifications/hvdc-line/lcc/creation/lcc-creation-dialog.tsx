@@ -21,7 +21,7 @@ import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LccDialogTab, LccInfos, LccCreationSchemaForm, LccFormInfos } from '../common/lcc-type';
+import { LccDialogTab, LccCreationInfos, LccCreationSchemaForm, LccFormInfos } from '../common/lcc-type';
 import { toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
@@ -69,7 +69,7 @@ const formSchema = yup
     .required();
 
 export type LccCreationDialogProps = NetworkModificationDialogProps & {
-    editData: LccInfos;
+    editData: LccCreationInfos;
 };
 
 export function LccCreationDialog({
@@ -99,7 +99,7 @@ export function LccCreationDialog({
     });
 
     const fromEditDataToFormValues = useCallback(
-        (lccCreationInfos: LccInfos) => {
+        (lccCreationInfos: LccCreationInfos) => {
             reset({
                 [EQUIPMENT_ID]: lccCreationInfos.equipmentId,
                 [EQUIPMENT_NAME]: lccCreationInfos.equipmentName ?? '',

@@ -36,8 +36,8 @@ import yup from '../../../../../utils/yup-config';
 import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,
-    LccInfos,
-    LccFormInfos,
+    LccCreationInfos,
+    LccFormInfos, LccModificationInfos,
     ShuntCompensatorFormSchema,
 } from './lcc-type';
 import {
@@ -332,13 +332,24 @@ export function getLccHvdcLineFromSearchCopy(hvdcLine: LccFormInfos) {
     };
 }
 
-export function getLccHvdcLineFromEditData(hvdcLine: LccInfos) {
+export function getLccHvdcLineFromEditData(hvdcLine: LccCreationInfos) {
     return {
         [NOMINAL_V]: hvdcLine.nominalV,
         [R]: hvdcLine.r,
         [MAX_P]: hvdcLine.maxP,
         [CONVERTERS_MODE]: hvdcLine.convertersMode,
         [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
+        ...getPropertiesFromModification(hvdcLine.properties),
+    };
+}
+
+export function getLccHvdcLineFromModificationEditData(hvdcLine: LccModificationInfos) {
+    return {
+        [NOMINAL_V]: hvdcLine.nominalV?.value ?? null,
+        [R]: hvdcLine.r?.value ?? null,
+        [MAX_P]: hvdcLine.maxP?.value ?? null,
+        [CONVERTERS_MODE]: hvdcLine.convertersMode?.value ?? null,
+        [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint?.value ?? null,
         ...getPropertiesFromModification(hvdcLine.properties),
     };
 }
