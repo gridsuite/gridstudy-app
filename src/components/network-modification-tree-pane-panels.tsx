@@ -22,6 +22,7 @@ interface NetworkModificationTreePanePanelsProps {
 const styles = {
     panelHandlerContainer: (theme: Theme) => ({
         backgroundColor: theme.networkModificationPanel.backgroundColor,
+        borderLeft: theme.networkModificationPanel.border,
     }),
 };
 export const NetworkModificationTreePanePanels = ({
@@ -29,13 +30,17 @@ export const NetworkModificationTreePanePanels = ({
     rightComponent,
     showRightPanel = true,
 }: NetworkModificationTreePanePanelsProps) => {
+    const MINIMUM_RIGHT_PANEL_SIZE = 380;
+    const PADDING_BY_ROOT_NETWORK = 72;
+
     // necessary to get container size in order to calculate % sizes from px
     const containerRef = useRef<HTMLDivElement>(null);
     // necessary to programatically resize layout
     const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
 
-    const rightComponentDefaultSizePixel = 320 + rootNetworks.length * 80;
+    const rightComponentDefaultSizePixel =
+        MINIMUM_RIGHT_PANEL_SIZE - PADDING_BY_ROOT_NETWORK / 2 + rootNetworks.length * PADDING_BY_ROOT_NETWORK;
 
     // we want to set sizes in pixel, but Panel only deals with sizes in %
     // this makes the conversion, and handle the resizing when the layout is updated
@@ -43,7 +48,7 @@ export const NetworkModificationTreePanePanels = ({
         containerRef: containerRef,
         panelGroupRef: panelGroupRef,
         rightComponentDefaultSizePixel: rightComponentDefaultSizePixel,
-        rightComponentMinSizePixel: 350,
+        rightComponentMinSizePixel: MINIMUM_RIGHT_PANEL_SIZE,
         showRightPanel: showRightPanel,
     });
 

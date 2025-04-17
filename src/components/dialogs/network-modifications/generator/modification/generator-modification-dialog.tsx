@@ -51,7 +51,6 @@ import {
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialog-utils';
-import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import {
@@ -131,7 +130,7 @@ const formSchema = yup
                 then: (schema) =>
                     schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
             }),
-        [RATED_NOMINAL_POWER]: yup.number().nullable(),
+        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [TRANSIENT_REACTANCE]: yup.number().nullable(),
         [TRANSFORMER_REACTANCE]: yup.number().nullable(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
@@ -324,24 +323,10 @@ export default function GeneratorModificationDialog({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const getPreviousRegulationType = useCallback(() => {
-        if (generatorToModify?.voltageRegulatorOn) {
-            return generatorToModify?.regulatingTerminalVlId || generatorToModify?.regulatingTerminalConnectableId
-                ? REGULATION_TYPES.DISTANT.id
-                : REGULATION_TYPES.LOCAL.id;
-        } else {
-            return null;
-        }
-    }, [generatorToModify]);
-
     const onSubmit = useCallback(
         (generator: GeneratorModificationDialogSchemaForm) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
             const isReactiveCapabilityCurveOn = reactiveLimits?.[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
-            const isDistantRegulation =
-                generator?.[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id ||
-                (generator[VOLTAGE_REGULATION_TYPE] === null &&
-                    getPreviousRegulationType() === REGULATION_TYPES.DISTANT.id);
 
             const generatorModificationInfos = {
                 type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
@@ -370,13 +355,9 @@ export default function GeneratorModificationDialog({
                 directTransX: toModificationOperation(generator[TRANSIENT_REACTANCE]),
                 stepUpTransformerX: toModificationOperation(generator[TRANSFORMER_REACTANCE]),
                 voltageRegulationType: toModificationOperation(generator[VOLTAGE_REGULATION_TYPE]),
-                regulatingTerminalId: toModificationOperation(isDistantRegulation ? generator[EQUIPMENT]?.id : null),
-                regulatingTerminalType: toModificationOperation(
-                    isDistantRegulation ? generator[EQUIPMENT]?.type : null
-                ),
-                regulatingTerminalVlId: toModificationOperation(
-                    isDistantRegulation ? generator[VOLTAGE_LEVEL]?.id : null
-                ),
+                regulatingTerminalId: toModificationOperation(generator[EQUIPMENT]?.id),
+                regulatingTerminalType: toModificationOperation(generator[EQUIPMENT]?.type),
+                regulatingTerminalVlId: toModificationOperation(generator[VOLTAGE_LEVEL]?.id),
                 reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
                 participate: toModificationOperation(generator[FREQUENCY_REGULATION]),
                 droop: toModificationOperation(generator[DROOP]),
@@ -405,7 +386,7 @@ export default function GeneratorModificationDialog({
                 });
             });
         },
-        [getPreviousRegulationType, selectedId, studyUuid, currentNodeUuid, editData, snackError]
+        [selectedId, studyUuid, currentNodeUuid, editData, snackError]
     );
 
     const open = useOpenShortWaitFetching({

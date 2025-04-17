@@ -5,19 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
-import PropTypes from 'prop-types';
+import { SyntheticEvent, useCallback, useState } from 'react';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
-import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
+import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
-import {
-    COMPUTATION_RESULTS_LOGS,
-    FUNCTION_TYPES,
-    SENSITIVITY_AT_NODE,
-    SENSITIVITY_IN_DELTA_A,
-    SENSITIVITY_IN_DELTA_MW,
-    SensitivityResultTabs,
-} from './sensitivity-analysis-result-utils';
+import { FUNCTION_TYPES, isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -29,20 +21,31 @@ import { downloadZipFile } from '../../../services/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
+import { AppState } from '../../../redux/reducer';
+import { UUID } from 'crypto';
+import { COMPUTATION_RESULTS_LOGS, SensiTab, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 
-function getDisplayedColumns(params) {
-    return params.api.getColumnDefs()?.map((c) => c.headerComponentParams.displayName);
-}
+export type SensitivityAnalysisResultTabProps = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+};
 
-const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUuid }) => {
+function SensitivityAnalysisResultTab({
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
+}: Readonly<SensitivityAnalysisResultTabProps>) {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const [nOrNkIndex, setNOrNkIndex] = useState(0);
-    const [sensiKind, setSensiKind] = useState(SENSITIVITY_IN_DELTA_MW);
-    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
-    const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
-    const [page, setPage] = useState(0);
-    const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
+    const [nOrNkIndex, setNOrNkIndex] = useState<number>(0);
+    const [sensiTab, setSensiTab] = useState<SensiTab>(SENSITIVITY_IN_DELTA_MW);
+    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState<boolean>(false);
+    const [isCsvExportLoading, setIsCsvExportLoading] = useState<boolean>(false);
+    const [page, setPage] = useState<number>(0);
+    const sensitivityAnalysisStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
 
     const initTable = () => {
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
@@ -53,12 +56,12 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, currentRootNetworkU
         setIsCsvExportSuccessful(false);
     };
 
-    const handleSensiKindChange = (newSensiKind) => {
+    const handleSensiTabChange = (newSensiTab: SensiTab) => {
         initTable();
-        setSensiKind(newSensiKind);
+        setSensiTab(newSensiTab);
     };
 
-    const handleSensiNOrNkIndexChange = (event, newNOrNKIndex) => {
+    const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
         initTable();
         setNOrNkIndex(newNOrNKIndex);
     };
@@ -68,22 +71,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, currentRootNetworkU
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const sensiResultKind = [SENSITIVITY_IN_DELTA_MW, SENSITIVITY_IN_DELTA_A, SENSITIVITY_AT_NODE];
-
-    const [csvHeaders, setCsvHeaders] = useState([]);
+    const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
-
-    const handleGridColumnsChanged = useCallback((params) => {
-        if (params?.api) {
-            setCsvHeaders(getDisplayedColumns(params));
-        }
-    }, []);
-
-    const handleRowDataUpdated = useCallback((params) => {
-        if (params?.api) {
-            setIsCsvButtonDisabled(params.api.getDisplayedRowCount() === 0);
-        }
-    }, []);
 
     const handleExportResultAsCsv = useCallback(() => {
         setIsCsvExportLoading(true);
@@ -91,10 +80,10 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, currentRootNetworkU
         exportSensitivityResultsAsCsv(studyUuid, nodeUuid, currentRootNetworkUuid, {
             csvHeaders: csvHeaders,
             resultTab: SensitivityResultTabs[nOrNkIndex].id,
-            sensitivityFunctionType: FUNCTION_TYPES[sensiKind],
+            sensitivityFunctionType: isSensiKind(sensiTab) ? FUNCTION_TYPES[sensiTab] : undefined,
         })
             .then((response) => {
-                response.blob().then((blob) => {
+                response.blob().then((blob: Blob) => {
                     downloadZipFile(blob, 'sensitivity_analyse_results.zip');
                     setIsCsvExportSuccessful(true);
                 });
@@ -109,12 +98,12 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, currentRootNetworkU
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [snackError, studyUuid, nodeUuid, currentRootNetworkUuid, intl, nOrNkIndex, sensiKind, csvHeaders]);
+    }, [snackError, studyUuid, nodeUuid, currentRootNetworkUuid, intl, nOrNkIndex, sensiTab, csvHeaders]);
 
     return (
         <>
-            <SensitivityAnalysisTabs sensiKind={sensiKind} setSensiKind={handleSensiKindChange} />
-            {sensiResultKind.includes(sensiKind) && (
+            <SensitivityAnalysisTabs sensiTab={sensiTab} setSensiTab={handleSensiTabChange} />
+            {isSensiKind(sensiTab) && (
                 <>
                     <Box
                         sx={{
@@ -137,18 +126,18 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, currentRootNetworkU
                     </Box>
                     <PagedSensitivityAnalysisResult
                         nOrNkIndex={nOrNkIndex}
-                        sensiKind={sensiKind}
+                        sensiKind={sensiTab}
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         page={page}
                         setPage={setPage}
-                        onGridColumnsChanged={handleGridColumnsChanged}
-                        onRowDataUpdated={handleRowDataUpdated}
+                        setCsvHeaders={setCsvHeaders}
+                        setIsCsvButtonDisabled={setIsCsvButtonDisabled}
                     />
                 </>
             )}
-            {sensiKind === COMPUTATION_RESULTS_LOGS && (
+            {sensiTab === COMPUTATION_RESULTS_LOGS && (
                 <>
                     <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
                     {(sensitivityAnalysisStatus === RunningStatus.SUCCEED ||
@@ -159,12 +148,6 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, currentRootNetworkU
             )}
         </>
     );
-};
-
-SensitivityAnalysisResultTab.propTypes = {
-    studyUuid: PropTypes.string.isRequired,
-    nodeUuid: PropTypes.string.isRequired,
-    currentRootNetworkUuid: PropTypes.string.isRequired,
-};
+}
 
 export default SensitivityAnalysisResultTab;

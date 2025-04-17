@@ -300,7 +300,7 @@ import {
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { ExpertFilter } from '../services/study/filter';
+import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
@@ -465,7 +465,7 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetFilterState = Record<string, FilterConfig[]>;
+export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
 
 export type DiagramState = {
     id: UUID;
@@ -504,7 +504,28 @@ export type NodeSelectionForCopy = {
 
 export type Actions = AppActions | AuthenticationActions;
 
-export interface AppState extends CommonStoreState {
+export interface AppConfigState {
+    [PARAM_THEME]: GsTheme;
+    [PARAM_LANGUAGE]: GsLang;
+    [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
+    [PARAM_LIMIT_REDUCTION]: number;
+    [PARAM_USE_NAME]: boolean;
+    [PARAM_LINE_FULL_PATH]: boolean;
+    [PARAM_LINE_PARALLEL_PATH]: boolean;
+    [PARAM_MAP_MANUAL_REFRESH]: boolean;
+    [PARAM_MAP_BASEMAP]: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL; //TODO enum
+    [PARAM_LINE_FLOW_MODE]: LineFlowMode;
+    [PARAM_CENTER_LABEL]: boolean;
+    [PARAM_DIAGONAL_LABEL]: boolean;
+    [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
+    [PARAM_COMPONENT_LIBRARY]: unknown | null;
+    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
+    [PARAM_DEVELOPER_MODE]: boolean;
+    [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
+    [PARAMS_LOADED]: boolean;
+}
+
+export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
@@ -557,25 +578,6 @@ export interface AppState extends CommonStoreState {
     spreadsheetNetwork: SpreadsheetNetworkState;
     gsFilterSpreadsheetState: GsFilterSpreadsheetState;
     networkVisualizationsParameters: NetworkVisualizationParameters;
-
-    [PARAM_THEME]: GsTheme;
-    [PARAM_LANGUAGE]: GsLang;
-    [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
-    [PARAM_LIMIT_REDUCTION]: number;
-    [PARAM_USE_NAME]: boolean;
-    [PARAM_LINE_FULL_PATH]: boolean;
-    [PARAM_LINE_PARALLEL_PATH]: boolean;
-    [PARAM_MAP_MANUAL_REFRESH]: boolean;
-    [PARAM_MAP_BASEMAP]: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL; //TODO enum
-    [PARAM_LINE_FLOW_MODE]: LineFlowMode;
-    [PARAM_CENTER_LABEL]: boolean;
-    [PARAM_DIAGONAL_LABEL]: boolean;
-    [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
-    [PARAM_COMPONENT_LIBRARY]: unknown | null;
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
-    [PARAM_DEVELOPER_MODE]: boolean;
-    [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
-    [PARAMS_LOADED]: boolean;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
         [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
@@ -654,7 +656,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
 };
 
-export type GsFilterSpreadsheetState = Record<UUID, ExpertFilter[]>;
+export type GsFilterSpreadsheetState = Record<UUID, SpreadsheetGlobalFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
 interface TablesState {
@@ -981,7 +983,7 @@ export const reducer = createReducer(initialState, (builder) => {
         });
 
         if (state[SPREADSHEET_STORE_FIELD]) {
-            delete state[SPREADSHEET_STORE_FIELD][removedTable.name];
+            delete state[SPREADSHEET_STORE_FIELD][removedTable.uuid];
         }
 
         if (state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE]) {
@@ -1900,8 +1902,8 @@ export const reducer = createReducer(initialState, (builder) => {
         if (tableSort[tableDefinition.name]) {
             tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter((sort) => sort.colId !== value);
         }
-        if (tableFilter[tableDefinition.name]) {
-            tableFilter[tableDefinition.name] = tableFilter[tableDefinition.name].filter(
+        if (tableFilter[tableDefinition.uuid]) {
+            tableFilter[tableDefinition.uuid] = tableFilter[tableDefinition.uuid].filter(
                 (filter) => filter.column !== value
             );
         }

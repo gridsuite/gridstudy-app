@@ -7,11 +7,11 @@
 
 import { ExpandCircleDown, ExpandMore, Settings as SettingsIcon } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Grid, Typography } from '@mui/material';
-import { FunctionComponent, PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { styles } from '../parameters-style';
 
-type ParameterGroupProps = {
+type ParameterGroupProps = PropsWithChildren & {
     label: string;
     state: boolean;
     onClick: (show: boolean) => void;
@@ -20,24 +20,32 @@ type ParameterGroupProps = {
     unmountOnExit?: boolean;
 };
 
-export const ParameterGroup: FunctionComponent<PropsWithChildren<ParameterGroupProps>> = (props, context) => {
+export function ParameterGroup({
+    label,
+    state,
+    onClick,
+    disabled,
+    infoText,
+    unmountOnExit,
+    children,
+}: Readonly<ParameterGroupProps>) {
     const [mouseHover, setMouseHover] = useState(false);
 
     return (
         <Grid item xs={12} sx={styles.subgroupParameters}>
             <Accordion
                 sx={styles.subgroupParametersAccordion}
-                expanded={props.state}
-                onChange={(event, showed) => props.onClick(showed)}
+                expanded={state}
+                onChange={(event, showed) => onClick(showed)}
                 disableGutters
                 elevation={0}
                 square
                 slotProps={{
                     transition: {
-                        unmountOnExit: props.unmountOnExit || false,
+                        unmountOnExit: unmountOnExit || false,
                     },
                 }}
-                disabled={props.disabled || undefined}
+                disabled={disabled || undefined}
             >
                 <AccordionSummary
                     sx={styles.subgroupParametersAccordionSummary}
@@ -47,21 +55,21 @@ export const ParameterGroup: FunctionComponent<PropsWithChildren<ParameterGroupP
                 >
                     <SettingsIcon />
                     <Typography sx={{ width: '66%', flexShrink: 0 }}>
-                        <FormattedMessage id={props.label} />
+                        <FormattedMessage id={label} />
                     </Typography>
-                    {props.infoText && (
+                    {infoText && (
                         <Typography
                             sx={{ color: 'text.secondary', width: '34%' }}
                             noWrap={true}
                             align="right"
                             variant="body2"
                         >
-                            {props.infoText}
+                            {infoText}
                         </Typography>
                     )}
                 </AccordionSummary>
-                <AccordionDetails sx={styles.subgroupParametersAccordionDetails}>{props.children}</AccordionDetails>
+                <AccordionDetails sx={styles.subgroupParametersAccordionDetails}>{children}</AccordionDetails>
             </Accordion>
         </Grid>
     );
-};
+}
