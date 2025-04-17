@@ -17,37 +17,9 @@ import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
 
 const styles = {
-    table: (theme: Theme) => ({
-        marginTop: theme.spacing(2.5),
-        lineHeight: 'unset',
-        flexGrow: 1,
-        // Hide the vertical scrollbar for pinned bottom rows
-        '.ag-floating-bottom.ag-selectable': {
-            overflowY: 'hidden !important',
-        },
-    }),
-    blink: {
-        animation: '$blink 2s infinite',
-    },
-    '@keyframes blink': {
-        '0%': {
-            opacity: 1,
-        },
-        '50%': {
-            opacity: 0.1,
-        },
-    },
-    invalidNode: {
-        position: 'absolute',
-        top: '30%',
-        left: '43%',
-    },
     toolbar: (theme: Theme) => ({
         marginTop: theme.spacing(2),
         alignItems: 'center',
-    }),
-    filter: (theme: Theme) => ({
-        marginLeft: theme.spacing(1),
     }),
     selectColumns: (theme: Theme) => ({
         marginLeft: theme.spacing(1),
