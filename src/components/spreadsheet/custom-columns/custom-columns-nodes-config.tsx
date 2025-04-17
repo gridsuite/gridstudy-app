@@ -22,6 +22,7 @@ import { useFetchEquipment } from '../data-fetching/use-fetch-equipment';
 import { validAlias } from './use-node-aliases';
 import { NodeType } from '../../graph/tree-node.type';
 import { isStatusBuilt } from '../../graph/util/model-functions';
+import { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 
 const styles = {
     icon: {
@@ -37,14 +38,14 @@ enum NodesOptionId {
 
 type CustomColumnsNodesConfigProps = {
     disabled?: boolean;
-    tabIndex: number;
+    tableType: SpreadsheetEquipmentType;
     nodeAliases: NodeAlias[] | undefined;
     updateNodeAliases: (newNodeAliases: NodeAlias[]) => void;
 };
 
 export default function CustomColumnsNodesConfig({
     disabled,
-    tabIndex,
+    tableType,
     nodeAliases,
     updateNodeAliases,
 }: Readonly<CustomColumnsNodesConfigProps>) {
@@ -52,7 +53,6 @@ export default function CustomColumnsNodesConfig({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.type);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
 
     const { fetchNodesEquipmentData } = useFetchEquipment(tableType);

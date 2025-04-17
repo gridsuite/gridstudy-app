@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Button, Grid, Theme } from '@mui/material';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -27,6 +27,7 @@ import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import TabLabel from './tab-label';
 import { ResetNodeAliasCallback } from './custom-columns/use-node-aliases';
+import RestoreIcon from '@mui/icons-material/Restore';
 
 const draggableTabStyles = {
     container: {
@@ -44,11 +45,18 @@ const draggableTabStyles = {
     },
 };
 
+const styles = {
+    resetButton: (theme: Theme) => ({
+        color: theme.palette.primary.main,
+    }),
+};
+
 interface EquipmentTabsProps {
     selectedTabUuid: UUID | null;
     handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
     resetNodeAliases: ResetNodeAliasCallback;
+    handleResetCollectionClick?: () => void;
 }
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
@@ -56,6 +64,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
     handleSwitchTab,
     disabled,
     resetNodeAliases,
+    handleResetCollectionClick,
 }) => {
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
@@ -207,7 +216,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
                         resetNodeAliases={resetNodeAliases}
                     />
                 </Grid>
-                <Grid item sx={{ overflow: 'hidden' }}>
+                <Grid item sx={{ overflow: 'hidden', flexGrow: 1 }}>
                     <DroppableTabs
                         id="equipment-tabs"
                         value={selectedTabIndex}
@@ -220,6 +229,16 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
                         tabsRender={renderTabs}
                         onDragEnd={handleDragEnd}
                     />
+                </Grid>
+                <Grid item padding={1}>
+                    <Button
+                        sx={styles.resetButton}
+                        size={'small'}
+                        onClick={handleResetCollectionClick}
+                        disabled={disabled}
+                    >
+                        <RestoreIcon />
+                    </Button>
                 </Grid>
             </Grid>
             {confirmationDialogOpen && (

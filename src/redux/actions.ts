@@ -59,7 +59,7 @@ import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export type TableValue<TValue = unknown> = {
-    index: number;
+    uuid: UUID;
     value: TValue;
 };
 
