@@ -75,6 +75,7 @@ export const useNodeAliases = () => {
     const listenerAliasesUpdated = useCallback(
         (event: MessageEvent) => {
             const eventData = JSON.parse(event.data);
+            console.log('DBG DBR listener alias ..?', eventData);
             if (
                 eventData.headers.updateType === NotificationType.SPREADSHEET_NODE_ALIASES_UPDATED &&
                 eventData.headers.studyUuid === studyUuid

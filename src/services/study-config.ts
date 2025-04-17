@@ -6,7 +6,7 @@
  */
 
 import { backendFetchJson } from '@gridsuite/commons-ui';
-import { SpreadsheetConfig } from 'components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetConfig, SpreadsheetConfigDto } from 'components/spreadsheet/config/spreadsheet.type';
 import { UUID } from 'crypto';
 
 const PREFIX_STUDY_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study-config';
@@ -19,7 +19,7 @@ function getSpreadsheetConfigsCollectionsUrl() {
     return `${PREFIX_STUDY_CONFIG_QUERIES}/v1/spreadsheet-config-collections`;
 }
 
-export function getSpreadsheetModel(spreadsheetModelUuid: UUID) {
+export function getSpreadsheetModel(spreadsheetModelUuid: UUID): Promise<SpreadsheetConfigDto> {
     const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}`;
     return backendFetchJson(fetchUrl, {
         method: 'GET',

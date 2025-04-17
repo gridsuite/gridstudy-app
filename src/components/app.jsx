@@ -52,10 +52,13 @@ import {
     setOptionalServices,
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
+    updateTableColumns,
 } from '../redux/actions';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
 import { StudyView } from './utils/utils';
+import { NotificationType } from '../redux/reducer.js';
+import { getSpreadsheetModel } from '../services/study-config.js';
 
 const noUserManager = { instance: null, error: null };
 
@@ -137,6 +140,36 @@ const App = () => {
 
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.CONFIG, {
         listenerCallbackMessage: updateConfig,
+    });
+
+    const updateSpreadsheet = useCallback(
+        (event) => {
+            const eventData = JSON.parse(event.data);
+            console.log('DBG DBR updateStudy ..?', eventData);
+            if (
+                eventData.headers.updateType === NotificationType.SPREADSHEET_TABS_UPDATED &&
+                eventData.headers.studyUuid === studyUuid
+            ) {
+                const configUuid = eventData.payload;
+                console.log('DBG DBR updateStudy YES id=', configUuid);
+                getSpreadsheetModel(configUuid)
+                    .then((model) => {
+                        console.log('DBG DBR updateStudy res', model);
+                        dispatch(updateTableColumns(model));
+                    })
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error,
+                            headerId: 'todoErr',
+                        });
+                    });
+            }
+        },
+        [dispatch, snackError, studyUuid]
+    );
+
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+        listenerCallbackMessage: updateSpreadsheet,
     });
 
     // Can't use lazy initializer because useRouteMatch is a hook
