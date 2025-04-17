@@ -39,8 +39,6 @@ import {
     LccInfos,
     LccFormInfos,
     ShuntCompensatorFormSchema,
-    ShuntCompensatorInfos,
-    ShuntCompensatorModificationInfos,
 } from './lcc-type';
 import {
     copyEquipmentPropertiesForCreation,
@@ -54,7 +52,7 @@ import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants
 import { sanitizeString } from '../../../../dialog-utils';
 import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
-import { AttributeModification } from '../../../../../../services/network-modification-types';
+import { ShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../../utils/utils';
 
 export const getLccConverterStationSchema = () =>
@@ -228,13 +226,13 @@ export const getShuntCompensatorOnSideCreateData = (
 
 export const getShuntCompensatorOnSideModifyData = (
     shuntCompensatorInfos?: ShuntCompensatorFormSchema[]
-): ShuntCompensatorModificationInfos[] => {
+): ShuntCompensatorInfos[] => {
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
             id: shuntCp[SHUNT_COMPENSATOR_ID],
-            name: toModificationOperation(shuntCp[SHUNT_COMPENSATOR_NAME]),
-            maxQAtNominalV: toModificationOperation(shuntCp[MAX_Q_AT_NOMINAL_V]),
-            connectedToHvdc: toModificationOperation(shuntCp[SHUNT_COMPENSATOR_SELECTED]),
+            name: shuntCp[SHUNT_COMPENSATOR_NAME],
+            maxQAtNominalV: shuntCp[MAX_Q_AT_NOMINAL_V],
+            connectedToHvdc: shuntCp[SHUNT_COMPENSATOR_SELECTED],
         })) ?? []
     );
 };
@@ -265,16 +263,13 @@ export function getLccConverterStationCreationData(converterStation: {
 
 /* busOrBusbarSectionId?: AttributeModification<string>; */
 
-export function getLccConverterStationModificationData(converterStation: {
-    converterStationId: string;
-    converterStationName?: AttributeModification<string>;
-    lossFactor: AttributeModification<number>;
-    powerFactor: AttributeModification<number>;
-    shuntCompensatorInfos?: ShuntCompensatorFormSchema[];
-}) {
+export function getLccConverterStationModificationData(
+    converterStation: any,
+    converterStationToModify: LccConverterStationFormInfos
+) {
     return {
         type: MODIFICATION_TYPES.LCC_CONVERTER_STATION_MODIFICATION.type,
-        equipmentId: converterStation[CONVERTER_STATION_ID],
+        equipmentId: converterStationToModify.id,
         equipmentName: toModificationOperation(converterStation[CONVERTER_STATION_NAME]),
         lossFactor: toModificationOperation(converterStation[LOSS_FACTOR]),
         powerFactor: toModificationOperation(converterStation[POWER_FACTOR]),

@@ -94,9 +94,7 @@ export const LccModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver<any>(formSchema),
     });
-    const { reset, handleSubmit, getValues, formState } = formMethods;
-
-    console.log('-------formState : ', formState);
+    const { reset, handleSubmit, getValues } = formMethods;
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -130,12 +128,24 @@ export const LccModificationDialog = ({
     const onSubmit = useCallback(
         (lccHvdcLine: any) => {
             const hvdcLineTab = lccHvdcLine[HVDC_LINE_TAB];
-            const converterStation1 = getLccConverterStationModificationData(lccHvdcLine[CONVERTER_STATION_1]);
-            const converterStation2 = getLccConverterStationModificationData(lccHvdcLine[CONVERTER_STATION_2]);
+            console.log('--------lccToModify : ', lccToModify);
+            if (!lccToModify) {
+                //TODO gérer l'erreur
+                console.log('error');
+                return;
+            }
+            const converterStation1 = getLccConverterStationModificationData(
+                lccHvdcLine[CONVERTER_STATION_1],
+                lccToModify.lccConverterStation1
+            );
+            const converterStation2 = getLccConverterStationModificationData(
+                lccHvdcLine[CONVERTER_STATION_2],
+                lccToModify.lccConverterStation2
+            );
             modifyLcc({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                id: lccHvdcLine[EQUIPMENT_ID] ?? '',
+                id: lccToModify.id,
                 name: sanitizeString(lccHvdcLine[EQUIPMENT_NAME]),
                 nominalV: hvdcLineTab[NOMINAL_V],
                 r: hvdcLineTab[R],
@@ -154,7 +164,7 @@ export const LccModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError, lccToModify]
     );
 
     const clear = useCallback(
@@ -168,6 +178,7 @@ export const LccModificationDialog = ({
         (equipmentId: string | null) => {
             if (!equipmentId) {
                 clear();
+                console.log('set to null because equipmentId is null-----');
                 setLccToModify(null);
             } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
@@ -181,8 +192,8 @@ export const LccModificationDialog = ({
                     true
                 )
                     .then((value: LccFormInfos | null) => {
-                        console.log('value : ', value);
                         if (value) {
+                            console.log('setting lccToModify to non null : ', value);
                             setLccToModify({ ...value });
                             reset((formValues: any) => ({
                                 ...formValues,
@@ -209,6 +220,7 @@ export const LccModificationDialog = ({
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
+                            console.log('set to null because of fetch failed------');
                             setLccToModify(null);
                             reset(emptyFormData);
                         }

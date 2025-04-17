@@ -140,6 +140,7 @@ export const mergeModificationAndEquipmentProperties = (
 };
 
 export const toModificationProperties = (properties: Properties) => {
+    console.log('properties', properties[ADDITIONAL_PROPERTIES]);
     const filteredProperties = properties[ADDITIONAL_PROPERTIES]?.filter(
         (p: Property) => !isBlankOrEmpty(p.value) || p[DELETION_MARK]
     );

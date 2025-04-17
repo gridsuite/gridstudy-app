@@ -26,7 +26,7 @@ import {
     POWER_FACTOR,
     R,
 } from '../../../../../utils/field-constants';
-import { AttributeModification } from '../../../../../../services/network-modification-types';
+import { ShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
 
 export const LccDialogTab = {
     HVDC_LINE_TAB: 0,
@@ -93,23 +93,9 @@ export interface LccConverterStationCreationInfos {
     shuntCompensatorsOnSide: ShuntCompensatorInfos[];
 }
 
-export interface ShuntCompensatorInfos {
-    id: string;
-    name?: string | null;
-    maxQAtNominalV: number;
-    connectedToHvdc?: boolean;
-}
-
-export interface ShuntCompensatorModificationInfos {
-    id: string;
-    name?: AttributeModification<string> | null;
-    maxQAtNominalV: AttributeModification<number> | null;
-    connectedToHvdc?: AttributeModification<boolean> | null;
-}
-
 export interface LccConverterStationFormInfos {
     id: string;
-    name?: string;
+    name?: string | null;
     lossFactor: number;
     powerFactor: number;
     voltageLevelId: string;
