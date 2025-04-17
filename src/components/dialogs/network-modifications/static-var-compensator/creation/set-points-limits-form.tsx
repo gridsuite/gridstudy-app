@@ -38,6 +38,7 @@ export interface SetPointsLimitsFormProps {
     currentRootNetworkUuid: UUID;
     voltageLevelOptions: any;
 }
+
 export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = ({
     studyUuid,
     currentNode,

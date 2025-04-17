@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -23,11 +23,44 @@ import {
     STEPS_TAP,
     TAP_POSITION,
 } from 'components/utils/field-constants';
-import PropTypes from 'prop-types';
-import { compareStepsWithPreviousValues, computeHighTapPosition } from 'components/utils/utils';
+import { compareStepsWithPreviousValues } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { DndColumn } from '../../../../utils/dnd-table/dnd-table.type';
+import { ColumnDefinition } from './use-column-definitions';
 
-const TapChangerSteps = ({
+export type TapChangerStepData = {
+    index: number;
+    rho: number;
+    r: number;
+    x: number;
+    g: number;
+    b: number;
+} & Partial<{
+    alpha: number;
+}>;
+export type TapChangerStepsProps = {
+    tapChanger: string;
+    ruleType: string;
+    createTapRuleColumn: string;
+    columnsDefinition: ColumnDefinition[];
+    csvColumns: string[];
+    createRuleMessageId: string;
+    createRuleAllowNegativeValues: boolean;
+    importRuleMessageId: string;
+    resetButtonMessageId: string;
+    handleImportRow: (val: Record<string, unknown>) => Record<string, unknown>;
+    disabled: boolean;
+    previousValuesSteps?: TapChangerStepData[];
+    previousValuesLowTapPosition?: number;
+    previousValuesHighTapPosition?: number;
+    previousValuesTapPosition?: number;
+    editData: any;
+    currentNode: CurrentTreeNode;
+    isModification: boolean;
+};
+
+export default function TapChangerSteps({
     tapChanger,
     ruleType,
     createTapRuleColumn,
@@ -39,11 +72,14 @@ const TapChangerSteps = ({
     resetButtonMessageId,
     handleImportRow,
     disabled,
-    previousValues,
+    previousValuesSteps,
+    previousValuesLowTapPosition,
+    previousValuesHighTapPosition,
+    previousValuesTapPosition,
     editData,
     currentNode,
     isModification = false,
-}) => {
+}: Readonly<TapChangerStepsProps>) {
     const intl = useIntl();
 
     const { trigger, getValues, setValue, clearErrors } = useFormContext();
@@ -65,8 +101,8 @@ const TapChangerSteps = ({
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
 
     const disableAddingRows = useMemo(() => {
-        return isModification && lowTapPosition === null && previousValues?.[LOW_TAP_POSITION] === undefined;
-    }, [isModification, lowTapPosition, previousValues]);
+        return isModification && lowTapPosition === null && previousValuesLowTapPosition === undefined;
+    }, [isModification, lowTapPosition, previousValuesLowTapPosition]);
 
     function allowedToAddTapRows() {
         // triggering validation on low tap position before generating rows (the field is required)
@@ -75,7 +111,7 @@ const TapChangerSteps = ({
         return trigger(`${tapChanger}.${LOW_TAP_POSITION}`);
     }
 
-    function createTapRows(numberOfRows) {
+    function createTapRows(numberOfRows: number) {
         const currentLowTapPosition = getValues(`${tapChanger}.${LOW_TAP_POSITION}`);
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
 
@@ -90,7 +126,7 @@ const TapChangerSteps = ({
         for (let i = 0; i < numberOfRows; i++) {
             // we remove STEPS_TAP from the columns with slice
             const newRow = columnsDefinition.slice(1).reduce(
-                (accumulator, currentValue) => ({
+                (accumulator: any, currentValue: any) => ({
                     ...accumulator,
                     [currentValue.dataKey]: currentValue.initialValue,
                 }),
@@ -115,16 +151,16 @@ const TapChangerSteps = ({
         if (editData?.[STEPS] && isNodeBuilt(currentNode)) {
             return true;
         } else {
-            return !compareStepsWithPreviousValues(tapStepsWatcher, previousValues?.[STEPS]);
+            return !compareStepsWithPreviousValues(tapStepsWatcher, previousValuesSteps);
         }
-    }, [currentNode, editData, previousValues, tapStepsWatcher]);
+    }, [currentNode, editData, previousValuesSteps, tapStepsWatcher]);
 
     const resetTapNumbers = useCallback(
-        (tapSteps, isModification) => {
+        (tapSteps: any, isModification: boolean) => {
             const currentTapRows = tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
 
             const currentLowTapPosition =
-                isModification && lowTapPosition === null ? previousValues?.[LOW_TAP_POSITION] : lowTapPosition;
+                isModification && lowTapPosition === null ? previousValuesLowTapPosition : lowTapPosition;
 
             for (
                 let tapPosition = currentLowTapPosition, index = 0;
@@ -138,7 +174,7 @@ const TapChangerSteps = ({
                 currentTapRows.length !== 0 ? currentLowTapPosition + currentTapRows.length - 1 : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
-        [getValues, tapChanger, lowTapPosition, previousValues, setValue]
+        [getValues, tapChanger, lowTapPosition, previousValuesLowTapPosition, setValue]
     );
 
     // Adjust high tap position when low tap position change + remove red if value fixed
@@ -156,19 +192,19 @@ const TapChangerSteps = ({
     }, [tapSteps, resetTapNumbers, isModification]);
 
     const handleResetButton = useCallback(() => {
-        replace(previousValues?.[STEPS] ?? []);
+        replace(previousValuesSteps ?? []);
         setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
         clearErrors(`${tapChanger}.${STEPS}`);
-    }, [clearErrors, previousValues, replace, setValue, tapChanger]);
+    }, [clearErrors, previousValuesSteps, replace, setValue, tapChanger]);
 
-    const handleCreateTapRule = (lowTap, highTap) => {
+    const handleCreateTapRule = (lowTap: number, highTap: number) => {
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
 
         if (currentTapRows.length > 1) {
             let interval = (highTap - lowTap) / (currentTapRows.length - 1);
             let current = lowTap;
 
-            currentTapRows.forEach((row, index) => {
+            currentTapRows.forEach((index: number) => {
                 currentTapRows[index][createTapRuleColumn] = current;
                 current += interval;
             });
@@ -184,7 +220,7 @@ const TapChangerSteps = ({
         });
     }
 
-    const handleImportTapRule = (selectedFile, setFileParseError) => {
+    const handleImportTapRule = (selectedFile: string, setFileParseError: any) => {
         Papa.parse(selectedFile, {
             header: true,
             skipEmptyLines: true,
@@ -193,10 +229,15 @@ const TapChangerSteps = ({
                     setFileParseError(intl.formatMessage({ id: 'TapPositionValueError' }, { value: MAX_ROWS_NUMBER }));
                     return;
                 }
-                let rows = results.data.map((val) => ({
-                    ...handleImportRow(val),
-                    [SELECTED]: false,
-                }));
+                const data = results.data as Record<string, unknown>[];
+                let rows = data.map((val) => {
+                    const rowData = handleImportRow(val) as Record<string, unknown>;
+                    return {
+                        ...rowData,
+                        [SELECTED]: false,
+                    };
+                });
+
                 if (rows && rows.length > 0) {
                     replace(rows);
                 }
@@ -211,7 +252,7 @@ const TapChangerSteps = ({
             formProps={{
                 disabled: disabled,
             }}
-            previousValue={previousValues?.[LOW_TAP_POSITION]}
+            previousValue={isModification ? previousValuesLowTapPosition : undefined}
         />
     );
 
@@ -222,7 +263,7 @@ const TapChangerSteps = ({
             formProps={{
                 disabled: true,
             }}
-            previousValue={computeHighTapPosition(previousValues?.[STEPS])}
+            previousValue={isModification ? previousValuesHighTapPosition : undefined}
         />
     );
 
@@ -233,7 +274,7 @@ const TapChangerSteps = ({
             formProps={{
                 disabled: disabled,
             }}
-            previousValue={previousValues?.[TAP_POSITION]}
+            previousValue={isModification ? previousValuesTapPosition : undefined}
         />
     );
 
@@ -252,15 +293,15 @@ const TapChangerSteps = ({
         </Tooltip>
     );
 
-    const completedColumnsDefinition = columnsDefinition;
+    const completedColumnsDefinition: DndColumn[] = columnsDefinition as unknown as DndColumn[];
     completedColumnsDefinition[completedColumnsDefinition.length - 1] = {
         ...completedColumnsDefinition[completedColumnsDefinition.length - 1],
         extra: createRuleButton,
     };
 
     const getTapPreviousValue = useCallback(
-        (rowIndex, column, arrayFormName, tapSteps) => {
-            const step = tapSteps?.find((e) => e.index === getValues(arrayFormName)[rowIndex]?.index);
+        (rowIndex: number, column: any, arrayFormName: string, tapSteps: any) => {
+            const step = tapSteps?.find((e: any) => e.index === getValues(arrayFormName)[rowIndex]?.index);
             if (step === undefined) {
                 return undefined;
             }
@@ -273,17 +314,16 @@ const TapChangerSteps = ({
 
     return (
         <Grid item container spacing={1}>
-            <Grid item container spacing={2}>
-                <Grid item xs={4}>
-                    {lowTapPositionField}
-                </Grid>
-                <Grid item xs={4}>
-                    {highTapPositionField}
-                </Grid>
-                <Grid item xs={4}>
-                    {tapPositionField}
-                </Grid>
+            <Grid item xs={4}>
+                {lowTapPositionField}
             </Grid>
+            <Grid item xs={4}>
+                {highTapPositionField}
+            </Grid>
+            <Grid item xs={4}>
+                {tapPositionField}
+            </Grid>
+
             <DndTable
                 arrayFormName={`${tapChanger}.${STEPS}`}
                 useFieldArrayOutput={useFieldArrayOutput}
@@ -295,7 +335,7 @@ const TapChangerSteps = ({
                 uploadButtonMessageId={importRuleMessageId}
                 handleResetButton={isModification ? handleResetButton : undefined}
                 resetButtonMessageId={resetButtonMessageId}
-                previousValues={previousValues?.[STEPS]}
+                previousValues={previousValuesSteps}
                 getPreviousValue={getTapPreviousValue}
                 isValueModified={isTapModified}
                 withResetButton={isModification && areStepsModified}
@@ -318,19 +358,4 @@ const TapChangerSteps = ({
             />
         </Grid>
     );
-};
-
-TapChangerSteps.prototype = {
-    tapChanger: PropTypes.string.isRequired,
-    ruleType: PropTypes.string.isRequired,
-    createTapRuleColumn: PropTypes.string.isRequired,
-    columnsDefinition: PropTypes.object.isRequired,
-    csvColumns: PropTypes.object.isRequired,
-    createRuleMessageId: PropTypes.string.isRequired,
-    createRuleAllowNegativeValues: PropTypes.bool.isRequired,
-    importRuleMessageId: PropTypes.string.isRequired,
-    handleImportRow: PropTypes.func.isRequired,
-    disabled: PropTypes.bool,
-};
-
-export default TapChangerSteps;
+}

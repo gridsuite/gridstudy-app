@@ -127,10 +127,15 @@ export const percentageTextField = {
     text: PERCENTAGE,
 };
 
-export function parseIntData(val: string, defaultValue: string) {
+export function parseIntData(val: string, defaultValue: number) {
     const intValue = parseInt(val);
     return isNaN(intValue) ? defaultValue : intValue;
 }
+
+export const parseFloatData = (value: string, defaultValue: number): number => {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? defaultValue : parsed;
+};
 
 export function sanitizeString(val: string | null | undefined) {
     const trimedValue = val?.trim();
