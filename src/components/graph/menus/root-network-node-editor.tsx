@@ -5,27 +5,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, Parameter, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CheckBoxList,
+    NotificationsUrlKeys,
+    Parameter,
+    useNotificationsListener,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 
 import {
-    FileUpload,
     Delete as DeleteIcon,
+    FileUpload,
     RemoveRedEye as RemoveRedEyeIcon,
     VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 
 import {
+    Badge,
     Box,
     Checkbox,
+    Chip,
     CircularProgress,
+    IconButton,
+    Stack,
     Theme,
     Toolbar,
     Tooltip,
     Typography,
-    Badge,
-    IconButton,
-    Stack,
-    Chip,
 } from '@mui/material';
 
 import { useCallback, useRef, useState } from 'react';
@@ -43,14 +49,13 @@ import { RootNetworkMetadata } from './network-modifications/network-modificatio
 
 import {
     CaseImportParameters,
-    GetCaseImportParametersReturn,
     getCaseImportParameters,
+    GetCaseImportParametersReturn,
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
 import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
 import { isChecked, isPartial } from './network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
-import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },
@@ -229,13 +234,13 @@ const RootNetworkNodeEditor = () => {
         [dispatch]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworkModifiedNotification,
     });
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworksUpdateFailedNotification,
     });
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworkDeletionStartedNotification,
     });
 

@@ -28,6 +28,7 @@ import { fetchRootNetworks } from 'services/root-network';
 import WaitingLoader from './utils/waiting-loader';
 import {
     fetchDirectoryElementPath,
+    NotificationsUrlKeys,
     useIntlRef,
     useNotificationsListener,
     usePrevious,
@@ -48,7 +49,6 @@ import { HttpStatusCode } from 'utils/http-status-code';
 import { StudyIndexationStatus } from 'redux/reducer';
 import { NodeType } from './graph/tree-node.type';
 import { UPDATE_TYPE_HEADER } from './use-node-data';
-import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -284,7 +284,7 @@ export function StudyContainer({ view, onChangeTab }) {
         [dispatch, displayErrorNotifications, sendAlert]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, { listenerCallbackMessage: handleStudyUpdate });
+    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleStudyUpdate });
 
     const fetchStudyPath = useCallback(() => {
         fetchDirectoryElementPath(studyUuid)
@@ -318,7 +318,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }, []);
 
     //Study deletion notification
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.DIRECTORY_DELETE_STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.DIRECTORY_DELETE_STUDY, {
         listenerCallbackMessage: closeWindow,
     });
 
@@ -342,7 +342,7 @@ export function StudyContainer({ view, onChangeTab }) {
         [dispatch, fetchStudyPath]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.DIRECTORY, {
+    useNotificationsListener(NotificationsUrlKeys.DIRECTORY, {
         listenerCallbackMessage: onStudyUpdated,
     });
 

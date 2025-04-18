@@ -6,13 +6,20 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { LIGHT_THEME, logout, OverflowableText, TopBar, useNotificationsListener } from '@gridsuite/commons-ui';
+import {
+    fetchAppsMetadata,
+    LIGHT_THEME,
+    logout,
+    OverflowableText,
+    TopBar,
+    useGlobalAnnouncement,
+} from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
 import { Badge, Box, Button, Tab, Tabs, Tooltip } from '@mui/material';
 import { Search, Settings } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME, PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
@@ -24,13 +31,11 @@ import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
 import { useDiagram } from './diagrams/use-diagram';
-import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils.js';
 
 const styles = {
     currentNodeBox: {
@@ -85,31 +90,7 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
     const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const [announcementInfos, setAnnouncementInfos] = useState(null);
-
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.GLOBAL_CONFIG, {
-        listenerCallbackMessage: (event) => {
-            const eventData = JSON.parse(event.data);
-            if (eventData.headers.messageType === 'announcement') {
-                if (
-                    announcementInfos != null &&
-                    announcementInfos.announcementId === eventData.headers.announcementId
-                ) {
-                    // If we receive a notification for an announcement that we already received we ignore it
-                    return;
-                }
-                const announcement = {
-                    announcementId: eventData.headers.announcementId,
-                    message: eventData.payload,
-                    severity: eventData.headers.severity,
-                    duration: eventData.headers.duration,
-                };
-                setAnnouncementInfos(announcement);
-            } else if (eventData.headers.messageType === 'cancelAnnouncement') {
-                setAnnouncementInfos(null);
-            }
-        },
-    });
+    const announcementInfos = useGlobalAnnouncement(user);
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
