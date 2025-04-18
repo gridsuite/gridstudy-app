@@ -16,11 +16,11 @@ import {
     REPLACING_LINE_1_NAME,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../dialogUtils';
+import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../commons/modificationDialog';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { deleteAttachingLine } from '../../../../services/study/network-modifications';
@@ -50,6 +50,7 @@ const formSchema = yup
  * Dialog to delete attaching line.
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -58,6 +59,7 @@ const formSchema = yup
 const DeleteAttachingLineDialog = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     editData,
     isUpdate,
     editDataFetchStatus,
@@ -76,9 +78,7 @@ const DeleteAttachingLineDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -103,16 +103,16 @@ const DeleteAttachingLineDialog = ({
 
     const onSubmit = useCallback(
         (formData) => {
-            deleteAttachingLine(
-                studyUuid,
-                currentNodeUuid,
-                editData ? editData.uuid : undefined,
-                formData[LINE_TO_ATTACH_TO_1_ID],
-                formData[LINE_TO_ATTACH_TO_2_ID],
-                formData[ATTACHED_LINE_ID],
-                formData[REPLACING_LINE_1_ID],
-                sanitizeString(formData[REPLACING_LINE_1_NAME])
-            ).catch((error) => {
+            deleteAttachingLine({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData ? editData.uuid : undefined,
+                lineToAttachTo1Id: formData[LINE_TO_ATTACH_TO_1_ID],
+                lineToAttachTo2Id: formData[LINE_TO_ATTACH_TO_2_ID],
+                attachedLineId: formData[ATTACHED_LINE_ID],
+                replacingLine1Id: formData[REPLACING_LINE_1_ID],
+                replacingLine1Name: sanitizeString(formData[REPLACING_LINE_1_NAME]),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'DeleteAttachingLineError',
@@ -134,17 +134,15 @@ const DeleteAttachingLineDialog = ({
                 subtitle={<DeleteAttachingLineIllustration />}
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-delete-attaching-line"
                 titleId="DeleteAttachingLine"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <DeleteAttachingLineForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
@@ -155,6 +153,7 @@ DeleteAttachingLineDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editDataFetchStatus: PropTypes.string,
 };

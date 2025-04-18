@@ -6,67 +6,45 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../commons/modificationDialog';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { DynamicSimulationEventForm } from './dynamic-simulation-event-form';
-import {
-    Event,
-    EventProperty,
-    EventPropertyName,
-    PrimitiveTypes,
-} from './types/event.type';
+import { Event, EventProperty, EventPropertyName, PrimitiveTypes } from './types/event.type';
 import yup from 'components/utils/yup-config';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
-import {
-    fetchDynamicSimulationEvent,
-    saveDynamicSimulationEvent,
-} from '../../../../services/dynamic-simulation';
+import { fetchDynamicSimulationEvent, saveDynamicSimulationEvent } from '../../../../services/dynamic-simulation';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 export type DynamicSimulationEventDialogProps = {
-    studyUuid: string;
-    currentNodeId: string;
     equipmentId: string;
-    equipmentType: string; // must be a string enum
+    equipmentType: EQUIPMENT_TYPES;
     onClose: () => void;
     title: string;
     open?: boolean;
 } & Omit<DialogProps, 'open'>;
 
-export const DynamicSimulationEventDialog = (
-    props: DynamicSimulationEventDialogProps
-) => {
-    const {
-        studyUuid,
-        currentNodeId,
-        equipmentId,
-        equipmentType,
-        onClose,
-        title,
-        open: defaultOpen,
-        ...dialogProps
-    } = props;
+export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialogProps) => {
+    const { equipmentId, equipmentType, onClose, title, open: defaultOpen, ...dialogProps } = props;
 
-    console.log('events', { equipmentId });
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentNodeId = currentNode?.id;
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [event, setEvent] = useState<Event>();
 
-    const eventType = useMemo(
-        () => getEventType(equipmentType),
-        [equipmentType]
-    );
+    const eventType = useMemo(() => getEventType(equipmentType), [equipmentType]);
 
-    const eventDefinition = useMemo(
-        () => (eventType ? eventDefinitions[eventType] : undefined),
-        [eventType]
-    );
+    const eventDefinition = useMemo(() => (eventType ? eventDefinitions[eventType] : undefined), [eventType]);
 
     // build formSchema from an event definition
     const formSchema = useMemo(
@@ -94,12 +72,7 @@ export const DynamicSimulationEventDialog = (
     } = useMemo(
         () =>
             eventDefinition
-                ? Object.fromEntries(
-                      Object.entries(eventDefinition).map(([key, value]) => [
-                          key,
-                          value.default,
-                      ])
-                  )
+                ? Object.fromEntries(Object.entries(eventDefinition).map(([key, value]) => [key, value.default]))
                 : {},
         [eventDefinition]
     );
@@ -113,13 +86,14 @@ export const DynamicSimulationEventDialog = (
 
     // load event for equipment
     useEffect(() => {
+        if (!studyUuid || !currentNodeId) {
+            return;
+        }
         setDataFetchStatus(FetchStatus.RUNNING);
-        fetchDynamicSimulationEvent(studyUuid, currentNodeId, equipmentId).then(
-            (event) => {
-                setDataFetchStatus(FetchStatus.SUCCEED);
-                setEvent(event);
-            }
-        );
+        fetchDynamicSimulationEvent(studyUuid, currentNodeId, equipmentId).then((event) => {
+            setDataFetchStatus(FetchStatus.SUCCEED);
+            setEvent(event);
+        });
     }, [currentNodeId, equipmentId, studyUuid, reset]);
 
     // reset form data when event available after fetch
@@ -128,8 +102,7 @@ export const DynamicSimulationEventDialog = (
             const formData = Object.fromEntries(
                 Object.entries(eventDefinition).map(([key, value]) => [
                     key,
-                    event.properties.find((property) => property.name === key)
-                        ?.value,
+                    event.properties.find((property) => property.name === key)?.value,
                 ])
             );
             reset(formData);
@@ -144,10 +117,11 @@ export const DynamicSimulationEventDialog = (
     // submit form
     const handleSubmit = useCallback(
         (formObj: { [KEY in EventPropertyName]: any }) => {
+            if (!studyUuid || !currentNodeId) {
+                return;
+            }
             // formObj to EventProperty[]
-            const propertyNames = Object.keys(
-                formObj ?? {}
-            ) as EventPropertyName[];
+            const propertyNames = Object.keys(formObj ?? {}) as EventPropertyName[];
 
             // new or changed properties
             const properties = propertyNames.reduce(
@@ -155,21 +129,15 @@ export const DynamicSimulationEventDialog = (
                     ...arr,
                     {
                         // lookup the corresponding old property by name to merge
-                        ...event?.properties.find(
-                            (elem) => elem.name === propertyName
-                        ),
+                        ...event?.properties.find((elem) => elem.name === propertyName),
                         name: propertyName,
                         value: formObj[propertyName],
-                        type: eventDefinition
-                            ? eventDefinition[propertyName]?.type
-                            : PrimitiveTypes.STRING,
+                        type: eventDefinition ? eventDefinition[propertyName]?.type : PrimitiveTypes.STRING,
                     } as EventProperty,
                 ],
                 [
                     {
-                        ...event?.properties.find(
-                            (elem) => elem.name === 'staticId'
-                        ),
+                        ...event?.properties.find((elem) => elem.name === 'staticId'),
                         name: 'staticId',
                         value: equipmentId,
                         type: PrimitiveTypes.STRING,
@@ -192,33 +160,18 @@ export const DynamicSimulationEventDialog = (
                       properties,
                   };
 
-            saveDynamicSimulationEvent(
-                studyUuid,
-                currentNodeId,
-                submitEvent
-            ).catch((error) => {
+            saveDynamicSimulationEvent(studyUuid, currentNodeId, submitEvent).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'DynamicSimulationEventSaveError',
                 });
             });
         },
-        [
-            currentNodeId,
-            equipmentId,
-            equipmentType,
-            snackError,
-            studyUuid,
-            eventType,
-            event,
-            eventDefinition,
-        ]
+        [currentNodeId, equipmentId, equipmentType, snackError, studyUuid, eventType, event, eventDefinition]
     );
 
     const waitingOpen = useOpenShortWaitFetching({
-        isDataFetched:
-            dataFetchStatus === FetchStatus.SUCCEED ||
-            dataFetchStatus === FetchStatus.FAILED,
+        isDataFetched: dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -231,7 +184,6 @@ export const DynamicSimulationEventDialog = (
                 onClose={onClose}
                 onClear={handleClear}
                 onSave={handleSubmit}
-                aria-labelledby="dialog-event-configuration"
                 maxWidth={'xs'}
                 titleId={title}
                 open={open}
@@ -243,9 +195,7 @@ export const DynamicSimulationEventDialog = (
                 <DynamicSimulationEventForm
                     equipmentId={equipmentId}
                     equipmentType={equipmentType}
-                    eventDefinition={
-                        eventType ? eventDefinitions[eventType] : undefined
-                    }
+                    eventDefinition={eventType ? eventDefinitions[eventType] : undefined}
                     event={event}
                 />
             </ModificationDialog>

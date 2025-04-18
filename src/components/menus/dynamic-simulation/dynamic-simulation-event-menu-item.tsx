@@ -13,6 +13,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import { CustomMenuItem } from '../../utils/custom-nested-menu';
+import { EquipmentType } from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const styles = {
     menuItem: {
@@ -25,25 +27,18 @@ const styles = {
 
 interface DynamicSimulationEventMenuItemProps {
     equipmentId: string;
-    equipmentType: string;
+    equipmentType: EquipmentType;
     onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
-        equipmentType: string,
+        equipmentType: EquipmentType,
         dialogTitle: string
     ) => void;
     disabled: boolean;
 }
 
-const DynamicSimulationEventMenuItem = (
-    props: DynamicSimulationEventMenuItemProps
-) => {
+const DynamicSimulationEventMenuItem = (props: DynamicSimulationEventMenuItemProps) => {
     const intl = useIntl();
-    const {
-        equipmentId,
-        equipmentType,
-        onOpenDynamicSimulationEventDialog,
-        disabled,
-    } = props;
+    const { equipmentId, equipmentType, onOpenDynamicSimulationEventDialog, disabled } = props;
     return (
         <CustomMenuItem
             sx={styles.menuItem}
@@ -51,9 +46,7 @@ const DynamicSimulationEventMenuItem = (
                 onOpenDynamicSimulationEventDialog(
                     equipmentId,
                     equipmentType,
-                    `${getEventType(equipmentType)}${
-                        EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
-                    }`
+                    `${getEventType(equipmentType)}${EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]}`
                 )
             }
             disabled={disabled}
@@ -66,7 +59,9 @@ const DynamicSimulationEventMenuItem = (
                     <Typography noWrap>
                         {intl.formatMessage({
                             id: `${getEventType(equipmentType)}${
-                                EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
+                                EQUIPMENT_TYPE_LABEL_KEYS[
+                                    EQUIPMENT_TYPES[equipmentType as keyof typeof EQUIPMENT_TYPES]
+                                ]
                             }`,
                         })}
                         {' ('}

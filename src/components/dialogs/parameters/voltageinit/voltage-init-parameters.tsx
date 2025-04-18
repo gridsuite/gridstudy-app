@@ -12,58 +12,47 @@ import {
     useSnackMessage,
     CustomFormProvider,
     TreeViewFinderNodeProps,
+    mergeSx,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
-import {
-    Dispatch,
-    SetStateAction,
-    SyntheticEvent,
-    useCallback,
-    useEffect,
-    useState,
-} from 'react';
+import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles, TabPanel } from '../parameters';
+import { TabPanel } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import {
-    getVoltageInitStudyParameters,
-    updateVoltageInitParameters,
-} from '../../../../services/study/voltage-init';
+import { updateVoltageInitParameters } from '../../../../services/study/voltage-init';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import {
     fromStudyVoltageInitParamsDataToFormValues,
     fromVoltageInitParametersFormToParamValues,
     fromVoltageInitParamsDataToFormValues,
-    VoltageInitParam,
 } from './voltage-init-utils';
 import { getVoltageInitParameters } from 'services/voltage-init';
-import { mergeSx } from 'components/utils/functions';
 import { GeneralParameters } from './general-parameters';
 import {
+    DEFAULT_GENERAL_APPLY_MODIFICATIONS,
     GENERAL,
     initialVoltageInitParametersForm,
     TabValue,
     VoltageInitParametersForm,
     voltageInitParametersFormSchema,
-} from './voltage-init-parameters-form.js';
-import { ReduxState } from '../../../../redux/reducer.type';
+} from './voltage-init-parameters-form';
+import { AppState } from '../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { useGetVoltageInitParameters } from './use-get-voltage-init-parameters';
+import { styles } from '../parameters-style';
 
 export const VoltageInitParameters = ({
     setHaveDirtyFields,
 }: {
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
 }) => {
-    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
-        useState(false);
-    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
-        useState(false);
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
@@ -75,48 +64,27 @@ export const VoltageInitParameters = ({
     });
     const { reset, handleSubmit, getValues, trigger, formState } = formMethods;
 
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const [voltageInitParams, setVoltageInitParams] =
-        useGetVoltageInitParameters();
+    const [voltageInitParams, setVoltageInitParams] = useGetVoltageInitParameters();
 
-    const handleTabChange = useCallback(
-        (_: SyntheticEvent, newValue: TabValue) => {
-            setTabValue(newValue);
-        },
-        []
-    );
+    const handleTabChange = useCallback((_: SyntheticEvent, newValue: TabValue) => {
+        setTabValue(newValue);
+    }, []);
 
     const resetVoltageInitParameters = useCallback(() => {
-        updateVoltageInitParameters(
-            studyUuid,
-            fromVoltageInitParametersFormToParamValues(
-                initialVoltageInitParametersForm
-            )
-        )
-            .then(() => {
-                return getVoltageInitStudyParameters(studyUuid)
-                    .then((params: VoltageInitParam) => {
-                        setVoltageInitParams(params);
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        });
-                    });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
+        updateVoltageInitParameters(studyUuid, {
+            applyModifications: DEFAULT_GENERAL_APPLY_MODIFICATIONS,
+            computationParameters: null,
+        }).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'paramsChangingError',
             });
-    }, [studyUuid, setVoltageInitParams, snackError]);
+        });
+    }, [studyUuid, snackError]);
 
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<TabValue[]>(
-        []
-    );
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<TabValue[]>([]);
 
     const onValidationError = useCallback(
         (errors?: any) => {
@@ -138,19 +106,14 @@ export const VoltageInitParameters = ({
 
     const onSubmit = useCallback(
         (newParams: VoltageInitParametersForm) => {
-            updateVoltageInitParameters(
-                studyUuid,
-                fromVoltageInitParametersFormToParamValues(newParams)
-            )
+            updateVoltageInitParameters(studyUuid, fromVoltageInitParametersFormToParamValues(newParams))
                 .then(() => {
-                    setVoltageInitParams(
-                        fromVoltageInitParametersFormToParamValues(newParams)
-                    );
+                    setVoltageInitParams(fromVoltageInitParametersFormToParamValues(newParams));
                 })
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'VoltageInitParametersError',
+                        headerId: 'updateVoltageInitParametersError',
                     });
                 });
             onValidationError();
@@ -160,9 +123,7 @@ export const VoltageInitParameters = ({
 
     useEffect(() => {
         if (voltageInitParams) {
-            reset(
-                fromStudyVoltageInitParamsDataToFormValues(voltageInitParams)
-            );
+            reset(fromStudyVoltageInitParamsDataToFormValues(voltageInitParams));
         }
     }, [reset, voltageInitParams]);
 
@@ -179,16 +140,12 @@ export const VoltageInitParameters = ({
                 getVoltageInitParameters(newParams[0].id as UUID)
                     .then((parameters: any) => {
                         console.info(
-                            `loading the following voltage init parameters : ${JSON.stringify(
-                                parameters
-                            )} ` + parameters.uuid
+                            `loading the following voltage init parameters : ${JSON.stringify(parameters)} ` +
+                                parameters.uuid
                         );
-                        reset(
-                            fromVoltageInitParamsDataToFormValues(parameters),
-                            {
-                                keepDefaultValues: true,
-                            }
-                        );
+                        reset(fromVoltageInitParamsDataToFormValues(parameters), {
+                            keepDefaultValues: true,
+                        });
                     })
                     .catch((error) => {
                         console.error(error);
@@ -217,10 +174,7 @@ export const VoltageInitParameters = ({
 
     return (
         <>
-            <CustomFormProvider
-                validationSchema={voltageInitParametersFormSchema}
-                {...formMethods}
-            >
+            <CustomFormProvider validationSchema={voltageInitParametersFormSchema} {...formMethods}>
                 <Grid
                     xl={tabValue === TabValue.VOLTAGE_LIMITS ? 12 : 6}
                     container
@@ -244,55 +198,33 @@ export const VoltageInitParameters = ({
                             variant="scrollable"
                             onChange={handleTabChange}
                             TabIndicatorProps={{
-                                sx: getTabIndicatorStyle(
-                                    tabIndexesWithError,
-                                    tabValue
-                                ),
+                                sx: getTabIndicatorStyle(tabIndexesWithError, tabValue),
                             }}
                         >
                             <Tab
-                                label={
-                                    <FormattedMessage id="VoltageInitParametersGeneralTabLabel" />
-                                }
+                                label={<FormattedMessage id="VoltageInitParametersGeneralTabLabel" />}
                                 value={TabValue.GENERAL}
-                                sx={getTabStyle(
-                                    tabIndexesWithError,
-                                    TabValue.GENERAL
-                                )}
+                                sx={getTabStyle(tabIndexesWithError, TabValue.GENERAL)}
                             />
                             <Tab
                                 label={<FormattedMessage id="VoltageLimits" />}
                                 value={TabValue.VOLTAGE_LIMITS}
-                                sx={getTabStyle(
-                                    tabIndexesWithError,
-                                    TabValue.VOLTAGE_LIMITS
-                                )}
+                                sx={getTabStyle(tabIndexesWithError, TabValue.VOLTAGE_LIMITS)}
                             />
                             <Tab
-                                label={
-                                    <FormattedMessage id="EquipmentSelection" />
-                                }
+                                label={<FormattedMessage id="EquipmentSelection" />}
                                 value={TabValue.EQUIPMENTS_SELECTION}
-                                sx={getTabStyle(
-                                    tabIndexesWithError,
-                                    TabValue.EQUIPMENTS_SELECTION
-                                )}
+                                sx={getTabStyle(tabIndexesWithError, TabValue.EQUIPMENTS_SELECTION)}
                             />
                         </Tabs>
                         <Grid container>
                             <TabPanel value={tabValue} index={TabValue.GENERAL}>
                                 <GeneralParameters />
                             </TabPanel>
-                            <TabPanel
-                                value={tabValue}
-                                index={TabValue.VOLTAGE_LIMITS}
-                            >
+                            <TabPanel value={tabValue} index={TabValue.VOLTAGE_LIMITS}>
                                 <VoltageLimitsParameters />
                             </TabPanel>
-                            <TabPanel
-                                value={tabValue}
-                                index={TabValue.EQUIPMENTS_SELECTION}
-                            >
+                            <TabPanel value={tabValue} index={TabValue.EQUIPMENTS_SELECTION}>
                                 <EquipmentSelectionParameters />
                             </TabPanel>
                         </Grid>
@@ -306,11 +238,7 @@ export const VoltageInitParameters = ({
                                 paddingLeft: 0,
                             })}
                         >
-                            <Button
-                                onClick={() =>
-                                    setOpenSelectParameterDialog(true)
-                                }
-                            >
+                            <Button onClick={() => setOpenSelectParameterDialog(true)}>
                                 <FormattedMessage id="settings.button.chooseSettings" />
                             </Button>
                             <Button onClick={handleOpenSaveDialog}>
@@ -319,13 +247,7 @@ export const VoltageInitParameters = ({
                             <Button onClick={clear}>
                                 <FormattedMessage id="resetToDefault" />
                             </Button>
-                            <SubmitButton
-                                variant="outlined"
-                                onClick={handleSubmit(
-                                    onSubmit,
-                                    onValidationError
-                                )}
-                            />
+                            <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onValidationError)} />
                         </DialogActions>
                     </Grid>
                 </Grid>
@@ -338,8 +260,7 @@ export const VoltageInitParameters = ({
                     parameterValues={getValues}
                     parameterType={ElementType.VOLTAGE_INIT_PARAMETERS}
                     parameterFormatter={(params: VoltageInitParametersForm) =>
-                        fromVoltageInitParametersFormToParamValues(params)
-                            .computationParameters
+                        fromVoltageInitParametersFormToParamValues(params).computationParameters
                     }
                 />
             )}

@@ -8,15 +8,9 @@
 import { Dialog, DialogActions } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import CreateRuleForm from './create-rule-form';
-import {
-    getCreateRuleValidationSchema,
-    getCreateRuteEmptyFormData,
-} from './create-rule-dialog-utils';
+import { getCreateRuleValidationSchema, getCreateRuteEmptyFormData } from './create-rule-dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    HIGH_TAP_POSITION,
-    LOW_TAP_POSITION,
-} from 'components/utils/field-constants';
+import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
 import CreateRuleDialogSubmitButton from './create-rule-dialog-submit-button';
 import { CancelButton, CustomFormProvider } from '@gridsuite/commons-ui';
 
@@ -29,11 +23,7 @@ export const CreateRuleDialog = (props) => {
         resolver: yupResolver(formSchema),
     });
 
-    const {
-        allowNegativeValues,
-        handleCreateTapRule,
-        setOpenCreateRuleDialog,
-    } = props;
+    const { allowNegativeValues, handleCreateTapRule, setOpenCreateRuleDialog } = props;
 
     const { reset } = formMethods;
 
@@ -53,10 +43,7 @@ export const CreateRuleDialog = (props) => {
                 <CreateRuleForm {...props} />
                 <DialogActions>
                     <CancelButton onClick={handleCloseDialog} />
-                    <CreateRuleDialogSubmitButton
-                        handleSave={handleSave}
-                        allowNegativeValues={allowNegativeValues}
-                    />
+                    <CreateRuleDialogSubmitButton handleSave={handleSave} allowNegativeValues={allowNegativeValues} />
                 </DialogActions>
             </CustomFormProvider>
         </Dialog>

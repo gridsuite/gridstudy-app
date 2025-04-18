@@ -14,19 +14,14 @@ import {
     STEPS_SUSCEPTANCE,
     STEPS_TAP,
 } from 'components/utils/field-constants';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
-import { parseIntData } from '../../../../dialogUtils';
+import { parseIntData } from '../../../../dialog-utils';
 import { RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
+import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
-const RatioTapChangerPaneSteps = ({
-    disabled,
-    previousValues,
-    editData,
-    currentNode,
-    isModification = false,
-}) => {
+const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {
     const intl = useIntl();
 
     const COLUMNS_DEFINITIONS = useMemo(() => {
@@ -34,13 +29,14 @@ const RatioTapChangerPaneSteps = ({
             {
                 label: 'Tap',
                 dataKey: STEPS_TAP,
+                type: DndColumnType.TEXT,
             },
             {
                 label: 'DeltaResistance',
                 dataKey: STEPS_RESISTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -48,7 +44,7 @@ const RatioTapChangerPaneSteps = ({
                 dataKey: STEPS_REACTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -56,7 +52,7 @@ const RatioTapChangerPaneSteps = ({
                 dataKey: STEPS_CONDUCTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -64,7 +60,7 @@ const RatioTapChangerPaneSteps = ({
                 dataKey: STEPS_SUSCEPTANCE,
                 initialValue: 0,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
             {
@@ -72,7 +68,7 @@ const RatioTapChangerPaneSteps = ({
                 dataKey: STEPS_RATIO,
                 initialValue: 1,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
                 clearable: false,
             },
         ].map((column) => ({
@@ -128,9 +124,7 @@ const RatioTapChangerPaneSteps = ({
                 ],
                 0
             ),
-            [STEPS_RATIO]: isNaN(
-                parseFloat(val[intl.formatMessage({ id: 'Ratio' })])
-            )
+            [STEPS_RATIO]: isNaN(parseFloat(val[intl.formatMessage({ id: 'Ratio' })]))
                 ? 1
                 : parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),
         };

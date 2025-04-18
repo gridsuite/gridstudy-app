@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SortWay } from 'hooks/use-aggrid-sort';
 
 export interface SCAFault {
     id: string;
@@ -24,6 +23,7 @@ export interface SCAFeederResult {
     connectableId: string;
     current: number;
     positiveMagnitude: number;
+    side: string;
 }
 
 interface SCAShortCircuitLimits {
@@ -82,18 +82,6 @@ interface Page<ResultType> {
     empty: boolean;
 }
 
-export type ColumnFilter = {
-    dataType: string;
-    type: string;
-    value: any;
-    field: string;
-};
-
-export type ColumnSort = {
-    colId: string;
-    sort: SortWay | null | undefined;
-};
-
 export enum ShortCircuitAnalysisResultTabs {
     ALL_BUSES = 0,
     ONE_BUS = 1,
@@ -104,9 +92,7 @@ export enum ShortCircuitAnalysisType {
     ONE_BUS = 1,
 }
 
-export const getShortCircuitAnalysisTypeFromEnum = (
-    type: ShortCircuitAnalysisType
-) => {
+export const getShortCircuitAnalysisTypeFromEnum = (type: ShortCircuitAnalysisType) => {
     switch (type) {
         case ShortCircuitAnalysisType.ALL_BUSES:
             return 'ALL_BUSES';

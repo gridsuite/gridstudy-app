@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
     ACTIVE_POWER_SET_POINT,
     BUS_OR_BUSBAR_SECTION_ID,
@@ -93,10 +93,7 @@ export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
     GENERATOR: MODIFICATION_TYPES.GENERATOR_CREATION.type,
 };
 
-export const convertCreationFieldFromBackToFront = (
-    key: string,
-    value: { value: string | number | boolean }
-) => {
+export const convertCreationFieldFromBackToFront = (key: string, value: { value: string | number | boolean }) => {
     switch (key) {
         case PARTICIPATE:
             return { key: FREQUENCY_REGULATION, value: value };
@@ -115,10 +112,7 @@ export const convertCreationFieldFromBackToFront = (
     }
 };
 
-export const convertCreationFieldFromFrontToBack = (
-    key: string,
-    value: string | number | boolean
-) => {
+export const convertCreationFieldFromFrontToBack = (key: string, value: string | number | boolean) => {
     switch (key) {
         case FREQUENCY_REGULATION:
             return { key: PARTICIPATE, value: value };
@@ -140,9 +134,7 @@ export const convertCreationFieldFromFrontToBack = (
 };
 
 export const getEquipmentTypeFromCreationType = (type: string) => {
-    return Object.keys(TABULAR_CREATION_TYPES).find(
-        (key) => TABULAR_CREATION_TYPES[key] === type
-    );
+    return Object.keys(TABULAR_CREATION_TYPES).find((key) => TABULAR_CREATION_TYPES[key] === type);
 };
 
 export const styles = {

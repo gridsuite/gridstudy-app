@@ -10,7 +10,7 @@ import { ISensiParameters } from '../components/dialogs/parameters/sensi/columns
 import { useMemo } from 'react';
 import { COUNT } from '../components/utils/field-constants';
 
-export const useCreateRowDataSensi = (sensiParam: ISensiParameters) => {
+export function useCreateRowDataSensi(sensiParam: ISensiParameters) {
     const useFieldArrayOutput = useFieldArray({
         name: sensiParam.name || '',
     });
@@ -24,5 +24,5 @@ export const useCreateRowDataSensi = (sensiParam: ISensiParameters) => {
 
     const createNewRowData = () => [newRowData];
 
-    return [createNewRowData, useFieldArrayOutput];
-};
+    return [createNewRowData, useFieldArrayOutput] as const;
+}

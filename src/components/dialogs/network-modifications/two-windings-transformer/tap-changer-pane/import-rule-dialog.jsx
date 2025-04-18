@@ -5,15 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    Alert,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Grid,
-} from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
 import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
@@ -29,10 +21,7 @@ export const ImportRuleDialog = (props) => {
     };
 
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
-        label:
-            props.ruleType === PHASE_TAP
-                ? 'ImportDephasingRule'
-                : 'ImportRegulationRule',
+        label: props.ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule',
         header: props.csvColumns,
         resetTrigger: props.openImportRuleDialog,
         maxTapNumber: MAX_ROWS_NUMBER,
@@ -46,22 +35,13 @@ export const ImportRuleDialog = (props) => {
     };
 
     const isInvalid = useMemo(() => {
-        return (
-            typeof selectedFile === 'undefined' ||
-            typeof selectedFileError !== 'undefined'
-        );
+        return typeof selectedFile === 'undefined' || typeof selectedFileError !== 'undefined';
     }, [selectedFile, selectedFileError]);
 
     return (
         <Dialog open={props.openImportRuleDialog} fullWidth={true}>
             <DialogTitle>
-                <FormattedMessage
-                    id={
-                        props.ruleType === PHASE_TAP
-                            ? 'ImportDephasingRule'
-                            : 'ImportRegulationRule'
-                    }
-                />
+                <FormattedMessage id={props.ruleType === PHASE_TAP ? 'ImportDephasingRule' : 'ImportRegulationRule'} />
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2} direction={'column'}>
@@ -69,11 +49,7 @@ export const ImportRuleDialog = (props) => {
                         <CsvDownloader
                             columns={props.csvColumns}
                             datas={[]}
-                            filename={
-                                props.ruleType === PHASE_TAP
-                                    ? 'tap-dephasing-rule'
-                                    : 'tap-regulating-rule'
-                            }
+                            filename={props.ruleType === PHASE_TAP ? 'tap-dephasing-rule' : 'tap-regulating-rule'}
                         >
                             <Button variant="contained">
                                 <FormattedMessage id="GenerateSkeleton" />
@@ -90,11 +66,7 @@ export const ImportRuleDialog = (props) => {
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleCloseDialog} />
-                <Button
-                    onClick={handleSave}
-                    variant="outlined"
-                    disabled={isInvalid}
-                >
+                <Button onClick={handleSave} variant="outlined" disabled={isInvalid}>
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>

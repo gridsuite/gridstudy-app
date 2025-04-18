@@ -5,48 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
+import { filledTextField } from '../../../dialog-utils';
 
 import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
-const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
+const ShuntCompensatorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
-        if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode.id).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
-                    );
-                }
-            );
+        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
+            fetchVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid).then((values) => {
+                setVoltageLevelOptions(values.sort((a, b) => a?.id?.localeCompare(b?.id)));
+            });
         }
-    }, [studyUuid, currentNode?.id]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     const shuntCompensatorIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const shuntCompensatorNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
+    const shuntCompensatorNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const connectivityForm = (
         <ConnectivityForm
@@ -54,6 +42,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
             voltageLevelOptions={voltageLevelOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
 
@@ -62,16 +51,16 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(shuntCompensatorIdField, 4)}
-                {gridItem(shuntCompensatorNameField, 4)}
+                <GridItem size={4}>{shuntCompensatorIdField}</GridItem>
+                <GridItem size={4}>{shuntCompensatorNameField}</GridItem>
             </Grid>
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
+                <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {gridItem(characteristicsForm, 12)}
+                <GridItem size={12}>{characteristicsForm}</GridItem>
             </Grid>
             <PropertiesForm networkElementType={'shuntCompensator'} />
         </>

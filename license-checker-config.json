@@ -1,5 +1,5 @@
 {
-    "onlyAllow" : [
+    "onlyAllow": [
         "MPL-2.0",
         "MIT",
         "Zlib",
@@ -21,6 +21,8 @@
     "excludePackages": [
         "@mapbox/jsonlint-lines-primitives@2.0.2",
         "cartocolor@4.0.2",
-        "rw@0.1.4"
+        "jackspeak@3.4.3",
+        "package-json-from-dist@1.0.1",
+        "path-scurry@1.11.1"
     ]
 }

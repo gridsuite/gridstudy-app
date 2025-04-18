@@ -16,13 +16,10 @@ import { useEffect, useState } from 'react';
  * @returns {boolean} A boolean indicating whether the loader should be displayed.
  */
 
-export const useOpenLoaderShortWait: ({
+export const useOpenLoaderShortWait: ({ isLoading, delay }: { isLoading: boolean; delay: number }) => boolean = ({
     isLoading,
     delay,
-}: {
-    isLoading: boolean;
-    delay: number;
-}) => boolean = ({ isLoading, delay }) => {
+}) => {
     // State to track whether the loader should be opened or not.
     const [shouldOpen, setShouldOpen] = useState(false);
 

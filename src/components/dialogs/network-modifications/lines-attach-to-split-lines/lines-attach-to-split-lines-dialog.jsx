@@ -7,7 +7,7 @@
 
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { sanitizeString } from 'components/dialogs/dialogUtils';
+import { sanitizeString } from 'components/dialogs/dialog-utils';
 import PropTypes from 'prop-types';
 import {
     ATTACHED_LINE_ID,
@@ -25,9 +25,9 @@ import {
     VOLTAGE_LEVEL_ID,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from 'components/dialogs/commons/modificationDialog';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 import {
@@ -70,6 +70,7 @@ const formSchema = yup
  * Dialog to attach a line to a (possibly new) voltage level.
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -79,6 +80,7 @@ const LinesAttachToSplitLinesDialog = ({
     editData,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -113,22 +115,20 @@ const LinesAttachToSplitLinesDialog = ({
 
     const onSubmit = useCallback(
         (linesAttachToSplitLine) => {
-            linesAttachToSplitLines(
-                studyUuid,
-                currentNodeUuid,
-                editData ? editData.uuid : undefined,
-                linesAttachToSplitLine[LINE_TO_ATTACH_TO_1_ID],
-                linesAttachToSplitLine[LINE_TO_ATTACH_TO_2_ID],
-                linesAttachToSplitLine[ATTACHED_LINE_ID],
-                linesAttachToSplitLine[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                linesAttachToSplitLine[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[
-                    ID
-                ],
-                linesAttachToSplitLine[REPLACING_LINE_1_ID],
-                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_1_NAME]),
-                linesAttachToSplitLine[REPLACING_LINE_2_ID],
-                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_2_NAME])
-            ).catch((error) => {
+            linesAttachToSplitLines({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData ? editData.uuid : undefined,
+                lineToAttachTo1Id: linesAttachToSplitLine[LINE_TO_ATTACH_TO_1_ID],
+                lineToAttachTo2Id: linesAttachToSplitLine[LINE_TO_ATTACH_TO_2_ID],
+                attachedLineId: linesAttachToSplitLine[ATTACHED_LINE_ID],
+                voltageLevelId: linesAttachToSplitLine[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                bbsBusId: linesAttachToSplitLine[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                replacingLine1Id: linesAttachToSplitLine[REPLACING_LINE_1_ID],
+                replacingLine1Name: sanitizeString(linesAttachToSplitLine[REPLACING_LINE_1_NAME]),
+                replacingLine2Id: linesAttachToSplitLine[REPLACING_LINE_2_ID],
+                replacingLine2Name: sanitizeString(linesAttachToSplitLine[REPLACING_LINE_2_NAME]),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LineAttachmentError',
@@ -144,9 +144,7 @@ const LinesAttachToSplitLinesDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -158,16 +156,14 @@ const LinesAttachToSplitLinesDialog = ({
                 maxWidth={'md'}
                 titleId="LinesAttachToSplitLines"
                 subtitle={<LineAttachToSplitLinesIllustration />}
-                aria-labelledby="dialog-attach-lines-to-split-lines"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <LinesAttachToSplitLinesForm
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
@@ -178,6 +174,7 @@ LinesAttachToSplitLinesDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editDataFetchStatus: PropTypes.string,
 };

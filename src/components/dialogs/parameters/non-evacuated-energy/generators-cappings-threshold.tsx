@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { Grid } from '@mui/material';
 
-import { SENSITIVITY_THRESHOLD } from '../../../utils/field-constants';
+import { GENERATORS_CAPPINGS, SENSITIVITY_THRESHOLD } from '../../../utils/field-constants';
 import { FormattedMessage } from 'react-intl';
 import { FloatInput } from '@gridsuite/commons-ui';
 
@@ -26,10 +25,7 @@ const GeneratorsCappingsThreshold = () => {
             </Grid>
             <Grid container spacing={1} paddingBottom={2}>
                 <Grid item xs={4}>
-                    <FloatInput
-                        name={SENSITIVITY_THRESHOLD}
-                        label="sensitivityThreshold"
-                    />
+                    <FloatInput name={`${GENERATORS_CAPPINGS}.${SENSITIVITY_THRESHOLD}`} label="sensitivityThreshold" />
                 </Grid>
             </Grid>
         </Grid>

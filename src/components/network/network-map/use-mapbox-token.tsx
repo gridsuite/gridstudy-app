@@ -15,9 +15,7 @@ export const useMapBoxToken = () => {
     const [mapBoxToken, setMapBoxToken] = useState<string>();
 
     useEffect(() => {
-        fetchMapBoxToken().then((token) =>
-            setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN)
-        );
+        fetchMapBoxToken().then((token) => setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN));
     }, []);
 
     return mapBoxToken;

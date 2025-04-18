@@ -5,13 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import {
-    DeletedEquipment,
-    NetworkImpactsInfos,
-    ReduxState,
-    UpdateTypes,
-} from '../redux/reducer.type';
+import { useSelector, useDispatch } from 'react-redux';
+import { DeletedEquipment, NetworkImpactsInfos, AppState, NotificationType } from '../redux/reducer';
 import { UUID } from 'crypto';
 
 interface StudyImpactsWithReset extends NetworkImpactsInfos {
@@ -24,19 +19,13 @@ interface StudyImpactsWithReset extends NetworkImpactsInfos {
  * Custom hook that consume the update notification 'study' and return the impacts of the study
  */
 export const useGetStudyImpacts = (): StudyImpactsWithReset => {
-    const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
-    );
+    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const dispatch = useDispatch();
 
-    const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<
-        UUID[]
-    >([]);
-    const [deletedEquipments, setDeletedEquipments] = useState<
-        DeletedEquipment[]
-    >([]);
-    const [impactedElementTypes, setImpactedElementTypes] = useState<string[]>(
-        []
-    );
+    const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<UUID[]>([]);
+    const [deletedEquipments, setDeletedEquipments] = useState<DeletedEquipment[]>([]);
+    const [impactedElementTypes, setImpactedElementTypes] = useState<string[]>([]);
 
     const resetImpactedSubstationsIds = useCallback(() => {
         setImpactedSubstationsIds([]);
@@ -51,7 +40,11 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     }, []);
 
     useEffect(() => {
-        if (studyUpdatedForce.type === UpdateTypes.STUDY) {
+        if (studyUpdatedForce.type === NotificationType.STUDY) {
+            const rootNetworkUuid = studyUpdatedForce?.eventData?.headers?.rootNetworkUuid;
+            if (rootNetworkUuid && rootNetworkUuid !== currentRootNetworkUuid) {
+                return;
+            }
             const {
                 impactedSubstationsIds: substationsIds,
                 deletedEquipments,
@@ -71,7 +64,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
                 setImpactedSubstationsIds(substationsIds);
             }
         }
-    }, [studyUpdatedForce]);
+    }, [dispatch, studyUpdatedForce, currentRootNetworkUuid]);
 
     return {
         impactedSubstationsIds,

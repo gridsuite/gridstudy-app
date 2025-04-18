@@ -5,17 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box } from '@mui/system';
-import { CsvExport } from '../spreadsheet/export-csv';
-import React, { FunctionComponent, Ref } from 'react';
-import {
-    ColDef,
-    GridReadyEvent,
-    RowClassParams,
-    RowDataUpdatedEvent,
-    RowStyle,
-} from 'ag-grid-community';
+import { CsvExport } from '../spreadsheet/csv-export/csv-export';
+import { FunctionComponent, RefObject } from 'react';
+import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { AgGridReact } from 'ag-grid-react';
+import { Box } from '@mui/material';
 
 const styles = {
     gridContainer: {
@@ -34,7 +29,7 @@ const styles = {
 };
 
 interface RenderTableAndExportCsvProps {
-    gridRef: Ref<any> | undefined;
+    gridRef: RefObject<AgGridReact>;
     columns: any[];
     defaultColDef: ColDef;
     tableName: string;
@@ -46,9 +41,7 @@ interface RenderTableAndExportCsvProps {
     skipColumnHeaders: boolean;
 }
 
-export const RenderTableAndExportCsv: FunctionComponent<
-    RenderTableAndExportCsvProps
-> = ({
+export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvProps> = ({
     gridRef,
     columns,
     defaultColDef,
@@ -84,6 +77,13 @@ export const RenderTableAndExportCsv: FunctionComponent<
                         onGridReady={onGridReady}
                         getRowStyle={getRowStyle}
                         overlayNoRowsTemplate={overlayNoRowsTemplate}
+                        onModelUpdated={({ api }) => {
+                            if (api.getDisplayedRowCount()) {
+                                api.hideOverlay();
+                            } else {
+                                api.showNoRowsOverlay();
+                            }
+                        }}
                     />
                 </Box>
             )}

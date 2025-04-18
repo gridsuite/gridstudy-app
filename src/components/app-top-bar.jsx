@@ -6,29 +6,17 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import {
-    LIGHT_THEME,
-    logout,
-    OverflowableText,
-    TopBar,
-} from '@gridsuite/commons-ui';
+import { LIGHT_THEME, logout, OverflowableText, TopBar } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
-import { StudyView } from './study-pane';
 import { Badge, Box, Button, Tab, Tabs, Tooltip } from '@mui/material';
 import { Search, Settings } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    PARAM_LANGUAGE,
-    PARAM_THEME,
-    PARAM_USE_NAME,
-} from '../utils/config-params';
+import { PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME, PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
-import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
-import { useParameterState } from './dialogs/parameters/parameters';
 import { getServersInfos } from '../services/study';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import { fetchVersion } from '../services/utils';
@@ -37,6 +25,11 @@ import { useComputationResultsCount } from '../hooks/use-computation-results-cou
 
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { fetchAppsMetadata } from '@gridsuite/commons-ui';
+import { ROOT_NODE_LABEL } from '../constants/node.constant';
+import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import { StudyView } from './utils/utils';
+import { DiagramType } from './diagrams/diagram.type';
+import { useDiagram } from './diagrams/use-diagram';
 
 const styles = {
     currentNodeBox: {
@@ -68,33 +61,28 @@ const styles = {
     },
 };
 
-const STUDY_VIEWS = [
-    StudyView.MAP,
-    StudyView.SPREADSHEET,
-    StudyView.RESULTS,
-    StudyView.LOGS,
-    StudyView.PARAMETERS,
-];
+const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, StudyView.LOGS, StudyView.PARAMETERS];
 
-const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
+const AppTopBar = ({ user, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { openDiagramView } = useDiagram();
 
     const theme = useSelector((state) => state[PARAM_THEME]);
+    const appTabIndex = useSelector((state) => state.appTabIndex);
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
 
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
     const notificationsCount = useComputationResultsCount();
-    const [languageLocal, handleChangeLanguage] =
-        useParameterState(PARAM_LANGUAGE);
-    const [useNameLocal, handleChangeUseName] =
-        useParameterState(PARAM_USE_NAME);
 
+    const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
+    const [useNameLocal, handleChangeUseName] = useParameterState(PARAM_USE_NAME);
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
+    const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -103,10 +91,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             if (optionInfos.type === EQUIPMENT_TYPES.SUBSTATION) {
                 openDiagramView(optionInfos.id, DiagramType.SUBSTATION);
             } else {
-                openDiagramView(
-                    optionInfos.voltageLevelId,
-                    DiagramType.VOLTAGE_LEVEL
-                );
+                openDiagramView(optionInfos.voltageLevelId, DiagramType.VOLTAGE_LEVEL);
             }
         },
         [onChangeTab, openDiagramView]
@@ -125,24 +110,18 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             <TopBar
                 appName="Study"
                 appColor="#0CA789"
-                appLogo={
-                    theme === LIGHT_THEME ? (
-                        <GridStudyLogoLight />
-                    ) : (
-                        <GridStudyLogoDark />
-                    )
-                }
+                appLogo={theme === LIGHT_THEME ? <GridStudyLogoLight /> : <GridStudyLogoDark />}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
                 user={user}
                 appsAndUrls={appsAndUrls}
                 onThemeClick={handleChangeTheme}
                 appVersion={AppPackage.version}
                 appLicense={AppPackage.license}
-                globalVersionPromise={() =>
-                    fetchVersion().then((res) => res?.deployVersion)
-                }
+                globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
                 additionalModulesPromise={getServersInfos}
                 theme={themeLocal}
+                onDeveloperModeClick={handleChangeDeveloperMode}
+                developerMode={enableDeveloperModeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 onLanguageClick={handleChangeLanguage}
@@ -155,17 +134,17 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         <OverflowableText
                             sx={styles.currentNodeLabel}
                             text={
-                                currentNode?.data?.label === 'Root'
+                                currentNode?.data?.label === ROOT_NODE_LABEL
                                     ? intl.formatMessage({ id: 'root' })
                                     : currentNode?.data?.label
                             }
                         />
                     </Box>
                 )}
-                {user && studyUuid && (
+                {user && studyUuid && currentRootNetworkUuid && (
                     <Box sx={styles.boxContent}>
                         <Tabs
-                            value={tabIndex}
+                            value={appTabIndex}
                             variant="scrollable"
                             onChange={(event, newTabIndex) => {
                                 onChangeTab(newTabIndex);
@@ -176,15 +155,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             {STUDY_VIEWS.map((tabName) => {
                                 let label;
                                 let style;
-                                if (
-                                    tabName === StudyView.RESULTS &&
-                                    notificationsCount > 0
-                                ) {
+                                if (tabName === StudyView.RESULTS && notificationsCount > 0) {
                                     label = (
-                                        <Badge
-                                            badgeContent={notificationsCount}
-                                            color="secondary"
-                                        >
+                                        <Badge badgeContent={notificationsCount} color="secondary">
                                             <FormattedMessage id={tabName} />
                                         </Badge>
                                     );
@@ -194,26 +167,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                 } else {
                                     label = <FormattedMessage id={tabName} />;
                                 }
-                                return (
-                                    <Tab
-                                        sx={style}
-                                        key={tabName}
-                                        label={label}
-                                    />
-                                );
+                                return <Tab sx={style} key={tabName} label={label} />;
                             })}
                         </Tabs>
                         <Box sx={styles.searchButton}>
-                            <Tooltip
-                                title={
-                                    <FormattedMessage id="equipment_search/label" />
-                                }
-                            >
-                                <Button
-                                    color="inherit"
-                                    size="large"
-                                    onClick={() => setIsDialogSearchOpen(true)}
-                                >
+                            <Tooltip title={<FormattedMessage id="equipment_search/label" />}>
+                                <Button color="inherit" size="large" onClick={() => setIsDialogSearchOpen(true)}>
                                     <Search />
                                 </Button>
                             </Tooltip>
@@ -222,10 +181,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             <RunButtonContainer
                                 studyUuid={studyUuid}
                                 currentNode={currentNode}
-                                disabled={
-                                    !isNodeBuilt(currentNode) ||
-                                    isNodeReadOnly(currentNode)
-                                }
+                                currentRootNetworkUuid={currentRootNetworkUuid}
+                                disabled={!isNodeBuilt(currentNode) || isNodeReadOnly(currentNode)}
                             />
                         </Box>
                     </Box>
@@ -245,7 +202,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
 AppTopBar.propTypes = {
     user: PropTypes.object,
-    tabIndex: PropTypes.number.isRequired,
     onChangeTab: PropTypes.func.isRequired,
     userManager: PropTypes.object.isRequired,
 };

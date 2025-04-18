@@ -11,8 +11,7 @@ const csv_locale_en = {
         '#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,true | false,,TOP | BOTTOM | UNDEFINED,,,,,,,,,true | false,required if voltageRegulationOn is true,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,required if frequencyRegulation is true,,,,,,,',
     'TabularModificationSkeletonComment.GENERATOR':
         '#,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,,,,true | false,,true | false,,,,,,',
-    'TabularModificationSkeletonComment.LOAD':
-        '#,AUXILIARY | FICTITIOUS,,,true | false',
+    'TabularModificationSkeletonComment.LOAD': '#,AUXILIARY | FICTITIOUS,,,true | false',
     'TabularModificationSkeletonComment.SUBSTATION':
         '#,2-letter code from ISO 3166-1 standard (FR ES PT IT CH DE BE LU NL GB ...)',
     'TabularModificationSkeletonComment.SHUNT_COMPENSATOR':

@@ -35,9 +35,7 @@ export function getNoRowsMessage(
             if (!isDataReady) {
                 return messages.fetching;
             } else if (!rows || rows?.length === 0) {
-                return messages.noData
-                    ? messages.noData
-                    : messages.noLimitViolation;
+                return messages.noData ? messages.noData : messages.noLimitViolation;
             }
             return undefined;
         default:
@@ -48,10 +46,7 @@ export function getNoRowsMessage(
 export function getRows(rows: any[] | undefined, status: string): any[] {
     return status === RunningStatus.SUCCEED && rows ? rows : [];
 }
-export const useIntlResultStatusMessages = (
-    intl: IntlShape,
-    hasNoData: boolean = false
-) => {
+export const useIntlResultStatusMessages = (intl: IntlShape, hasNoData: boolean = false) => {
     const specificMessage = useCallback(():
         | { noData: string }
         | { noLimitViolation: string }

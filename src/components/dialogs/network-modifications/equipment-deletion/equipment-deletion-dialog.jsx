@@ -7,15 +7,11 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import {
-    DELETION_SPECIFIC_DATA,
-    EQUIPMENT_ID,
-    TYPE,
-} from '../../../utils/field-constants';
+import { DELETION_SPECIFIC_DATA, EQUIPMENT_ID, TYPE } from '../../../utils/field-constants';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import React, { useCallback, useEffect } from 'react';
-import ModificationDialog from '../../commons/modificationDialog';
+import { useCallback, useEffect } from 'react';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';
@@ -51,6 +47,7 @@ const emptyFormData = {
 const EquipmentDeletionDialog = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     editData,
     isUpdate,
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD/map
@@ -95,12 +92,7 @@ const EquipmentDeletionDialog = ({
         } else if (defaultIdValue) {
             fromMenuDataValues(defaultIdValue);
         }
-    }, [
-        fromEditDataToFormValues,
-        editData,
-        fromMenuDataValues,
-        defaultIdValue,
-    ]);
+    }, [fromEditDataToFormValues, editData, fromMenuDataValues, defaultIdValue]);
 
     const onSubmit = useCallback(
         (formData) => {
@@ -127,9 +119,7 @@ const EquipmentDeletionDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -140,17 +130,15 @@ const EquipmentDeletionDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-equipment-deletion"
                 titleId="DeleteEquipment"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <DeleteEquipmentForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     editData={editData}
                 />
             </ModificationDialog>
@@ -161,6 +149,7 @@ const EquipmentDeletionDialog = ({
 EquipmentDeletionDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     editData: PropTypes.object,
     isUpdate: PropTypes.bool,
     defaultIdValue: PropTypes.string,

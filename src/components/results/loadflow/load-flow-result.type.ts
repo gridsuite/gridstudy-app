@@ -6,9 +6,7 @@
  */
 
 import { ColDef } from 'ag-grid-community';
-import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { UUID } from 'crypto';
-import { SortConfigType } from 'hooks/use-aggrid-sort';
 import { BranchSide } from '../../utils/constants';
 
 export interface ComponentResult {
@@ -20,6 +18,7 @@ export interface ComponentResult {
     slackBusResults: SlackBusResult[];
     distributedActivePower: number;
 }
+
 export interface SlackBusResult {
     id: string;
     activePowerMismatch: number;
@@ -31,19 +30,16 @@ export interface LoadFlowResult {
     componentResults: ComponentResult[];
 }
 
-export type QueryParamsType = Record<
-    string,
-    string | number | SortConfigType | FilterSelectorType[]
->;
-
 export enum LimitTypes {
     HIGH_VOLTAGE = 'HIGH_VOLTAGE',
     LOW_VOLTAGE = 'LOW_VOLTAGE',
     CURRENT = 'CURRENT',
 }
+
 export interface LoadFlowTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
 }
 
 export interface LoadflowResultTap {
@@ -51,6 +47,7 @@ export interface LoadflowResultTap {
     columnDefs: ColDef<any>[];
     tableName: string;
 }
+
 export interface LoadflowResultProps extends LoadflowResultTap {
     result: LoadFlowResult;
 }
@@ -62,6 +59,7 @@ export interface LimitViolationResultProps extends LoadflowResultTap {
 export interface OverloadedEquipment {
     overload: number;
     subjectId: string;
+    locationId: string;
     value: number;
     actualOverloadDuration: number | null;
     upComingOverloadDuration: number | null;
@@ -70,8 +68,10 @@ export interface OverloadedEquipment {
     side: string | undefined;
     limitType: string;
 }
+
 export interface OverloadedEquipmentFromBack {
     subjectId: string;
+    locationId: string;
     limit: number;
     limitName: string | null;
     actualOverloadDuration: 300;

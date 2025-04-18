@@ -39,29 +39,16 @@ export const getVariationSchema = () =>
                 .required()
                 .min(1, 'FieldIsRequired')
                 .when([VARIATION_MODE], {
-                    is:
-                        VARIATION_MODES.STACKING_UP.id ||
-                        VARIATION_MODES.VENTILATION.id,
+                    is: VARIATION_MODES.STACKING_UP.id || VARIATION_MODES.VENTILATION.id,
                     then: (schema) =>
-                        schema.test(
-                            'AllFiltersAreExplicitNaming',
-                            'AllExplicitNamingFiltersError',
-                            (values) =>
-                                values.every(
-                                    (f) =>
-                                        f?.specificMetadata?.type ===
-                                        IDENTIFIER_LIST
-                                )
+                        schema.test('AllFiltersAreExplicitNaming', 'AllExplicitNamingFiltersError', (values) =>
+                            values.every((f) => f?.specificMetadata?.type === IDENTIFIER_LIST)
                         ),
                 }),
         });
 
 export const getVariationsSchema = (id) => ({
-    [id]: yup
-        .array()
-        .nullable()
-        .min(1, 'EmptyList.variations')
-        .of(getVariationSchema()),
+    [id]: yup.array().nullable().min(1, 'EmptyList.variations').of(getVariationSchema()),
 });
 
 export const getVariationEmptyForm = (variationMode) => {

@@ -5,19 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    FREQUENCY_RESERVE,
-    GENERATORS_FILTERS,
-    GENERATORS_FREQUENCY_RESERVES,
-} from 'components/utils/field-constants';
+import { FREQUENCY_RESERVE, GENERATORS_FILTERS, GENERATORS_FREQUENCY_RESERVES } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import DndTable from 'components/utils/dnd-table/dnd-table';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { ElementType } from '@gridsuite/commons-ui';
 import { Tooltip, IconButton } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
+import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
     const intl = useIntl();
@@ -29,8 +26,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
                 dataKey: GENERATORS_FILTERS,
                 initialValue: [],
                 editable: true,
-                numeric: false,
-                directoryItems: true,
+                type: DndColumnType.DIRECTORY_ITEMS,
                 equipmentTypes: [EQUIPMENT_TYPES.GENERATOR],
                 elementType: ElementType.FILTER,
                 titleId: 'FiltersListsSelection',
@@ -40,7 +36,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
                 dataKey: FREQUENCY_RESERVE,
                 initialValue: null,
                 editable: true,
-                numeric: true,
+                type: DndColumnType.NUMERIC,
             },
         ].map((column) => ({
             ...column,
@@ -57,9 +53,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
 
     const newRowData = useMemo(() => {
         const newRowData = {};
-        columnsDefinition.forEach(
-            (column) => (newRowData[column.dataKey] = column.initialValue)
-        );
+        columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [columnsDefinition]);
     const createFrequencyReserveRows = () => [newRowData];

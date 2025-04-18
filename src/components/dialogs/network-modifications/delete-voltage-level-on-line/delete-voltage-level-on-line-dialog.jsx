@@ -16,11 +16,11 @@ import {
     REPLACING_LINE_1_NAME,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../dialogUtils';
+import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../commons/modificationDialog';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
 import { deleteVoltageLevelOnLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
@@ -47,6 +47,7 @@ const formSchema = yup
  * Dialog to delete a voltage level on a line
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -55,6 +56,7 @@ const formSchema = yup
 const DeleteVoltageLevelOnLineDialog = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     editData,
     isUpdate,
     editDataFetchStatus,
@@ -73,9 +75,7 @@ const DeleteVoltageLevelOnLineDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -128,18 +128,16 @@ const DeleteVoltageLevelOnLineDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-delete-voltage-level-on-line"
                 titleId="DeleteVoltageLevelOnLine"
                 subtitle={<DeleteVoltageLevelOnLineIllustration />}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <DeleteVoltageLevelOnLineForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
@@ -150,6 +148,7 @@ DeleteVoltageLevelOnLineDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editDataFetchStatus: PropTypes.string,
 };

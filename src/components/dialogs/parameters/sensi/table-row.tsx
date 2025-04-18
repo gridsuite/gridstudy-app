@@ -8,7 +8,7 @@
 import { TableCell, TableRow } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import React, { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { useIntl } from 'react-intl';
 import EditableTableCell from './table-cell';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -17,7 +17,6 @@ import { IColumnsDef } from './columns-definitions';
 interface TableRowComponentProps {
     arrayFormName: string;
     columnsDefinition: IColumnsDef[];
-    row: Record<'id', string>;
     index: number;
     handleDeleteButton: (index: number) => void;
     disableDelete: boolean;
@@ -27,7 +26,6 @@ interface TableRowComponentProps {
 const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     arrayFormName,
     columnsDefinition,
-    row,
     index,
     handleDeleteButton,
     disableDelete = false,
@@ -43,18 +41,9 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     };
 
     return (
-        <TableRow
-            key={row.id}
-            onMouseEnter={() => handleHover(true)}
-            onMouseLeave={() => handleHover(false)}
-        >
+        <TableRow onMouseEnter={() => handleHover(true)} onMouseLeave={() => handleHover(false)}>
             {columnsDefinition.map((column: IColumnsDef) =>
-                EditableTableCell(
-                    arrayFormName,
-                    index,
-                    column,
-                    handleRowChanged
-                )
+                EditableTableCell(arrayFormName, index, column, handleRowChanged)
             )}
             {!disableDelete && (
                 <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
@@ -64,9 +53,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
                                 id: 'DeleteRows',
                             })}
                         >
-                            <IconButton
-                                onClick={() => handleDeleteButton(index)}
-                            >
+                            <IconButton onClick={() => handleDeleteButton(index)}>
                                 <DeleteIcon />
                             </IconButton>
                         </Tooltip>

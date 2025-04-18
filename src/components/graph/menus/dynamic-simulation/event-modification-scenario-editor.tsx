@@ -5,66 +5,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    Box,
-    Checkbox,
-    CircularProgress,
-    Toolbar,
-    Typography,
-} from '@mui/material';
+import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CheckboxList from '../../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
-import {
-    addNotification,
-    removeNotificationByNode,
-    setModificationsInProgress,
-} from '../../../../redux/actions';
-import {
-    EVENT_CRUD_FINISHED,
-    EventCrudType,
-} from 'components/network/constants.type';
-import { ReduxState, StudyUpdated } from '../../../../redux/reducer.type';
+import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
+import { EVENT_CRUD_FINISHED, EventCrudType } from 'components/network/constants.type';
 import { UUID } from 'crypto';
-import {
-    Event,
-    EventType,
-} from '../../../dialogs/dynamicsimulation/event/types/event.type';
-import {
-    deleteDynamicSimulationEvents,
-    fetchDynamicSimulationEvents,
-} from '../../../../services/dynamic-simulation';
-import { EventListItem } from './event-list-item';
+import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
+import { deleteDynamicSimulationEvents, fetchDynamicSimulationEvents } from '../../../../services/dynamic-simulation';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import { getStartTime } from '../../../dialogs/dynamicsimulation/event/model/event.model';
-import {
-    isChecked,
-    isPartial,
-    styles,
-} from '../network-modification-node-editor';
+import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';
+import { isChecked, isPartial, styles } from '../network-modifications/network-modification-node-editor-utils';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
-import { areUuidsEqual } from 'components/utils/utils';
+import EditIcon from '@mui/icons-material/Edit';
+import { AppState, StudyUpdated, StudyUpdatedEventData } from '../../../../redux/reducer';
+import { AppDispatch } from '../../../../redux/store';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
-    const notificationIdList = useSelector(
-        (state: ReduxState) => state.notificationIdList
-    );
-    const params = useParams();
-    const studyUuid = params?.studyUuid
-        ? decodeURIComponent(params.studyUuid)
-        : undefined;
+    const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [events, setEvents] = useState<Event[]>([]);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -75,15 +44,13 @@ const EventModificationScenarioEditor = () => {
         | {
               eventType?: EventType;
               equipmentId: string;
-              equipmentType: string;
+              equipmentType: keyof typeof EQUIPMENT_TYPE_LABEL_KEYS;
           }
         | undefined
     >();
 
-    const dispatch = useDispatch();
-    const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
-    );
+    const dispatch = useDispatch<AppDispatch>();
+    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
@@ -96,10 +63,12 @@ const EventModificationScenarioEditor = () => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
+            const studyUpdatedEventData = study?.eventData as StudyUpdatedEventData;
+
             dispatch(
                 addNotification([
-                    study.eventData.headers['parentNode'],
-                    ...(study.eventData.headers['nodes'] ?? []),
+                    studyUpdatedEventData.headers.parentNode,
+                    ...(studyUpdatedEventData.headers.nodes ?? []),
                 ])
             );
         },
@@ -109,20 +78,11 @@ const EventModificationScenarioEditor = () => {
     const manageNotification = useCallback(
         (study: StudyUpdated) => {
             let messageId = '';
-            if (
-                study.eventData.headers['updateType'] ===
-                EventCrudType.EVENT_CREATING_IN_PROGRESS
-            ) {
+            if (study.eventData.headers.updateType === EventCrudType.EVENT_CREATING_IN_PROGRESS) {
                 messageId = 'DynamicSimulationEventCreating';
-            } else if (
-                study.eventData.headers['updateType'] ===
-                EventCrudType.EVENT_UPDATING_IN_PROGRESS
-            ) {
+            } else if (study.eventData.headers.updateType === EventCrudType.EVENT_UPDATING_IN_PROGRESS) {
                 messageId = 'DynamicSimulationEventUpdating';
-            } else if (
-                study.eventData.headers['updateType'] ===
-                EventCrudType.EVENT_DELETING_IN_PROGRESS
-            ) {
+            } else if (study.eventData.headers.updateType === EventCrudType.EVENT_DELETING_IN_PROGRESS) {
                 messageId = 'DynamicSimulationEventDeleting';
             }
             fillNotification(study, messageId);
@@ -132,27 +92,23 @@ const EventModificationScenarioEditor = () => {
 
     const updateSelectedItems = useCallback((events: Event[]) => {
         const toKeepIdsSet = new Set(events.map((e) => e.uuid));
-        setSelectedItems((oldselectedItems) =>
-            oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid))
-        );
+        setSelectedItems((oldselectedItems) => oldselectedItems.filter((s) => toKeepIdsSet.has(s.uuid)));
     }, []);
 
     const doFetchEvents = useCallback(() => {
         // Do not fetch modifications on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+        if (currentNode?.type !== 'NETWORK_MODIFICATION' || !studyUuid) {
             return;
         }
         setLaunchLoader(true);
-        fetchDynamicSimulationEvents(studyUuid ?? '', currentNode.id)
+        fetchDynamicSimulationEvents(studyUuid, currentNode.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
                     updateSelectedItems(res);
                     // sort by start time
-                    const sortedEvents = res.sort(
-                        (a, b) => getStartTime(a) - getStartTime(b)
-                    );
+                    const sortedEvents = res.sort((a, b) => getStartTime(a) - getStartTime(b));
                     setEvents(sortedEvents);
                 }
             })
@@ -166,24 +122,13 @@ const EventModificationScenarioEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [
-        currentNode?.type,
-        currentNode.id,
-        studyUuid,
-        updateSelectedItems,
-        snackError,
-        dispatch,
-    ]);
+    }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
 
     useEffect(() => {
         // first time with currentNode initialized then fetch events
         // (because if currentNode is not initialized, doFetchEvents silently does nothing)
         // OR next time if currentNodeId changed then fetch events
-        if (
-            currentNode &&
-            (!currentNodeIdRef.current ||
-                currentNodeIdRef.current !== currentNode.id)
-        ) {
+        if (currentNode && (!currentNodeIdRef.current || currentNodeIdRef.current !== currentNode.id)) {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the events list
             setEvents([]);
@@ -193,36 +138,28 @@ const EventModificationScenarioEditor = () => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (
-                currentNodeIdRef.current !==
-                studyUpdatedForce.eventData.headers['parentNode']
-            ) {
+            const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
+
+            if (currentNodeIdRef.current !== studyUpdatedEventData.headers.parentNode) {
                 return;
             }
 
-            if (
-                Object.values<string>(EventCrudType).includes(
-                    studyUpdatedForce.eventData.headers['updateType'] ?? ''
-                )
-            ) {
+            if (Object.values<string>(EventCrudType).includes(studyUpdatedEventData.headers.updateType ?? '')) {
                 dispatch(setModificationsInProgress(true));
                 setPendingState(true);
                 manageNotification(studyUpdatedForce);
             }
             // notify  finished action (success or error => we remove the loader)
             // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                EVENT_CRUD_FINISHED
-            ) {
+            if (studyUpdatedEventData.headers.updateType === EVENT_CRUD_FINISHED) {
                 // fetch events because it must have changed
                 // Do not clear the events list, because currentNode is the concerned one
                 // this allows to append new events to the existing list.
                 doFetchEvents();
                 dispatch(
                     removeNotificationByNode([
-                        studyUpdatedForce.eventData.headers['parentNode'],
-                        ...(studyUpdatedForce.eventData.headers['nodes'] ?? []),
+                        studyUpdatedEventData.headers.parentNode,
+                        ...(studyUpdatedEventData.headers.nodes ?? []),
                     ])
                 );
             }
@@ -232,12 +169,11 @@ const EventModificationScenarioEditor = () => {
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const doDeleteEvent = useCallback(() => {
+        if (!studyUuid || !currentNode?.id) {
+            return;
+        }
         const selectedEvents = [...selectedItems];
-        deleteDynamicSimulationEvents(
-            studyUuid ?? '',
-            currentNode.id,
-            selectedEvents
-        ).catch((errMsg) => {
+        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((errMsg) => {
             snackError({
                 messageTxt: errMsg,
                 headerId: 'DynamicSimulationEventDeleteError',
@@ -254,36 +190,74 @@ const EventModificationScenarioEditor = () => {
     };
 
     const toggleSelectAllEvents = useCallback(() => {
-        setSelectedItems((oldVals: Event[]) =>
-            oldVals.length === 0 ? events : []
-        );
+        setSelectedItems((oldVals: Event[]) => (oldVals.length === 0 ? events : []));
     }, [events]);
 
-    const isLoading = () => {
-        return (
-            notificationIdList.filter(
-                (notification) => notification === currentNode?.id
-            ).length > 0
+    const isLoading = useCallback(() => {
+        return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
+    }, [currentNode?.id, notificationIdList]);
+
+    const getItemLabel = (item: Event) => {
+        if (!studyUuid || !currentNode || !item) {
+            return '';
+        }
+
+        const computedValues = {
+            computedLabel: (
+                <>
+                    <strong>{item.equipmentId}</strong>
+                    <i>{` - ${getStartTime(item)} ${getStartTimeUnit(item)}`}</i>
+                </>
+            ),
+        } as {};
+
+        const equipmentTypeLabelKeys = EQUIPMENT_TYPE_LABEL_KEYS as Record<EQUIPMENT_TYPES, string>;
+
+        return intl.formatMessage(
+            {
+                id: `Event${item.eventType}${equipmentTypeLabelKeys[item.equipmentType as EQUIPMENT_TYPES]}`,
+            },
+            {
+                ...computedValues,
+            }
         );
     };
 
+    const handleSecondaryAction = useCallback(
+        (item: Event, isItemHovered?: boolean) =>
+            isItemHovered && !isAnyNodeBuilding ? (
+                <IconButton
+                    onClick={() => doEditEvent(item)}
+                    size={'small'}
+                    sx={styles.iconEdit}
+                    disabled={isLoading()}
+                >
+                    <EditIcon />
+                </IconButton>
+            ) : null,
+        [isAnyNodeBuilding, isLoading]
+    );
+
     const renderEventList = () => {
         return (
-            <CheckboxList
-                className={styles.list}
-                onChecked={setSelectedItems}
-                checkedValues={selectedItems}
-                values={events}
-                itemComparator={areUuidsEqual}
-                itemRenderer={(props: any) => (
-                    <EventListItem
-                        key={props.item.equipmentId}
-                        onEdit={doEditEvent}
-                        isOneNodeBuilding={isAnyNodeBuilding}
-                        disabled={isLoading()}
-                        {...props}
-                    />
-                )}
+            <CheckBoxList
+                sx={{
+                    items: {
+                        checkboxListItem: {
+                            paddingLeft: (theme) => theme.spacing(2),
+                            paddingBottom: 'unset',
+                            paddingTop: 'unset',
+                        },
+                    },
+                }}
+                items={events}
+                selectedItems={selectedItems}
+                onSelectionChange={setSelectedItems}
+                getItemId={(v: Event) => v.equipmentId}
+                getItemLabel={getItemLabel}
+                secondaryAction={handleSecondaryAction}
+                isDisabled={() => isLoading()}
+                divider
             />
         );
     };
@@ -292,10 +266,7 @@ const EventModificationScenarioEditor = () => {
         return (
             <Box sx={styles.modificationsTitle}>
                 <Box sx={styles.icon}>
-                    <CircularProgress
-                        size={'1em'}
-                        sx={styles.circularProgress}
-                    />
+                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage id={messageId} />
@@ -308,15 +279,10 @@ const EventModificationScenarioEditor = () => {
         return (
             <Box sx={styles.modificationsTitle}>
                 <Box sx={styles.icon}>
-                    <CircularProgress
-                        size={'1em'}
-                        sx={styles.circularProgress}
-                    />
+                    <CircularProgress size={'1em'} sx={styles.circularProgress} />
                 </Box>
                 <Typography noWrap>
-                    <FormattedMessage
-                        id={'DynamicSimulationEventUpdatingList'}
-                    />
+                    <FormattedMessage id={'DynamicSimulationEventUpdatingList'} />
                 </Typography>
             </Box>
         );
@@ -326,12 +292,7 @@ const EventModificationScenarioEditor = () => {
         return (
             <Box sx={styles.modificationsTitle}>
                 <Box sx={styles.icon}>
-                    {pendingState && (
-                        <CircularProgress
-                            size={'1em'}
-                            sx={styles.circularProgress}
-                        />
-                    )}
+                    {pendingState && <CircularProgress size={'1em'} sx={styles.circularProgress} />}
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage
@@ -364,10 +325,7 @@ const EventModificationScenarioEditor = () => {
                     color={'primary'}
                     edge="start"
                     checked={isChecked(selectedItems.length)}
-                    indeterminate={isPartial(
-                        selectedItems.length,
-                        events?.length
-                    )}
+                    indeterminate={isPartial(selectedItems.length, events?.length)}
                     disableRipple
                     onClick={toggleSelectAllEvents}
                 />
@@ -376,11 +334,7 @@ const EventModificationScenarioEditor = () => {
                     onClick={doDeleteEvent}
                     size={'small'}
                     sx={styles.toolbarIcon}
-                    disabled={
-                        selectedItems.length === 0 ||
-                        isAnyNodeBuilding ||
-                        !currentNode
-                    }
+                    disabled={selectedItems.length === 0 || isAnyNodeBuilding || !currentNode}
                 >
                     <DeleteIcon />
                 </IconButton>
@@ -391,17 +345,13 @@ const EventModificationScenarioEditor = () => {
 
             {editDialogOpen && (
                 <DynamicSimulationEventDialog
-                    studyUuid={studyUuid ?? ''}
-                    currentNodeId={currentNode?.id}
                     equipmentId={editDialogOpen.equipmentId}
                     equipmentType={editDialogOpen.equipmentType}
                     onClose={() => handleCloseDialog()}
                     title={intl.formatMessage(
                         {
                             id: `Event${editDialogOpen.eventType}${
-                                EQUIPMENT_TYPE_LABEL_KEYS[
-                                    editDialogOpen.equipmentType
-                                ]
+                                EQUIPMENT_TYPE_LABEL_KEYS[editDialogOpen.equipmentType]
                             }`,
                         },
                         { computedLabel: '' }

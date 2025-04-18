@@ -18,8 +18,7 @@ import {
     LINE2_NAME,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import React, { useMemo, useState } from 'react';
-import { gridItem, GridSection } from '../../dialogUtils';
+import { useMemo, useState } from 'react';
 
 import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
@@ -31,10 +30,13 @@ import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import { useWatch } from 'react-hook-form';
+import GridSection from '../../commons/grid-section';
+import GridItem from '../../commons/grid-item';
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     onLineCreationDo,
     lineToEdit,
     onVoltageLevelCreationDo,
@@ -69,39 +71,27 @@ const LineAttachToVoltageLevelForm = ({
             label={'LineToAttachTo'}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
 
-    const attachmentPointIdField = (
-        <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} />
-    );
+    const attachmentPointIdField = <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} />;
 
-    const attachmentPointNameField = (
-        <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} />
-    );
+    const attachmentPointNameField = <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} />;
 
     const lineToIdField = (
-        <TextInput
-            name={ATTACHMENT_LINE_ID}
-            label={'AttachedLineId'}
-            formProps={{ disabled: true }}
-        />
+        <TextInput name={ATTACHMENT_LINE_ID} label={'AttachedLineId'} formProps={{ disabled: true }} />
     );
 
     const newLine1IdField = <TextInput name={LINE1_ID} label={'Line1ID'} />;
 
-    const newLine1NameField = (
-        <TextInput name={LINE1_NAME} label={'Line1Name'} />
-    );
+    const newLine1NameField = <TextInput name={LINE1_NAME} label={'Line1Name'} />;
 
     const newLine2IdField = <TextInput name={LINE2_ID} label={'Line2ID'} />;
 
-    const newLine2NameField = (
-        <TextInput name={LINE2_NAME} label={'Line2Name'} />
-    );
+    const newLine2NameField = <TextInput name={LINE2_NAME} label={'Line2Name'} />;
 
-    const isVoltageLevelEdit =
-        voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
+    const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     const busbarSectionOptions = useMemo(() => {
         if (isVoltageLevelEdit) {
@@ -118,58 +108,58 @@ const LineAttachToVoltageLevelForm = ({
             newBusOrBusbarSectionOptions={busbarSectionOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
 
     return (
         <>
             <GridSection title="LineToAttachTo" />
-            {gridItem(lineToAttachToForm, 12)}
+            <GridItem size={12}>{lineToAttachToForm}</GridItem>
             <GridSection title="AttachmentPoint" />
             <Grid container spacing={2}>
-                {gridItem(attachmentPointIdField, 6)}
-                {gridItem(attachmentPointNameField, 6)}
+                <GridItem>{attachmentPointIdField}</GridItem>
+                <GridItem>{attachmentPointNameField}</GridItem>
             </Grid>
             <GridSection title="VOLTAGE_LEVEL" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
-                {gridItem(
-                    <Button
-                        onClick={openVoltageLevelDialog}
-                        startIcon={
-                            isVoltageLevelEdit ? <EditIcon /> : <AddIcon />
-                        }
-                    >
-                        <Typography align="left">
-                            <FormattedMessage id="NewVoltageLevel" />
-                        </Typography>
-                    </Button>
-                )}
+                <GridItem size={12}>{connectivityForm}</GridItem>
+                <GridItem>
+                    {
+                        <Button
+                            onClick={openVoltageLevelDialog}
+                            startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
+                        >
+                            <Typography align="left">
+                                <FormattedMessage id="NewVoltageLevel" />
+                            </Typography>
+                        </Button>
+                    }
+                </GridItem>
             </Grid>
             <GridSection title="AttachedLine" />
             <Grid container spacing={2}>
-                {gridItem(lineToIdField, 6)}
+                <GridItem>{lineToIdField}</GridItem>
                 <Box width="100%" />
-                {gridItem(
-                    <Button
-                        onClick={openLineDialog}
-                        startIcon={lineToEdit ? <EditIcon /> : <AddIcon />}
-                    >
-                        <Typography align="left">
-                            <FormattedMessage id="AttachedLine" />
-                        </Typography>
-                    </Button>
-                )}
+                <GridItem>
+                    {
+                        <Button onClick={openLineDialog} startIcon={lineToEdit ? <EditIcon /> : <AddIcon />}>
+                            <Typography align="left">
+                                <FormattedMessage id="AttachedLine" />
+                            </Typography>
+                        </Button>
+                    }
+                </GridItem>
             </Grid>
             <GridSection title="Line1" />
             <Grid container spacing={2}>
-                {gridItem(newLine1IdField, 6)}
-                {gridItem(newLine1NameField, 6)}
+                <GridItem>{newLine1IdField}</GridItem>
+                <GridItem>{newLine1NameField}</GridItem>
             </Grid>
             <GridSection title="Line2" />
             <Grid container spacing={2}>
-                {gridItem(newLine2IdField, 6)}
-                {gridItem(newLine2NameField, 6)}
+                <GridItem>{newLine2IdField}</GridItem>
+                <GridItem>{newLine2NameField}</GridItem>
             </Grid>
             {voltageLevelDialogOpen && (
                 <VoltageLevelCreationDialog
@@ -177,6 +167,7 @@ const LineAttachToVoltageLevelForm = ({
                     onClose={onVoltageLevelDialogClose}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
                     editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
                 />
@@ -187,6 +178,7 @@ const LineAttachToVoltageLevelForm = ({
                     onClose={onLineDialogClose}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     displayConnectivity={false}
                     onCreateLine={onLineCreationDo}
                     editData={lineToEdit}

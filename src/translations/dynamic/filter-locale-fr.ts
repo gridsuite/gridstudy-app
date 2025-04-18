@@ -16,6 +16,9 @@ const filter_locale_fr = {
     'filter.greaterThanOrEqual': 'Supérieur ou égal',
     'filter.greaterThan': 'Supérieur',
     'filter.filterOoo': 'Filtrer...',
+    'filter.rounded': 'Arrondi à',
+    'filter.roundedToOne': "Arrondi à l'unité.",
+    'filter.warnRounding': 'À partir de 13 décimales après la virgule, les filtres deviennent imprécis.',
 };
 
 export default filter_locale_fr;

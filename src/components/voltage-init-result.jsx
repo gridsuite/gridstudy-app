@@ -4,22 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, {
-    useCallback,
-    useState,
-    useMemo,
-    useRef,
-    useEffect,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { LinearProgress, Stack, Typography } from '@mui/material';
+import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import Button from '@mui/material/Button';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
@@ -27,17 +20,14 @@ import {
     getVoltageInitStudyParameters,
 } from '../services/study/voltage-init';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Box } from '@mui/system';
 import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import { FetchStatus } from '../services/utils';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
-import { REPORT_TYPES } from './utils/report-type';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
-import { useParameterState } from './dialogs/parameters/parameters';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import ComputingType from './computing-status/computing-type';
 
 const styles = {
     container: {
@@ -89,18 +79,16 @@ const styles = {
     },
 };
 
-const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
+const VoltageInitResult = ({ result, status }) => {
+    const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
     const { snackError } = useSnackMessage();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const [disabledApplyModifications, setDisableApplyModifications] = useState(
-        !result || !result.modificationsGroupUuid
-    );
+    const [disableApplyModifications, setDisableApplyModifications] = useState(!result?.modificationsGroupUuid);
     const [applyingModifications, setApplyingModifications] = useState(false);
-    const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] =
-        useState(false);
+    const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] = useState(false);
     const [voltageInitModification, setVoltageInitModification] = useState();
 
     const intl = useIntl();
@@ -110,16 +98,16 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const closePreviewModificationsDialog = () => {
-        setPreviewModificationsDialogOpen(false);
-    };
     const gridRef = useRef();
     const defaultColDef = useMemo(
         () => ({
+            filter: true,
             sortable: true,
             resizable: false,
             lockPinned: true,
             wrapHeaderText: true,
+            flex: 1,
+            lockVisible: true,
         }),
         []
     );
@@ -129,10 +117,14 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         }
     }, []);
 
+    const onGridReady = useCallback(({ api }) => {
+        api?.sizeColumnsToFit();
+    }, []);
+
     const applyModifications = () => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
-        cloneVoltageInitModifications(studyUuid, currentNode.id)
+        cloneVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
@@ -148,7 +140,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const previewModifications = useCallback(() => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
-        getVoltageInitModifications(studyUuid, currentNode.id)
+        getVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
             .then((modificationList) => {
                 // this endpoint returns a list, but we are expecting a single modification here
                 setVoltageInitModification(modificationList.at(0));
@@ -166,6 +158,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
             });
     }, [
         currentNode?.id,
+        currentRootNetworkUuid,
         snackError,
         studyUuid,
         setVoltageInitModification,
@@ -175,13 +168,9 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const [autoApplyModifications, setAutoApplyModifications] = useState(false);
 
     useEffect(() => {
-        getVoltageInitStudyParameters(studyUuid).then(
-            (voltageInitParameters) => {
-                setAutoApplyModifications(
-                    voltageInitParameters?.applyModifications ?? false
-                );
-            }
-        );
+        getVoltageInitStudyParameters(studyUuid).then((voltageInitParameters) => {
+            setAutoApplyModifications(voltageInitParameters?.applyModifications ?? false);
+        });
     }, [studyUuid]);
 
     const renderPreviewModificationsDialog = () => {
@@ -190,10 +179,9 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 currentNode={currentNode.id}
                 studyUuid={studyUuid}
                 editData={voltageInitModification}
-                onClose={() => closePreviewModificationsDialog(false)}
+                onClose={() => setPreviewModificationsDialogOpen(false)}
                 onPreviewModeSubmit={applyModifications}
                 editDataFetchStatus={FetchStatus.IDLE}
-                dialogProps={undefined}
                 disabledSave={autoApplyModifications}
             />
         );
@@ -201,58 +189,45 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const indicatorsColumnDefs = useMemo(() => {
         return [
             {
+                headerName: intl.formatMessage({ id: 'Key' }),
                 field: 'key',
+                colId: 'key',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'Key' }) },
             },
             {
+                headerName: intl.formatMessage({ id: 'Value' }),
                 field: 'value',
+                colId: 'value',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'Value' }) },
             },
         ];
-    }, []);
+    }, [intl]);
 
     function renderHeaderReactiveSlacks(result) {
         const calculateTotal = (reactiveSlacks, isPositive) => {
             return reactiveSlacks
                 ? reactiveSlacks
-                      .filter((reactiveSlack) =>
-                          isPositive
-                              ? reactiveSlack.slack > 0
-                              : reactiveSlack.slack < 0
-                      )
-                      .reduce(
-                          (sum, reactiveSlack) => sum + reactiveSlack.slack,
-                          0
-                      )
+                      .filter((reactiveSlack) => (isPositive ? reactiveSlack.slack > 0 : reactiveSlack.slack < 0))
+                      .reduce((sum, reactiveSlack) => sum + reactiveSlack.slack, 0)
                 : 0;
         };
 
         const totalInjection = calculateTotal(result.reactiveSlacks, false);
         const totalConsumption = calculateTotal(result.reactiveSlacks, true);
         return (
-            <Stack
-                direction={'row'}
-                gap={1}
-                marginBottom={2}
-                marginTop={1.5}
-                marginLeft={2}
-            >
+            <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
                 <Typography sx={styles.typography}>
                     <FormattedMessage id="TotalInjection" />
                 </Typography>
-                <Typography sx={styles.totalTypography}>
-                    {totalInjection.toFixed(2)} MVar
-                </Typography>
+                <Typography sx={styles.totalTypography}>{totalInjection.toFixed(2)} MVar</Typography>
 
                 <Typography sx={styles.secondTypography}>
                     <FormattedMessage id="TotalConsumption" />
                 </Typography>
-                <Typography sx={styles.totalTypography}>
-                    {totalConsumption.toFixed(2)} MVar
-                </Typography>
+                <Typography sx={styles.totalTypography}>{totalConsumption.toFixed(2)} MVar</Typography>
 
                 {result.reactiveSlacksOverThreshold && (
-                    <Typography
-                        sx={styles.reactiveSlacksOverThresholdTypography}
-                    >
+                    <Typography sx={styles.reactiveSlacksOverThresholdTypography}>
                         <FormattedMessage
                             id={'REACTIVE_SLACKS_OVER_THRESHOLD'}
                             values={{
@@ -275,18 +250,10 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         const statusToShow = status === 'SUCCEED' ? 'OK' : 'KO';
         return (
             <>
-                <Stack
-                    direction={'row'}
-                    gap={1}
-                    marginBottom={2}
-                    marginTop={1.5}
-                    marginLeft={2}
-                >
+                <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
                     <Typography style={{ fontWeight: 'bold' }}>
                         <FormattedMessage id="VoltageInitStatus" />
-                        <span style={{ marginLeft: '4px' }}>
-                            {statusToShow}
-                        </span>
+                        <span style={{ marginLeft: '4px' }}>{statusToShow}</span>
                     </Typography>
                     <Lens fontSize={'medium'} sx={color} />
                 </Stack>
@@ -297,7 +264,8 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows}
                     onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
+                    onGridReady={onGridReady}
+                    skipColumnHeaders={false}
                 />
             </>
         );
@@ -308,10 +276,14 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
             {
                 headerName: intl.formatMessage({ id: 'BusId' }),
                 field: 'busId',
+                colId: 'busId',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusId' }) },
             },
             {
                 headerName: intl.formatMessage({ id: 'Slack' }),
                 field: 'slack',
+                colId: 'slack',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'Slack' }) },
                 numeric: true,
             },
         ];
@@ -329,58 +301,65 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
                     rows={result.reactiveSlacks}
                     onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
+                    onGridReady={onGridReady}
+                    skipColumnHeaders={false}
                 />
             </>
         );
     }
+
+    const formatValue = (value, precision, intl) => {
+        return isNaN(value) ? intl.formatMessage({ id: 'Undefined' }) : value.toFixed(precision);
+    };
 
     const busVoltagesColumnDefs = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'BusId' }),
                 field: 'busId',
+                colId: 'busId',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusId' }) },
             },
             {
                 headerName: intl.formatMessage({ id: 'BusVoltage' }),
                 field: 'v',
+                colId: 'v',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusVoltage' }) },
                 numeric: true,
+                valueFormatter: (params) => formatValue(params.value, 2, intl),
             },
             {
                 headerName: intl.formatMessage({ id: 'BusAngle' }),
                 field: 'angle',
+                colId: 'angle',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusAngle' }) },
                 numeric: true,
+                valueFormatter: (params) => formatValue(params.value, 2, intl),
             },
         ];
     }, [intl]);
 
     function renderBusVoltagesTable(busVoltages) {
         return (
-            <>
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={busVoltagesColumnDefs}
-                    defaultColDef={defaultColDef}
-                    tableName={intl.formatMessage({ id: 'BusVoltages' })}
-                    rows={busVoltages}
-                    onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
-                />
-            </>
+            <RenderTableAndExportCsv
+                gridRef={gridRef}
+                columns={busVoltagesColumnDefs}
+                defaultColDef={defaultColDef}
+                tableName={intl.formatMessage({ id: 'BusVoltages' })}
+                rows={busVoltages}
+                onRowDataUpdated={onRowDataUpdated}
+                onGridReady={onGridReady}
+                skipColumnHeaders={false}
+            />
         );
     }
 
     const renderReportViewer = () => {
         return (
             <>
-                <Box sx={{ height: '4px' }}>
-                    {openLoader && <LinearProgress />}
-                </Box>
-                {(status === RunningStatus.SUCCEED ||
-                    status === RunningStatus.FAILED) && (
-                    <ComputationReportViewer
-                        reportType={REPORT_TYPES.VOLTAGE_INITIALIZATION}
-                    />
+                <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
+                {(status === RunningStatus.SUCCEED || status === RunningStatus.FAILED) && (
+                    <ComputationReportViewer reportType={ComputingType.VOLTAGE_INITIALIZATION} />
                 )}
             </>
         );
@@ -391,34 +370,11 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
             <>
                 <Box sx={styles.container}>
                     <Box sx={styles.tabs}>
-                        <Tabs
-                            value={tabIndex}
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
-                        >
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'ReactiveSlacks',
-                                })}
-                            />
-                            <Tab
-                                label={intl.formatMessage({ id: 'Indicators' })}
-                            />
-                            {enableDeveloperMode && (
-                                <Tab
-                                    label={intl.formatMessage({
-                                        id: 'BusVoltages',
-                                    })}
-                                />
-                            )}
-                            <Tab
-                                label={
-                                    <FormattedMessage
-                                        id={'ComputationResultsLogs'}
-                                    />
-                                }
-                            />
+                        <Tabs value={tabIndex} onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}>
+                            <Tab label={intl.formatMessage({ id: 'ReactiveSlacks' })} />
+                            <Tab label={intl.formatMessage({ id: 'Indicators' })} />
+                            <Tab label={intl.formatMessage({ id: 'BusVoltages' })} />
+                            <Tab label={intl.formatMessage({ id: 'ComputationResultsLogs' })} />
                         </Tabs>
                     </Box>
 
@@ -426,45 +382,24 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                         <Button
                             variant="outlined"
                             onClick={previewModifications}
-                            disabled={
-                                !result ||
-                                !result.modificationsGroupUuid ||
-                                disabledApplyModifications
-                            }
+                            disabled={!result?.modificationsGroupUuid || disableApplyModifications}
                         >
                             <FormattedMessage id="previewModifications" />
                         </Button>
-                        {previewModificationsDialogOpen &&
-                            renderPreviewModificationsDialog()}
-                        {result &&
-                            !result.modificationsGroupUuid &&
-                            status === RunningStatus.SUCCEED && (
-                                <Box sx={{ paddingLeft: 2 }}>
-                                    <FormattedMessage id="modificationsAlreadyApplied" />
-                                </Box>
-                            )}
-                        {applyingModifications && (
-                            <CircularProgress
-                                sx={{ paddingLeft: 2 }}
-                                size={'1em'}
-                            />
+                        {previewModificationsDialogOpen && renderPreviewModificationsDialog()}
+                        {result && !result.modificationsGroupUuid && status === RunningStatus.SUCCEED && (
+                            <Box sx={{ paddingLeft: 2 }}>
+                                <FormattedMessage id="modificationsAlreadyApplied" />
+                            </Box>
                         )}
+                        {applyingModifications && <CircularProgress sx={{ paddingLeft: 2 }} size={'1em'} />}
                     </Box>
                 </Box>
                 <div style={{ flexGrow: 1 }}>
-                    {result &&
-                        tabIndex === 0 &&
-                        renderReactiveSlacksTable(result)}
-                    {result &&
-                        tabIndex === 1 &&
-                        renderIndicatorsTable(result.indicators)}
-                    {result &&
-                        tabIndex === 2 &&
-                        enableDeveloperMode &&
-                        renderBusVoltagesTable(result.busVoltages)}
-                    {((tabIndex === 3 && enableDeveloperMode) ||
-                        (tabIndex === 2 && !enableDeveloperMode)) &&
-                        renderReportViewer()}
+                    {result && tabIndex === 0 && renderReactiveSlacksTable(result)}
+                    {result && tabIndex === 1 && renderIndicatorsTable(result.indicators)}
+                    {result && tabIndex === 2 && renderBusVoltagesTable(result.busVoltages)}
+                    {tabIndex === 3 && renderReportViewer()}
                 </div>
             </>
         );

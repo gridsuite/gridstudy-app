@@ -142,20 +142,11 @@ const CheckboxAutocomplete = <Value,>({
         />
     );
 
-    const renderOption = (
-        props: HTMLAttributes<HTMLElement>,
-        option: Value,
-        state: AutocompleteRenderOptionState
-    ) =>
+    const renderOption = (props: HTMLAttributes<HTMLElement>, option: Value, state: AutocompleteRenderOptionState) =>
         virtualize ? (
             ([option, state.selected, getOptionLabel, props] as ReactNode)
         ) : (
-            <CheckboxItem
-                option={option}
-                selected={state.selected}
-                getOptionLabel={getOptionLabel}
-                {...props}
-            />
+            <CheckboxItem option={option} selected={state.selected} getOptionLabel={getOptionLabel} {...props} />
         );
 
     const handleBlur = () => {

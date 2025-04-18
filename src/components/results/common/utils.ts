@@ -4,15 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { NA_Value } from 'components/spreadsheet/utils/equipment-table-utils';
 import { IntlShape } from 'react-intl';
-import { NA_Value } from '../../spreadsheet/utils/cell-renderers';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
-export const translateLimitNameBackToFront = (
-    limitName: string | null | undefined,
-    intl: IntlShape
-) => {
+export const translateLimitNameBackToFront = (limitName: string | null | undefined, intl: IntlShape) => {
     switch (limitName) {
         case PERMANENT_LIMIT_NAME:
             return intl.formatMessage({ id: 'PermanentLimitName' });
@@ -23,10 +20,7 @@ export const translateLimitNameBackToFront = (
     }
 };
 
-export const translateLimitNameFrontToBack = (
-    limitName: string,
-    intl: IntlShape
-) => {
+export const translateLimitNameFrontToBack = (limitName: string, intl: IntlShape) => {
     switch (limitName) {
         case intl.formatMessage({ id: 'PermanentLimitName' }):
             return PERMANENT_LIMIT_NAME;
@@ -36,3 +30,9 @@ export const translateLimitNameFrontToBack = (
             return limitName;
     }
 };
+
+export enum FilterType {
+    VOLTAGE_LEVEL = 'voltageLevel',
+    COUNTRY = 'country',
+    GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library
+}

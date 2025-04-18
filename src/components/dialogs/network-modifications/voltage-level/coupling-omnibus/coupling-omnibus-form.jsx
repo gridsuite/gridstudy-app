@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
+import { ExpandableInput } from 'components/utils/rhf-inputs/expandable-input';
 import {
     BUS_BAR_COUNT,
     BUS_BAR_SECTION_ID1,
@@ -33,11 +33,7 @@ export const CouplingOmnibusForm = () => {
 
     const sectionOptions = useMemo(() => {
         if (watchVoltageLevelID && watchBusBarCount && watchSectionCount) {
-            return buildNewBusbarSections(
-                watchVoltageLevelID,
-                watchSectionCount,
-                watchBusBarCount
-            ).map((section) => {
+            return buildNewBusbarSections(watchVoltageLevelID, watchSectionCount, watchBusBarCount).map((section) => {
                 return section.id;
             });
         }

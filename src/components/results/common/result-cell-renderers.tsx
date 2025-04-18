@@ -7,7 +7,6 @@
 import { green, red } from '@mui/material/colors';
 import { Box } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import React from 'react';
 import { ICellRendererParams } from 'ag-grid-community';
 
 const styles = {
@@ -27,9 +26,11 @@ const styles = {
     },
 };
 
+export const COL_STATUS = 'status';
+
 export const StatusCellRender = (cellData: ICellRendererParams) => {
     const status = cellData.value;
-    const color = status === 'CONVERGED' ? styles.succeed : styles.fail;
+    const color = status === 'CONVERGED' || status === 'SUCCEED' ? styles.succeed : styles.fail;
     return (
         <Box sx={styles.cell}>
             <div style={{ display: 'flex', alignItems: 'center' }}>

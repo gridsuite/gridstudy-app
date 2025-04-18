@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    FunctionComponent,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ExportButton } from '../../utils/export-button';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
@@ -19,25 +13,19 @@ import { downloadShortCircuitResultZippedCsv } from '../../../services/study/sho
 import { downloadZipFile } from '../../../services/utils';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import { UUID } from 'crypto';
+import { BranchSide } from 'components/utils/constants';
 
 interface ShortCircuitExportButtonProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     csvHeaders?: string[];
     analysisType: number;
     disabled?: boolean;
 }
 
-export const ShortCircuitExportButton: FunctionComponent<
-    ShortCircuitExportButtonProps
-> = (props) => {
-    const {
-        studyUuid,
-        nodeUuid,
-        csvHeaders,
-        disabled = false,
-        analysisType,
-    } = props;
+export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButtonProps> = (props) => {
+    const { studyUuid, nodeUuid, currentRootNetworkUuid, csvHeaders, disabled = false, analysisType } = props;
     const { snackError } = useSnackMessage();
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
@@ -61,6 +49,8 @@ export const ShortCircuitExportButton: FunctionComponent<
             'HIGH_VOLTAGE',
             'LOW_SHORT_CIRCUIT_CURRENT',
             'HIGH_SHORT_CIRCUIT_CURRENT',
+            BranchSide.ONE,
+            BranchSide.TWO,
             'OTHER',
         ];
 
@@ -76,6 +66,7 @@ export const ShortCircuitExportButton: FunctionComponent<
         downloadShortCircuitResultZippedCsv(
             studyUuid,
             nodeUuid,
+            currentRootNetworkUuid,
             analysisType,
             csvHeaders,
             enumValueTranslations
@@ -104,6 +95,7 @@ export const ShortCircuitExportButton: FunctionComponent<
     }, [
         studyUuid,
         nodeUuid,
+        currentRootNetworkUuid,
         intl,
         snackError,
         csvHeaders,

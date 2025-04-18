@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import LineSplitDiagram from '../../../../images/network-modifications/illustrations/lines-attach-to-split-lines.svg?react';
 import GenericIllustrationNetworkModification from 'components/dialogs/illustrations/generic-Illustration-network-modification';
 

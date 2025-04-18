@@ -4,30 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    Box,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-} from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import React, { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { UseFieldArrayReturn, useFormContext } from 'react-hook-form';
 import TableRowComponent from './table-row';
 import { IColumnsDef } from './columns-definitions';
-import {
-    ACTIVATED,
-    COUNT,
-    HVDC_LINES,
-    INJECTIONS,
-    MONITORED_BRANCHES,
-    PSTS,
-} from '../../../utils/field-constants';
+import { ACTIVATED, COUNT, HVDC_LINES, INJECTIONS, MONITORED_BRANCHES, PSTS } from '../../../utils/field-constants';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -38,10 +24,11 @@ interface SensitivityTableProps {
     tableHeight: number;
     createRows: (a: number) => void;
     disableAdd?: boolean;
-    disableDelete: boolean;
+    disableDelete?: boolean;
     onFormChanged: (a: boolean) => void;
     onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
 }
+
 const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     arrayFormName,
     useFieldArrayOutput,
@@ -69,10 +56,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             const row = getValues(arrayFormName)[index];
             const isActivated = row[ACTIVATED];
             const hasMonitoredBranches = row[MONITORED_BRANCHES]?.length > 0;
-            const hasInjections =
-                row[INJECTIONS]?.length > 0 ||
-                row[HVDC_LINES]?.length > 0 ||
-                row[PSTS]?.length > 0;
+            const hasInjections = row[INJECTIONS]?.length > 0 || row[HVDC_LINES]?.length > 0 || row[PSTS]?.length > 0;
             if (source === 'switch' && hasMonitoredBranches && hasInjections) {
                 if (isActivated) {
                     onChangeParams(row, arrayFormName, index);
@@ -83,10 +67,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             if (source === 'directory' && isActivated) {
                 if (hasMonitoredBranches && hasInjections) {
                     onChangeParams(row, arrayFormName, index);
-                } else if (
-                    (!hasMonitoredBranches || !hasInjections) &&
-                    row.count === 0
-                ) {
+                } else if ((!hasMonitoredBranches || !hasInjections) && row.count === 0) {
                     onFormChanged(false);
                 } else if (!hasMonitoredBranches || !hasInjections) {
                     onFormChanged(true);
@@ -101,10 +82,7 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
             const currentRowsValues = getValues(arrayFormName);
             let isFormChanged = false;
             if (index >= 0 && index < currentRowsValues.length) {
-                if (
-                    currentRowsValues[index][COUNT] &&
-                    currentRowsValues[index][ACTIVATED]
-                ) {
+                if (currentRowsValues[index][COUNT] && currentRowsValues[index][ACTIVATED]) {
                     isFormChanged = true;
                 }
                 remove(index);
@@ -123,45 +101,39 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
         >
             <Table stickyHeader size="small" sx={{ tableLayout: 'fixed' }}>
                 <TableHead>
-                    {columnsDefinition.map((column: IColumnsDef) => (
-                        <TableCell
-                            key={column.dataKey}
-                            sx={{ width: column.width, textAlign: 'center' }}
-                        >
-                            <Box>{column.label}</Box>
+                    <TableRow>
+                        {columnsDefinition.map((column: IColumnsDef) => (
+                            <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
+                                <Box>{column.label}</Box>
+                            </TableCell>
+                        ))}
+                        <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
+                            <Tooltip
+                                title={intl.formatMessage({
+                                    id: 'AddRows',
+                                })}
+                            >
+                                <span>
+                                    <IconButton disabled={disableAdd} onClick={handleAddRowsButton}>
+                                        <AddCircleIcon />
+                                    </IconButton>
+                                </span>
+                            </Tooltip>
                         </TableCell>
-                    ))}
-                    <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
-                        <Tooltip
-                            title={intl.formatMessage({
-                                id: 'AddRows',
-                            })}
-                        >
-                            <span>
-                                <IconButton
-                                    disabled={disableAdd}
-                                    onClick={handleAddRowsButton}
-                                >
-                                    <AddCircleIcon />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    </TableCell>
+                    </TableRow>
                 </TableHead>
                 <TableBody>
-                    {currentRows.map(
-                        (row: Record<'id', string>, index: number) => (
-                            <TableRowComponent
-                                arrayFormName={arrayFormName}
-                                columnsDefinition={columnsDefinition}
-                                row={row}
-                                index={index}
-                                handleDeleteButton={handleDeleteButton}
-                                disableDelete={disableDelete}
-                                fetchCount={fetchCount}
-                            />
-                        )
-                    )}
+                    {currentRows.map((row: Record<'id', string>, index: number) => (
+                        <TableRowComponent
+                            key={row.id}
+                            arrayFormName={arrayFormName}
+                            columnsDefinition={columnsDefinition}
+                            index={index}
+                            handleDeleteButton={handleDeleteButton}
+                            disableDelete={disableDelete}
+                            fetchCount={fetchCount}
+                        />
+                    ))}
                 </TableBody>
             </Table>
         </TableContainer>

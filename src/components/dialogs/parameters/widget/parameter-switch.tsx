@@ -6,7 +6,6 @@
  */
 import { Grid, SwitchProps } from '@mui/material';
 import { SwitchWithLabel } from '../parameters';
-import React from 'react';
 
 export interface ParameterSwitchProps extends Pick<SwitchProps, 'onChange'> {
     label: string;
@@ -14,27 +13,12 @@ export interface ParameterSwitchProps extends Pick<SwitchProps, 'onChange'> {
     key?: string;
 }
 
-export const ParameterSwitch = ({
-    label,
-    value,
-    onChange,
-    key,
-}: ParameterSwitchProps) => {
+export function ParameterSwitch({ label, value, onChange, key }: Readonly<ParameterSwitchProps>) {
     return (
         <>
-            <Grid
-                container
-                spacing={1}
-                paddingTop={1}
-                key={key}
-                justifyContent={'space-between'}
-            >
-                <SwitchWithLabel
-                    value={value}
-                    label={label}
-                    callback={onChange}
-                />
+            <Grid container spacing={1} paddingTop={1} key={key} justifyContent={'space-between'}>
+                <SwitchWithLabel value={value} label={label} callback={onChange} />
             </Grid>
         </>
     );
-};
+}

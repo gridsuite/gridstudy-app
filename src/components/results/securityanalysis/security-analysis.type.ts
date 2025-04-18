@@ -8,9 +8,9 @@
 import * as React from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
-import { SortConfigType } from '../../../hooks/use-aggrid-sort';
 import { UUID } from 'crypto';
-import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
+import { TablePaginationProps } from '@mui/material';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -77,10 +77,7 @@ export interface PreContingencyResult {
     limitViolation?: LimitViolation;
 }
 
-export type QueryParamsType = Record<
-    string,
-    string | number | SortConfigType[] | FilterSelectorType[]
->;
+export type QueryParamsType = Record<string, string | number | SortConfig[] | FilterConfig[]>;
 
 type Sort = {
     empty?: boolean;
@@ -97,28 +94,10 @@ type Pageable = {
     unpaged?: boolean;
 };
 
-type PaginationProps = {
-    count?: number;
-    rowsPerPage?: number;
-    page?: number;
-    onPageChange?: (
-        event: React.MouseEvent<HTMLButtonElement> | null,
-        page: number
-    ) => void;
-    onRowsPerPageChange?: React.ChangeEventHandler<
-        HTMLTextAreaElement | HTMLInputElement
-    >;
-};
-
-export type SubjectIdRendererType = (
-    cellData: ICellRendererParams
-) => React.JSX.Element | undefined;
+export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
 export interface SecurityAnalysisNmkResult {
-    content?:
-        | ContingenciesFromConstraintItem[]
-        | ConstraintsFromContingencyItem[]
-        | null;
+    content?: ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | null;
     empty?: boolean;
     first?: boolean;
     last?: boolean;
@@ -135,6 +114,7 @@ export interface SecurityAnalysisNmkResult {
 export interface SecurityAnalysisTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     openVoltageLevelDiagram: (id: string) => void;
 }
 
@@ -149,7 +129,7 @@ export interface SecurityAnalysisResultNmkProps {
     columnDefs: ColDef<any>[];
     isLoadingResult: boolean;
     isFromContingency: boolean;
-    paginationProps: PaginationProps;
+    paginationProps: TablePaginationProps;
 }
 
 export interface SecurityAnalysisNTableRow {

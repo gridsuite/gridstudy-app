@@ -6,10 +6,9 @@
  */
 
 import Drawer from '@mui/material/Drawer';
-import React from 'react';
 import PropTypes from 'prop-types';
-import { mergeSx } from './utils/functions';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
     drawerPaper: {

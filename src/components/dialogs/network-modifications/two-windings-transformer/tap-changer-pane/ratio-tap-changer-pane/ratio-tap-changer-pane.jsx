@@ -20,24 +20,22 @@ import {
 import { useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { gridItem, VoltageAdornment } from '../../../../dialogUtils';
+import { VoltageAdornment } from '../../../../dialog-utils';
 import { SwitchInput, FloatInput, SelectInput } from '@gridsuite/commons-ui';
-import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
+import { RegulatingTerminalForm } from '../../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
-import {
-    RATIO_REGULATION_MODES,
-    REGULATION_TYPES,
-    SIDE,
-} from 'components/network/constants';
+import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import { getComputedPreviousRatioRegulationType } from './ratio-tap-changer-pane-utils';
+import GridItem from '../../../../commons/grid-item';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     voltageLevelOptions = [],
     previousValues,
     editData,
@@ -47,26 +45,16 @@ const RatioTapChangerPane = ({
     const intl = useIntl();
 
     const previousRegulation = () => {
-        if (
-            previousValues?.[RATIO_TAP_CHANGER]?.[
-                LOAD_TAP_CHANGING_CAPABILITIES
-            ]
-        ) {
+        if (previousValues?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES]) {
             return intl.formatMessage({ id: 'On' });
         }
-        if (
-            previousValues?.[RATIO_TAP_CHANGER]?.[
-                LOAD_TAP_CHANGING_CAPABILITIES
-            ] === false
-        ) {
+        if (previousValues?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES] === false) {
             return intl.formatMessage({ id: 'Off' });
         }
         return null;
     };
 
-    const getRatioTapChangerRegulationModeLabel = (
-        ratioTapChangerFormValues
-    ) => {
+    const getRatioTapChangerRegulationModeLabel = (ratioTapChangerFormValues) => {
         if (!ratioTapChangerFormValues) {
             return null;
         }
@@ -115,9 +103,7 @@ const RatioTapChangerPane = ({
     const isRatioTapLoadTapChangingCapabilitiesOn =
         ratioTapLoadTapChangingCapabilitiesWatcher ||
         (ratioTapLoadTapChangingCapabilitiesWatcher === null &&
-            previousValues?.[RATIO_TAP_CHANGER]?.[
-                LOAD_TAP_CHANGING_CAPABILITIES
-            ] === true);
+            previousValues?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES] === true);
 
     const regulationModeWatch = useWatch({
         name: `${id}.${REGULATION_MODE}`,
@@ -128,10 +114,7 @@ const RatioTapChangerPane = ({
     });
 
     const regulationType = useMemo(() => {
-        return (
-            regulationTypeWatch ||
-            getComputedPreviousRatioRegulationType(previousValues)
-        );
+        return regulationTypeWatch || getComputedPreviousRatioRegulationType(previousValues);
     }, [previousValues, regulationTypeWatch]);
 
     // we want to update the validation of these fields when they become optionals to remove the red alert
@@ -169,9 +152,7 @@ const RatioTapChangerPane = ({
             options={Object.values(RATIO_REGULATION_MODES)}
             size={'small'}
             disabled={!ratioTapChangerEnabledWatcher}
-            previousValue={getRatioTapChangerRegulationModeLabel(
-                previousValues?.[RATIO_TAP_CHANGER]
-            )}
+            previousValue={getRatioTapChangerRegulationModeLabel(previousValues?.[RATIO_TAP_CHANGER])}
         />
     );
 
@@ -182,10 +163,7 @@ const RatioTapChangerPane = ({
             options={Object.values(REGULATION_TYPES)}
             disabled={!ratioTapChangerEnabledWatcher}
             size={'small'}
-            previousValue={getRegulationTypeLabel(
-                previousValues,
-                previousValues?.[RATIO_TAP_CHANGER]
-            )}
+            previousValue={getRegulationTypeLabel(previousValues, previousValues?.[RATIO_TAP_CHANGER])}
         />
     );
 
@@ -196,10 +174,7 @@ const RatioTapChangerPane = ({
             options={Object.values(SIDE)}
             disabled={!ratioTapChangerEnabledWatcher}
             size={'small'}
-            previousValue={getTapSideLabel(
-                previousValues,
-                previousValues?.[RATIO_TAP_CHANGER]
-            )}
+            previousValue={getTapSideLabel(previousValues, previousValues?.[RATIO_TAP_CHANGER])}
         />
     );
 
@@ -231,15 +206,12 @@ const RatioTapChangerPane = ({
         <RegulatingTerminalForm
             id={id}
             disabled={!ratioTapChangerEnabledWatcher}
-            equipmentSectionTypeDefaultValue={
-                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
-            }
+            equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
             studyUuid={studyUuid}
             currentNodeUuid={currentNode?.id}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
-            previousRegulatingTerminalValue={
-                previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId
-            }
+            previousRegulatingTerminalValue={previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId}
             previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
                 previousValues?.[RATIO_TAP_CHANGER]
             )}
@@ -278,16 +250,12 @@ const RatioTapChangerPane = ({
                                     alignItems: 'center',
                                 }}
                             >
-                                <FormattedMessage
-                                    id="RegulatedTerminal"
-                                    disabled={true}
-                                />
+                                <FormattedMessage id="RegulatedTerminal" disabled={true} />
                             </Grid>
                             <Grid item xs={4}>
                                 {regulationTypeField}
                             </Grid>
-                            {regulationType === REGULATION_TYPES.LOCAL.id &&
-                                gridItem(sideField, 4)}
+                            {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
                         </Grid>
                         {regulationType === REGULATION_TYPES.DISTANT.id && (
                             <Grid
@@ -300,7 +268,7 @@ const RatioTapChangerPane = ({
                                     marginLeft: '10px',
                                 }}
                             >
-                                {gridItem(regulatingTerminalField, 2)}
+                                <GridItem size={2}>{regulatingTerminalField}</GridItem>
                             </Grid>
                         )}
                     </>

@@ -6,24 +6,17 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
-import React, { useCallback, useEffect, useState } from 'react';
+import { ModificationDialog } from '../../../commons/modificationDialog';
+import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import {
-    ADDITIONAL_PROPERTIES,
-    COUNTRY,
-    EQUIPMENT_NAME,
-} from 'components/utils/field-constants';
+import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifySubstation } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -35,6 +28,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -64,6 +58,7 @@ const SubstationModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
+    currentRootNetworkUuid,
     studyUuid,
     isUpdate,
     editDataFetchStatus,
@@ -108,6 +103,7 @@ const SubstationModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.SUBSTATION,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -118,11 +114,7 @@ const SubstationModificationDialog = ({
                             setSubstationToModify(substation);
                             reset((formValues) => ({
                                 ...formValues,
-                                [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(
-                                        substation,
-                                        getValues
-                                    ),
+                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(substation, getValues),
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -136,7 +128,7 @@ const SubstationModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getValues, editData]
+        [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, editData]
     );
 
     useEffect(() => {
@@ -147,16 +139,15 @@ const SubstationModificationDialog = ({
 
     const onSubmit = useCallback(
         (substation) => {
-            modifySubstation(
-                studyUuid,
-                currentNodeUuid,
-                selectedId,
-                sanitizeString(substation[EQUIPMENT_NAME]),
-                substation[COUNTRY],
-                !!editData,
-                editData?.uuid,
-                toModificationProperties(substation)
-            ).catch((error) => {
+            modifySubstation({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                id: selectedId,
+                name: sanitizeString(substation[EQUIPMENT_NAME]),
+                country: substation[COUNTRY],
+                properties: toModificationProperties(substation),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'SubstationModificationError',
@@ -169,10 +160,8 @@ const SubstationModificationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            ((editDataFetchStatus === FetchStatus.SUCCEED ||
-                editDataFetchStatus === FetchStatus.FAILED) &&
-                (dataFetchStatus === FetchStatus.SUCCEED ||
-                    dataFetchStatus === FetchStatus.FAILED)),
+            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
 
@@ -181,28 +170,25 @@ const SubstationModificationDialog = ({
             validationSchema={formSchema}
             {...formMethods}
             removeOptional={true}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
         >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-substation"
                 maxWidth={'md'}
                 titleId="ModifySubstation"
                 open={open}
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        dataFetchStatus === FetchStatus.RUNNING)
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >
                 {selectedId == null && (
                     <EquipmentIdSelector
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.SUBSTATION}
@@ -211,7 +197,6 @@ const SubstationModificationDialog = ({
                 )}
                 {selectedId != null && (
                     <SubstationModificationForm
-                        currentNode={currentNode}
                         studyUuid={studyUuid}
                         substationToModify={substationToModify}
                         equipmentId={selectedId}

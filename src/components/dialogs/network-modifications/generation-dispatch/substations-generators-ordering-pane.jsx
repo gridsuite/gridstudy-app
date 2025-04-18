@@ -5,18 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    SUBSTATIONS_GENERATORS_ORDERING,
-    SUBSTATION_IDS,
-} from 'components/utils/field-constants';
+import { SUBSTATIONS_GENERATORS_ORDERING, SUBSTATION_IDS } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import DndTable from 'components/utils/dnd-table/dnd-table';
+import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
-const SubstationsGeneratorsOrderingPane = ({
-    id = SUBSTATIONS_GENERATORS_ORDERING,
-}) => {
+const SubstationsGeneratorsOrderingPane = ({ id = SUBSTATIONS_GENERATORS_ORDERING }) => {
     const intl = useIntl();
 
     const columnsDefinition = useMemo(() => {
@@ -26,8 +22,7 @@ const SubstationsGeneratorsOrderingPane = ({
                 dataKey: SUBSTATION_IDS,
                 initialValue: [],
                 editable: true,
-                numeric: false,
-                chipItems: true,
+                type: DndColumnType.CHIP_ITEMS,
             },
         ].map((column) => ({
             ...column,
@@ -44,9 +39,7 @@ const SubstationsGeneratorsOrderingPane = ({
 
     const newRowData = useMemo(() => {
         const newRowData = {};
-        columnsDefinition.forEach(
-            (column) => (newRowData[column.dataKey] = column.initialValue)
-        );
+        columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [columnsDefinition]);
     const createSubstationsGeneratorsOrderingRows = () => [newRowData];

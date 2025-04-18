@@ -10,10 +10,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CreateSwitchesDialogSubmitButton from './create-switches-dialog-submit-button';
 import CreateSwitchesForm from './create-switches-form';
-import {
-    getCreateSwitchesEmptyFormData,
-    getCreateSwitchesValidationSchema,
-} from './create-switches-dialog-utils';
+import { getCreateSwitchesEmptyFormData, getCreateSwitchesValidationSchema } from './create-switches-dialog-utils';
 import { SWITCH_KINDS } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { useEffect } from 'react';
@@ -30,12 +27,7 @@ export const CreateSwitchesDialog = (props) => {
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const {
-        handleCreateSwitchesDialog,
-        setOpenCreateSwitchesDialog,
-        openCreateSwitchesDialog,
-        switchKinds,
-    } = props;
+    const { handleCreateSwitchesDialog, setOpenCreateSwitchesDialog, openCreateSwitchesDialog, switchKinds } = props;
 
     const { reset } = formMethods;
 

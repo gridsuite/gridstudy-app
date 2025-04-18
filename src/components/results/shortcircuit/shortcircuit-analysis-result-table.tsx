@@ -5,51 +5,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
-import {
-    SCAFaultResult,
-    SCAFeederResult,
-    ShortCircuitAnalysisType,
-} from './shortcircuit-analysis-result.type';
-import {
-    GridReadyEvent,
-    RowClassParams,
-    ValueGetterParams,
-} from 'ag-grid-community';
-import {
-    getNoRowsMessage,
-    getRows,
-    useIntlResultStatusMessages,
-} from '../../utils/aggrid-rows-handler';
+import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
+import { GridReadyEvent, RowClassParams, RowDataUpdatedEvent, ValueGetterParams } from 'ag-grid-community';
+import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { CustomAGGrid, unitToKiloUnit } from '@gridsuite/commons-ui';
+import { convertSide } from '../loadflow/load-flow-result-utils';
+import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { mappingTabs } from './shortcircuit-analysis-result-content';
 import {
-    FilterEnumsType,
-    FilterPropsType,
-} from '../../../hooks/use-aggrid-row-filter';
-import { SortPropsType } from '../../../hooks/use-aggrid-sort';
-import {
+    ColumnContext,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-header.type';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { unitToKiloUnit } from '../../../utils/unit-converter';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+    FilterEnumsType,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
     analysisType: ShortCircuitAnalysisType;
     isFetching: boolean;
-    filterProps: FilterPropsType;
-    sortProps: SortPropsType;
     filterEnums: FilterEnumsType;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
-    onRowDataUpdated: (params: GridReadyEvent) => void;
+    onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    onFilter: () => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -81,157 +70,209 @@ interface ShortCircuitAnalysisResultsFeederResult {
     connectableId: string;
     current: number;
     linkedElementId: string;
+    side?: string;
 }
 
-const ShortCircuitAnalysisResultTable: FunctionComponent<
-    ShortCircuitAnalysisResultProps
-> = ({
+const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisResultProps> = ({
     result,
     analysisType,
     isFetching,
-    sortProps,
-    filterProps,
     filterEnums,
     onGridColumnsChanged,
     onRowDataUpdated,
+    onFilter,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
 
+    const getEnumLabel = useCallback(
+        (value: string) =>
+            intl.formatMessage({
+                id: value,
+                defaultMessage: value,
+            }),
+        [intl]
+    );
+
     const columns = useMemo(() => {
-        const isAllBusesAnalysisType =
-            analysisType === ShortCircuitAnalysisType.ALL_BUSES;
+        const isAllBusesAnalysisType = analysisType === ShortCircuitAnalysisType.ALL_BUSES;
 
-        const sortPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType
-            ? sortProps
-            : undefined;
+        const onlyIfIsAllBuses = <T,>(data: T, defaultData: T | undefined = {} as T) =>
+            isAllBusesAnalysisType ? data : defaultData;
 
-        const filterPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType
-            ? filterProps
-            : undefined;
+        const onlyIfIsOneBus = <T,>(data: T, defaultData: T | undefined = {} as T) =>
+            !isAllBusesAnalysisType ? data : defaultData;
+
+        const sortParams: ColumnContext['sortParams'] = {
+            table: SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
+            tab: mappingTabs(analysisType),
+        };
+
+        const filterParams = {
+            type: AgGridFilterType.ShortcircuitAnalysis,
+            tab: mappingTabs(analysisType),
+            updateFilterCallback: onFilter,
+        };
 
         const textFilterParams = {
-            filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterComparators: [
-                FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                FILTER_TEXT_COMPARATORS.CONTAINS,
-            ],
+            dataType: FILTER_DATA_TYPES.TEXT,
+            comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
         };
 
         const numericFilterParams = {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            dataType: FILTER_DATA_TYPES.NUMBER,
+            comparators: Object.values(FILTER_NUMBER_COMPARATORS),
         };
 
-        const autoCompleteFilterParams = {
-            filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterEnums,
+        const inputFilterParams = (
+            filterDefinition: Pick<
+                Required<ColumnContext>['filterComponentParams']['filterParams'],
+                'dataType' | 'comparators'
+            >
+        ) => {
+            return {
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        ...filterDefinition,
+                        ...filterParams,
+                    },
+                },
+            };
+        };
+
+        const autocompleteFilterParams = (colId: string) => {
+            return {
+                filterComponent: CustomAggridAutocompleteFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        ...filterParams,
+                    },
+                    options: filterEnums[colId] ?? [],
+                    getOptionLabel: getEnumLabel,
+                },
+            };
         };
 
         return [
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IDNode' }),
+                colId: 'elementId',
                 field: 'elementId',
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: textFilterParams,
+                context: {
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(textFilterParams) }),
+                },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Type' }),
+                colId: 'faultType',
                 field: 'faultType',
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: autoCompleteFilterParams,
+                context: {
+                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('faultType') }),
+                },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
+                colId: 'connectableId',
                 field: 'connectableId',
-                sortProps: isAllBusesAnalysisType
-                    ? { ...sortProps, children: true }
-                    : sortProps,
-                filterProps: filterProps,
-                filterParams: textFilterParams,
+                context: {
+                    sortParams: onlyIfIsAllBuses({ ...sortParams, isChildren: true }, sortParams),
+                    ...inputFilterParams(textFilterParams),
+                },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscKA' }),
+                colId: 'current',
                 field: 'current',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps,
-                filterProps: filterProps,
-                filterParams: numericFilterParams,
-                valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params.data?.current),
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    sortParams,
+                    ...inputFilterParams(numericFilterParams),
+                },
+                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.current),
+            }),
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: 'Side' }),
+                colId: 'side',
+                field: 'side',
+                hide: isAllBusesAnalysisType,
+                context: {
+                    ...onlyIfIsOneBus({ sortParams, ...autocompleteFilterParams('side') }),
+                },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
+                colId: 'limitType',
                 field: 'limitType',
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: autoCompleteFilterParams,
+                context: {
+                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('limitType') }),
+                },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
+                colId: 'limitMin',
                 field: 'limitMin',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: numericFilterParams,
-                valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params.data?.limitMin),
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                },
+                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMin),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
+                colId: 'limitMax',
                 field: 'limitMax',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: numericFilterParams,
-                valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params.data?.limitMax),
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                },
+                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMax),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
+                colId: 'shortCircuitPower',
                 field: 'shortCircuitPower',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: numericFilterParams,
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                },
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
+                colId: 'deltaCurrentIpMin',
                 field: 'deltaCurrentIpMin',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: numericFilterParams,
-                valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params.data?.deltaCurrentIpMin),
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                },
+                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMin),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
+                colId: 'deltaCurrentIpMax',
                 field: 'deltaCurrentIpMax',
-                numeric: true,
-                fractionDigits: 2,
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
-                filterParams: numericFilterParams,
-                valueGetter: (params: ValueGetterParams) =>
-                    unitToKiloUnit(params.data?.deltaCurrentIpMax),
+                context: {
+                    numeric: true,
+                    fractionDigits: 2,
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                },
+                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMax),
             }),
             {
                 field: 'linkedElementId',
                 hide: true,
             },
         ];
-    }, [intl, analysisType, sortProps, filterProps, filterEnums]);
+    }, [analysisType, onFilter, filterEnums, intl, getEnumLabel]);
 
     const shortCircuitAnalysisStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[
                 analysisType === ShortCircuitAnalysisType.ALL_BUSES
                     ? ComputingType.SHORT_CIRCUIT
@@ -273,9 +314,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     );
 
     const handleRowDataUpdated = useCallback(
-        (params: GridReadyEvent) => {
-            if (params?.api) {
-                onRowDataUpdated(params);
+        (event: RowDataUpdatedEvent) => {
+            if (event?.api) {
+                onRowDataUpdated(event);
             }
         },
         [onRowDataUpdated]
@@ -298,86 +339,72 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         (shortCircuitAnalysisResult: SCAFaultResult[]) => {
             const rows: ShortCircuitAnalysisAGGridResult[] = [];
 
-            shortCircuitAnalysisResult?.forEach(
-                (faultResult: SCAFaultResult) => {
-                    const fault = faultResult.fault;
-                    const limitViolations = faultResult.limitViolations ?? [];
-                    let firstLimitViolation;
-                    if (limitViolations.length > 0) {
-                        let lv = limitViolations[0];
-                        firstLimitViolation = {
-                            limitType: intl.formatMessage({
-                                id: lv.limitType,
-                            }),
-                        };
-                    }
+            shortCircuitAnalysisResult?.forEach((faultResult: SCAFaultResult) => {
+                const fault = faultResult.fault;
+                const limitViolations = faultResult.limitViolations ?? [];
+                let firstLimitViolation;
+                if (limitViolations.length > 0) {
+                    let lv = limitViolations[0];
+                    firstLimitViolation = {
+                        limitType: intl.formatMessage({
+                            id: lv.limitType,
+                        }),
+                    };
+                }
 
-                    const current = getCurrent(faultResult);
+                const current = getCurrent(faultResult);
+                const deltaCurrentIpMax = faultResult.shortCircuitLimits.deltaCurrentIpMax;
+                const deltaCurrentIpMin = faultResult.shortCircuitLimits.deltaCurrentIpMin;
 
-                    const deltaCurrentIpMax =
-                        faultResult.shortCircuitLimits.deltaCurrentIpMax;
-                    const deltaCurrentIpMin =
-                        faultResult.shortCircuitLimits.deltaCurrentIpMin;
+                rows.push({
+                    faultId: fault.id,
+                    elementId: fault.elementId,
+                    faultType: intl.formatMessage({ id: fault.faultType }),
+                    shortCircuitPower: faultResult.shortCircuitPower,
+                    limitMin: faultResult.shortCircuitLimits.ipMin,
+                    limitMax: faultResult.shortCircuitLimits.ipMax,
+                    deltaCurrentIpMax: deltaCurrentIpMax,
+                    deltaCurrentIpMin: deltaCurrentIpMin,
+                    current: current,
+                    connectableId: '', // we have to add this otherwise it's automatically filtered
+                    ...firstLimitViolation,
+                });
+                limitViolations.slice(1).forEach((lv) => {
+                    rows.push({
+                        limitType: intl.formatMessage({
+                            id: lv.limitType,
+                        }),
+                        limitMin: lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT' ? lv.limit : null,
+                        limitMax: lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT' ? lv.limit : null,
+                        current: lv.value,
+                        elementId: '', // we have to add this otherwise it's automatically filtered
+                        faultType: '', // we have to add this otherwise it's automatically filtered
+                        connectableId: '', // we have to add this otherwise it's automatically filtered
+                    });
+                });
+                const feederResults = faultResult.feederResults ?? [];
+                feederResults.forEach((feederResult) => {
+                    const current = getCurrent(feederResult);
+                    const side = analysisType === ShortCircuitAnalysisType.ONE_BUS ? feederResult.side : undefined;
 
                     rows.push({
-                        faultId: fault.id,
-                        elementId: fault.elementId,
-                        faultType: intl.formatMessage({ id: fault.faultType }),
-                        shortCircuitPower: faultResult.shortCircuitPower,
-                        limitMin: faultResult.shortCircuitLimits.ipMin,
-                        limitMax: faultResult.shortCircuitLimits.ipMax,
-                        deltaCurrentIpMax: deltaCurrentIpMax,
-                        deltaCurrentIpMin: deltaCurrentIpMin,
+                        connectableId: feederResult.connectableId,
+                        linkedElementId: fault.id,
                         current: current,
-                        connectableId: '', // we have to add this otherwise it's automatically filtered
-                        ...firstLimitViolation,
+                        elementId: '', // we have to add this otherwise it's automatically filtered
+                        faultType: '', // we have to add this otherwise it's automatically filtered
+                        limitType: '', // we have to add this otherwise it's automatically filtered
+                        side: convertSide(side, intl),
                     });
-                    limitViolations.slice(1).forEach((lv) => {
-                        rows.push({
-                            limitType: intl.formatMessage({
-                                id: lv.limitType,
-                            }),
-                            limitMin:
-                                lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                                    ? lv.limit
-                                    : null,
-                            limitMax:
-                                lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                                    ? lv.limit
-                                    : null,
-                            current: lv.value,
-                            elementId: '', // we have to add this otherwise it's automatically filtered
-                            faultType: '', // we have to add this otherwise it's automatically filtered
-                            connectableId: '', // we have to add this otherwise it's automatically filtered
-                        });
-                    });
-                    const feederResults = faultResult.feederResults ?? [];
-                    feederResults.forEach((feederResult) => {
-                        const current = getCurrent(feederResult);
-
-                        rows.push({
-                            connectableId: feederResult.connectableId,
-                            linkedElementId: fault.id,
-                            current: current,
-                            elementId: '', // we have to add this otherwise it's automatically filtered
-                            faultType: '', // we have to add this otherwise it's automatically filtered
-                            limitType: '', // we have to add this otherwise it's automatically filtered
-                        });
-                    });
-                }
-            );
+                });
+            });
             return rows;
         },
-        [getCurrent, intl]
+        [getCurrent, intl, analysisType]
     );
     const rows = useMemo(() => flattenResult(result), [flattenResult, result]);
 
-    const message = getNoRowsMessage(
-        messages,
-        rows,
-        shortCircuitAnalysisStatus,
-        !isFetching
-    );
+    const message = getNoRowsMessage(messages, rows, shortCircuitAnalysisStatus, !isFetching);
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 
     return (

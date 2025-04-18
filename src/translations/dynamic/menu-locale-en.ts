@@ -16,6 +16,7 @@ const menu_locale_en = {
     Trip2WTransformer: 'Trip the transformer',
     Trip3WTransformer: 'Trip the transformer',
     TripLine: 'Trip the line',
+    TripBusbarSection: 'Trip the bus bar section',
     TripHvdcLine: 'Trip the HVDC line',
     UnableToEnergiseOnOneEndLine: 'Unable to energise the line end',
     UnableToLockout2WTransformer: 'Unable to lockout the transformer',
@@ -26,6 +27,7 @@ const menu_locale_en = {
     UnableToTrip2WTransformer: 'Unable to trip the transformer',
     UnableToTrip3WTransformer: 'Unable to trip the transformer',
     UnableToTripLine: 'Unable to trip the line',
+    UnableToTripBusbarSection: 'Unable to trip the bus bar section',
     UnableToTripHvdcLine: 'Unable to trip the HVDC line',
 
     // Dynamic simulation events with format `{eventType}{equipmentType}`

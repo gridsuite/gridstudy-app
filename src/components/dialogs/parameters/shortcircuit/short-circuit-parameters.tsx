@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -16,20 +16,9 @@ import {
     SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
     SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
 } from '../../../utils/field-constants';
-import {
-    CheckboxInput,
-    FieldLabel,
-    MuiSelectInput,
-    RadioInput,
-    SwitchInput,
-} from '@gridsuite/commons-ui';
+import { CheckboxInput, FieldLabel, MuiSelectInput, RadioInput, SwitchInput } from '@gridsuite/commons-ui';
 
-import {
-    INITIAL_VOLTAGE,
-    PREDEFINED_PARAMETERS,
-    STATUS,
-} from '../../../utils/constants';
-import { gridItem, GridSection } from '../../dialogUtils';
+import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS, STATUS } from '../../../utils/constants';
 import { green, red } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
 import VoltageTable from './short-circuit-voltage-table';
@@ -39,10 +28,10 @@ import {
     intlPredefinedParametersOptions,
 } from './short-circuit-parameters-utils';
 import { ShortCircuitFieldsProps } from './short-circuit-parameters.type';
+import GridItem from '../../commons/grid-item';
+import GridSection from '../../commons/grid-section';
 
-const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
-    resetAll,
-}) => {
+const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetAll }) => {
     const [status, setStatus] = useState(STATUS.SUCCESS);
 
     const watchInitialVoltageProfileMode = useWatch({
@@ -65,21 +54,11 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     });
 
     const isIccMinFeaturesDefaultConfiguration = useMemo(() => {
-        return (
-            !watchLoads &&
-            !watchShuntCompensators &&
-            !watchVSC &&
-            !watchNeutralPosition
-        );
+        return !watchLoads && !watchShuntCompensators && !watchVSC && !watchNeutralPosition;
     }, [watchLoads, watchShuntCompensators, watchVSC, watchNeutralPosition]);
 
     const isIccMaxFeaturesDefaultConfiguration = useMemo(() => {
-        return (
-            !watchLoads &&
-            !watchShuntCompensators &&
-            watchVSC &&
-            !watchNeutralPosition
-        );
+        return !watchLoads && !watchShuntCompensators && watchVSC && !watchNeutralPosition;
     }, [watchLoads, watchShuntCompensators, watchVSC, watchNeutralPosition]);
 
     // the translation of values
@@ -104,10 +83,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
 
     const onPredefinedParametersManualChange = (event: any) => {
         const newPredefinedParameters = event.target.value;
-        console.debug(
-            'onPredefinedParametersManualChange new:',
-            newPredefinedParameters
-        );
+        console.debug('onPredefinedParametersManualChange new:', newPredefinedParameters);
         resetAll(newPredefinedParameters);
     };
 
@@ -137,69 +113,40 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
             options={Object.values(initialVoltageProfileMode)}
         />
     );
-    const loads = (
-        <CheckboxInput
-            name={SHORT_CIRCUIT_WITH_LOADS}
-            label={'shortCircuitLoads'}
-        />
-    );
-    const vsc = (
-        <CheckboxInput
-            name={SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS}
-            label={'shortCircuitHvdc'}
-        />
-    );
+    const loads = <CheckboxInput name={SHORT_CIRCUIT_WITH_LOADS} label={'shortCircuitLoads'} />;
+    const vsc = <CheckboxInput name={SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS} label={'shortCircuitHvdc'} />;
     const shuntCompensators = (
-        <CheckboxInput
-            name={SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS}
-            label={'shortCircuitShuntCompensators'}
-        />
+        <CheckboxInput name={SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS} label={'shortCircuitShuntCompensators'} />
     );
     const neutralPosition = (
-        <CheckboxInput
-            name={SHORT_CIRCUIT_WITH_NEUTRAL_POSITION}
-            label={'shortCircuitNeutralPosition'}
-        />
+        <CheckboxInput name={SHORT_CIRCUIT_WITH_NEUTRAL_POSITION} label={'shortCircuitNeutralPosition'} />
     );
 
     useEffect(() => {
         // in order to show the right status we need to check the predefinedParams and initial voltage profile mode values
         // show success only if ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP is associated to NOMINAL or ICC_MAX_WITH_CEI909 to CEI909 or ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP is associated to NOMINAL
         const isIccMaxWithNominalVoltageMap =
-            watchPredefinedParams ===
-            PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP;
+            watchPredefinedParams === PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP;
 
-        const isIccMinWithNominal =
-            watchPredefinedParams ===
-            PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP;
+        const isIccMinWithNominal = watchPredefinedParams === PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP;
 
-        const isInitialVoltageNominal =
-            watchInitialVoltageProfileMode === INITIAL_VOLTAGE.NOMINAL;
+        const isInitialVoltageNominal = watchInitialVoltageProfileMode === INITIAL_VOLTAGE.NOMINAL;
 
-        const isIccMaxNominalDefaultConfiguration =
-            isIccMaxWithNominalVoltageMap && isInitialVoltageNominal;
-        const isIccMinNominalDefaultConfiguration =
-            isIccMinWithNominal && isInitialVoltageNominal;
+        const isIccMaxNominalDefaultConfiguration = isIccMaxWithNominalVoltageMap && isInitialVoltageNominal;
+        const isIccMinNominalDefaultConfiguration = isIccMinWithNominal && isInitialVoltageNominal;
 
         const isCEI909DefaultConfiguration =
-            watchPredefinedParams ===
-                PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909 &&
+            watchPredefinedParams === PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909 &&
             watchInitialVoltageProfileMode === INITIAL_VOLTAGE.CEI909;
 
         const isIccMaxDefaultConfiguration =
-            (isIccMaxNominalDefaultConfiguration ||
-                isCEI909DefaultConfiguration) &&
+            (isIccMaxNominalDefaultConfiguration || isCEI909DefaultConfiguration) &&
             isIccMaxFeaturesDefaultConfiguration;
 
         const isIccMinDefaultConfiguration =
-            isIccMinNominalDefaultConfiguration &&
-            isIccMinFeaturesDefaultConfiguration;
+            isIccMinNominalDefaultConfiguration && isIccMinFeaturesDefaultConfiguration;
 
-        setStatus(
-            isIccMaxDefaultConfiguration || isIccMinDefaultConfiguration
-                ? STATUS.SUCCESS
-                : STATUS.ERROR
-        );
+        setStatus(isIccMaxDefaultConfiguration || isIccMinDefaultConfiguration ? STATUS.SUCCESS : STATUS.ERROR);
     }, [
         watchInitialVoltageProfileMode,
         watchPredefinedParams,
@@ -210,28 +157,28 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     return (
         <Grid container spacing={2} paddingLeft={2}>
             <Grid container paddingTop={2} xl={6}>
-                {gridItem(feederResult, 9)}
+                <GridItem size={9}>{feederResult}</GridItem>
             </Grid>
-            <GridSection
-                title="ShortCircuitPredefinedParameters"
-                heading={'4'}
-            />
+            <GridSection title="ShortCircuitPredefinedParameters" heading={4} />
             <Grid xl={6} container spacing={1} alignItems={'center'}>
-                {gridItem(predefinedParameters, 8)}
-                {gridItem(statusToShow, 4)}
+                <GridItem size={8}>{predefinedParameters}</GridItem>
+                <GridItem size={4}>{statusToShow}</GridItem>
             </Grid>
-            <GridSection title="ShortCircuitCharacteristics" heading={'4'} />
-            <Grid>
-                {gridItem(loads, 6)}
-                {gridItem(shuntCompensators, 6)}
+            <GridSection title="ShortCircuitCharacteristics" heading={4} />
+            <Grid container spacing={5}>
+                <Grid item>
+                    <GridItem>{loads}</GridItem>
+                    <GridItem>{shuntCompensators}</GridItem>
+                </Grid>
+                <Grid item xs={8}>
+                    <GridItem>{vsc}</GridItem>
+                    <GridItem>{neutralPosition}</GridItem>
+                </Grid>
             </Grid>
-            <Grid marginLeft={4}>
-                {gridItem(vsc, 4)}
-                {gridItem(neutralPosition, 8)}
+            <GridSection title="ShortCircuitVoltageProfileMode" heading={4} />
+            <Grid container>
+                <GridItem size={12}>{initialVoltageProfileModeField}</GridItem>
             </Grid>
-
-            <GridSection title="ShortCircuitVoltageProfileMode" heading={'4'} />
-            <Grid>{gridItem(initialVoltageProfileModeField, 12)}</Grid>
             <VoltageTable voltageProfileMode={watchInitialVoltageProfileMode} />
         </Grid>
     );

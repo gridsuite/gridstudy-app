@@ -5,58 +5,77 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+    convertInputValue,
+    convertOutputValue,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ADDITIONAL_PROPERTIES,
     B1,
     B2,
+    STATE_ESTIMATION,
+    BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
+    CONNECTIVITY_1,
+    CONNECTIVITY_2,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     EQUIPMENT_NAME,
     G1,
     G2,
+    ID,
     LIMITS,
+    MEASUREMENT_P1,
+    MEASUREMENT_P2,
+    MEASUREMENT_Q1,
+    MEASUREMENT_Q2,
     PERMANENT_LIMIT,
     R,
     TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
+    VALUE,
+    VALIDITY,
+    VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from 'components/dialogs/dialogUtils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
+import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 
-import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import {
     addModificationTypeToTemporaryLimits,
     getLimitsEmptyFormData,
-    getLimitsFormData,
+    getSelectedLimitsFormData,
     getLimitsValidationSchema,
     sanitizeLimitNames,
     updateTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsValidationSchema,
     getCharacteristicsWithOutConnectivityFormData,
 } from '../characteristics-pane/line-characteristics-pane-utils';
-import { formatTemporaryLimits } from 'components/utils/utils';
+import { addSelectedFieldToRows, formatTemporaryLimits } from 'components/utils/utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -68,11 +87,19 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-
-export const LineCreationDialogTab = {
-    CHARACTERISTICS_TAB: 0,
-    LIMITS_TAB: 1,
-};
+import {
+    createConnectivityData,
+    getCon1andCon2WithPositionValidationSchema,
+    getConnectivityFormData,
+    getCont1Cont2WithPositionEmptyFormData,
+} from '../../../connectivity/connectivity-form-utils';
+import {
+    getBranchActiveReactivePowerEditData,
+    getBranchActiveReactivePowerEmptyFormData,
+    getBranchActiveReactivePowerValidationSchema,
+} from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
+import { LineModificationDialogTab } from '../line-utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
 
 /**
  * Dialog to modify a line in the network
@@ -90,6 +117,7 @@ const LineModificationDialog = ({
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     displayConnectivity = false,
     isUpdate,
     editDataFetchStatus,
@@ -101,20 +129,15 @@ const LineModificationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState(null);
-    const [tabIndex, setTabIndex] = useState(
-        LineCreationDialogTab.CHARACTERISTICS_TAB
-    );
-    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] =
-        useState(false);
-
+    const [tabIndex, setTabIndex] = useState(LineModificationDialogTab.CONNECTIVITY_TAB);
+    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
-            ...getCharacteristicsEmptyFormData(
-                CHARACTERISTICS,
-                displayConnectivity
-            ),
+            ...getCont1Cont2WithPositionEmptyFormData(true),
+            ...getCharacteristicsEmptyFormData(CHARACTERISTICS, displayConnectivity),
             ...getLimitsEmptyFormData(),
+            ...getBranchActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
             ...emptyProperties,
         }),
         [displayConnectivity]
@@ -124,12 +147,10 @@ const LineModificationDialog = ({
         .object()
         .shape({
             [EQUIPMENT_NAME]: yup.string(),
-            ...getCharacteristicsValidationSchema(
-                CHARACTERISTICS,
-                displayConnectivity,
-                true
-            ),
-            ...getLimitsValidationSchema(),
+            ...getCon1andCon2WithPositionValidationSchema(true),
+            ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
+            ...getLimitsValidationSchema(true),
+            ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
         })
         .concat(modificationPropertiesSchema)
         .required();
@@ -142,39 +163,36 @@ const LineModificationDialog = ({
     const { reset, setValue, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (line, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
-            if (line?.equipmentId) {
-                setSelectedId(line.equipmentId);
+        (lineModification) => {
+            if (lineModification?.equipmentId) {
+                setSelectedId(lineModification.equipmentId);
             }
             reset({
-                [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
+                [EQUIPMENT_NAME]: lineModification.equipmentName?.value ?? '',
+                [CONNECTIVITY]: {
+                    ...getConnectivityFormData(createConnectivityData(lineModification, 1), CONNECTIVITY_1),
+                    ...getConnectivityFormData(createConnectivityData(lineModification, 2), CONNECTIVITY_2),
+                },
+                ...getBranchActiveReactivePowerEditData(STATE_ESTIMATION, lineModification),
                 ...getCharacteristicsWithOutConnectivityFormData({
-                    r: line.r?.value ?? null,
-                    x: line.x?.value ?? null,
-                    g1: unitToMicroUnit(line.g1?.value ?? null),
-                    b1: unitToMicroUnit(line.b1?.value ?? null),
-                    g2: unitToMicroUnit(line.g2?.value ?? null),
-                    b2: unitToMicroUnit(line.b2?.value ?? null),
+                    r: lineModification.r?.value ?? null,
+                    x: lineModification.x?.value ?? null,
+                    g1: convertInputValue(FieldType.G1, lineModification.g1?.value ?? null),
+                    b1: convertInputValue(FieldType.B1, lineModification.b1?.value ?? null),
+                    g2: convertInputValue(FieldType.G2, lineModification.g2?.value ?? null),
+                    b2: convertInputValue(FieldType.B2, lineModification.b2?.value ?? null),
                 }),
-                ...getLimitsFormData({
-                    permanentLimit1: line.currentLimits1?.permanentLimit,
-                    permanentLimit2: line.currentLimits2?.permanentLimit,
+                ...getSelectedLimitsFormData({
+                    permanentLimit1: lineModification.currentLimits1?.permanentLimit,
+                    permanentLimit2: lineModification.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        updatedTemporaryLimits1
-                            ? updatedTemporaryLimits1
-                            : formatTemporaryLimits(
-                                  line.currentLimits1?.temporaryLimits
-                              )
+                        formatTemporaryLimits(lineModification.currentLimits1?.temporaryLimits)
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        updatedTemporaryLimits2
-                            ? updatedTemporaryLimits2
-                            : formatTemporaryLimits(
-                                  line.currentLimits2?.temporaryLimits
-                              )
+                        formatTemporaryLimits(lineModification.currentLimits2?.temporaryLimits)
                     ),
                 }),
-                ...getPropertiesFromModification(line.properties),
+                ...getPropertiesFromModification(lineModification.properties),
             });
         },
         [reset]
@@ -182,106 +200,111 @@ const LineModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(
-                editData,
-                updateTemporaryLimits(
-                    formatTemporaryLimits(
-                        editData.currentLimits1?.temporaryLimits
-                    ),
-                    formatTemporaryLimits(
-                        lineToModify?.currentLimits1?.temporaryLimits
-                    )
-                ),
-                updateTemporaryLimits(
-                    formatTemporaryLimits(
-                        editData.currentLimits2?.temporaryLimits
-                    ),
-                    formatTemporaryLimits(
-                        lineToModify?.currentLimits2?.temporaryLimits
-                    )
-                )
-            );
+            fromEditDataToFormValues(editData);
         }
-    }, [fromEditDataToFormValues, editData, lineToModify]);
+    }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
         (line) => {
+            const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
+            const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
+            const stateEstimationData = line[STATE_ESTIMATION];
             const limits = line[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
-                ),
-                lineToModify?.currentLimits1?.temporaryLimits,
-                editData?.currentLimits1?.temporaryLimits,
+                sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
+                completeCurrentLimitsGroupsToOnlySelected(
+                    lineToModify?.currentLimits1,
+                    lineToModify?.selectedOperationalLimitsGroup1
+                )?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    editData?.currentLimits1,
+                    editData?.selectedOperationalLimitsGroup1
+                )?.temporaryLimits,
                 currentNode
             );
             let currentLimits1 = null;
-            if (
-                limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT] ||
-                temporaryLimits1.length > 0
-            ) {
+            if (limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT] || temporaryLimits1.length > 0) {
                 currentLimits1 = {
                     permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
                     temporaryLimits: temporaryLimits1,
                 };
             }
             const temporaryLimits2 = addModificationTypeToTemporaryLimits(
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
-                ),
-                lineToModify?.currentLimits2?.temporaryLimits,
-                editData?.currentLimits2?.temporaryLimits,
+                sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
+                completeCurrentLimitsGroupsToOnlySelected(
+                    lineToModify?.currentLimits2,
+                    lineToModify?.selectedOperationalLimitsGroup2
+                )?.temporaryLimits,
+                completeCurrentLimitsGroupsToOnlySelected(
+                    editData?.currentLimits2,
+                    editData?.selectedOperationalLimitsGroup2
+                )?.temporaryLimits,
                 currentNode
             );
             let currentLimits2 = null;
-            if (
-                limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT] ||
-                temporaryLimits2.length > 0
-            ) {
+            if (limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT] || temporaryLimits2.length > 0) {
                 currentLimits2 = {
                     permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
                     temporaryLimits: temporaryLimits2,
                 };
             }
 
-            modifyLine(
-                studyUuid,
-                currentNodeUuid,
-                selectedId,
-                sanitizeString(line[EQUIPMENT_NAME]),
-                characteristics[R],
-                characteristics[X],
-                microUnitToUnit(characteristics[G1]),
-                microUnitToUnit(characteristics[B1]),
-                microUnitToUnit(characteristics[G2]),
-                microUnitToUnit(characteristics[B2]),
-                currentLimits1,
-                currentLimits2,
-                !!editData,
-                editData?.uuid,
-                toModificationProperties(line)
-            ).catch((error) => {
+            modifyLine({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                lineId: selectedId,
+                lineName: sanitizeString(line[EQUIPMENT_NAME]),
+                r: characteristics[R],
+                x: characteristics[X],
+                g1: convertOutputValue(FieldType.G1, characteristics[G1]),
+                b1: convertOutputValue(FieldType.B1, characteristics[B1]),
+                g2: convertOutputValue(FieldType.G2, characteristics[G2]),
+                b2: convertOutputValue(FieldType.B2, characteristics[B2]),
+                currentLimit1: currentLimits1,
+                currentLimit2: currentLimits2,
+                voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
+                busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
+                voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,
+                busOrBusbarSectionId2: connectivity2[BUS_OR_BUSBAR_SECTION]?.id,
+                connectionName1: sanitizeString(connectivity1[CONNECTION_NAME]),
+                connectionName2: sanitizeString(connectivity2[CONNECTION_NAME]),
+                connectionDirection1: connectivity1[CONNECTION_DIRECTION],
+                connectionDirection2: connectivity2[CONNECTION_DIRECTION],
+                connectionPosition1: connectivity1[CONNECTION_POSITION],
+                connectionPosition2: connectivity2[CONNECTION_POSITION],
+                connected1: connectivity1[CONNECTED],
+                connected2: connectivity2[CONNECTED],
+                properties: toModificationProperties(line),
+                p1MeasurementValue: stateEstimationData[MEASUREMENT_P1][VALUE],
+                p1MeasurementValidity: stateEstimationData[MEASUREMENT_P1][VALIDITY],
+                q1MeasurementValue: stateEstimationData[MEASUREMENT_Q1][VALUE],
+                q1MeasurementValidity: stateEstimationData[MEASUREMENT_Q1][VALIDITY],
+                p2MeasurementValue: stateEstimationData[MEASUREMENT_P2][VALUE],
+                p2MeasurementValidity: stateEstimationData[MEASUREMENT_P2][VALIDITY],
+                q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][VALUE],
+                q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LineModificationError',
                 });
             });
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            selectedId,
-            lineToModify,
-            editData,
-            currentNode,
-            snackError,
-        ]
+        [studyUuid, currentNodeUuid, selectedId, lineToModify, editData, currentNode, snackError]
     );
 
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [emptyFormData, reset]);
+
+    const setConnectivityValue = useCallback(
+        (index, field, value) => {
+            setValue(`${CONNECTIVITY}.${index}.${field}.${ID}`, value);
+        },
+        [setValue]
+    );
 
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
@@ -290,6 +313,7 @@ const LineModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -298,32 +322,36 @@ const LineModificationDialog = ({
                     .then((line) => {
                         if (line) {
                             setLineToModify(line);
-                            if (editData?.equipmentId !== selectedId) {
-                                reset((formValues) => ({
-                                    ...formValues,
-                                    ...getLimitsFormData({
-                                        temporaryLimits1:
-                                            addSelectedFieldToRows(
-                                                formatTemporaryLimits(
-                                                    line.currentLimits1
-                                                        ?.temporaryLimits
-                                                )
-                                            ),
-                                        temporaryLimits2:
-                                            addSelectedFieldToRows(
-                                                formatTemporaryLimits(
-                                                    line.currentLimits2
-                                                        ?.temporaryLimits
-                                                )
-                                            ),
-                                    }),
-                                    [ADDITIONAL_PROPERTIES]:
-                                        getConcatenatedProperties(
-                                            line,
-                                            getValues
-                                        ),
-                                }));
-                            }
+                            setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, line?.voltageLevelId1);
+                            setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, line?.voltageLevelId2);
+                            setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
+                            setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
+                            const selectedCurrentLimits1 = completeCurrentLimitsGroupsToOnlySelected(
+                                line?.currentLimits1,
+                                line?.selectedOperationalLimitsGroup1
+                            );
+                            const selectedCurrentLimits2 = completeCurrentLimitsGroupsToOnlySelected(
+                                line?.currentLimits2,
+                                line?.selectedOperationalLimitsGroup2
+                            );
+                            const updatedTemporaryLimits1 = updateTemporaryLimits(
+                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(selectedCurrentLimits1?.temporaryLimits)
+                            );
+                            const updatedTemporaryLimits2 = updateTemporaryLimits(
+                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
+                                formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
+                            );
+                            reset((formValues) => ({
+                                ...formValues,
+                                ...getSelectedLimitsFormData({
+                                    permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
+                                    permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
+                                    temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
+                                    temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
+                                }),
+                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
+                            }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -342,11 +370,12 @@ const LineModificationDialog = ({
         [
             studyUuid,
             currentNodeUuid,
-            selectedId,
-            editData,
-            reset,
-            emptyFormData,
+            currentRootNetworkUuid,
+            setConnectivityValue,
             getValues,
+            reset,
+            editData?.equipmentId,
+            emptyFormData,
         ]
     );
 
@@ -359,26 +388,28 @@ const LineModificationDialog = ({
     const onValidationError = (errors) => {
         let tabsInError = [];
         if (errors?.[LIMITS] !== undefined) {
-            tabsInError.push(LineCreationDialogTab.LIMITS_TAB);
+            tabsInError.push(LineModificationDialogTab.LIMITS_TAB);
         }
         if (errors?.[CHARACTERISTICS] !== undefined) {
-            tabsInError.push(LineCreationDialogTab.CHARACTERISTICS_TAB);
+            tabsInError.push(LineModificationDialogTab.CHARACTERISTICS_TAB);
         }
-
+        if (errors?.[CONNECTIVITY] !== undefined) {
+            tabsInError.push(LineModificationDialogTab.CONNECTIVITY_TAB);
+        }
+        if (errors?.[STATE_ESTIMATION] !== undefined) {
+            tabsInError.push(LineModificationDialogTab.STATE_ESTIMATION_TAB);
+        }
         if (tabsInError.length > 0) {
             setTabIndex(tabsInError[0]);
         }
-
         setTabIndexesWithError(tabsInError);
     };
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            ((editDataFetchStatus === FetchStatus.SUCCEED ||
-                editDataFetchStatus === FetchStatus.FAILED) &&
-                (dataFetchStatus === FetchStatus.SUCCEED ||
-                    dataFetchStatus === FetchStatus.FAILED)),
+            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
 
@@ -416,13 +447,14 @@ const LineModificationDialog = ({
             validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
         >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
                 onValidationError={onValidationError}
-                aria-labelledby="dialog-modify-line"
                 maxWidth={'md'}
                 titleId="ModifyLine"
                 subtitle={selectedId != null ? headerAndTabs : undefined}
@@ -430,26 +462,18 @@ const LineModificationDialog = ({
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        dataFetchStatus === FetchStatus.RUNNING)
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
-                onOpenCatalogDialog={
-                    selectedId != null
-                        ? () => setOpenLineTypesCatalogDialog(true)
-                        : undefined
-                }
+                onOpenCatalogDialog={selectedId != null ? () => setOpenLineTypesCatalogDialog(true) : undefined}
                 {...dialogProps}
             >
                 {selectedId == null && (
                     <EquipmentIdSelector
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.LINE}
@@ -460,6 +484,7 @@ const LineModificationDialog = ({
                         <LineModificationDialogTabs
                             studyUuid={studyUuid}
                             currentNode={currentNode}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
                             lineToModify={lineToModify}
                             tabIndex={tabIndex}
                         />

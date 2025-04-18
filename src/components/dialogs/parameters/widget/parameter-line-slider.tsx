@@ -5,15 +5,15 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, SliderInput } from '@gridsuite/commons-ui';
 import { Mark } from '@mui/base/useSlider';
-import { Grid, Slider } from '@mui/material';
-import { useState } from 'react';
+import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { styles, useParameterState } from '../parameters';
+import { sanitizePercentageValue } from 'components/dialogs/percentage-area/percentage-area-utils';
+import { styles } from '../parameters-style';
 
 type SliderParameterLineProps = {
-    readonly paramNameId: string;
+    name: string;
     disabled?: boolean;
     label: string;
     marks: boolean | Mark[];
@@ -21,46 +21,34 @@ type SliderParameterLineProps = {
     maxValue?: number; //default = 100;
 };
 
-const ParameterLineSlider = ({
-    paramNameId,
+function ParameterLineSlider({
+    name,
     label,
     marks,
     disabled = false,
     minValue = 0,
     maxValue = 100,
-}: SliderParameterLineProps) => {
-    const [parameterValue, handleChangeParameterValue] =
-        useParameterState(paramNameId);
-    const [sliderValue, setSliderValue] = useState(Number(parameterValue));
-
+}: Readonly<SliderParameterLineProps>) {
     return (
         <>
             <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid
-                item
-                container
-                xs={4}
-                sx={mergeSx(styles.controlItem, { paddingRight: 2 })}
-            >
-                <Slider
+            <Grid item container xs={4} sx={mergeSx(styles.controlItem, { paddingRight: 2 })}>
+                <SliderInput
+                    name={name}
                     min={minValue}
                     max={maxValue}
                     valueLabelDisplay="auto"
-                    onChange={(_event, newValue) => {
-                        setSliderValue(Number(newValue));
-                    }}
-                    onChangeCommitted={(_event, value) => {
-                        handleChangeParameterValue(value);
-                    }}
-                    value={sliderValue}
+                    step={0.01}
+                    size="medium"
                     disabled={disabled ?? false}
                     marks={marks}
+                    valueLabelFormat={(value) => sanitizePercentageValue(value * 100)}
                 />
             </Grid>
         </>
     );
-};
+}
 
 export default ParameterLineSlider;

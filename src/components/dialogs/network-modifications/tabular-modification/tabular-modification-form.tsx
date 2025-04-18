@@ -5,18 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import {
-    AutocompleteInput,
-    CustomAGGrid,
-    ErrorInput,
-    FieldErrorAlert,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
-import { gridItem } from 'components/dialogs/dialogUtils';
+import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     CONNECTED,
     CONNECTED1,
@@ -27,19 +19,14 @@ import {
     VOLTAGE_REGULATION_ON,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
-import { Alert, Button } from '@mui/material';
-import {
-    TABULAR_MODIFICATION_FIELDS,
-    styles,
-} from './tabular-modification-utils';
-import {
-    BooleanNullableCellRenderer,
-    DefaultCellRenderer,
-} from 'components/spreadsheet/utils/cell-renderers';
+import { Alert, Button, Grid } from '@mui/material';
+import { TABULAR_MODIFICATION_FIELDS, styles } from './tabular-modification-utils';
+import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
+import GridItem from '../../commons/grid-item';
+import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 
 const TabularModificationForm = () => {
     const intl = useIntl();
@@ -69,8 +56,7 @@ const TabularModificationForm = () => {
                 results.data.some(
                     (modification) =>
                         modification.maxSusceptance &&
-                        (modification.shuntCompensatorType ||
-                            modification.maxQAtNominalV)
+                        (modification.shuntCompensatorType || modification.maxQAtNominalV)
                 )
             ) {
                 snackWarning({
@@ -100,11 +86,7 @@ const TabularModificationForm = () => {
         if (csvTranslatedColumns) {
             // First comment line contains header translation
             commentData.push(['#' + csvTranslatedColumns.join(',')]);
-            if (
-                !!intl.messages[
-                    'TabularModificationSkeletonComment.' + watchType
-                ]
-            ) {
+            if (!!intl.messages['TabularModificationSkeletonComment.' + watchType]) {
                 // Optionally a second comment line, if present in translation file
                 commentData.push([
                     intl.formatMessage({
@@ -120,7 +102,6 @@ const TabularModificationForm = () => {
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
         label: 'ImportModifications',
         header: csvColumns,
-        maxTapNumber: undefined,
         disabled: !csvColumns,
         resetTrigger: typeChangedTrigger,
     });
@@ -142,9 +123,7 @@ const TabularModificationForm = () => {
                 complete: handleComplete,
                 transformHeader: (header: string) => {
                     // transform header to modification field
-                    const transformedHeader = TABULAR_MODIFICATION_FIELDS[
-                        getValues(TYPE)
-                    ]?.find(
+                    const transformedHeader = TABULAR_MODIFICATION_FIELDS[getValues(TYPE)]?.find(
                         (field) => intl.formatMessage({ id: field }) === header
                     );
                     return transformedHeader ?? header;
@@ -152,15 +131,7 @@ const TabularModificationForm = () => {
                 transform: (value) => value.trim(),
             });
         }
-    }, [
-        clearErrors,
-        getValues,
-        handleComplete,
-        intl,
-        selectedFile,
-        selectedFileError,
-        setValue,
-    ]);
+    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue]);
 
     const typesOptions = useMemo(() => {
         //only available types for tabular modification
@@ -224,7 +195,7 @@ const TabularModificationForm = () => {
     return (
         <Grid container spacing={2} direction={'row'}>
             <Grid container item spacing={2} alignItems={'center'}>
-                {gridItem(equipmentTypeField, 4)}
+                <GridItem size={4}>{equipmentTypeField}</GridItem>
                 <Grid item>{FileField}</Grid>
             </Grid>
             <Grid container item spacing={2} alignItems={'center'}>
@@ -241,13 +212,8 @@ const TabularModificationForm = () => {
                     </CsvDownloader>
                 </Grid>
                 <Grid item>
-                    <ErrorInput
-                        name={MODIFICATIONS_TABLE}
-                        InputField={FieldErrorAlert}
-                    />
-                    {selectedFileError && (
-                        <Alert severity="error">{selectedFileError}</Alert>
-                    )}
+                    <ErrorInput name={MODIFICATIONS_TABLE} InputField={FieldErrorAlert} />
+                    {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
                 </Grid>
             </Grid>
             <Grid item xs={12} sx={styles.grid}>

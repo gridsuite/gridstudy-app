@@ -8,13 +8,7 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ExportButton } from 'components/utils/export-button';
 import { UUID } from 'crypto';
-import {
-    FunctionComponent,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
 import { downloadZipFile } from 'services/utils';
@@ -24,15 +18,14 @@ import { PERMANENT_LIMIT_NAME } from '../common/utils';
 interface SecurityAnalysisExportButtonProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    rootNetworkUuid: UUID;
     csvHeaders?: string[];
     resultType: RESULT_TYPE;
     disabled?: boolean;
 }
 
-export const SecurityAnalysisExportButton: FunctionComponent<
-    SecurityAnalysisExportButtonProps
-> = (props) => {
-    const { studyUuid, nodeUuid, csvHeaders, disabled, resultType } = props;
+export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExportButtonProps> = (props) => {
+    const { studyUuid, nodeUuid, rootNetworkUuid, csvHeaders, disabled, resultType } = props;
     const { snackError } = useSnackMessage();
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
@@ -78,6 +71,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<
         downloadSecurityAnalysisResultZippedCsv(
             studyUuid,
             nodeUuid,
+            rootNetworkUuid,
             {
                 resultType,
             },
@@ -97,15 +91,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<
                 });
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [
-        resultType,
-        csvHeaders,
-        enumValueTranslations,
-        studyUuid,
-        nodeUuid,
-        snackError,
-        intl,
-    ]);
+    }, [resultType, csvHeaders, enumValueTranslations, studyUuid, nodeUuid, rootNetworkUuid, snackError, intl]);
 
     return (
         <ExportButton

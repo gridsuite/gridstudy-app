@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
@@ -13,28 +13,14 @@ import SplitButton from './utils/split-button';
 import RunningStatus from './utils/running-status';
 import ComputingType from './computing-status/computing-type';
 
-const RunButton = ({
-    runnables,
-    activeRunnables,
-    getStatus,
-    computationStopped,
-    disabled,
-}) => {
+const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
     const intl = useIntl();
 
     const runnablesText = useMemo(
-        () =>
-            Object.fromEntries(
-                activeRunnables.map((k) => [
-                    k,
-                    intl.formatMessage({ id: runnables[k].messageId }),
-                ])
-            ),
+        () => Object.fromEntries(activeRunnables.map((k) => [k, intl.formatMessage({ id: runnables[k].messageId })])),
         [intl, runnables, activeRunnables]
     );
-    const [selectedRunnable, setSelectedRunnable] = React.useState(
-        activeRunnables[0]
-    );
+    const [selectedRunnable, setSelectedRunnable] = useState(activeRunnables[0]);
 
     function getOptions() {
         switch (getRunningStatus()) {
@@ -64,25 +50,33 @@ const RunButton = ({
         if (selectedRunnable === ComputingType.LOAD_FLOW) {
             // We run once loadflow analysis, as it will always return the same result for one hypothesis
             return getRunningStatus() !== RunningStatus.IDLE;
-        } else if (selectedRunnable === ComputingType.DYNAMIC_SIMULATION) {
+        }
+
+        if (selectedRunnable === ComputingType.DYNAMIC_SIMULATION) {
             // Load flow button's status must be "SUCCEED"
             return (
                 getRunningStatus() === RunningStatus.RUNNING ||
                 getStatus(ComputingType.LOAD_FLOW) !== RunningStatus.SUCCEED
             );
-        } else {
-            // We can run only 1 computation at a time
-            return getRunningStatus() === RunningStatus.RUNNING;
         }
+
+        if (selectedRunnable === ComputingType.DYNAMIC_SECURITY_ANALYSIS) {
+            // Dynamic simulation button's status must be "SUCCEED"
+            return (
+                getRunningStatus() === RunningStatus.RUNNING ||
+                getStatus(ComputingType.DYNAMIC_SIMULATION) !== RunningStatus.SUCCEED
+            );
+        }
+
+        // We can run only 1 computation at a time
+        return getRunningStatus() === RunningStatus.RUNNING;
     }
 
     return (
         <SplitButton
             options={getOptions()}
             selectedIndex={activeRunnables.indexOf(selectedRunnable)}
-            onSelectionChange={(index) =>
-                setSelectedRunnable(activeRunnables[index])
-            }
+            onSelectionChange={(index) => setSelectedRunnable(activeRunnables[index])}
             onClick={runnables[selectedRunnable].startComputation}
             runningStatus={getRunningStatus()}
             buttonDisabled={disabled || isButtonDisable()}

@@ -8,7 +8,5 @@
 export * from './parameter-float';
 export * from './parameter-group';
 export { default as parameterLineDirectoryItemsInput } from './parameter-line-directory-items-input';
-export { default as parameterLineDropdown } from './parameter-line-dropdown';
 export { default as parameterLineSlider } from './parameter-line-slider';
-export { default as parameterLineSwitch } from './parameter-line-switch';
 export * from './parameter-switch';

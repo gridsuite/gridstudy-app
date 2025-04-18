@@ -22,15 +22,15 @@ import {
     SUBSTATIONS_GENERATORS_ORDERING,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import yup from 'components/utils/yup-config';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import ModificationDialog from '../../commons/modificationDialog';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
-import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import { generationDispatch } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
+import { addSelectedFieldToRows } from 'components/utils/utils';
 
 const emptyFormData = {
     [LOSS_COEFFICIENT]: null,
@@ -62,12 +62,7 @@ const getGeneratorsFrequencyReserveSchema = (id) => ({
                     })
                 )
                 .min(1),
-            [FREQUENCY_RESERVE]: yup
-                .number()
-                .nullable()
-                .min(0)
-                .max(100)
-                .required(),
+            [FREQUENCY_RESERVE]: yup.number().nullable().min(0).max(100).required(),
         })
     ),
 });
@@ -75,11 +70,7 @@ const getGeneratorsFrequencyReserveSchema = (id) => ({
 const getSubstationsGeneratorsOrderingSchema = (id) => ({
     [id]: yup.array().of(
         yup.object().shape({
-            [SUBSTATION_IDS]: yup
-                .array()
-                .of(yup.string().required())
-                .min(1)
-                .required(),
+            [SUBSTATION_IDS]: yup.array().of(yup.string().required()).min(1).required(),
         })
     ),
 });
@@ -88,18 +79,11 @@ const formSchema = yup
     .object()
     .shape({
         [LOSS_COEFFICIENT]: yup.number().nullable().min(0).max(100).required(),
-        [DEFAULT_OUTAGE_RATE]: yup
-            .number()
-            .nullable()
-            .min(0)
-            .max(100)
-            .required(),
+        [DEFAULT_OUTAGE_RATE]: yup.number().nullable().min(0).max(100).required(),
         ...getGeneratorsFiltersSchema(GENERATORS_WITHOUT_OUTAGE),
         ...getGeneratorsFiltersSchema(GENERATORS_WITH_FIXED_ACTIVE_POWER),
         ...getGeneratorsFrequencyReserveSchema(GENERATORS_FREQUENCY_RESERVES),
-        ...getSubstationsGeneratorsOrderingSchema(
-            SUBSTATIONS_GENERATORS_ORDERING
-        ),
+        ...getSubstationsGeneratorsOrderingSchema(SUBSTATIONS_GENERATORS_ORDERING),
     })
     .required();
 
@@ -127,14 +111,9 @@ const GenerationDispatchDialog = ({
                 [LOSS_COEFFICIENT]: generation.lossCoefficient,
                 [DEFAULT_OUTAGE_RATE]: generation.defaultOutageRate,
                 [GENERATORS_WITHOUT_OUTAGE]: generation.generatorsWithoutOutage,
-                [GENERATORS_WITH_FIXED_ACTIVE_POWER]:
-                    generation.generatorsWithFixedSupply,
-                [GENERATORS_FREQUENCY_RESERVES]: addSelectedFieldToRows(
-                    generation.generatorsFrequencyReserve
-                ),
-                [SUBSTATIONS_GENERATORS_ORDERING]: addSelectedFieldToRows(
-                    generation.substationsGeneratorsOrdering
-                ),
+                [GENERATORS_WITH_FIXED_ACTIVE_POWER]: generation.generatorsWithFixedSupply,
+                [GENERATORS_FREQUENCY_RESERVES]: addSelectedFieldToRows(generation.generatorsFrequencyReserve),
+                [SUBSTATIONS_GENERATORS_ORDERING]: addSelectedFieldToRows(generation.substationsGeneratorsOrdering),
             });
         },
         [reset]
@@ -148,17 +127,17 @@ const GenerationDispatchDialog = ({
 
     const onSubmit = useCallback(
         (generation) => {
-            generationDispatch(
-                studyUuid,
-                currentNodeUuid,
-                editData?.uuid ?? undefined,
-                generation?.lossCoefficient,
-                generation?.defaultOutageRate,
-                generation[GENERATORS_WITHOUT_OUTAGE],
-                generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
-                generation[GENERATORS_FREQUENCY_RESERVES],
-                generation[SUBSTATIONS_GENERATORS_ORDERING]
-            ).catch((error) => {
+            generationDispatch({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid ?? undefined,
+                lossCoefficient: generation?.lossCoefficient,
+                defaultOutageRate: generation?.defaultOutageRate,
+                generatorsWithoutOutage: generation[GENERATORS_WITHOUT_OUTAGE],
+                generatorsWithFixedActivePower: generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
+                generatorsFrequencyReserve: generation[GENERATORS_FREQUENCY_RESERVES],
+                substationsGeneratorsOrdering: generation[SUBSTATIONS_GENERATORS_ORDERING],
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'GenerationDispatchError',
@@ -174,35 +153,23 @@ const GenerationDispatchDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
     return (
-        <CustomFormProvider
-            validationSchema={formSchema}
-            removeOptional={true}
-            {...formMethods}
-        >
+        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-generation-dispatch"
                 maxWidth={'md'}
                 titleId="GenerationDispatch"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <GenerationDispatchForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                />
+                <GenerationDispatchForm />
             </ModificationDialog>
         </CustomFormProvider>
     );

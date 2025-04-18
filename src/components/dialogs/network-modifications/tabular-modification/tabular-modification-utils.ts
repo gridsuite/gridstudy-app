@@ -5,19 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import { convertInputValue, convertOutputValue, FieldType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
+    B,
+    B1,
+    B2,
     CONNECTED,
     CONNECTED1,
     CONNECTED2,
+    COUNTRY,
     ENERGY_SOURCE,
     EQUIPMENT_ID,
     FORCED_OUTAGE_RATE,
+    G,
+    G1,
+    G2,
     HIGH_VOLTAGE_LIMIT,
     LOAD_TYPE,
     LOW_VOLTAGE_LIMIT,
-    G,
-    B,
     MARGINAL_COST,
     MAX_P,
     MAX_Q_AT_NOMINAL_V,
@@ -29,27 +34,21 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     Q0,
+    R,
     RATED_S,
     RATED_U1,
     RATED_U2,
     SECTION_COUNT,
-    R,
-    X,
     SHUNT_COMPENSATOR_TYPE,
-    G1,
-    B1,
-    G2,
-    B2,
     STEP_UP_TRANSFORMER_REACTANCE,
-    COUNTRY,
     TARGET_P,
     TARGET_Q,
     TARGET_V,
     TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION_ON,
+    X,
 } from 'components/utils/field-constants';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
-import { toModificationOperation } from 'components/utils/utils';
+import { toModificationOperation } from '../../../utils/utils';
 
 export interface TabularModificationFields {
     [key: string]: string[];
@@ -75,12 +74,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         FORCED_OUTAGE_RATE,
     ],
     BATTERY: [EQUIPMENT_ID, MIN_P, TARGET_P, MAX_P, TARGET_Q, CONNECTED],
-    VOLTAGE_LEVEL: [
-        EQUIPMENT_ID,
-        NOMINAL_V,
-        LOW_VOLTAGE_LIMIT,
-        HIGH_VOLTAGE_LIMIT,
-    ],
+    VOLTAGE_LEVEL: [EQUIPMENT_ID, NOMINAL_V, LOW_VOLTAGE_LIMIT, HIGH_VOLTAGE_LIMIT],
     SHUNT_COMPENSATOR: [
         EQUIPMENT_ID,
         MAXIMUM_SECTION_COUNT,
@@ -92,18 +86,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     ],
     LINE: [EQUIPMENT_ID, R, X, G1, G2, B1, B2, CONNECTED1, CONNECTED2],
     LOAD: [EQUIPMENT_ID, LOAD_TYPE, P0, Q0, CONNECTED],
-    TWO_WINDINGS_TRANSFORMER: [
-        EQUIPMENT_ID,
-        R,
-        X,
-        G,
-        B,
-        RATED_U1,
-        RATED_U2,
-        RATED_S,
-        CONNECTED1,
-        CONNECTED2,
-    ],
+    TWO_WINDINGS_TRANSFORMER: [EQUIPMENT_ID, R, X, G, B, RATED_U1, RATED_U2, RATED_S, CONNECTED1, CONNECTED2],
     SUBSTATION: [EQUIPMENT_ID, COUNTRY],
 };
 
@@ -114,8 +97,7 @@ export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     VOLTAGE_LEVEL: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
     SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
     LINE: MODIFICATION_TYPES.LINE_MODIFICATION.type,
-    TWO_WINDINGS_TRANSFORMER:
-        MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+    TWO_WINDINGS_TRANSFORMER: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
     SUBSTATION: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
 };
 
@@ -129,50 +111,37 @@ export const formatModification = (modification: Modification) => {
     return rest;
 };
 
-export const convertValueFromBackToFront = (
-    key: string,
-    value: { value: string | number }
-) => {
-    switch (key) {
-        case EQUIPMENT_ID:
-            return value;
-        case G:
-        case B:
-        case G1:
-        case G2:
-        case B1:
-        case B2:
-            return unitToMicroUnit(value?.value);
-        default:
-            return value?.value;
-    }
-};
-
-export const convertValueFromFrontToBack = (
-    key: string,
-    value: string | number
-) => {
-    switch (key) {
-        case EQUIPMENT_ID:
-            return value;
-        case G:
-        case B:
-        case G1:
-        case G2:
-        case B1:
-        case B2:
-            return toModificationOperation(microUnitToUnit(value));
-        default:
-            return toModificationOperation(value);
-    }
-};
-
 export const getEquipmentTypeFromModificationType = (type: string) => {
-    return Object.keys(TABULAR_MODIFICATION_TYPES).find(
-        (key) => TABULAR_MODIFICATION_TYPES[key] === type
-    );
+    return Object.keys(TABULAR_MODIFICATION_TYPES).find((key) => TABULAR_MODIFICATION_TYPES[key] === type);
 };
 
 export const styles = {
     grid: { height: 500, width: '100%' },
+};
+
+/**
+ * Convert a camelCase string to SNAKE_CASE format and map it to a key in the FieldType enum.
+ * @param key - The camelCase string to be converted.
+ * @returns The corresponding value from the FieldType enum.
+ */
+const convertCamelToSnake = (key: string) =>
+    FieldType[
+        key
+            .split(/\.?(?=[A-Z])/)
+            .join('_')
+            .toUpperCase() as keyof typeof FieldType
+    ];
+
+export const convertInputValues = (key: string, value: { value: string | number }) => {
+    if (key === EQUIPMENT_ID) {
+        return value;
+    }
+    return convertInputValue(convertCamelToSnake(key), value?.value);
+};
+
+export const convertOutputValues = (key: string, value: string | number) => {
+    if (key === EQUIPMENT_ID) {
+        return value;
+    }
+    return toModificationOperation(convertOutputValue(convertCamelToSnake(key), value));
 };

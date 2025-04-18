@@ -26,17 +26,14 @@ import {
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
-import {
-    FORM_LOADING_DELAY,
-    UNDEFINED_CONNECTION_DIRECTION,
-} from 'components/network/constants';
+import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
+import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
@@ -91,6 +88,7 @@ const formSchema = yup
 const ShuntCompensatorCreationDialog = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     editData,
     isUpdate,
     editDataFetchStatus,
@@ -114,13 +112,10 @@ const ShuntCompensatorCreationDialog = ({
                 [EQUIPMENT_NAME]: shuntCompensator.name ?? '',
                 ...getConnectivityFormData({
                     busbarSectionId: shuntCompensator.busOrBusbarSectionId,
-                    connectionDirection:
-                        shuntCompensator.connectablePosition
-                            .connectionDirection,
-                    connectionName:
-                        shuntCompensator.connectablePosition.connectionName,
+                    connectionDirection: shuntCompensator.connectablePosition.connectionDirection,
+                    connectionName: shuntCompensator.connectablePosition.connectionName,
                     voltageLevelId: shuntCompensator.voltageLevelId,
-                    // connected is not copied on purpose: we use the default value (true) in all cases
+                    // terminalConnected is not copied on purpose: we use the default value (true) in all cases
                 }),
                 ...getCharacteristicsCreateFormDataFromSearchCopy({
                     bperSection: shuntCompensator.bperSection,
@@ -150,7 +145,7 @@ const ShuntCompensatorCreationDialog = ({
                     connectionName: shuntCompensator.connectionName,
                     connectionPosition: shuntCompensator.connectionPosition,
                     voltageLevelId: shuntCompensator.voltageLevelId,
-                    connected: shuntCompensator.connected,
+                    terminalConnected: shuntCompensator.terminalConnected,
                 }),
                 ...getCharacteristicsFormData({
                     maxSusceptance: shuntCompensator.maxSusceptance ?? null,
@@ -165,13 +160,7 @@ const ShuntCompensatorCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-    });
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.SHUNT_COMPENSATOR);
 
     useEffect(() => {
         if (editData) {
@@ -181,37 +170,35 @@ const ShuntCompensatorCreationDialog = ({
 
     const onSubmit = useCallback(
         (shuntCompensator) => {
-            createShuntCompensator(
-                studyUuid,
-                currentNodeUuid,
-                shuntCompensator[EQUIPMENT_ID],
-                sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
-                shuntCompensator[CHARACTERISTICS_CHOICE] ===
-                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                    ? shuntCompensator[MAX_SUSCEPTANCE]
-                    : null,
-                shuntCompensator[CHARACTERISTICS_CHOICE] ===
-                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                    ? shuntCompensator[MAX_Q_AT_NOMINAL_V]
-                    : null,
-                shuntCompensator[CHARACTERISTICS_CHOICE] ===
-                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                    ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
-                    : null,
-                shuntCompensator[SECTION_COUNT],
-                shuntCompensator[MAXIMUM_SECTION_COUNT],
-                shuntCompensator[CONNECTIVITY],
-                !!editData,
-                editData ? editData.uuid : undefined,
-                shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                sanitizeString(
-                    shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]
-                ),
-                shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null,
-                shuntCompensator[CONNECTIVITY]?.[CONNECTED],
-                toModificationProperties(shuntCompensator)
-            ).catch((error) => {
+            createShuntCompensator({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                shuntCompensatorId: shuntCompensator[EQUIPMENT_ID],
+                shuntCompensatorName: sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
+                maxSusceptance:
+                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
+                        ? shuntCompensator[MAX_SUSCEPTANCE]
+                        : null,
+                maxQAtNominalV:
+                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                        ? shuntCompensator[MAX_Q_AT_NOMINAL_V]
+                        : null,
+                shuntCompensatorType:
+                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                        ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
+                        : null,
+                sectionCount: shuntCompensator[SECTION_COUNT],
+                maximumSectionCount: shuntCompensator[MAXIMUM_SECTION_COUNT],
+                connectivity: shuntCompensator[CONNECTIVITY],
+                isUpdate: !!editData,
+                modificationUuid: editData ? editData.uuid : undefined,
+                connectionDirection:
+                    shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectionName: sanitizeString(shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]),
+                connectionPosition: shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null,
+                terminalConnected: shuntCompensator[CONNECTIVITY]?.[CONNECTED],
+                properties: toModificationProperties(shuntCompensator),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'ShuntCompensatorCreationError',
@@ -227,9 +214,7 @@ const ShuntCompensatorCreationDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -239,18 +224,16 @@ const ShuntCompensatorCreationDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-shuntCompensator"
                 titleId="CreateShuntCompensator"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <ShuntCompensatorCreationForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
@@ -258,6 +241,7 @@ const ShuntCompensatorCreationDialog = ({
                     equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
@@ -273,6 +257,7 @@ ShuntCompensatorCreationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
+    currentRootNetworkUuid: PropTypes.string,
     editDataFetchStatus: PropTypes.string,
 };
 

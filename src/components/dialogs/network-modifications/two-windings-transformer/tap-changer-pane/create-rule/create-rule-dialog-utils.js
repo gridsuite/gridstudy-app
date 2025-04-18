@@ -5,10 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    HIGH_TAP_POSITION,
-    LOW_TAP_POSITION,
-} from 'components/utils/field-constants';
+import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
 const createRuleValidationSchema = () =>

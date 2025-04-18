@@ -7,54 +7,46 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import {
+    Equipment,
     EquipmentType,
+    ExtendedEquipmentType,
     getEquipmentsInfosForSearchBar,
     useElementSearch,
 } from '@gridsuite/commons-ui';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { searchEquipmentsInfos } from '../../services/study';
 import { UUID } from 'crypto';
-import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 
 interface UseSearchMatchingEquipmentsProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     inUpstreamBuiltParentNode?: boolean;
-    equipmentType?: EquipmentType;
+    equipmentType?: EquipmentType | ExtendedEquipmentType;
 }
 
-export const useSearchMatchingEquipments = (
-    props: UseSearchMatchingEquipmentsProps
-) => {
-    const { studyUuid, nodeUuid, inUpstreamBuiltParentNode, equipmentType } =
-        props;
+export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsProps) => {
+    const { studyUuid, nodeUuid, currentRootNetworkUuid, inUpstreamBuiltParentNode, equipmentType } = props;
 
     const { getUseNameParameterKey, getNameOrId } = useNameOrId();
 
-    const fetchElements: (newSearchTerm: string) => Promise<Equipment[]> =
-        useCallback(
-            (newSearchTerm) =>
-                searchEquipmentsInfos(
-                    studyUuid,
-                    nodeUuid,
-                    newSearchTerm,
-                    getUseNameParameterKey,
-                    inUpstreamBuiltParentNode,
-                    equipmentType
-                ),
-            [
-                equipmentType,
+    const fetchElements: (newSearchTerm: string) => Promise<Equipment[]> = useCallback(
+        (newSearchTerm) =>
+            searchEquipmentsInfos(
+                studyUuid,
+                nodeUuid,
+                currentRootNetworkUuid,
+                newSearchTerm,
                 getUseNameParameterKey,
                 inUpstreamBuiltParentNode,
-                nodeUuid,
-                studyUuid,
-            ]
-        );
+                equipmentType
+            ),
+        [equipmentType, getUseNameParameterKey, inUpstreamBuiltParentNode, nodeUuid, studyUuid, currentRootNetworkUuid]
+    );
 
-    const { elementsFound, isLoading, searchTerm, updateSearchTerm } =
-        useElementSearch({
-            fetchElements,
-        });
+    const { elementsFound, isLoading, searchTerm, updateSearchTerm } = useElementSearch({
+        fetchElements,
+    });
 
     const equipmentsFound = useMemo(
         () => getEquipmentsInfosForSearchBar(elementsFound, getNameOrId),
@@ -62,7 +54,7 @@ export const useSearchMatchingEquipments = (
     );
 
     useEffect(() => {
-        updateSearchTerm(searchTerm);
+        updateSearchTerm(searchTerm?.trim());
     }, [searchTerm, equipmentType, updateSearchTerm]);
 
     return {

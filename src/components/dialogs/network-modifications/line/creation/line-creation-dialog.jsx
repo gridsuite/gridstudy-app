@@ -6,7 +6,10 @@
  */
 
 import {
+    convertInputValue,
+    convertOutputValue,
     CustomFormProvider,
+    FieldType,
     TextInput,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -23,17 +26,17 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     G1,
     G2,
     LIMITS,
-    PERMANENT_LIMIT,
+    OPERATIONAL_LIMITS_GROUPS_1,
+    OPERATIONAL_LIMITS_GROUPS_2,
     R,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     TAB_HEADER,
-    TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
@@ -42,16 +45,12 @@ import {
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
-import {
-    FORM_LOADING_DELAY,
-    UNDEFINED_CONNECTION_DIRECTION,
-} from 'components/network/constants';
+import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import {
@@ -63,23 +62,19 @@ import {
     getHeaderEmptyFormData,
     getHeaderFormData,
     getHeaderValidationSchema,
+    LineCreationDialogTab,
 } from './line-creation-dialog-utils';
-import LimitsPane from '../../../limits/limits-pane';
+import { LimitsPane } from '../../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
-    getLimitsFormData,
+    getAllLimitsFormData,
     getLimitsValidationSchema,
+    sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
 import LineDialogTabs from '../line-dialog-tabs';
-import {
-    filledTextField,
-    gridItem,
-    sanitizeString,
-} from 'components/dialogs/dialogUtils';
+import { filledTextField, sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
-import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
-import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import { formatTemporaryLimits } from 'components/utils/utils';
+import { useFormSearchCopy } from 'components/dialogs/commons/use-form-search-copy';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createLine } from '../../../../../services/study/network-modifications';
@@ -90,23 +85,21 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import GridItem from '../../../commons/grid-item';
+import { formatCompleteCurrentLimit } from '../../../../utils/utils';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
-    ...getLimitsEmptyFormData(),
+    ...getLimitsEmptyFormData(false),
     ...emptyProperties,
-};
-
-export const LineCreationDialogTab = {
-    CHARACTERISTICS_TAB: 0,
-    LIMITS_TAB: 1,
 };
 
 /**
  * Dialog to create a line in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
  * @param editData the data to edit
  * @param onCreateLine callback to customize line creation process
  * @param displayConnectivity to display connectivity section or not
@@ -118,6 +111,7 @@ const LineCreationDialog = ({
     editData,
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     onCreateLine = createLine,
     displayConnectivity = true,
     isUpdate,
@@ -127,13 +121,10 @@ const LineCreationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const [tabIndex, setTabIndex] = useState(
-        LineCreationDialogTab.CHARACTERISTICS_TAB
-    );
+    const [tabIndex, setTabIndex] = useState(LineCreationDialogTab.CHARACTERISTICS_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
-    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] =
-        useState(false);
+    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
 
     const handleCloseLineTypesCatalogDialog = () => {
         setOpenLineTypesCatalogDialog(false);
@@ -143,11 +134,8 @@ const LineCreationDialog = ({
         .object()
         .shape({
             ...getHeaderValidationSchema(),
-            ...getCharacteristicsValidationSchema(
-                CHARACTERISTICS,
-                displayConnectivity
-            ),
-            ...getLimitsValidationSchema(),
+            ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity),
+            ...getLimitsValidationSchema(false),
         })
         .concat(creationPropertiesSchema)
         .required();
@@ -169,20 +157,17 @@ const LineCreationDialog = ({
                 ...getCharacteristicsFormData({
                     r: line.r,
                     x: line.x,
-                    g1: unitToMicroUnit(line.g1), // this form uses and displays microSiemens
-                    b1: unitToMicroUnit(line.b1),
-                    g2: unitToMicroUnit(line.g2),
-                    b2: unitToMicroUnit(line.b2),
+                    g1: convertInputValue(FieldType.G1, line.g1), // this form uses and displays microSiemens
+                    b1: convertInputValue(FieldType.B1, line.b1),
+                    g2: convertInputValue(FieldType.G2, line.g2),
+                    b2: convertInputValue(FieldType.B2, line.b2),
                     ...(displayConnectivity &&
                         getConnectivityFormData(
                             {
                                 voltageLevelId: line.voltageLevelId1,
                                 busbarSectionId: line.busOrBusbarSectionId1,
-                                connectionDirection:
-                                    line.connectablePosition1
-                                        .connectionDirection,
-                                connectionName:
-                                    line.connectablePosition1.connectionName,
+                                connectionDirection: line.connectablePosition1.connectionDirection,
+                                connectionName: line.connectablePosition1.connectionName,
                             },
                             CONNECTIVITY_1
                         )),
@@ -191,28 +176,17 @@ const LineCreationDialog = ({
                             {
                                 voltageLevelId: line.voltageLevelId2,
                                 busbarSectionId: line.busOrBusbarSectionId2,
-                                connectionDirection:
-                                    line.connectablePosition2
-                                        .connectionDirection,
-                                connectionName:
-                                    line.connectablePosition2.connectionName,
+                                connectionDirection: line.connectablePosition2.connectionDirection,
+                                connectionName: line.connectablePosition2.connectionName,
                             },
                             CONNECTIVITY_2
                         )),
                 }),
-                ...getLimitsFormData({
-                    permanentLimit1: line.currentLimits1?.permanentLimit,
-                    permanentLimit2: line.currentLimits2?.permanentLimit,
-                    temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits1?.temporaryLimits
-                        )
-                    ),
-                    temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits2?.temporaryLimits
-                        )
-                    ),
+                ...getAllLimitsFormData({
+                    [OPERATIONAL_LIMITS_GROUPS_1]: formatCompleteCurrentLimit(line.currentLimits1),
+                    [OPERATIONAL_LIMITS_GROUPS_2]: formatCompleteCurrentLimit(line.currentLimits2),
+                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
+                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
                 }),
                 ...copyEquipmentPropertiesForCreation(line),
             },
@@ -230,10 +204,10 @@ const LineCreationDialog = ({
                 ...getCharacteristicsFormData({
                     r: line.r,
                     x: line.x,
-                    g1: unitToMicroUnit(line.g1),
-                    b1: unitToMicroUnit(line.b1),
-                    g2: unitToMicroUnit(line.g2),
-                    b2: unitToMicroUnit(line.b2),
+                    g1: convertInputValue(FieldType.G1, line.g1),
+                    b1: convertInputValue(FieldType.B1, line.b1),
+                    g2: convertInputValue(FieldType.G2, line.g2),
+                    b2: convertInputValue(FieldType.B2, line.b2),
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: line.busOrBusbarSectionId1,
@@ -241,7 +215,7 @@ const LineCreationDialog = ({
                             connectionName: line.connectionName1,
                             connectionPosition: line.connectionPosition1,
                             voltageLevelId: line.voltageLevelId1,
-                            connected: line.connected1,
+                            terminalConnected: line.connected1,
                         },
                         CONNECTIVITY_1
                     ),
@@ -252,24 +226,16 @@ const LineCreationDialog = ({
                             connectionName: line.connectionName2,
                             connectionPosition: line.connectionPosition2,
                             voltageLevelId: line.voltageLevelId2,
-                            connected: line.connected2,
+                            terminalConnected: line.connected2,
                         },
                         CONNECTIVITY_2
                     ),
                 }),
-                ...getLimitsFormData({
-                    permanentLimit1: line.currentLimits1?.permanentLimit,
-                    permanentLimit2: line.currentLimits2?.permanentLimit,
-                    temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits1?.temporaryLimits
-                        )
-                    ),
-                    temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits2?.temporaryLimits
-                        )
-                    ),
+                ...getAllLimitsFormData({
+                    [OPERATIONAL_LIMITS_GROUPS_1]: line.operationalLimitsGroups1,
+                    [OPERATIONAL_LIMITS_GROUPS_2]: line.operationalLimitsGroups2,
+                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
+                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
                 }),
                 ...getPropertiesFromModification(line.properties),
             });
@@ -277,25 +243,13 @@ const LineCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.LINE,
-    });
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.LINE);
 
     useEffect(() => {
         if (editData) {
             fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
-
-    const sanitizeLimitNames = (temporaryLimitList) =>
-        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
-            ...temporaryLimit,
-            name: sanitizeString(name),
-        }));
 
     const handleLineSegmentsBuildSubmit = (data) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
@@ -317,47 +271,39 @@ const LineCreationDialog = ({
             const header = line[TAB_HEADER];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
-            onCreateLine(
-                studyUuid,
-                currentNodeUuid,
-                header[EQUIPMENT_ID],
-                sanitizeString(header[EQUIPMENT_NAME]),
-                characteristics[R],
-                characteristics[X],
-                microUnitToUnit(characteristics[G1]),
-                microUnitToUnit(characteristics[B1]),
-                microUnitToUnit(characteristics[G2]),
-                microUnitToUnit(characteristics[B2]),
-                characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.id,
-                characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
-                characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
-                limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
-                ),
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
-                ),
-                !!editData,
-                editData ? editData.uuid : undefined,
-                sanitizeString(
-                    characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]
-                ),
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                sanitizeString(
-                    characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]
-                ),
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
-                characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
-                characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
-                toModificationProperties(line)
-            ).catch((error) => {
+            onCreateLine({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                lineId: header[EQUIPMENT_ID],
+                lineName: sanitizeString(header[EQUIPMENT_NAME]),
+                r: characteristics[R],
+                x: characteristics[X],
+                g1: convertOutputValue(FieldType.G1, characteristics[G1]),
+                b1: convertOutputValue(FieldType.B1, characteristics[B1]),
+                g2: convertOutputValue(FieldType.G2, characteristics[G2]),
+                b2: convertOutputValue(FieldType.B2, characteristics[B2]),
+                voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.id,
+                busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
+                voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
+                busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
+                limitsGroups1: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS_1]),
+                limitsGroups2: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS_2]),
+                selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
+                selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
+                isUpdate: !!editData,
+                modificationUuid: editData ? editData.uuid : undefined,
+                connectionName1: sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),
+                connectionDirection1:
+                    characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectionName2: sanitizeString(characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]),
+                connectionDirection2:
+                    characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectionPosition1: characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
+                connectionPosition2: characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
+                connected1: characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
+                connected2: characteristics[CONNECTIVITY_2]?.[CONNECTED] ?? null,
+                properties: toModificationProperties(line),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LineCreationError',
@@ -397,11 +343,7 @@ const LineCreationDialog = ({
     );
 
     const lineNameField = (
-        <TextInput
-            name={`${TAB_HEADER}.${EQUIPMENT_NAME}`}
-            label={'Name'}
-            formProps={filledTextField}
-        />
+        <TextInput name={`${TAB_HEADER}.${EQUIPMENT_NAME}`} label={'Name'} formProps={filledTextField} />
     );
 
     const headerAndTabs = (
@@ -413,22 +355,16 @@ const LineCreationDialog = ({
             }}
         >
             <Grid container spacing={2}>
-                {gridItem(lineIdField, 4)}
-                {gridItem(lineNameField, 4)}
+                <GridItem size={4}>{lineIdField}</GridItem>
+                <GridItem size={4}>{lineNameField}</GridItem>
             </Grid>
-            <LineDialogTabs
-                tabIndex={tabIndex}
-                tabIndexesWithError={tabIndexesWithError}
-                setTabIndex={setTabIndex}
-            />
+            <LineDialogTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>
     );
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -439,8 +375,7 @@ const LineCreationDialog = ({
                 onClear={clear}
                 onValidationError={onValidationError}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-line"
-                maxWidth={'md'}
+                maxWidth={'xl'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
                 onOpenCatalogDialog={() => setOpenLineTypesCatalogDialog(true)}
@@ -451,28 +386,19 @@ const LineCreationDialog = ({
                     },
                 }}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <Box
-                    hidden={
-                        tabIndex !== LineCreationDialogTab.CHARACTERISTICS_TAB
-                    }
-                    p={1}
-                >
+                <Box hidden={tabIndex !== LineCreationDialogTab.CHARACTERISTICS_TAB} p={1}>
                     <LineCharacteristicsPane
                         displayConnectivity={displayConnectivity}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                     />
                 </Box>
 
-                <Box
-                    hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB}
-                    p={1}
-                >
+                <Box hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB} p={1}>
                     <LimitsPane />
                 </Box>
 
@@ -482,6 +408,7 @@ const LineCreationDialog = ({
                     equipmentType={EQUIPMENT_TYPES.LINE}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
                 <LineTypeSegmentDialog
                     open={isOpenLineTypesCatalogDialog}
@@ -497,6 +424,7 @@ LineCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editDataFetchStatus: PropTypes.string,
 };

@@ -6,16 +6,12 @@
  */
 
 import { useIntl } from 'react-intl';
-import {
-    ElementType,
-    useSnackMessage,
-    DirectoryItemSelector,
-    TreeViewFinderNodeProps,
-} from '@gridsuite/commons-ui';
-import { CopyType } from '../graph/menus/network-modification-node-editor';
+import { ElementType, useSnackMessage, DirectoryItemSelector, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { copyOrMoveModifications } from '../../services/study';
-import { UUID } from 'crypto';
 import { FunctionComponent } from 'react';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
+import { NetworkModificationCopyType } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 /**
  * Dialog to select some network modifications and append them in the current node
@@ -28,31 +24,22 @@ import { FunctionComponent } from 'react';
 interface ImportModificationDialogProps {
     open: boolean;
     onClose: () => void;
-    currentNode: { id: string };
-    studyUuid: UUID;
 }
 
-const ImportModificationDialog: FunctionComponent<
-    ImportModificationDialogProps
-> = ({ open, onClose, currentNode, studyUuid }) => {
+const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps> = ({ open, onClose }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const processSelectedElements = (
-        selectedElements: TreeViewFinderNodeProps[]
-    ) => {
+    const processSelectedElements = (selectedElements: TreeViewFinderNodeProps[]) => {
         const copyInfos = {
-            copyType: CopyType.INSERT,
+            copyType: NetworkModificationCopyType.INSERT,
         };
         const modificationUuidList = selectedElements.map((e) => e.id);
         // import selected modifications
-        if (modificationUuidList.length > 0) {
-            copyOrMoveModifications(
-                studyUuid,
-                currentNode.id,
-                modificationUuidList,
-                copyInfos
-            ).catch((errmsg) => {
+        if (modificationUuidList.length > 0 && studyUuid && currentNode) {
+            copyOrMoveModifications(studyUuid, currentNode.id, modificationUuidList, copyInfos).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errDuplicateModificationMsg',

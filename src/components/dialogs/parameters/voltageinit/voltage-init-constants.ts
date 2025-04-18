@@ -6,3 +6,4 @@
  */
 
 export const REACTIVE_SLACKS_THRESHOLD = 'reactiveSlacksThreshold';
+export const SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD = 'shuntCompensatorActivationThreshold';

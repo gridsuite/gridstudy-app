@@ -4,40 +4,28 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { GridSection } from '../../../dialogUtils';
-import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useState } from 'react';
-import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
-import {
-    ADDED,
-    ADDITIONAL_PROPERTIES,
-    DELETION_MARK,
-    PREVIOUS_VALUE,
-} from '../../../../utils/field-constants';
+import { Grid } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
+import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
+import { ADDED, ADDITIONAL_PROPERTIES, DELETION_MARK, PREVIOUS_VALUE } from '../../../../utils/field-constants';
 import PropertyForm from './property-form';
-import {
-    fetchPredefinedProperties,
-    initializedProperty,
-    PredefinedProperties,
-} from './property-utils';
+import { fetchPredefinedProperties, initializedProperty, PredefinedProperties } from './property-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
+import GridSection from '../../../commons/grid-section';
 
 type PropertiesFormProps = {
+    id?: string;
     networkElementType?: string;
     isModification?: boolean;
 };
 
-const PropertiesForm = ({
-    networkElementType,
-    isModification = false,
-}: PropertiesFormProps) => {
+const PropertiesForm = ({ id, networkElementType, isModification = false }: PropertiesFormProps) => {
+    const additionalProperties = id ? `${id}.${ADDITIONAL_PROPERTIES}` : ADDITIONAL_PROPERTIES;
     const watchProps = useWatch({
-        name: ADDITIONAL_PROPERTIES,
+        name: additionalProperties,
     });
     const { getValues, setValue } = useFormContext();
-    const [predefinedProperties, setPredefinedProperties] = useState(
-        {} as PredefinedProperties
-    );
+    const [predefinedProperties, setPredefinedProperties] = useState({} as PredefinedProperties);
 
     useEffect(() => {
         networkElementType &&
@@ -50,19 +38,19 @@ const PropertiesForm = ({
 
     const getDeletionMark = useCallback(
         (idx: number) => {
-            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
+            const properties = getValues(`${additionalProperties}`);
             if (properties && typeof properties[idx] !== 'undefined') {
                 return watchProps && properties[idx][DELETION_MARK];
             }
             return false;
         },
-        [getValues, watchProps]
+        [getValues, watchProps, additionalProperties]
     );
 
     const deleteCallback = useCallback(
         (idx: number) => {
             let markedForDeletion = false;
-            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
+            const properties = getValues(`${additionalProperties}`);
             if (properties && typeof properties[idx] !== 'undefined') {
                 markedForDeletion = properties[idx][DELETION_MARK];
             } else {
@@ -72,30 +60,19 @@ const PropertiesForm = ({
             let canRemoveLine = true;
             if (markedForDeletion) {
                 // just unmark
-                setValue(
-                    `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
-                    false,
-                    { shouldDirty: true }
-                );
+                setValue(`${additionalProperties}.${idx}.${DELETION_MARK}`, false, { shouldDirty: true });
                 canRemoveLine = false;
             } else {
                 // we should mark for deletion a property that actually exists in the network and not delete the property line straight away
-                if (
-                    properties[idx][PREVIOUS_VALUE] &&
-                    properties[idx][ADDED] === false
-                ) {
-                    setValue(
-                        `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
-                        true,
-                        { shouldDirty: true }
-                    );
+                if (properties[idx][PREVIOUS_VALUE] && properties[idx][ADDED] === false) {
+                    setValue(`${additionalProperties}.${idx}.${DELETION_MARK}`, true, { shouldDirty: true });
                     canRemoveLine = false;
                 }
             }
             // otherwise just delete the line
             return canRemoveLine;
         },
-        [getValues, setValue]
+        [getValues, setValue, additionalProperties]
     );
 
     const modificationProperties = isModification
@@ -108,7 +85,7 @@ const PropertiesForm = ({
 
     const additionalProps = (
         <ExpandableInput
-            name={ADDITIONAL_PROPERTIES}
+            name={additionalProperties}
             Field={PropertyForm}
             fieldProps={{ predefinedProperties }}
             addButtonLabel={'AddProperty'}

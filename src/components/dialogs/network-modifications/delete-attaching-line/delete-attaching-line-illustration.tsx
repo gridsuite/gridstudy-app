@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FC } from 'react';
+import { FC } from 'react';
 import GenericIllustrationNetworkModification from 'components/dialogs/illustrations/generic-Illustration-network-modification';
 import DeleteAttachingLine from '../../../../images/network-modifications/illustrations/delete-attaching-line-illustration.svg?react';
 

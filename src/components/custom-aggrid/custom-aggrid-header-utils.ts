@@ -5,89 +5,57 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomColDef,
-    FilterSelectorType,
-    FILTER_DATA_TYPES,
-} from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
-import { SortWay } from 'hooks/use-aggrid-sort';
+import { CustomAggridFilterParams, CustomColDef } from './custom-aggrid-filters/custom-aggrid-filter.type';
 
-export const makeAgGridCustomHeaderColumn = ({
-    sortProps, // sortProps: contains useAgGridSort params
-    filterProps, // filterProps: contains useAgGridRowFilter params
-    filterParams, // filterParams: Parameters for the column's filtering functionality
-    filterTab,
+export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
+    context,
     ...props // agGrid column props
-}: CustomColDef) => {
-    const { headerName, field = '', fractionDigits, numeric } = props;
-    const { onSortChanged = () => {}, sortConfig, children } = sortProps || {};
-    const { updateFilter, filterSelector } = filterProps || {};
-    const { filterDataType, filterEnums = {} } = filterParams || {};
-
-    const customFilterOptions =
-        filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
-
-    const isSortable = !!sortProps;
-    const isFilterable = !!filterProps;
-    const isCurrentColumnSorted = !!sortConfig?.find(
-        (value) => value.colId === field
-    );
+}: CustomColDef<any, F>) => {
+    const {
+        sortParams,
+        forceDisplayFilterIcon,
+        filterComponent,
+        filterComponentParams,
+        tabIndex,
+        isCustomColumn,
+        Menu,
+        fractionDigits,
+        numeric,
+    } = context || {};
+    const { headerName, field = '' } = props;
+    const isSortable = !!sortParams;
 
     let minWidth = 75;
-    if (isSortable && isCurrentColumnSorted) {
+    if (isSortable) {
         minWidth += 30;
     }
-    if (isFilterable) {
+    if (!!filterComponent) {
         minWidth += 30;
     }
 
     return {
         headerTooltip: headerName,
         minWidth,
-        fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
             field,
             displayName: headerName,
-            isSortable,
-            sortParams: {
-                sortConfig,
-                onSortChanged: (newSortValue: SortWay) => {
-                    onSortChanged({
-                        colId: field,
-                        sort: newSortValue,
-                        children: children,
-                    });
-                },
+            sortParams,
+            customMenuParams: {
+                tabIndex: tabIndex,
+                isCustomColumn: isCustomColumn,
+                Menu: Menu,
             },
-            isFilterable,
-            filterParams: {
-                ...filterParams,
-                filterSelector,
-                customFilterOptions,
-                updateFilter,
-            },
-            getEnumLabel: props?.getEnumLabel,
-            isCountry: props?.isCountry,
+            forceDisplayFilterIcon: forceDisplayFilterIcon,
+            filterComponent: filterComponent,
+            filterComponentParams,
         },
-        filterParams: props?.agGridFilterParams || undefined,
+        filterParams: context?.agGridFilterParams || undefined,
         ...props,
+        context: {
+            ...context,
+            fractionDigits: numeric && !fractionDigits ? 2 : fractionDigits,
+        },
     };
 };
-
-export const mapFieldsToColumnsFilter = (
-    filterSelector: FilterSelectorType[],
-    columnToFieldMapping: Record<string, string>
-) => {
-    return filterSelector.map((filter) => ({
-        ...filter,
-        column: columnToFieldMapping[filter.column],
-    }));
-};
-
-export enum BooleanFilterValue {
-    TRUE = 'true',
-    FALSE = 'false',
-    UNDEFINED = 'undefinedValue',
-}

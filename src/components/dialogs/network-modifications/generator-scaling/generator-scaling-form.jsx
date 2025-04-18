@@ -9,10 +9,11 @@ import { RadioInput } from '@gridsuite/commons-ui';
 import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import VariationForm from './variation/variation-form';
-import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
-import Grid from '@mui/material/Grid';
-import { gridItem, GridSection } from '../../dialogUtils';
+import { ExpandableInput } from 'components/utils/rhf-inputs/expandable-input';
+import { Grid } from '@mui/material';
 import { getVariationEmptyForm } from './variation/variation-utils';
+import GridItem from '../../commons/grid-item';
+import GridSection from '../../commons/grid-section';
 
 const styles = {
     padding: (theme) => ({
@@ -21,31 +22,26 @@ const styles = {
 };
 
 const GeneratorScalingForm = () => {
-    const variationTypeField = (
-        <RadioInput
-            name={VARIATION_TYPE}
-            options={Object.values(VARIATION_TYPES)}
-        />
-    );
+    const variationTypeField = <RadioInput name={VARIATION_TYPE} options={Object.values(VARIATION_TYPES)} />;
 
     const variationsField = (
         <ExpandableInput
             name={VARIATIONS}
             Field={VariationForm}
             addButtonLabel={'CreateVariation'}
-            initialValue={getVariationEmptyForm(
-                VARIATION_MODES.PROPORTIONAL_TO_PMAX.id
-            )}
+            initialValue={getVariationEmptyForm(VARIATION_MODES.PROPORTIONAL_TO_PMAX.id)}
         />
     );
 
     return (
         <>
-            <Grid sx={styles.padding}>{gridItem(variationTypeField, 8)}</Grid>
+            <Grid sx={styles.padding}>
+                <GridItem size={8}>{variationTypeField}</GridItem>
+            </Grid>
 
             <GridSection title="Variations" />
             <Grid container sx={styles.padding}>
-                {gridItem(variationsField, 12)}
+                <GridItem size={12}>{variationsField}</GridItem>
             </Grid>
         </>
     );

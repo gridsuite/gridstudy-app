@@ -5,36 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import {
-    gridItem,
-    GridSection,
-    MicroSusceptanceAdornment,
-    MVAPowerAdornment,
-    OhmAdornment,
-    VoltageAdornment,
-} from '../../../dialogUtils';
-import { FloatInput } from '@gridsuite/commons-ui';
-import {
-    B,
-    CHARACTERISTICS,
-    G,
-    R,
-    RATED_S,
-    RATED_U1,
-    RATED_U2,
-    X,
-} from 'components/utils/field-constants';
-import { unitToMicroUnit } from '../../../../../utils/unit-converter';
+import { MicroSusceptanceAdornment, MVAPowerAdornment, OhmAdornment, VoltageAdornment } from '../../../dialog-utils';
+import { convertInputValue, FieldType, FloatInput } from '@gridsuite/commons-ui';
+import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
 import PropertiesForm from '../../common/properties/properties-form';
+import GridSection from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
 
-const TwoWindingsTransformerCharacteristicsPane = ({
-    id = CHARACTERISTICS,
-    twtToModify,
-    isModification = false,
-}) => {
+const TwoWindingsTransformerCharacteristicsPane = ({ id = CHARACTERISTICS, twtToModify, isModification = false }) => {
     const width = isModification ? 12 : 8;
 
     const seriesResistanceField = (
@@ -62,7 +42,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             name={`${id}.${G}`}
             label="G"
             adornment={MicroSusceptanceAdornment}
-            previousValue={unitToMicroUnit(twtToModify?.g)}
+            previousValue={convertInputValue(FieldType.G, twtToModify?.g)}
             clearable={isModification}
         />
     );
@@ -72,7 +52,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             name={`${id}.${B}`}
             label="B"
             adornment={MicroSusceptanceAdornment}
-            previousValue={unitToMicroUnit(twtToModify?.b)}
+            previousValue={convertInputValue(FieldType.B, twtToModify?.b)}
             clearable={isModification}
         />
     );
@@ -111,11 +91,11 @@ const TwoWindingsTransformerCharacteristicsPane = ({
         <>
             <GridSection title={'Characteristics'} />
             <Grid container item spacing={2} xs={width}>
-                {gridItem(seriesResistanceField)}
-                {gridItem(seriesReactanceField)}
-                {gridItem(magnetizingConductanceField)}
-                {gridItem(magnetizingSusceptanceField)}
-                {gridItem(ratedSField)}
+                <GridItem>{seriesResistanceField}</GridItem>
+                <GridItem>{seriesReactanceField}</GridItem>
+                <GridItem>{magnetizingConductanceField}</GridItem>
+                <GridItem>{magnetizingSusceptanceField}</GridItem>
+                <GridItem>{ratedSField}</GridItem>
             </Grid>
             <Grid container item spacing={2} xs={width}>
                 <Grid item xs={6}>
@@ -130,13 +110,10 @@ const TwoWindingsTransformerCharacteristicsPane = ({
                 </Grid>
             </Grid>
             <Grid container item spacing={2} xs={width}>
-                {gridItem(ratedVoltage1Field)}
-                {gridItem(ratedVoltage2Field)}
+                <GridItem>{ratedVoltage1Field}</GridItem>
+                <GridItem>{ratedVoltage2Field}</GridItem>
             </Grid>
-            <PropertiesForm
-                networkElementType={'twt'}
-                isModification={isModification}
-            />
+            <PropertiesForm networkElementType={'twt'} isModification={isModification} />
         </>
     );
 };

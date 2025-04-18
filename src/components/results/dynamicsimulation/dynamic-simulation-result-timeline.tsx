@@ -6,42 +6,32 @@
  */
 import { UUID } from 'crypto';
 import { Box, LinearProgress } from '@mui/material';
-import React, { memo, useMemo, useRef } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../redux/reducer';
+import ComputingType from '../../computing-status/computing-type';
+import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+
+import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
+import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
+import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
+import { NumberCellRenderer } from '../common/result-cell-renderers';
+import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { AgGridReact } from 'ag-grid-react';
+import { FilterType } from '../../../types/custom-aggrid-types';
+import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { useNodeData } from 'components/use-node-data';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-header.type';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import {
-    getNoRowsMessage,
-    useIntlResultStatusMessages,
-} from '../../utils/aggrid-rows-handler';
-import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
-import ComputingType from '../../computing-status/computing-type';
-import { useAgGridLocalSort } from '../../../hooks/use-aggrid-local-sort';
-import { SortWay } from '../../../hooks/use-aggrid-sort';
-import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
-
-import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
-import {
-    dynamicSimulationResultInvalidations,
-    LARGE_COLUMN_WIDTH,
-    MEDIUM_COLUMN_WIDTH,
-    MIN_COLUMN_WIDTH,
-} from './utils/dynamic-simulation-result-utils';
-import { useNodeData } from '../../study-container';
-import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
-import { NumberCellRenderer } from '../common/result-cell-renderers';
-import { setDynamicSimulationResultFilter } from 'redux/actions';
-import {
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-    TIMELINE,
-} from 'utils/store-filter-fields';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
 const styles = {
     loader: {
@@ -67,47 +57,21 @@ const defaultColDef = {
 type DynamicSimulationResultTimelineProps = {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
 };
 
 const DynamicSimulationResultTimeline = memo(
-    ({ studyUuid, nodeUuid }: DynamicSimulationResultTimelineProps) => {
+    ({ studyUuid, nodeUuid, currentRootNetworkUuid }: DynamicSimulationResultTimelineProps) => {
         const intl = useIntl();
-        const gridRef = useRef(null);
+        const gridRef = useRef<AgGridReact>(null);
 
-        const [timelines, isLoading] = useNodeData(
+        const { result: timelines, isLoading } = useNodeData({
             studyUuid,
             nodeUuid,
-            fetchDynamicSimulationResultTimeline,
-            dynamicSimulationResultInvalidations
-        );
-
-        const { onSortChanged, sortConfig } = useAgGridLocalSort(gridRef, {
-            colId: COL_TIME,
-            sort: SortWay.ASC,
+            rootNetworkUuid: currentRootNetworkUuid,
+            fetcher: fetchDynamicSimulationResultTimeline,
+            invalidations: dynamicSimulationResultInvalidations,
         });
-
-        const { updateFilter, filterSelector } = useAggridLocalRowFilter(
-            gridRef,
-            {
-                filterType: DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-                filterTab: TIMELINE,
-                filterStoreAction: setDynamicSimulationResultFilter,
-            }
-        );
-
-        const sortAndFilterProps = useMemo(
-            () => ({
-                sortProps: {
-                    onSortChanged,
-                    sortConfig,
-                },
-                filterProps: {
-                    updateFilter,
-                    filterSelector,
-                },
-            }),
-            [onSortChanged, sortConfig, updateFilter, filterSelector]
-        );
 
         // columns are defined from fields in {@link TimelineEvent} types
         const columnDefs = useMemo(
@@ -118,73 +82,91 @@ const DynamicSimulationResultTimeline = memo(
                     }),
                     field: COL_TIME,
                     width: MIN_COLUMN_WIDTH,
-                    numeric: true,
-                    fractionDigits: 2,
+                    colId: 'agNumberColumnFilter',
                     filter: 'agNumberColumnFilter',
-                    filterParams: {
-                        filterDataType: FILTER_DATA_TYPES.NUMBER,
-                        filterComparators: Object.values(
-                            FILTER_NUMBER_COMPARATORS
-                        ),
+                    context: {
+                        numeric: true,
+                        fractionDigits: 2,
+                        filterComponent: CustomAggridComparatorFilter,
+                        filterComponentParams: {
+                            filterParams: {
+                                type: FilterType.DynamicSimulation,
+                                tab: TIMELINE,
+                                updateFilterCallback: updateFilters,
+                                dataType: FILTER_DATA_TYPES.NUMBER,
+                                comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                            },
+                        },
+                        sortParams: {
+                            table: DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+                            tab: TIMELINE,
+                        },
                     },
                     cellRenderer: NumberCellRenderer,
-                    ...sortAndFilterProps,
                 }),
                 makeAgGridCustomHeaderColumn({
                     headerName: intl.formatMessage({
                         id: 'DynamicSimulationTimelineEventModelName',
                     }),
+                    colId: COL_MODEL_NAME,
                     field: COL_MODEL_NAME,
                     width: MEDIUM_COLUMN_WIDTH,
-                    filterParams: {
-                        filterDataType: FILTER_DATA_TYPES.TEXT,
-                        filterComparators: [
-                            FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                            FILTER_TEXT_COMPARATORS.CONTAINS,
-                        ],
+                    context: {
+                        filterComponent: CustomAggridComparatorFilter,
+                        filterComponentParams: {
+                            filterParams: {
+                                type: FilterType.DynamicSimulation,
+                                tab: TIMELINE,
+                                updateFilterCallback: updateFilters,
+                                dataType: FILTER_DATA_TYPES.TEXT,
+                                comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                            },
+                        },
+                        sortParams: {
+                            table: DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+                            tab: TIMELINE,
+                        },
                     },
-                    ...sortAndFilterProps,
                 }),
                 makeAgGridCustomHeaderColumn({
                     headerName: intl.formatMessage({
                         id: 'DynamicSimulationTimelineEventModelMessage',
                     }),
+                    colId: COL_MESSAGE,
                     field: COL_MESSAGE,
                     width: LARGE_COLUMN_WIDTH,
-                    filterParams: {
-                        filterDataType: FILTER_DATA_TYPES.TEXT,
-                        filterComparators: [
-                            FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                            FILTER_TEXT_COMPARATORS.CONTAINS,
-                        ],
+                    context: {
+                        filterComponent: CustomAggridComparatorFilter,
+                        filterComponentParams: {
+                            filterParams: {
+                                type: FilterType.DynamicSimulation,
+                                tab: TIMELINE,
+                                updateFilterCallback: updateFilters,
+                                dataType: FILTER_DATA_TYPES.TEXT,
+                                comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                            },
+                        },
+                        sortParams: {
+                            table: DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+                            tab: TIMELINE,
+                        },
                     },
-                    ...sortAndFilterProps,
                 }),
             ],
-            [intl, sortAndFilterProps]
+            [intl]
         );
 
         // messages to show when no data
         const dynamicSimulationStatus = useSelector(
-            (state: ReduxState) =>
-                state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+            (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
         );
         const messages = useIntlResultStatusMessages(intl, true);
         const overlayMessage = useMemo(
-            () =>
-                getNoRowsMessage(
-                    messages,
-                    timelines,
-                    dynamicSimulationStatus,
-                    !isLoading
-                ),
+            () => getNoRowsMessage(messages, timelines, dynamicSimulationStatus, !isLoading),
             [messages, timelines, dynamicSimulationStatus, isLoading]
         );
 
-        const rowDataToShow = useMemo(
-            () => (overlayMessage ? [] : timelines),
-            [timelines, overlayMessage]
-        );
+        const rowDataToShow = useMemo(() => (overlayMessage ? [] : timelines), [timelines, overlayMessage]);
 
         return (
             <>

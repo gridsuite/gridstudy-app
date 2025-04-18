@@ -8,20 +8,17 @@
 const table_locale_en = {
     // Used to create column names in sensitivity analysis results
     DeltaInkA: 'Sensitivity (ΔA / MW or Δ°)',
-    DeltaInkABeforeContingency:
-        'Sensitivity (ΔA / MW ou Δ°) before contingency',
+    DeltaInkABeforeContingency: 'Sensitivity (ΔA / MW ou Δ°) before contingency',
     DeltaInkV: 'Sensitivity (ΔkV / kV)',
     DeltaInkVBeforeContingency: 'Sensitivity (ΔkV / kV) before contingency',
     DeltaInkW: 'Sensitivity (ΔMW / MW or Δ°)',
-    DeltaInkWBeforeContingency:
-        'Sensitivity (ΔMW / MW ou Δ°) before contingency',
+    DeltaInkWBeforeContingency: 'Sensitivity (ΔMW / MW ou Δ°) before contingency',
     ValRefInkA: 'Reference current (A)',
     ValRefInkABeforeContingency: 'Reference current (A) before contingency',
     ValRefInkV: 'Reference voltage (kV)',
     ValRefInkVBeforeContingency: 'Reference voltage (kV) before contingency',
     ValRefInkW: 'Reference active power (MW)',
-    ValRefInkWBeforeContingency:
-        'Reference active power (MW) before contingency',
+    ValRefInkWBeforeContingency: 'Reference active power (MW) before contingency',
 };
 
 export default table_locale_en;

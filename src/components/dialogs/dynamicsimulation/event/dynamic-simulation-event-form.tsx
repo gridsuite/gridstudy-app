@@ -5,22 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Grid, TextField } from '@mui/material';
-import { filledTextField, gridItem } from '../../dialogUtils';
+import { filledTextField } from '../../dialog-utils';
 import { Event, EventDefinition, EventPropertyName } from './types/event.type';
-import React from 'react';
 import { makeComponentFor } from './util/event-rhf';
 import { useIntl } from 'react-intl';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import GridItem from '../../commons/grid-item';
 
 export type DynamicSimulationBasicEventFormProps = {
     equipmentId: string;
-    equipmentType: string;
+    equipmentType: EQUIPMENT_TYPES;
     eventDefinition?: EventDefinition;
     event?: Event;
 };
 
-export const DynamicSimulationEventForm = (
-    props: DynamicSimulationBasicEventFormProps
-) => {
+export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFormProps) => {
     const { equipmentId, equipmentType, eventDefinition, event } = props;
 
     const propertyNames: EventPropertyName[] = (
@@ -37,8 +36,8 @@ export const DynamicSimulationEventForm = (
             value={equipmentId}
             InputProps={{
                 readOnly: true,
-                ...filledTextField,
             }}
+            {...filledTextField}
             disabled
         />
     );
@@ -46,41 +45,33 @@ export const DynamicSimulationEventForm = (
     return (
         <Grid container rowSpacing={2} spacing={2} paddingTop={2}>
             <Grid container item spacing={2}>
-                {gridItem(EquipmentIdField, 12)}
+                <GridItem size={12}>{EquipmentIdField}</GridItem>
             </Grid>
             {/* event's properties defined in the eventDefinition   */}
             <Grid container item spacing={2}>
                 {propertyNames.map((propertyName) => {
-                    const propertyDefinition = eventDefinition
-                        ? eventDefinition[propertyName]
-                        : undefined;
+                    const propertyDefinition = eventDefinition ? eventDefinition[propertyName] : undefined;
 
-                    const hasEnumValues = propertyDefinition
-                        ? !!propertyDefinition.values
-                        : false;
+                    const hasEnumValues = propertyDefinition ? !!propertyDefinition.values : false;
 
-                    const propertyValue = event?.properties.find(
-                        (elem) => elem.name === propertyName
-                    )?.value;
+                    const propertyValue = event?.properties.find((elem) => elem.name === propertyName)?.value;
 
                     // compatibility check between event property and equipment type to show or not
-                    const visible =
-                        !propertyDefinition?.acceptOnly ||
-                        propertyDefinition.acceptOnly(equipmentType);
+                    const visible = !propertyDefinition?.acceptOnly || propertyDefinition.acceptOnly(equipmentType);
 
                     return (
-                        visible &&
-                        gridItem(
-                            makeComponentFor(
-                                propertyName,
-                                propertyDefinition,
-                                propertyValue && hasEnumValues
-                                    ? intl.formatMessage({
-                                          id: propertyValue,
-                                      })
-                                    : propertyValue
-                            ),
-                            12
+                        visible && (
+                            <GridItem size={12}>
+                                {makeComponentFor(
+                                    propertyName,
+                                    propertyDefinition,
+                                    propertyValue && hasEnumValues
+                                        ? intl.formatMessage({
+                                              id: propertyValue,
+                                          })
+                                        : propertyValue
+                                )}
+                            </GridItem>
                         )
                     );
                 })}
