@@ -5,48 +5,49 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent } from 'react';
-import { Paper, Box, Theme } from '@mui/material';
-import { OverflowableText } from '@gridsuite/commons-ui';
-import { useIntl } from 'react-intl';
+import React, { FunctionComponent, useState } from 'react';
+import { Paper } from '@mui/material';
 import RootNetworkNodeEditor from './graph/menus/root-network-node-editor';
+import RootNetworkPanelHeader from './root-network-panel-header';
+import RootNetworkMinimizedPanelContent from './graph/menus/root-network-minimized-panel-content';
 
 const styles = {
     paper: {
         position: 'absolute',
         top: 16,
         left: 16,
-        width: '300px',
-        minHeight: '300px',
         borderRadius: '8px',
         zIndex: 10,
         overflow: 'hidden',
     },
-    contentBox: {
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-    },
-    header: (theme: Theme) => ({
-        padding: theme.spacing(1),
-        display: 'flex',
-        alignItems: 'center',
-    }),
-    rootNameTitle: (theme: Theme) => ({
-        flexGrow: 1,
-        fontWeight: 'bold',
-        marginLeft: theme.spacing(2),
-    }),
 };
+
 const RootNetworkPanel: FunctionComponent = () => {
-    const intl = useIntl();
+    const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
+    const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(false);
+    const panelStyle = {
+        ...styles.paper,
+        width: isRootNetworkPanelMinimized ? '174px' : '300px',
+        minHeight: isRootNetworkPanelMinimized ? '99px' : '300px',
+    };
 
     return (
-        <Paper elevation={3} sx={styles.paper}>
-            <Box sx={styles.header}>
-                <OverflowableText text={intl.formatMessage({ id: 'root' })} sx={styles.rootNameTitle} />
-            </Box>
-            <RootNetworkNodeEditor />
+        <Paper elevation={3} sx={panelStyle}>
+            <RootNetworkPanelHeader
+                isRootNetworksProcessing={isRootNetworksProcessing}
+                setIsRootNetworksProcessing={setIsRootNetworksProcessing}
+                isRootNetworkPanelMinimized={isRootNetworkPanelMinimized}
+                setIsRootNetworkPanelMinimized={setIsRootNetworkPanelMinimized}
+            />
+
+            {isRootNetworkPanelMinimized ? (
+                <RootNetworkMinimizedPanelContent />
+            ) : (
+                <RootNetworkNodeEditor
+                    isRootNetworksProcessing={isRootNetworksProcessing}
+                    setIsRootNetworksProcessing={setIsRootNetworksProcessing}
+                />
+            )}
         </Paper>
     );
 };
