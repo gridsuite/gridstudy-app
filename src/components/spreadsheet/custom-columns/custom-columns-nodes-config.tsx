@@ -99,18 +99,25 @@ export default function CustomColumnsNodesConfig({
 
     return (
         <>
-            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
-                <BuildIcon sx={styles.icon} />
-                <FormattedMessage id="spreadsheet/custom_column/nodes" />
-                {showWarning && (
-                    <Badge
-                        badgeContent="!"
-                        color="warning"
-                        overlap="circular"
-                        style={{ transform: 'translate(10px, -15px)' }}
-                    ></Badge>
-                )}
-            </Button>
+            <Badge color="secondary" variant={nodeAliases?.length ? 'dot' : undefined}>
+                <Button
+                    sx={spreadsheetStyles.spreadsheetButton}
+                    size={'small'}
+                    onClick={handleClick}
+                    disabled={disabled}
+                >
+                    <BuildIcon sx={styles.icon} />
+                    <FormattedMessage id="spreadsheet/custom_column/nodes" />
+                    {showWarning && (
+                        <Badge
+                            badgeContent="!"
+                            color="warning"
+                            overlap="circular"
+                            style={{ transform: 'translate(10px, -15px)' }}
+                        ></Badge>
+                    )}
+                </Button>
+            </Badge>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem
                     key={NodesOptionId.CONFIG}
