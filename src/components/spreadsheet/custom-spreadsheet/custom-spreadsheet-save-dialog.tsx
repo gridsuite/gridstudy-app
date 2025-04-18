@@ -18,16 +18,18 @@ import { createSpreadsheetModel, updateSpreadsheetModel } from '../../../service
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { v4 as uuid4 } from 'uuid';
-import { ColumnDefinitionDto, SpreadsheetConfig } from '../config/spreadsheet.type';
+import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 
 export type CustomSpreadsheetSaveDialogProps = {
-    tabIndex: number;
+    tableDefinition: SpreadsheetTabDefinition;
     open: UseStateBooleanReturn;
 };
 
-export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly<CustomSpreadsheetSaveDialogProps>) {
+export default function CustomSpreadsheetSaveDialog({
+    tableDefinition,
+    open,
+}: Readonly<CustomSpreadsheetSaveDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
-    const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const customColumns = useMemo(() => {

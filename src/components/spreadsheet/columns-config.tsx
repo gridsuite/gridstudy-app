@@ -9,19 +9,19 @@ import { Button, Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, L
 import { Theme } from '@mui/material/styles';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { AppState } from '../../redux/reducer';
 import { updateTableDefinition } from 'redux/actions';
 import { spreadsheetStyles } from './utils/style';
 import { UUID } from 'crypto';
 import { reorderSpreadsheetColumns } from 'services/study-config';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 
 const MAX_LOCKS_PER_TAB = 5;
 
@@ -45,16 +45,14 @@ const styles = {
 };
 
 interface ColumnsConfigProps {
-    tabIndex: number;
+    tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
 }
 
-export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex, disabled }) => {
+export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefinition, disabled }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-
-    const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
 
     const [localColumns, setLocalColumns] = useState(tableDefinition?.columns);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState<boolean>(false);
@@ -201,9 +199,9 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                             <div ref={provided.innerRef} {...provided.droppableProps}>
                                 {[...localColumns].map(({ uuid, name, visible }, index) => (
                                     <Draggable
-                                        draggableId={tabIndex + '-' + index}
+                                        draggableId={tableDefinition.uuid + '-' + index}
                                         index={index}
-                                        key={tabIndex + '-' + index}
+                                        key={tableDefinition.uuid + '-' + index}
                                     >
                                         {(provided) => (
                                             <div ref={provided.innerRef} {...provided.draggableProps}>

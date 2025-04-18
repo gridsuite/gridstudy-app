@@ -14,7 +14,7 @@ import ShuntCompensatorModificationDialog from 'components/dialogs/network-modif
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
@@ -93,7 +93,7 @@ export const useEquipmentModification = ({ equipmentType }: UseEquipmentModifica
         [getDialogForEquipment]
     );
 
-    const isModificationDialogForEquipmentType = useCallback(() => {
+    const isModificationDialogForEquipmentType = useMemo(() => {
         const DialogComponent = EQUIPMENT_DIALOG_MAPPING[equipmentType as EditableEquipmentType];
         return DialogComponent !== undefined;
     }, [equipmentType]);
