@@ -16,8 +16,8 @@ import { AppState } from 'redux/reducer';
 import { setRemoveColumnDefinition } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
 import { DialogMenuProps } from './custom-aggrid-menu';
-import { deleteSpreadsheetColumn } from 'services/study-config';
 import { UUID } from 'crypto';
+import { deleteSpreadsheetColumn } from '../../services/study/study-config';
 
 export interface CustomColumnConfigProps extends DialogMenuProps {
     tabIndex: number;
@@ -27,6 +27,7 @@ export interface CustomColumnConfigProps extends DialogMenuProps {
 export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabIndex, colUuid, onClose, anchorEl }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const dialogOpen = useStateBoolean(false);
     const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
     const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
@@ -54,8 +55,8 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabI
     );
 
     const handleValidate = useCallback(() => {
-        if (columnDefinition?.id) {
-            deleteSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid)
+        if (studyUuid && columnDefinition?.id) {
+            deleteSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid)
                 .then(() => {
                     setConfirmationDialogOpen(false);
                     dispatch(
@@ -72,7 +73,15 @@ export const CustomColumnMenu: React.FC<CustomColumnConfigProps> = ({ open, tabI
                     });
                 });
         }
-    }, [columnDefinition?.id, columnDefinition?.uuid, dispatch, snackError, spreadsheetConfigUuid, tabIndex]);
+    }, [
+        columnDefinition?.id,
+        columnDefinition?.uuid,
+        dispatch,
+        snackError,
+        spreadsheetConfigUuid,
+        studyUuid,
+        tabIndex,
+    ]);
 
     return (
         <>

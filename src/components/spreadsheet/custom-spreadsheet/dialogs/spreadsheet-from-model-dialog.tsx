@@ -44,6 +44,7 @@ interface SpreadsheetFromModelDialogProps {
 export default function SpreadsheetFromModelDialog({ open }: Readonly<SpreadsheetFromModelDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
@@ -78,6 +79,9 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
 
     const onSubmit = useCallback(
         (formData: any) => {
+            if (!studyUuid) {
+                return;
+            }
             const tabIndex = tablesDefinitions.length;
             const tabName = formData[SPREADSHEET_NAME];
             const modelId = formData[SPREADSHEET_MODEL][0].id;
@@ -87,6 +91,7 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
                     const columns = mapColumnsDto(selectedModel.columns);
 
                     addNewSpreadsheet({
+                        studyUuid,
                         columns,
                         sheetType: selectedModel.sheetType,
                         tabIndex,
@@ -105,7 +110,7 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
                 });
             open.setFalse();
         },
-        [tablesDefinitions.length, spreadsheetsCollectionUuid, dispatch, snackError, open]
+        [studyUuid, tablesDefinitions.length, open, spreadsheetsCollectionUuid, dispatch, snackError]
     );
 
     return (

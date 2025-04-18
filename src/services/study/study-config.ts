@@ -9,7 +9,7 @@ import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { NetworkVisualizationParameters } from '../../components/dialogs/parameters/network-visualizations/network-visualizations.types';
-import { SpreadsheetCollectionDto } from 'components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetCollectionDto, SpreadsheetConfig } from 'components/spreadsheet/config/spreadsheet.type';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID) {
     console.info('get network visualization parameters');
@@ -66,5 +66,101 @@ export function updateStudySpreadsheetConfigCollection(studyUuid: UUID, collecti
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
+    });
+}
+
+export function reorderSpreadsheetColumns(studyUuid: UUID, spreadsheetModelUuid: UUID, columnsOrder: UUID[]) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns/reorder`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(columnsOrder),
+    });
+}
+
+export function updateSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: UUID, columnUuid: UUID, column: any) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns/${columnUuid}`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(column),
+    });
+}
+
+export function deleteSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: UUID, columnUuid: UUID) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns/${columnUuid}`;
+    return backendFetchJson(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function createSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: UUID, column: any) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns`;
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(column),
+    });
+}
+
+export function renameSpreadsheetModel(studyUuid: UUID, spreadsheetModelUuid: UUID, name: string) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/name`;
+    return backendFetchJson(url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: name,
+    });
+}
+
+export function addSpreadsheetConfigToCollection(
+    studyUuid: UUID,
+    collectionUuid: UUID,
+    spreadsheetModel: SpreadsheetConfig
+) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config-collection/${collectionUuid}/spreadsheet-configs`;
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(spreadsheetModel),
+    });
+}
+
+export function removeSpreadsheetConfigFromCollection(
+    studyUuid: UUID,
+    collectionUuid: UUID,
+    spreadsheetModelUuid: UUID
+) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config-collection/${collectionUuid}/spreadsheet-configs/${spreadsheetModelUuid}`;
+    return backendFetchJson(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function reorderSpreadsheetConfigs(studyUuid: UUID, collectionUuid: UUID, newOrder: UUID[]) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config-collection/${collectionUuid}/reorder`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newOrder),
     });
 }

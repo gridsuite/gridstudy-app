@@ -17,8 +17,9 @@ import { Dispatch } from 'redux';
 import { UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
 import { SortWay } from 'types/custom-aggrid-types';
-import { addSpreadsheetConfigToCollection, getSpreadsheetModel } from 'services/study-config';
+import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
+import { addSpreadsheetConfigToCollection } from '../../../services/study/study-config';
 
 const createNewTableDefinition = (
     columns: ColumnDefinition[],
@@ -90,6 +91,7 @@ const handleSuccess = (
 };
 
 interface AddNewSpreadsheetParams {
+    studyUuid: UUID;
     columns: ColumnDefinition[];
     sheetType: SpreadsheetEquipmentType;
     tabIndex: number;
@@ -101,6 +103,7 @@ interface AddNewSpreadsheetParams {
 }
 
 export const addNewSpreadsheet = ({
+    studyUuid,
     columns,
     sheetType,
     tabIndex,
@@ -113,7 +116,7 @@ export const addNewSpreadsheet = ({
     const newTableDefinition = createNewTableDefinition(columns, sheetType, tabIndex, tabName);
     const spreadsheetConfig = createSpreadsheetConfig(columns, sheetType, tabName);
 
-    addSpreadsheetConfigToCollection(spreadsheetsCollectionUuid, spreadsheetConfig)
+    addSpreadsheetConfigToCollection(studyUuid, spreadsheetsCollectionUuid, spreadsheetConfig)
         .then((uuid: UUID) => handleSuccess(uuid, newTableDefinition, dispatch, snackError, open))
         .catch((error) => {
             snackError({
