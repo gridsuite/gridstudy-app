@@ -26,7 +26,7 @@ import {
     Chip,
 } from '@mui/material';
 
-import { useCallback, useRef, useState } from 'react';
+import { SetStateAction, useCallback, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -45,8 +45,6 @@ import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
 import { isChecked, isPartial } from './network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
-import RootNetworkPanelHeader from 'components/root-network-panel-header';
-import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../util/case-import-parameters';
 
 const styles = {
@@ -125,11 +123,18 @@ const styles = {
     }),
 };
 
-const RootNetworkNodeEditor = () => {
+interface RootNetworkNodeEditorProps {
+    isRootNetworksProcessing: boolean;
+    setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
+}
+
+const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
+    isRootNetworksProcessing,
+    setIsRootNetworksProcessing,
+}) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
-    const isPanelMinimized = useSelector((state: AppState) => state.isRootNetworkPanelMinimized);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -141,7 +146,6 @@ const RootNetworkNodeEditor = () => {
     const [rootNetworkModificationDialogOpen, setRootNetworkModificationDialogOpen] = useState(false);
     const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
     const dispatch = useDispatch();
-    const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
 
     const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
     rootNetworksRef.current = rootNetworks;
@@ -169,7 +173,7 @@ const RootNetworkNodeEditor = () => {
                     });
                 });
         }
-    }, [studyUuid, updateSelectedItems, snackError, dispatch]);
+    }, [studyUuid, updateSelectedItems, dispatch, setIsRootNetworksProcessing, snackError]);
 
     const rootNetworkModifiedNotification = useCallback(
         (event: MessageEvent<string>) => {
@@ -383,50 +387,39 @@ const RootNetworkNodeEditor = () => {
         }
     };
 
-    const renderRootNetworkPanelContent = () => {
-        return (
-            <>
-                <Toolbar sx={styles.toolbar}>
-                    <Checkbox
-                        sx={styles.toolbarCheckbox}
-                        disabled={isRootNetworksProcessing}
-                        color={'primary'}
-                        edge="start"
-                        checked={isChecked(selectedItems.length)}
-                        indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
-                        disableRipple
-                        onClick={toggleSelectAllRootNetworks}
-                    />
-                    <Box sx={styles.filler} />
-
-                    <IconButton
-                        onClick={doDeleteRootNetwork}
-                        size={'small'}
-                        sx={styles.toolbarIcon}
-                        disabled={
-                            selectedItems.length === 0 ||
-                            !currentNode ||
-                            rootNetworks.length === selectedItems.length ||
-                            isRootNetworksProcessing
-                        }
-                    >
-                        <DeleteIcon />
-                    </IconButton>
-                </Toolbar>
-                {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
-                {renderRootNetworksListTitle()}
-
-                {renderRootNetworksList()}
-            </>
-        );
-    };
     return (
         <>
-            <RootNetworkPanelHeader
-                isRootNetworksProcessing={isRootNetworksProcessing}
-                setIsRootNetworksProcessing={setIsRootNetworksProcessing}
-            />
-            {isPanelMinimized ? <RootNetworkMinimizedPanelContent /> : renderRootNetworkPanelContent()}
+            <Toolbar sx={styles.toolbar}>
+                <Checkbox
+                    sx={styles.toolbarCheckbox}
+                    disabled={isRootNetworksProcessing}
+                    color={'primary'}
+                    edge="start"
+                    checked={isChecked(selectedItems.length)}
+                    indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
+                    disableRipple
+                    onClick={toggleSelectAllRootNetworks}
+                />
+                <Box sx={styles.filler} />
+
+                <IconButton
+                    onClick={doDeleteRootNetwork}
+                    size={'small'}
+                    sx={styles.toolbarIcon}
+                    disabled={
+                        selectedItems.length === 0 ||
+                        !currentNode ||
+                        rootNetworks.length === selectedItems.length ||
+                        isRootNetworksProcessing
+                    }
+                >
+                    <DeleteIcon />
+                </IconButton>
+            </Toolbar>
+            {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
+            {renderRootNetworksListTitle()}
+
+            {renderRootNetworksList()}
         </>
     );
 };

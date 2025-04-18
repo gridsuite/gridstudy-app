@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { Paper } from '@mui/material';
 import RootNetworkNodeEditor from './graph/menus/root-network-node-editor';
-import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import RootNetworkPanelHeader from './root-network-panel-header';
+import RootNetworkMinimizedPanelContent from './graph/menus/root-network-minimized-panel-content';
 
 const styles = {
     paper: {
@@ -23,17 +23,31 @@ const styles = {
 };
 
 const RootNetworkPanel: FunctionComponent = () => {
-    const isPanelMinimized = useSelector((state: AppState) => state.isRootNetworkPanelMinimized);
-
+    const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
+    const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(false);
     const panelStyle = {
         ...styles.paper,
-        width: isPanelMinimized ? '174px' : '300px',
-        minHeight: isPanelMinimized ? '99px' : '300px',
+        width: isRootNetworkPanelMinimized ? '174px' : '300px',
+        minHeight: isRootNetworkPanelMinimized ? '99px' : '300px',
     };
 
     return (
         <Paper elevation={3} sx={panelStyle}>
-            <RootNetworkNodeEditor />
+            <RootNetworkPanelHeader
+                isRootNetworksProcessing={isRootNetworksProcessing}
+                setIsRootNetworksProcessing={setIsRootNetworksProcessing}
+                isRootNetworkPanelMinimized={isRootNetworkPanelMinimized}
+                setIsRootNetworkPanelMinimized={setIsRootNetworkPanelMinimized}
+            />
+
+            {isRootNetworkPanelMinimized ? (
+                <RootNetworkMinimizedPanelContent />
+            ) : (
+                <RootNetworkNodeEditor
+                    isRootNetworksProcessing={isRootNetworksProcessing}
+                    setIsRootNetworksProcessing={setIsRootNetworksProcessing}
+                />
+            )}
         </Paper>
     );
 };

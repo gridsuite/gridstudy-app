@@ -142,8 +142,7 @@ export type AppActions =
     | CancelLeaveParametersTabAction
     | LoadNadFromConfigAction
     | SetEditNadModeAction
-    | DeletedOrRenamedNodesAction
-    | RootNetworkPanelMinimizedAction;
+    | DeletedOrRenamedNodesAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -583,17 +582,6 @@ export function setEditNadMode(isEditMode: boolean): SetEditNadModeAction {
     return {
         type: SET_EDIT_NAD_MODE,
         isEditMode,
-    };
-}
-
-export const SET_ROOT_NETWORK_PANEL_MINIMIZED = 'SET_ROOT_NETWORK_PANEL_MINIMIZED';
-export type RootNetworkPanelMinimizedAction = Readonly<Action<typeof SET_ROOT_NETWORK_PANEL_MINIMIZED>> & {
-    isRootNetworkPanelMinimized: boolean;
-};
-export function setRootNetworkPanelMinimized(isRootNetworkPanelMinimized: boolean): RootNetworkPanelMinimizedAction {
-    return {
-        type: SET_ROOT_NETWORK_PANEL_MINIMIZED,
-        isRootNetworkPanelMinimized,
     };
 }
 

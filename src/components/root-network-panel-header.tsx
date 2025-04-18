@@ -7,18 +7,18 @@
 
 import React, { SetStateAction, useCallback, useState } from 'react';
 import { Box, IconButton, Theme, Tooltip } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { OverflowableText, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
+import { LIGHT_THEME, OverflowableText, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { FileUpload } from '@mui/icons-material';
 import RootNetworkDialog, { FormData } from './dialogs/root-network/root-network-dialog';
 import { createRootNetwork } from 'services/root-network';
 import { UUID } from 'crypto';
 import { GetCaseImportParametersReturn, getCaseImportParameters } from 'services/network-conversion';
-import { setRootNetworkPanelMinimized } from 'redux/actions';
-import { PanelLeftOpen, PanelRightOpen } from 'lucide-react';
+import LeftPanelClose from '@material-symbols/svg-400/outlined/left_panel_close.svg?react';
+import LeftPanelOpen from '@material-symbols/svg-400/outlined/left_panel_open.svg?react';
 import { customizeCurrentParameters, formatCaseImportParameters } from './graph/util/case-import-parameters';
+import { useSelector } from 'react-redux';
 
 const styles = {
     headerPanel: (theme: Theme) => ({
@@ -38,20 +38,25 @@ const styles = {
 interface RootNetworkPanelHeaderProps {
     isRootNetworksProcessing: boolean;
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
+    isRootNetworkPanelMinimized: boolean;
+    setIsRootNetworkPanelMinimized: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     isRootNetworksProcessing,
     setIsRootNetworksProcessing,
+    isRootNetworkPanelMinimized,
+    setIsRootNetworkPanelMinimized,
 }) => {
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const intl = useIntl();
-    const dispatch = useDispatch();
+    const theme = useSelector((state: AppState) => state.theme);
+
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [rootNetworkCreationDialogOpen, setRootNetworkCreationDialogOpen] = useState(false);
-    const isPanelMinimized = useSelector((state: AppState) => state.isRootNetworkPanelMinimized);
+
     const openRootNetworkCreationDialog = useCallback(() => {
         setRootNetworkCreationDialogOpen(true);
     }, []);
@@ -96,8 +101,10 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
             });
     };
     const minimizeRootNetworkPanel = useCallback(() => {
-        dispatch(setRootNetworkPanelMinimized(!isPanelMinimized));
-    }, [dispatch, isPanelMinimized]);
+        setIsRootNetworkPanelMinimized((prev) => !prev);
+    }, [setIsRootNetworkPanelMinimized]);
+    const LeftPanelIconComponent = isRootNetworkPanelMinimized ? LeftPanelOpen : LeftPanelClose;
+    const leftPanelIconColor = theme === LIGHT_THEME ? 'rgba(0, 0, 0, 0.54)' : '#fff';
 
     return (
         <>
@@ -110,16 +117,21 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                             <IconButton
                                 onClick={openRootNetworkCreationDialog}
                                 size={'small'}
-                                sx={isPanelMinimized ? undefined : styles.uploadButton}
+                                sx={isRootNetworkPanelMinimized ? undefined : styles.uploadButton}
                                 disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
                             >
                                 <FileUpload />
                             </IconButton>
                         </span>
                     </Tooltip>
-
                     <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
-                        {isPanelMinimized ? <PanelLeftOpen /> : <PanelRightOpen />}
+                        <LeftPanelIconComponent
+                            style={{
+                                width: 24,
+                                height: 24,
+                                fill: leftPanelIconColor,
+                            }}
+                        />
                     </IconButton>
                 </Box>
             </Box>
