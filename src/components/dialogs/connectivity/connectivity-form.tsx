@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ExploreOffOutlinedIcon from '@mui/icons-material/ExploreOffOutlined';
-import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
-import { GridDirection, IconButton, Tooltip } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import ExploreOffOutlinedIcon from "@mui/icons-material/ExploreOffOutlined";
+import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
+import { GridDirection, IconButton, Tooltip } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
@@ -17,14 +17,14 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY,
     ID,
-    VOLTAGE_LEVEL,
-} from 'components/utils/field-constants';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { useIntl } from 'react-intl';
-import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
-import { isNodeBuilt } from '../../graph/util/model-functions';
-import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
+    VOLTAGE_LEVEL
+} from "components/utils/field-constants";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
+import { useIntl } from "react-intl";
+import PositionDiagramPane from "../../diagrams/singleLineDiagram/position-diagram-pane";
+import { isNodeBuilt } from "../../graph/util/model-functions";
+import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from "../../network/constants";
 import {
     AutocompleteInput,
     Identifiable,
@@ -32,15 +32,15 @@ import {
     Option,
     SelectInput,
     SwitchInput,
-    TextInput,
-} from '@gridsuite/commons-ui';
-import { fetchBusesOrBusbarSectionsForVoltageLevel } from 'services/study/network';
-import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input';
-import { areIdsEqual, getObjectId } from '../../utils/utils';
-import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } from './connectivity-form-utils';
-import { UUID } from 'crypto';
-import { ConnectablePositionFormInfos } from './connectivity.type';
-import { CurrentTreeNode } from '../../graph/tree-node.type';
+    TextInput
+} from "@gridsuite/commons-ui";
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from "services/study/network";
+import CheckboxNullableInput from "../../utils/rhf-inputs/boolean-nullable-input";
+import { areIdsEqual, getObjectId } from "../../utils/utils";
+import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } from "./connectivity-form-utils";
+import { UUID } from "crypto";
+import { ConnectablePositionFormInfos } from "./connectivity.type";
+import { CurrentTreeNode } from "../../graph/tree-node.type";
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -73,8 +73,14 @@ interface ConnectivityFormProps {
     currentRootNetworkUuid: UUID;
     onVoltageLevelChangeCallback?: () => void;
     isEquipmentModification?: boolean;
-    previousValues?: { connectablePosition?: ConnectablePositionFormInfos; terminalConnected?: boolean | null };
+    previousValues?: {
+        connectablePosition?: ConnectablePositionFormInfos;
+        voltageLevelId?: string;
+        busOrBusbarSectionId?: string;
+        terminalConnected?: boolean | null;
+    };
 }
+
 export function ConnectivityForm({
     id = CONNECTIVITY,
     voltageLevelSelectLabel = 'VOLTAGE_LEVEL',
@@ -113,9 +119,6 @@ export function ConnectivityForm({
     );
 
     useEffect(() => {
-        if (isEquipmentModification) {
-            return;
-        }
         if (watchVoltageLevelId) {
             const existingVoltageLevelOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
             if (existingVoltageLevelOption) {
@@ -136,24 +139,13 @@ export function ConnectivityForm({
                 setBusOrBusbarSectionOptions([]);
             }
         }
-    }, [
-        watchVoltageLevelId,
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        voltageLevelOptions,
-        id,
-        isEquipmentModification,
-    ]);
+    }, [watchVoltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelOptions, id]);
 
     useEffect(() => {
-        if (isEquipmentModification) {
-            return;
-        }
         if (newBusOrBusbarSectionOptions?.length > 0) {
             setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
         }
-    }, [newBusOrBusbarSectionOptions, isEquipmentModification]);
+    }, [newBusOrBusbarSectionOptions]);
 
     const handleChange = useCallback(() => {
         onVoltageLevelChangeCallback?.();
@@ -162,24 +154,13 @@ export function ConnectivityForm({
     }, [id, onVoltageLevelChangeCallback, setValue]);
 
     useEffect(() => {
-        if (isEquipmentModification) {
-            return;
-        }
         const currentBusOrBusbarSection = getValues(`${id}.${BUS_OR_BUSBAR_SECTION}`);
         if (busOrBusbarSectionOptions?.length > 0 && currentBusOrBusbarSection?.id !== null) {
             setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, currentBusOrBusbarSection);
         }
-    }, [busOrBusbarSectionOptions, setValue, id, getValues, isEquipmentModification]);
+    }, [busOrBusbarSectionOptions, setValue, id, getValues]);
 
-    const newVoltageLevelField = isEquipmentModification ? (
-        <AutocompleteInput
-            name={`${id}.${VOLTAGE_LEVEL}.${ID}`}
-            label={voltageLevelSelectLabel}
-            options={vlOptions}
-            disabled={isEquipmentModification}
-            size={'small'}
-        />
-    ) : (
+    const newVoltageLevelField = (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
             outputTransform={(value) => {
@@ -197,6 +178,7 @@ export function ConnectivityForm({
             label={voltageLevelSelectLabel}
             options={vlOptions}
             getOptionLabel={getObjectId}
+            previousValue={isEquipmentModification ? previousValues?.voltageLevelId : undefined}
             size={'small'}
         />
     );
@@ -230,15 +212,7 @@ export function ConnectivityForm({
         <SwitchInput name={`${id}.${CONNECTED}`} label="connected" />
     );
 
-    const newBusOrBusbarSectionField = isEquipmentModification ? (
-        <AutocompleteInput
-            name={`${id}.${BUS_OR_BUSBAR_SECTION}.${ID}`}
-            label="BusBarBus"
-            options={busOrBusbarSectionOptions}
-            disabled={isEquipmentModification}
-            size={'small'}
-        />
-    ) : (
+    const newBusOrBusbarSectionField = (
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
@@ -257,6 +231,7 @@ export function ConnectivityForm({
                 }
                 return value;
             }}
+            previousValue={isEquipmentModification ? previousValues?.busOrBusbarSectionId : undefined}
             size={'small'}
         />
     );
