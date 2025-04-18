@@ -98,7 +98,12 @@ export function getVscConverterStationSchema(id: string) {
         [id]: yup.object().shape({
             [CONVERTER_STATION_ID]: yup.string().nullable().required(),
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
-            [LOSS_FACTOR]: yup.number().nullable().required().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
+            [LOSS_FACTOR]: yup
+                .number()
+                .nullable()
+                .required()
+                .min(0, 'NormalizedPercentage')
+                .max(100, 'NormalizedPercentage'),
             [VOLTAGE_REGULATION_ON]: yup.boolean(),
             [REACTIVE_POWER]: yup
                 .number()
