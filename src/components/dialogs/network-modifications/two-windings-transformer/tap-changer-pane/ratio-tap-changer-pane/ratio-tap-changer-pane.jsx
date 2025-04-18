@@ -21,16 +21,13 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { VoltageAdornment } from '../../../../dialog-utils';
 import { FloatInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
-import { RegulatingTerminalForm } from '../../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
-import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { RATIO_REGULATION_MODES } from 'components/network/constants';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
-import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import { getComputedPreviousRatioRegulationType } from './ratio-tap-changer-pane-utils';
 import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
-import { getRegulationTypeLabel, getTapSideLabel } from '../tap-changer-pane-utils';
+import RegulatedTerminalSection from '../regulated-terminal-section';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
@@ -134,28 +131,6 @@ const RatioTapChangerPane = ({
         />
     );
 
-    const regulationTypeField = (
-        <SelectInput
-            name={`${id}.${REGULATION_TYPE}`}
-            label={'RegulationTypeText'}
-            options={Object.values(REGULATION_TYPES)}
-            disabled={!ratioTapChangerEnabledWatcher}
-            size="small"
-            previousValue={getRegulationTypeLabel(previousValues, previousValues?.ratioTapChanger, intl)}
-        />
-    );
-
-    const sideField = (
-        <SelectInput
-            name={`${id}.${REGULATION_SIDE}`}
-            label={'RegulatedSide'}
-            options={Object.values(SIDE)}
-            disabled={!ratioTapChangerEnabledWatcher}
-            size="small"
-            previousValue={getTapSideLabel(previousValues, previousValues?.ratioTapChanger, intl)}
-        />
-    );
-
     const targetVoltage1Field = (
         <FloatInput
             name={`${id}.${TARGET_V}`}
@@ -180,20 +155,6 @@ const RatioTapChangerPane = ({
         />
     );
 
-    const regulatingTerminalField = (
-        <RegulatingTerminalForm
-            id={id}
-            disabled={!ratioTapChangerEnabledWatcher}
-            equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
-            studyUuid={studyUuid}
-            currentNodeUuid={currentNode?.id}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-            voltageLevelOptions={voltageLevelOptions}
-            regulatingTerminalVlId={previousValues?.ratioTapChanger?.regulatingTerminalVlId}
-            equipmentSectionType={getTapChangerEquipmentSectionTypeValue(previousValues?.ratioTapChanger)}
-        />
-    );
-
     return (
         <>
             <GridItem size={4}>{ratioTapLoadTapChangingCapabilitiesField}</GridItem>
@@ -206,15 +167,16 @@ const RatioTapChangerPane = ({
                         <GridItem size={4}>{targetVoltage1Field}</GridItem>
                         <GridItem size={4}>{targetDeadbandField}</GridItem>
                     </Grid>
-
-                    <GridSection title="RegulatedTerminal" heading={4} />
-                    <Grid item container spacing={1}>
-                        <GridItem size={4}>{regulationTypeField}</GridItem>
-                        {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
-                        {regulationType === REGULATION_TYPES.DISTANT.id && (
-                            <GridItem size={8}>{regulatingTerminalField}</GridItem>
-                        )}
-                    </Grid>
+                    <RegulatedTerminalSection
+                        id={id}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
+                        voltageLevelOptions={voltageLevelOptions}
+                        previousValues={previousValues}
+                        tapChangerEnabledWatcher={ratioTapChangerEnabledWatcher}
+                        regulationType={regulationType}
+                    />
                 </>
             )}
 

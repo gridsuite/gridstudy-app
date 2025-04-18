@@ -12,27 +12,23 @@ import {
     FLOW_SET_POINT_REGULATING_VALUE,
     PHASE_TAP_CHANGER,
     REGULATION_MODE,
-    REGULATION_SIDE,
     REGULATION_TYPE,
     TARGET_DEADBAND,
 } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { ActivePowerAdornment, AmpereAdornment } from '../../../../dialog-utils';
-import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
+import { PHASE_REGULATION_MODES } from 'components/network/constants';
 import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
-import { RegulatingTerminalForm } from '../../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     getComputedPhaseTapChangerRegulationMode,
     getComputedPreviousPhaseRegulationType,
 } from './phase-tap-changer-pane-utils';
 import { useMemo } from 'react';
-import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
-import { getRegulationTypeLabel, getTapSideLabel } from '../tap-changer-pane-utils';
+import RegulatedTerminalSection from '../regulated-terminal-section.js';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -99,30 +95,6 @@ const PhaseTapChangerPane = ({
         />
     );
 
-    const regulationTypeField = (
-        <SelectInput
-            name={`${id}.${REGULATION_TYPE}`}
-            label={'RegulationTypeText'}
-            options={Object.values(REGULATION_TYPES)}
-            disabled={!phaseTapChangerEnabledWatch}
-            size="small"
-            disableClearable={!isModification}
-            previousValue={getRegulationTypeLabel(previousValues, previousValues?.phaseTapChanger, intl)}
-        />
-    );
-
-    const sideField = (
-        <SelectInput
-            name={`${id}.${REGULATION_SIDE}`}
-            label={'RegulatedSide'}
-            options={Object.values(SIDE)}
-            disabled={!phaseTapChangerEnabledWatch}
-            size="small"
-            disableClearable={!isModification}
-            previousValue={getTapSideLabel(previousValues, previousValues?.phaseTapChanger, intl)}
-        />
-    );
-
     const currentLimiterRegulatingValueField = (
         <FloatInput
             name={`${id}.${CURRENT_LIMITER_REGULATING_VALUE}`}
@@ -166,19 +138,6 @@ const PhaseTapChangerPane = ({
         />
     );
 
-    const regulatingTerminalField = (
-        <RegulatingTerminalForm
-            id={id}
-            disabled={!phaseTapChangerEnabledWatch}
-            equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
-            studyUuid={studyUuid}
-            currentNodeUuid={currentNode?.id}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-            regulatingTerminalVlId={previousValues?.phaseTapChanger?.regulatingTerminalVlId}
-            equipmentSectionType={getTapChangerEquipmentSectionTypeValue(previousValues?.phaseTapChanger)}
-        />
-    );
-
     return (
         <>
             <GridSection title="RegulationSection" heading={4} />
@@ -199,16 +158,16 @@ const PhaseTapChangerPane = ({
             </Grid>
 
             {phaseTapChangerEnabledWatch && regulationMode && (
-                <>
-                    <GridSection title="RegulatedTerminal" heading={4} />
-                    <Grid item container spacing={1}>
-                        <GridItem size={4}>{regulationTypeField}</GridItem>
-                        {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
-                        {regulationType === REGULATION_TYPES.DISTANT.id && (
-                            <GridItem size={8}>{regulatingTerminalField}</GridItem>
-                        )}
-                    </Grid>
-                </>
+                <RegulatedTerminalSection
+                    id={id}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    voltageLevelOptions={voltageLevelOptions}
+                    previousValues={previousValues}
+                    tapChangerEnabledWatcher={phaseTapChangerEnabledWatch}
+                    regulationType={regulationType}
+                />
             )}
             <GridSection title="TapsSection" heading={4} />
             <PhaseTapChangerPaneSteps
