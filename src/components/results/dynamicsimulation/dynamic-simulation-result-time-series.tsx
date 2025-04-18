@@ -124,7 +124,7 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                 </Box>
             )}
             <Overlay message={overlayMessage}>
-                <Grid container sx={styles.root}>
+                <Box sx={styles.root}>
                     {/* tab headers */}
                     <Grid container direction="row" wrap="nowrap">
                         <Grid sx={{ overflow: 'hidden' }}>
@@ -182,7 +182,7 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                     </Grid>
 
                     {/* tab contents */}
-                    <Grid
+                    <Box
                         sx={{
                             height: 'calc(100vh - 220px)', // TODO fix layout to use flexGrow : 1
                         }}
@@ -197,8 +197,8 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                                 />
                             </VisibilityBox>
                         ))}
-                    </Grid>
-                </Grid>
+                    </Box>
+                </Box>
             </Overlay>
         </>
     );
