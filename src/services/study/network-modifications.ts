@@ -23,6 +23,7 @@ import {
     GeneratorCreationInfos,
     GeneratorModificationInfos,
     LCCCreationInfo,
+    LccModificationInfo,
     LineCreationInfo,
     LineModificationInfo,
     LinesAttachToSplitLinesInfo,
@@ -1718,6 +1719,52 @@ export function createLcc({
             activePowerSetpoint: activePowerSetpoint,
             converterStation1: converterStation1,
             converterStation2: converterStation2,
+            properties: properties,
+        }),
+    });
+}
+export function modifyLcc({
+    studyUuid,
+    nodeUuid,
+    id,
+    name,
+    nominalV,
+    r,
+    maxP,
+    convertersMode,
+    activePowerSetpoint,
+    lccConverterStation1,
+    lccConverterStation2,
+    properties,
+    isUpdate = false,
+    modificationUuid,
+}: LccModificationInfo) {
+    let modifyLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (isUpdate) {
+        modifyLccUrl += '/' + safeEncodeURIComponent(modificationUuid);
+        console.info('Updating lcc hvdc line modification');
+    } else {
+        console.info('Creating lcc hvdc line modification');
+    }
+
+    return backendFetchText(modifyLccUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.LCC_MODIFICATION.type,
+            equipmentId: id,
+            equipmentName: toModificationOperation(name),
+            nominalV: toModificationOperation(nominalV),
+            r: toModificationOperation(r),
+            maxP: toModificationOperation(maxP),
+            convertersMode: toModificationOperation(convertersMode),
+            activePowerSetpoint: toModificationOperation(activePowerSetpoint),
+            converterStation1: lccConverterStation1,
+            converterStation2: lccConverterStation2,
             properties: properties,
         }),
     });
