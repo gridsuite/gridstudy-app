@@ -87,7 +87,7 @@ export const enumColumnDefinition = (displayName: string, tab: string): ColDef =
                     tab,
                     updateFilterCallback: updateFilters,
                     dataType: FILTER_DATA_TYPES.TEXT,
-                    debounceMs: 200,
+                    debounceMs: 800,
                 },
             },
         },
