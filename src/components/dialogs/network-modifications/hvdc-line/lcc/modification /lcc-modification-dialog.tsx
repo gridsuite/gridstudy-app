@@ -108,11 +108,9 @@ export const LccModificationDialog = ({
                 setEquipmentId(editData.equipmentId);
             }
 
-            console.log('----------lccModificationInfos : ', lccModificationInfos);
-
             reset({
                 [EQUIPMENT_ID]: lccModificationInfos.equipmentId,
-                [EQUIPMENT_NAME]: lccModificationInfos.equipmentName,
+                [EQUIPMENT_NAME]: lccModificationInfos.equipmentName?.value ?? '',
                 [HVDC_LINE_TAB]: getLccHvdcLineFromModificationEditData(lccModificationInfos),
                 [CONVERTER_STATION_1]: getLccConverterStationFromEditData(lccModificationInfos.converterStation1),
                 [CONVERTER_STATION_2]: getLccConverterStationFromEditData(lccModificationInfos.converterStation2),

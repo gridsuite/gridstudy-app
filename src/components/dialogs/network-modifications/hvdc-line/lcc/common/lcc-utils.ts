@@ -37,7 +37,8 @@ import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,
     LccCreationInfos,
-    LccFormInfos, LccModificationInfos,
+    LccFormInfos,
+    LccModificationInfos,
     ShuntCompensatorFormSchema,
 } from './lcc-type';
 import {
@@ -260,8 +261,6 @@ export function getLccConverterStationCreationData(converterStation: {
         shuntCompensatorsOnSide: getShuntCompensatorOnSideCreateData(converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE]),
     };
 }
-
-/* busOrBusbarSectionId?: AttributeModification<string>; */
 
 export function getLccConverterStationModificationData(
     converterStation: any,

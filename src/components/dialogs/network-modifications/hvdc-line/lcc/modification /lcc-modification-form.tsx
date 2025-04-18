@@ -96,7 +96,6 @@ export function LccModificationForm({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     id={CONVERTER_STATION_1}
                     stationLabel={'converterStation1'}
-                    hideConnectityForm
                     previousValues={lccToModify?.lccConverterStation1}
                     isModification
                 />
@@ -108,7 +107,6 @@ export function LccModificationForm({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     id={CONVERTER_STATION_2}
                     stationLabel={'converterStation2'}
-                    hideConnectityForm
                     previousValues={lccToModify?.lccConverterStation2}
                     isModification
                 />

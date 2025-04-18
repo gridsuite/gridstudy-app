@@ -6,14 +6,21 @@
  */
 import {
     ACTIVE_POWER_SETPOINT,
+    ADDITIONAL_PROPERTIES,
+    CONNECTIVITY,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
+    CONVERTER_STATION_ID,
+    CONVERTER_STATION_NAME,
     CONVERTERS_MODE,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    FILTERS_SHUNT_COMPENSATOR_TABLE,
     HVDC_LINE_TAB,
+    LOSS_FACTOR,
     MAX_P,
     NOMINAL_V,
+    POWER_FACTOR,
     R,
 } from '../../../../../utils/field-constants';
 import yup from '../../../../../utils/yup-config';
@@ -21,8 +28,8 @@ import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LccDialogTab, LccCreationInfos, LccCreationSchemaForm, LccFormInfos } from '../common/lcc-type';
-import { toModificationProperties } from '../../../common/properties/property-utils';
+import { LccDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from '../common/lcc-type';
+import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
@@ -48,6 +55,36 @@ import {
     getLccHvdcLineSchema,
 } from '../common/lcc-utils';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { Connectivity } from '../../../../connectivity/connectivity.type';
+
+export type LccCreationSchemaForm = {
+    [EQUIPMENT_ID]: string;
+    [EQUIPMENT_NAME]?: string;
+    [HVDC_LINE_TAB]: {
+        [NOMINAL_V]: number;
+        [R]: number;
+        [MAX_P]: number;
+        [CONVERTERS_MODE]: string;
+        [ACTIVE_POWER_SETPOINT]: number;
+        [ADDITIONAL_PROPERTIES]?: Property[];
+    };
+    [CONVERTER_STATION_1]: {
+        [CONVERTER_STATION_ID]: string;
+        [CONVERTER_STATION_NAME]?: string;
+        [LOSS_FACTOR]: number;
+        [POWER_FACTOR]: number;
+        [CONNECTIVITY]: Connectivity;
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorFormSchema[];
+    };
+    [CONVERTER_STATION_2]: {
+        [CONVERTER_STATION_ID]: string;
+        [CONVERTER_STATION_NAME]?: string;
+        [LOSS_FACTOR]: number;
+        [POWER_FACTOR]: number;
+        [CONNECTIVITY]: Connectivity;
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorFormSchema[];
+    };
+};
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

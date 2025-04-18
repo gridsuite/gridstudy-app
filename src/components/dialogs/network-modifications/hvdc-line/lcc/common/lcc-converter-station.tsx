@@ -33,7 +33,6 @@ interface LccConverterStationProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
-    hideConnectityForm?: boolean;
     previousValues?: LccConverterStationFormInfos;
     isModification?: boolean;
 }
@@ -44,7 +43,6 @@ export default function LccConverterStation({
     currentNode,
     studyUuid,
     currentRootNetworkUuid,
-    hideConnectityForm,
     previousValues,
     isModification,
 }: Readonly<LccConverterStationProps>) {
@@ -67,7 +65,7 @@ export default function LccConverterStation({
         <TextInput
             name={`${id}.${CONVERTER_STATION_NAME}`}
             label={'converterStationName'}
-            previousValue={previousValues?.name}
+            previousValue={previousValues?.name ?? ''}
         />
     );
     const connectivityForm = (
@@ -124,7 +122,7 @@ export default function LccConverterStation({
                 <GridItem size={4}>{stationIdField}</GridItem>
                 <GridItem size={4}>{stationNameField}</GridItem>
             </Grid>
-            {!hideConnectityForm && connectivitySection}
+            {!isModification && connectivitySection}
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
                 <GridItem size={4}>{lossFactorField}</GridItem>

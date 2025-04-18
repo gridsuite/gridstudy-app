@@ -6,17 +6,14 @@
  */
 import { Property } from '../../../common/properties/property-utils';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import { ConnectablePositionInfos, Connectivity } from '../../../../connectivity/connectivity.type';
+import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 import {
     ACTIVE_POWER_SETPOINT,
     ADDITIONAL_PROPERTIES,
-    CONNECTIVITY,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
-    CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
     CONVERTERS_MODE,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FILTERS_SHUNT_COMPENSATOR_TABLE,
     HVDC_LINE_TAB,
@@ -38,12 +35,6 @@ export type LccModificationSchemaForm = {
     [CONVERTER_STATION_1]: ConverterStationBaseType;
     [CONVERTER_STATION_2]: ConverterStationBaseType;
 } & Partial<LccBaseSchemaForm>;
-
-export type LccCreationSchemaForm = {
-    [EQUIPMENT_ID]: string;
-    [CONVERTER_STATION_1]: { [CONVERTER_STATION_ID]: string; [CONNECTIVITY]: Connectivity } & ConverterStationBaseType;
-    [CONVERTER_STATION_2]: { [CONVERTER_STATION_ID]: string; [CONNECTIVITY]: Connectivity } & ConverterStationBaseType;
-} & LccBaseSchemaForm;
 
 export type LccBaseSchemaForm = {
     [EQUIPMENT_NAME]?: string;
