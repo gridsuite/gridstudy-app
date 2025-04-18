@@ -8,12 +8,11 @@
 import { Grid } from '@mui/material';
 import { ConnectivityForm } from './connectivity-form';
 import { CONNECTIVITY, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
-import { FunctionComponent } from 'react';
 import useVoltageLevelsListInfos from '../../../hooks/use-voltage-levels-list-infos';
-import { CurrentTreeNode } from '../../../redux/reducer';
 import { UUID } from 'crypto';
 import GridSection from '../commons/grid-section';
 import GridItem from '../commons/grid-item';
+import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 interface BranchConnectivityFormProps {
     currentNode: CurrentTreeNode;
@@ -23,13 +22,13 @@ interface BranchConnectivityFormProps {
     previousValues?: any;
 }
 
-const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = ({
+export function BranchConnectivityForm({
     currentNode,
     studyUuid,
     currentRootNetworkUuid,
     isModification = false,
     previousValues,
-}) => {
+}: Readonly<BranchConnectivityFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
     const id1 = `${CONNECTIVITY}.${CONNECTIVITY_1}`;
     const id2 = `${CONNECTIVITY}.${CONNECTIVITY_2}`;
@@ -82,6 +81,4 @@ const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = (
             </Grid>
         </>
     );
-};
-
-export default BranchConnectivityForm;
+}

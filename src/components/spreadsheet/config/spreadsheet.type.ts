@@ -54,15 +54,25 @@ export type SpreadsheetEquipmentsByNodes = {
     equipmentsByNodeId: Record<string, Identifiable[]>;
 };
 
-export type ColumnState = { colId: string; name: string; visible: boolean };
-
 export type SpreadsheetConfig = {
     name: string;
     sheetType: SpreadsheetEquipmentType;
     columns: ColumnDefinitionDto[];
 };
 
+export type SpreadsheetConfigDto = SpreadsheetConfig & {
+    id: UUID;
+};
+
 export type SpreadsheetCollection = {
     id?: string;
     spreadsheetConfigs: SpreadsheetConfig[];
+    nodeAliases?: string[];
+};
+
+export type SpreadsheetCollectionDto = {
+    id: UUID;
+    name: string;
+    spreadsheetConfigs: SpreadsheetConfigDto[];
+    nodeAliases?: string[];
 };

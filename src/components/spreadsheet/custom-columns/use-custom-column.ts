@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
-import { COLUMN_TYPES, CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import { limitedEvaluate } from './math';
 import { ColDef, ValueGetterParams } from 'ag-grid-community';
 import {
@@ -19,6 +19,8 @@ import {
 } from '../config/common-column-definitions';
 import { validateFormulaResult } from './formula-validator';
 import { ColumnDefinition } from '../config/spreadsheet.type';
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { isCalculationRow } from '../utils/calculation-utils';
 
 export function useCustomColumn(tabIndex: number) {
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
@@ -27,12 +29,17 @@ export function useCustomColumn(tabIndex: number) {
         (colDef: ColumnDefinition) =>
             (params: ValueGetterParams): boolean | string | number | undefined => {
                 try {
+                    // Skip formula processing for pinned rows and use raw value
+                    if (isCalculationRow(params.node?.data?.rowType)) {
+                        return params.data[colDef.id];
+                    }
                     const scope = { ...params.data };
                     const colDependencies = colDef.dependencies ?? [];
                     colDependencies.forEach((dep) => {
                         scope[dep] = params.getValue(dep);
                     });
-                    const result = limitedEvaluate(colDef.formula, scope);
+                    const escapedFormula = colDef.formula.replace(/\\/g, '\\\\');
+                    const result = limitedEvaluate(escapedFormula, scope);
                     const validation = validateFormulaResult(result, colDef.type);
 
                     if (!validation.isValid) {
@@ -53,16 +60,16 @@ export function useCustomColumn(tabIndex: number) {
 
                 switch (colDef.type) {
                     case COLUMN_TYPES.NUMBER:
-                        baseDefinition = numberColumnDefinition(colDef.name, tableDefinition.name, colDef.precision);
+                        baseDefinition = numberColumnDefinition(colDef.name, tableDefinition.uuid, colDef.precision);
                         break;
                     case COLUMN_TYPES.TEXT:
-                        baseDefinition = textColumnDefinition(colDef.name, tableDefinition.name);
+                        baseDefinition = textColumnDefinition(colDef.name, tableDefinition.uuid);
                         break;
                     case COLUMN_TYPES.BOOLEAN:
-                        baseDefinition = booleanColumnDefinition(colDef.name, tableDefinition.name);
+                        baseDefinition = booleanColumnDefinition(colDef.name, tableDefinition.uuid);
                         break;
                     case COLUMN_TYPES.ENUM:
-                        baseDefinition = enumColumnDefinition(colDef.name, tableDefinition.name);
+                        baseDefinition = enumColumnDefinition(colDef.name, tableDefinition.uuid);
                         break;
                     default:
                         baseDefinition = {};
@@ -88,6 +95,6 @@ export function useCustomColumn(tabIndex: number) {
                     enableCellChangeFlash: true,
                 };
             }),
-        [tableDefinition?.columns, tableDefinition?.name, tabIndex, createValueGetter]
+        [tableDefinition?.columns, tableDefinition?.uuid, tabIndex, createValueGetter]
     );
 }

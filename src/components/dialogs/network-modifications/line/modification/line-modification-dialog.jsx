@@ -18,7 +18,7 @@ import {
     ADDITIONAL_PROPERTIES,
     B1,
     B2,
-    BRANCH_MEASUREMENTS,
+    STATE_ESTIMATION,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
     CONNECTED,
@@ -52,7 +52,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 
 import {
     addModificationTypeToTemporaryLimits,
@@ -98,6 +98,7 @@ import {
     getBranchActiveReactivePowerValidationSchema,
 } from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
 import { LineModificationDialogTab } from '../line-utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
 
 /**
  * Dialog to modify a line in the network
@@ -135,7 +136,7 @@ const LineModificationDialog = ({
             ...getCont1Cont2WithPositionEmptyFormData(true),
             ...getCharacteristicsEmptyFormData(CHARACTERISTICS, displayConnectivity),
             ...getLimitsEmptyFormData(),
-            ...getBranchActiveReactivePowerEmptyFormData(BRANCH_MEASUREMENTS),
+            ...getBranchActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
             ...emptyProperties,
         }),
         [displayConnectivity]
@@ -147,8 +148,8 @@ const LineModificationDialog = ({
             [EQUIPMENT_NAME]: yup.string(),
             ...getCon1andCon2WithPositionValidationSchema(true),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
-            ...getLimitsValidationSchema(),
-            ...getBranchActiveReactivePowerValidationSchema(BRANCH_MEASUREMENTS),
+            ...getLimitsValidationSchema(true),
+            ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
         })
         .concat(modificationPropertiesSchema)
         .required();
@@ -171,7 +172,7 @@ const LineModificationDialog = ({
                     ...getConnectivityFormData(createConnectivityData(lineModification, 1), CONNECTIVITY_1),
                     ...getConnectivityFormData(createConnectivityData(lineModification, 2), CONNECTIVITY_2),
                 },
-                ...getBranchActiveReactivePowerEditData(BRANCH_MEASUREMENTS, lineModification),
+                ...getBranchActiveReactivePowerEditData(STATE_ESTIMATION, lineModification),
                 ...getCharacteristicsWithOutConnectivityFormData({
                     r: lineModification.r?.value ?? null,
                     x: lineModification.x?.value ?? null,
@@ -207,7 +208,7 @@ const LineModificationDialog = ({
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
-            const measurements = line[BRANCH_MEASUREMENTS];
+            const stateEstimationData = line[STATE_ESTIMATION];
             const limits = line[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
                 sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
@@ -275,14 +276,14 @@ const LineModificationDialog = ({
                 connected1: connectivity1[CONNECTED],
                 connected2: connectivity2[CONNECTED],
                 properties: toModificationProperties(line),
-                p1MeasurementValue: measurements[MEASUREMENT_P1][VALUE],
-                p1MeasurementValidity: measurements[MEASUREMENT_P1][VALIDITY],
-                q1MeasurementValue: measurements[MEASUREMENT_Q1][VALUE],
-                q1MeasurementValidity: measurements[MEASUREMENT_Q1][VALIDITY],
-                p2MeasurementValue: measurements[MEASUREMENT_P2][VALUE],
-                p2MeasurementValidity: measurements[MEASUREMENT_P2][VALIDITY],
-                q2MeasurementValue: measurements[MEASUREMENT_Q2][VALUE],
-                q2MeasurementValidity: measurements[MEASUREMENT_Q2][VALIDITY],
+                p1MeasurementValue: stateEstimationData[MEASUREMENT_P1][VALUE],
+                p1MeasurementValidity: stateEstimationData[MEASUREMENT_P1][VALIDITY],
+                q1MeasurementValue: stateEstimationData[MEASUREMENT_Q1][VALUE],
+                q1MeasurementValidity: stateEstimationData[MEASUREMENT_Q1][VALIDITY],
+                p2MeasurementValue: stateEstimationData[MEASUREMENT_P2][VALUE],
+                p2MeasurementValidity: stateEstimationData[MEASUREMENT_P2][VALIDITY],
+                q2MeasurementValue: stateEstimationData[MEASUREMENT_Q2][VALUE],
+                q2MeasurementValidity: stateEstimationData[MEASUREMENT_Q2][VALIDITY],
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -374,8 +375,8 @@ const LineModificationDialog = ({
         if (errors?.[CONNECTIVITY] !== undefined) {
             tabsInError.push(LineModificationDialogTab.CONNECTIVITY_TAB);
         }
-        if (errors?.[BRANCH_MEASUREMENTS] !== undefined) {
-            tabsInError.push(LineModificationDialogTab.MEASUREMENTS_TAB);
+        if (errors?.[STATE_ESTIMATION] !== undefined) {
+            tabsInError.push(LineModificationDialogTab.STATE_ESTIMATION_TAB);
         }
         if (tabsInError.length > 0) {
             setTabIndex(tabsInError[0]);
@@ -421,13 +422,18 @@ const LineModificationDialog = ({
     );
 
     return (
-        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
+        <CustomFormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
                 onValidationError={onValidationError}
-                aria-labelledby="dialog-modify-line"
                 maxWidth={'md'}
                 titleId="ModifyLine"
                 subtitle={selectedId != null ? headerAndTabs : undefined}
@@ -447,9 +453,6 @@ const LineModificationDialog = ({
             >
                 {selectedId == null && (
                     <EquipmentIdSelector
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.LINE}

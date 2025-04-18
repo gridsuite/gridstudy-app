@@ -9,12 +9,15 @@ import { useState, MouseEvent, useCallback } from 'react';
 import { Button, Menu, MenuItem, Theme, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useStateBoolean } from '@gridsuite/commons-ui';
-import AddSpreadsheetConfigDialog from './custom-spreadsheet-dialog';
-import { NEW_SPREADSHEET_CREATION_OPTIONS } from '../constants';
+import { NEW_SPREADSHEET_CREATION_OPTIONS, SpreadsheetOption } from '../constants';
 import { FormattedMessage } from 'react-intl';
+import { SpreadsheetTabDefinition } from '../config/spreadsheet.type';
+import { ResetNodeAliasCallback } from '../custom-columns/use-node-aliases';
 
 interface CustomSpreadsheetConfigProps {
     disabled: boolean;
+    resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
+    resetNodeAliases: ResetNodeAliasCallback;
 }
 
 const styles = {
@@ -23,10 +26,14 @@ const styles = {
     }),
 };
 
-const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({ disabled }) => {
+const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({
+    disabled,
+    resetTabIndex,
+    resetNodeAliases,
+}) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const dialogOpen = useStateBoolean(false);
-    const [selectedOption, setSelectedOption] = useState<{ id: string; label: string }>();
+    const [selectedOption, setSelectedOption] = useState<SpreadsheetOption | undefined>();
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -37,13 +44,15 @@ const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({ disab
     }, []);
 
     const handleMenuItemClick = useCallback(
-        (option: { id: string; label: string }) => {
+        (option: SpreadsheetOption) => {
             setSelectedOption(option);
             dialogOpen.setTrue();
             handleClose();
         },
         [dialogOpen, handleClose]
     );
+
+    const SelectedDialog = selectedOption?.dialog;
 
     return (
         <>
@@ -60,7 +69,9 @@ const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({ disab
                 ))}
             </Menu>
 
-            <AddSpreadsheetConfigDialog open={dialogOpen} selectedOption={selectedOption} />
+            {SelectedDialog && (
+                <SelectedDialog open={dialogOpen} resetTabIndex={resetTabIndex} resetNodeAliases={resetNodeAliases} />
+            )}
         </>
     );
 };

@@ -17,13 +17,6 @@ import {
 import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
-import {
-    ColumnContext,
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-    FilterEnumsType,
-} from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
@@ -36,12 +29,19 @@ import computingType, { ComputingType } from '../../computing-status/computing-t
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
-import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
+import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { convertDuration, formatNAValue } from 'components/spreadsheet/utils/equipment-table-utils';
+import {
+    ColumnContext,
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+    FilterEnumsType,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -766,7 +766,7 @@ export const useFetchFiltersEnums = () => {
     });
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const securityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
@@ -910,12 +910,6 @@ export const convertFilterValues = (intl: IntlShape, filterSelector: FilterConfi
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
-
-export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
-    return index === 0 || (index === 1 && nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS)
-        ? 'subjectId'
-        : 'contingencyId';
-};
 
 export const MAX_INT32: number = 2147483647;
 

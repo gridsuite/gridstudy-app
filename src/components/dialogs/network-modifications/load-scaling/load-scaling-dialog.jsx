@@ -6,9 +6,9 @@
  */
 
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../commons/modificationDialog';
+import { ModificationDialog } from '../../commons/modificationDialog';
 import LoadScalingForm from './load-scaling-form';
 import { useCallback, useEffect } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
@@ -85,7 +85,6 @@ const LoadScalingDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-load-scaling"
                 maxWidth={'md'}
                 titleId="LoadScaling"
                 open={open}

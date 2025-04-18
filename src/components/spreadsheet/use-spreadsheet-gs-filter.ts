@@ -7,46 +7,45 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { IRowNode } from 'ag-grid-community';
-import { evaluateFilters, ExpertFilter } from '../../services/study/filter';
+import { evaluateFilters, SpreadsheetGlobalFilter } from '../../services/study/filter';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
-import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 
-export const useSpreadsheetGsFilter = (equipmentType: SpreadsheetEquipmentType) => {
+export const useSpreadsheetGsFilter = (tabUuid: UUID) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [filterIds, setFilterIds] = useState<string[]>([]);
     const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
 
     const applyGsFilter = useCallback(
-        async (filters: ExpertFilter[]) => {
-            if (!filters?.length || !currentRootNetwork) {
+        async (filters: SpreadsheetGlobalFilter[]) => {
+            if (!filters?.length || !currentRootNetworkUuid) {
                 setFilterIds([]);
                 return;
             }
 
-            const filtersUuid = filters.filter((filter) => filter.id).map((filter) => filter.id as UUID);
+            const filtersUuid = filters.map((filter) => filter.id);
             if (filtersUuid.length > 0) {
-                const response = await evaluateFilters(studyUuid as UUID, currentRootNetwork, filtersUuid);
+                const response = await evaluateFilters(studyUuid as UUID, currentRootNetworkUuid, filtersUuid);
                 const equipmentsIds = response.flatMap((filterEquipments) =>
                     filterEquipments.identifiableAttributes.map((attr) => attr.id)
                 );
                 setFilterIds(equipmentsIds);
             }
         },
-        [currentRootNetwork, studyUuid]
+        [currentRootNetworkUuid, studyUuid]
     );
 
     useEffect(() => {
-        applyGsFilter(gsFilterSpreadsheetState[equipmentType]);
-    }, [applyGsFilter, equipmentType, gsFilterSpreadsheetState]);
+        applyGsFilter(gsFilterSpreadsheetState[tabUuid]);
+    }, [applyGsFilter, tabUuid, gsFilterSpreadsheetState]);
 
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
     const isExternalFilterPresent = useCallback(
-        () => gsFilterSpreadsheetState[equipmentType]?.length > 0,
-        [equipmentType, gsFilterSpreadsheetState]
+        () => gsFilterSpreadsheetState[tabUuid]?.length > 0,
+        [tabUuid, gsFilterSpreadsheetState]
     );
 
     return { doesFormulaFilteringPass, isExternalFilterPresent };

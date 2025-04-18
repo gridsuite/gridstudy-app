@@ -29,7 +29,7 @@ export const customColumnFormSchema = yup.object().shape({
         .string()
         .required()
         .max(60, 'spreadsheet/custom_column/error/id_le_60')
-        .matches(/^[^\s$]+$/, 'spreadsheet/custom_column/error/id_not_conform'),
+        .matches(/^[a-zA-Z_]\w*$/, 'spreadsheet/custom_column/error/id_not_conform'),
     [COLUMN_NAME]: yup.string().required().max(60, 'spreadsheet/custom_column/error/name_le_60'),
     [COLUMN_TYPE]: yup.mixed<COLUMN_TYPES>().oneOf(Object.values(COLUMN_TYPES)).required(),
     [PRECISION]: yup

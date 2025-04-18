@@ -14,7 +14,6 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
-    DiagramType,
 } from '../diagram-common';
 import {
     CSS_RULE,
@@ -28,13 +27,17 @@ import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
-import { getNadIdentifier } from '../diagram-utils';
+import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import DiagramControls from '../diagram-controls';
+import { createDiagramConfig } from '../../../services/explore';
+import { DiagramType } from '../diagram.type';
+import { useDiagram } from '../use-diagram';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -141,16 +144,18 @@ type NetworkAreaDiagramContentProps = {
     readonly svg?: string;
     readonly svgMetadata?: DiagramMetadata;
     readonly svgScalingFactor?: number;
+    readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
     visible: boolean;
 };
+
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
-
+    const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
@@ -166,10 +171,20 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
+    const { loadNadFromConfigView } = useDiagram();
 
     const nadIdentifier = useMemo(() => {
+        if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
+            return props.diagramId;
+        }
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
-    }, [diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]);
+    }, [
+        diagramStates,
+        networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+        props.svgType,
+        props.diagramId,
+    ]);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
@@ -232,6 +247,41 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
         [setShouldDisplayTooltip, setAnchorPosition]
     );
+
+    const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
+        createDiagramConfig(
+            {
+                scalingFactor: props.svgScalingFactor,
+                voltageLevelIds: props.svgVoltageLevels ?? [],
+                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
+            },
+            directoryData.name,
+            directoryData.description,
+            directoryData.folderId
+        )
+            .then(() => {
+                snackInfo({
+                    headerId: 'diagramConfigCreationMsg',
+                    headerValues: {
+                        directory: directoryData.folderName,
+                    },
+                });
+            })
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'diagramConfigCreationError',
+                })
+            );
+    };
+
+    const handleLoadFromConfig = useCallback(
+        (nadConfigUuid: string, nadName: string) => {
+            loadNadFromConfigView(nadConfigUuid, nadName);
+        },
+        [loadNadFromConfigView]
+    );
+
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -249,10 +299,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
                 null,
-                true,
+                isEditNadMode,
                 true,
                 dynamicCssRules,
-                OnToggleHoverCallback,
+                isEditNadMode ? null : OnToggleHoverCallback,
                 null,
                 false
             );
@@ -319,6 +369,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         OnToggleHoverCallback,
         nadIdentifier,
         onMoveTextNodeCallback,
+        isEditNadMode,
     ]);
 
     /**
@@ -346,6 +397,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
+            <DiagramControls onSave={handleSaveNadConfig} onLoad={handleLoadFromConfig} />
         </>
     );
 }

@@ -6,7 +6,7 @@
  */
 
 import { ElementType, RadioInput } from '@gridsuite/commons-ui';
-import { Alert, DialogContent, Grid } from '@mui/material';
+import { Alert, DialogContent, Grid, Theme } from '@mui/material';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     GENERATORS_SELECTION_TYPE,
@@ -18,7 +18,6 @@ import {
 } from 'components/utils/field-constants';
 import ParameterLineDirectoryItemsInput from '../widget/parameter-line-directory-items-input';
 import { FormattedMessage } from 'react-intl';
-import { Theme } from '@mui/system';
 
 const equipmentsSelectionStyles = {
     alert: (theme: Theme) => ({

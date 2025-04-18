@@ -6,7 +6,12 @@
 
 # webstorm
 /.idea
-/coverage
+
+# vscode
+/.vscode
+
+# vite
+/vite.config.ts-timestamp-*
 
 # misc
 .env.local
@@ -14,5 +19,8 @@
 .env.test.local
 .env.production.local
 
-#vscode
-/.vscode
+# jest
+/coverage
+
+# GitHub Action: sonarqube-scan-action
+/.scannerwork/

@@ -37,6 +37,13 @@ const createNewTableDefinition = (
     })),
 });
 
+export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
+    return columns.map((column) => ({
+        ...column,
+        [COLUMN_DEPENDENCIES]: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
+    }));
+};
+
 const createSpreadsheetConfig = (
     columns: ColumnDefinition[],
     sheetType: SpreadsheetEquipmentType,
@@ -53,7 +60,6 @@ const createSpreadsheetConfig = (
 const handleSuccess = (
     uuid: UUID,
     newTableDefinition: SpreadsheetTabDefinition,
-    tabName: string,
     dispatch: Dispatch,
     snackError: any,
     open: UseStateBooleanReturn
@@ -69,8 +75,8 @@ const handleSuccess = (
                 locked: false,
             }));
             dispatch(updateTableDefinition(newTableDefinition));
-            dispatch(addFilterForNewSpreadsheet(tabName, []));
-            dispatch(addSortForNewSpreadsheet(tabName, [{ colId: 'id', sort: SortWay.ASC }]));
+            dispatch(addFilterForNewSpreadsheet(uuid, []));
+            dispatch(addSortForNewSpreadsheet(uuid, [{ colId: 'id', sort: SortWay.ASC }]));
         })
         .catch((error) => {
             snackError({
@@ -108,7 +114,7 @@ export const addNewSpreadsheet = ({
     const spreadsheetConfig = createSpreadsheetConfig(columns, sheetType, tabName);
 
     addSpreadsheetConfigToCollection(spreadsheetsCollectionUuid, spreadsheetConfig)
-        .then((uuid: UUID) => handleSuccess(uuid, newTableDefinition, tabName, dispatch, snackError, open))
+        .then((uuid: UUID) => handleSuccess(uuid, newTableDefinition, dispatch, snackError, open))
         .catch((error) => {
             snackError({
                 messageTxt: error,

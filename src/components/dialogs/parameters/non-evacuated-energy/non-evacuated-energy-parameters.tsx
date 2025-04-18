@@ -44,21 +44,17 @@ import {
     STAGES_DEFINITION_INDEX,
     STAGES_SELECTION,
 } from '../../../utils/field-constants';
-import yup from '../../../utils/yup-config';
 import { setNonEvacuatedEnergyParameters } from '../../../../services/study/non-evacuated-energy';
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
 import {
-    UseGetNonEvacuatedEnergyParametersReturnProps,
-    getContingenciesFormSchema,
+    formSchema,
     getContingenciesParams,
-    getGenerationStagesDefinitionFormSchema,
     getGenerationStagesDefinitionParams,
-    getGenerationStagesSelectionFormSchema,
     getGenerationStagesSelectionParams,
-    getGeneratorsCappingsFormSchema,
     getGeneratorsCappingsParams,
-    getMonitoredBranchesFormSchema,
     getMonitoredBranchesParams,
+    NonEvacuatedEnergyParametersForm,
+    UseGetNonEvacuatedEnergyParametersReturnProps,
 } from './utils';
 import ComputingType from '../../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
@@ -66,20 +62,6 @@ import LineSeparator from '../../commons/line-separator';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { styles } from '../parameters-style';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [PROVIDER]: yup.string().required(),
-        ...getGenerationStagesDefinitionFormSchema(),
-        ...getGenerationStagesSelectionFormSchema(),
-        ...getGeneratorsCappingsFormSchema(),
-        ...getMonitoredBranchesFormSchema(),
-        ...getContingenciesFormSchema(),
-    })
-    .required();
-
-export type NonEvacuatedEnergyParametersForm = yup.InferType<typeof formSchema>;
 
 interface NonEvacuatedEnergyParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.NON_EVACUATED_ENERGY_ANALYSIS>;
@@ -312,20 +294,20 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                     indexPmax1 === 0
                         ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_1]
                         : indexPmax1 === 1
-                        ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_2]
-                        : stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_3];
+                          ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_2]
+                          : stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_3];
                 const valPmax2 =
                     indexPmax2 === 0
                         ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_1]
                         : indexPmax2 === 1
-                        ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_2]
-                        : stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_3];
+                          ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_2]
+                          : stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_3];
                 const valPmax3 =
                     indexPmax3 === 0
                         ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_1]
                         : indexPmax3 === 1
-                        ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_2]
-                        : stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_3];
+                          ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_2]
+                          : stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_3];
                 let stageSelection = {
                     [ACTIVATED]: true,
                     [NAME]:

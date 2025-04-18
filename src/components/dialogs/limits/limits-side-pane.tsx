@@ -23,9 +23,9 @@ import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
 import DndTable from '../../utils/dnd-table/dnd-table';
 import TemporaryLimitsTable from './temporary-limits-table';
-import { CurrentTreeNode } from '../../../redux/reducer';
 import { ColumnNumeric, ColumnText, DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 import LimitsChart from './limitsChart';
+import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
@@ -155,7 +155,8 @@ export function LimitsSidePane({
         (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
-            return getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+            return getValues(arrayFormName) &&
+                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
                 ? false
                 : temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
                       column.dataKey !== TEMPORARY_LIMIT_VALUE;
@@ -180,7 +181,8 @@ export function LimitsSidePane({
 
     const isValueModified = useCallback(
         (rowIndex: number, arrayFormName: string) => {
-            const temporaryLimit = getValues(arrayFormName)[rowIndex];
+            const temporaryLimits = getValues(arrayFormName);
+            const temporaryLimit = temporaryLimits ? temporaryLimits[rowIndex] : null;
             if (
                 temporaryLimit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
                 !isNodeBuilt(currentNode ?? null)

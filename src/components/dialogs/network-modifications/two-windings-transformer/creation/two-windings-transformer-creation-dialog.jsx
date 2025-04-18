@@ -63,7 +63,7 @@ import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
+import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import {
     FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
@@ -73,7 +73,7 @@ import {
     UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import {
     getPhaseTapChangerEmptyFormData,
@@ -393,14 +393,7 @@ const TwoWindingsTransformerCreationDialog = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-    });
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER);
 
     useEffect(() => {
         if (editData) {
@@ -628,7 +621,6 @@ const TwoWindingsTransformerCreationDialog = ({
                 onClear={clear}
                 onValidationError={onValidationError}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-two-windings-transformer"
                 maxWidth={dialogWidth}
                 titleId="CreateTwoWindingsTransformer"
                 subtitle={headerAndTabs}

@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -28,6 +28,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -165,12 +166,17 @@ const SubstationModificationDialog = ({
     });
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods} removeOptional={true}>
+        <CustomFormProvider
+            validationSchema={formSchema}
+            {...formMethods}
+            removeOptional={true}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-substation"
                 maxWidth={'md'}
                 titleId="ModifySubstation"
                 open={open}
@@ -183,9 +189,6 @@ const SubstationModificationDialog = ({
             >
                 {selectedId == null && (
                     <EquipmentIdSelector
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.SUBSTATION}

@@ -21,14 +21,13 @@ import {
     Tooltip,
 } from '@mui/material';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { DragDropContext, Draggable, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable, DroppableProvided, DropResult } from '@hello-pangea/dnd';
 import { useIntl } from 'react-intl';
 import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
 import { AutocompleteInput, CheckboxInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
-import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
 import { ErrorInput } from '@gridsuite/commons-ui';
 import { FieldErrorAlert } from '@gridsuite/commons-ui';
@@ -480,24 +479,6 @@ const DndTable = (props: DndTableProps) => {
             />
         </Grid>
     );
-};
-
-DndTable.propTypes = {
-    arrayFormName: PropTypes.string.isRequired,
-    useFieldArrayOutput: PropTypes.object.isRequired,
-    columnsDefinition: PropTypes.array.isRequired,
-    tableHeight: PropTypes.number,
-    allowedToAddRows: PropTypes.func,
-    createRows: PropTypes.func.isRequired,
-    handleUploadButton: PropTypes.func,
-    uploadButtonMessageId: PropTypes.string,
-    handleResetButton: PropTypes.func,
-    resetButtonMessageId: PropTypes.string,
-    disabled: PropTypes.bool,
-    withLeftButtons: PropTypes.bool,
-    withAddRowsDialog: PropTypes.bool,
-    showMoveArrow: PropTypes.bool,
-    disableDragAndDrop: PropTypes.bool,
 };
 
 export default DndTable;

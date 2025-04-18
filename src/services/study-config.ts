@@ -61,6 +61,28 @@ export function updateSpreadsheetColumn(spreadsheetModelUuid: UUID, columnUuid: 
     });
 }
 
+export function reorderSpreadsheetColumns(spreadsheetModelUuid: UUID, columnsOrder: UUID[]) {
+    const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}/columns/reorder`;
+    return backendFetchJson(fetchUrl, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(columnsOrder),
+    });
+}
+
+export function renameSpreadsheetModel(spreadsheetModelUuid: UUID, name: string) {
+    const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}/name`;
+    return backendFetchJson(fetchUrl, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: name,
+    });
+}
+
 export function addSpreadsheetConfigToCollection(collectionUuid: UUID, spreadsheetModel: SpreadsheetConfig) {
     const fetchUrl = `${getSpreadsheetConfigsCollectionsUrl()}/${collectionUuid}/spreadsheet-configs`;
     return backendFetchJson(fetchUrl, {
@@ -79,6 +101,17 @@ export function removeSpreadsheetConfigFromCollection(collectionUuid: UUID, spre
         headers: {
             'Content-Type': 'application/json',
         },
+    });
+}
+
+export function reorderSpreadsheetConfigs(collectionUuid: UUID, newOrder: UUID[]) {
+    const fetchUrl = `${getSpreadsheetConfigsCollectionsUrl()}/${collectionUuid}/reorder`;
+    return backendFetchJson(fetchUrl, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newOrder),
     });
 }
 

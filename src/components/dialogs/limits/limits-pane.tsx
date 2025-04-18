@@ -19,12 +19,12 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
-import { CurrentTreeNode } from '../../../redux/reducer';
 import { useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
+import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 export interface LimitsPaneProps {
     id?: string;

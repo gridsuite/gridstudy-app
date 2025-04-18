@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { lighten, darken, Theme } from '@mui/material/styles';
-import { EditableTitle } from '../editable-title';
+import { Theme } from '@mui/material/styles';
+import { EditableTitle } from '../network-modifications/editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setEventScenarioDrawerOpen } from '../../../../redux/actions';
@@ -22,10 +22,7 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        background: (theme: Theme) =>
-            theme.palette.mode === 'light'
-                ? darken(theme.palette.background.paper, 0.1)
-                : lighten(theme.palette.background.paper, 0.2),
+        background: (theme: Theme) => theme.networkModificationPanel.backgroundColor,
     },
 };
 

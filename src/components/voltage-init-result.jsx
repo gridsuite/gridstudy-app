@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
@@ -83,12 +83,10 @@ const VoltageInitResult = ({ result, status }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
     const { snackError } = useSnackMessage();
 
-    const [disabledApplyModifications, setDisableApplyModifications] = useState(
-        !result || !result.modificationsGroupUuid
-    );
+    const [disableApplyModifications, setDisableApplyModifications] = useState(!result?.modificationsGroupUuid);
     const [applyingModifications, setApplyingModifications] = useState(false);
     const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] = useState(false);
     const [voltageInitModification, setVoltageInitModification] = useState();
@@ -100,9 +98,6 @@ const VoltageInitResult = ({ result, status }) => {
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const closePreviewModificationsDialog = () => {
-        setPreviewModificationsDialogOpen(false);
-    };
     const gridRef = useRef();
     const defaultColDef = useMemo(
         () => ({
@@ -111,6 +106,7 @@ const VoltageInitResult = ({ result, status }) => {
             resizable: false,
             lockPinned: true,
             wrapHeaderText: true,
+            flex: 1,
             lockVisible: true,
         }),
         []
@@ -119,6 +115,10 @@ const VoltageInitResult = ({ result, status }) => {
         if (params.api) {
             params.api.sizeColumnsToFit();
         }
+    }, []);
+
+    const onGridReady = useCallback(({ api }) => {
+        api?.sizeColumnsToFit();
     }, []);
 
     const applyModifications = () => {
@@ -179,10 +179,9 @@ const VoltageInitResult = ({ result, status }) => {
                 currentNode={currentNode.id}
                 studyUuid={studyUuid}
                 editData={voltageInitModification}
-                onClose={() => closePreviewModificationsDialog(false)}
+                onClose={() => setPreviewModificationsDialogOpen(false)}
                 onPreviewModeSubmit={applyModifications}
                 editDataFetchStatus={FetchStatus.IDLE}
-                dialogProps={undefined}
                 disabledSave={autoApplyModifications}
             />
         );
@@ -190,13 +189,19 @@ const VoltageInitResult = ({ result, status }) => {
     const indicatorsColumnDefs = useMemo(() => {
         return [
             {
+                headerName: intl.formatMessage({ id: 'Key' }),
                 field: 'key',
+                colId: 'key',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'Key' }) },
             },
             {
+                headerName: intl.formatMessage({ id: 'Value' }),
                 field: 'value',
+                colId: 'value',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'Value' }) },
             },
         ];
-    }, []);
+    }, [intl]);
 
     function renderHeaderReactiveSlacks(result) {
         const calculateTotal = (reactiveSlacks, isPositive) => {
@@ -259,7 +264,8 @@ const VoltageInitResult = ({ result, status }) => {
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows}
                     onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
+                    onGridReady={onGridReady}
+                    skipColumnHeaders={false}
                 />
             </>
         );
@@ -270,10 +276,14 @@ const VoltageInitResult = ({ result, status }) => {
             {
                 headerName: intl.formatMessage({ id: 'BusId' }),
                 field: 'busId',
+                colId: 'busId',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusId' }) },
             },
             {
                 headerName: intl.formatMessage({ id: 'Slack' }),
                 field: 'slack',
+                colId: 'slack',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'Slack' }) },
                 numeric: true,
             },
         ];
@@ -291,44 +301,56 @@ const VoltageInitResult = ({ result, status }) => {
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
                     rows={result.reactiveSlacks}
                     onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
+                    onGridReady={onGridReady}
+                    skipColumnHeaders={false}
                 />
             </>
         );
     }
+
+    const formatValue = (value, precision, intl) => {
+        return isNaN(value) ? intl.formatMessage({ id: 'Undefined' }) : value.toFixed(precision);
+    };
 
     const busVoltagesColumnDefs = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'BusId' }),
                 field: 'busId',
+                colId: 'busId',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusId' }) },
             },
             {
                 headerName: intl.formatMessage({ id: 'BusVoltage' }),
                 field: 'v',
+                colId: 'v',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusVoltage' }) },
                 numeric: true,
+                valueFormatter: (params) => formatValue(params.value, 2, intl),
             },
             {
                 headerName: intl.formatMessage({ id: 'BusAngle' }),
                 field: 'angle',
+                colId: 'angle',
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'BusAngle' }) },
                 numeric: true,
+                valueFormatter: (params) => formatValue(params.value, 2, intl),
             },
         ];
     }, [intl]);
 
     function renderBusVoltagesTable(busVoltages) {
         return (
-            <>
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={busVoltagesColumnDefs}
-                    defaultColDef={defaultColDef}
-                    tableName={intl.formatMessage({ id: 'BusVoltages' })}
-                    rows={busVoltages}
-                    onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
-                />
-            </>
+            <RenderTableAndExportCsv
+                gridRef={gridRef}
+                columns={busVoltagesColumnDefs}
+                defaultColDef={defaultColDef}
+                tableName={intl.formatMessage({ id: 'BusVoltages' })}
+                rows={busVoltages}
+                onRowDataUpdated={onRowDataUpdated}
+                onGridReady={onGridReady}
+                skipColumnHeaders={false}
+            />
         );
     }
 
@@ -360,7 +382,7 @@ const VoltageInitResult = ({ result, status }) => {
                         <Button
                             variant="outlined"
                             onClick={previewModifications}
-                            disabled={!result || !result.modificationsGroupUuid || disabledApplyModifications}
+                            disabled={!result?.modificationsGroupUuid || disableApplyModifications}
                         >
                             <FormattedMessage id="previewModifications" />
                         </Button>

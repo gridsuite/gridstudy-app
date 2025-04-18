@@ -18,22 +18,19 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
 import { percentageTextField, ReactivePowerAdornment, VoltageAdornment } from '../../../../dialog-utils';
-import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
-import { Grid } from '@mui/material';
-import ReactiveLimitsForm from '../../../../reactive-limits/reactive-limits-form';
+import { Grid, TextField } from '@mui/material';
+import { ReactiveLimitsForm } from '../../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { TextField } from '@mui/material';
-import {
-    ConverterStationElementModificationInfos,
-    UpdateReactiveCapabilityCurveTable,
-} from './converter-station-utils';
+import { UpdateReactiveCapabilityCurveTable } from './converter-station-utils';
 import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
+import { ConverterStationElementModificationInfos } from './converter-station-type';
+import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 
 interface VscConverterStationPaneProps {
     id: string;
@@ -104,7 +101,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={isModification}
-            previousValues={previousValues}
+            previousValues={{
+                connectablePosition: previousValues?.connectablePosition,
+                terminalConnected: previousValues?.terminalConnected,
+            }}
         />
     );
 
@@ -177,7 +177,8 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm
                 id={`${id}.${REACTIVE_LIMITS}`}
-                equipmentToModify={previousValues as any}
+                previousReactiveCapabilityCurvePoints={previousValues?.reactiveCapabilityCurveTable}
+                previousMinMaxReactiveLimits={previousValues?.minMaxReactiveLimits}
                 updatePreviousReactiveCapabilityCurveTable={
                     updatePreviousReactiveCapabilityCurveTableConverterStation as any
                 }

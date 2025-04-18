@@ -8,7 +8,14 @@
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
-import { EquipmentInfos, EquipmentType, createFilter, NewFilterType } from '@gridsuite/commons-ui';
+import {
+    createFilter,
+    EquipmentInfos,
+    EquipmentType,
+    ExtendedEquipmentType,
+    Identifiable,
+    NewFilterType,
+} from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
@@ -59,12 +66,11 @@ export function fetchVoltageLevelEquipments(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    substationsIds: string[],
     voltageLevelId: string,
-    inUpstreamBuiltParentNode: boolean
-) {
+    inUpstreamBuiltParentNode?: boolean
+): Promise<(Identifiable & { type: EquipmentType })[]> {
     console.info(
-        `Fetching equipments of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}' with substations ids '${substationsIds}'...`
+        `Fetching equipments of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}'`
     );
     const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
@@ -78,7 +84,6 @@ export function fetchVoltageLevelEquipments(
         encodeURIComponent(voltageLevelId) +
         '/equipments' +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId') +
         urlSearchParams.toString();
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
@@ -89,7 +94,7 @@ export function fetchEquipmentsIds(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     substationsIds: string[],
-    equipmentType: EquipmentType,
+    equipmentType: EquipmentType | ExtendedEquipmentType,
     inUpstreamBuiltParentNode: boolean,
     nominalVoltages?: number[]
 ) {

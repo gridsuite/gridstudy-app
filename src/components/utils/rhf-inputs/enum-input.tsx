@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { FieldLabel } from '@gridsuite/commons-ui';
@@ -52,13 +51,6 @@ const EnumInput = <T extends { id: string; label: string }>({
             )}
         </FormControl>
     );
-};
-
-EnumInput.propTypes = {
-    options: PropTypes.array.isRequired,
-    name: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    size: PropTypes.string,
 };
 
 export default EnumInput;

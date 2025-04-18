@@ -52,10 +52,6 @@ export interface VoltageLevel extends Identifiable {
     subtationId?: string;
 }
 
-export interface Substation extends Identifiable {
-    nominalV: number;
-}
-
 export const convertToEquipmentType = (type: EQUIPMENT_TYPES): EquipmentType => {
     return EquipmentType[type as keyof typeof EquipmentType];
 };

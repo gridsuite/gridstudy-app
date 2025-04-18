@@ -8,7 +8,7 @@
 import { Box } from '@mui/material';
 import { LimitsPane } from '../../../limits/limits-pane';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
-import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form';
+import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
 import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';
 import { LineModificationDialogTab } from '../line-utils';
 
@@ -46,7 +46,7 @@ const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetwork
                 />
             </Box>
 
-            <Box hidden={tabIndex !== LineModificationDialogTab.MEASUREMENTS_TAB} p={1}>
+            <Box hidden={tabIndex !== LineModificationDialogTab.STATE_ESTIMATION_TAB} p={1}>
                 <BranchActiveReactivePowerMeasurementsForm equipmentToModify={lineToModify} />
             </Box>
         </>

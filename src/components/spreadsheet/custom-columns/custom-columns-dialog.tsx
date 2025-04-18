@@ -77,6 +77,8 @@ const styles = {
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 } as const satisfies Record<string, SxProps<Theme>>;
 
+const COLUMN_NAME_REGEX = /\W/g;
+
 export default function CustomColumnDialog({
     open,
     colUuid,
@@ -88,12 +90,12 @@ export default function CustomColumnDialog({
         resolver: yupResolver(customColumnFormSchema),
     });
 
-    const { setError, control } = formMethods;
+    const { setError, setValue, control } = formMethods;
     const columnId = useWatch({ control, name: COLUMN_ID });
+    const watchColumnName = useWatch({ control, name: COLUMN_NAME });
     const watchColumnType = useWatch({ control, name: COLUMN_TYPE });
     const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
     const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
-    const tableName = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.name);
     const { snackError } = useSnackMessage();
     const columnDefinition = useMemo(
         () => columnsDefinitions?.find((column) => column?.uuid === colUuid),
@@ -105,8 +107,21 @@ export default function CustomColumnDialog({
 
     const intl = useIntl();
 
+    const generateColumnId = useCallback(() => {
+        if (columnId === '') {
+            setValue(COLUMN_ID, watchColumnName.replace(COLUMN_NAME_REGEX, ''));
+        }
+    }, [columnId, watchColumnName, setValue]);
+
     const columnNameField = (
-        <TextInput name={COLUMN_NAME} label={'spreadsheet/custom_column/column_name'} formProps={{ autoFocus: true }} />
+        <TextInput
+            name={COLUMN_NAME}
+            label={'spreadsheet/custom_column/column_name'}
+            formProps={{
+                autoFocus: true,
+                onBlur: generateColumnId,
+            }}
+        />
     );
 
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
@@ -140,12 +155,12 @@ export default function CustomColumnDialog({
         />
     );
 
-    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, tableName);
+    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
 
     const validateParams = (
         columnsDefinitions: ColumnDefinition[],
         newParams: CustomColumnForm,
-        colUuid: UUID,
+        colUuid: UUID | undefined,
         setError: UseFormSetError<CustomColumnForm>
     ) => {
         const columnIdAlreadyExist = columnsDefinitions?.find(
@@ -185,7 +200,7 @@ export default function CustomColumnDialog({
 
     const onSubmit = useCallback(
         async (newParams: CustomColumnForm) => {
-            if (colUuid && !validateParams(columnsDefinitions, newParams, colUuid, setError)) {
+            if (!validateParams(columnsDefinitions, newParams, colUuid, setError)) {
                 return;
             }
 
@@ -208,6 +223,10 @@ export default function CustomColumnDialog({
                     ? updateSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
                     : createSpreadsheetColumn(spreadsheetConfigUuid, formattedParams);
 
+            // we reset and close the dialog to avoid multiple submissions
+            reset(initialCustomColumnForm);
+            open.setFalse();
+
             updateOrCreateColumn
                 .then((uuid) => {
                     dispatch(
@@ -226,9 +245,6 @@ export default function CustomColumnDialog({
                             },
                         })
                     );
-
-                    reset(initialCustomColumnForm);
-                    open.setFalse();
                 })
                 .catch((error) => {
                     snackError({

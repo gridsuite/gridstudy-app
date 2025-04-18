@@ -7,27 +7,18 @@
 
 import { getIn, SchemaDescription } from 'yup';
 import { isNotBlankOrEmpty, toNumber } from './validation-functions';
-import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from 'services/network-modification-types';
+import {
+    AttributeModification,
+    CurrentLimits,
+    OperationalLimitsGroup,
+    OperationType,
+    TemporaryLimit,
+} from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
-import { AttributeModification } from 'components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
 import { Option } from '@gridsuite/commons-ui';
 import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
-
-/**
- * Get the label of an enum value from its id
- * @param {Array} enumValues - The enum values {id: string, label: string} []
- * @param {string} id - The id of the enum value
- * @returns {string | undefined} - The label of the enum value
- */
-export const getEnumLabelById = (enumValues: { id: string; label: string }[], id: string) => {
-    if (!enumValues || !id) {
-        return undefined;
-    }
-    const enumValue = enumValues.find((enumValue) => enumValue.id === id);
-    return enumValue?.label;
-};
 
 export const isFieldRequired = (fieldName: string, schema: any, values: unknown) => {
     const { schema: fieldSchema, parent: parentValues } = getIn(schema, fieldName, values) || {};
@@ -91,12 +82,8 @@ export const areIdsEqual = (val1: Option, val2: Option) => {
     }
 };
 
-export const areUuidsEqual = (val1: { uuid: string }, val2: { uuid: string }) => {
-    return val1.uuid === val2.uuid;
-};
-
 export const getObjectId = (object: string | { id: string }) => {
-    return typeof object === 'string' ? object : object?.id ?? null;
+    return typeof object === 'string' ? object : (object?.id ?? null);
 };
 
 export const buildNewBusbarSections = (equipmentId: string, sectionCount: number, busbarCount: number) => {
@@ -112,15 +99,23 @@ export const buildNewBusbarSections = (equipmentId: string, sectionCount: number
     return newBusbarSections;
 };
 
-export function toModificationOperation<T>(value: T): AttributeModification<T> | null {
-    return value === 0 || value === false || value ? { value: value, op: 'SET' } : null;
+export function toModificationOperation<T>(
+    value: T
+): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
+    return value === 0 || value === false || value
+        ? { value: value as Exclude<Exclude<T, null>, undefined>, op: OperationType.SET }
+        : null;
 }
 
-export function toModificationUnsetOperation<T>(value: T): AttributeModification<T> | null {
+export function toModificationUnsetOperation<T>(
+    value: T
+): AttributeModification<Exclude<Exclude<T, null>, undefined>> | null {
     if (value === null) {
         return null;
     }
-    return value === 0 || value === false || value ? { value: value, op: 'SET' } : { op: 'UNSET' };
+    return value === 0 || value === false || value
+        ? { value: value as Exclude<Exclude<T, null>, undefined>, op: OperationType.SET }
+        : { op: OperationType.UNSET };
 }
 
 export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]) =>
@@ -282,6 +277,8 @@ export const StudyView = {
     LOGS: 'Logs',
     PARAMETERS: 'Parameters',
 };
+
+export type StudyViewType = (typeof StudyView)[keyof typeof StudyView];
 
 export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
     return rows?.map((row) => {

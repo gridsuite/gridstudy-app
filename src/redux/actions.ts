@@ -22,9 +22,7 @@ import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
-    CurrentTreeNode,
     EquipmentUpdateType,
-    NodeAlias,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     StudyIndexationStatus,
@@ -34,8 +32,7 @@ import type {
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
-import { DiagramType } from '../components/diagrams/diagram-common';
-import { Filter } from '../components/results/common/results-global-filter';
+import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
@@ -47,8 +44,8 @@ import {
     STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
-import GSMapEquipments from 'components/network/gs-map-equipments';
+import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
     SpreadsheetEquipmentsByNodes,
     ColumnDefinition,
@@ -57,9 +54,9 @@ import {
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import { ExpertFilter } from '../services/study/filter';
-
-type MutableUnknownArray = unknown[];
+import { SpreadsheetGlobalFilter } from '../services/study/filter';
+import type { DiagramType } from '../components/diagrams/diagram.type';
+import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export type TableValue<TValue = unknown> = {
     index: number;
@@ -87,12 +84,10 @@ export type AppActions =
     | SetParamsLoadedAction
     | OpenStudyAction
     | CloseStudyAction
-    | RemoveSelectedCaseAction
     | UseNameAction
     | EnableDeveloperModeAction
     | StudyUpdatedAction
     | MapDataLoadingAction
-    | ResetMapReloadedAction
     | MapEquipmentsInitializedAction
     | SetFullscreenDiagramAction
     | FavoriteContingencyListsAction
@@ -122,6 +117,7 @@ export type AppActions =
     | SetOptionalServicesAction
     | SetOneBusShortcircuitAnalysisDiagramAction
     | AddToRecentGlobalFiltersAction
+    | RemoveFromRecentGlobalFiltersAction
     | SetLastCompletedComputationAction
     | LoadflowResultFilterAction
     | SecurityAnalysisResultFilterAction
@@ -132,11 +128,63 @@ export type AppActions =
     | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
-    | UpdateCustomColumnsNodesAliasesAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
     | SaveSpreadSheetGsFilterAction
-    | RemoveTableDefinitionAction;
+    | ResetAllSpreadsheetGsFiltersAction
+    | RemoveTableDefinitionAction
+    | SetCalculationSelectionsAction
+    | ReorderTableDefinitionsAction
+    | RenameTableDefinitionAction
+    | SetAppTabIndexAction
+    | AttemptLeaveParametersTabAction
+    | ConfirmLeaveParametersTabAction
+    | CancelLeaveParametersTabAction
+    | LoadNadFromConfigAction
+    | SetEditNadModeAction
+    | DeletedOrRenamedNodesAction;
+
+export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
+export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
+    tabIndex: number;
+};
+
+export function setAppTabIndex(tabIndex: number): SetAppTabIndexAction {
+    return {
+        type: SET_APP_TAB_INDEX,
+        tabIndex,
+    };
+}
+
+export const ATTEMPT_LEAVE_PARAMETERS_TAB = 'ATTEMPT_LEAVE_PARAMETERS_TAB';
+export type AttemptLeaveParametersTabAction = Readonly<Action<typeof ATTEMPT_LEAVE_PARAMETERS_TAB>> & {
+    targetTabIndex: number;
+};
+
+export function attemptLeaveParametersTab(targetTabIndex: number): AttemptLeaveParametersTabAction {
+    return {
+        type: ATTEMPT_LEAVE_PARAMETERS_TAB,
+        targetTabIndex,
+    };
+}
+
+export const CONFIRM_LEAVE_PARAMETERS_TAB = 'CONFIRM_LEAVE_PARAMETERS_TAB';
+export type ConfirmLeaveParametersTabAction = Readonly<Action<typeof CONFIRM_LEAVE_PARAMETERS_TAB>>;
+
+export function confirmLeaveParametersTab(): ConfirmLeaveParametersTabAction {
+    return {
+        type: CONFIRM_LEAVE_PARAMETERS_TAB,
+    };
+}
+
+export const CANCEL_LEAVE_PARAMETERS_TAB = 'CANCEL_LEAVE_PARAMETERS_TAB';
+export type CancelLeaveParametersTabAction = Readonly<Action<typeof CANCEL_LEAVE_PARAMETERS_TAB>>;
+
+export function cancelLeaveParametersTab(): CancelLeaveParametersTabAction {
+    return {
+        type: CANCEL_LEAVE_PARAMETERS_TAB,
+    };
+}
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -155,31 +203,6 @@ export function loadEquipments(
     };
 }
 
-export type AdditionalNodeData = {
-    alias: string;
-    identifiables: Identifiable[];
-};
-
-export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS =
-    'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
-export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<
-    Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>
-> & {
-    equipmentType: SpreadsheetEquipmentType;
-    data: AdditionalNodeData[];
-};
-
-export function addAdditionalEquipmentsByNodesForCustomColumns(
-    type: SpreadsheetEquipmentType,
-    data: AdditionalNodeData[]
-): AddEquipmentsByNodesForCustomColumnsAction {
-    return {
-        type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
-        equipmentType: type,
-        data,
-    };
-}
-
 export const REMOVE_NODE_DATA = 'REMOVE_NODE_DATA';
 export type RemoveNodeDataAction = Readonly<Action<typeof REMOVE_NODE_DATA>> & {
     nodesIdToRemove: string[];
@@ -189,18 +212,6 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
     return {
         type: REMOVE_NODE_DATA,
         nodesIdToRemove,
-    };
-}
-
-export const UPDATE_CUSTOM_COLUMNS_NODES_ALIASES = 'UPDATE_CUSTOM_COLUMNS_NODES_ALIASES';
-export type UpdateCustomColumnsNodesAliasesAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_NODES_ALIASES>> & {
-    nodesAliases: NodeAlias[];
-};
-
-export function updateCustomColumnsNodesAliases(nodesAliases: NodeAlias[]): UpdateCustomColumnsNodesAliasesAction {
-    return {
-        type: UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
-        nodesAliases: nodesAliases,
     };
 }
 
@@ -492,13 +503,6 @@ export function closeStudy(): CloseStudyAction {
     return { type: CLOSE_STUDY };
 }
 
-export const REMOVE_SELECTED_CASE = 'REMOVE_SELECTED_CASE';
-export type RemoveSelectedCaseAction = Readonly<Action<typeof REMOVE_SELECTED_CASE>>;
-
-export function removeSelectedCase(): RemoveSelectedCaseAction {
-    return { type: REMOVE_SELECTED_CASE };
-}
-
 export const USE_NAME = 'USE_NAME';
 export type UseNameAction = Readonly<Action<typeof USE_NAME>> & {
     [PARAM_USE_NAME]: boolean;
@@ -557,12 +561,27 @@ export function setMapDataLoading(mapDataLoading: boolean): MapDataLoadingAction
     };
 }
 
-export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
-export type ResetMapReloadedAction = Readonly<Action<typeof RESET_MAP_RELOADED>>;
+export const SET_RELOAD_MAP_NEEDED = 'SET_RELOAD_MAP_NEEDED';
+export type SetReloadMapNeededAction = Readonly<Action<typeof SET_RELOAD_MAP_NEEDED>> & {
+    reloadMapNeeded: boolean;
+};
 
-export function resetMapReloaded(): ResetMapReloadedAction {
+export function setReloadMapNeeded(reloadMapNeeded: boolean): SetReloadMapNeededAction {
     return {
-        type: RESET_MAP_RELOADED,
+        type: SET_RELOAD_MAP_NEEDED,
+        reloadMapNeeded,
+    };
+}
+
+export const SET_EDIT_NAD_MODE = 'SET_EDIT_NAD_MODE';
+export type SetEditNadModeAction = Readonly<Action<typeof SET_EDIT_NAD_MODE>> & {
+    isEditMode: boolean;
+};
+
+export function setEditNadMode(isEditMode: boolean): SetEditNadModeAction {
+    return {
+        type: SET_EDIT_NAD_MODE,
+        isEditMode,
     };
 }
 
@@ -610,12 +629,10 @@ export function setFullScreenDiagram(
 
 export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
 export type FavoriteContingencyListsAction = Readonly<Action<typeof FAVORITE_CONTINGENCY_LISTS>> & {
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: MutableUnknownArray;
+    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
 };
 
-export function selectFavoriteContingencyLists(
-    favoriteContingencyLists: MutableUnknownArray
-): FavoriteContingencyListsAction {
+export function selectFavoriteContingencyLists(favoriteContingencyLists: UUID[]): FavoriteContingencyListsAction {
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
@@ -634,15 +651,27 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     };
 }
 
-export const CURRENT_ROOT_NETWORK = 'CURRENT_ROOT_NETWORK';
-export type CurrentRootNetworkAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK>> & {
-    currentRootNetwork: UUID;
+export const CURRENT_ROOT_NETWORK_UUID = 'CURRENT_ROOT_NETWORK_UUID';
+export type CurrentRootNetworkUuidAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK_UUID>> & {
+    currentRootNetworkUuid: UUID;
 };
 
-export function setCurrentRootNetwork(currentRootNetwork: UUID): CurrentRootNetworkAction {
+export function setCurrentRootNetworkUuid(currentRootNetworkUuid: UUID): CurrentRootNetworkUuidAction {
     return {
-        type: CURRENT_ROOT_NETWORK,
-        currentRootNetwork: currentRootNetwork,
+        type: CURRENT_ROOT_NETWORK_UUID,
+        currentRootNetworkUuid: currentRootNetworkUuid,
+    };
+}
+
+export const SET_ROOT_NETWORKS = 'SET_ROOT_NETWORKS';
+export type SetRootNetworksAction = Readonly<Action<typeof SET_ROOT_NETWORKS>> & {
+    rootNetworks: RootNetworkMetadata[];
+};
+
+export function setRootNetworks(rootNetworks: RootNetworkMetadata[]): SetRootNetworksAction {
+    return {
+        type: SET_ROOT_NETWORKS,
+        rootNetworks: rootNetworks,
     };
 }
 
@@ -821,6 +850,20 @@ export function closeDiagrams(ids: string[]): CloseDiagramsAction {
     return {
         type: CLOSE_DIAGRAMS,
         ids: ids,
+    };
+}
+
+export const LOAD_NAD_FROM_CONFIG = 'LOAD_NAD_FROM_CONFIG';
+export type LoadNadFromConfigAction = Readonly<Action<typeof LOAD_NAD_FROM_CONFIG>> & {
+    nadConfigUuid: string;
+    nadName: string;
+};
+
+export function loadNadFromConfig(nadConfigUuid: string, nadName: string): LoadNadFromConfigAction {
+    return {
+        type: LOAD_NAD_FROM_CONFIG,
+        nadConfigUuid: nadConfigUuid,
+        nadName: nadName,
     };
 }
 
@@ -1011,13 +1054,25 @@ export function setOneBusShortcircuitAnalysisDiagram(
 
 export const ADD_TO_RECENT_GLOBAL_FILTERS = 'ADD_TO_RECENT_GLOBAL_FILTERS';
 export type AddToRecentGlobalFiltersAction = Readonly<Action<typeof ADD_TO_RECENT_GLOBAL_FILTERS>> & {
-    globalFilters: Filter[];
+    globalFilters: GlobalFilter[];
 };
 
-export function addToRecentGlobalFilters(globalFilters: Filter[]): AddToRecentGlobalFiltersAction {
+export function addToRecentGlobalFilters(globalFilters: GlobalFilter[]): AddToRecentGlobalFiltersAction {
     return {
         type: ADD_TO_RECENT_GLOBAL_FILTERS,
         globalFilters: globalFilters,
+    };
+}
+
+export const REMOVE_FROM_RECENT_GLOBAL_FILTERS = 'REMOVE_FROM_RECENT_GLOBAL_FILTERS';
+export type RemoveFromRecentGlobalFiltersAction = Readonly<Action<typeof REMOVE_FROM_RECENT_GLOBAL_FILTERS>> & {
+    uuid: UUID;
+};
+
+export function removeFromRecentGlobalFilters(uuid: UUID): RemoveFromRecentGlobalFiltersAction {
+    return {
+        type: REMOVE_FROM_RECENT_GLOBAL_FILTERS,
+        uuid: uuid,
     };
 }
 
@@ -1227,6 +1282,20 @@ export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefiniti
     newTableDefinition,
 });
 
+export const RENAME_TABLE_DEFINITION = 'RENAME_TABLE_DEFINITION';
+export type RenameTableDefinitionAction = Readonly<Action<typeof RENAME_TABLE_DEFINITION>> & {
+    tabUuid: UUID;
+    newName: string;
+};
+
+export function renameTableDefinition(tabUuid: UUID, newName: string): RenameTableDefinitionAction {
+    return {
+        type: RENAME_TABLE_DEFINITION,
+        tabUuid,
+        newName,
+    };
+}
+
 export const INIT_TABLE_DEFINITIONS = 'INIT_TABLE_DEFINITIONS';
 
 export type InitTableDefinitionsAction = {
@@ -1244,20 +1313,28 @@ export const initTableDefinitions = (
     tableDefinitions,
 });
 
+export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
+export type ReorderTableDefinitionsAction = {
+    type: typeof REORDER_TABLE_DEFINITIONS;
+    definitions: SpreadsheetTabDefinition[];
+};
+
+export const reorderTableDefinitions = (definitions: SpreadsheetTabDefinition[]): ReorderTableDefinitionsAction => ({
+    type: REORDER_TABLE_DEFINITIONS,
+    definitions,
+});
+
 export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
 
 export type AddFilterForNewSpreadsheetAction = {
     type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: FilterConfig[] };
+    payload: { tabUuid: UUID; value: FilterConfig[] };
 };
 
-export const addFilterForNewSpreadsheet = (
-    newTabName: string,
-    value: FilterConfig[]
-): AddFilterForNewSpreadsheetAction => ({
+export const addFilterForNewSpreadsheet = (tabUuid: UUID, value: FilterConfig[]): AddFilterForNewSpreadsheetAction => ({
     type: ADD_FILTER_FOR_NEW_SPREADSHEET,
     payload: {
-        newTabName,
+        tabUuid,
         value,
     },
 });
@@ -1266,13 +1343,13 @@ export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
 
 export type AddSortForNewSpreadsheetAction = {
     type: typeof ADD_SORT_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: SortConfig[] };
+    payload: { tabUuid: UUID; value: SortConfig[] };
 };
 
-export const addSortForNewSpreadsheet = (newTabName: string, value: SortConfig[]): AddSortForNewSpreadsheetAction => ({
+export const addSortForNewSpreadsheet = (tabUuid: UUID, value: SortConfig[]): AddSortForNewSpreadsheetAction => ({
     type: ADD_SORT_FOR_NEW_SPREADSHEET,
     payload: {
-        newTabName,
+        tabUuid,
         value,
     },
 });
@@ -1296,17 +1373,52 @@ export function setStateEstimationResultFilter(
 
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
 export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
-    equipmentType: SpreadsheetEquipmentType;
-    filters: ExpertFilter[];
+    tabUuid: UUID;
+    filters: SpreadsheetGlobalFilter[];
 };
 
 export function saveSpreadsheetGsFilters(
-    equipmentType: SpreadsheetEquipmentType,
-    filters: ExpertFilter[]
+    tabUuid: UUID,
+    filters: SpreadsheetGlobalFilter[]
 ): SaveSpreadSheetGsFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
-        equipmentType: equipmentType,
+        tabUuid: tabUuid,
         filters: filters,
+    };
+}
+
+export const SET_CALCULATION_SELECTIONS = 'SET_CALCULATION_SELECTIONS';
+export type SetCalculationSelectionsAction = Readonly<Action<typeof SET_CALCULATION_SELECTIONS>> & {
+    tabUuid: UUID;
+    selections: string[];
+};
+
+export function setCalculationSelections(tabUuid: UUID, selections: string[]): SetCalculationSelectionsAction {
+    return {
+        type: SET_CALCULATION_SELECTIONS,
+        tabUuid,
+        selections,
+    };
+}
+
+export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
+export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
+
+export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
+    return {
+        type: RESET_ALL_SPREADSHEET_GS_FILTERS,
+    };
+}
+
+export const DELETED_OR_RENAMED_NODES = 'DELETED_OR_RENAMED_NODES';
+export type DeletedOrRenamedNodesAction = Readonly<Action<typeof DELETED_OR_RENAMED_NODES>> & {
+    deletedOrRenamedNodes: UUID[];
+};
+
+export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrRenamedNodesAction {
+    return {
+        type: DELETED_OR_RENAMED_NODES,
+        deletedOrRenamedNodes,
     };
 }

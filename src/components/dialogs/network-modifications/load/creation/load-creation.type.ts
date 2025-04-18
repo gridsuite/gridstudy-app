@@ -7,6 +7,7 @@
 
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import {
+    ACTIVE_POWER_SETPOINT,
     ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,
@@ -19,8 +20,7 @@ import {
     ID,
     LOAD_TYPE,
     NAME,
-    P0,
-    Q0,
+    REACTIVE_POWER_SET_POINT,
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
 import { Property } from '../../common/properties/property-utils';
@@ -29,8 +29,8 @@ export type LoadCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
     [EQUIPMENT_NAME]?: string;
     [LOAD_TYPE]?: string;
-    [P0]: number;
-    [Q0]: number;
+    [ACTIVE_POWER_SETPOINT]: number;
+    [REACTIVE_POWER_SET_POINT]: number;
     [CONNECTIVITY]: {
         [VOLTAGE_LEVEL]: { [ID]?: string };
         [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
@@ -53,30 +53,9 @@ export interface LoadCreationInfos {
     q0: number;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    busbarSectionName?: string;
     connectionDirection: string | null;
     connectionName?: string | null;
-    connectionPosition?: string | null;
+    connectionPosition?: number | null;
     terminalConnected?: boolean | null;
     properties?: Property[];
-}
-
-interface ConnectablePositionInfos {
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: string | null;
-}
-
-export interface LoadFormInfos {
-    id: string;
-    name: string;
-    type: string;
-    p0: number;
-    q0: number;
-    voltageLevelId: string;
-    connectablePosition: ConnectablePositionInfos;
-    busOrBusbarSectionId: string;
-    busbarSectionName: string;
-    terminalConnected?: boolean | null;
-    properties: Record<string, string> | undefined;
 }
