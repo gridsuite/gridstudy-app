@@ -7,7 +7,7 @@
 
 import { FunctionComponent, PropsWithChildren } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Box, BoxProps, Button, ButtonProps, Grid, Switch, Typography, TypographyProps } from '@mui/material';
+import { Box, BoxProps, Button, ButtonProps, Grid, Switch } from '@mui/material';
 import { styles } from './parameters-style';
 
 interface LabelledButtonProps extends ButtonProps {
