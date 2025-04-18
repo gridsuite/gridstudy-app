@@ -10,20 +10,25 @@ import './react-grid-layout.custom.css';
 // TODO place these css at global or directly into useStyles for RGLResponsive
 import { Responsive as RGLResponsive, ResponsiveProps } from 'react-grid-layout';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { useEffect, useMemo } from 'react';
 
 export type ResponsiveGridLayoutProps = ResponsiveProps & {
     computeRowHeight: (height: number) => number;
 };
 
 function ResponsiveGridLayout({ computeRowHeight, ...otherProps }: Readonly<ResponsiveGridLayoutProps>) {
+    useEffect(() => {
+        return () => {
+            console.log(`XXX demonté ResponsiveGridLayout: `);
+        };
+    }, []);
+    const AutoSizerChildren = useMemo(() => {
+        return ({ width, height }: { width: number; height: number }) => (
+            <RGLResponsive width={width} rowHeight={computeRowHeight(height)} {...otherProps} />
+        );
+    }, [computeRowHeight, otherProps]);
     // use AutoSizer to make react-grid-layout Responsive component aware of width
-    return (
-        <AutoSizer>
-            {({ width, height }) => (
-                <RGLResponsive width={width} rowHeight={computeRowHeight(height)} {...otherProps} />
-            )}
-        </AutoSizer>
-    );
+    return <AutoSizer children={AutoSizerChildren} />;
 }
 
 export default ResponsiveGridLayout;

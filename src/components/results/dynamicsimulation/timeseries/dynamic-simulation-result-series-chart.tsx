@@ -10,7 +10,7 @@ import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import PlotlySeriesChart from '../plot/plotly-series-chart';
 import { Card, CardContent, CardHeader, Theme, ToggleButton, Tooltip, Typography } from '@mui/material';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import TooltipIconButton from '../common/tooltip-icon-button';
 import { lighten } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
@@ -70,6 +70,12 @@ function DynamicSimulationResultSeriesChart({
     onPlotScale = () => {},
 }: Readonly<DynamicSimulationResultSeriesChartProps>) {
     const intl = useIntl();
+    useEffect(() => {
+        console.log(`XXX remount DynamicSimulationResultSeriesChart ${id} ${groupId}`);
+        return () => {
+            console.log(`XXX démonté DynamicSimulationResultSeriesChart ${id} ${groupId}`);
+        };
+    }, [id, groupId]);
 
     // button options switch scale plot / restore plot
     const [plotScale, setPlotScale] = useState<boolean>(false);
