@@ -375,6 +375,13 @@ export interface ShuntCompensatorInfos {
     connectedToHvdc?: boolean;
 }
 
+export interface ShuntCompensatorModificationInfos {
+    id: string;
+    name?: string | null;
+    maxQAtNominalV: number;
+    connectedToHvdc: boolean | null;
+}
+
 export interface LCCCreationConverterStation {
     type: string;
     equipmentId: string;

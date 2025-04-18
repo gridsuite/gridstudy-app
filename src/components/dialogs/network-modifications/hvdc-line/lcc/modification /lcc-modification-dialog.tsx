@@ -23,21 +23,19 @@ import yup from '../../../../../utils/yup-config';
 import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LccModificationForm } from './lcc-modification-form';
-import { LccDialogTab, LccFormInfos, LccCreationInfos, LccModificationInfos } from '../common/lcc-type';
+import { LccDialogTab, LccFormInfos, LccModificationInfos } from '../common/lcc-type';
 import { useCallback, useEffect, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { FetchStatus } from 'services/utils.type';
-import { ModificationDialog } from '../../../../commons/modificationDialog';
 import {
-    getLccConverterStationFromEditData,
     getLccConverterStationModificationData,
     getLccConverterStationModificationEmptyFormData,
+    getLccConverterStationModificationFromEditData,
     getLccConverterStationModificationSchema,
     getLccHvdcLineEmptyFormData,
     getLccHvdcLineFromModificationEditData,
     getLccHvdcLineModificationSchema,
-    getShuntCompensatorOnSideFormData,
+    getShuntCompensatorOnSideFormModificationData,
 } from '../common/lcc-utils';
 import { modifyLcc } from 'services/study/network-modifications';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
@@ -48,6 +46,8 @@ import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selec
 import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from '../../../../../utils/equipment-types';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
+import { ModificationDialog } from '../../../../commons/modificationDialog';
+import { LccModificationForm } from './lcc-modification-form';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -58,13 +58,13 @@ const emptyFormData = {
 };
 
 export type LccModificationDialogProps = EquipmentModificationDialogProps & {
-    editData?: LccCreationInfos;
+    editData?: LccModificationInfos;
 };
 
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_ID]: yup.string(), //TODO : remove
+        [EQUIPMENT_ID]: yup.string(),
         [EQUIPMENT_NAME]: yup.string(),
         [HVDC_LINE_TAB]: getLccHvdcLineModificationSchema(),
         [CONVERTER_STATION_1]: getLccConverterStationModificationSchema(),
@@ -112,8 +112,12 @@ export const LccModificationDialog = ({
                 [EQUIPMENT_ID]: lccModificationInfos.equipmentId,
                 [EQUIPMENT_NAME]: lccModificationInfos.equipmentName?.value ?? '',
                 [HVDC_LINE_TAB]: getLccHvdcLineFromModificationEditData(lccModificationInfos),
-                [CONVERTER_STATION_1]: getLccConverterStationFromEditData(lccModificationInfos.converterStation1),
-                [CONVERTER_STATION_2]: getLccConverterStationFromEditData(lccModificationInfos.converterStation2),
+                [CONVERTER_STATION_1]: getLccConverterStationModificationFromEditData(
+                    lccModificationInfos.converterStation1
+                ),
+                [CONVERTER_STATION_2]: getLccConverterStationModificationFromEditData(
+                    lccModificationInfos.converterStation2
+                ),
             });
         },
         [editData, reset]
@@ -128,10 +132,7 @@ export const LccModificationDialog = ({
     const onSubmit = useCallback(
         (lccHvdcLine: any) => {
             const hvdcLineTab = lccHvdcLine[HVDC_LINE_TAB];
-            console.log('--------lccToModify : ', lccToModify);
             if (!lccToModify) {
-                //TODO gérer l'erreur
-                console.log('error');
                 return;
             }
             const converterStation1 = getLccConverterStationModificationData(
@@ -178,7 +179,6 @@ export const LccModificationDialog = ({
         (equipmentId: string | null) => {
             if (!equipmentId) {
                 clear();
-                console.log('set to null because equipmentId is null-----');
                 setLccToModify(null);
             } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
@@ -193,7 +193,6 @@ export const LccModificationDialog = ({
                 )
                     .then((value: LccFormInfos | null) => {
                         if (value) {
-                            console.log('setting lccToModify to non null : ', value);
                             setLccToModify({ ...value });
                             reset((formValues: any) => ({
                                 ...formValues,
@@ -203,13 +202,13 @@ export const LccModificationDialog = ({
                                 },
                                 [CONVERTER_STATION_1]: {
                                     ...formValues,
-                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormData(
+                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormModificationData(
                                         value.lccConverterStation1.shuntCompensatorsOnSide
                                     ),
                                 },
                                 [CONVERTER_STATION_2]: {
                                     ...formValues,
-                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormData(
+                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormModificationData(
                                         value.lccConverterStation2.shuntCompensatorsOnSide
                                     ),
                                 },
@@ -220,7 +219,6 @@ export const LccModificationDialog = ({
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
-                            console.log('set to null because of fetch failed------');
                             setLccToModify(null);
                             reset(emptyFormData);
                         }

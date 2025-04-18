@@ -36,6 +36,7 @@ import yup from '../../../../../utils/yup-config';
 import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,
+    LccConverterStationModificationInfos,
     LccCreationInfos,
     LccFormInfos,
     LccModificationInfos,
@@ -53,7 +54,10 @@ import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants
 import { sanitizeString } from '../../../../dialog-utils';
 import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
-import { ShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
+import {
+    ShuntCompensatorInfos,
+    ShuntCompensatorModificationInfos,
+} from '../../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../../utils/utils';
 
 export const getLccConverterStationSchema = () =>
@@ -120,6 +124,16 @@ export const getEmptyShuntCompensatorOnSideFormData = () => ({
     [SHUNT_COMPENSATOR_SELECTED]: true,
 });
 
+export const getEmptyShuntCompensatorOnSideModificationFormData = () => ({
+    [SHUNT_COMPENSATOR_ID]: null,
+    [SHUNT_COMPENSATOR_NAME]: '',
+    [MAX_Q_AT_NOMINAL_V]: null,
+    [SHUNT_COMPENSATOR_SELECTED]: null,
+});
+
+export const getEmptyFiltersShuntCompensatorModificationTableFormData = (count = 0) =>
+    Array.from({ length: count }, () => getEmptyShuntCompensatorOnSideModificationFormData());
+
 export const getEmptyFiltersShuntCompensatorTableFormData = (count = 0) =>
     Array.from({ length: count }, () => getEmptyShuntCompensatorOnSideFormData());
 
@@ -140,8 +154,7 @@ export function getLccConverterStationModificationEmptyFormData() {
         [CONVERTER_STATION_NAME]: null,
         [LOSS_FACTOR]: null,
         [POWER_FACTOR]: null,
-        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getEmptyFiltersShuntCompensatorTableFormData(),
-        ...getConnectivityWithPositionEmptyFormData(),
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getEmptyFiltersShuntCompensatorModificationTableFormData(),
     };
 }
 
@@ -180,13 +193,28 @@ export function getLccConverterStationFromSearchCopy(lccConverterStationFormInfo
 export const getShuntCompensatorOnSideFormData = (
     shuntCompensatorInfos?: ShuntCompensatorInfos[]
 ): ShuntCompensatorFormSchema[] => {
-    console.log('shuntCompensatorInfos : ', shuntCompensatorInfos);
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
             [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
             [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? true,
+        })) ?? []
+    );
+};
+
+export const getShuntCompensatorOnSideFormModificationData = (
+    shuntCompensatorInfos?: ShuntCompensatorModificationInfos[]
+): ShuntCompensatorFormSchema[] => {
+    shuntCompensatorInfos?.forEach((shuntCompensatorInfo) =>
+        console.log('shuntCompensatorInfo.connectedToHvdc : ', shuntCompensatorInfo.connectedToHvdc ?? null)
+    );
+    return (
+        shuntCompensatorInfos?.map((shuntCp) => ({
+            [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
+            [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
+            [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
+            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? undefined, //TODO basseche : should be null
         })) ?? []
     );
 };
@@ -212,6 +240,22 @@ export function getLccConverterStationFromEditData(lccConverterStationCreationIn
     };
 }
 
+export function getLccConverterStationModificationFromEditData(
+    lccConverterStationInfos: LccConverterStationModificationInfos
+) {
+    console.log('------lccConverterStationInfos : ', lccConverterStationInfos);
+
+    return {
+        [CONVERTER_STATION_ID]: lccConverterStationInfos.equipmentId,
+        [CONVERTER_STATION_NAME]: lccConverterStationInfos?.equipmentName?.value ?? '',
+        [LOSS_FACTOR]: lccConverterStationInfos.lossFactor?.value ?? undefined,
+        [POWER_FACTOR]: lccConverterStationInfos.powerFactor?.value ?? undefined,
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormModificationData(
+            lccConverterStationInfos?.shuntCompensatorsOnSide
+        ),
+    };
+}
+
 export const getShuntCompensatorOnSideCreateData = (
     shuntCompensatorInfos?: ShuntCompensatorFormSchema[]
 ): ShuntCompensatorInfos[] => {
@@ -224,20 +268,6 @@ export const getShuntCompensatorOnSideCreateData = (
         })) ?? []
     );
 };
-
-export const getShuntCompensatorOnSideModifyData = (
-    shuntCompensatorInfos?: ShuntCompensatorFormSchema[]
-): ShuntCompensatorInfos[] => {
-    return (
-        shuntCompensatorInfos?.map((shuntCp) => ({
-            id: shuntCp[SHUNT_COMPENSATOR_ID],
-            name: shuntCp[SHUNT_COMPENSATOR_NAME],
-            maxQAtNominalV: shuntCp[MAX_Q_AT_NOMINAL_V],
-            connectedToHvdc: shuntCp[SHUNT_COMPENSATOR_SELECTED],
-        })) ?? []
-    );
-};
-
 export function getLccConverterStationCreationData(converterStation: {
     converterStationId: string;
     converterStationName?: string;
@@ -272,7 +302,7 @@ export function getLccConverterStationModificationData(
         equipmentName: toModificationOperation(converterStation[CONVERTER_STATION_NAME]),
         lossFactor: toModificationOperation(converterStation[LOSS_FACTOR]),
         powerFactor: toModificationOperation(converterStation[POWER_FACTOR]),
-        shuntCompensatorsOnSide: getShuntCompensatorOnSideModifyData(converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE]),
+        shuntCompensatorsOnSide: getShuntCompensatorOnSideCreateData(converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE]),
     };
 }
 

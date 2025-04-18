@@ -23,7 +23,11 @@ import {
     POWER_FACTOR,
     R,
 } from '../../../../../utils/field-constants';
-import { AttributeModification, ShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
+import {
+    AttributeModification,
+    ShuntCompensatorInfos,
+    ShuntCompensatorModificationInfos,
+} from '../../../../../../services/network-modification-types';
 
 export const LccDialogTab = {
     HVDC_LINE_TAB: 0,
@@ -80,8 +84,8 @@ export interface LccModificationInfos {
     maxP: AttributeModification<number> | null;
     convertersMode: AttributeModification<string> | null;
     activePowerSetpoint: AttributeModification<number> | null;
-    converterStation1: LccConverterStationCreationInfos;
-    converterStation2: LccConverterStationCreationInfos;
+    converterStation1: LccConverterStationModificationInfos;
+    converterStation2: LccConverterStationModificationInfos;
     properties?: Property[];
 }
 
@@ -99,9 +103,17 @@ export interface LccConverterStationCreationInfos {
     shuntCompensatorsOnSide: ShuntCompensatorInfos[];
 }
 
+export interface LccConverterStationModificationInfos {
+    equipmentId: string;
+    equipmentName: AttributeModification<string> | null;
+    lossFactor: AttributeModification<number> | null;
+    powerFactor: AttributeModification<number> | null;
+    shuntCompensatorsOnSide: ShuntCompensatorModificationInfos[];
+}
+
 export interface LccConverterStationFormInfos {
     id: string;
-    name?: string | null;
+    name: string | null;
     lossFactor: number;
     powerFactor: number;
     voltageLevelId: string;
@@ -126,13 +138,6 @@ export interface LccFormInfos {
 
 // this type used instead of ShuntCompensatorInfos because RHF uses 'id' to manage array, see useFieldArray
 export interface ShuntCompensatorFormSchema {
-    shuntCompensatorId: string;
-    shuntCompensatorName?: string | null;
-    maxQAtNominalV: number;
-    connectedToHvdc?: boolean;
-}
-
-export interface ShuntCompensatorModificationFormSchema {
     shuntCompensatorId: string;
     shuntCompensatorName?: string | null;
     maxQAtNominalV: number;

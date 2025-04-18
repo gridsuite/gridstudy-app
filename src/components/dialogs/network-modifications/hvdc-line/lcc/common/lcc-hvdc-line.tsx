@@ -13,7 +13,7 @@ import { Grid } from '@mui/material';
 import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
-import { LccFormInfos } from '../common/lcc-type';
+import { LccFormInfos } from './lcc-type';
 
 interface LccHvdcLineProps {
     id: string;

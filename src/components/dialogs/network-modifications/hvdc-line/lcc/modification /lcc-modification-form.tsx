@@ -15,7 +15,7 @@ import {
 } from '../../../../../utils/field-constants';
 import { LccDialogTab, LccFormInfos } from '../common/lcc-type';
 import { Box, Grid, TextField } from '@mui/material';
-import LccHvdcLine from '../creation/lcc-hvdc-line';
+import LccHvdcLine from '../common/lcc-hvdc-line';
 import LccConverterStation from '../common/lcc-converter-station';
 import LccTabs from '../common/lcc-tabs';
 import { TextInput } from '@gridsuite/commons-ui';

@@ -7,7 +7,7 @@
 import { UUID } from 'crypto';
 import { Box } from '@mui/material';
 import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../../utils/field-constants';
-import LccHvdcLine from './lcc-hvdc-line';
+import LccHvdcLine from '../common/lcc-hvdc-line';
 import { LccDialogTab } from '../common/lcc-type';
 import LccConverterStation from '../common/lcc-converter-station';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
