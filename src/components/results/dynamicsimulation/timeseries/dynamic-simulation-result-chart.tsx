@@ -7,7 +7,7 @@
 
 import { Box, Grid, Paper, TextField, Theme, ToggleButton, Tooltip, Typography } from '@mui/material';
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
-import { ChangeEvent, memo, useCallback, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
 import VisibilityBox from '../common/visibility-box';
 import TooltipIconButton from '../common/tooltip-icon-button';
@@ -18,6 +18,7 @@ import { useIntl } from 'react-intl';
 import { MenuOpen } from '@mui/icons-material';
 import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
+import { Responsive as RGLResponsive, ResponsiveProps } from 'react-grid-layout';
 import ResponsiveGridLayout from '../common/gridlayout/responsive-grid-layout';
 import { lighten } from '@mui/material/styles';
 import { mergeSx, useDebounce } from '@gridsuite/commons-ui';
@@ -89,6 +90,11 @@ function getTimeseriesIndexes(metadata: TimeSeriesMetadata): number[] {
         : [];
 }
 
+function computeRowHeight(height: number) {
+    console.log(`XXX height ${height}`);
+    return height / 12;
+}
+
 export type DynamicSimulationResultChartProps = {
     groupId: string;
     timeseriesMetadatas?: SimpleTimeSeriesMetadata[];
@@ -103,6 +109,12 @@ function DynamicSimulationResultChart({
     loadTimeSeries,
 }: Readonly<DynamicSimulationResultChartProps>) {
     const intl = useIntl();
+    console.log('XXX rerender ', groupId);
+    useEffect(() => {
+        return () => {
+            console.log(`XXX démonté tab ${groupId}`);
+        };
+    }, [groupId]);
 
     const headers = useMemo(
         () => [
@@ -486,25 +498,27 @@ function DynamicSimulationResultChart({
                                     lg: gridLayout.items,
                                 }}
                                 isBounded={true}
-                                computeRowHeight={(height) => height / 12}
+                                computeRowHeight={computeRowHeight}
+                                // rowHeight={100}
+                                // width={1000}
                                 onBreakpointChange={handleBreakpointChange}
                                 onLayoutChange={handleLayoutChange}
                             >
                                 {plots.map((plot, index) => (
-                                    <Box
+                                    <div
                                         key={plot.id}
-                                        sx={{
-                                            display: plotIdScale
-                                                ? plotIdScale !== plot.id
-                                                    ? 'none'
-                                                    : 'block'
-                                                : 'block',
-                                        }}
+                                        // sx={{
+                                        //     display: plotIdScale
+                                        //         ? plotIdScale !== plot.id
+                                        //             ? 'none'
+                                        //             : 'block'
+                                        //         : 'block',
+                                        // }}
                                     >
                                         <DynamicSimulationResultSeriesChart
-                                            key={`${plot.id}`}
-                                            id={`${plot.id}`}
-                                            groupId={`${groupId}`}
+                                            key={plot.id}
+                                            id={plot.id}
+                                            groupId={groupId}
                                             index={index}
                                             selected={selectedIndex === index}
                                             onSelect={handleSelectIndex}
@@ -514,7 +528,7 @@ function DynamicSimulationResultChart({
                                             sync={sync}
                                             onPlotScale={handlePlotScale}
                                         />
-                                    </Box>
+                                    </div>
                                 ))}
                             </ResponsiveGridLayout>
                         </Box>

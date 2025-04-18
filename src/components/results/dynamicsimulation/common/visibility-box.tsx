@@ -11,7 +11,7 @@ const getStyle = (hidden: boolean) => {
     if (hidden) {
         return {
             visibility: 'hidden',
-            height: 0,
+            height: '1px',
         };
     }
     return {
