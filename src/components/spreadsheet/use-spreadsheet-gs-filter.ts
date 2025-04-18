@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { IRowNode } from 'ag-grid-community';
-import { evaluateFilters, ExpertFilter } from '../../services/study/filter';
+import { evaluateFilters, SpreadsheetGlobalFilter } from '../../services/study/filter';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
@@ -19,13 +19,13 @@ export const useSpreadsheetGsFilter = (tabUuid: UUID) => {
     const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
 
     const applyGsFilter = useCallback(
-        async (filters: ExpertFilter[]) => {
+        async (filters: SpreadsheetGlobalFilter[]) => {
             if (!filters?.length || !currentRootNetworkUuid) {
                 setFilterIds([]);
                 return;
             }
 
-            const filtersUuid = filters.filter((filter) => filter.id).map((filter) => filter.id as UUID);
+            const filtersUuid = filters.map((filter) => filter.id);
             if (filtersUuid.length > 0) {
                 const response = await evaluateFilters(studyUuid as UUID, currentRootNetworkUuid, filtersUuid);
                 const equipmentsIds = response.flatMap((filterEquipments) =>
