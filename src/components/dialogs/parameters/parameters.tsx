@@ -7,7 +7,7 @@
 
 import { FunctionComponent, PropsWithChildren } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Box, Button, ButtonProps, Grid, Switch, Typography, TypographyProps } from '@mui/material';
+import { Box, BoxProps, Button, ButtonProps, Grid, Switch } from '@mui/material';
 import { styles } from './parameters-style';
 
 interface LabelledButtonProps extends ButtonProps {
@@ -47,7 +47,7 @@ export const SwitchWithLabel: FunctionComponent<SwitchWithLabelProps> = ({ value
     );
 };
 
-interface TabPanelProps<T> extends TypographyProps {
+interface TabPanelProps<T> extends BoxProps {
     value: T;
     index: T;
     keepState?: boolean;
@@ -56,16 +56,15 @@ interface TabPanelProps<T> extends TypographyProps {
 export const TabPanel = <T,>(props: PropsWithChildren<TabPanelProps<T>>) => {
     const { children, value, index, keepState, ...other } = props;
     return (
-        <Typography
-            component="div"
+        <Box
             role="tabpanel"
             hidden={value !== index}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
-            style={{ flexGrow: 1 }}
+            sx={{ height: '100%' }}
             {...other}
         >
             {(value === index || keepState) && <Box sx={styles.panel}>{children}</Box>}
-        </Typography>
+        </Box>
     );
 };
