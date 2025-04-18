@@ -27,7 +27,7 @@ export const validateFormulaResult = (value: any, type: COLUMN_TYPES): Validatio
             };
         case COLUMN_TYPES.ENUM:
             return {
-                isValid: typeof value === 'string',
+                isValid: typeof value === 'string' || typeof value === 'number',
                 error: 'Formula must evaluate to a string',
             };
         case COLUMN_TYPES.TEXT:
