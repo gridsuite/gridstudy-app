@@ -21,6 +21,7 @@ export const createRootNetwork = (
     caseUuid: UUID,
     caseFormat: string,
     rootNetworkName: string,
+    rootNetworkTag: string,
     studyUuid: UUID,
     importParameters: Record<string, any>
 ) => {
@@ -28,6 +29,7 @@ export const createRootNetwork = (
     urlSearchParams.append('caseUuid', caseUuid);
     urlSearchParams.append('caseFormat', caseFormat);
     urlSearchParams.append('name', rootNetworkName);
+    urlSearchParams.append('tag', rootNetworkTag);
 
     const createRootNetworkUrl =
         PREFIX_STUDY_QUERIES +
@@ -37,6 +39,41 @@ export const createRootNetwork = (
     console.debug(createRootNetworkUrl);
     return backendFetch(createRootNetworkUrl, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: importParameters ? JSON.stringify(importParameters) : '',
+    });
+};
+
+export const updateRootNetwork = (
+    rootNetworkUuid: UUID,
+    name: string,
+    tag: string,
+    caseUuid: UUID | null,
+    caseFormat: string | null,
+    studyUuid: UUID,
+    importParameters: Record<string, any> | null
+) => {
+    // Create an object of parameters to be appended to the URL
+    const params = { caseUuid, caseFormat, name, tag };
+
+    // Initialize URLSearchParams with only the truthy values from params
+    const urlSearchParams = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+        if (value) {
+            urlSearchParams.append(key, value.toString());
+        }
+    });
+    const updateRootNetworkUrl =
+        PREFIX_STUDY_QUERIES +
+        `/v1/studies/${encodeURIComponent(studyUuid)}/root-networks/${encodeURIComponent(rootNetworkUuid)}?` +
+        urlSearchParams.toString();
+
+    console.debug(updateRootNetworkUrl);
+    return backendFetch(updateRootNetworkUrl, {
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -66,6 +103,19 @@ export function checkRootNetworkNameExistence(studyUuid: UUID, name: string): Pr
         });
     console.debug(checkRootNetworkNameExistenceUrl);
     return backendFetch(checkRootNetworkNameExistenceUrl, { method: 'head' }).then((response) => {
+        return response.status !== 204;
+    });
+}
+
+export function checkRootNetworkTagExistence(studyUuid: UUID, tag: string): Promise<boolean> {
+    const checkRootNetworkTagExistenceUrl =
+        getStudyUrl(studyUuid) +
+        '/root-networks?' +
+        new URLSearchParams({
+            tag: tag,
+        });
+    console.debug(checkRootNetworkTagExistenceUrl);
+    return backendFetch(checkRootNetworkTagExistenceUrl, { method: 'head' }).then((response) => {
         return response.status !== 204;
     });
 }

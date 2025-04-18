@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, mergeSx, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
-import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
@@ -45,100 +44,24 @@ import {
     STAGES_DEFINITION_INDEX,
     STAGES_SELECTION,
 } from '../../../utils/field-constants';
-import yup from '../../../utils/yup-config';
-import {
-    getNonEvacuatedEnergyParameters,
-    setNonEvacuatedEnergyParameters,
-} from '../../../../services/study/non-evacuated-energy';
+import { setNonEvacuatedEnergyParameters } from '../../../../services/study/non-evacuated-energy';
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
 import {
-    getContingenciesFormSchema,
+    formSchema,
     getContingenciesParams,
-    getGenerationStagesDefinitionFormSchema,
     getGenerationStagesDefinitionParams,
-    getGenerationStagesSelectionFormSchema,
     getGenerationStagesSelectionParams,
-    getGeneratorsCappingsFormSchema,
     getGeneratorsCappingsParams,
-    getMonitoredBranchesFormSchema,
     getMonitoredBranchesParams,
+    NonEvacuatedEnergyParametersForm,
+    UseGetNonEvacuatedEnergyParametersReturnProps,
 } from './utils';
-import { mergeSx } from 'components/utils/functions';
 import ComputingType from '../../../computing-status/computing-type';
-import { isComputationParametersUpdated } from '../common/computation-parameters-util';
-import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/optional-services';
-import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
 import LineSeparator from '../../commons/line-separator';
 import { UseParametersBackendReturnProps } from '../parameters.type';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
-
-type UseGetNonEvacuatedEnergyParametersReturnProps = [
-    NonEvacuatedEnergyParametersInfos | null,
-    React.Dispatch<React.SetStateAction<NonEvacuatedEnergyParametersInfos | null>>
-];
-
-export const useGetNonEvacuatedEnergyParameters = (): UseGetNonEvacuatedEnergyParametersReturnProps => {
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
-
-    const { snackError } = useSnackMessage();
-    const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useState<NonEvacuatedEnergyParametersInfos | null>(
-        null
-    );
-
-    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
-    const nonEvacuatedEnergyAvailabilityRef = useRef(nonEvacuatedEnergyAvailability);
-    nonEvacuatedEnergyAvailabilityRef.current = nonEvacuatedEnergyAvailability;
-
-    const fetchNonEvacuatedEnergyParameters = useCallback(
-        (studyUuid: UUID) => {
-            getNonEvacuatedEnergyParameters(studyUuid)
-                .then((params: NonEvacuatedEnergyParametersInfos) => setNonEvacuatedEnergyParams(params))
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
-                });
-        },
-        [snackError]
-    );
-
-    useEffect(() => {
-        if (studyUuid && nonEvacuatedEnergyAvailability === OptionalServicesStatus.Up) {
-            fetchNonEvacuatedEnergyParameters(studyUuid);
-        }
-    }, [nonEvacuatedEnergyAvailability, studyUuid, fetchNonEvacuatedEnergyParameters]);
-
-    // fetch the parameter if NON_EVACUATED_ENERGY_ANALYSIS  notification type is received.
-    useEffect(() => {
-        if (
-            studyUuid &&
-            nonEvacuatedEnergyAvailabilityRef.current === OptionalServicesStatus.Up &&
-            isComputationParametersUpdated(ComputingType.NON_EVACUATED_ENERGY_ANALYSIS, studyUpdated)
-        ) {
-            fetchNonEvacuatedEnergyParameters(studyUuid);
-        }
-    }, [studyUuid, fetchNonEvacuatedEnergyParameters, studyUpdated]);
-
-    return [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams];
-};
-
-const formSchema = yup
-    .object()
-    .shape({
-        [PROVIDER]: yup.string().required(),
-        ...getGenerationStagesDefinitionFormSchema(),
-        ...getGenerationStagesSelectionFormSchema(),
-        ...getGeneratorsCappingsFormSchema(),
-        ...getMonitoredBranchesFormSchema(),
-        ...getContingenciesFormSchema(),
-    })
-    .required();
-
-export type NonEvacuatedEnergyParametersForm = yup.InferType<typeof formSchema>;
+import { styles } from '../parameters-style';
 
 interface NonEvacuatedEnergyParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.NON_EVACUATED_ENERGY_ANALYSIS>;
@@ -371,20 +294,20 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                     indexPmax1 === 0
                         ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_1]
                         : indexPmax1 === 1
-                        ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_2]
-                        : stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_3];
+                          ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_2]
+                          : stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_3];
                 const valPmax2 =
                     indexPmax2 === 0
                         ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_1]
                         : indexPmax2 === 1
-                        ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_2]
-                        : stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_3];
+                          ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_2]
+                          : stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_3];
                 const valPmax3 =
                     indexPmax3 === 0
                         ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_1]
                         : indexPmax3 === 1
-                        ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_2]
-                        : stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_3];
+                          ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_2]
+                          : stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_3];
                 let stageSelection = {
                     [ACTIVATED]: true,
                     [NAME]:

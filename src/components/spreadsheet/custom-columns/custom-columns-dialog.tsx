@@ -29,8 +29,9 @@ import {
     TextInput,
     UseStateBooleanReturn,
     AutocompleteInput,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm, UseFormSetError, useWatch } from 'react-hook-form';
 import {
     COLUMN_DEPENDENCIES,
     COLUMN_ID,
@@ -46,18 +47,20 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
-import { setUpdateCustomColumDefinitions } from 'redux/actions';
+import { setUpdateColumnsDefinitions } from 'redux/actions';
 import { MATHJS_LINK } from '../constants';
 import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { v4 as uuid4 } from 'uuid';
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
 import { AppState } from 'redux/reducer';
+import { createSpreadsheetColumn, updateSpreadsheetColumn } from 'services/study-config';
+import { UUID } from 'crypto';
+import { ColumnDefinition } from '../config/spreadsheet.type';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
-    customColumnName?: string;
+    colUuid?: UUID;
     tabIndex: number;
     isCreate?: boolean;
 };
@@ -74,9 +77,11 @@ const styles = {
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 } as const satisfies Record<string, SxProps<Theme>>;
 
+const COLUMN_NAME_REGEX = /\W/g;
+
 export default function CustomColumnDialog({
     open,
-    customColumnName,
+    colUuid,
     tabIndex,
     isCreate = true,
 }: Readonly<CustomColumnDialogProps>) {
@@ -85,27 +90,38 @@ export default function CustomColumnDialog({
         resolver: yupResolver(customColumnFormSchema),
     });
 
-    const { setError, control } = formMethods;
+    const { setError, setValue, control } = formMethods;
     const columnId = useWatch({ control, name: COLUMN_ID });
+    const watchColumnName = useWatch({ control, name: COLUMN_NAME });
     const watchColumnType = useWatch({ control, name: COLUMN_TYPE });
-    const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
+    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
+    const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
+    const { snackError } = useSnackMessage();
+    const columnDefinition = useMemo(
+        () => columnsDefinitions?.find((column) => column?.uuid === colUuid),
+        [colUuid, columnsDefinitions]
     );
-    const tableName = useSelector((state: AppState) => state.tables.definitions[tabIndex].name);
-
-    const customColumnDefinition = useMemo(
-        () => customColumnsDefinitions.find((column) => column.name === customColumnName),
-        [customColumnName, customColumnsDefinitions]
-    );
-    const hasColumnIdChanged = columnId !== customColumnDefinition?.[COLUMN_ID];
 
     const { handleSubmit, reset } = formMethods;
     const dispatch = useDispatch<AppDispatch>();
 
     const intl = useIntl();
 
+    const generateColumnId = useCallback(() => {
+        if (columnId === '') {
+            setValue(COLUMN_ID, watchColumnName.replace(COLUMN_NAME_REGEX, ''));
+        }
+    }, [columnId, watchColumnName, setValue]);
+
     const columnNameField = (
-        <TextInput name={COLUMN_NAME} label={'spreadsheet/custom_column/column_name'} formProps={{ autoFocus: true }} />
+        <TextInput
+            name={COLUMN_NAME}
+            label={'spreadsheet/custom_column/column_name'}
+            formProps={{
+                autoFocus: true,
+                onBlur: generateColumnId,
+            }}
+        />
     );
 
     const columnIdField = <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />;
@@ -139,82 +155,135 @@ export default function CustomColumnDialog({
         />
     );
 
-    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, tableName);
+    const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
+
+    const validateParams = (
+        columnsDefinitions: ColumnDefinition[],
+        newParams: CustomColumnForm,
+        colUuid: UUID | undefined,
+        setError: UseFormSetError<CustomColumnForm>
+    ) => {
+        const columnIdAlreadyExist = columnsDefinitions?.find(
+            (column) => column.id === newParams.id && column.uuid !== colUuid
+        );
+        const columnNameAlreadyExist = columnsDefinitions?.find(
+            (column) => column.name === newParams.name && column.uuid !== colUuid
+        );
+
+        if (columnNameAlreadyExist) {
+            setError(COLUMN_NAME, {
+                type: 'validate',
+                message: 'spreadsheet/custom_column/column_name_already_exist',
+            });
+            return false;
+        }
+
+        if (columnIdAlreadyExist) {
+            setError(COLUMN_ID, {
+                type: 'validate',
+                message: 'spreadsheet/custom_column/column_id_already_exist',
+            });
+            return false;
+        }
+
+        const newItems: Item[] = [...columnsDefinitions, newParams];
+        if (hasCyclicDependencies(newItems)) {
+            setError(COLUMN_DEPENDENCIES, {
+                type: 'validate',
+                message: 'spreadsheet/custom_column/creates_cyclic_dependency',
+            });
+            return false;
+        }
+
+        return true;
+    };
 
     const onSubmit = useCallback(
-        (newParams: CustomColumnForm) => {
-            const existingColumn = customColumnsDefinitions?.find((column) => column.id === newParams.id);
+        async (newParams: CustomColumnForm) => {
+            if (!validateParams(columnsDefinitions, newParams, colUuid, setError)) {
+                return;
+            }
+
+            const existingColumn = columnsDefinitions?.find((column) => column.uuid === colUuid);
+            let isUpdate = false;
 
             if (existingColumn) {
-                if (isCreate || hasColumnIdChanged) {
-                    setError(COLUMN_ID, {
-                        type: 'validate',
-                        message: 'spreadsheet/custom_column/column_id_already_exist',
-                    });
-                    return;
-                }
-                // if we are editing an existing column, we need to remove the existing filter
-                const updatedFilters = filters.filter((filter) => filter.column !== existingColumn.id);
+                isUpdate = true;
+                const updatedFilters = filters?.filter((filter) => filter.column !== existingColumn.id);
                 dispatchFilters(updatedFilters);
             }
 
-            if (customColumnsDefinitions) {
-                const newItems: Item[] = [...customColumnsDefinitions, newParams];
-                if (hasCyclicDependencies(newItems)) {
-                    setError(COLUMN_DEPENDENCIES, {
-                        type: 'validate',
-                        message: 'spreadsheet/custom_column/creates_cyclic_dependency',
-                    });
-                    return;
-                }
-            }
+            const formattedParams = {
+                ...newParams,
+                dependencies: newParams.dependencies?.length ? JSON.stringify(newParams.dependencies) : undefined,
+            };
 
-            dispatch(
-                setUpdateCustomColumDefinitions({
-                    index: tabIndex,
-                    value: {
-                        uuid: customColumnDefinition?.uuid || uuid4(),
-                        id: newParams.id,
-                        name: newParams.name,
-                        type: COLUMN_TYPES[newParams.type],
-                        precision: newParams.precision,
-                        formula: newParams.formula,
-                        dependencies: newParams.dependencies,
-                    },
-                })
-            );
+            const updateOrCreateColumn =
+                isUpdate && columnDefinition
+                    ? updateSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
+                    : createSpreadsheetColumn(spreadsheetConfigUuid, formattedParams);
+
+            // we reset and close the dialog to avoid multiple submissions
             reset(initialCustomColumnForm);
             open.setFalse();
+
+            updateOrCreateColumn
+                .then((uuid) => {
+                    dispatch(
+                        setUpdateColumnsDefinitions({
+                            index: tabIndex,
+                            value: {
+                                uuid: columnDefinition?.uuid ?? uuid,
+                                id: newParams.id,
+                                name: newParams.name,
+                                type: COLUMN_TYPES[newParams.type],
+                                precision: newParams.precision,
+                                formula: newParams.formula,
+                                dependencies: newParams.dependencies,
+                                visible: true,
+                                locked: existingColumn?.locked,
+                            },
+                        })
+                    );
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error,
+                        headerId: 'spreadsheet/custom_column/error_saving_or_updating_column',
+                    });
+                });
         },
         [
-            customColumnsDefinitions,
-            dispatch,
-            tabIndex,
-            customColumnDefinition?.uuid,
-            reset,
-            open,
-            isCreate,
-            hasColumnIdChanged,
+            columnsDefinitions,
+            colUuid,
+            setError,
+            columnDefinition,
+            spreadsheetConfigUuid,
             filters,
             dispatchFilters,
-            setError,
+            dispatch,
+            tabIndex,
+            reset,
+            open,
+            snackError,
         ]
     );
 
     useEffect(() => {
-        if (open.value && customColumnDefinition) {
+        if (open.value && columnDefinition) {
+            const { name, id, type, precision, formula, dependencies } = columnDefinition;
             reset({
-                [COLUMN_NAME]: customColumnDefinition.name,
-                [COLUMN_ID]: customColumnDefinition.id,
-                [COLUMN_TYPE]: customColumnDefinition.type,
-                [PRECISION]: customColumnDefinition.precision,
-                [FORMULA]: customColumnDefinition.formula,
-                [COLUMN_DEPENDENCIES]: customColumnDefinition.dependencies,
+                [COLUMN_NAME]: name,
+                [COLUMN_ID]: id,
+                [COLUMN_TYPE]: type,
+                [PRECISION]: precision,
+                [FORMULA]: formula,
+                [COLUMN_DEPENDENCIES]: dependencies ?? [],
             });
         } else {
             reset(initialCustomColumnForm);
         }
-    }, [customColumnDefinition, tabIndex, open.value, reset]);
+    }, [columnDefinition, tabIndex, open.value, reset]);
 
     return (
         <CustomFormProvider validationSchema={customColumnFormSchema} {...formMethods}>
@@ -273,7 +342,7 @@ export default function CustomColumnDialog({
                                 label="spreadsheet/custom_column/column_dependencies"
                                 name={COLUMN_DEPENDENCIES}
                                 options={
-                                    customColumnsDefinitions
+                                    columnsDefinitions
                                         ?.map((definition) => definition.id)
                                         .filter((id) => id !== columnId) ?? []
                                 }

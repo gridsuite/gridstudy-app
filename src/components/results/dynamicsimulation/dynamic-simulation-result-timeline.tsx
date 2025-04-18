@@ -9,11 +9,6 @@ import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import {
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-header.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
@@ -23,7 +18,6 @@ import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/a
 
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
-import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
@@ -32,6 +26,12 @@ import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-
 import { AgGridReact } from 'ag-grid-react';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { useNodeData } from 'components/use-node-data';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
 const styles = {
     loader: {
@@ -65,13 +65,13 @@ const DynamicSimulationResultTimeline = memo(
         const intl = useIntl();
         const gridRef = useRef<AgGridReact>(null);
 
-        const [timelines, isLoading] = useNodeData(
+        const { result: timelines, isLoading } = useNodeData({
             studyUuid,
             nodeUuid,
-            currentRootNetworkUuid,
-            fetchDynamicSimulationResultTimeline,
-            dynamicSimulationResultInvalidations
-        );
+            rootNetworkUuid: currentRootNetworkUuid,
+            fetcher: fetchDynamicSimulationResultTimeline,
+            invalidations: dynamicSimulationResultInvalidations,
+        });
 
         // columns are defined from fields in {@link TimelineEvent} types
         const columnDefs = useMemo(

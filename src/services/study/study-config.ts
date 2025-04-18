@@ -9,6 +9,7 @@ import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { NetworkVisualizationParameters } from '../../components/dialogs/parameters/network-visualizations/network-visualizations.types';
+import { SpreadsheetCollectionDto } from 'components/spreadsheet/config/spreadsheet.type';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID) {
     console.info('get network visualization parameters');
@@ -28,5 +29,42 @@ export function setNetworkVisualizationParameters(studyUuid: UUID, newParams: Ne
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newParams),
+    });
+}
+
+export function getSpreadsheetConfigCollection(studyUuid: UUID): Promise<SpreadsheetCollectionDto> {
+    console.info('get spreadsheet config collection');
+    const url = getStudyUrl(studyUuid) + '/spreadsheet-config-collection';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function setSpreadsheetConfigCollection(studyUuid: UUID, spreadsheetCollection?: SpreadsheetCollectionDto) {
+    console.info('set spreadsheet config collection');
+    const url = getStudyUrl(studyUuid) + '/spreadsheet-config-collection';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: spreadsheetCollection ? JSON.stringify(spreadsheetCollection) : null,
+    });
+}
+
+export function updateStudySpreadsheetConfigCollection(studyUuid: UUID, collectionUuid: UUID, appendMode: boolean) {
+    console.info('update study spreadsheet config collection');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('collectionUuid', collectionUuid);
+    urlSearchParams.append('append', String(appendMode));
+    const url = getStudyUrl(studyUuid) + `/spreadsheet-config-collection?${urlSearchParams.toString()}`;
+    console.debug(url);
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
     });
 }

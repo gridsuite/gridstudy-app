@@ -7,18 +7,21 @@
 
 import { Button, Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { AppState } from '../../redux/reducer';
-import { changeDisplayedColumns, changeLockedColumns } from 'redux/actions';
+import { updateTableDefinition } from 'redux/actions';
 import { spreadsheetStyles } from './utils/style';
+import { UUID } from 'crypto';
+import { reorderSpreadsheetColumns } from 'services/study-config';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const MAX_LOCKS_PER_TAB = 5;
 
@@ -49,16 +52,11 @@ interface ColumnsConfigProps {
 export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex, disabled }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
 
-    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
-    const lockedColumns = useSelector((state: AppState) => state.allLockedColumnsNames[tabIndex]);
-    const formattedLockedColumns: Set<string> = useMemo(
-        () => new Set(lockedColumns ? JSON.parse(lockedColumns) : []),
-        [lockedColumns]
-    );
+    const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
 
-    const [localColumnsStates, setLocalColumnsStates] = useState(columnsStates);
-    const [localLockedColumns, setLocalLockedColumns] = useState<Set<string>>(formattedLockedColumns);
+    const [localColumns, setLocalColumns] = useState(tableDefinition?.columns);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState<boolean>(false);
 
     const handleOpenPopupSelectColumnNames = useCallback(() => {
@@ -70,90 +68,123 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
     }, []);
 
     useEffect(() => {
-        setLocalColumnsStates(columnsStates);
-        setLocalLockedColumns(formattedLockedColumns);
-    }, [columnsStates, formattedLockedColumns]);
+        setLocalColumns(tableDefinition?.columns);
+    }, [tableDefinition?.columns]);
 
     const handleCancelPopupSelectColumnNames = useCallback(() => {
-        setLocalColumnsStates(columnsStates);
-        setLocalLockedColumns(formattedLockedColumns);
+        setLocalColumns(tableDefinition?.columns);
         handleCloseColumnsSettingDialog();
-    }, [columnsStates, formattedLockedColumns, handleCloseColumnsSettingDialog]);
+    }, [tableDefinition?.columns, handleCloseColumnsSettingDialog]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
-        dispatch(changeDisplayedColumns({ index: tabIndex, value: localColumnsStates }));
-        dispatch(changeLockedColumns({ index: tabIndex, value: localLockedColumns }));
-        handleCloseColumnsSettingDialog();
-    }, [tabIndex, localLockedColumns, handleCloseColumnsSettingDialog, localColumnsStates, dispatch]);
+        // check if column order has changed by comparing uuids
+        const hasOrderChanged = tableDefinition.columns.some((col, index) => col.uuid !== localColumns[index].uuid);
 
-    const handleToggle = (value: string) => () => {
-        setLocalColumnsStates((prevSelectedColumnsNames) => {
-            const idx = prevSelectedColumnsNames.findIndex((col) => col.colId === value);
-            const newColumns = [...prevSelectedColumnsNames];
-            newColumns[idx] = {
-                colId: newColumns[idx].colId,
-                visible: !newColumns[idx].visible,
-            };
-            return newColumns;
+        // create a Promise chain that conditionally includes the reorder request
+        const updatePromise = hasOrderChanged
+            ? reorderSpreadsheetColumns(
+                  tableDefinition.uuid,
+                  localColumns.map((col) => col.uuid)
+              )
+            : Promise.resolve();
+
+        updatePromise
+            .then(() => {
+                dispatch(
+                    updateTableDefinition({
+                        ...tableDefinition,
+                        columns: localColumns,
+                    })
+                );
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error,
+                    headerId: 'spreadsheet/reorder_columns/error',
+                });
+            });
+
+        handleCloseColumnsSettingDialog();
+    }, [tableDefinition, localColumns, handleCloseColumnsSettingDialog, dispatch, snackError]);
+
+    const handleToggle = (value: UUID) => () => {
+        const newLocalColumns = localColumns.map((col) => {
+            if (col.uuid === value) {
+                return {
+                    ...col,
+                    visible: !col.visible,
+                    locked: col.locked && !col.visible,
+                };
+            }
+            return col;
         });
-        setLocalLockedColumns((prevLockedColumnsNames) => {
-            const newLockedColumns = new Set(prevLockedColumnsNames);
-            newLockedColumns.delete(value);
-            return newLockedColumns;
-        });
+        setLocalColumns(newLocalColumns);
     };
 
     const handleToggleAll = () => {
-        let isAllChecked = localColumnsStates.filter((col) => !col.visible).length === 0;
+        let isAllChecked = localColumns?.filter((col) => !col.visible).length === 0;
         // If all columns are selected/checked, then we hide all of them.
-        setLocalColumnsStates((prevSelectedColumnsNames) => {
-            return prevSelectedColumnsNames.map((col) => {
-                return {
-                    colId: col.colId,
-                    visible: !isAllChecked,
-                };
-            });
+        const newLocalColumns = localColumns.map((col) => {
+            return {
+                ...col,
+                visible: !isAllChecked,
+                locked: col.locked && !col.visible,
+            };
         });
-        if (isAllChecked) {
-            setLocalLockedColumns(new Set());
-        }
+        setLocalColumns(newLocalColumns);
     };
 
-    const handleClickOnLock = (value: string) => () => {
-        if (localColumnsStates.filter((col) => col.colId === value && col.visible).length === 0) {
+    const handleClickOnLock = (value: UUID) => () => {
+        // Early return if column is not visible
+        const targetColumn = localColumns?.find((col) => col.uuid === value);
+        if (!targetColumn?.visible) {
             return;
         }
-        const newLocked = new Set(localLockedColumns.values());
-        if (localLockedColumns.has(value)) {
-            newLocked.delete(value);
-        } else if (localLockedColumns.size < MAX_LOCKS_PER_TAB) {
-            newLocked.add(value);
-        }
-        setLocalLockedColumns(newLocked);
+
+        const lockedColumnsCount = localColumns.filter((col) => col.locked).length;
+
+        const newLocalColumns = localColumns.map((col) => {
+            if (col.uuid !== value) {
+                return col;
+            }
+
+            // Allow unlocking always, but only allow locking if under limit
+            const canToggleLock = col.locked || (!col.locked && lockedColumnsCount < MAX_LOCKS_PER_TAB);
+            if (canToggleLock) {
+                return {
+                    ...col,
+                    locked: !col.locked,
+                };
+            }
+
+            return col;
+        });
+
+        setLocalColumns(newLocalColumns);
     };
 
     const handleDrag = useCallback(
         ({ source, destination }: DropResult) => {
             if (destination) {
-                let reorderedTableDefinitionIndexesTemp = [...localColumnsStates];
+                let reorderedTableDefinitionIndexesTemp = [...localColumns];
                 const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
                 reorderedTableDefinitionIndexesTemp.splice(destination.index, 0, reorderedItem);
-                setLocalColumnsStates(reorderedTableDefinitionIndexesTemp);
+                setLocalColumns(reorderedTableDefinitionIndexesTemp);
             }
         },
-        [localColumnsStates]
+        [localColumns]
     );
 
-    const renderColumnConfigLockIcon = (value: string) => {
-        if (localLockedColumns?.has(value)) {
+    const renderColumnConfigLockIcon = (value: UUID) => {
+        if (localColumns?.find((col) => col.uuid === value)?.locked) {
             return <LockIcon sx={styles.columnConfigClosedLock} />;
         }
         return <LockOpenIcon sx={styles.columnConfigOpenLock} />;
     };
 
     const checkListColumnsNames = () => {
-        let isAllChecked = localColumnsStates.filter((col) => !col.visible).length === 0;
-        let isSomeChecked = localColumnsStates.filter((col) => col.visible).length !== 0;
+        let isAllChecked = localColumns?.filter((col) => !col.visible).length === 0;
+        let isSomeChecked = localColumns?.filter((col) => col.visible).length !== 0;
 
         return (
             <>
@@ -168,7 +199,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                     <Droppable droppableId="network-table-columns-list">
                         {(provided) => (
                             <div ref={provided.innerRef} {...provided.droppableProps}>
-                                {[...localColumnsStates].map(({ colId, visible }, index) => (
+                                {[...localColumns].map(({ uuid, name, visible }, index) => (
                                     <Draggable
                                         draggableId={tabIndex + '-' + index}
                                         index={index}
@@ -187,23 +218,18 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                                                     </IconButton>
 
                                                     <ListItemIcon
-                                                        onClick={handleClickOnLock(colId)}
+                                                        onClick={handleClickOnLock(uuid)}
                                                         style={{
                                                             minWidth: 0,
                                                             width: '20px',
                                                         }}
                                                     >
-                                                        {renderColumnConfigLockIcon(colId)}
+                                                        {renderColumnConfigLockIcon(uuid)}
                                                     </ListItemIcon>
-                                                    <ListItemIcon onClick={handleToggle(colId)}>
+                                                    <ListItemIcon onClick={handleToggle(uuid)}>
                                                         <Checkbox checked={visible} />
                                                     </ListItemIcon>
-                                                    <ListItemText
-                                                        onClick={handleToggle(colId)}
-                                                        primary={intl.formatMessage({
-                                                            id: `${colId}`,
-                                                        })}
-                                                    />
+                                                    <ListItemText onClick={handleToggle(uuid)} primary={name} />
                                                 </ListItem>
                                             </div>
                                         )}
@@ -238,7 +264,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                     id: 'spreadsheet/column/dialog/title',
                 })}
                 child={checkListColumnsNames()}
-                //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beautiful-dnd warning related to nested scroll containers
+                //Replacing overflow default value 'auto' by 'visible' in order to prevent a @hello-pangea/dnd warning related to nested scroll containers
                 style={{
                     '& .MuiPaper-root': {
                         overflowY: 'visible',

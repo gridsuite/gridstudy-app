@@ -8,7 +8,6 @@
 import { ColDef } from 'ag-grid-community';
 import { UUID } from 'crypto';
 import { BranchSide } from '../../utils/constants';
-import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 
 export interface ComponentResult {
     componentResultUuid: UUID;
@@ -19,6 +18,7 @@ export interface ComponentResult {
     slackBusResults: SlackBusResult[];
     distributedActivePower: number;
 }
+
 export interface SlackBusResult {
     id: string;
     activePowerMismatch: number;
@@ -30,13 +30,12 @@ export interface LoadFlowResult {
     componentResults: ComponentResult[];
 }
 
-export type QueryParamsType = Record<string, string | number | SortConfig | FilterConfig[]>;
-
 export enum LimitTypes {
     HIGH_VOLTAGE = 'HIGH_VOLTAGE',
     LOW_VOLTAGE = 'LOW_VOLTAGE',
     CURRENT = 'CURRENT',
 }
+
 export interface LoadFlowTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
@@ -48,6 +47,7 @@ export interface LoadflowResultTap {
     columnDefs: ColDef<any>[];
     tableName: string;
 }
+
 export interface LoadflowResultProps extends LoadflowResultTap {
     result: LoadFlowResult;
 }
@@ -68,6 +68,7 @@ export interface OverloadedEquipment {
     side: string | undefined;
     limitType: string;
 }
+
 export interface OverloadedEquipmentFromBack {
     subjectId: string;
     locationId: string;

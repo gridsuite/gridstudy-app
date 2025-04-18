@@ -11,11 +11,13 @@ import PropTypes from 'prop-types';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
-import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { TableWrapper } from './spreadsheet/table-wrapper';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
+import { StudyView } from './utils/utils';
+import { DiagramType } from './diagrams/diagram.type';
+import { useDiagram } from './diagrams/use-diagram';
 
 const styles = {
     map: {
@@ -43,14 +45,6 @@ const styles = {
     },
 };
 
-export const StudyView = {
-    MAP: 'Map',
-    SPREADSHEET: 'Spreadsheet',
-    RESULTS: 'Results',
-    LOGS: 'Logs',
-    PARAMETERS: 'Parameters',
-};
-
 const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
@@ -69,6 +63,10 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         }
     }
+
+    const unsetTableEquipment = () => {
+        setTableEquipment({ id: null, type: null, changed: false });
+    };
 
     return (
         <>
@@ -100,6 +98,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
                         disabled={disabled}
+                        onEquipmentScrolled={unsetTableEquipment}
                     />
                 </Paper>
             </TabPanelLazy>
@@ -129,7 +128,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                 />
             </TabPanelLazy>
             <TabPanelLazy key={`parameters-${currentNode?.id}`} selected={props.view === StudyView.PARAMETERS}>
-                <ParametersTabs studyId={studyUuid} />
+                <ParametersTabs view={props.view} />
             </TabPanelLazy>
         </>
     );
@@ -137,12 +136,10 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
 
 StudyPane.defaultProps = {
     view: StudyView.MAP,
-    lineFlowAlertThreshold: 100,
 };
 
 StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
-    lineFlowAlertThreshold: PropTypes.number.isRequired,
     onChangeTab: PropTypes.func,
 };
 

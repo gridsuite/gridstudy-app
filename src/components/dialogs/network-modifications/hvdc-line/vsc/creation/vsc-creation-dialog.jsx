@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ExtendedEquipmentType, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -30,8 +30,8 @@ import { Box, Grid } from '@mui/material';
 import { filledTextField, sanitizeString } from '../../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../../commons/modificationDialog';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
+import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import {
     getVscHvdcLinePaneEmptyFormData,
@@ -48,8 +48,7 @@ import {
 } from '../converter-station/converter-station-utils';
 import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../../services/study/network-modifications';
-import { useFormSearchCopy } from '../../../../form-search-copy-hook';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import {
     copyEquipmentPropertiesForCreation,
@@ -59,6 +58,7 @@ import {
     toModificationProperties,
 } from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
+import { VSC_CREATION_TABS } from '../vsc-utils';
 
 const formSchema = yup
     .object()
@@ -78,12 +78,6 @@ const emptyFormData = {
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1),
     ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2),
     ...emptyProperties,
-};
-
-export const VSC_CREATION_TABS = {
-    HVDC_LINE_TAB: 0,
-    CONVERTER_STATION_1: 1,
-    CONVERTER_STATION_2: 2,
 };
 
 const VscCreationDialog = ({
@@ -136,14 +130,7 @@ const VscCreationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.HVDC_LINE,
-    });
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, ExtendedEquipmentType.HVDC_LINE_VSC);
 
     const generatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
@@ -248,7 +235,6 @@ const VscCreationDialog = ({
                 onClear={clear}
                 onValidationError={onValidationError}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-vsc"
                 maxWidth={'md'}
                 titleId="CreateVsc"
                 subtitle={headersAndTabs}
@@ -271,7 +257,7 @@ const VscCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
+                    equipmentType={ExtendedEquipmentType.HVDC_LINE_VSC}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}

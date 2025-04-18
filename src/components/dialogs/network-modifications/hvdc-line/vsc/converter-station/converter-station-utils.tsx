@@ -9,10 +9,10 @@ import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import yup from '../../../../../utils/yup-config';
 import {
     BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
-    CONNECTED,
     CONNECTIVITY,
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
@@ -41,6 +41,9 @@ import {
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { sanitizeString } from '../../../../dialog-utils';
 import { toModificationOperation } from '../../../../../utils/utils';
+import { ConverterStationElementInfos, ConverterStationElementModificationInfos } from './converter-station-type';
+import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
+import { AttributeModification } from '../../../../../../services/network-modification-types';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -49,23 +52,6 @@ export type UpdateReactiveCapabilityCurveTableConverterStation = (
     index: number,
     converterStationName: 'converterStation1' | 'converterStation2'
 ) => void;
-
-export interface ReactiveCapabilityCurvePointsData {
-    p?: number | null;
-    maxQ?: number | null;
-    minQ?: number | null;
-}
-
-interface MinMaxReactiveLimitsData {
-    minQ: number | null;
-    maxQ: number | null;
-}
-
-interface ConnectablePositionInfos {
-    connectionName: string | null;
-    connectionDirection: string | null;
-    connectionPosition: number | null;
-}
 
 export interface ConverterStationInterfaceEditData {
     equipmentId: string;
@@ -79,17 +65,12 @@ export interface ConverterStationInterfaceEditData {
     busbarSectionName?: string;
     connectionDirection: string | null;
     connectionName?: string | null;
-    connectionPosition?: string | null;
+    connectionPosition?: number | null;
     terminalConnected?: boolean | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: boolean;
     minQ: number | null;
     maxQ: number | null;
-}
-
-export interface AttributeModification<T> {
-    value: T;
-    op: string;
 }
 
 export interface ConverterStationModificationInterfaceEditData {
@@ -104,50 +85,13 @@ export interface ConverterStationModificationInterfaceEditData {
     busbarSectionName?: AttributeModification<string> | null;
     connectionDirection: AttributeModification<string> | null;
     connectionName?: AttributeModification<string> | null;
-    connectionPosition?: AttributeModification<string> | null;
+    connectionPosition?: AttributeModification<number> | null;
     terminalConnected?: AttributeModification<boolean> | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[];
     reactiveCapabilityCurve: AttributeModification<boolean> | null;
     minQ: AttributeModification<number> | null;
     maxQ: AttributeModification<number> | null;
 }
-
-export interface ConverterStationElementInfos {
-    id: string;
-    name: string | null;
-    lossFactor: number;
-    voltageSetpoint: number | null;
-    reactivePowerSetpoint: number | null;
-    voltageRegulatorOn: boolean;
-    voltageLevelId: string;
-    busOrBusbarSectionId: string;
-    nominalV: number;
-    terminalConnected: boolean;
-    p: number | null;
-    q: number | null;
-    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
-    minMaxReactiveLimits: MinMaxReactiveLimitsData | null;
-    connectablePositionInfos: ConnectablePositionInfos;
-    reactivePower?: number;
-    voltageRegulationOn?: boolean;
-    voltage?: number;
-}
-export interface ReactiveCapabilityCurvePoint {
-    p: number | null;
-    oldP: number | null;
-    minQ: number | null;
-    oldMinQ: number | null;
-    maxQ: number | null;
-    oldMaxQ: number | null;
-}
-
-// the backend return a converterStationElementInfo.reactiveCapabilityCurvePoints
-// but the form define rename is to reactiveCapabilityCurveTable
-// may be we should refactor the forms in Battery , generator and converter station to use the same name
-export type ConverterStationElementModificationInfos = Omit<
-    ConverterStationElementInfos,
-    'reactiveCapabilityCurvePoints'
-> & { reactiveCapabilityCurveTable: ReactiveCapabilityCurvePointsData[] };
 
 export function getVscConverterStationSchema(id: string) {
     return {
@@ -181,10 +125,10 @@ export function getVscConverterStationModificationSchema(id: string) {
         [id]: yup.object().shape({
             [CONVERTER_STATION_ID]: yup.string(),
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
-            [LOSS_FACTOR]: yup.number().nullable(),
+            [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
             [REACTIVE_POWER]: yup.number().nullable(),
-            [VOLTAGE]: yup.number().nullable(),
+            [VOLTAGE]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
             ...getReactiveLimitsSchema(true),
         }),
     };
@@ -311,13 +255,13 @@ function getConverterStationReactiveLimits(converterStation: ConverterStationInt
               reactiveCapabilityCurveChoice: 'CURVE',
               minimumReactivePower: null,
               maximumReactivePower: null,
-              reactiveCapabilityCurveTable: converterStation.reactiveCapabilityCurvePoints,
+              reactiveCapabilityCurvePoints: converterStation.reactiveCapabilityCurvePoints,
           })
         : getReactiveLimitsFormData({
               reactiveCapabilityCurveChoice: 'MINMAX',
               minimumReactivePower: converterStation.minQ,
               maximumReactivePower: converterStation.maxQ,
-              reactiveCapabilityCurveTable: converterStation?.reactiveCapabilityCurvePoints ?? null,
+              reactiveCapabilityCurvePoints: converterStation?.reactiveCapabilityCurvePoints ?? null,
           });
 }
 
@@ -331,7 +275,7 @@ function getConverterStationModificationReactiveLimits(
                 : 'MINMAX',
             maximumReactivePower: converterStationEditData?.maxQ?.value ?? null,
             minimumReactivePower: converterStationEditData?.minQ?.value ?? null,
-            reactiveCapabilityCurveTable: converterStationEditData?.reactiveCapabilityCurvePoints ?? null,
+            reactiveCapabilityCurvePoints: converterStationEditData?.reactiveCapabilityCurvePoints ?? null,
         }),
     };
 }
@@ -347,8 +291,8 @@ export function getConverterStationFromSearchCopy(id: string, converterStation: 
             ...getConnectivityFormData({
                 voltageLevelId: converterStation?.voltageLevelId,
                 busbarSectionId: converterStation?.busOrBusbarSectionId,
-                connectionDirection: converterStation?.connectablePositionInfos?.connectionDirection,
-                connectionName: converterStation?.connectablePositionInfos?.connectionName,
+                connectionDirection: converterStation?.connectablePosition?.connectionDirection,
+                connectionName: converterStation?.connectablePosition?.connectionName,
                 connectionPosition: null,
                 busbarSectionName: null,
                 terminalConnected: true,
@@ -357,7 +301,7 @@ export function getConverterStationFromSearchCopy(id: string, converterStation: 
                 reactiveCapabilityCurveChoice: converterStation?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
                 minimumReactivePower: converterStation?.minMaxReactiveLimits?.minQ,
                 maximumReactivePower: converterStation?.minMaxReactiveLimits?.maxQ,
-                reactiveCapabilityCurveTable: converterStation.reactiveCapabilityCurvePoints ?? null,
+                reactiveCapabilityCurvePoints: converterStation.reactiveCapabilityCurvePoints ?? null,
             }),
         },
     };

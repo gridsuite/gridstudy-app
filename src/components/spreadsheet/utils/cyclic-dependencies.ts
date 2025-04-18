@@ -6,14 +6,17 @@
  */
 export type Item = {
     id: string;
-    dependencies: string[];
+    dependencies?: string[];
 };
 
 export const hasCyclicDependencies = (items: Item[]): boolean => {
-    const dependenciesPerItemId = items.reduce((acc, item) => {
-        acc[item.id] = item.dependencies || [];
-        return acc;
-    }, {} as Record<string, string[]>);
+    const dependenciesPerItemId = items.reduce(
+        (acc, item) => {
+            acc[item.id] = item.dependencies || [];
+            return acc;
+        },
+        {} as Record<string, string[]>
+    );
 
     const visited = new Set<string>();
     const stack = new Set<string>();

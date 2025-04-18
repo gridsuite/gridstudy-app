@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'crypto';
-import { EquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
@@ -105,7 +105,7 @@ export function fetchBusesOrBusbarSectionsForVoltageLevel(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     voltageLevelId: UUID
-) {
+): Promise<Identifiable[]> {
     console.info(
         `Fetching buses or busbar sections of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
@@ -208,7 +208,7 @@ export function fetchNetworkElementInfos(
     studyUuid: string | undefined | null,
     currentNodeUuid: UUID | undefined,
     currentRootNetworkUuid: string | undefined | null,
-    elementType: EquipmentType | EQUIPMENT_TYPES,
+    elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES,
     infoType: string,
     elementId: string,
     inUpstreamBuiltParentNode: boolean
@@ -319,8 +319,7 @@ export function fetchSubstations(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.SUBSTATION,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -336,8 +335,7 @@ export function fetchLines(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.LINE,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -353,8 +351,7 @@ export function fetchVoltageLevels(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -404,8 +401,7 @@ export function fetchTwoWindingsTransformers(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        false
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -421,8 +417,7 @@ export function fetchThreeWindingsTransformers(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        false
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -454,8 +449,7 @@ export function fetchLoads(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.LOAD,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -503,8 +497,7 @@ export function fetchHvdcLines(
         currentRootNetworkUuid,
         substationsIds,
         EQUIPMENT_TYPES.HVDC_LINE,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 

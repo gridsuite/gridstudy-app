@@ -10,13 +10,13 @@ on:
 
 jobs:
   run-patch:
-    uses: powsybl/github-ci/.github/workflows/patch-frontend-app-generic.yml@859a4effdaa9c5e79684378f39778fd8d06df3c5
+    uses: powsybl/github-ci/.github/workflows/patch-frontend-app-generic.yml@8197c006b729cfd664ffa3f3fe4bb603fb574c69
     with:
       releaseVersion: ${{ github.event.inputs.releaseVersion }}
       dockerImage: docker.io/gridsuite/gridstudy-app
       dockerUsername: gridsuiteci
       githubappId: ${{ vars.GRIDSUITE_ACTIONS_APPID }}
     secrets:
-      githubappPrivateKey: ${{ secrets.GRIDSUITE_ACTIONS_SECRET }}
-      docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
+      VERSIONBUMP_GHAPP_PRIVATE_KEY: ${{ secrets.VERSIONBUMP_GHAPP_PRIVATE_KEY }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       sonar-token: ${{ secrets.SONAR_TOKEN }}

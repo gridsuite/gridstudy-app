@@ -15,11 +15,11 @@ import { NodeInsertModes } from '../nodes/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 import { BUILD_STATUS } from '../../network/constants';
-import { type AppState, type CurrentTreeNode, type NodeSelectionForCopy } from 'redux/reducer';
+import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
-import { NodeType } from '../tree-node.type';
+import { CurrentTreeNode, NodeType } from '../tree-node.type';
 
 type SubMenuItem = {
     onRoot: boolean;
@@ -59,13 +59,13 @@ interface CreateNodeMenuProps {
     disableRestoreNodes: boolean;
 }
 
-export const NodeActions = {
+const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
     REMOVE_SUBTREE: 'REMOVE_SUBTREE',
     NO_ACTION: 'NO_ACTION',
 };
 
-export const getNodeChildren = (
+const getNodeChildren = (
     treeModel: NetworkModificationTreeModel,
     sourceNodeIds: UUID[],
     allChildren: CurrentTreeNode[]
@@ -81,7 +81,7 @@ export const getNodeChildren = (
     }
 };
 
-export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel | null, id: UUID) => {
+const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel | null, id: UUID) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
         const activeNodeDirectChildren = treeModel.treeNodes.filter((item) => item.parentId === id);

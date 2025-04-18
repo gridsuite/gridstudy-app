@@ -12,10 +12,9 @@ import DndTable from '../../utils/dnd-table/dnd-table';
 import { SELECTED } from '../../utils/field-constants';
 import { useFieldArray } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { AppState, CurrentTreeNode } from '../../../redux/reducer';
-
-// TODO: to fix when either migrating DndTable to typescript or using something else than DndTable
-const DndTableTyped = DndTable as React.ComponentType<any>;
+import { AppState } from '../../../redux/reducer';
+import { DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
+import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 const NodeAliasTable = () => {
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
@@ -32,11 +31,12 @@ const NodeAliasTable = () => {
         name: `${NODES_ALIASES}`,
     });
 
-    const NODES_ALIASES_COLUMNS_DEFINITIONS = useMemo(() => {
+    const NODES_ALIASES_COLUMNS_DEFINITIONS: (DndColumn & { initialValue?: string })[] = useMemo(() => {
         return [
             {
                 label: intl.formatMessage({ id: 'spreadsheet/parameter_aliases/node_alias' }),
                 dataKey: NODE_ALIAS,
+                type: DndColumnType.TEXT,
                 editable: true,
                 initialValue: '',
                 showErrorMsg: true,
@@ -48,7 +48,7 @@ const NodeAliasTable = () => {
                 dataKey: NODE_NAME,
                 initialValue: '',
                 editable: true,
-                autocomplete: true,
+                type: DndColumnType.AUTOCOMPLETE,
                 options: nodeNames,
                 width: '30%',
                 maxWidth: '30%',
@@ -68,13 +68,15 @@ const NodeAliasTable = () => {
     };
 
     return (
-        <DndTableTyped
+        <DndTable
             arrayFormName={`${NODES_ALIASES}`}
             columnsDefinition={NODES_ALIASES_COLUMNS_DEFINITIONS}
             useFieldArrayOutput={useNodesAliasesFieldArrayOutput}
             createRows={createNodeAliasRows}
             withAddRowsDialog={false}
             withLeftButtons={false}
+            disableDragAndDrop={true}
+            showMoveArrow={false}
         />
     );
 };

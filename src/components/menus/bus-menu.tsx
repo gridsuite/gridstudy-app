@@ -15,7 +15,6 @@ import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
-import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
@@ -27,6 +26,7 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { tripEquipment } from '../../services/study/network-modifications';
 import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchNetworkElementInfos } from '../../services/study/network';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 interface BusMenuProps {
     busId: string;
@@ -75,7 +75,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
 
     // to check is node editable
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const isNodeEditable = useMemo(

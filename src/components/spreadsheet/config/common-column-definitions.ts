@@ -4,24 +4,33 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
+import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import {
-    COLUMN_TYPES,
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-header.type';
-import {
-    BooleanFilterValue,
-    CustomAggridBooleanFilter,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
-import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '../utils/cell-renderers';
+    BooleanCellRenderer,
+    DefaultCellRenderer,
+    NumericCellRenderer,
+    RowIndexCellRenderer,
+} from '../utils/cell-renderers';
 import { ColDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
+import {
+    BooleanFilterValue,
+    updateFilters,
+} from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import {
+    CustomColDef,
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { UUID } from 'crypto';
+import { isCalculationRow } from '../utils/calculation-utils';
+import { ROW_INDEX_COLUMN_ID } from '../constants';
 
 export const textColumnDefinition = (displayName: string, tab: string): ColDef => {
     return {
@@ -166,6 +175,33 @@ export const booleanColumnDefinition = (displayName: string, tab: string): ColDe
         cellRenderer: BooleanCellRenderer,
         context: {
             columnType: COLUMN_TYPES.BOOLEAN,
+        },
+    };
+};
+
+export const rowIndexColumnDefinition = (tabUuid: UUID): CustomColDef => {
+    return {
+        colId: ROW_INDEX_COLUMN_ID,
+        headerName: '',
+        cellRenderer: (params: any) => {
+            // For pinned rows, use the RowIndexCellRenderer which handles the calculate icon
+            if (isCalculationRow(params.node?.data?.rowType)) {
+                return RowIndexCellRenderer(params);
+            }
+            return params.node.rowIndex + 1;
+        },
+        width: 65,
+        pinned: 'left',
+        suppressMovable: true,
+        lockPosition: true,
+        sortable: false,
+        filter: false,
+        resizable: true,
+        cellStyle: { textAlign: 'center' },
+        editable: false,
+        suppressAutoSize: false,
+        context: {
+            tabUuid: tabUuid,
         },
     };
 };

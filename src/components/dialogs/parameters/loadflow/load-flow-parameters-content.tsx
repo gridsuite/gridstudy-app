@@ -7,29 +7,37 @@
 
 import { mergeSx } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
-import { styles, TabPanel } from '../parameters';
-import { ParameterDescription, TAB_VALUES } from './load-flow-parameters-utils';
+import { TabPanel } from '../parameters';
+import { TAB_VALUES } from './load-flow-parameters-utils';
 import LoadFlowGeneralParameters from './load-flow-general-parameters';
 import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
 import ParameterLineSlider from '../widget/parameter-line-slider';
 import { PARAM_LIMIT_REDUCTION, PARAM_PROVIDER_OPENLOADFLOW } from 'utils/config-params';
-import { alertThresholdMarks, MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION } from './constants';
+import {
+    alertThresholdMarks,
+    MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
+    MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
+} from './constants';
 import { ILimitReductionsByVoltageLevel } from '../common/limitreductions/columns-definitions';
 import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
+import { SpecificParameterInfos } from '../parameters.type';
+import { styles } from '../parameters-style';
 
-const LoadFlowParametersContent = ({
+type LoadFlowParametersContentProps = {
+    selectedTab: TAB_VALUES;
+    currentProvider: string;
+    specificParameters: SpecificParameterInfos[];
+    params: LoadFlowParametersInfos | null;
+    defaultLimitReductions: ILimitReductionsByVoltageLevel[];
+};
+
+function LoadFlowParametersContent({
     selectedTab,
     currentProvider,
     specificParameters,
     params,
     defaultLimitReductions,
-}: {
-    selectedTab: TAB_VALUES;
-    currentProvider: string;
-    specificParameters: ParameterDescription[];
-    params: LoadFlowParametersInfos | null;
-    defaultLimitReductions: ILimitReductionsByVoltageLevel[];
-}) => {
+}: Readonly<LoadFlowParametersContentProps>) {
     return (
         <Box
             sx={{
@@ -54,10 +62,11 @@ const LoadFlowParametersContent = ({
                                 <LimitReductionsTableForm limits={params?.limitReductions ?? defaultLimitReductions} />
                             ) : (
                                 <ParameterLineSlider
-                                    paramNameId={PARAM_LIMIT_REDUCTION}
+                                    name={PARAM_LIMIT_REDUCTION}
                                     label="LimitReduction"
                                     marks={alertThresholdMarks}
                                     minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                                    maxValue={MAX_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
                                 />
                             )}
                         </Grid>
@@ -66,6 +75,6 @@ const LoadFlowParametersContent = ({
             </Grid>
         </Box>
     );
-};
+}
 
 export default LoadFlowParametersContent;

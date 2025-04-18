@@ -5,15 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ElementType, useSnackMessage, UseStateBooleanReturn } from '@gridsuite/commons-ui';
-import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
+import {
+    ElementSaveDialog,
+    ElementType,
+    IElementCreationDialog,
+    IElementUpdateDialog,
+    useSnackMessage,
+    UseStateBooleanReturn,
+} from '@gridsuite/commons-ui';
 import { useMemo } from 'react';
-import { createSpreadsheetModel } from '../../../services/explore';
+import { createSpreadsheetModel, updateSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { ColumnWithFormulaDto, SpreadsheetConfig } from '../../../types/custom-columns.types';
-import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { v4 as uuid4 } from 'uuid';
+import { ColumnDefinitionDto, SpreadsheetConfig } from '../config/spreadsheet.type';
 
 export type CustomSpreadsheetSaveDialogProps = {
     tabIndex: number;
@@ -23,46 +28,31 @@ export type CustomSpreadsheetSaveDialogProps = {
 export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly<CustomSpreadsheetSaveDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
-    const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
-    );
-    const columnsStates = useSelector((state: AppState) => state.tables.columnsStates[tabIndex]);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const customColumns = useMemo(() => {
-        return customColumnsDefinitions.map(({ id, name, type, precision, formula, dependencies }) => ({
-            id,
-            name,
-            type,
-            precision,
-            formula,
-            dependencies: JSON.stringify(dependencies),
-        }));
-    }, [customColumnsDefinitions]);
+        return tableDefinition?.columns.reduce(
+            (acc, item) => {
+                acc[item.id] = {
+                    uuid: item?.uuid ?? uuid4(),
+                    id: item.id,
+                    name: item.name,
+                    type: item.type,
+                    precision: item.precision,
+                    formula: item.formula,
+                    dependencies: item.dependencies?.length ? JSON.stringify(item.dependencies) : undefined,
+                };
+                return acc;
+            },
+            {} as Record<string, ColumnDefinitionDto>
+        );
+    }, [tableDefinition?.columns]);
 
-    const staticColumnIdToColInfos = useMemo(() => {
-        return tableDefinition.columns.reduce((acc, item) => {
-            acc[item.colId] = {
-                uuid: uuid4(),
-                id: item.field ?? '',
-                name: item.headerComponentParams?.displayName ?? item.colId,
-                type: item.context?.columnType ?? COLUMN_TYPES.TEXT,
-                precision: item.cellRendererParams?.fractionDigits,
-                formula: item.field ?? '',
-                dependencies: null,
-            };
-            return acc;
-        }, {} as Record<string, ColumnWithFormulaDto>);
-    }, [tableDefinition.columns]);
-
-    const reorderedStaticColumnIds = useMemo(() => {
-        return columnsStates.map((col) => col.colId);
-    }, [columnsStates]);
-
-    const staticColumnFormulas = useMemo(() => {
-        return reorderedStaticColumnIds && staticColumnIdToColInfos
-            ? reorderedStaticColumnIds.map((colId: string) => staticColumnIdToColInfos[colId])
+    const reorderedColumns = useMemo(() => {
+        return tableDefinition?.columns && customColumns
+            ? tableDefinition?.columns?.map((column) => customColumns[column.id])
             : [];
-    }, [reorderedStaticColumnIds, staticColumnIdToColInfos]);
+    }, [tableDefinition, customColumns]);
 
     const saveSpreadsheetColumnsConfiguration = ({
         name,
@@ -71,8 +61,9 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
         folderId,
     }: IElementCreationDialog) => {
         const spreadsheetConfig: SpreadsheetConfig = {
-            sheetType: tableDefinition.type,
-            customColumns: [...staticColumnFormulas, ...customColumns],
+            name: tableDefinition?.name,
+            sheetType: tableDefinition?.type,
+            columns: reorderedColumns,
         };
 
         createSpreadsheetModel(name, description, folderId, spreadsheetConfig)
@@ -92,15 +83,52 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
             });
     };
 
+    const updateSpreadsheetColumnsConfiguration = ({
+        id,
+        name,
+        description,
+        elementFullPath,
+    }: IElementUpdateDialog) => {
+        const spreadsheetConfig: SpreadsheetConfig = {
+            name: tableDefinition?.name,
+            sheetType: tableDefinition?.type,
+            columns: reorderedColumns,
+        };
+
+        updateSpreadsheetModel(id, name, description, spreadsheetConfig)
+            .then(() => {
+                snackInfo({
+                    headerId: 'spreadsheet/save/update_confirmation_message',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
+                });
+            })
+            .catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'spreadsheet/save/update_error_message',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
+                });
+            });
+    };
+
     return (
         <>
-            {open.value && (
-                <ElementCreationDialog
+            {open.value && studyUuid && (
+                <ElementSaveDialog
                     open={open.value}
                     onClose={open.setFalse}
                     onSave={saveSpreadsheetColumnsConfiguration}
+                    OnUpdate={updateSpreadsheetColumnsConfiguration}
                     type={ElementType.SPREADSHEET_CONFIG}
                     titleId={'spreadsheet/save/dialog_title'}
+                    studyUuid={studyUuid}
+                    selectorTitleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
+                    createLabelId="spreadsheet/save/create_new_model"
+                    updateLabelId="spreadsheet/save/replace_existing_model"
                 />
             )}
         </>

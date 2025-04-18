@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LineModificationDialogTab } from './line-modification-dialog';
 import { Box } from '@mui/material';
 import { LimitsPane } from '../../../limits/limits-pane';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
-import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form';
+import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
+import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';
+import { LineModificationDialogTab } from '../line-utils';
 
 const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetworkUuid, lineToModify, tabIndex }) => {
     return (
@@ -43,6 +44,10 @@ const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetwork
                     clearableFields={true}
                     onlySelectedLimitsGroup
                 />
+            </Box>
+
+            <Box hidden={tabIndex !== LineModificationDialogTab.STATE_ESTIMATION_TAB} p={1}>
+                <BranchActiveReactivePowerMeasurementsForm equipmentToModify={lineToModify} />
             </Box>
         </>
     );

@@ -20,7 +20,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import PropTypes from 'prop-types';
 import { EquipmentInfos, EquipmentType, OperatingStatus, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
@@ -33,16 +32,16 @@ import {
     tripEquipment,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { CustomMenuItem } from '../utils/custom-nested-menu';
 import { BaseEquipmentMenuProps, MapEquipment } from './base-equipment-menu';
-import { CurrentTreeNode } from 'redux/reducer';
 import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
 import { UUID } from 'crypto';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import { CurrentTreeNode } from '../graph/tree-node.type';
 
 const styles = {
     menuItem: {
@@ -234,7 +233,7 @@ const withOperatingStatusMenu =
                     )}
                     <CustomMenuItem
                         sx={styles.menuItem}
-                        onClick={() => handleTrip()}
+                        onClick={handleTrip}
                         disabled={!isNodeEditable || equipmentInfos?.operatingStatus === OperatingStatus.FORCED_OUTAGE}
                     >
                         <ListItemIcon>
@@ -284,7 +283,7 @@ const withOperatingStatusMenu =
                                             {
                                                 substation: getNameOrId({
                                                     name: equipmentInfos?.voltageLevelName1,
-                                                    id: equipmentInfos?.voltageLevelId1,
+                                                    id: equipmentInfos?.voltageLevelId1 ?? '',
                                                 }),
                                             }
                                         )}
@@ -316,7 +315,7 @@ const withOperatingStatusMenu =
                                             {
                                                 substation: getNameOrId({
                                                     name: equipmentInfos?.voltageLevelName2,
-                                                    id: equipmentInfos?.voltageLevelId2,
+                                                    id: equipmentInfos?.voltageLevelId2 ?? '',
                                                 }),
                                             }
                                         )}
@@ -394,21 +393,5 @@ const withOperatingStatusMenu =
             )
         );
     };
-
-withOperatingStatusMenu.propTypes = {
-    id: PropTypes.string.isRequired,
-    equipmentType: PropTypes.string.isRequired,
-    position: PropTypes.arrayOf(PropTypes.number).isRequired,
-    handleClose: PropTypes.func.isRequired,
-    handleViewInSpreadsheet: PropTypes.func.isRequired,
-    handleDeleteEquipment: PropTypes.func.isRequired,
-    handleOpenModificationDialog: PropTypes.func.isRequired,
-    onOpenDynamicSimulationEventDialog: PropTypes.func.isRequired,
-    currentNode: PropTypes.object,
-    studyUuid: PropTypes.string.isRequired,
-    currentRootNetworkUuid: PropTypes.string.isRequired,
-    modificationInProgress: PropTypes.func,
-    setModificationInProgress: PropTypes.func,
-};
 
 export default withOperatingStatusMenu;

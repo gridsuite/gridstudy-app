@@ -7,10 +7,10 @@
 
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { TwoWindingsTransformerModificationDialogTab } from './two-windings-transformer-modification-dialog';
 import { useWatch } from 'react-hook-form';
 import { ENABLED, PHASE_TAP_CHANGER, RATIO_TAP_CHANGER } from 'components/utils/field-constants';
 import { getTabIndicatorStyle, getTabStyle } from '../../../../utils/tab-utils';
+import { TwoWindingsTransformerModificationDialogTab } from '../two-windings-transformer-utils';
 
 const TwoWindingsTransformerModificationDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
     const phaseTapChangerEnabledWatch = useWatch({
@@ -44,6 +44,13 @@ const TwoWindingsTransformerModificationDialogTabs = ({ tabIndex, tabIndexesWith
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
                     sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerModificationDialogTab.LIMITS_TAB)}
+                />
+                <Tab
+                    label={<FormattedMessage id="StateEstimationTab" />}
+                    sx={getTabStyle(
+                        tabIndexesWithError,
+                        TwoWindingsTransformerModificationDialogTab.STATE_ESTIMATION_TAB
+                    )}
                 />
                 <Tab
                     label={<FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />}

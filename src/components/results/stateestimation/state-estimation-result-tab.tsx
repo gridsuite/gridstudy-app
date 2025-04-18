@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { QualityCriterionResult, StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
-import { useNodeData } from '../../study-container';
 import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
 import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer';
@@ -26,6 +25,7 @@ import {
 } from './state-estimation-result-utils';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { stateEstimationResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { useNodeData } from 'components/use-node-data';
 
 const styles = {
     flexWrapper: {
@@ -57,21 +57,13 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
 
-    const fetchEstimResults = useCallback(() => {
-        return fetchStateEstimationResult(studyUuid, nodeUuid, currentRootNetworkUuid);
-    }, [studyUuid, nodeUuid, currentRootNetworkUuid]);
-
-    const fetchResult = useMemo(() => {
-        return fetchEstimResults;
-    }, [fetchEstimResults]);
-
-    const [stateEstimationResult, isLoadingResult] = useNodeData(
+    const { result: stateEstimationResult, isLoading: isLoadingResult } = useNodeData({
         studyUuid,
         nodeUuid,
-        currentRootNetworkUuid,
-        fetchResult,
-        stateEstimationResultInvalidations
-    );
+        rootNetworkUuid: currentRootNetworkUuid,
+        fetcher: fetchStateEstimationResult,
+        invalidations: stateEstimationResultInvalidations,
+    });
 
     const stateEstimationQualityColumns = useMemo(() => {
         switch (tabIndex) {

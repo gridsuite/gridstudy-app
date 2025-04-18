@@ -8,25 +8,21 @@
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, Grid } from '@mui/material';
-import { styles } from './parameters';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    mergeSx,
     SubmitButton,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import {
-    getShortCircuitParameters,
     invalidateShortCircuitStatus,
     setShortCircuitParameters,
 } from '../../../services/study/short-circuit-analysis';
 import { fetchShortCircuitParameters } from '../../../services/short-circuit-analysis';
-import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
-import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
-import { mergeSx } from '../../utils/functions';
 import yup from '../../utils/yup-config';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -44,62 +40,11 @@ import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 
 import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
-import ComputingType from '../../computing-status/computing-type';
-import { isComputationParametersUpdated } from './common/computation-parameters-util';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
 import LineSeparator from '../commons/line-separator';
 import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analysis.type';
-
-export type UseGetShortCircuitParametersProps = [
-    ShortCircuitParametersInfos | null,
-    React.Dispatch<React.SetStateAction<ShortCircuitParametersInfos | null>>
-];
-
-export const useGetShortCircuitParameters = (): UseGetShortCircuitParametersProps => {
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
-
-    const { snackError } = useSnackMessage();
-    const [shortCircuitParams, setShortCircuitParams] = useState<ShortCircuitParametersInfos | null>(null);
-
-    const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
-
-    const fetchShortCircuitParameters = useCallback(
-        (studyUuid: UUID) => {
-            getShortCircuitParameters(studyUuid)
-                .then((params: ShortCircuitParametersInfos) => {
-                    setShortCircuitParams(params);
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
-                });
-        },
-        [snackError]
-    );
-
-    useEffect(() => {
-        if (studyUuid && shortCircuitAvailability === OptionalServicesStatus.Up) {
-            fetchShortCircuitParameters(studyUuid);
-        }
-    }, [shortCircuitAvailability, studyUuid, fetchShortCircuitParameters]);
-
-    // fetch the parameter if SHORT_CIRCUIT  notification type is received.
-    useEffect(() => {
-        if (
-            studyUuid &&
-            shortCircuitAvailability === OptionalServicesStatus.Up &&
-            isComputationParametersUpdated(ComputingType.SHORT_CIRCUIT, studyUpdated)
-        ) {
-            fetchShortCircuitParameters(studyUuid);
-        }
-    }, [studyUuid, shortCircuitAvailability, fetchShortCircuitParameters, studyUpdated]);
-
-    return [shortCircuitParams, setShortCircuitParams];
-};
+import { styles } from './parameters-style';
+import { UseGetShortCircuitParametersProps } from './use-get-short-circuit-parameters';
 
 const formSchema = yup
     .object()

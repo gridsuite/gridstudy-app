@@ -9,17 +9,18 @@ import { useState, MouseEvent, useCallback, useMemo } from 'react';
 import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/reducer';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import CustomSpreadsheetSaveDialog from './custom-spreadsheet/custom-spreadsheet-save-dialog';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import { useCsvExport } from './csv-export/use-csv-export';
 import { CsvExportProps } from './csv-export/csv-export.type';
 import { spreadsheetStyles } from './utils/style';
+import { SpreadsheetCollectionSaveDialog } from './custom-spreadsheet/spreadsheet-collection-save-dialog';
+import { NodeAlias } from './custom-columns/node-alias.type';
+import { ROW_INDEX_COLUMN_ID } from './constants';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
+    SAVE_COLLECTION = 'SAVE_COLLECTION',
     EXPORT_CSV = 'EXPORT_CSV',
 }
 
@@ -27,12 +28,13 @@ interface SpreadsheetSaveOption {
     id: SpreadsheetSaveOptionId;
     label: string;
     action: () => void;
-    showInDevMode?: boolean;
     disabled?: boolean;
 }
 
 interface SpreadsheetSaveProps extends CsvExportProps {
     tabIndex: number;
+    dataSize?: number;
+    nodeAliases: NodeAlias[] | undefined;
 }
 
 export default function SpreadsheetSave({
@@ -41,10 +43,12 @@ export default function SpreadsheetSave({
     columns,
     tableName,
     disabled,
+    dataSize,
+    nodeAliases,
 }: Readonly<SpreadsheetSaveProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const customSaveDialogOpen = useStateBoolean(false);
+    const saveCollectionDialogOpen = useStateBoolean(false);
     const { downloadCSVData } = useCsvExport();
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
@@ -61,16 +65,32 @@ export default function SpreadsheetSave({
                 id: SpreadsheetSaveOptionId.SAVE_MODEL,
                 label: 'spreadsheet/save/options/model',
                 action: customSaveDialogOpen.setTrue,
-                showInDevMode: true,
+            },
+            [SpreadsheetSaveOptionId.SAVE_COLLECTION]: {
+                id: SpreadsheetSaveOptionId.SAVE_COLLECTION,
+                label: 'spreadsheet/save/options/collection',
+                action: saveCollectionDialogOpen.setTrue,
             },
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
                 label: 'spreadsheet/save/options/csv',
-                action: () => downloadCSVData({ gridRef, columns, tableName }),
-                disabled: disabled,
+                action: () => {
+                    // Filter out the rowIndex column before exporting to CSV
+                    const columnsForExport = columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID);
+                    downloadCSVData({ gridRef, columns: columnsForExport, tableName });
+                },
+                disabled: dataSize === 0,
             },
         }),
-        [customSaveDialogOpen.setTrue, downloadCSVData, gridRef, columns, tableName, disabled]
+        [
+            customSaveDialogOpen.setTrue,
+            saveCollectionDialogOpen.setTrue,
+            dataSize,
+            downloadCSVData,
+            gridRef,
+            columns,
+            tableName,
+        ]
     );
 
     const handleMenuItemClick = useCallback(
@@ -83,21 +103,18 @@ export default function SpreadsheetSave({
 
     const renderMenuItem = useCallback(
         (option: SpreadsheetSaveOption) => {
-            if (option.showInDevMode && !developerMode) {
-                return null;
-            }
             return (
                 <MenuItem key={option.id} onClick={() => handleMenuItemClick(option.id)} disabled={option?.disabled}>
                     <FormattedMessage id={option.label} />
                 </MenuItem>
             );
         },
-        [developerMode, handleMenuItemClick]
+        [handleMenuItemClick]
     );
 
     return (
         <>
-            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick}>
+            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
                 <SaveIcon />
                 <FormattedMessage id="spreadsheet/save/button" />
             </Button>
@@ -105,6 +122,7 @@ export default function SpreadsheetSave({
                 {Object.values(spreadsheetOptions).map(renderMenuItem)}
             </Menu>
             <CustomSpreadsheetSaveDialog tabIndex={tabIndex} open={customSaveDialogOpen} />
+            <SpreadsheetCollectionSaveDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
         </>
     );
 }

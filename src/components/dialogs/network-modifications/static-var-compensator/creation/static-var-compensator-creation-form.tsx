@@ -10,16 +10,17 @@ import { FunctionComponent } from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { Box, Grid } from '@mui/material';
-import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-dialog-tabs';
 import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { UUID } from 'crypto';
 import GridItem from '../../../commons/grid-item';
+import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 export interface StaticVarCompensatorCreationFormProps {
     studyUuid: UUID;
-    currentNode: { id: UUID };
+    currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     tabIndex: number;
 }
@@ -38,7 +39,7 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
-            previousValues={null}
+            previousValues={undefined}
         />
     );
 

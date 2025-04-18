@@ -13,64 +13,7 @@ import { Grid } from '@mui/material';
 import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
-import yup from '../../../../../utils/yup-config';
-import { LccCreationInfos, LccFormInfos } from './lcc-creation.type';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-} from '../../../common/properties/property-utils';
 
-export const getLccHvdcLineSchema = () =>
-    yup
-        .object()
-        .shape({
-            [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVMustBeGreaterOrEqualToZero').required(),
-            [R]: yup.number().nullable().min(0, 'dcResistanceMustBeGreaterOrEqualToZero').required(),
-            [MAX_P]: yup.number().nullable().min(0, 'maxPMustBeGreaterOrEqualToZero').required(),
-            [ACTIVE_POWER_SETPOINT]: yup
-                .number()
-                .nullable()
-                .min(0, 'activePowerSetpointMinValueError')
-                .max(yup.ref(MAX_P), 'activePowerSetpointMaxValueError')
-                .required(),
-            [CONVERTERS_MODE]: yup.string().required(),
-        })
-        .concat(creationPropertiesSchema);
-
-export function getLccHvdcLineEmptyFormData() {
-    return {
-        [NOMINAL_V]: null,
-        [R]: null,
-        [MAX_P]: null,
-        [CONVERTERS_MODE]: null,
-        [ACTIVE_POWER_SETPOINT]: null,
-        ...emptyProperties,
-    };
-}
-
-export function getLccHvdcLineFromSearchCopy(hvdcLine: LccFormInfos) {
-    return {
-        [NOMINAL_V]: hvdcLine.nominalV,
-        [R]: hvdcLine.r,
-        [MAX_P]: hvdcLine.maxP,
-        [CONVERTERS_MODE]: hvdcLine.convertersMode,
-        [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
-        ...copyEquipmentPropertiesForCreation(hvdcLine),
-    };
-}
-
-export function getLccHvdcLineFromEditData(hvdcLine: LccCreationInfos) {
-    return {
-        [NOMINAL_V]: hvdcLine.nominalV,
-        [R]: hvdcLine.r,
-        [MAX_P]: hvdcLine.maxP,
-        [CONVERTERS_MODE]: hvdcLine.convertersMode,
-        [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
-        ...getPropertiesFromModification(hvdcLine.properties),
-    };
-}
 interface LccHvdcLineProps {
     id: string;
 }

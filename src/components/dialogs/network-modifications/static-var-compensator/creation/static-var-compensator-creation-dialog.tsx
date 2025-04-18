@@ -48,10 +48,10 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
+import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
@@ -67,9 +67,7 @@ import {
     Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import StaticVarCompensatorCreationDialogTabs, {
-    StaticVarCompensatorCreationDialogTab,
-} from './static-var-compensator-creation-dialog-tabs';
+import StaticVarCompensatorCreationDialogTabs from './static-var-compensator-creation-dialog-tabs';
 import { Grid } from '@mui/material';
 import StaticVarCompensatorCreationForm from './static-var-compensator-creation-form';
 import StaticVarCompensatorCreationDialogHeader from './static-var-compensator-creation-dialog-header';
@@ -84,6 +82,7 @@ import {
     getStandbyAutomatonFormValidationSchema,
 } from './standby-automaton-form-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
+import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 
 export type StaticVarCompensatorCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -284,15 +283,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-
-        toFormValues: (data: StaticVarCompensatorCreationSchemaForm) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
-    });
+    const searchCopy = useFormSearchCopy(fromSearchCopyToFormValues, EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR);
 
     useEffect(() => {
         if (editData) {
@@ -452,12 +443,11 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 maxWidth={'md'}
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-staticCompensator"
                 titleId="CreateStaticVarCompensator"
+                open={open}
                 subtitle={headerAndTabs}
                 searchCopy={searchCopy}
                 onValidationError={onValidationError}
-                open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 PaperProps={{
                     sx: {

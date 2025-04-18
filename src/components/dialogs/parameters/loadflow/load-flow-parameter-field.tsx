@@ -18,9 +18,9 @@ import {
     SwitchInput,
     TextInput,
 } from '@gridsuite/commons-ui';
-import { styles } from '../parameters';
 import LineSeparator from 'components/dialogs/commons/line-separator';
-import { TYPES } from './constants';
+import { ParameterType } from '../parameters.type';
+import { styles } from '../parameters-style';
 
 interface LoadFlowParameterFieldProps {
     id: string;
@@ -41,19 +41,19 @@ const LoadFlowParameterField: FunctionComponent<LoadFlowParameterFieldProps> = (
 }) => {
     const renderField = () => {
         switch (type) {
-            case TYPES.STRING:
+            case ParameterType.STRING:
                 return possibleValues ? (
                     <MuiSelectInput name={`${id}.${name}`} options={possibleValues} size="small" />
                 ) : (
                     <TextInput name={`${id}.${name}`} />
                 );
-            case TYPES.BOOLEAN:
+            case ParameterType.BOOLEAN:
                 return <SwitchInput name={`${id}.${name}`} />;
-            case TYPES.COUNTRIES:
+            case ParameterType.COUNTRIES:
                 return <CountriesInput name={`${id}.${name}`} label={'descLfCountries'} />;
-            case TYPES.DOUBLE:
+            case ParameterType.DOUBLE:
                 return <FloatInput name={`${id}.${name}`} />;
-            case TYPES.STRING_LIST:
+            case ParameterType.STRING_LIST:
                 return possibleValues ? (
                     <AutocompleteInput
                         name={`${id}.${name}`}
@@ -71,7 +71,7 @@ const LoadFlowParameterField: FunctionComponent<LoadFlowParameterFieldProps> = (
                 ) : (
                     <MultipleAutocompleteInput name={`${id}.${name}`} size="small" />
                 );
-            case TYPES.INTEGER:
+            case ParameterType.INTEGER:
                 return <IntegerInput name={`${id}.${name}`} />;
             default:
                 return null;

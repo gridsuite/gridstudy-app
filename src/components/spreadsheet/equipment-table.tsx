@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, Ref, useCallback, useMemo } from 'react';
+import { FunctionComponent, RefObject, useCallback, useMemo, useRef } from 'react';
 import { useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -18,12 +18,29 @@ import {
     GridOptions,
     RowStyle,
 } from 'ag-grid-community';
-import { CurrentTreeNode } from '../../redux/reducer';
+import { AppState } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
+import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
+import { CalculationRowType } from './utils/calculation.type';
+import { isCalculationRow } from './utils/calculation-utils';
+import { useSelector } from 'react-redux';
 
 const DEFAULT_ROW_HEIGHT = 28;
+const MAX_CLICK_DURATION = 200;
 
-const getRowId = (params: GetRowIdParams<{ id: string }>) => params.data.id;
+interface RowData {
+    id: string;
+    rowType?: string;
+    calculationType?: string;
+}
+
+// Handle row IDs for regular and calculation rows
+const getRowId = (params: GetRowIdParams<RowData>) => {
+    if (params.data.rowType) {
+        return params.data.rowType + (params.data.calculationType ?? '');
+    }
+    return params.data.id;
+};
 
 const defaultColDef: ColDef = {
     filter: true,
@@ -36,49 +53,74 @@ const defaultColDef: ColDef = {
 };
 
 interface EquipmentTableProps {
-    rowData: unknown[];
+    rowData: unknown[] | undefined;
     columnData: ColDef[];
-    gridRef: Ref<any> | undefined;
-    studyUuid: string;
+    gridRef: RefObject<any> | undefined;
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
     handleRowDataUpdated: () => void;
-    fetched: boolean;
+    isFetching: boolean | undefined;
     shouldHidePinnedHeaderRightBorder: boolean;
     onRowClicked?: (event: RowClickedEvent) => void;
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
+    onModelUpdated: GridOptions['onModelUpdated'];
+    isDataEditable: boolean;
 }
-
-const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     rowData,
     columnData,
     gridRef,
-    studyUuid,
     currentNode,
     handleColumnDrag,
     handleRowDataUpdated,
-    fetched,
+    isFetching,
     shouldHidePinnedHeaderRightBorder,
     onRowClicked,
     isExternalFilterPresent,
     doesExternalFilterPass,
+    onModelUpdated,
+    isDataEditable,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
+    const clickTimeRef = useRef<number | null>(null);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {
+            const isRootNode = currentNode?.type === NodeType.ROOT;
+            const cursorStyle = isRootNode || !isDataEditable ? 'initial' : 'pointer';
+
+            if (isCalculationRow(params.data?.rowType)) {
+                if (params.data?.rowType === CalculationRowType.CALCULATION) {
+                    return {
+                        backgroundColor: theme.palette.background.default,
+                        fontWeight: 'bold',
+                    };
+                }
+
+                if (params.data?.rowType === CalculationRowType.CALCULATION_BUTTON) {
+                    return {
+                        borderTop: '1px solid ' + theme.palette.divider,
+                        backgroundColor: theme.palette.action.hover,
+                    };
+                }
+            }
+
             if (params.rowIndex === 0 && params.node.rowPinned === 'top') {
                 return {
                     borderTop: '1px solid ' + theme.palette.primary.main,
                     borderBottom: '1px solid ' + theme.palette.primary.main,
+                    cursor: cursorStyle,
                 };
             }
+            return {
+                cursor: cursorStyle,
+            };
         },
-        [theme.palette.primary.main]
+        [currentNode?.type, theme, isDataEditable]
     );
 
     const gridContext = useMemo(
@@ -90,28 +132,37 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode, studyUuid, theme]
     );
 
-    const rowsToShow = useMemo(() => (fetched && rowData.length > 0 ? rowData : []), [rowData, fetched]);
-
-    const message = useMemo(() => {
-        if (!fetched) {
-            return intl.formatMessage({ id: 'LoadingRemoteData' });
+    const rowsToShow = useMemo(() => {
+        if (isFetching !== undefined && rowData !== undefined) {
+            return !isFetching && rowData.length > 0 ? rowData : [];
         }
-        if (fetched && rowData.length === 0) {
-            return intl.formatMessage({ id: 'grid.noRowsToShow' });
-        }
+        // If isFetching/rowData are not initialized, dont set [] for rowData to avoid an initial "no rows" state
         return undefined;
-    }, [rowData, fetched, intl]);
+    }, [rowData, isFetching]);
 
-    const loadingOverlayComponentParams = useMemo(
-        () => ({
-            loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),
-        }),
-        [intl]
+    const handleCellMouseDown = useCallback(() => {
+        clickTimeRef.current = Date.now();
+    }, []);
+
+    const handleRowClicked = useCallback(
+        (event: RowClickedEvent) => {
+            // Prevent row click event on pinned rows
+            if (isCalculationRow(event.node.data?.rowType)) {
+                return;
+            }
+            const clickDuration = Date.now() - (clickTimeRef.current ?? 0);
+            if (clickDuration < MAX_CLICK_DURATION) {
+                onRowClicked?.(event);
+            }
+            clickTimeRef.current = null;
+        },
+        [onRowClicked]
     );
 
     return (
         <CustomAGGrid
             ref={gridRef}
+            rowSelection={{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }}
             getRowId={getRowId}
             rowData={rowsToShow}
             debounceVerticalScrollbar={true}
@@ -123,15 +174,14 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             onColumnMoved={handleColumnDrag}
             suppressDragLeaveHidesColumns={true}
             suppressColumnVirtualisation={true}
-            singleClickEdit={true}
-            onRowClicked={(event) => onRowClicked?.(event)}
+            onCellMouseDown={handleCellMouseDown}
+            onRowClicked={handleRowClicked}
+            onModelUpdated={onModelUpdated}
             context={gridContext}
             shouldHidePinnedHeaderRightBorder={shouldHidePinnedHeaderRightBorder}
             rowHeight={DEFAULT_ROW_HEIGHT}
-            overlayNoRowsTemplate={message}
-            loadingOverlayComponent={loadingOverlayComponent}
-            loadingOverlayComponentParams={loadingOverlayComponentParams}
-            showOverlay={true}
+            loading={isFetching}
+            overlayLoadingTemplate={intl.formatMessage({ id: 'LoadingRemoteData' })}
             isExternalFilterPresent={isExternalFilterPresent}
             doesExternalFilterPass={doesExternalFilterPass}
         />

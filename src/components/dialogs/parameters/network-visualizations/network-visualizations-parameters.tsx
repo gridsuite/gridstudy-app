@@ -7,8 +7,8 @@
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Button, Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { styles, TabPanel } from '../parameters';
-import { SingleLineDiagramParameters, useGetAvailableComponentLibraries } from './single-line-diagram-parameters';
+import { TabPanel } from '../parameters';
+import { SingleLineDiagramParameters } from './single-line-diagram-parameters';
 import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
 import { MapParameters } from './map-parameters';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,22 +23,40 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    mergeSx,
     SubmitButton,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { TabValue } from './network-visualizations-utils';
-import { mergeSx } from '../../../utils/functions';
 import { NetworkVisualizationParameters } from './network-visualizations.types';
 import {
     getNetworkVisualizationParameters,
     setNetworkVisualizationParameters,
 } from '../../../../services/study/study-config';
 import { UUID } from 'crypto';
-import { UPDATE_TYPE_HEADER } from '../common/computation-parameters-util';
 import { setUpdateNetworkVisualizationParameters } from '../../../../redux/actions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { fetchNetworkVisualizationsParameters } from '../../../../services/study-config';
+import { User } from 'oidc-client';
+import { getAvailableComponentLibraries } from 'services/study';
+import { styles } from '../parameters-style';
+
+const useGetAvailableComponentLibraries = (user: User | null) => {
+    const [componentLibraries, setComponentLibraries] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (user !== null) {
+            getAvailableComponentLibraries().then((libraries) => {
+                if (libraries != null) {
+                    setComponentLibraries(libraries);
+                }
+            });
+        }
+    }, [user]);
+
+    return componentLibraries;
+};
 
 interface NetworkVisualizationsParametersProps {
     setHaveDirtyFields: (haveDirtyFields: boolean) => void;
@@ -83,8 +101,7 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
     useEffect(() => {
         if (
             studyUpdated.eventData.headers &&
-            studyUpdated.eventData.headers[UPDATE_TYPE_HEADER] ===
-                NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED
+            studyUpdated.eventData.headers.updateType === NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED
         ) {
             getNetworkVisualizationParameters(studyUuid as UUID)
                 .then((params: NetworkVisualizationParameters) => {

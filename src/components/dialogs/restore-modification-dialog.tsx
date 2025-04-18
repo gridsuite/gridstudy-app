@@ -21,7 +21,7 @@ import { deleteModifications, restoreModifications } from 'services/study/networ
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { NetworkModificationMetadata } from 'components/graph/menus/network-modification-menu.type';
+import { NetworkModificationMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { toggleElementFromList } from 'components/utils/utils';
 
 const styles = {
@@ -64,6 +64,7 @@ interface RestoreModificationDialogProps {
 
 const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreModificationDialogProps) => {
     const intl = useIntl();
+
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -116,13 +117,13 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
             onClose={handleClose}
             aria-labelledby="dialog-restore-modifications"
         >
-            <DialogTitle>{intl.formatMessage({ id: 'RestoreModifications' })}</DialogTitle>
+            <DialogTitle>
+                <FormattedMessage id="RestoreModifications" />
+            </DialogTitle>
             <DialogContent>
                 <Box sx={styles.text}>
                     <DialogContentText>
-                        {intl.formatMessage({
-                            id: 'RestoreModificationText',
-                        })}
+                        <FormattedMessage id="RestoreModificationText" />
                     </DialogContentText>
                 </Box>
                 <CheckBoxList
@@ -133,11 +134,7 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
                     getItemLabel={getLabel}
                     onItemClick={(stashedModification) =>
                         setSelectedItems((oldCheckedElements) =>
-                            toggleElementFromList(
-                                stashedModification,
-                                oldCheckedElements,
-                                (v: NetworkModificationMetadata) => v.uuid
-                            )
+                            toggleElementFromList(stashedModification, oldCheckedElements, (v) => v.uuid)
                         )
                     }
                     addSelectAllCheckbox

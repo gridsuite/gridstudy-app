@@ -5,207 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput, MODIFICATION_TYPES, TextInput } from '@gridsuite/commons-ui';
+import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import {
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
     CONNECTIVITY,
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
-    FILTERS_SHUNT_COMPENSATOR_TABLE,
-    ID,
     LOSS_FACTOR,
-    MAX_Q_AT_NOMINAL_V,
     POWER_FACTOR,
-    SHUNT_COMPENSATOR_ID,
-    SHUNT_COMPENSATOR_NAME,
-    SHUNT_COMPENSATOR_SELECTED,
-    VOLTAGE_LEVEL,
 } from '../../../../../utils/field-constants';
-import { percentageTextField, sanitizeString } from '../../../../dialog-utils';
-import { CurrentTreeNode } from '../../../../../../redux/reducer';
+import { percentageTextField } from '../../../../dialog-utils';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
-import yup from '../../../../../utils/yup-config';
-import {
-    getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionSchema,
-} from '../../../../connectivity/connectivity-form-utils';
+
 import FiltersShuntCompensatorTable from './filters-shunt-compensator-table';
-import {
-    LccConverterStationCreationInfos,
-    LccConverterStationFormInfos,
-    ShuntCompensatorFormSchema,
-    ShuntCompensatorInfos,
-} from './lcc-creation.type';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
-import { Connectivity } from '../../../../connectivity/connectivity.type';
-
-export const getLccConverterStationSchema = () =>
-    yup.object().shape({
-        [CONVERTER_STATION_ID]: yup.string().nullable().required(),
-        [CONVERTER_STATION_NAME]: yup.string().nullable(),
-        [LOSS_FACTOR]: yup
-            .number()
-            .nullable()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage')
-            .required(),
-        [POWER_FACTOR]: yup
-            .number()
-            .nullable()
-            .min(-1, 'powerFactorMinValueError')
-            .max(1, 'powerFactorMaxValueError')
-            .required(),
-        [FILTERS_SHUNT_COMPENSATOR_TABLE]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [SHUNT_COMPENSATOR_ID]: yup.string().nullable().required(),
-                    [SHUNT_COMPENSATOR_NAME]: yup.string().nullable(),
-                    [MAX_Q_AT_NOMINAL_V]: yup
-                        .number()
-                        .nullable()
-                        .min(0, 'qMaxAtNominalVMustBeGreaterThanZero')
-                        .required(),
-                    [SHUNT_COMPENSATOR_SELECTED]: yup.boolean().nullable(),
-                })
-            )
-            .nullable(),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
-    });
-
-export const getEmptyShuntCompensatorOnSideFormData = () => ({
-    [SHUNT_COMPENSATOR_ID]: null,
-    [SHUNT_COMPENSATOR_NAME]: '',
-    [MAX_Q_AT_NOMINAL_V]: null,
-    [SHUNT_COMPENSATOR_SELECTED]: true,
-});
-
-export const getEmptyFiltersShuntCompensatorTableFormData = (count = 0) =>
-    Array.from({ length: count }, () => getEmptyShuntCompensatorOnSideFormData());
-
-export function getLccConverterStationEmptyFormData() {
-    return {
-        [CONVERTER_STATION_ID]: null,
-        [CONVERTER_STATION_NAME]: null,
-        [LOSS_FACTOR]: null,
-        [POWER_FACTOR]: null,
-        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getEmptyFiltersShuntCompensatorTableFormData(),
-        ...getConnectivityWithPositionEmptyFormData(),
-    };
-}
-
-const getShuntCompensatorOnSideFormData = (
-    shuntCompensatorInfos?: ShuntCompensatorInfos[]
-): ShuntCompensatorFormSchema[] => {
-    return (
-        shuntCompensatorInfos?.map((shuntCp) => ({
-            [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
-            [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
-            [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
-            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? true,
-        })) ?? []
-    );
-};
-
-const getShuntCompensatorOnSideCreateData = (
-    shuntCompensatorInfos?: ShuntCompensatorFormSchema[]
-): ShuntCompensatorInfos[] => {
-    return (
-        shuntCompensatorInfos?.map((shuntCp) => ({
-            id: shuntCp[SHUNT_COMPENSATOR_ID],
-            name: shuntCp[SHUNT_COMPENSATOR_NAME],
-            maxQAtNominalV: shuntCp[MAX_Q_AT_NOMINAL_V],
-            connectedToHvdc: shuntCp[SHUNT_COMPENSATOR_SELECTED],
-        })) ?? []
-    );
-};
-
-export const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos?: ShuntCompensatorInfos[]) => {
-    return (
-        shuntCompensatorInfos?.map((shuntCp) => ({
-            [SHUNT_COMPENSATOR_ID]: shuntCp.id + '(1)',
-            [SHUNT_COMPENSATOR_NAME]: shuntCp?.name ?? '',
-            [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
-            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? true,
-        })) ?? []
-    );
-};
-
-export function getLccConverterStationFromSearchCopy(lccConverterStationFormInfos: LccConverterStationFormInfos) {
-    return {
-        [CONVERTER_STATION_ID]: lccConverterStationFormInfos.id + '(1)',
-        [CONVERTER_STATION_NAME]: lccConverterStationFormInfos?.name ?? '',
-        [LOSS_FACTOR]: lccConverterStationFormInfos.lossFactor,
-        [POWER_FACTOR]: lccConverterStationFormInfos.powerFactor,
-        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFromSearchCopy(
-            lccConverterStationFormInfos?.shuntCompensatorsOnSide
-        ),
-        ...getConnectivityFormData({
-            voltageLevelId: lccConverterStationFormInfos?.voltageLevelId,
-            busbarSectionId: lccConverterStationFormInfos?.busOrBusbarSectionId,
-            connectionDirection: lccConverterStationFormInfos.connectablePosition?.connectionDirection,
-            connectionName: lccConverterStationFormInfos.connectablePosition?.connectionName,
-            terminalConnected: lccConverterStationFormInfos?.terminalConnected,
-            connectionPosition: undefined,
-            busbarSectionName: undefined,
-        }),
-    };
-}
-
-export function getLccConverterStationFromEditData(lccConverterStationCreationInfos: LccConverterStationCreationInfos) {
-    return {
-        [CONVERTER_STATION_ID]: lccConverterStationCreationInfos.equipmentId,
-        [CONVERTER_STATION_NAME]: lccConverterStationCreationInfos?.equipmentName ?? '',
-        [LOSS_FACTOR]: lccConverterStationCreationInfos.lossFactor,
-        [POWER_FACTOR]: lccConverterStationCreationInfos.powerFactor,
-        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormData(
-            lccConverterStationCreationInfos?.shuntCompensatorsOnSide
-        ),
-        ...getConnectivityFormData({
-            voltageLevelId: lccConverterStationCreationInfos?.voltageLevelId,
-            busbarSectionId: lccConverterStationCreationInfos?.busOrBusbarSectionId,
-            connectionDirection: lccConverterStationCreationInfos?.connectionDirection,
-            connectionName: lccConverterStationCreationInfos?.connectionName,
-            terminalConnected: lccConverterStationCreationInfos?.terminalConnected,
-            connectionPosition: lccConverterStationCreationInfos?.connectionPosition,
-            busbarSectionName: undefined,
-        }),
-    };
-}
-
-export function getLccConverterStationCreationData(converterStation: {
-    converterStationId: string;
-    converterStationName?: string;
-    lossFactor: number;
-    powerFactor: number;
-    connectivity: Connectivity;
-    shuntCompensatorInfos?: ShuntCompensatorFormSchema[];
-}) {
-    return {
-        type: MODIFICATION_TYPES.LCC_CONVERTER_STATION_CREATION.type,
-        equipmentId: converterStation[CONVERTER_STATION_ID],
-        equipmentName: converterStation[CONVERTER_STATION_NAME],
-        lossFactor: converterStation[LOSS_FACTOR],
-        powerFactor: converterStation[POWER_FACTOR],
-        voltageLevelId: converterStation[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-        busOrBusbarSectionId: converterStation[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-        connectionName: sanitizeString(converterStation[CONNECTIVITY]?.[CONNECTION_NAME]),
-        connectionDirection: converterStation[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-        connectionPosition: converterStation[CONNECTIVITY]?.[CONNECTION_POSITION],
-        terminalConnected: converterStation[CONNECTIVITY]?.[CONNECTED],
-        shuntCompensatorsOnSide: getShuntCompensatorOnSideCreateData(converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE]),
-    };
-}
+import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 
 interface LccConverterStationProps {
     id: string;

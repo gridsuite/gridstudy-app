@@ -12,8 +12,7 @@ import {
     OptionalServicesNames,
     OptionalServicesStatus,
 } from './utils/optional-services';
-import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
-import { StudyView } from './study-pane';
+import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
     AuthenticationRouter,
     CardErrorBoundary,
@@ -30,7 +29,6 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_LANGUAGE,
-    PARAM_LIMIT_REDUCTION,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
@@ -42,20 +40,22 @@ import { fetchConfigParameter, fetchConfigParameters } from '../services/config'
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
-    limitReductionModified,
+    attemptLeaveParametersTab,
+    initTableDefinitions,
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
     selectLanguage,
-    selectLimitReduction,
     selectTheme,
     selectUseName,
+    setAppTabIndex,
     setOptionalServices,
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
 } from '../redux/actions';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
-import { getNetworkVisualizationParameters } from '../services/study/study-config.ts';
+import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
+import { StudyView } from './utils/utils';
 
 const noUserManager = { instance: null, error: null };
 
@@ -64,6 +64,7 @@ const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, St
 const App = () => {
     const { snackError } = useSnackMessage();
 
+    const appTabIndex = useSelector((state) => state.appTabIndex);
     const user = useSelector((state) => state.user);
     const studyUuid = useSelector((state) => state.studyUuid);
     const signInCallbackError = useSelector((state) => state.signInCallbackError);
@@ -77,8 +78,6 @@ const App = () => {
     const dispatch = useDispatch();
 
     const location = useLocation();
-
-    const [tabIndex, setTabIndex] = useState(0);
 
     const updateNetworkVisualizationsParams = useCallback(
         (params) => {
@@ -99,9 +98,6 @@ const App = () => {
                     case PARAM_LANGUAGE:
                         dispatch(selectLanguage(param.value));
                         dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
-                        break;
-                    case PARAM_LIMIT_REDUCTION:
-                        dispatch(selectLimitReduction(param.value));
                         break;
                     case PARAM_DEVELOPER_MODE:
                         dispatch(selectEnableDeveloperMode(param.value === 'true'));
@@ -127,9 +123,6 @@ const App = () => {
                 fetchConfigParameter(eventData.headers['parameterName'])
                     .then((param) => {
                         updateParams([param]);
-                        if (param.name === 'limitReduction') {
-                            dispatch(limitReductionModified(true));
-                        }
                     })
                     .catch((error) =>
                         snackError({
@@ -139,7 +132,7 @@ const App = () => {
                     );
             }
         },
-        [dispatch, snackError, updateParams]
+        [snackError, updateParams]
     );
 
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.CONFIG, {
@@ -218,6 +211,28 @@ const App = () => {
                 });
             });
 
+            const mapColumns = (columns) => {
+                return columns.map((column) => {
+                    return {
+                        ...column,
+                        dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
+                    };
+                });
+            };
+
+            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((config) => {
+                const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
+                    return {
+                        uuid: spreadsheetConfig.id,
+                        index: index,
+                        name: spreadsheetConfig.name,
+                        columns: mapColumns(spreadsheetConfig.columns),
+                        type: spreadsheetConfig.sheetType,
+                    };
+                });
+                dispatch(initTableDefinitions(config.id, tableDefinitions));
+            });
+
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
                     const retrieveOptionalServices = services.map((service) => {
@@ -260,6 +275,7 @@ const App = () => {
                 fetchCommonConfigPromise,
                 fetchAppConfigPromise,
                 fetchOptionalServices,
+                fetchSpreadsheetConfigPromise,
             ])
                 .then(() => {
                     dispatch(setParamsLoaded());
@@ -273,9 +289,19 @@ const App = () => {
         }
     }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams]);
 
-    const onChangeTab = useCallback((newTabIndex) => {
-        setTabIndex(newTabIndex);
-    }, []);
+    const onChangeTab = useCallback(
+        (newTabIndex) => {
+            const parametersTabIndex = STUDY_VIEWS.indexOf(StudyView.PARAMETERS);
+
+            //check if we are leaving the parameters tab
+            if (appTabIndex === parametersTabIndex && newTabIndex !== parametersTabIndex) {
+                dispatch(attemptLeaveParametersTab(newTabIndex));
+            } else {
+                dispatch(setAppTabIndex(newTabIndex));
+            }
+        },
+        [dispatch, appTabIndex]
+    );
 
     return (
         <div
@@ -285,7 +311,7 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar user={user} tabIndex={tabIndex} onChangeTab={onChangeTab} userManager={userManager} />
+            <AppTopBar user={user} onChangeTab={onChangeTab} userManager={userManager} />
             <CardErrorBoundary>
                 <div
                     className="singlestretch-parent"
@@ -307,7 +333,7 @@ const App = () => {
                         <Routes>
                             <Route
                                 path="/studies/:studyUuid"
-                                element={<StudyContainer view={STUDY_VIEWS[tabIndex]} onChangeTab={onChangeTab} />}
+                                element={<StudyContainer view={STUDY_VIEWS[appTabIndex]} onChangeTab={onChangeTab} />}
                             />
                             <Route
                                 path="/sign-in-callback"

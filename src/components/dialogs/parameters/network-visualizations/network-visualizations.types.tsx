@@ -12,8 +12,6 @@ type MapParameters = {
     lineFullPath: boolean;
     lineParallelPath: boolean;
     lineFlowMode: string;
-    lineFlowColorMode: string;
-    lineFlowAlertThreshold: number;
     mapManualRefresh: boolean;
     mapBaseMap: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL;
 };

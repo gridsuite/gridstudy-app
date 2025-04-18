@@ -17,7 +17,7 @@ import {
 import { useCallback, useEffect } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import ByFormulaForm from './by-formula-form';
@@ -52,7 +52,7 @@ function getFieldOrConvertedUnitValue(input, fieldType, convert) {
     }
 }
 
-export function shouldConvert(input1, input2, operator) {
+function shouldConvert(input1, input2, operator) {
     const isNumber1 = input1 && (!isNaN(input1) || !isNaN(parseFloat(input1.replace(',', '.'))));
     const isNumber2 = input2 && (!isNaN(input2) || !isNaN(parseFloat(input2.replace(',', '.'))));
 
@@ -188,7 +188,6 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-by-formula"
                 titleId="ModifyByFormula"
                 open={open}
                 maxWidth={'xl'}

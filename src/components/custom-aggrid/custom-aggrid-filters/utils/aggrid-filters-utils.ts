@@ -5,10 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FILTER_DATA_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { GridApi } from 'ag-grid-community';
 import { addToleranceToFilter } from './filter-tolerance-utils';
 import { FilterConfig } from '../../../../types/custom-aggrid-types';
+import { FILTER_DATA_TYPES } from '../custom-aggrid-filter.type';
+
+export enum BooleanFilterValue {
+    TRUE = 'true',
+    FALSE = 'false',
+    UNDEFINED = 'undefinedValue',
+}
 
 interface FilterModel {
     [colId: string]: any;

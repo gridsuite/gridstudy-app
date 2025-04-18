@@ -9,7 +9,7 @@ import { UUID } from 'crypto';
 import { ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState, StudyUpdatedEventData } from 'redux/reducer';
 import { Chip, darken, lighten, Theme } from '@mui/material';
 import { setOneBusShortcircuitAnalysisDiagram } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
@@ -87,12 +87,14 @@ export function useOneBusShortcircuitAnalysisLoader(
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers['rootNetwork'] !== rootNetworkUuid) {
+            const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
+
+            if (studyUpdatedEventData.headers.rootNetworkUuid !== rootNetworkUuid) {
                 return;
             }
             if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'oneBusShortCircuitAnalysisResult' ||
-                studyUpdatedForce.eventData.headers['updateType'] === 'oneBusShortCircuitAnalysis_failed'
+                studyUpdatedEventData.headers.updateType === 'oneBusShortCircuitAnalysisResult' ||
+                studyUpdatedEventData.headers.updateType === 'oneBusShortCircuitAnalysis_failed'
             ) {
                 resetOneBusShortcircuitAnalysisLoader();
             }

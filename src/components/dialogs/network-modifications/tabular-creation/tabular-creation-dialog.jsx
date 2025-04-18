@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { CREATIONS_TABLE, REACTIVE_CAPABILITY_CURVE, TYPE } from 'components/utils/field-constants';
-import ModificationDialog from 'components/dialogs/commons/modificationDialog';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { createTabularCreation } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
 import TabularCreationForm from './tabular-creation-form';
@@ -138,7 +138,6 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 onClear={clear}
                 disabledSave={disableSave}
                 onSave={onSubmit}
-                aria-labelledby="dialog-tabular-creation"
                 titleId="TabularCreation"
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}

@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UPDATE_TYPE_HEADER } from 'components/study-container';
 import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from './computing-type';
-import { AppState, StudyUpdated } from 'redux/reducer';
+import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
@@ -21,10 +20,10 @@ interface UseComputingStatusProps {
         studyUuid: UUID,
         nodeUuid: UUID,
         currentRootNetworkUuid: UUID,
-        fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string>,
+        fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
         invalidations: string[],
         completions: string[],
-        resultConversion: (x: string) => RunningStatus,
+        resultConversion: (x: string | null) => RunningStatus,
         computingType: ComputingType,
         optionalServiceAvailabilityStatus?: OptionalServicesStatus
     ): void;
@@ -32,12 +31,12 @@ interface UseComputingStatusProps {
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
-    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string>;
+    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>;
 }
 
 function isWorthUpdate(
     studyUpdatedForce: StudyUpdated,
-    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string>,
+    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
     lastUpdateRef: RefObject<LastUpdateProps>,
     nodeUuidRef: RefObject<UUID>,
     rootNetworkUuidRef: RefObject<UUID>,
@@ -45,11 +44,12 @@ function isWorthUpdate(
     currentRootNetworkUuid: UUID,
     invalidations: string[]
 ): boolean {
-    const headers = studyUpdatedForce?.eventData?.headers;
-    const updateType = headers?.[UPDATE_TYPE_HEADER];
-    const node = headers?.['node'];
-    const nodes = headers?.['nodes'];
-    const rootNetworkUuidFromNotification = studyUpdatedForce?.eventData?.headers?.['rootNetwork'];
+    const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
+    const headers = studyUpdatedEventData?.headers;
+    const updateType = headers?.updateType;
+    const node = headers?.node;
+    const nodes = headers?.nodes;
+    const rootNetworkUuidFromNotification = headers?.rootNetworkUuid;
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
     }
@@ -129,7 +129,7 @@ export const useComputingStatus: UseComputingStatusProps = (
         nodeUuidRef.current = nodeUuid;
         rootNetworkUuidRef.current = currentRootNetworkUuid;
         fetcher(studyUuid, nodeUuid, currentRootNetworkUuid)
-            .then((res: string) => {
+            .then((res: string | null) => {
                 if (
                     !canceledRequest &&
                     nodeUuidRef.current === nodeUuid &&

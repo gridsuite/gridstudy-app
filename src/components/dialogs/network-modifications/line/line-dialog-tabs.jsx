@@ -8,8 +8,8 @@
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
-import { LineCreationDialogTab } from './creation/line-creation-dialog';
-import { LineModificationDialogTab } from './modification/line-modification-dialog';
+import { LineCreationDialogTab } from './creation/line-creation-dialog-utils';
+import { LineModificationDialogTab } from './line-utils';
 
 const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex, isModification = false }) => {
     const LineDialogTab = isModification ? LineModificationDialogTab : LineCreationDialogTab;
@@ -37,6 +37,12 @@ const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex, isModifica
                     label={<FormattedMessage id="LimitsTab" />}
                     sx={getTabStyle(tabIndexesWithError, LineDialogTab.LIMITS_TAB)}
                 />
+                {isModification && (
+                    <Tab
+                        label={<FormattedMessage id="StateEstimationTab" />}
+                        sx={getTabStyle(tabIndexesWithError, LineDialogTab.STATE_ESTIMATION_TAB)}
+                    />
+                )}
             </Tabs>
         </Grid>
     );

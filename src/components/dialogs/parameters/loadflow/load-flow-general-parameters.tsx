@@ -7,7 +7,6 @@
 
 import { FunctionComponent, memo } from 'react';
 import { ParameterGroup } from '../widget';
-import { useLoadFlowContext } from './load-flow-parameters-context';
 import LoadFlowParameterField from './load-flow-parameter-field';
 import {
     BALANCE_TYPE,
@@ -25,32 +24,32 @@ import {
     SPECIFIC_PARAMETERS,
     TRANSFORMER_VOLTAGE_CONTROL_ON,
     TWT_SPLIT_SHUNT_ADMITTANCE,
-    TYPES,
     USE_REACTIVE_LIMITS,
     VOLTAGE_INIT_MODE,
     WRITE_SLACK_BUS,
 } from './constants';
-import { ParameterDescription } from './load-flow-parameters-utils';
+import { ParameterType, SpecificParameterInfos } from '../parameters.type';
+import { useLoadFlowContext } from './use-load-flow-context';
 
-const basicParams: ParameterDescription[] = [
+const basicParams: SpecificParameterInfos[] = [
     {
         name: TRANSFORMER_VOLTAGE_CONTROL_ON,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfTransformerVoltageControlOn',
     },
     {
         name: PHASE_SHIFTER_REGULATION_ON,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfPhaseShifterRegulationOn',
     },
     {
         name: DC,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfDC',
     },
     {
         name: BALANCE_TYPE,
-        type: TYPES.STRING,
+        type: ParameterType.STRING,
         label: 'descLfBalanceType',
         possibleValues: [
             { id: 'PROPORTIONAL_TO_GENERATION_P', label: 'descLfBalanceTypeGenP' },
@@ -61,12 +60,12 @@ const basicParams: ParameterDescription[] = [
     },
     {
         name: COUNTRIES_TO_BALANCE,
-        type: TYPES.COUNTRIES,
+        type: ParameterType.COUNTRIES,
         label: 'descLfCountriesToBalance',
     },
     {
         name: CONNECTED_COMPONENT_MODE,
-        type: TYPES.STRING,
+        type: ParameterType.STRING,
         label: 'descLfConnectedComponentMode',
         possibleValues: [
             {
@@ -81,15 +80,15 @@ const basicParams: ParameterDescription[] = [
     },
     {
         name: HVDC_AC_EMULATION,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfHvdcAcEmulation',
     },
 ];
 
-const advancedParams: ParameterDescription[] = [
+const advancedParams: SpecificParameterInfos[] = [
     {
         name: VOLTAGE_INIT_MODE,
-        type: TYPES.STRING,
+        type: ParameterType.STRING,
         label: 'descLfVoltageInitMode',
         possibleValues: [
             {
@@ -108,49 +107,49 @@ const advancedParams: ParameterDescription[] = [
     },
     {
         name: USE_REACTIVE_LIMITS,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfUseReactiveLimits',
     },
     {
         name: TWT_SPLIT_SHUNT_ADMITTANCE,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfTwtSplitShuntAdmittance',
     },
     {
         name: READ_SLACK_BUS,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfReadSlackBus',
     },
     {
         name: WRITE_SLACK_BUS,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfWriteSlackBus',
     },
     {
         name: DISTRIBUTED_SLACK,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfDistributedSlack',
     },
     {
         name: SHUNT_COMPENSATOR_VOLTAGE_CONTROL_ON,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfShuntCompensatorVoltageControlOn',
     },
     {
         name: DC_USE_TRANSFORMER_RATIO,
-        type: TYPES.BOOLEAN,
+        type: ParameterType.BOOLEAN,
         label: 'descLfDcUseTransformerRatio',
     },
     {
         name: DC_POWER_FACTOR,
-        type: TYPES.DOUBLE,
+        type: ParameterType.DOUBLE,
         label: 'descLfDcPowerFactor',
     },
 ];
 
 interface LoadFlowGeneralParametersProps {
     provider: string;
-    specificParams: ParameterDescription[];
+    specificParams: SpecificParameterInfos[];
 }
 
 const LoadFlowGeneralParameters: FunctionComponent<LoadFlowGeneralParametersProps> = ({ provider, specificParams }) => {

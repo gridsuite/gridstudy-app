@@ -8,7 +8,7 @@
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { styles } from '../parameters';
+import { styles } from '../parameters-style';
 
 type DirectoryItemsInputLineProps = {
     label: string;
@@ -18,13 +18,13 @@ type DirectoryItemsInputLineProps = {
     hideErrorMessage: boolean;
 };
 
-const ParameterLineDirectoryItemsInput = ({
+function ParameterLineDirectoryItemsInput({
     label,
     name,
     equipmentTypes,
     elementType,
     hideErrorMessage,
-}: DirectoryItemsInputLineProps) => {
+}: Readonly<DirectoryItemsInputLineProps>) {
     return (
         <Grid item container spacing={1} paddingTop={1} paddingBottom={1}>
             <Grid item xs={7} sx={styles.parameterName}>
@@ -43,6 +43,6 @@ const ParameterLineDirectoryItemsInput = ({
             </Grid>
         </Grid>
     );
-};
+}
 
 export default ParameterLineDirectoryItemsInput;

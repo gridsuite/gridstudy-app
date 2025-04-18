@@ -5,39 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../utils/yup-config';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
-import TimeDelayParameters, {
-    emptyFormData as timeDelayEmptyFormData,
-    formSchema as timeDelayFormSchema,
-    START_TIME,
-    STOP_TIME,
-} from './time-delay-parameters';
-import SolverParameters, {
-    emptyFormData as solverEmptyFormData,
-    formSchema as solverFormSchema,
-    SOLVER_ID,
-    SOLVERS,
-} from './solver-parameters';
-import MappingParameters, {
-    emptyFormData as mappingEmptyFormData,
-    formSchema as mappingFormSchema,
-    MAPPING,
-} from './mapping-parameters';
-import { LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
-import NetworkParameters, {
-    emptyFormData as networkEmptyFormData,
-    formSchema as networkFormSchema,
-    NETWORK,
-} from './network-parameters';
-import CurveParameters, {
-    CURVES,
-    emptyFormData as curveEmptyFormData,
-    formSchema as curveFormSchema,
-} from './curve-parameters';
+import TimeDelayParameters from './time-delay-parameters';
+import SolverParameters from './solver-parameters';
+import MappingParameters from './mapping-parameters';
+import { LabelledButton, TabPanel } from '../parameters';
+import NetworkParameters from './network-parameters';
+import CurveParameters from './curve-parameters';
 import { fetchDynamicSimulationProviders } from '../../../../services/dynamic-simulation';
 import {
     fetchDefaultDynamicSimulationProvider,
@@ -48,38 +25,35 @@ import {
 } from '../../../../services/study/dynamic-simulation';
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
-import { mergeSx } from '../../../utils/functions';
-import { CustomFormProvider, isObjectEmpty, MuiSelectInput, SubmitButton } from '@gridsuite/commons-ui';
+import { CustomFormProvider, isObjectEmpty, mergeSx, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
-import LineSeparator from '../../commons/line-separator';
 import { User } from 'oidc-client';
-import { SolverInfos } from 'services/study/dynamic-simulation.type';
 import { PROVIDER } from '../../../utils/field-constants';
-
-enum TAB_VALUES {
-    TIME_DELAY = 'timeDelay',
-    SOLVER = 'solver',
-    MAPPING = 'mapping',
-    NETWORK = 'network',
-    CURVE = 'curve',
-}
+import ProviderParam from '../common/ProviderParam';
+import { SolverInfos } from 'services/study/dynamic-simulation.type';
+import {
+    Curve,
+    curveEmptyFormData,
+    MAPPING,
+    mappingEmptyFormData,
+    NETWORK,
+    networkEmptyFormData,
+    Solver,
+    solverEmptyFormData,
+    TimeDelay,
+    timeDelayEmptyFormData,
+} from './dynamic-simulation-utils';
+import { useParametersBackend } from '../use-parameters-backend';
+import { styles } from '../parameters-style';
+import { DynamicSimulationForm, formSchema, TAB_VALUES } from './dynamic-simulation.type';
 
 interface DynamicSimulationParametersProps {
     user: User | null;
     setHaveDirtyFields: (haveDirtyFields: boolean) => void;
 }
-
-const formSchema = yup.object().shape({
-    [PROVIDER]: yup.string().required(),
-    [TAB_VALUES.TIME_DELAY]: timeDelayFormSchema,
-    [TAB_VALUES.SOLVER]: solverFormSchema,
-    [TAB_VALUES.MAPPING]: mappingFormSchema,
-    [TAB_VALUES.NETWORK]: networkFormSchema,
-    [TAB_VALUES.CURVE]: curveFormSchema,
-});
 
 const emptyFormData = {
     [PROVIDER]: '',
@@ -89,8 +63,6 @@ const emptyFormData = {
     [TAB_VALUES.NETWORK]: { ...networkEmptyFormData },
     [TAB_VALUES.CURVE]: { ...curveEmptyFormData },
 };
-
-export type DynamicSimulationForm = yup.InferType<typeof formSchema>;
 
 const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParametersProps> = ({
     user,
@@ -176,9 +148,9 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
             updateParameters({
                 [PROVIDER]: newParams.provider,
                 ...newParams.timeDelay,
-                [SOLVER_ID]: newParams.solver.solverId,
+                [Solver.ID]: newParams.solver.solverId,
                 // merge only the current selected solver, others are ignored
-                [SOLVERS]: parameters?.solvers?.reduce(
+                [Solver.SOLVERS]: parameters?.solvers?.reduce(
                     (arr, curr, index) => [
                         ...arr,
                         newParams.solver.solvers?.[index].id === newParams.solver.solverId
@@ -200,12 +172,12 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
             reset({
                 [PROVIDER]: parameters.provider ?? provider,
                 [TAB_VALUES.TIME_DELAY]: {
-                    [START_TIME]: parameters.startTime,
-                    [STOP_TIME]: parameters.stopTime,
+                    [TimeDelay.START_TIME]: parameters.startTime,
+                    [TimeDelay.STOP_TIME]: parameters.stopTime,
                 },
                 [TAB_VALUES.SOLVER]: {
-                    [SOLVER_ID]: parameters.solverId,
-                    [SOLVERS]: parameters.solvers,
+                    [Solver.ID]: parameters.solverId,
+                    [Solver.SOLVERS]: parameters.solvers,
                 },
                 [TAB_VALUES.MAPPING]: {
                     [MAPPING]: parameters.mapping,
@@ -214,7 +186,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                     ...parameters.network,
                 },
                 [TAB_VALUES.CURVE]: {
-                    [CURVES]: parameters.curves,
+                    [Curve.CURVES]: parameters.curves,
                 },
             });
         }
@@ -231,25 +203,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <Grid sx={{ height: '100%' }}>
-                <Grid
-                    xl={8}
-                    container
-                    sx={{
-                        height: 'fit-content',
-                        justifyContent: 'space-between',
-                    }}
-                    paddingRight={2}
-                >
-                    <Grid item xs sx={styles.parameterName}>
-                        <FormattedMessage id="Provider" />
-                    </Grid>
-                    <Grid item container xs sx={styles.controlItem}>
-                        <MuiSelectInput name={PROVIDER} size="small" options={formattedProviders} />
-                    </Grid>
-                </Grid>
-                <Grid container paddingTop={1} paddingRight={2} xl={8}>
-                    <LineSeparator />
-                </Grid>
+                <ProviderParam options={formattedProviders} />
                 <Grid
                     key="dsParameters"
                     sx={mergeSx(styles.scrollableGrid, {
@@ -257,7 +211,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                         paddingTop: 0,
                     })}
                 >
-                    <Grid item width="100%" height="90%">
+                    <Grid item width="100%">
                         <Tabs value={tabIndex} variant="scrollable" onChange={handleTabChange} aria-label="parameters">
                             <Tab
                                 label={<FormattedMessage id="DynamicSimulationTimeDelay" />}

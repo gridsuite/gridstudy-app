@@ -24,32 +24,15 @@ import {
     R,
 } from '../../../../../utils/field-constants';
 import yup from '../../../../../utils/yup-config';
-import { DialogProps } from '@mui/material/Dialog/Dialog';
-import { CurrentTreeNode } from '../../../../../../redux/reducer';
-import { UUID } from 'crypto';
 import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccCreationDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormSchema } from './lcc-creation.type';
-import {
-    getLccHvdcLineEmptyFormData,
-    getLccHvdcLineFromEditData,
-    getLccHvdcLineFromSearchCopy,
-    getLccHvdcLineSchema,
-} from './lcc-hvdc-line';
-import {
-    getLccConverterStationCreationData,
-    getLccConverterStationEmptyFormData,
-    getLccConverterStationFromEditData,
-    getLccConverterStationFromSearchCopy,
-    getLccConverterStationSchema,
-} from './lcc-converter-station';
 import { Property, toModificationProperties } from '../../../common/properties/property-utils';
-import { useFormSearchCopy } from '../../../../form-search-copy-hook';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
-import ModificationDialog from '../../../../commons/modificationDialog';
+import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
+import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ModificationDialog } from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import { useCallback, useEffect, useState } from 'react';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
@@ -61,6 +44,18 @@ import LccCreationDialogHeader from './lcc-creation-dialog-header';
 import LccCreationDialogTabs from './lcc-creation-dialog-tabs';
 import LccCreationForm from './lcc-creation-form';
 import { Connectivity } from '../../../../connectivity/connectivity.type';
+import {
+    getLccConverterStationCreationData,
+    getLccConverterStationEmptyFormData,
+    getLccConverterStationFromEditData,
+    getLccConverterStationFromSearchCopy,
+    getLccConverterStationSchema,
+    getLccHvdcLineEmptyFormData,
+    getLccHvdcLineFromEditData,
+    getLccHvdcLineFromSearchCopy,
+    getLccHvdcLineSchema,
+} from './lcc-creation-utils';
+import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 
 export type LccCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -110,14 +105,9 @@ const formSchema = yup
     })
     .required();
 
-export interface LccCreationDialogProps extends Partial<DialogProps> {
+export type LccCreationDialogProps = NetworkModificationDialogProps & {
     editData: LccCreationInfos;
-    currentNode: CurrentTreeNode;
-    studyUuid: UUID;
-    currentRootNetworkUuid: UUID;
-    isUpdate: boolean;
-    editDataFetchStatus: FetchStatus;
-}
+};
 
 export function LccCreationDialog({
     editData,
@@ -158,16 +148,9 @@ export function LccCreationDialog({
         [reset]
     );
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        toFormValues: fromSearchCopyToFormValues,
-        setFormValues: (data: LccCreationSchemaForm) => {
-            reset(data, { keepDefaultValues: true });
-        },
-        elementType: EQUIPMENT_TYPES.HVDC_LINE,
-    });
+    const searchCopy = useFormSearchCopy((data) => {
+        reset(fromSearchCopyToFormValues(data), { keepDefaultValues: true });
+    }, ExtendedEquipmentType.HVDC_LINE_LCC);
 
     useEffect(() => {
         if (editData) {
@@ -253,10 +236,8 @@ export function LccCreationDialog({
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
-                onClose={clear}
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-lcc"
                 titleId="CreateLcc"
                 subtitle={headerAndTabs}
                 searchCopy={searchCopy}
@@ -280,7 +261,7 @@ export function LccCreationDialog({
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     onSelectionChange={searchCopy.handleSelectionChange}
-                    equipmentType={EquipmentType.HVDC_LINE}
+                    equipmentType={ExtendedEquipmentType.HVDC_LINE_LCC}
                     currentNodeUuid={currentNodeUuid}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />

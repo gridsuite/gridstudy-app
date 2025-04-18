@@ -9,9 +9,9 @@ import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } f
 import { NodeInsertModes } from './nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
-import { CurrentTreeNode, isReactFlowRootNodeData } from '../../redux/reducer';
 import { Edge } from '@xyflow/react';
-import { AbstractNode, NetworkModificationNodeData, RootNodeData } from './tree-node.type';
+import { AbstractNode, CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from './tree-node.type';
+import { isReactFlowRootNodeData } from '../../redux/utils';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes

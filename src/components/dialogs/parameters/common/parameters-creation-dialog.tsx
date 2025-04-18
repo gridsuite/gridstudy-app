@@ -6,9 +6,17 @@
  */
 
 import { FieldValues, UseFormGetValues } from 'react-hook-form';
-import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
-import { createParameter } from 'services/explore';
-import ElementCreationDialog, { IElementCreationDialog } from '../../element-creation-dialog';
+import {
+    ElementSaveDialog,
+    ElementType,
+    IElementCreationDialog,
+    IElementUpdateDialog,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { createParameter, updateParameter } from 'services/explore';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
+import { useCallback } from 'react';
 
 interface CreateParameterProps<T extends FieldValues> {
     open: boolean;
@@ -25,27 +33,74 @@ const CreateParameterDialog = <T extends FieldValues>({
     parameterType,
     parameterFormatter,
 }: CreateParameterProps<T>) => {
-    const { snackError } = useSnackMessage();
-    const saveParameters = ({ name, description, folderId }: IElementCreationDialog) => {
-        createParameter(parameterFormatter(parameterValues()), name, parameterType, description, folderId).catch(
-            (error) => {
+    const { snackError, snackInfo } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+
+    const saveParameters = useCallback(
+        (element: IElementCreationDialog) => {
+            createParameter(
+                parameterFormatter(parameterValues()),
+                element.name,
+                parameterType,
+                element.description,
+                element.folderId
+            )
+                .then(() => {
+                    snackInfo({
+                        headerId: 'paramsCreationMsg',
+                        headerValues: {
+                            directory: element.folderName,
+                        },
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsCreatingError',
+                    });
+                });
+        },
+        [parameterFormatter, parameterType, parameterValues, snackError, snackInfo]
+    );
+
+    const updateParameters = ({ id, name, description, elementFullPath }: IElementUpdateDialog) => {
+        updateParameter(id, parameterFormatter(parameterValues()), name, parameterType, description)
+            .then(() => {
+                snackInfo({
+                    headerId: 'paramsUpdateMsg',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
+                });
+            })
+            .catch((error) => {
                 console.error(error);
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'paramsCreatingError',
+                    headerId: 'paramsUpdatingError',
+                    headerValues: {
+                        item: elementFullPath,
+                    },
                 });
-            }
-        );
+            });
     };
 
     return (
-        <ElementCreationDialog
-            open={open}
-            onClose={onClose}
-            onSave={saveParameters}
-            type={parameterType}
-            titleId={'saveParameters'}
-        />
+        studyUuid && (
+            <ElementSaveDialog
+                open={open}
+                onClose={onClose}
+                onSave={saveParameters}
+                OnUpdate={updateParameters}
+                type={parameterType}
+                titleId={'saveParameters'}
+                studyUuid={studyUuid}
+                selectorTitleId="showSelectParameterDialog"
+                createLabelId="createParameterLabel"
+                updateLabelId="updateParameterLabel"
+            />
+        )
     );
 };
 

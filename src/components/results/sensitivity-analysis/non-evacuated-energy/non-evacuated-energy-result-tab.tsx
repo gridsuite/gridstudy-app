@@ -8,7 +8,6 @@
 import { FunctionComponent, SyntheticEvent, useState } from 'react';
 import { NonEvacuatedEnergyTabProps } from './non-evacuated-energy-result.type';
 import { NonEvacuatedEnergyResult } from './non-evacuated-energy-result';
-import { useNodeData } from '../../../study-container';
 import { fetchNonEvacuatedEnergyResult } from '../../../../services/study/non-evacuated-energy';
 
 import { useOpenLoaderShortWait } from '../../../dialogs/commons/handle-loader';
@@ -21,6 +20,7 @@ import { AppState } from '../../../../redux/reducer';
 import { ComputingType } from '../../../computing-status/computing-type';
 import { RESULTS_LOADING_DELAY } from '../../../network/constants';
 import { nonEvacuatedEnergyResultInvalidations } from '../../../computing-status/use-all-computing-status';
+import { useNodeData } from 'components/use-node-data';
 
 const styles = {
     container: {
@@ -54,13 +54,13 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTa
         (state: AppState) => state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
     );
 
-    const [nonEvacuatedEnergyResult] = useNodeData(
+    const { result: nonEvacuatedEnergyResult } = useNodeData({
         studyUuid,
         nodeUuid,
-        currentRootNetworkUuid,
-        fetchNonEvacuatedEnergyResult,
-        nonEvacuatedEnergyResultInvalidations
-    );
+        rootNetworkUuid: currentRootNetworkUuid,
+        fetcher: fetchNonEvacuatedEnergyResult,
+        invalidations: nonEvacuatedEnergyResultInvalidations,
+    });
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
         setTabIndex(newTabIndex);

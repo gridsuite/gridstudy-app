@@ -38,6 +38,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAna
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const [faultResult, setFaultResult] = useState<SCAFaultResult>();
     const [feederResults, setFeederResults] = useState<SCAFeederResult[]>();
@@ -51,6 +52,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAna
         fetchShortCircuitAnalysisResult({
             studyUuid,
             currentNodeUuid: currentNode?.id,
+            currentRootNetworkUuid: currentRootNetworkUuid!,
             type: ShortCircuitAnalysisType.ONE_BUS,
         }).then((result: SCAResult | null) => {
             if (result?.faults.length !== 1) {
@@ -64,7 +66,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAna
             }
             setFaultResult(result?.faults[0]);
         });
-    }, [snackError, studyUuid, currentNode, oneBusShortCircuitAnalysisStatus]);
+    }, [snackError, studyUuid, currentNode, currentRootNetworkUuid, oneBusShortCircuitAnalysisStatus]);
 
     useEffect(() => {
         if (!faultResult || !feederResults) {

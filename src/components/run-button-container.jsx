@@ -14,19 +14,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import RunningStatus from './utils/running-status';
 import ComputingType from './computing-status/computing-type';
 
-import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from '../utils/config-params';
-import { useParameterState } from './dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
-import ContingencyListSelector from './dialogs/contingency-list-selector';
-import DynamicSimulationParametersSelector, {
-    checkDynamicSimulationParameters,
-} from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+import { DynamicSimulationParametersSelector } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+import { ContingencyListSelector } from './dialogs/contingency-list-selector';
 
 import { startSensitivityAnalysis, stopSensitivityAnalysis } from '../services/study/sensitivity-analysis';
 import { startNonEvacuatedEnergy, stopNonEvacuatedEnergy } from '../services/study/non-evacuated-energy';
-import { startDynamicSimulation, stopDynamicSimulation } from '../services/study/dynamic-simulation';
+import {
+    fetchDynamicSimulationParameters,
+    startDynamicSimulation,
+    stopDynamicSimulation,
+} from '../services/study/dynamic-simulation';
 import { startLoadFlow, stopLoadFlow } from '../services/study/loadflow';
 import { startSecurityAnalysis, stopSecurityAnalysis } from '../services/study/security-analysis';
 import { startShortCircuitAnalysis, stopShortCircuitAnalysis } from '../services/study/short-circuit-analysis';
@@ -35,7 +36,17 @@ import { startStateEstimation, stopStateEstimation } from '../services/study/sta
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { startDynamicSecurityAnalysis, stopDynamicSecurityAnalysis } from '../services/study/dynamic-security-analysis';
+import { useParameterState } from './dialogs/parameters/use-parameters-state';
 
+const checkDynamicSimulationParameters = (studyUuid) => {
+    return fetchDynamicSimulationParameters(studyUuid).then((params) => {
+        // check mapping configuration
+        const mappings = params.mappings.map((elem) => elem.name);
+        const mapping = params.mapping;
+        const isMappingValid = mappings.includes(mapping);
+        return isMappingValid;
+    });
+};
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
@@ -70,8 +81,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isModificationsInProgress = useSelector((state) => state.isModificationsInProgress);
-
-    const limitReductionParam = useSelector((state) => Number(state[PARAM_LIMIT_REDUCTION]));
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
@@ -163,13 +172,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.LOAD_FLOW,
                         null,
-                        () =>
-                            startLoadFlow(
-                                studyUuid,
-                                currentNode?.id,
-                                currentRootNetworkUuid,
-                                limitReductionParam / 100.0
-                            ),
+                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
                         'startLoadFlowError'
@@ -330,15 +333,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 },
             },
         };
-    }, [
-        dispatch,
-        snackError,
-        startComputationAsync,
-        studyUuid,
-        limitReductionParam,
-        currentNode?.id,
-        currentRootNetworkUuid,
-    ]);
+    }, [dispatch, snackError, startComputationAsync, studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(
@@ -427,7 +422,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 open={showContingencyListSelector}
                 onClose={() => setShowContingencyListSelector(false)}
                 onStart={handleStartSecurityAnalysis}
-                studyUuid={studyUuid}
             />
             {!disabled && showDynamicSimulationParametersSelector && (
                 <DynamicSimulationParametersSelector

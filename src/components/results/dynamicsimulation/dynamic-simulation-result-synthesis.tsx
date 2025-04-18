@@ -8,7 +8,6 @@
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo } from 'react';
-import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
 import { MEDIUM_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { useSelector } from 'react-redux';
@@ -16,12 +15,12 @@ import ComputingType from '../../computing-status/computing-type';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { StatusCellRender } from '../common/result-cell-renderers';
+import { COL_STATUS, StatusCellRender } from '../common/result-cell-renderers';
 import { UUID } from 'crypto';
-import RunningStatus from '../../utils/running-status';
 import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
+import { useNodeData } from 'components/use-node-data';
 
 const styles = {
     loader: {
@@ -50,29 +49,31 @@ const DynamicSimulationResultSynthesis = memo(
     ({ nodeUuid, studyUuid, currentRootNetworkUuid }: DynamicSimulationResultSynthesisProps) => {
         const intl = useIntl();
 
-        const [result, isLoading] = useNodeData(
+        const { result, isLoading } = useNodeData({
             studyUuid,
             nodeUuid,
-            currentRootNetworkUuid,
-            fetchDynamicSimulationStatus,
-            dynamicSimulationResultInvalidations,
-            null,
-            (status: RunningStatus) =>
-                status && [
-                    {
-                        status,
-                    },
-                ]
-        );
+            rootNetworkUuid: currentRootNetworkUuid,
+            fetcher: fetchDynamicSimulationStatus,
+            invalidations: dynamicSimulationResultInvalidations,
+            resultConverter: (status: string | null) => {
+                return status === null
+                    ? undefined
+                    : [
+                          {
+                              [COL_STATUS]: status,
+                          },
+                      ];
+            },
+        });
 
         const columnDefs = useMemo(
             () => [
                 makeAgGridCustomHeaderColumn({
                     headerName: intl.formatMessage({
-                        id: 'status',
+                        id: COL_STATUS,
                     }),
-                    colId: 'status',
-                    field: 'status',
+                    colId: COL_STATUS,
+                    field: COL_STATUS,
                     width: MEDIUM_COLUMN_WIDTH,
                     cellRenderer: StatusCellRender,
                 }),

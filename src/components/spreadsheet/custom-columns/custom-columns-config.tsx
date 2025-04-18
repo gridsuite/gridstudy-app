@@ -6,9 +6,10 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Badge, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import AddColumnRightLight from 'images/add_column_right_light.svg?react';
 import AddColumnRightDark from 'images/add_column_right_dark.svg?react';
+import AddColumnRightDisabled from 'images/add_column_right_disabled.svg?react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { LIGHT_THEME, useStateBoolean } from '@gridsuite/commons-ui';
@@ -17,30 +18,31 @@ import { spreadsheetStyles } from '../utils/style';
 
 export type CustomColumnsConfigProps = {
     tabIndex: number;
+    disabled?: boolean;
 };
 
-export default function CustomColumnsConfig({ tabIndex }: Readonly<CustomColumnsConfigProps>) {
+export default function CustomColumnsConfig({ tabIndex, disabled }: Readonly<CustomColumnsConfigProps>) {
     const dialogOpen = useStateBoolean(false);
-    const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tabIndex]
-    );
     const theme = useSelector((state: AppState) => state.theme);
+
+    const getAddColumnIcon = () => {
+        if (disabled) {
+            return <AddColumnRightDisabled />;
+        }
+        return theme === LIGHT_THEME ? <AddColumnRightLight /> : <AddColumnRightDark />;
+    };
 
     return (
         <>
-            <Badge
-                color="secondary"
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                badgeContent={customColumnsDefinitions.length}
+            <Button
+                sx={spreadsheetStyles.spreadsheetButton}
+                size={'small'}
+                onClick={dialogOpen.setTrue}
+                disabled={disabled}
             >
-                <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={dialogOpen.setTrue}>
-                    {theme === LIGHT_THEME ? <AddColumnRightLight /> : <AddColumnRightDark />}
-                    <FormattedMessage id="spreadsheet/custom_column/add_columns" />
-                </Button>
-            </Badge>
+                {getAddColumnIcon()}
+                <FormattedMessage id="spreadsheet/custom_column/add_columns" />
+            </Button>
 
             <CustomColumnDialog tabIndex={tabIndex} open={dialogOpen} />
         </>

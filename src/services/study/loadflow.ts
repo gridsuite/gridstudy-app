@@ -8,14 +8,7 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { GlobalFilter } from '../../components/results/loadflow/load-flow-result-tab';
-import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
-
-interface QueryParams {
-    sort?: SortConfig[];
-    filters: FilterConfig[] | null;
-    globalFilters?: GlobalFilter;
-}
+import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
 
 export function getDefaultLoadFlowProvider() {
     console.info('get default load flow provier');
@@ -59,26 +52,17 @@ export function setLoadFlowProvider(studyUuid: UUID, newProvider: string) {
     });
 }
 
-export function startLoadFlow(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    limitReduction: number
-) {
+export function startLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         'Running loadflow on ' +
             studyUuid +
             ' on root network ' +
             currentRootNetworkUuid +
             ' and node ' +
-            currentNodeUuid +
-            ' with limit reduction ' +
-            limitReduction
+            currentNodeUuid
     );
     const startLoadFlowUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/loadflow/run?limitReduction=' +
-        limitReduction.toString();
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
@@ -109,7 +93,7 @@ export function fetchLoadFlowResult(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    queryParams: QueryParams
+    queryParams: ResultsQueryParams
 ) {
     console.info(
         `Fetching loadflow result on '${studyUuid}', node '${currentNodeUuid}' and current root network '${currentRootNetworkUuid}' ...`
@@ -134,7 +118,7 @@ export function fetchLimitViolations(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    queryParams: QueryParams
+    queryParams: ResultsQueryParams
 ) {
     console.info(`Fetching limit violations ...`);
     const { sort, filters, globalFilters } = queryParams || {};

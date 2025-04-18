@@ -5,20 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Checkbox, Tooltip } from '@mui/material';
+import { Box, Checkbox, Tooltip, IconButton, Menu, MenuItem } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { ReactNode, useEffect, useRef, useState } from 'react';
+import CalculateIcon from '@mui/icons-material/Calculate';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCalculationSelections } from '../../../redux/actions';
+import { AppState } from '../../../redux/reducer';
 
-import { mergeSx } from '../../utils/functions';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
-import { IntlShape } from 'react-intl';
 import { ICellRendererParams } from 'ag-grid-community';
 import { CustomCellRendererProps } from 'ag-grid-react';
+import { mergeSx } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
+import { CalculationRowType, CalculationType } from './calculation.type';
+import { isCalculationRow } from './calculation-utils';
 
 const styles = {
     tableCell: (theme: Theme) => ({
         fontSize: 'small',
-        cursor: 'initial',
+        cursor: 'inherit',
         display: 'flex',
         '&:before': {
             content: '""',
@@ -36,9 +42,19 @@ const styles = {
     numericValue: {
         marginLeft: 'inherit',
     },
+    menuItemLabel: {
+        marginLeft: 1,
+    },
+    calculationButton: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        padding: 0,
+        minWidth: 'auto',
+        minHeight: 'auto',
+    },
 };
-
-export const NA_Value = 'N/A';
 
 export const BooleanCellRenderer = (props: any) => {
     const isChecked = props.value;
@@ -72,7 +88,7 @@ const formatNumericCell = (value: number, fractionDigits?: number) => {
     return { value: value.toFixed(fractionDigits ?? 2), tooltip: value?.toString() };
 };
 
-export const formatCell = (props: any) => {
+const formatCell = (props: any) => {
     let value = props?.valueFormatted || props.value;
     let tooltipValue = undefined;
     // we use valueGetter only if value is not defined
@@ -88,25 +104,6 @@ export const formatCell = (props: any) => {
         value = null;
     }
     return { value: value, tooltip: tooltipValue };
-};
-
-export const convertDuration = (duration: number) => {
-    if (!duration || isNaN(duration)) {
-        return '';
-    }
-
-    const minutes = Math.floor(duration / 60);
-    const seconds = duration % 60;
-
-    if (seconds === 0) {
-        return minutes + ' mn';
-    }
-
-    if (minutes === 0) {
-        return seconds + ' s';
-    }
-
-    return `${minutes}' ${seconds}"`;
 };
 
 export interface NumericCellRendererProps extends CustomCellRendererProps {
@@ -230,19 +227,6 @@ export const MessageLogCellRenderer = ({
     );
 };
 
-export const PropertiesCellRenderer = (props: any) => {
-    const cellValue = formatCell(props);
-    // different properties are seperated with |
-    // tooltip message contains properties in seperated lines
-    return (
-        <Box sx={mergeSx(styles.tableCell)}>
-            <Tooltip title={<div style={{ whiteSpace: 'pre-line' }}>{cellValue.value?.replaceAll(' | ', '\n')}</div>}>
-                <Box sx={styles.overflow}>{cellValue.value}</Box>
-            </Tooltip>
-        </Box>
-    );
-};
-
 export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNode; tooltipValue: ReactNode } }) => {
     const { cellValue, tooltipValue } = value ?? {};
 
@@ -259,6 +243,114 @@ export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNo
     );
 };
 
-export const formatNAValue = (value: string, intl: IntlShape): string => {
-    return value === NA_Value ? intl.formatMessage({ id: 'Undefined' }) : value;
+export const RowIndexCellRenderer = (props: CustomCellRendererProps) => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    const intl = useIntl();
+
+    // Get tab UUID from context passed via column definition
+    const tabUuid = props.colDef?.context?.tabUuid || '';
+
+    const dispatch = useDispatch();
+    const calculationSelections = useSelector((state: AppState) => state.calculationSelections);
+
+    // Get selections for current tab
+    const selections = calculationSelections[tabUuid] || [];
+
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleSelectionChange = (option: CalculationType) => {
+        const newSelections = selections.includes(option)
+            ? selections.filter((item) => item !== option)
+            : [...selections, option];
+
+        dispatch(setCalculationSelections(tabUuid, newSelections));
+    };
+
+    if (isCalculationRow(props.data?.rowType)) {
+        if (props.data?.rowType === CalculationRowType.CALCULATION_BUTTON) {
+            return (
+                <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <IconButton size="small" aria-label="calculate" onClick={handleClick} sx={styles.calculationButton}>
+                        <CalculateIcon fontSize="small" />
+                    </IconButton>
+                    <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                        <MenuItem dense onClick={() => handleSelectionChange(CalculationType.AVERAGE)}>
+                            <Checkbox
+                                checked={selections.includes(CalculationType.AVERAGE)}
+                                size="small"
+                                disableRipple
+                            />
+                            <Box sx={styles.menuItemLabel}>
+                                {intl.formatMessage({ id: 'spreadsheet/calculation/average' })}
+                            </Box>
+                        </MenuItem>
+                        <MenuItem dense onClick={() => handleSelectionChange(CalculationType.SUM)}>
+                            <Checkbox checked={selections.includes(CalculationType.SUM)} size="small" disableRipple />
+                            <Box sx={styles.menuItemLabel}>
+                                {intl.formatMessage({ id: 'spreadsheet/calculation/sum' })}
+                            </Box>
+                        </MenuItem>
+                        <MenuItem dense onClick={() => handleSelectionChange(CalculationType.MIN)}>
+                            <Checkbox checked={selections.includes(CalculationType.MIN)} size="small" disableRipple />
+                            <Box sx={styles.menuItemLabel}>
+                                {intl.formatMessage({ id: 'spreadsheet/calculation/min' })}
+                            </Box>
+                        </MenuItem>
+                        <MenuItem dense onClick={() => handleSelectionChange(CalculationType.MAX)}>
+                            <Checkbox checked={selections.includes(CalculationType.MAX)} size="small" disableRipple />
+                            <Box sx={styles.menuItemLabel}>
+                                {intl.formatMessage({ id: 'spreadsheet/calculation/max' })}
+                            </Box>
+                        </MenuItem>
+                    </Menu>
+                </Box>
+            );
+        }
+
+        // Row with calculation results - show appropriate label
+        if (props.data?.rowType === CalculationRowType.CALCULATION) {
+            let label = '';
+            switch (props.data.calculationType) {
+                case CalculationType.SUM:
+                    label = intl.formatMessage({ id: 'spreadsheet/calculation/sum_abbrev' });
+                    break;
+                case CalculationType.AVERAGE:
+                    label = intl.formatMessage({ id: 'spreadsheet/calculation/average_abbrev' });
+                    break;
+                case CalculationType.MIN:
+                    label = intl.formatMessage({ id: 'spreadsheet/calculation/min_abbrev' });
+                    break;
+                case CalculationType.MAX:
+                    label = intl.formatMessage({ id: 'spreadsheet/calculation/max_abbrev' });
+                    break;
+            }
+
+            return (
+                <Box
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                        fontWeight: 'bold',
+                    }}
+                >
+                    {label}
+                </Box>
+            );
+        }
+
+        return null;
+    }
+
+    // For normal rows, return the row index number
+    return props.value;
 };
