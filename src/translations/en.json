@@ -1577,5 +1577,7 @@
     "qmax": "Max Q",
     "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
     "nodeAliasesUpdateError": "An error occured while updating node aliases",
-    "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0"
+    "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
+    "RegulationSection": "Regulation",
+    "TapsSection": "Taps"
 }

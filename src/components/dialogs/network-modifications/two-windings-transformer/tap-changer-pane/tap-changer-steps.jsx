@@ -273,17 +273,16 @@ const TapChangerSteps = ({
 
     return (
         <Grid item container spacing={1}>
-            <Grid item container spacing={2}>
-                <Grid item xs={4}>
-                    {lowTapPositionField}
-                </Grid>
-                <Grid item xs={4}>
-                    {highTapPositionField}
-                </Grid>
-                <Grid item xs={4}>
-                    {tapPositionField}
-                </Grid>
+            <Grid item xs={4}>
+                {lowTapPositionField}
             </Grid>
+            <Grid item xs={4}>
+                {highTapPositionField}
+            </Grid>
+            <Grid item xs={4}>
+                {tapPositionField}
+            </Grid>
+
             <DndTable
                 arrayFormName={`${tapChanger}.${STEPS}`}
                 useFieldArrayOutput={useFieldArrayOutput}
