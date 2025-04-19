@@ -79,16 +79,20 @@ const DynamicSimulationResultTimeSeries = memo(function ({
     };
 
     const handleClose = (index: number) => {
-        return () => {
-            const newTabs = Array.from(tabs);
-            newTabs.splice(index, 1);
-            setSelectedIndex(newTabs.length === 0 ? -1 : index === tabs.length - 1 ? newTabs.length - 1 : index); // get the next item in new tabs
-            setTabs(newTabs);
-            if (newTabs.length === 0) {
-                // reset tabId to zero
-                setTabIncId(0);
-            }
-        };
+        const newTabs = Array.from(tabs);
+        newTabs.splice(index, 1);
+        setSelectedIndex((prevSelectedIndex) => {
+            // IF close a tab after current selected tab or current selected tab its self => keep the same previous selected index
+            // IF close a tab before current selected tab => shift one before previous selected tab
+            const newSelectedIndex = index >= prevSelectedIndex ? prevSelectedIndex : prevSelectedIndex - 1;
+            // IF newSelectedIndex is the last index of previous tabs, take the last index of new tabs
+            return Math.min(newSelectedIndex, newTabs.length - 1);
+        });
+        setTabs(newTabs);
+        if (newTabs.length === 0) {
+            // reset tabId to zero
+            setTabIncId(0);
+        }
     };
 
     const handleDragEnd = (result: DropResult) => {
@@ -129,15 +133,15 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                     <Grid container direction="row" wrap="nowrap">
                         <Grid sx={{ overflow: 'hidden' }}>
                             <DroppableTabs
-                                id={'1'}
+                                id={'curves-tabs'}
                                 value={selectedIndex}
                                 onChange={handleTabsChange}
                                 tabsRender={() =>
                                     tabs.map((tab, index) => {
                                         return (
                                             <DraggableTab
-                                                key={`tab-${tab.id}`}
-                                                id={`tab-${index}`}
+                                                key={`${tab.id}`}
+                                                id={`${tab.id}`}
                                                 index={index}
                                                 value={index}
                                                 label={
@@ -155,7 +159,11 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                                                             })}
                                                             size="small"
                                                             component="span"
-                                                            onClick={handleClose(index)}
+                                                            onClick={(event) => {
+                                                                // prevent DroppableTabs#onChange fired
+                                                                event.stopPropagation();
+                                                                handleClose(index);
+                                                            }}
                                                         >
                                                             <CloseIcon />
                                                         </TooltipIconButton>
