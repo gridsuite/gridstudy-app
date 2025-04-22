@@ -127,18 +127,15 @@ function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Reado
                         xaxis: {
                             ...prev.xaxis,
                             range: [...(prev.xaxis.range ?? [])],
+                            autorange: false, // to force layout refresh with new range
                         },
                     };
 
                     newLayout.xaxis.range[0] = eventData['xaxis.range[0]'];
                     newLayout.xaxis.range[1] = eventData['xaxis.range[1]'];
-                    // force refresh Plot in mutable layout but not work???
-                    // newLayout.datarevision += 1;
 
                     return newLayout;
                 });
-                // force refresh Plot in mutable layout but not work???
-                // setRevision((prev) => prev + 1);
             }
         },
         [groupId, id]
