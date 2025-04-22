@@ -31,7 +31,6 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import ResultsGlobalFilter from '../common/global-filter/results-global-filter';
 import { mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -49,6 +48,7 @@ import {
 import { GlobalFilter, GlobalFilters } from '../common/global-filter/global-filter-types';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { UUID } from 'crypto';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 
 const styles = {
     flexWrapper: {
@@ -295,7 +295,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const globalFilters = useMemo(
         () => (
-            <ResultsGlobalFilter
+            <GlobalFilterSelector
                 onChange={handleGlobalFilterChange}
                 filters={[...voltageLevelsFilter, ...countriesFilter]}
                 filterableEquipmentTypes={filterableEquipmentTypes}

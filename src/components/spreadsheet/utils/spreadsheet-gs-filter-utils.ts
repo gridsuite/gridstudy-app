@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ExpertFilter } from '../../../services/study/filter';
+import { ExpertFilter, SpreadsheetGlobalFilter } from '../../../services/study/filter';
 import yup from '../../utils/yup-config';
 import { FILTERS, ID, NAME, SPREADSHEET_GS_FILTER } from '../../utils/field-constants';
 
@@ -36,6 +36,6 @@ export const initialSpreadsheetGsFilterForm: Record<string, ExpertFilterForm[]> 
     [SPREADSHEET_GS_FILTER]: [],
 };
 
-export const toFormFormat = (input: ExpertFilter[]): Record<string, ExpertFilterForm[]> => ({
+export const toFormFormat = (input: SpreadsheetGlobalFilter[]): Record<string, ExpertFilterForm[]> => ({
     [SPREADSHEET_GS_FILTER]: input.map(({ id, name }) => ({ id, name })),
 });
