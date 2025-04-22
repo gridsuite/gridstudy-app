@@ -23,7 +23,7 @@ import {
     GeneratorCreationInfos,
     GeneratorModificationInfos,
     LCCCreationInfo,
-    LccModificationInfo,
+    LccModificationInfos,
     LineCreationInfo,
     LineModificationInfo,
     LinesAttachToSplitLinesInfo,
@@ -1724,21 +1724,18 @@ export function createLcc({
     });
 }
 export function modifyLcc({
+    lccModificationInfos,
     studyUuid,
     nodeUuid,
-    id,
-    name,
-    nominalV,
-    r,
-    maxP,
-    convertersMode,
-    activePowerSetpoint,
-    lccConverterStation1,
-    lccConverterStation2,
-    properties,
-    isUpdate = false,
     modificationUuid,
-}: LccModificationInfo) {
+    isUpdate,
+}: {
+    lccModificationInfos: LccModificationInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+    modificationUuid: string | null;
+    isUpdate: boolean;
+}) {
     let modifyLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1754,19 +1751,7 @@ export function modifyLcc({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.LCC_MODIFICATION.type,
-            equipmentId: id,
-            equipmentName: toModificationOperation(name),
-            nominalV: toModificationOperation(nominalV),
-            r: toModificationOperation(r),
-            maxP: toModificationOperation(maxP),
-            convertersMode: toModificationOperation(convertersMode),
-            activePowerSetpoint: toModificationOperation(activePowerSetpoint),
-            converterStation1: lccConverterStation1,
-            converterStation2: lccConverterStation2,
-            properties: properties,
-        }),
+        body: JSON.stringify(lccModificationInfos),
     });
 }
 export function createVsc({

@@ -25,11 +25,11 @@ import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import { ReactivePowerAdornment } from '../../../../dialog-utils';
 import TextField from '@mui/material/TextField';
 import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
-import { ShuntCompensatorInfos } from 'services/network-modification-types';
+import { LccShuntCompensatorInfos } from 'services/network-modification-types';
 
 interface ModificationFiltersShuntCompensatorTableProps {
     id: string;
-    previousValues?: ShuntCompensatorInfos[];
+    previousValues?: LccShuntCompensatorInfos[];
 }
 export function ModificationFiltersShuntCompensatorTable({
     id,

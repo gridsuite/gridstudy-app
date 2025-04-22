@@ -23,11 +23,7 @@ import {
     POWER_FACTOR,
     R,
 } from '../../../../../utils/field-constants';
-import {
-    AttributeModification,
-    ShuntCompensatorInfos,
-    ShuntCompensatorModificationInfos,
-} from '../../../../../../services/network-modification-types';
+import { LccShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
 
 export const LccDialogTab = {
     HVDC_LINE_TAB: 0,
@@ -36,26 +32,23 @@ export const LccDialogTab = {
 };
 
 export type LccModificationSchemaForm = {
-    [CONVERTER_STATION_1]: ConverterStationBaseType;
-    [CONVERTER_STATION_2]: ConverterStationBaseType;
-} & Partial<LccBaseSchemaForm>;
-
-export type LccBaseSchemaForm = {
     [EQUIPMENT_NAME]?: string;
     [HVDC_LINE_TAB]: {
-        [NOMINAL_V]: number;
-        [R]: number;
-        [MAX_P]: number;
-        [CONVERTERS_MODE]: string;
-        [ACTIVE_POWER_SETPOINT]: number;
+        [NOMINAL_V]?: number;
+        [R]?: number;
+        [MAX_P]?: number;
+        [CONVERTERS_MODE]?: string;
+        [ACTIVE_POWER_SETPOINT]?: number;
         [ADDITIONAL_PROPERTIES]?: Property[];
     };
+    [CONVERTER_STATION_1]: ConverterStationType;
+    [CONVERTER_STATION_2]: ConverterStationType;
 };
 
-interface ConverterStationBaseType {
+interface ConverterStationType {
     [CONVERTER_STATION_NAME]?: string;
-    [LOSS_FACTOR]: number;
-    [POWER_FACTOR]: number;
+    [LOSS_FACTOR]?: number;
+    [POWER_FACTOR]?: number;
     [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorFormSchema[];
 }
 
@@ -74,21 +67,6 @@ export interface LccCreationInfos {
     properties?: Property[];
 }
 
-export interface LccModificationInfos {
-    uuid: string;
-    equipmentType: EQUIPMENT_TYPES;
-    equipmentId: string;
-    equipmentName: AttributeModification<string> | null;
-    nominalV: AttributeModification<number> | null;
-    r: AttributeModification<number> | null;
-    maxP: AttributeModification<number> | null;
-    convertersMode: AttributeModification<string> | null;
-    activePowerSetpoint: AttributeModification<number> | null;
-    converterStation1: LccConverterStationModificationInfos;
-    converterStation2: LccConverterStationModificationInfos;
-    properties?: Property[];
-}
-
 export interface LccConverterStationCreationInfos {
     equipmentId: string;
     equipmentName: string | null;
@@ -100,27 +78,29 @@ export interface LccConverterStationCreationInfos {
     connectionDirection: string | null;
     connectionName: string | null;
     connectionPosition: number | null;
-    shuntCompensatorsOnSide: ShuntCompensatorInfos[];
-}
-
-export interface LccConverterStationModificationInfos {
-    equipmentId: string;
-    equipmentName: AttributeModification<string> | null;
-    lossFactor: AttributeModification<number> | null;
-    powerFactor: AttributeModification<number> | null;
-    shuntCompensatorsOnSide: ShuntCompensatorModificationInfos[];
+    shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
 }
 
 export interface LccConverterStationFormInfos {
     id: string;
-    name: string | null;
+    name: string;
     lossFactor: number;
     powerFactor: number;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
     terminalConnected: boolean;
     connectablePosition: ConnectablePositionInfos;
-    shuntCompensatorsOnSide: ShuntCompensatorInfos[];
+    shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
+}
+
+export interface LccCommonFormInfos {
+    id: string;
+    name: string;
+    nominalV: number;
+    r: number;
+    maxP: number;
+    convertersMode: string;
+    activePowerSetpoint: number;
 }
 
 export interface LccFormInfos {
@@ -141,5 +121,5 @@ export interface ShuntCompensatorFormSchema {
     shuntCompensatorId: string;
     shuntCompensatorName?: string | null;
     maxQAtNominalV: number;
-    connectedToHvdc?: boolean;
+    connectedToHvdc?: boolean | null;
 }

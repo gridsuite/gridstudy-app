@@ -55,11 +55,11 @@ const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Re
                     />
                 }
                 label={
-                    label !== ''
-                        ? intl.formatMessage({
+                    !label
+                        ? ''
+                        : intl.formatMessage({
                               id: label,
                           })
-                        : ''
                 }
             />
             {previousValue && (

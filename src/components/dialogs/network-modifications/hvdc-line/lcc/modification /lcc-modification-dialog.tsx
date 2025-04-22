@@ -20,10 +20,10 @@ import {
     R,
 } from '../../../../../utils/field-constants';
 import yup from '../../../../../utils/yup-config';
-import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ExtendedEquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LccDialogTab, LccFormInfos, LccModificationInfos } from '../common/lcc-type';
+import { LccDialogTab, LccFormInfos, LccModificationSchemaForm } from '../common/lcc-type';
 import { useCallback, useEffect, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { FetchStatus } from 'services/utils.type';
@@ -48,6 +48,9 @@ import { EQUIPMENT_INFOS_TYPES } from '../../../../../utils/equipment-types';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { LccModificationForm } from './lcc-modification-form';
+import { toModificationOperation } from '../../../../../utils/utils';
+import { LccConverterStationModificationInfos, LccModificationInfos } from 'services/network-modification-types';
+import { DeepNullable } from '../../../../../utils/ts-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -90,9 +93,9 @@ export const LccModificationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<any>({
+    const formMethods = useForm<DeepNullable<LccModificationSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<any>(formSchema),
+        resolver: yupResolver<DeepNullable<LccModificationSchemaForm>>(formSchema),
     });
     const { reset, handleSubmit, getValues } = formMethods;
 
@@ -109,7 +112,6 @@ export const LccModificationDialog = ({
             }
 
             reset({
-                [EQUIPMENT_ID]: lccModificationInfos.equipmentId,
                 [EQUIPMENT_NAME]: lccModificationInfos.equipmentName?.value ?? '',
                 [HVDC_LINE_TAB]: getLccHvdcLineFromModificationEditData(lccModificationInfos),
                 [CONVERTER_STATION_1]: getLccConverterStationModificationFromEditData(
@@ -135,7 +137,7 @@ export const LccModificationDialog = ({
             if (!lccToModify) {
                 return;
             }
-            const converterStation1 = getLccConverterStationModificationData(
+            const converterStation1: LccConverterStationModificationInfos = getLccConverterStationModificationData(
                 lccHvdcLine[CONVERTER_STATION_1],
                 lccToModify.lccConverterStation1
             );
@@ -143,21 +145,28 @@ export const LccModificationDialog = ({
                 lccHvdcLine[CONVERTER_STATION_2],
                 lccToModify.lccConverterStation2
             );
+
+            const lccModificationInfos = {
+                type: MODIFICATION_TYPES.LCC_MODIFICATION.type,
+                uuid: editData?.uuid ?? null,
+                equipmentId: lccToModify.id,
+                equipmentName: toModificationOperation(sanitizeString(lccHvdcLine[EQUIPMENT_NAME])),
+                nominalV: toModificationOperation(hvdcLineTab[NOMINAL_V]),
+                r: toModificationOperation(hvdcLineTab[R]),
+                maxP: toModificationOperation(hvdcLineTab[MAX_P]),
+                convertersMode: toModificationOperation(hvdcLineTab[CONVERTERS_MODE]),
+                activePowerSetpoint: toModificationOperation(hvdcLineTab[ACTIVE_POWER_SETPOINT]),
+                converterStation1: converterStation1,
+                converterStation2: converterStation2,
+                properties: toModificationProperties(hvdcLineTab),
+            } satisfies LccModificationInfos;
+
             modifyLcc({
+                lccModificationInfos,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                id: lccToModify.id,
-                name: sanitizeString(lccHvdcLine[EQUIPMENT_NAME]),
-                nominalV: hvdcLineTab[NOMINAL_V],
-                r: hvdcLineTab[R],
-                maxP: hvdcLineTab[MAX_P],
-                convertersMode: hvdcLineTab[CONVERTERS_MODE],
-                activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
-                lccConverterStation1: converterStation1,
-                lccConverterStation2: converterStation2,
-                properties: toModificationProperties(hvdcLineTab),
+                modificationUuid: editData ? editData.uuid : null,
                 isUpdate: !!editData,
-                modificationUuid: editData ? editData.uuid : undefined,
             }).catch((error: any) => {
                 snackError({
                     messageTxt: error.message,
@@ -192,6 +201,7 @@ export const LccModificationDialog = ({
                     true
                 )
                     .then((value: LccFormInfos | null) => {
+                        console.log('onEquipment Id change - value : ', value);
                         if (value) {
                             setLccToModify({ ...value });
                             reset((formValues: any) => ({

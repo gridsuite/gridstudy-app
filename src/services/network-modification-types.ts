@@ -368,18 +368,11 @@ export interface VSCCreationConverterStation {
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
 }
 
-export interface ShuntCompensatorInfos {
+export interface LccShuntCompensatorInfos {
     id: string;
     name?: string | null;
     maxQAtNominalV: number;
-    connectedToHvdc?: boolean;
-}
-
-export interface ShuntCompensatorModificationInfos {
-    id: string;
-    name?: string | null;
-    maxQAtNominalV: number;
-    connectedToHvdc: boolean | null;
+    connectedToHvdc?: boolean | null;
 }
 
 export interface LCCCreationConverterStation {
@@ -394,18 +387,7 @@ export interface LCCCreationConverterStation {
     connectionDirection: string;
     connectionPosition?: number;
     terminalConnected?: boolean;
-    shuntCompensatorsOnSide: ShuntCompensatorInfos[];
-}
-
-export interface LccModificationConverterStation {
-    type: string;
-    equipmentId: string;
-    equipmentName?: AttributeModification<string> | null;
-    lossFactor?: AttributeModification<number> | null;
-    powerFactor?: AttributeModification<number> | null;
-    voltageLevelId?: string;
-    busOrBusbarSectionId?: string;
-    shuntCompensatorsOnSide: ShuntCompensatorInfos[] | null;
+    shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
 }
 
 export interface VSCModificationConverterStation {
@@ -729,21 +711,28 @@ export interface LCCCreationInfo {
     modificationUuid?: string;
 }
 
-export interface LccModificationInfo {
-    studyUuid: string;
-    nodeUuid: UUID;
-    id: string | null;
-    name?: string | null;
-    nominalV: number;
-    r: number;
-    maxP: number;
-    convertersMode: string;
-    activePowerSetpoint: number;
-    lccConverterStation1: LccModificationConverterStation;
-    lccConverterStation2: LccModificationConverterStation;
+export interface LccConverterStationModificationInfos {
+    type: string;
+    equipmentId: string;
+    equipmentName: AttributeModification<string> | null;
+    lossFactor: AttributeModification<number> | null;
+    powerFactor: AttributeModification<number> | null;
+    shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
+}
+
+export interface LccModificationInfos {
+    uuid: string | null;
+    type: string;
+    equipmentId: string;
+    equipmentName: AttributeModification<string> | null;
+    nominalV: AttributeModification<number> | null;
+    r: AttributeModification<number> | null;
+    maxP: AttributeModification<number> | null;
+    convertersMode: AttributeModification<string> | null;
+    activePowerSetpoint: AttributeModification<number> | null;
+    converterStation1: LccConverterStationModificationInfos;
+    converterStation2: LccConverterStationModificationInfos;
     properties?: Property[];
-    isUpdate: boolean;
-    modificationUuid?: string;
 }
 
 export interface VSCModificationInfo {

@@ -36,10 +36,8 @@ import yup from '../../../../../utils/yup-config';
 import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,
-    LccConverterStationModificationInfos,
     LccCreationInfos,
     LccFormInfos,
-    LccModificationInfos,
     ShuntCompensatorFormSchema,
 } from './lcc-type';
 import {
@@ -55,8 +53,9 @@ import { sanitizeString } from '../../../../dialog-utils';
 import { getConnectivityWithPositionSchema } from 'components/dialogs/connectivity/connectivity-form-utils';
 import { Connectivity } from 'components/dialogs/connectivity/connectivity.type';
 import {
-    ShuntCompensatorInfos,
-    ShuntCompensatorModificationInfos,
+    LccConverterStationModificationInfos,
+    LccModificationInfos,
+    LccShuntCompensatorInfos,
 } from '../../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../../utils/utils';
 
@@ -158,7 +157,7 @@ export function getLccConverterStationModificationEmptyFormData() {
     };
 }
 
-export const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos?: ShuntCompensatorInfos[]) => {
+export const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos?: LccShuntCompensatorInfos[]) => {
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
             [SHUNT_COMPENSATOR_ID]: shuntCp.id + '(1)',
@@ -191,7 +190,7 @@ export function getLccConverterStationFromSearchCopy(lccConverterStationFormInfo
 }
 
 export const getShuntCompensatorOnSideFormData = (
-    shuntCompensatorInfos?: ShuntCompensatorInfos[]
+    shuntCompensatorInfos?: LccShuntCompensatorInfos[]
 ): ShuntCompensatorFormSchema[] => {
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
@@ -204,7 +203,7 @@ export const getShuntCompensatorOnSideFormData = (
 };
 
 export const getShuntCompensatorOnSideFormModificationData = (
-    shuntCompensatorInfos?: ShuntCompensatorModificationInfos[]
+    shuntCompensatorInfos?: LccShuntCompensatorInfos[]
 ): ShuntCompensatorFormSchema[] => {
     shuntCompensatorInfos?.forEach((shuntCompensatorInfo) =>
         console.log('shuntCompensatorInfo.connectedToHvdc : ', shuntCompensatorInfo.connectedToHvdc ?? null)
@@ -214,7 +213,7 @@ export const getShuntCompensatorOnSideFormModificationData = (
             [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
-            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? undefined, //TODO basseche : should be null
+            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc === undefined ? null : shuntCp.connectedToHvdc, //TODO basseche : should be null
         })) ?? []
     );
 };
@@ -258,7 +257,7 @@ export function getLccConverterStationModificationFromEditData(
 
 export const getShuntCompensatorOnSideCreateData = (
     shuntCompensatorInfos?: ShuntCompensatorFormSchema[]
-): ShuntCompensatorInfos[] => {
+): LccShuntCompensatorInfos[] => {
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
             id: shuntCp[SHUNT_COMPENSATOR_ID],
@@ -295,7 +294,7 @@ export function getLccConverterStationCreationData(converterStation: {
 export function getLccConverterStationModificationData(
     converterStation: any,
     converterStationToModify: LccConverterStationFormInfos
-) {
+): LccConverterStationModificationInfos {
     return {
         type: MODIFICATION_TYPES.LCC_CONVERTER_STATION_MODIFICATION.type,
         equipmentId: converterStationToModify.id,
