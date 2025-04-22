@@ -10,13 +10,13 @@ import { Box, BoxProps } from '@mui/material';
 const getStyle = (hidden: boolean) => {
     if (hidden) {
         return {
-            visibility: 'hidden',
-            height: 0,
+            display: 'none',
         };
     }
     return {
-        visibility: 'visible',
-        height: 'inherit',
+        display: 'flex',
+        height: '100%',
+        width: '100%',
     };
 };
 
