@@ -144,6 +144,8 @@ export const SpreadsheetTabContent = React.memo(
             handleEquipmentScroll();
         }, [handleEquipmentScroll]);
 
+        // used to scroll to the selected row when the data is first rendered
+        // and the grid is fully loaded
         const onFirstDataRendered = useCallback(() => {
             handleEquipmentScroll();
         }, [handleEquipmentScroll]);
@@ -170,6 +172,7 @@ export const SpreadsheetTabContent = React.memo(
         );
 
         const [rowData, setRowData] = useState<RecursiveIdentifiable[]>([]);
+        const [shouldSetRowData, setShouldSetRowData] = useState(false);
 
         useEffect(() => {
             if (equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined || !nodeAliases) {
@@ -177,20 +180,25 @@ export const SpreadsheetTabContent = React.memo(
             }
             const localRowData = transformRowData(equipments, currentNode.id, nodeAliases);
             setRowData(localRowData);
+            // Set the row data in the grid if it is already initialized
+            // Otherwise, wait for the grid to be initialized
+            // before setting the row data
+            // This is needed to avoid crashes when equipments are already fetched
+            // and the grid is not yet initialized
             if (gridRef.current?.api) {
                 gridRef.current.api.setGridOption('rowData', localRowData);
+            } else {
+                setShouldSetRowData(true);
             }
         }, [equipments, tableDefinition?.type, nodeAliases, currentNode.id, transformRowData]);
 
         useEffect(() => {
-            if (gridRef.current?.api) {
+            if (gridRef.current?.api && shouldSetRowData) {
                 gridRef.current.api.setGridOption('rowData', rowData);
             }
-        }, [rowData]);
+        }, [rowData, shouldSetRowData]);
 
         const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
-
-        console.log('rerendered ------ ' + tableDefinition.uuid + ' ------- ' + tableDefinition.type);
 
         useEffect(() => {
             const api = gridRef.current?.api;
