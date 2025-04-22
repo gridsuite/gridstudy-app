@@ -77,6 +77,13 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
                         onGridReady={onGridReady}
                         getRowStyle={getRowStyle}
                         overlayNoRowsTemplate={overlayNoRowsTemplate}
+                        onModelUpdated={({ api }) => {
+                            if (api.getDisplayedRowCount()) {
+                                api.hideOverlay();
+                            } else {
+                                api.showNoRowsOverlay();
+                            }
+                        }}
                     />
                 </Box>
             )}
