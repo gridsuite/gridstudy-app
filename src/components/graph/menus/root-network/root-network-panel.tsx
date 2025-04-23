@@ -7,9 +7,9 @@
 
 import React, { FunctionComponent, useMemo, useState } from 'react';
 import { Paper, useTheme } from '@mui/material';
-import RootNetworkNodeEditor from './graph/menus/root-network-node-editor';
 import RootNetworkPanelHeader from './root-network-panel-header';
-import RootNetworkMinimizedPanelContent from './graph/menus/root-network-minimized-panel-content';
+import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
+import RootNetworkNodeEditor from './root-network-node-editor';
 
 const styles = {
     paper: {

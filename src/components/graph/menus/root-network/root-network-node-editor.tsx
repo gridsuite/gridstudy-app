@@ -37,15 +37,15 @@ import {
     RootNetworksDeletionStartedEventData,
     RootNetworksUpdatedEventData,
 } from 'redux/reducer';
-import { RootNetworkMetadata } from './network-modifications/network-modification-menu.type';
+import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 
 import { getCaseImportParameters } from 'services/network-conversion';
 import { deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
 import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
-import { isChecked, isPartial } from './network-modifications/network-modification-node-editor-utils';
+import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
-import { customizeCurrentParameters, formatCaseImportParameters } from '../util/case-import-parameters';
+import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 
 const styles = {
     checkBoxLabel: { flexGrow: '1' },

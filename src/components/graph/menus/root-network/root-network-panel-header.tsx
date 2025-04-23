@@ -17,11 +17,11 @@ import {
 } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { FileUpload } from '@mui/icons-material';
-import RootNetworkDialog, { FormData } from './dialogs/root-network/root-network-dialog';
+import RootNetworkDialog, { FormData } from '../../../dialogs/root-network/root-network-dialog';
 import { createRootNetwork } from 'services/root-network';
 import { UUID } from 'crypto';
 import { GetCaseImportParametersReturn, getCaseImportParameters } from 'services/network-conversion';
-import { customizeCurrentParameters, formatCaseImportParameters } from './graph/util/case-import-parameters';
+import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 import { useSelector } from 'react-redux';
 
 const styles = {
