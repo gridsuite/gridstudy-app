@@ -138,6 +138,14 @@ export const SpreadsheetTabContent = React.memo(
             }
         }, [equipmentId, gridRef, isGridReady, onEquipmentScrolled, rowDataInitialized]);
 
+        useEffect(() => {
+            // add a small delay to allow tab switching to finish
+            // before scrolling to the equipment
+            setTimeout(() => {
+                handleEquipmentScroll();
+            }, 400);
+        }, [handleEquipmentScroll, equipmentId]);
+
         const onFirstDataRendered = useCallback(() => {
             handleEquipmentScroll();
         }, [handleEquipmentScroll]);
@@ -200,7 +208,7 @@ export const SpreadsheetTabContent = React.memo(
 
         useEffect(() => {
             const api = gridRef.current?.api;
-            if (!api || !isGridReady || !rowDataInitialized) {
+            if (!api || !isGridReady) {
                 return;
             }
 
@@ -210,15 +218,7 @@ export const SpreadsheetTabContent = React.memo(
             if (filters.length > 0) {
                 updateFilters(api, filters);
             }
-        }, [
-            updateSortConfig,
-            updateLockedColumnsConfig,
-            filters,
-            equipments,
-            gridRef,
-            isGridReady,
-            rowDataInitialized,
-        ]);
+        }, [updateSortConfig, updateLockedColumnsConfig, filters, equipments, gridRef, isGridReady]);
 
         return (
             <>
