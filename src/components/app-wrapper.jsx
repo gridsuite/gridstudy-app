@@ -190,6 +190,7 @@ const darkTheme = createTheme({
     },
     palette: {
         mode: 'dark',
+        tabBackground: '#1e1e1e',
     },
     link: {
         color: 'green',
@@ -255,7 +256,7 @@ function createThemeWithComponents(baseTheme, ...args) {
                 cancelButtonColor: {
                     main: baseTheme.palette.text.secondary,
                 },
-                tabBackground: baseTheme.palette.background.default,
+                tabBackground: baseTheme.palette.tabBackground ?? baseTheme.palette.background.default,
             },
             components: {
                 CancelButton: {
