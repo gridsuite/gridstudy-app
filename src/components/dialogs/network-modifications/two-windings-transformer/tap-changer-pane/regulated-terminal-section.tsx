@@ -44,7 +44,7 @@ export default function RegulatedTerminalSection({
     regulationType: unknown;
 }) {
     const intl = useIntl();
-    const prevValues =
+    const tapChangerPreviousValues =
         id === RATIO_TAP_CHANGER
             ? previousValues?.ratioTapChanger
             : id === PHASE_TAP_CHANGER
@@ -58,7 +58,7 @@ export default function RegulatedTerminalSection({
             options={Object.values(REGULATION_TYPES)}
             disabled={!tapChangerEnabledWatcher}
             size="small"
-            previousValue={getRegulationTypeLabel(prevValues, prevValues, intl) ?? undefined}
+            previousValue={getRegulationTypeLabel(previousValues, tapChangerPreviousValues, intl) ?? undefined}
         />
     );
 
@@ -69,7 +69,7 @@ export default function RegulatedTerminalSection({
             options={Object.values(SIDE)}
             disabled={!tapChangerEnabledWatcher}
             size="small"
-            previousValue={getTapSideLabel(prevValues, prevValues, intl) ?? undefined}
+            previousValue={getTapSideLabel(previousValues, tapChangerPreviousValues, intl) ?? undefined}
         />
     );
 
@@ -82,8 +82,8 @@ export default function RegulatedTerminalSection({
             currentNodeUuid={currentNode?.id}
             currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
-            regulatingTerminalVlId={prevValues?.regulatingTerminalVlId}
-            equipmentSectionType={getTapChangerEquipmentSectionTypeValue(prevValues) ?? undefined}
+            regulatingTerminalVlId={tapChangerPreviousValues?.regulatingTerminalVlId}
+            equipmentSectionType={getTapChangerEquipmentSectionTypeValue(tapChangerPreviousValues) ?? undefined}
         />
     );
 
