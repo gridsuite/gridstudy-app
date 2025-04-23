@@ -28,7 +28,7 @@ import {
 import { useMemo } from 'react';
 import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
-import RegulatedTerminalSection from '../regulated-terminal-section.js';
+import RegulatedTerminalSection from '../regulated-terminal-section';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
