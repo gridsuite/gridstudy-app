@@ -49,7 +49,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
-    const [currentEquipmentId, setCurrentEquipmentId] = useState<string | null>(null);
 
     // Initialize activeTabUuid with the first tab's UUID if not already set
     useEffect(() => {
@@ -68,11 +67,14 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, []);
 
     useEffect(() => {
-        const matchingTab = tablesDefinitions.find((def) => def.type === equipmentType);
-        if (matchingTab && matchingTab.uuid !== activeTabUuid) {
-            setActiveTabUuid(matchingTab.uuid);
+        // Find all tabs of the current equipmentType
+        const matchingTabs = tablesDefinitions.filter((def) => def.type === equipmentType);
+
+        // If the active tab is not of the right type, switch to the first matching tab
+        const activeTab = tablesDefinitions.find((def) => def.uuid === activeTabUuid);
+        if (matchingTabs.length > 0 && (!activeTab || activeTab.type !== equipmentType)) {
+            setActiveTabUuid(matchingTabs[0].uuid);
         }
-        setCurrentEquipmentId(equipmentId);
     }, [activeTabUuid, equipmentId, equipmentType, tablesDefinitions]);
 
     const getStudySpreadsheetConfigCollection = useCallback(() => {
@@ -139,7 +141,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
             {tablesDefinitions.map((tabDef) => {
                 const isActive = activeTabUuid === tabDef.uuid;
-                const equipmentIdToScrollTo = tabDef.type === equipmentType && isActive ? currentEquipmentId : null;
+                const equipmentIdToScrollTo = tabDef.type === equipmentType && isActive ? equipmentId : null;
                 return (
                     <TabPanelLazy key={tabDef.uuid} selected={isActive}>
                         <Paper

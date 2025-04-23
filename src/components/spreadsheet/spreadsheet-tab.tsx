@@ -42,7 +42,7 @@ export const SpreadsheetTab = React.memo(
 
         const columnsDefinitions = useCustomColumn(tableDefinition);
 
-        const reorderedColsDefs = useMemo(() => {
+        const displayedColsDefs = useMemo(() => {
             const columns = tableDefinition?.columns?.filter((column) => column.visible);
             const visibleColDefs =
                 columns?.map((column) => {
@@ -65,7 +65,7 @@ export const SpreadsheetTab = React.memo(
                 <SpreadsheetTabToolbar
                     gridRef={gridRef}
                     tableDefinition={tableDefinition}
-                    columns={reorderedColsDefs}
+                    columns={displayedColsDefs}
                     nodeAliases={nodeAliases}
                     updateNodeAliases={updateNodeAliases}
                     shouldDisableButtons={shouldDisableButtons}
@@ -76,7 +76,7 @@ export const SpreadsheetTab = React.memo(
                     gridRef={gridRef}
                     currentNode={currentNode}
                     tableDefinition={tableDefinition}
-                    columns={reorderedColsDefs}
+                    columns={displayedColsDefs}
                     nodeAliases={nodeAliases}
                     shouldDisableButtons={shouldDisableButtons}
                     disabled={disabled}

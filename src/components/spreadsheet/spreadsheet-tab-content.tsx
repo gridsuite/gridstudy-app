@@ -72,8 +72,6 @@ export const SpreadsheetTabContent = React.memo(
     }: SpreadsheetTabContentProps) => {
         const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
         const [isGridReady, setIsGridReady] = useState(false);
-        const [rowData, setRowData] = useState<RecursiveIdentifiable[]>([]);
-        const [rowDataInitialized, setRowDataInitialized] = useState(false);
 
         const highlightUpdatedEquipment = useCallback(() => {
             if (!equipmentToUpdateId) {
@@ -123,7 +121,7 @@ export const SpreadsheetTabContent = React.memo(
         );
 
         const handleEquipmentScroll = useCallback(() => {
-            if (equipmentId && gridRef.current?.api && isGridReady && rowDataInitialized) {
+            if (equipmentId && gridRef.current?.api && isGridReady) {
                 const selectedRow = gridRef.current.api.getRowNode(equipmentId);
                 if (selectedRow) {
                     gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
@@ -131,14 +129,11 @@ export const SpreadsheetTabContent = React.memo(
                     onEquipmentScrolled();
                 }
             }
-        }, [equipmentId, gridRef, isGridReady, onEquipmentScrolled, rowDataInitialized]);
+        }, [equipmentId, gridRef, isGridReady, onEquipmentScrolled]);
 
         useEffect(() => {
-            if (!equipmentId || !gridRef.current?.api || !isGridReady || !rowDataInitialized) {
-                return;
-            }
             handleEquipmentScroll();
-        }, [handleEquipmentScroll, equipmentId, gridRef, isGridReady, rowDataInitialized]);
+        }, [handleEquipmentScroll, equipmentId]);
 
         const onFirstDataRendered = useCallback(() => {
             handleEquipmentScroll();
@@ -171,25 +166,10 @@ export const SpreadsheetTabContent = React.memo(
         }, [equipments, currentNode.id, nodeAliases]);
 
         useEffect(() => {
-            const localRowData = transformedRowData;
-            setRowData(localRowData);
-            // Set the row data in the grid if it is already initialized
-            // Otherwise, wait for the grid to be initialized
-            // before setting the row data
-            // This is needed to avoid crashes when equipments are already fetched
-            // and the grid is not yet initialized
             if (gridRef.current?.api) {
-                gridRef.current.api.setGridOption('rowData', localRowData);
-                setRowDataInitialized(true);
+                gridRef.current.api.setGridOption('rowData', transformedRowData);
             }
-        }, [transformedRowData, gridRef]);
-
-        useEffect(() => {
-            if (isGridReady && gridRef.current?.api && !rowDataInitialized) {
-                gridRef.current.api.setGridOption('rowData', rowData);
-                setRowDataInitialized(true);
-            }
-        }, [isGridReady, rowData, gridRef, rowDataInitialized]);
+        }, [transformedRowData, gridRef, isGridReady]);
 
         const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
 
