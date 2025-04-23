@@ -21,3 +21,6 @@
 
 # jest
 /coverage
+
+# GitHub Action: sonarqube-scan-action
+/.scannerwork/
