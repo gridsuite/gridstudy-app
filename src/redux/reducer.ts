@@ -210,6 +210,8 @@ import {
     UseNameAction,
     SET_EDIT_NAD_MODE,
     SetEditNadModeAction,
+    DELETED_OR_RENAMED_NODES,
+    DeletedOrRenamedNodesAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -298,7 +300,7 @@ import {
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { ExpertFilter } from '../services/study/filter';
+import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
@@ -308,10 +310,9 @@ export enum NotificationType {
     COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
     NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
     LOADFLOW_RESULT = 'loadflowResult',
-    ROOT_NETWORK_MODIFIED = 'rootNetworkModified',
-    ROOT_NETWORK_UPDATED = 'rootNetworksUpdated',
+    ROOT_NETWORKS_DELETION_STARTED = 'rootNetworksDeletionStarted',
+    ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
     ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
-    ROOT_NETWORK_DELETION_STARTED = 'rootNetworkDeletionStarted',
 }
 
 export enum StudyIndexationStatus {
@@ -328,11 +329,10 @@ export interface OneBusShortCircuitAnalysisDiagram {
 // Headers
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
+    updateType: string;
     parentNode: UUID;
-    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
-    rootNetworks: UUID[];
+    rootNetworkUuid: UUID;
     timestamp: number;
-    updateType?: string;
     node?: UUID;
     nodes?: UUID[];
     error?: string;
@@ -340,22 +340,23 @@ export interface StudyUpdatedEventDataHeader {
     computationType?: ComputingType;
 }
 
-interface RootNetworkDeletionStartedEventDataHeader {
+interface RootNetworksDeletionStartedEventDataHeader {
     studyUuid: UUID;
-    rootNetworks: UUID[];
     updateType: string;
+    rootNetworksUuids: UUID[];
 }
 
 interface LoadflowResultEventDataHeaders {
     studyUuid: UUID;
-    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
     updateType: string;
+    rootNetworkUuid: UUID;
 }
 
-interface RootNetworkModifiedEventDataHeaders {
+interface RootNetworksUpdatedEventDataHeaders {
     studyUuid: UUID;
-    rootNetwork: UUID; // todo rename rootNetworkUuid in back as well
     updateType: string;
+    rootNetworkUuid?: UUID; // all root networks if absent
+    error?: string;
 }
 
 // Payloads
@@ -386,13 +387,13 @@ export interface LoadflowResultEventData {
     payload: undefined;
 }
 
-export interface RootNetworkDeletionStartedEventData {
-    headers: RootNetworkDeletionStartedEventDataHeader;
+export interface RootNetworksDeletionStartedEventData {
+    headers: RootNetworksDeletionStartedEventDataHeader;
     payload: undefined;
 }
 
-export interface RootNetworkModifiedEventData {
-    headers: RootNetworkModifiedEventDataHeaders;
+export interface RootNetworksUpdatedEventData {
+    headers: RootNetworksUpdatedEventDataHeaders;
     payload: undefined;
 }
 
@@ -412,24 +413,19 @@ type LoadflowResultNotification = {
     eventData: LoadflowResultEventData;
 };
 
-type RootNetworkModifiedNotification = {
-    type: NotificationType.ROOT_NETWORK_MODIFIED;
-    eventData: RootNetworkModifiedEventData;
+type RootNetworksUpdatedNotification = {
+    type: NotificationType.ROOT_NETWORKS_UPDATED;
+    eventData: RootNetworksUpdatedEventData;
 };
 
-type RootNetworkUpdatedNotification = {
-    type: NotificationType.ROOT_NETWORK_UPDATED;
-    eventData: RootNetworkModifiedEventData;
-};
-
-type RootNetworkUpdateFailedNotification = {
+type RootNetworksUpdateFailedNotification = {
     type: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
-    eventData: RootNetworkModifiedEventData;
+    eventData: RootNetworksUpdatedEventData;
 };
 
 type RootNetworkDeletionStartedNotification = {
-    type: NotificationType.ROOT_NETWORK_DELETION_STARTED;
-    eventData: RootNetworkDeletionStartedEventData;
+    type: NotificationType.ROOT_NETWORKS_DELETION_STARTED;
+    eventData: RootNetworksDeletionStartedEventData;
 };
 
 // Redux state
@@ -439,9 +435,8 @@ export type StudyUpdated = {
     | StudyUpdatedUndefined
     | StudyUpdatedStudy
     | LoadflowResultNotification
-    | RootNetworkModifiedNotification
-    | RootNetworkUpdatedNotification
-    | RootNetworkUpdateFailedNotification
+    | RootNetworksUpdatedNotification
+    | RootNetworksUpdateFailedNotification
     | RootNetworkDeletionStartedNotification
 );
 
@@ -470,7 +465,7 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetFilterState = Record<string, FilterConfig[]>;
+export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
 
 export type DiagramState = {
     id: UUID;
@@ -509,7 +504,28 @@ export type NodeSelectionForCopy = {
 
 export type Actions = AppActions | AuthenticationActions;
 
-export interface AppState extends CommonStoreState {
+export interface AppConfigState {
+    [PARAM_THEME]: GsTheme;
+    [PARAM_LANGUAGE]: GsLang;
+    [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
+    [PARAM_LIMIT_REDUCTION]: number;
+    [PARAM_USE_NAME]: boolean;
+    [PARAM_LINE_FULL_PATH]: boolean;
+    [PARAM_LINE_PARALLEL_PATH]: boolean;
+    [PARAM_MAP_MANUAL_REFRESH]: boolean;
+    [PARAM_MAP_BASEMAP]: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL; //TODO enum
+    [PARAM_LINE_FLOW_MODE]: LineFlowMode;
+    [PARAM_CENTER_LABEL]: boolean;
+    [PARAM_DIAGONAL_LABEL]: boolean;
+    [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
+    [PARAM_COMPONENT_LIBRARY]: unknown | null;
+    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
+    [PARAM_DEVELOPER_MODE]: boolean;
+    [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
+    [PARAMS_LOADED]: boolean;
+}
+
+export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
@@ -563,25 +579,6 @@ export interface AppState extends CommonStoreState {
     gsFilterSpreadsheetState: GsFilterSpreadsheetState;
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
-    [PARAM_THEME]: GsTheme;
-    [PARAM_LANGUAGE]: GsLang;
-    [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
-    [PARAM_LIMIT_REDUCTION]: number;
-    [PARAM_USE_NAME]: boolean;
-    [PARAM_LINE_FULL_PATH]: boolean;
-    [PARAM_LINE_PARALLEL_PATH]: boolean;
-    [PARAM_MAP_MANUAL_REFRESH]: boolean;
-    [PARAM_MAP_BASEMAP]: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL; //TODO enum
-    [PARAM_LINE_FLOW_MODE]: LineFlowMode;
-    [PARAM_CENTER_LABEL]: boolean;
-    [PARAM_DIAGONAL_LABEL]: boolean;
-    [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
-    [PARAM_COMPONENT_LIBRARY]: unknown | null;
-    [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
-    [PARAM_DEVELOPER_MODE]: boolean;
-    [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
-    [PARAMS_LOADED]: boolean;
-
     [LOADFLOW_RESULT_STORE_FIELD]: {
         [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
         [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: FilterConfig[];
@@ -615,6 +612,7 @@ export interface AppState extends CommonStoreState {
     [LOGS_STORE_FIELD]: LogsFilterState;
 
     calculationSelections: Record<UUID, CalculationType[]>;
+    deletedOrRenamedNodes: UUID[];
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -658,7 +656,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
 };
 
-export type GsFilterSpreadsheetState = Record<UUID, ExpertFilter[]>;
+export type GsFilterSpreadsheetState = Record<UUID, SpreadsheetGlobalFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
 interface TablesState {
@@ -737,6 +735,7 @@ const initialState: AppState = {
     })),
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
+    deletedOrRenamedNodes: [],
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -984,7 +983,7 @@ export const reducer = createReducer(initialState, (builder) => {
         });
 
         if (state[SPREADSHEET_STORE_FIELD]) {
-            delete state[SPREADSHEET_STORE_FIELD][removedTable.name];
+            delete state[SPREADSHEET_STORE_FIELD][removedTable.uuid];
         }
 
         if (state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE]) {
@@ -1675,7 +1674,7 @@ export const reducer = createReducer(initialState, (builder) => {
         // equipments : list of updated equipments of type <equipmentType>
         for (const [updateType, equipments] of Object.entries(updatedEquipments) as [
             EquipmentUpdateType,
-            Identifiable[]
+            Identifiable[],
         ][]) {
             const equipmentType = getEquipmentTypeFromUpdateType(updateType);
             const currentEquipment: Identifiable[] | undefined =
@@ -1903,8 +1902,8 @@ export const reducer = createReducer(initialState, (builder) => {
         if (tableSort[tableDefinition.name]) {
             tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter((sort) => sort.colId !== value);
         }
-        if (tableFilter[tableDefinition.name]) {
-            tableFilter[tableDefinition.name] = tableFilter[tableDefinition.name].filter(
+        if (tableFilter[tableDefinition.uuid]) {
+            tableFilter[tableDefinition.uuid] = tableFilter[tableDefinition.uuid].filter(
                 (filter) => filter.column !== value
             );
         }
@@ -1923,6 +1922,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGsFiltersAction) => {
         state.gsFilterSpreadsheetState = {};
+    });
+
+    builder.addCase(DELETED_OR_RENAMED_NODES, (state, action: DeletedOrRenamedNodesAction) => {
+        state.deletedOrRenamedNodes = action.deletedOrRenamedNodes;
     });
 });
 

@@ -4,20 +4,47 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Grid from '@mui/material/Grid';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { VirtualizedTreeview } from './virtualized-treeview';
 import { ReportItem } from './treeview-item';
-import { Report, ReportLog, ReportTree, ReportType, SelectedReportLog, SeverityLevel } from 'utils/report/report.type';
+import {
+    ComputingAndNetworkModificationType,
+    Report,
+    ReportLog,
+    ReportTree,
+    ReportType,
+    SelectedReportLog,
+    SeverityLevel,
+} from 'utils/report/report.type';
 import { GLOBAL_REPORT_NODE_LABEL } from '../../utils/report/report.constant';
+import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { Box, Theme } from '@mui/material';
 
-type ReportViewerProps = { report: Report; reportType: string; severities: SeverityLevel[] | undefined };
+const styles = {
+    panelHandlerContainer: (theme: Theme) => ({
+        borderRight: `1px solid ${theme.palette.divider}`,
+        marginRight: theme.spacing(1),
+    }),
+};
+
+type ReportViewerProps = {
+    report: Report;
+    reportType: ComputingAndNetworkModificationType;
+    severities: SeverityLevel[] | undefined;
+    resetFilters?: boolean;
+};
 
 const DEFAULT_CONTAINER_HEIGHT_OFFSET = 170; // The value 170px is fine, but leaves a gap below the report.
 
-export default function ReportViewer({ report, reportType, severities = [] }: Readonly<ReportViewerProps>) {
+export default function ReportViewer({
+    report,
+    reportType,
+    severities = [],
+    resetFilters = false,
+}: Readonly<ReportViewerProps>) {
     const [expandedTreeReports, setExpandedTreeReports] = useState<string[]>([]);
     const [highlightedReportId, setHighlightedReportId] = useState<string>();
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number>(
@@ -91,33 +118,43 @@ export default function ReportViewer({ report, reportType, severities = [] }: Re
         [reportTreeMap]
     );
 
+    // Ref for resizing
+    const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
+
+    // sizes in percent
+    const LEFT_PANEL_MIN_SIZE = 15;
+    const LEFT_PANEL_DEFAULT_SIZE = 25;
+    const RIGHT_PANEL_MIN_SIZE = 50;
+
     return (
-        <Grid
-            container
-            ref={handleReportVerticalPositionFromTop}
-            sx={{
-                height: reportContainerHeight,
-            }}
-        >
-            <Grid item sm={3} sx={{ borderRight: (theme) => `1px solid ${theme.palette.divider}` }}>
-                <VirtualizedTreeview
-                    expandedTreeReports={expandedTreeReports}
-                    setExpandedTreeReports={setExpandedTreeReports}
-                    selectedReportId={selectedReport.id}
-                    reportTree={reportTree}
-                    onSelectedItem={handleSelectedItem}
-                    highlightedReportId={highlightedReportId}
-                />
-            </Grid>
-            <Grid item xs={12} sm={9}>
-                <LogTable
-                    selectedReport={selectedReport}
-                    reportType={reportType}
-                    severities={severities}
-                    onRowClick={onLogRowClick}
-                    onFiltersChanged={onFiltersChanged}
-                />
-            </Grid>
-        </Grid>
+        <Box width={'100%'} ref={handleReportVerticalPositionFromTop} sx={{ height: reportContainerHeight }}>
+            <PanelGroup direction="horizontal" ref={panelGroupRef}>
+                <Panel id="treeview-panel" minSize={LEFT_PANEL_MIN_SIZE} defaultSize={LEFT_PANEL_DEFAULT_SIZE}>
+                    <VirtualizedTreeview
+                        expandedTreeReports={expandedTreeReports}
+                        setExpandedTreeReports={setExpandedTreeReports}
+                        selectedReportId={selectedReport.id}
+                        reportTree={reportTree}
+                        onSelectedItem={handleSelectedItem}
+                        highlightedReportId={highlightedReportId}
+                    />
+                </Panel>
+                <Box display="flex" alignItems="center" sx={styles.panelHandlerContainer}>
+                    <PanelResizeHandle>
+                        <DragIndicatorIcon fontSize="small" sx={{ padding: 0, margin: 0 }} />
+                    </PanelResizeHandle>
+                </Box>
+                <Panel id="logtable-panel" minSize={RIGHT_PANEL_MIN_SIZE}>
+                    <LogTable
+                        selectedReport={selectedReport}
+                        reportType={reportType}
+                        severities={severities}
+                        onRowClick={onLogRowClick}
+                        onFiltersChanged={onFiltersChanged}
+                        resetFilters={resetFilters}
+                    />
+                </Panel>
+            </PanelGroup>
+        </Box>
     );
 }

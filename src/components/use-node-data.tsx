@@ -51,7 +51,7 @@ function shouldUpdate<T>({
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const nodeUuidFromNotif = headers?.node;
     const nodeUuidsFromNotif = headers?.nodes;
-    const rootNetworkFromNotif = headers?.rootNetwork;
+    const rootNetworkFromNotif = headers?.rootNetworkUuid;
 
     if (rootNetworkFromNotif && rootNetworkFromNotif !== rootNetworkUuid) {
         return false;

@@ -8,7 +8,7 @@
 import StudyPane from './study-pane';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
@@ -38,10 +38,6 @@ import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './gr
 import { computeFullPath, computePageTitle } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { BUILD_STATUS } from './network/constants';
-import {
-    connectDeletedStudyNotificationsWebsocket,
-    connectNotificationsWsUpdateDirectories,
-} from '../services/directory-notification';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchCaseName, fetchStudyExists } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
@@ -160,13 +156,11 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
-    const wsRef = useRef();
-
     const displayErrorNotifications = useCallback(
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
-            const rootNetworkUuidFromNotif = eventData.headers.rootNetwork;
+            const rootNetworkUuidFromNotif = eventData.headers.rootNetworkUuid;
 
             const userId = eventData.headers[USER_HEADER];
             if (userId != null && userId !== userName) {
@@ -251,7 +245,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const sendAlert = useCallback(
         (eventData) => {
             const userId = eventData.headers[USER_HEADER];
-            const rootNetworkUuidFromNotif = eventData.headers.rootNetwork;
+            const rootNetworkUuidFromNotif = eventData.headers.rootNetworkUuid;
             if (currentRootNetworkUuidRef.current !== rootNetworkUuidFromNotif && rootNetworkUuidFromNotif) {
                 return;
             }
@@ -319,29 +313,17 @@ export function StudyContainer({ view, onChangeTab }) {
             });
     }, [initialTitle, snackError, studyUuid]);
 
-    const connectDeletedStudyNotifications = useCallback((studyUuid) => {
-        console.info(`Connecting to directory notifications ...`);
-
-        const ws = connectDeletedStudyNotificationsWebsocket(studyUuid);
-        ws.onmessage = function () {
-            window.close();
-        };
-        ws.onclose = function (event) {
-            if (!websocketExpectedCloseRef.current) {
-                console.error('Unexpected Notification WebSocket closed');
-            }
-        };
-        ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
+    const closeWindow = useCallback(() => {
+        window.close();
     }, []);
 
-    useEffect(() => {
-        // create ws at mount event
-        wsRef.current = connectNotificationsWsUpdateDirectories();
+    //Study deletion notification
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.DIRECTORY_DELETE_STUDY, {
+        listenerCallbackMessage: closeWindow,
+    });
 
-        wsRef.current.onmessage = function (event) {
+    const onStudyUpdated = useCallback(
+        (event) => {
             const eventData = JSON.parse(event.data);
             dispatch(studyUpdated(eventData));
             if (eventData.headers) {
@@ -356,22 +338,13 @@ export function StudyContainer({ view, onChangeTab }) {
                     }
                 }
             }
-        };
+        },
+        [dispatch, fetchStudyPath]
+    );
 
-        wsRef.current.onclose = function () {
-            console.error('Unexpected Notification WebSocket closed');
-        };
-        wsRef.current.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
-        // That's because wsRef.current could be modify outside of this scope.
-        const wsToClose = wsRef.current;
-        // cleanup at unmount event
-        return () => {
-            wsToClose.close();
-        };
-    }, [dispatch, fetchStudyPath]);
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.DIRECTORY, {
+        listenerCallbackMessage: onStudyUpdated,
+    });
 
     const loadTree = useCallback(
         (initIndexationStatus) => {
@@ -574,7 +547,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetwork;
+            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetworkUuid;
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
                 rootNetworkUuidFromNotif === currentRootNetworkUuidRef.current
@@ -657,18 +630,15 @@ export function StudyContainer({ view, onChangeTab }) {
             websocketExpectedCloseRef.current = false;
             dispatch(openStudy(studyUuid));
 
-            const wsDirectory = connectDeletedStudyNotifications(studyUuid);
-
             // study cleanup at unmount event
             return function () {
                 websocketExpectedCloseRef.current = true;
-                wsDirectory.close();
                 dispatch(closeStudy());
             };
         }
         // Note: dispach, loadGeoData
         // connectNotifications don't change
-    }, [dispatch, studyUuid, connectDeletedStudyNotifications]);
+    }, [dispatch, studyUuid]);
 
     return (
         <WaitingLoader

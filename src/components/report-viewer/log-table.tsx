@@ -17,7 +17,12 @@ import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { ReportLog, SelectedReportLog, SeverityLevel } from 'utils/report/report.type';
+import {
+    ComputingAndNetworkModificationType,
+    ReportLog,
+    SelectedReportLog,
+    SeverityLevel,
+} from 'utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -67,22 +72,28 @@ const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
 type LogTableProps = {
     selectedReport: SelectedReportLog;
-    reportType: string;
+    reportType: ComputingAndNetworkModificationType;
     severities: SeverityLevel[] | undefined;
     onRowClick: (data: ReportLog) => void;
     onFiltersChanged: () => void;
+    resetFilters?: boolean;
 };
 
-const LogTable = ({ selectedReport, reportType, severities, onRowClick, onFiltersChanged }: LogTableProps) => {
+const LogTable = ({
+    selectedReport,
+    reportType,
+    severities,
+    onRowClick,
+    onFiltersChanged,
+    resetFilters = false,
+}: LogTableProps) => {
     const intl = useIntl();
 
     const theme = useTheme<Theme>();
 
     const dispatch = useDispatch();
 
-    const [, , fetchReportLogs, fetchNodeSeverities] = useReportFetcher(
-        reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
-    );
+    const [, , fetchReportLogs] = useReportFetcher(reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE);
     const { filters } = useFilterSelector(FilterType.Logs, reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
@@ -91,6 +102,8 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick, onFilter
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const gridRef = useRef<AgGridReact>(null);
+
+    const [filtersInitialized, setFiltersInitialized] = useState(false);
 
     const severityFilter = useMemo(() => getColumnFilterValue(filters, 'severity') ?? [], [filters]);
     const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);
@@ -115,7 +128,7 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick, onFilter
                         message: log.message,
                         parentId: log.parentId,
                         backgroundColor: log.severity.colorName,
-                    } as unknown as ReportLog)
+                    }) as unknown as ReportLog
             );
             setSelectedRowIndex(-1);
             setRowData(transformedLogs);
@@ -125,18 +138,26 @@ const LogTable = ({ selectedReport, reportType, severities, onRowClick, onFilter
 
     useEffect(() => {
         if (severities && severities.length > 0) {
-            dispatch(
-                setLogsFilter(reportType, [
-                    {
-                        column: 'severity',
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        type: FILTER_TEXT_COMPARATORS.EQUALS,
-                        value: getDefaultSeverityFilter(severities),
-                    },
-                ])
-            );
+            // Reset filters will trigger initialization regardless of current filter state
+            // Otherwise, only initialize if not already done and no filters present :
+            // This is to avoid overwriting filters when user unchecks all severities manually
+            const needsInitialization = resetFilters || (!filtersInitialized && severityFilter.length === 0);
+
+            if (needsInitialization) {
+                dispatch(
+                    setLogsFilter(reportType, [
+                        {
+                            column: 'severity',
+                            dataType: FILTER_DATA_TYPES.TEXT,
+                            type: FILTER_TEXT_COMPARATORS.EQUALS,
+                            value: getDefaultSeverityFilter(severities),
+                        },
+                    ])
+                );
+                setFiltersInitialized(true);
+            }
         }
-    }, [severities, dispatch, reportType, fetchNodeSeverities]);
+    }, [severities, dispatch, reportType, resetFilters, filtersInitialized, severityFilter.length]);
 
     useEffect(() => {
         if (selectedReport.id && selectedReport.type) {

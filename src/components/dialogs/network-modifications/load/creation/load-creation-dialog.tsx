@@ -7,9 +7,17 @@
 
 import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CONNECTIVITY, EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
-import { useCallback, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import {
+    ACTIVE_POWER_SETPOINT,
+    ADDITIONAL_PROPERTIES,
+    CONNECTIVITY,
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
+    LOAD_TYPE,
+    REACTIVE_POWER_SET_POINT,
+} from 'components/utils/field-constants';
+import { useCallback, useEffect, useState } from 'react';
+import { FieldErrors, useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
@@ -21,7 +29,6 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
-import LoadCreationForm from './load-creation-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
@@ -33,9 +40,14 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { LoadCreationInfos, LoadCreationSchemaForm, LoadFormInfos } from './load-creation.type';
+import { LoadCreationInfos, LoadCreationSchemaForm } from './load-creation.type';
 import { FetchStatus } from '../../../../../services/utils.type';
-import { DefaultModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import LoadDialogHeader from '../common/load-dialog-header';
+import { LoadDialogTab } from '../common/load-utils';
+import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
+import { LoadFormInfos } from '../common/load.type';
+import useVoltageLevelsListInfos from 'hooks/use-voltage-levels-list-infos';
 
 /**
  * Dialog to create a load in the network
@@ -50,8 +62,8 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [LOAD_TYPE]: null,
-    [P0]: null,
-    [Q0]: null,
+    [ACTIVE_POWER_SETPOINT]: null,
+    [REACTIVE_POWER_SET_POINT]: null,
     ...getConnectivityWithPositionEmptyFormData(),
     ...emptyProperties,
 };
@@ -62,14 +74,14 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
         [LOAD_TYPE]: yup.string().nullable(),
-        [P0]: yup.number().nullable().required(),
-        [Q0]: yup.number().nullable().required(),
+        [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
+        [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
     })
     .concat(creationPropertiesSchema)
     .required();
 
-export type LoadCreationDialogProps = DefaultModificationDialogProps & {
+export type LoadCreationDialogProps = NetworkModificationDialogProps & {
     editData: LoadCreationInfos;
 };
 
@@ -84,6 +96,9 @@ export function LoadCreationDialog({
 }: Readonly<LoadCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
+    const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const formMethods = useForm<DeepNullable<LoadCreationSchemaForm>>({
         defaultValues: emptyFormData,
@@ -96,8 +111,8 @@ export function LoadCreationDialog({
         [EQUIPMENT_ID]: load.id + '(1)',
         [EQUIPMENT_NAME]: load.name ?? '',
         [LOAD_TYPE]: load.type,
-        [P0]: load.p0,
-        [Q0]: load.q0,
+        [ACTIVE_POWER_SETPOINT]: load.p0,
+        [REACTIVE_POWER_SET_POINT]: load.q0,
         ...getConnectivityFormData({
             voltageLevelId: load.voltageLevelId,
             busbarSectionId: load.busOrBusbarSectionId,
@@ -118,8 +133,8 @@ export function LoadCreationDialog({
                 [EQUIPMENT_ID]: load.equipmentId,
                 [EQUIPMENT_NAME]: load.equipmentName ?? '',
                 [LOAD_TYPE]: load.loadType,
-                [P0]: load.p0,
-                [Q0]: load.q0,
+                [ACTIVE_POWER_SETPOINT]: load.p0,
+                [REACTIVE_POWER_SET_POINT]: load.q0,
                 ...getConnectivityFormData({
                     voltageLevelId: load.voltageLevelId,
                     busbarSectionId: load.busOrBusbarSectionId,
@@ -152,9 +167,9 @@ export function LoadCreationDialog({
                 nodeUuid: currentNodeUuid,
                 id: load[EQUIPMENT_ID],
                 name: sanitizeString(load[EQUIPMENT_NAME]),
-                loadType: !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
-                p0: load[P0],
-                q0: load[Q0],
+                loadType: load[LOAD_TYPE] ?? UNDEFINED_LOAD_TYPE,
+                p0: load[ACTIVE_POWER_SETPOINT],
+                q0: load[REACTIVE_POWER_SET_POINT],
                 voltageLevelId: load.connectivity.voltageLevel.id,
                 busOrBusbarSectionId: load.connectivity.busOrBusbarSection.id,
                 isUpdate: !!editData,
@@ -182,12 +197,36 @@ export function LoadCreationDialog({
 
     const clear = useCallback(() => reset(emptyFormData), [reset]);
 
+    const onValidationError = (errors: FieldErrors) => {
+        let tabsInError: number[] = [];
+        if (
+            errors?.[ACTIVE_POWER_SETPOINT] !== undefined ||
+            errors?.[REACTIVE_POWER_SET_POINT] !== undefined ||
+            errors?.[ADDITIONAL_PROPERTIES] !== undefined
+        ) {
+            tabsInError.push(LoadDialogTab.CHARACTERISTICS_TAB);
+        }
+        if (errors?.[CONNECTIVITY] !== undefined) {
+            tabsInError.push(LoadDialogTab.CONNECTIVITY_TAB);
+        }
+        if (tabsInError.length > 0) {
+            setTabIndex(tabsInError[0]);
+        }
+        setTabIndexesWithError(tabsInError);
+    };
+
+    const headerAndTabs = (
+        <LoadDialogHeader tabIndexesWithError={tabIndexesWithError} tabIndex={tabIndex} setTabIndex={setTabIndex} />
+    );
+
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
+                onValidationError={onValidationError}
+                subtitle={headerAndTabs}
                 maxWidth={'md'}
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
@@ -195,10 +234,12 @@ export function LoadCreationDialog({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <LoadCreationForm
-                    currentNode={currentNode}
+                <LoadDialogTabsContent
                     studyUuid={studyUuid}
+                    currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
+                    tabIndex={tabIndex}
+                    voltageLevelOptions={voltageLevelOptions}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

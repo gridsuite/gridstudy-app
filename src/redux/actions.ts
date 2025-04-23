@@ -54,7 +54,7 @@ import {
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import { ExpertFilter } from '../services/study/filter';
+import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
@@ -141,7 +141,8 @@ export type AppActions =
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
     | LoadNadFromConfigAction
-    | SetEditNadModeAction;
+    | SetEditNadModeAction
+    | DeletedOrRenamedNodesAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -1373,10 +1374,13 @@ export function setStateEstimationResultFilter(
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
 export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
     tabUuid: UUID;
-    filters: ExpertFilter[];
+    filters: SpreadsheetGlobalFilter[];
 };
 
-export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: ExpertFilter[]): SaveSpreadSheetGsFilterAction {
+export function saveSpreadsheetGsFilters(
+    tabUuid: UUID,
+    filters: SpreadsheetGlobalFilter[]
+): SaveSpreadSheetGsFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
         tabUuid: tabUuid,
@@ -1404,5 +1408,17 @@ export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_AL
 export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
+    };
+}
+
+export const DELETED_OR_RENAMED_NODES = 'DELETED_OR_RENAMED_NODES';
+export type DeletedOrRenamedNodesAction = Readonly<Action<typeof DELETED_OR_RENAMED_NODES>> & {
+    deletedOrRenamedNodes: UUID[];
+};
+
+export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrRenamedNodesAction {
+    return {
+        type: DELETED_OR_RENAMED_NODES,
+        deletedOrRenamedNodes,
     };
 }

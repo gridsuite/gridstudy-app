@@ -41,12 +41,9 @@ import {
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { sanitizeString } from '../../../../dialog-utils';
 import { toModificationOperation } from '../../../../../utils/utils';
-import {
-    AttributeModification,
-    ConverterStationElementInfos,
-    ConverterStationElementModificationInfos,
-} from './converter-station-type';
+import { ConverterStationElementInfos, ConverterStationElementModificationInfos } from './converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
+import { AttributeModification } from '../../../../../../services/network-modification-types';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -101,7 +98,12 @@ export function getVscConverterStationSchema(id: string) {
         [id]: yup.object().shape({
             [CONVERTER_STATION_ID]: yup.string().nullable().required(),
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
-            [LOSS_FACTOR]: yup.number().nullable().required(),
+            [LOSS_FACTOR]: yup
+                .number()
+                .nullable()
+                .required()
+                .min(0, 'NormalizedPercentage')
+                .max(100, 'NormalizedPercentage'),
             [VOLTAGE_REGULATION_ON]: yup.boolean(),
             [REACTIVE_POWER]: yup
                 .number()
@@ -113,6 +115,7 @@ export function getVscConverterStationSchema(id: string) {
             [VOLTAGE]: yup
                 .number()
                 .nullable()
+                .min(0, 'mustBeGreaterOrEqualToZero')
                 .when([VOLTAGE_REGULATION_ON], {
                     is: true,
                     then: (schema) => schema.required(),
@@ -128,10 +131,10 @@ export function getVscConverterStationModificationSchema(id: string) {
         [id]: yup.object().shape({
             [CONVERTER_STATION_ID]: yup.string(),
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
-            [LOSS_FACTOR]: yup.number().nullable(),
+            [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
             [REACTIVE_POWER]: yup.number().nullable(),
-            [VOLTAGE]: yup.number().nullable(),
+            [VOLTAGE]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
             ...getReactiveLimitsSchema(true),
         }),
     };
@@ -258,13 +261,13 @@ function getConverterStationReactiveLimits(converterStation: ConverterStationInt
               reactiveCapabilityCurveChoice: 'CURVE',
               minimumReactivePower: null,
               maximumReactivePower: null,
-              reactiveCapabilityCurveTable: converterStation.reactiveCapabilityCurvePoints,
+              reactiveCapabilityCurvePoints: converterStation.reactiveCapabilityCurvePoints,
           })
         : getReactiveLimitsFormData({
               reactiveCapabilityCurveChoice: 'MINMAX',
               minimumReactivePower: converterStation.minQ,
               maximumReactivePower: converterStation.maxQ,
-              reactiveCapabilityCurveTable: converterStation?.reactiveCapabilityCurvePoints ?? null,
+              reactiveCapabilityCurvePoints: converterStation?.reactiveCapabilityCurvePoints ?? null,
           });
 }
 
@@ -278,7 +281,7 @@ function getConverterStationModificationReactiveLimits(
                 : 'MINMAX',
             maximumReactivePower: converterStationEditData?.maxQ?.value ?? null,
             minimumReactivePower: converterStationEditData?.minQ?.value ?? null,
-            reactiveCapabilityCurveTable: converterStationEditData?.reactiveCapabilityCurvePoints ?? null,
+            reactiveCapabilityCurvePoints: converterStationEditData?.reactiveCapabilityCurvePoints ?? null,
         }),
     };
 }
@@ -304,7 +307,7 @@ export function getConverterStationFromSearchCopy(id: string, converterStation: 
                 reactiveCapabilityCurveChoice: converterStation?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
                 minimumReactivePower: converterStation?.minMaxReactiveLimits?.minQ,
                 maximumReactivePower: converterStation?.minMaxReactiveLimits?.maxQ,
-                reactiveCapabilityCurveTable: converterStation.reactiveCapabilityCurvePoints ?? null,
+                reactiveCapabilityCurvePoints: converterStation.reactiveCapabilityCurvePoints ?? null,
             }),
         },
     };

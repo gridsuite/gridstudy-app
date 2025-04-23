@@ -51,13 +51,14 @@ export default function CustomColumnsNodesConfig({
     const dialogOpen = useStateBoolean(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.type);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
 
     const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
 
     const showWarning = useMemo(
-        () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.every((n) => !validAlias(n)),
+        () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.some((n) => !validAlias(n)),
         [nodeAliases]
     );
 
@@ -90,11 +91,11 @@ export default function CustomColumnsNodesConfig({
     }, []);
 
     const handleRefresh = useCallback(() => {
-        if (nodesToReload?.length) {
+        if (currentNode?.id && currentRootNetworkUuid && nodesToReload?.length) {
             const nodesIdsToReload = new Set<string>(nodesToReload.map((n) => n.id as string));
-            fetchNodesEquipmentData(nodesIdsToReload);
+            fetchNodesEquipmentData(nodesIdsToReload, currentNode.id, currentRootNetworkUuid);
         }
-    }, [fetchNodesEquipmentData, nodesToReload]);
+    }, [currentNode?.id, currentRootNetworkUuid, fetchNodesEquipmentData, nodesToReload]);
 
     return (
         <>
@@ -136,7 +137,7 @@ export default function CustomColumnsNodesConfig({
                             handleClose();
                             handleRefresh();
                         }}
-                        disabled={nodesToReload ? nodesToReload.length === 0 : true}
+                        disabled={tableType && nodesToReload ? nodesToReload.length === 0 : true}
                     >
                         <FormattedMessage id={'spreadsheet/custom_column/option/refresh'} />
                     </MenuItem>

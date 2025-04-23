@@ -11,11 +11,18 @@
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "module": "esnext",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx"
     },
-    "include": ["src"]
+    "include": [
+        "src",
+        "jest.setup.ts",
+        // We must list config files in typescript because needed by prettier when called by eslint as plugin
+        "jest.config.ts",
+        "prettier.config.js",
+        "vite.config.ts"
+    ]
 }

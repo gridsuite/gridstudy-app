@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
@@ -106,6 +106,7 @@ const VoltageInitResult = ({ result, status }) => {
             resizable: false,
             lockPinned: true,
             wrapHeaderText: true,
+            flex: 1,
             lockVisible: true,
         }),
         []
@@ -114,6 +115,10 @@ const VoltageInitResult = ({ result, status }) => {
         if (params.api) {
             params.api.sizeColumnsToFit();
         }
+    }, []);
+
+    const onGridReady = useCallback(({ api }) => {
+        api?.sizeColumnsToFit();
     }, []);
 
     const applyModifications = () => {
@@ -259,6 +264,7 @@ const VoltageInitResult = ({ result, status }) => {
                     tableName={intl.formatMessage({ id: 'Indicators' })}
                     rows={rows}
                     onRowDataUpdated={onRowDataUpdated}
+                    onGridReady={onGridReady}
                     skipColumnHeaders={false}
                 />
             </>
@@ -295,6 +301,7 @@ const VoltageInitResult = ({ result, status }) => {
                     tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
                     rows={result.reactiveSlacks}
                     onRowDataUpdated={onRowDataUpdated}
+                    onGridReady={onGridReady}
                     skipColumnHeaders={false}
                 />
             </>
@@ -341,6 +348,7 @@ const VoltageInitResult = ({ result, status }) => {
                 tableName={intl.formatMessage({ id: 'BusVoltages' })}
                 rows={busVoltages}
                 onRowDataUpdated={onRowDataUpdated}
+                onGridReady={onGridReady}
                 skipColumnHeaders={false}
             />
         );
