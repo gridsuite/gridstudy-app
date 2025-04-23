@@ -30,7 +30,7 @@ import {
     FILTER_TEXT_COMPARATORS,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { AggridLocales } from '../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -418,7 +418,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
                 onRowDataUpdated={handleRowDataUpdated}
-                overrideLocales={AggridLocales}
+                overrideLocales={AGGRID_LOCALES}
             />
         </Box>
     );

@@ -32,7 +32,7 @@ import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
 import SwitchCellRenderer from './switch-cell-renderer';
-import { AggridLocales } from '../../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     container: (theme: Theme) => ({
@@ -204,7 +204,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 onRowDragEnd={onRowDragEnd}
                 rowDragManaged={!isRowDragDisabled}
                 suppressNoRowsOverlay={true}
-                overrideLocales={AggridLocales}
+                overrideLocales={AGGRID_LOCALES}
             />
         </Box>
     );

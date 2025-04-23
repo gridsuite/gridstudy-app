@@ -21,7 +21,7 @@ import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
-import { AggridLocales } from '../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     loader: {
@@ -107,7 +107,7 @@ const DynamicSimulationResultSynthesis = memo(
                     defaultColDef={defaultColDef}
                     overlayNoRowsTemplate={overlayMessage}
                     enableCellTextSelection
-                    overrideLocales={AggridLocales}
+                    overrideLocales={AGGRID_LOCALES}
                 />
             </>
         );

@@ -26,7 +26,7 @@ import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
-import { AggridLocales } from '../../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 
 const TabularCreationForm = () => {
     const intl = useIntl();
@@ -227,7 +227,7 @@ const TabularCreationForm = () => {
                     pagination
                     paginationPageSize={100}
                     suppressDragLeaveHidesColumns
-                    overrideLocales={AggridLocales}
+                    overrideLocales={AGGRID_LOCALES}
                 />
             </Grid>
         </Grid>

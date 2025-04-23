@@ -10,6 +10,4 @@ export const grid_fr = {
     'grid.failed': 'Echec du calcul',
     'grid.running': 'Calcul en cours...',
     'grid.noLimitViolation': 'Pas de contrainte',
-    'grid.customInRange': 'Intervalle', // Custom filter for enums
-    'grid.booleanMatches': 'Correspondances booléennes',
 };

@@ -33,7 +33,7 @@ import type {
     RowDataUpdatedEvent,
 } from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
-import { AggridLocales } from '../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 function isColDef(col: ColDef | ColGroupDef): col is ColDef {
     return (col as ColDef).field !== undefined;
@@ -264,7 +264,7 @@ function SensitivityAnalysisResult({
                 overlayNoRowsTemplate={message}
                 onGridColumnsChanged={handleGridColumnsChanged}
                 onRowDataUpdated={handleRowDataUpdated}
-                overrideLocales={AggridLocales}
+                overrideLocales={AGGRID_LOCALES}
                 {...props}
             />
         </div>

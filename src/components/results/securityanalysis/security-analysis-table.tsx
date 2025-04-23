@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import { AggridLocales } from '../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
     rows,
@@ -61,7 +61,7 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
             overlayNoRowsTemplate={overlayNoRowsTemplate}
-            overrideLocales={AggridLocales}
+            overrideLocales={AGGRID_LOCALES}
             {...agGridProps}
         />
     );

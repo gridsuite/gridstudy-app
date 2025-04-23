@@ -21,7 +21,7 @@ import { fetchDynamicSecurityAnalysisStatus } from '../../../services/study/dyna
 import { MEDIUM_COLUMN_WIDTH } from '../dynamicsimulation/utils/dynamic-simulation-result-utils';
 import { dynamicSecurityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
-import { AggridLocales } from '../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     loader: {
@@ -107,7 +107,7 @@ const DynamicSecurityAnalysisResultSynthesis = memo(
                     defaultColDef={defaultColDef}
                     overlayNoRowsTemplate={overlayMessage}
                     enableCellTextSelection
-                    overrideLocales={AggridLocales}
+                    overrideLocales={AGGRID_LOCALES}
                 />
             </>
         );

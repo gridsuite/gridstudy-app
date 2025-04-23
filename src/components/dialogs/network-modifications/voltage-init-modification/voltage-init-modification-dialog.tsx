@@ -30,7 +30,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { FetchStatus } from '../../../../services/utils.type';
 import type { ColDef, RowDataUpdatedEvent } from 'ag-grid-community';
 import { suppressEventsToPreventEditMode } from '../../commons/utils';
-import { AggridLocales } from '../../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     container: {
@@ -517,7 +517,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             columnDefs={columnDefs}
                             rowSelection="single"
                             onRowDataUpdated={onRowDataUpdated}
-                            overrideLocales={AggridLocales}
+                            overrideLocales={AGGRID_LOCALES}
                         />
                     </Box>
                 </Box>

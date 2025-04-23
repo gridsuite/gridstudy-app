@@ -25,7 +25,7 @@ import { CalculationRowType } from './utils/calculation.type';
 import { isCalculationRow } from './utils/calculation-utils';
 import { useSelector } from 'react-redux';
 import { styles } from './equipment-table.style';
-import { AggridLocales } from '../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 
 const DEFAULT_ROW_HEIGHT = 28;
 const MAX_CLICK_DURATION = 200;
@@ -186,7 +186,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             isExternalFilterPresent={isExternalFilterPresent}
             doesExternalFilterPass={doesExternalFilterPass}
             sx={shouldHidePinnedHeaderRightBorder ? styles.noBorderRight : undefined}
-            overrideLocales={AggridLocales}
+            overrideLocales={AGGRID_LOCALES}
         />
     );
 };

@@ -12,7 +12,7 @@ import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { AggridLocales } from '../../../../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     grid: {
@@ -151,7 +151,7 @@ const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
                         defaultColDef={defaultColDef}
                         rowSelection={'multiple'}
                         onSelectionChanged={onSelectionChanged}
-                        overrideLocales={AggridLocales}
+                        overrideLocales={AGGRID_LOCALES}
                     />
                 </Box>
             </Grid>
