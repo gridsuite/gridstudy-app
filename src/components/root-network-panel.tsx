@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useState } from 'react';
-import { Paper } from '@mui/material';
+import React, { FunctionComponent, useMemo, useState } from 'react';
+import { Paper, useTheme } from '@mui/material';
 import RootNetworkNodeEditor from './graph/menus/root-network-node-editor';
 import RootNetworkPanelHeader from './root-network-panel-header';
 import RootNetworkMinimizedPanelContent from './graph/menus/root-network-minimized-panel-content';
@@ -25,12 +25,16 @@ const styles = {
 const RootNetworkPanel: FunctionComponent = () => {
     const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
     const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(false);
-    const panelStyle = {
-        ...styles.paper,
-        width: isRootNetworkPanelMinimized ? '174px' : '300px',
-        minHeight: isRootNetworkPanelMinimized ? '99px' : '300px',
-    };
 
+    const theme = useTheme();
+
+    const panelStyle = useMemo(() => {
+        return {
+            ...styles.paper,
+            width: isRootNetworkPanelMinimized ? theme.spacing(22) : theme.spacing(38),
+            minHeight: isRootNetworkPanelMinimized ? theme.spacing(12) : theme.spacing(38),
+        };
+    }, [isRootNetworkPanelMinimized, theme]);
     return (
         <Paper elevation={3} sx={panelStyle}>
             <RootNetworkPanelHeader

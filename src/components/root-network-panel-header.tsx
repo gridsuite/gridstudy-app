@@ -8,15 +8,19 @@
 import React, { SetStateAction, useCallback, useState } from 'react';
 import { Box, IconButton, Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
-import { LIGHT_THEME, OverflowableText, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    LeftPanelCloseIcon,
+    LeftPanelOpenIcon,
+    OverflowableText,
+    Parameter,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { FileUpload } from '@mui/icons-material';
 import RootNetworkDialog, { FormData } from './dialogs/root-network/root-network-dialog';
 import { createRootNetwork } from 'services/root-network';
 import { UUID } from 'crypto';
 import { GetCaseImportParametersReturn, getCaseImportParameters } from 'services/network-conversion';
-import LeftPanelClose from '@material-symbols/svg-400/outlined/left_panel_close.svg?react';
-import LeftPanelOpen from '@material-symbols/svg-400/outlined/left_panel_open.svg?react';
 import { customizeCurrentParameters, formatCaseImportParameters } from './graph/util/case-import-parameters';
 import { useSelector } from 'react-redux';
 
@@ -27,12 +31,16 @@ const styles = {
         padding: theme.spacing(1),
     }),
     rootNameTitle: (theme: Theme) => ({
-        flexGrow: 1,
         fontWeight: 'bold',
+    }),
+    headerLeftContainer: (theme: Theme) => ({
         marginLeft: theme.spacing(2),
+        display: 'flex',
+        alignItems: 'center',
+        flexGrow: 1,
     }),
     uploadButton: (theme: Theme) => ({
-        marginRight: theme.spacing(14),
+        marginLeft: theme.spacing(2),
     }),
 };
 interface RootNetworkPanelHeaderProps {
@@ -51,7 +59,6 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const intl = useIntl();
-    const theme = useSelector((state: AppState) => state.theme);
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -103,37 +110,27 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     const minimizeRootNetworkPanel = useCallback(() => {
         setIsRootNetworkPanelMinimized((prev) => !prev);
     }, [setIsRootNetworkPanelMinimized]);
-    const LeftPanelIconComponent = isRootNetworkPanelMinimized ? LeftPanelOpen : LeftPanelClose;
-    const leftPanelIconColor = theme === LIGHT_THEME ? 'rgba(0, 0, 0, 0.54)' : '#fff';
 
     return (
         <>
-            <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                <Box sx={styles.headerPanel}>
-                    <OverflowableText text={intl.formatMessage({ id: 'root' })} sx={styles.rootNameTitle} />
+            <Box sx={styles.headerPanel}>
+                <Box sx={styles.headerLeftContainer}>
+                    <OverflowableText sx={styles.rootNameTitle} text={intl.formatMessage({ id: 'root' })} />
 
                     <Tooltip title={<FormattedMessage id={'addNetwork'} />}>
-                        <span>
-                            <IconButton
-                                onClick={openRootNetworkCreationDialog}
-                                size={'small'}
-                                sx={isRootNetworkPanelMinimized ? undefined : styles.uploadButton}
-                                disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
-                            >
-                                <FileUpload />
-                            </IconButton>
-                        </span>
+                        <IconButton
+                            onClick={openRootNetworkCreationDialog}
+                            size={'small'}
+                            sx={styles.uploadButton}
+                            disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
+                        >
+                            <FileUpload />
+                        </IconButton>
                     </Tooltip>
-                    <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
-                        <LeftPanelIconComponent
-                            style={{
-                                width: 24,
-                                height: 24,
-                                fill: leftPanelIconColor,
-                            }}
-                        />
-                    </IconButton>
                 </Box>
+                <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
+                    {isRootNetworkPanelMinimized ? <LeftPanelOpenIcon /> : <LeftPanelCloseIcon />}
+                </IconButton>
             </Box>
             {rootNetworkCreationDialogOpen && renderRootNetworkCreationDialog()}
         </>

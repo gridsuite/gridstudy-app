@@ -17,14 +17,8 @@ const styles = {
         alignItems: 'center',
         padding: theme.spacing(1),
     }),
-    rootNameTitle: (theme: Theme) => ({
-        flexGrow: 1,
-        fontWeight: 'bold',
-        marginLeft: theme.spacing(2),
-    }),
     minimizedPanel: (theme: Theme) => ({
         flexGrow: 1,
-        fontWeight: 'bold',
         marginLeft: theme.spacing(2),
     }),
     icon: {
