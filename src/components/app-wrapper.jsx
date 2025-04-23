@@ -55,8 +55,8 @@ import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import messages_plugins from '../plugins/translations';
-import aggrid_locale_en from '../translations/external/aggrid-locale-en';
-import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
+import { grid_en } from '../translations/grid-en';
+import { grid_fr } from '../translations/grid-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
 import dynamic_mapping_models_en from '../translations/external/dynamic-mapping-models-en';
@@ -305,7 +305,7 @@ const messages = {
         ...commonButtonEn,
         ...componentsEn,
         ...equipmentsEn,
-        ...aggrid_locale_en,
+        ...grid_en,
         ...backend_locale_en,
         ...dynamic_mapping_models_en,
         ...csv_locale_en,
@@ -337,7 +337,7 @@ const messages = {
         ...commonButtonFr,
         ...componentsFr,
         ...equipmentsFr,
-        ...aggrid_locale_fr,
+        ...grid_fr,
         ...backend_locale_fr,
         ...dynamic_mapping_models_fr,
         ...csv_locale_fr,
