@@ -253,9 +253,9 @@ function createThemeWithComponents(baseTheme, ...args) {
         {
             palette: {
                 cancelButtonColor: {
-                    main: lightTheme.palette.text.secondary,
+                    main: baseTheme.palette.text.secondary,
                 },
-                tabBackground: lightTheme.palette.background.default,
+                tabBackground: baseTheme.palette.background.default,
             },
             components: {
                 CancelButton: {
