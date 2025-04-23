@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSpreadsheetEquipments } from './data-fetching/use-spreadsheet-equipments';
 import { EquipmentTable } from './equipment-table';
 import { Identifiable } from '@gridsuite/commons-ui';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { SpreadsheetEquipmentsByNodes, SpreadsheetTabDefinition } from './config/spreadsheet.type';
+import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Alert, Box, Theme } from '@mui/material';
@@ -23,7 +23,6 @@ import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
 import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useGridCalculations } from 'hooks/use-grid-calculations';
-import { UUID } from 'crypto';
 import { useColumnManagement } from './hooks/use-column-management';
 
 const styles = {
@@ -100,11 +99,7 @@ export const SpreadsheetTabContent = React.memo(
             nodeAliases
         );
 
-        const { onModelUpdated: onModelUpdatedGridCalculations } = useGridCalculations(
-            gridRef,
-            tableDefinition.uuid,
-            columns
-        );
+        const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
         const { updateSortConfig, updateLockedColumnsConfig, isLockedColumnNamesEmpty, handleColumnDrag } =
             useColumnManagement(gridRef, tableDefinition);
@@ -139,52 +134,44 @@ export const SpreadsheetTabContent = React.memo(
         }, [equipmentId, gridRef, isGridReady, onEquipmentScrolled, rowDataInitialized]);
 
         useEffect(() => {
-            // add a small delay to allow tab switching to finish
-            // before scrolling to the equipment
-            setTimeout(() => {
-                handleEquipmentScroll();
-            }, 400);
-        }, [handleEquipmentScroll, equipmentId]);
+            if (!equipmentId || !gridRef.current?.api || !isGridReady || !rowDataInitialized) {
+                return;
+            }
+            handleEquipmentScroll();
+        }, [handleEquipmentScroll, equipmentId, gridRef, isGridReady, rowDataInitialized]);
 
         const onFirstDataRendered = useCallback(() => {
             handleEquipmentScroll();
         }, [handleEquipmentScroll]);
 
-        const onModelUpdated = useCallback(() => {
-            handleEquipmentScroll();
-            onModelUpdatedGridCalculations();
-        }, [handleEquipmentScroll, onModelUpdatedGridCalculations]);
-
         const onGridReady = useCallback(() => {
             setIsGridReady(true);
         }, []);
 
-        const transformRowData = useCallback(
-            (equipments: SpreadsheetEquipmentsByNodes, currentNodeId: UUID, nodeAliases: NodeAlias[]) => {
-                if (!equipments?.equipmentsByNodeId[currentNodeId] || !nodeAliases) {
-                    return [];
-                }
+        const transformedRowData = useMemo(() => {
+            if (
+                !nodeAliases ||
+                !equipments?.nodesId.includes(currentNode.id) ||
+                !equipments.equipmentsByNodeId[currentNode.id]
+            ) {
+                return [];
+            }
 
-                return equipments.equipmentsByNodeId[currentNodeId].map((equipment) => {
-                    let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
-                    Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, nodeEquipments]) => {
-                        let matchingEquipment = nodeEquipments.find((eq) => eq.id === equipment.id);
-                        let nodeAlias = nodeAliases.find((value) => value.id === nodeId);
-                        if (nodeAlias && matchingEquipment) {
-                            equipmentToAdd[nodeAlias.alias] = matchingEquipment;
-                        }
-                    });
-                    return equipmentToAdd;
+            return equipments.equipmentsByNodeId[currentNode.id].map((equipment) => {
+                let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
+                Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, nodeEquipments]) => {
+                    let matchingEquipment = nodeEquipments.find((eq) => eq.id === equipment.id);
+                    let nodeAlias = nodeAliases.find((value) => value.id === nodeId);
+                    if (nodeAlias && matchingEquipment) {
+                        equipmentToAdd[nodeAlias.alias] = matchingEquipment;
+                    }
                 });
-            },
-            []
-        );
+                return equipmentToAdd;
+            });
+        }, [equipments, currentNode.id, nodeAliases]);
 
         useEffect(() => {
-            if (equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined || !nodeAliases) {
-                return;
-            }
-            const localRowData = transformRowData(equipments, currentNode.id, nodeAliases);
+            const localRowData = transformedRowData;
             setRowData(localRowData);
             // Set the row data in the grid if it is already initialized
             // Otherwise, wait for the grid to be initialized
@@ -195,7 +182,7 @@ export const SpreadsheetTabContent = React.memo(
                 gridRef.current.api.setGridOption('rowData', localRowData);
                 setRowDataInitialized(true);
             }
-        }, [equipments, nodeAliases, currentNode.id, transformRowData, gridRef]);
+        }, [transformedRowData, gridRef]);
 
         useEffect(() => {
             if (isGridReady && gridRef.current?.api && !rowDataInitialized) {

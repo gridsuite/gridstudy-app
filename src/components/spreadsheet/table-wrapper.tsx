@@ -49,6 +49,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
+    const [currentEquipmentId, setCurrentEquipmentId] = useState<string | null>(null);
 
     // Initialize activeTabUuid with the first tab's UUID if not already set
     useEffect(() => {
@@ -71,7 +72,8 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (matchingTab && matchingTab.uuid !== activeTabUuid) {
             setActiveTabUuid(matchingTab.uuid);
         }
-    }, [activeTabUuid, equipmentType, tablesDefinitions]);
+        setCurrentEquipmentId(equipmentId);
+    }, [activeTabUuid, equipmentId, equipmentType, tablesDefinitions]);
 
     const getStudySpreadsheetConfigCollection = useCallback(() => {
         if (!studyUuid) {
@@ -137,7 +139,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
             {tablesDefinitions.map((tabDef) => {
                 const isActive = activeTabUuid === tabDef.uuid;
-                const equipmentIdToScrollTo = tabDef.type === equipmentType ? equipmentId : null;
+                const equipmentIdToScrollTo = tabDef.type === equipmentType && isActive ? currentEquipmentId : null;
                 return (
                     <TabPanelLazy key={tabDef.uuid} selected={isActive}>
                         <Paper
