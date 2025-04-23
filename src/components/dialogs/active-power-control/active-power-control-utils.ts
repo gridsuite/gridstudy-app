@@ -24,6 +24,8 @@ export const getActivePowerControlSchema = (isEquipmentModification = false) => 
     [DROOP]: yup
         .number()
         .nullable()
+        .min(0, 'NormalizedPercentage')
+        .max(100, 'NormalizedPercentage')
         .when([FREQUENCY_REGULATION], {
             is: (frequencyRegulation: boolean) => !isEquipmentModification && frequencyRegulation,
             then: (schema) => schema.required(),

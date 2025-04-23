@@ -19,7 +19,6 @@ import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import { Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
@@ -68,7 +67,7 @@ import {
 import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
-import { RestoreFromTrash } from '@mui/icons-material';
+import { RestoreFromTrash, FileUpload } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
@@ -961,7 +960,7 @@ const NetworkModificationNodeEditor = () => {
                             sx={styles.toolbarIcon}
                             disabled={isAnyNodeBuilding || mapDataLoading}
                         >
-                            <CreateNewFolderIcon />
+                            <FileUpload />
                         </IconButton>
                     </span>
                 </Tooltip>
