@@ -66,6 +66,7 @@ interface EquipmentTableProps {
     onModelUpdated?: GridOptions['onModelUpdated'];
     isDataEditable: boolean;
     onFirstDataRendered: GridOptions['onFirstDataRendered'];
+    onGridReady: GridOptions['onGridReady'];
 }
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
@@ -81,6 +82,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     onModelUpdated,
     isDataEditable,
     onFirstDataRendered,
+    onGridReady,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -174,6 +176,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             isExternalFilterPresent={isExternalFilterPresent}
             doesExternalFilterPass={doesExternalFilterPass}
             onFirstDataRendered={onFirstDataRendered}
+            onGridReady={onGridReady}
         />
     );
 };

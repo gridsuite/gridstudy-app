@@ -72,6 +72,9 @@ export const SpreadsheetTabContent = React.memo(
         onEquipmentScrolled,
     }: SpreadsheetTabContentProps) => {
         const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
+        const [isGridReady, setIsGridReady] = useState(false);
+        const [rowData, setRowData] = useState<RecursiveIdentifiable[]>([]);
+        const [rowDataInitialized, setRowDataInitialized] = useState(false);
 
         const highlightUpdatedEquipment = useCallback(() => {
             if (!equipmentToUpdateId) {
@@ -97,7 +100,11 @@ export const SpreadsheetTabContent = React.memo(
             nodeAliases
         );
 
-        const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
+        const { onModelUpdated: onModelUpdatedGridCalculations } = useGridCalculations(
+            gridRef,
+            tableDefinition.uuid,
+            columns
+        );
 
         const { updateSortConfig, updateLockedColumnsConfig, isLockedColumnNamesEmpty, handleColumnDrag } =
             useColumnManagement(gridRef, tableDefinition);
@@ -121,29 +128,28 @@ export const SpreadsheetTabContent = React.memo(
         );
 
         const handleEquipmentScroll = useCallback(() => {
-            if (equipmentId && gridRef.current?.api) {
-                // a small timeout is needed to ensure the grid is fully rendered
-                // before trying to scroll to the selected row to avoid glitches
-                setTimeout(() => {
-                    const selectedRow = gridRef.current?.api?.getRowNode(equipmentId);
-                    if (selectedRow) {
-                        gridRef.current?.api?.ensureNodeVisible(selectedRow, 'top');
-                        selectedRow.setSelected(true, true);
-                        onEquipmentScrolled();
-                    }
-                }, 300);
+            if (equipmentId && gridRef.current?.api && isGridReady && rowDataInitialized) {
+                const selectedRow = gridRef.current.api.getRowNode(equipmentId);
+                if (selectedRow) {
+                    gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
+                    selectedRow.setSelected(true, true);
+                    onEquipmentScrolled();
+                }
             }
-        }, [equipmentId, gridRef, onEquipmentScrolled]);
+        }, [equipmentId, gridRef, isGridReady, onEquipmentScrolled, rowDataInitialized]);
 
-        useEffect(() => {
-            handleEquipmentScroll();
-        }, [handleEquipmentScroll]);
-
-        // used to scroll to the selected row when the data is first rendered
-        // and the grid is fully loaded
         const onFirstDataRendered = useCallback(() => {
             handleEquipmentScroll();
         }, [handleEquipmentScroll]);
+
+        const onModelUpdated = useCallback(() => {
+            handleEquipmentScroll();
+            onModelUpdatedGridCalculations();
+        }, [handleEquipmentScroll, onModelUpdatedGridCalculations]);
+
+        const onGridReady = useCallback(() => {
+            setIsGridReady(true);
+        }, []);
 
         const transformRowData = useCallback(
             (equipments: SpreadsheetEquipmentsByNodes, currentNodeId: UUID, nodeAliases: NodeAlias[]) => {
@@ -166,9 +172,6 @@ export const SpreadsheetTabContent = React.memo(
             []
         );
 
-        const [rowData, setRowData] = useState<RecursiveIdentifiable[]>([]);
-        const [shouldSetRowData, setShouldSetRowData] = useState(false);
-
         useEffect(() => {
             if (equipments?.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined || !nodeAliases) {
                 return;
@@ -182,24 +185,22 @@ export const SpreadsheetTabContent = React.memo(
             // and the grid is not yet initialized
             if (gridRef.current?.api) {
                 gridRef.current.api.setGridOption('rowData', localRowData);
-            } else {
-                setShouldSetRowData(true);
+                setRowDataInitialized(true);
             }
         }, [equipments, nodeAliases, currentNode.id, transformRowData, gridRef]);
 
         useEffect(() => {
-            if (gridRef.current?.api && shouldSetRowData) {
-                setTimeout(() => {
-                    gridRef.current?.api.setGridOption('rowData', rowData);
-                }, 300);
+            if (isGridReady && gridRef.current?.api && !rowDataInitialized) {
+                gridRef.current.api.setGridOption('rowData', rowData);
+                setRowDataInitialized(true);
             }
-        }, [gridRef, rowData, shouldSetRowData]);
+        }, [isGridReady, rowData, gridRef, rowDataInitialized]);
 
         const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
 
         useEffect(() => {
             const api = gridRef.current?.api;
-            if (!api) {
+            if (!api || !isGridReady || !rowDataInitialized) {
                 return;
             }
 
@@ -209,7 +210,15 @@ export const SpreadsheetTabContent = React.memo(
             if (filters.length > 0) {
                 updateFilters(api, filters);
             }
-        }, [updateSortConfig, updateLockedColumnsConfig, filters, equipments, gridRef, shouldSetRowData]);
+        }, [
+            updateSortConfig,
+            updateLockedColumnsConfig,
+            filters,
+            equipments,
+            gridRef,
+            isGridReady,
+            rowDataInitialized,
+        ]);
 
         return (
             <>
@@ -232,6 +241,7 @@ export const SpreadsheetTabContent = React.memo(
                             shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
                             onModelUpdated={onModelUpdated}
                             onFirstDataRendered={onFirstDataRendered}
+                            onGridReady={onGridReady}
                         />
                     </Box>
                 )}
