@@ -38,6 +38,7 @@ function TabPanelLazy({ children, selected, ...otherProps }: Readonly<TabPanelLa
                           visibility: 'visible',
                       }
                     : {
+                          width: '100%',
                           display: 'inherit',
                           position: 'absolute',
                           top: 0,
