@@ -21,7 +21,14 @@ import {
 import { GLOBAL_REPORT_NODE_LABEL } from '../../utils/report/report.constant';
 import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { Box } from '@mui/material';
+import { Box, Theme } from '@mui/material';
+
+const styles = {
+    panelHandlerContainer: (theme: Theme) => ({
+        borderRight: `1px solid ${theme.palette.divider}`,
+        marginRight: theme.spacing(1),
+    }),
+};
 
 type ReportViewerProps = {
     report: Report;
@@ -132,15 +139,7 @@ export default function ReportViewer({
                         highlightedReportId={highlightedReportId}
                     />
                 </Panel>
-                <Box
-                    display="flex"
-                    alignItems="center"
-                    sx={{
-                        height: '100%',
-                        borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
-                        borderRight: (theme) => `1px solid ${theme.palette.divider}`,
-                    }}
-                >
+                <Box display="flex" alignItems="center" sx={styles.panelHandlerContainer}>
                     <PanelResizeHandle>
                         <DragIndicatorIcon fontSize="small" sx={{ padding: 0, margin: 0 }} />
                     </PanelResizeHandle>
