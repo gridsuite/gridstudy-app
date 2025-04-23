@@ -5,16 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSpreadsheetEquipments } from './data-fetching/use-spreadsheet-equipments';
 import { EquipmentTable } from './equipment-table';
 import { Identifiable } from '@gridsuite/commons-ui';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import {
-    SpreadsheetEquipmentsByNodes,
-    SpreadsheetEquipmentType,
-    SpreadsheetTabDefinition,
-} from './config/spreadsheet.type';
+import { SpreadsheetEquipmentsByNodes, SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Alert, Box, Theme } from '@mui/material';
@@ -52,19 +48,20 @@ interface RecursiveIdentifiable extends Identifiable {
 }
 
 interface SpreadsheetTabContentProps {
+    gridRef: React.RefObject<AgGridReact>;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
     nodeAliases: NodeAlias[] | undefined;
     disabled: boolean;
     shouldDisableButtons: boolean;
-    equipmentId: string;
-    equipmentType: SpreadsheetEquipmentType;
+    equipmentId: string | null;
     onEquipmentScrolled: () => void;
 }
 
 export const SpreadsheetTabContent = React.memo(
     ({
+        gridRef,
         currentNode,
         tableDefinition,
         columns,
@@ -72,10 +69,8 @@ export const SpreadsheetTabContent = React.memo(
         shouldDisableButtons,
         disabled,
         equipmentId,
-        equipmentType,
         onEquipmentScrolled,
     }: SpreadsheetTabContentProps) => {
-        const gridRef = useRef<AgGridReact>(null);
         const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
 
         const highlightUpdatedEquipment = useCallback(() => {
@@ -94,7 +89,7 @@ export const SpreadsheetTabContent = React.memo(
             }
 
             setEquipmentToUpdateId(null);
-        }, [equipmentToUpdateId]);
+        }, [equipmentToUpdateId, gridRef]);
 
         const { equipments, isFetching } = useSpreadsheetEquipments(
             tableDefinition?.type,
@@ -126,7 +121,7 @@ export const SpreadsheetTabContent = React.memo(
         );
 
         const handleEquipmentScroll = useCallback(() => {
-            if (equipmentId && equipmentType === tableDefinition.type && gridRef.current?.api) {
+            if (equipmentId && gridRef.current?.api) {
                 // a small timeout is needed to ensure the grid is fully rendered
                 // before trying to scroll to the selected row to avoid glitches
                 setTimeout(() => {
@@ -138,7 +133,7 @@ export const SpreadsheetTabContent = React.memo(
                     }
                 }, 300);
             }
-        }, [equipmentId, equipmentType, tableDefinition.type, onEquipmentScrolled]);
+        }, [equipmentId, gridRef, onEquipmentScrolled]);
 
         useEffect(() => {
             handleEquipmentScroll();
@@ -190,13 +185,15 @@ export const SpreadsheetTabContent = React.memo(
             } else {
                 setShouldSetRowData(true);
             }
-        }, [equipments, tableDefinition?.type, nodeAliases, currentNode.id, transformRowData]);
+        }, [equipments, nodeAliases, currentNode.id, transformRowData, gridRef]);
 
         useEffect(() => {
             if (gridRef.current?.api && shouldSetRowData) {
-                gridRef.current.api.setGridOption('rowData', rowData);
+                setTimeout(() => {
+                    gridRef.current?.api.setGridOption('rowData', rowData);
+                }, 300);
             }
-        }, [rowData, shouldSetRowData]);
+        }, [gridRef, rowData, shouldSetRowData]);
 
         const { filters } = useFilterSelector(FilterType.Spreadsheet, tableDefinition?.uuid);
 
@@ -212,7 +209,7 @@ export const SpreadsheetTabContent = React.memo(
             if (filters.length > 0) {
                 updateFilters(api, filters);
             }
-        }, [updateSortConfig, updateLockedColumnsConfig, filters, equipments]);
+        }, [updateSortConfig, updateLockedColumnsConfig, filters, equipments, gridRef, shouldSetRowData]);
 
         return (
             <>

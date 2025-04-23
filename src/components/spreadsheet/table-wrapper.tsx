@@ -27,7 +27,6 @@ interface TableWrapperProps {
     currentNode: CurrentTreeNode;
     equipmentId: string;
     equipmentType: SpreadsheetEquipmentType;
-    equipmentChanged: boolean;
     disabled: boolean;
     onEquipmentScrolled: () => void;
 }
@@ -36,7 +35,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     currentNode,
     equipmentId,
     equipmentType,
-    equipmentChanged,
     disabled,
     onEquipmentScrolled,
 }) => {
@@ -139,6 +137,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
             {tablesDefinitions.map((tabDef) => {
                 const isActive = activeTabUuid === tabDef.uuid;
+                const equipmentIdToScrollTo = tabDef.type === equipmentType ? equipmentId : null;
                 return (
                     <TabPanelLazy key={tabDef.uuid} selected={isActive}>
                         <Paper
@@ -155,8 +154,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                                 disabled={disabled}
                                 nodeAliases={nodeAliases}
                                 updateNodeAliases={updateNodeAliases}
-                                equipmentId={equipmentId}
-                                equipmentType={equipmentType}
+                                equipmentId={equipmentIdToScrollTo}
                                 onEquipmentScrolled={onEquipmentScrolled}
                             />
                         </Paper>

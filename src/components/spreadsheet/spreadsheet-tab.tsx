@@ -9,7 +9,7 @@ import React, { useMemo, useRef } from 'react';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { rowIndexColumnDefinition } from './config/common-column-definitions';
-import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from './config/spreadsheet.type';
+import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { AgGridReact } from 'ag-grid-react';
 import { SpreadsheetTabContent } from './spreadsheet-tab-content';
@@ -23,8 +23,7 @@ interface SpreadsheetTabProps {
     disabled: boolean;
     nodeAliases: NodeAlias[] | undefined;
     updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
-    equipmentId: string;
-    equipmentType: SpreadsheetEquipmentType;
+    equipmentId: string | null;
     onEquipmentScrolled: () => void;
 }
 
@@ -37,7 +36,6 @@ export const SpreadsheetTab = React.memo(
         nodeAliases,
         updateNodeAliases,
         equipmentId,
-        equipmentType,
         onEquipmentScrolled,
     }: SpreadsheetTabProps) => {
         const gridRef = useRef<AgGridReact>(null);
@@ -75,6 +73,7 @@ export const SpreadsheetTab = React.memo(
                 />
 
                 <SpreadsheetTabContent
+                    gridRef={gridRef}
                     currentNode={currentNode}
                     tableDefinition={tableDefinition}
                     columns={reorderedColsDefs}
@@ -82,7 +81,6 @@ export const SpreadsheetTab = React.memo(
                     shouldDisableButtons={shouldDisableButtons}
                     disabled={disabled}
                     equipmentId={equipmentId}
-                    equipmentType={equipmentType}
                     onEquipmentScrolled={onEquipmentScrolled}
                 />
             </>

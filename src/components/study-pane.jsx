@@ -49,7 +49,6 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
-        changed: false,
     });
 
     const { openDiagramView } = useDiagram();
@@ -65,7 +64,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
     }
 
     const unsetTableEquipment = useCallback(() => {
-        setTableEquipment({ id: null, type: null, changed: false });
+        setTableEquipment({ id: null, type: null });
     }, []);
 
     return (
@@ -96,7 +95,6 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                         currentNode={currentNode}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
-                        equipmentChanged={tableEquipment.changed}
                         disabled={disabled}
                         onEquipmentScrolled={unsetTableEquipment}
                     />

@@ -70,14 +70,13 @@ export const SpreadsheetTabToolbar = ({
                     updateNodeAliases={updateNodeAliases}
                 />
             </Grid>
-            <Grid item style={{ flexGrow: 1 }}></Grid>
+            <Grid item sx={{ flexGrow: 1 }}></Grid>
             <Grid item sx={styles.save}>
                 <SpreadsheetSave
                     tableDefinition={tableDefinition}
                     gridRef={gridRef}
                     columns={columns}
-                    disabled={false}
-                    dataSize={1}
+                    disabled={shouldDisableButtons}
                     nodeAliases={nodeAliases}
                 />
             </Grid>

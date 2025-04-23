@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Grid, Theme } from '@mui/material';
+import { Button, Grid, Theme, Tooltip } from '@mui/material';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -18,7 +18,7 @@ import {
     reorderSpreadsheetConfigs,
 } from 'services/study-config';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
@@ -231,14 +231,16 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
                     />
                 </Grid>
                 <Grid item padding={1}>
-                    <Button
-                        sx={styles.resetButton}
-                        size={'small'}
-                        onClick={handleResetCollectionClick}
-                        disabled={disabled}
-                    >
-                        <RestoreIcon />
-                    </Button>
+                    <Tooltip title={<FormattedMessage id="spreadsheet/reset_spreadsheet_collection/button_tooltip" />}>
+                        <Button
+                            sx={styles.resetButton}
+                            size={'small'}
+                            onClick={handleResetCollectionClick}
+                            disabled={disabled}
+                        >
+                            <RestoreIcon />
+                        </Button>
+                    </Tooltip>
                 </Grid>
             </Grid>
             {confirmationDialogOpen && (
