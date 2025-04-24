@@ -181,11 +181,16 @@ export const SpreadsheetTabContent = React.memo(
 
             updateSortConfig();
             updateLockedColumnsConfig();
+        }, [updateSortConfig, updateLockedColumnsConfig, equipments, gridRef, isGridReady]);
 
-            if (filters.length > 0) {
-                updateFilters(api, filters);
+        useEffect(() => {
+            const api = gridRef.current?.api;
+            if (!api || !isGridReady || !filters.length) {
+                return;
             }
-        }, [updateSortConfig, updateLockedColumnsConfig, filters, equipments, gridRef, isGridReady]);
+
+            updateFilters(api, filters);
+        }, [filters, gridRef, isGridReady, equipments]);
 
         return (
             <>
