@@ -57,6 +57,7 @@ const defaultColDef: ColDef = {
 
 interface EquipmentTableProps {
     gridRef: React.RefObject<AgGridReact>;
+    rowData: unknown[] | undefined;
     columnData: ColDef[];
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
@@ -74,6 +75,7 @@ interface EquipmentTableProps {
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     columnData,
     gridRef,
+    rowData,
     currentNode,
     handleColumnDrag,
     isFetching,
@@ -180,6 +182,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             onGridReady={onGridReady}
             sx={shouldHidePinnedHeaderRightBorder ? styles.noBorderRight : undefined}
             overrideLocales={AGGRID_LOCALES}
+            suppressNoRowsOverlay={rowData === undefined}
         />
     );
 };

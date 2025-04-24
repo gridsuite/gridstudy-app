@@ -146,15 +146,12 @@ export const SpreadsheetTabContent = React.memo(
         }, []);
 
         const transformedRowData = useMemo(() => {
-            if (isFetching == null) {
-                return undefined; // avoid 'no rows' overlay before first fetch
-            }
             if (
                 !nodeAliases ||
                 !equipments?.nodesId.includes(currentNode.id) ||
                 !equipments.equipmentsByNodeId[currentNode.id]
             ) {
-                return [];
+                return undefined;
             }
 
             return equipments.equipmentsByNodeId[currentNode.id].map((equipment) => {
@@ -168,7 +165,7 @@ export const SpreadsheetTabContent = React.memo(
                 });
                 return equipmentToAdd;
             });
-        }, [equipments, currentNode.id, nodeAliases, isFetching]);
+        }, [equipments, currentNode.id, nodeAliases]);
 
         useEffect(() => {
             if (gridRef.current?.api) {
@@ -207,6 +204,7 @@ export const SpreadsheetTabContent = React.memo(
                     <Box sx={styles.table}>
                         <EquipmentTable
                             gridRef={gridRef}
+                            rowData={transformedRowData}
                             currentNode={currentNode}
                             columnData={columns}
                             isFetching={isFetching}
