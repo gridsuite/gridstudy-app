@@ -28,7 +28,7 @@ import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
-import { convertDuration, formatNAValue } from 'components/spreadsheet/utils/equipment-table-utils';
+import { convertDuration, formatNAValue } from 'components/spreadsheet-view/utils/equipment-table-utils';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,

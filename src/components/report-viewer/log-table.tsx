@@ -26,7 +26,7 @@ import {
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { MessageLogCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { MessageLogCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';

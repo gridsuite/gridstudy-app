@@ -15,7 +15,7 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { AppState } from '../../../redux/reducer';
 
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import { RunningStatus } from '../../utils/running-status';

@@ -8,7 +8,7 @@
 import { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
 import { FilterParams } from '../../../types/custom-aggrid-types';
 import React, { ComponentType } from 'react';
-import { CustomColumnConfigProps } from '../custom-column-menu';
+import { CustomColumnConfigProps } from '../../spreadsheet-view/columns/column-menu';
 import { SortParams } from '../hooks/use-custom-aggrid-sort';
 import { COLUMN_TYPES, CustomCellType } from '../custom-aggrid-header.type';
 import { UUID } from 'crypto';

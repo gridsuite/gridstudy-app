@@ -51,7 +51,7 @@ import {
     ColumnDefinition,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-} from '../components/spreadsheet/config/spreadsheet.type';
+} from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { SpreadsheetGlobalFilter } from '../services/study/filter';
