@@ -35,7 +35,6 @@ interface SpreadsheetTabContentProps {
     columns: CustomColDef[];
     nodeAliases: NodeAlias[] | undefined;
     updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
-    shouldDisableButtons: boolean;
     disabled: boolean;
 }
 
@@ -45,7 +44,6 @@ export const SpreadsheetTabToolbar = ({
     columns,
     nodeAliases,
     updateNodeAliases,
-    shouldDisableButtons,
     disabled,
 }: SpreadsheetTabContentProps) => {
     return (
@@ -56,11 +54,11 @@ export const SpreadsheetTabToolbar = ({
             <Grid item>
                 <ColumnsConfig
                     tableDefinition={tableDefinition}
-                    disabled={shouldDisableButtons || tableDefinition?.columns.length === 0}
+                    disabled={disabled || tableDefinition?.columns.length === 0}
                 />
             </Grid>
             <Grid item>
-                <CustomColumnsConfig tableDefinition={tableDefinition} disabled={shouldDisableButtons} />
+                <CustomColumnsConfig tableDefinition={tableDefinition} disabled={disabled} />
             </Grid>
             <Grid item>
                 <CustomColumnsNodesConfig
@@ -76,7 +74,7 @@ export const SpreadsheetTabToolbar = ({
                     tableDefinition={tableDefinition}
                     gridRef={gridRef}
                     columns={columns}
-                    disabled={shouldDisableButtons}
+                    disabled={disabled}
                     nodeAliases={nodeAliases}
                 />
             </Grid>

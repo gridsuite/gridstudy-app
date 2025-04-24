@@ -19,7 +19,6 @@ import { NodeAlias } from './custom-columns/node-alias.type';
 interface SpreadsheetTabProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
-    shouldDisableButtons: boolean;
     disabled: boolean;
     nodeAliases: NodeAlias[] | undefined;
     updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
@@ -32,7 +31,6 @@ export const SpreadsheetTab = React.memo(
     ({
         currentNode,
         tableDefinition,
-        shouldDisableButtons,
         disabled,
         nodeAliases,
         updateNodeAliases,
@@ -70,7 +68,6 @@ export const SpreadsheetTab = React.memo(
                     columns={displayedColsDefs}
                     nodeAliases={nodeAliases}
                     updateNodeAliases={updateNodeAliases}
-                    shouldDisableButtons={shouldDisableButtons}
                     disabled={disabled}
                 />
 
@@ -80,7 +77,6 @@ export const SpreadsheetTab = React.memo(
                     tableDefinition={tableDefinition}
                     columns={displayedColsDefs}
                     nodeAliases={nodeAliases}
-                    shouldDisableButtons={shouldDisableButtons}
                     disabled={disabled}
                     equipmentId={equipmentId}
                     onEquipmentScrolled={onEquipmentScrolled}

@@ -53,7 +53,6 @@ interface SpreadsheetTabContentProps {
     columns: CustomColDef[];
     nodeAliases: NodeAlias[] | undefined;
     disabled: boolean;
-    shouldDisableButtons: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
     active: boolean;
@@ -66,7 +65,6 @@ export const SpreadsheetTabContent = React.memo(
         tableDefinition,
         columns,
         nodeAliases,
-        shouldDisableButtons,
         disabled,
         equipmentId,
         onEquipmentScrolled,
@@ -201,9 +199,9 @@ export const SpreadsheetTabContent = React.memo(
 
         return (
             <>
-                {disabled || shouldDisableButtons ? (
+                {disabled ? (
                     <Alert sx={styles.invalidNode} severity="warning">
-                        <FormattedMessage id={disabled ? 'InvalidNode' : 'NoSpreadsheets'} />
+                        <FormattedMessage id={'InvalidNode'} />
                     </Alert>
                 ) : (
                     <Box sx={styles.table}>

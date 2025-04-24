@@ -192,6 +192,8 @@ export const useSpreadsheetEquipments = (
         ) {
             setIsFetching(true);
             fetchNodesEquipmentData(nodesIdToFetch, currentNode.id, currentRootNetworkUuid, onFetchingDone);
+        } else {
+            setIsFetching(false);
         }
     }, [
         active,

@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { Paper } from '@mui/material';
+import { Alert, Paper } from '@mui/material';
 import { EquipmentTabs } from './equipment-tabs';
 import { AppState } from '../../redux/reducer';
 import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './config/spreadsheet.type';
@@ -17,12 +17,19 @@ import { UUID } from 'crypto';
 import { useNodeAliases } from './custom-columns/use-node-aliases';
 import TabPanelLazy from 'components/results/common/tab-panel-lazy';
 import { SpreadsheetTab } from './spreadsheet-tab';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
 import { mapColumnsDto } from './custom-spreadsheet/custom-spreadsheet-utils';
 import { initTableDefinitions, resetAllSpreadsheetGsFilters } from 'redux/actions';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 
+const styles = {
+    invalidNode: {
+        position: 'absolute',
+        top: '30%',
+        left: '43%',
+    },
+};
 interface TableWrapperProps {
     currentNode: CurrentTreeNode;
     equipmentId: string;
@@ -52,15 +59,12 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     // Initialize activeTabUuid with the first tab's UUID if not already set
     useEffect(() => {
-        if (!activeTabUuid && tablesDefinitions.length > 0) {
+        if (tablesDefinitions.length === 0) {
+            setActiveTabUuid(null);
+        } else if (!activeTabUuid && tablesDefinitions.length > 0) {
             setActiveTabUuid(tablesDefinitions[0].uuid);
         }
     }, [activeTabUuid, tablesDefinitions]);
-
-    const shouldDisableButtons = useMemo(
-        () => disabled || tablesDefinitions.length === 0,
-        [disabled, tablesDefinitions]
-    );
 
     const handleSwitchTab = useCallback((tabUuid: UUID) => {
         setActiveTabUuid(tabUuid);
@@ -139,33 +143,38 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 handleResetCollectionClick={handleResetCollectionClick}
             />
 
-            {tablesDefinitions.map((tabDef) => {
-                const isActive = activeTabUuid === tabDef.uuid;
-                const equipmentIdToScrollTo = tabDef.type === equipmentType && isActive ? equipmentId : null;
-                return (
-                    <TabPanelLazy key={tabDef.uuid} selected={isActive}>
-                        <Paper
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                flexGrow: 1,
-                            }}
-                        >
-                            <SpreadsheetTab
-                                currentNode={currentNode}
-                                tableDefinition={tabDef}
-                                shouldDisableButtons={shouldDisableButtons}
-                                disabled={disabled}
-                                nodeAliases={nodeAliases}
-                                updateNodeAliases={updateNodeAliases}
-                                equipmentId={equipmentIdToScrollTo}
-                                onEquipmentScrolled={onEquipmentScrolled}
-                                active={isActive}
-                            />
-                        </Paper>
-                    </TabPanelLazy>
-                );
-            })}
+            {tablesDefinitions.length === 0 ? (
+                <Alert sx={styles.invalidNode} severity="warning">
+                    <FormattedMessage id={'NoSpreadsheets'} />
+                </Alert>
+            ) : (
+                tablesDefinitions.map((tabDef) => {
+                    const isActive = activeTabUuid === tabDef.uuid;
+                    const equipmentIdToScrollTo = tabDef.type === equipmentType && isActive ? equipmentId : null;
+                    return (
+                        <TabPanelLazy key={tabDef.uuid} selected={isActive}>
+                            <Paper
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flexGrow: 1,
+                                }}
+                            >
+                                <SpreadsheetTab
+                                    currentNode={currentNode}
+                                    tableDefinition={tabDef}
+                                    disabled={disabled}
+                                    nodeAliases={nodeAliases}
+                                    updateNodeAliases={updateNodeAliases}
+                                    equipmentId={equipmentIdToScrollTo}
+                                    onEquipmentScrolled={onEquipmentScrolled}
+                                    active={isActive}
+                                />
+                            </Paper>
+                        </TabPanelLazy>
+                    );
+                })
+            )}
             {resetConfirmationDialogOpen && (
                 <PopupConfirmationDialog
                     message={intl.formatMessage({
