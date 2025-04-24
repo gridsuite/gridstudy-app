@@ -37,7 +37,7 @@ export const useSpreadsheetEquipments = (
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
     const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>();
 
-    const [isFetching, setIsFetching] = useState<boolean>(false);
+    const [isFetching, setIsFetching] = useState<boolean>();
 
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 

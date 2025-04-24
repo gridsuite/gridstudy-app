@@ -148,6 +148,9 @@ export const SpreadsheetTabContent = React.memo(
         }, []);
 
         const transformedRowData = useMemo(() => {
+            if (isFetching == null) {
+                return undefined; // avoid 'no rows' overlay before first fetch
+            }
             if (
                 !nodeAliases ||
                 !equipments?.nodesId.includes(currentNode.id) ||
@@ -167,7 +170,7 @@ export const SpreadsheetTabContent = React.memo(
                 });
                 return equipmentToAdd;
             });
-        }, [equipments, currentNode.id, nodeAliases]);
+        }, [equipments, currentNode.id, nodeAliases, isFetching]);
 
         useEffect(() => {
             if (gridRef.current?.api) {
