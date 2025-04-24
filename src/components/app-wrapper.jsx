@@ -118,9 +118,6 @@ const lightTheme = createTheme({
     link: {
         color: 'blue',
     },
-    icon: {
-        color: '#757575',
-    },
     node: {
         background: '#1976d2',
         hover: '#84adce',
@@ -197,9 +194,6 @@ const darkTheme = createTheme({
     },
     link: {
         color: 'green',
-    },
-    icon: {
-        color: 'white',
     },
     node: {
         background: '#1976d2',

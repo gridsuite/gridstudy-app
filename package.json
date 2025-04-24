@@ -14,7 +14,7 @@
         "@gridsuite/commons-ui": "0.95.0",
         "@hello-pangea/dnd": "^18.0.1",
         "@hookform/resolvers": "^4.0.0",
-       "@mui/icons-material": "^5.16.14",
+        "@mui/icons-material": "^5.16.14",
         "@mui/lab": "5.0.0-alpha.175",
         "@mui/material": "^5.16.14",
         "@mui/x-charts": "^7.25.0",
