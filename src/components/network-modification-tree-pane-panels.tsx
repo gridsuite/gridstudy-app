@@ -11,7 +11,7 @@ import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { usePanelsSize } from './spreadsheet/network-modification-tree-pane-panels-handlers';
+import { usePanelsSize } from './network-modification-tree-pane-panels-handlers';
 
 interface NetworkModificationTreePanePanelsProps {
     leftComponent: ReactNode;
