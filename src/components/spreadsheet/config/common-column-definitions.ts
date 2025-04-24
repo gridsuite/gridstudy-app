@@ -12,7 +12,7 @@ import {
     NumericCellRenderer,
     RowIndexCellRenderer,
 } from '../utils/cell-renderers';
-import type { ColDef, IFilterOptionDef } from 'ag-grid-community';
+import type { ColDef, IFilterOptionDef, GridApi } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
