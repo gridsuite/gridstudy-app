@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
+import { CONNECTIVITY_1, CONNECTIVITY_2 } from '../../../../../utils/field-constants';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
