@@ -219,7 +219,6 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         updateSortConfig();
         updateLockedColumnsConfig();
         updateFilters(gridRef.current?.api, filters);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reorderedColsDefs]);
 
     useEffect(() => {

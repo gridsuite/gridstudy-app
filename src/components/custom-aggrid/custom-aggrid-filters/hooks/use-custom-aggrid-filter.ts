@@ -65,7 +65,6 @@ export const useCustomAggridFilter = (
         [updateFilterCallback, api, dispatchFilters, filters]
     );
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedUpdateFilter = useCallback(
         debounce((data) => updateFilter(colId, data), debounceMs),
         [colId, debounceMs]

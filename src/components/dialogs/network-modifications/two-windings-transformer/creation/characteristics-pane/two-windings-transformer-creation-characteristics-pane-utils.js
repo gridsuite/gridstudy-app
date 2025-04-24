@@ -36,20 +36,17 @@ export const getTwoWindingsTransformerEmptyFormData = () => {
     return twoWindingsTransformerEmptyFormData();
 };
 
-export const getTwoWindingsTransformerFormData = (
-    {
-        r = null,
-        x = null,
-        g = null,
-        b = null,
-        ratedS = null,
-        ratedU1 = null,
-        ratedU2 = null,
-        connectivity1 = null,
-        connectivity2 = null,
-    },
-    id = CHARACTERISTICS
-) =>
+export const getTwoWindingsTransformerFormData = ({
+    r = null,
+    x = null,
+    g = null,
+    b = null,
+    ratedS = null,
+    ratedU1 = null,
+    ratedU2 = null,
+    connectivity1 = null,
+    connectivity2 = null,
+}) =>
     getCharacteristicsFormData(
         {
             r,

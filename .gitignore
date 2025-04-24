@@ -13,6 +13,9 @@
 # vite
 /vite.config.ts-timestamp-*
 
+# ESLint
+/.eslintcache
+
 # misc
 .env.local
 .env.development.local

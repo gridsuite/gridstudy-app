@@ -161,7 +161,7 @@ const LoadFlowParameters: FunctionComponent<{
             const specificParamsPerProvider = params.specificParametersPerProvider[params.provider];
 
             const formatted = specificParams?.reduce((acc: Record<string, unknown>, param: SpecificParameterInfos) => {
-                if (specificParamsPerProvider?.hasOwnProperty(param.name)) {
+                if (specificParamsPerProvider !== undefined && Object.hasOwn(specificParamsPerProvider, param.name)) {
                     if (param.type === ParameterType.BOOLEAN) {
                         acc[param.name] = specificParamsPerProvider[param.name] === 'true';
                     } else if (param.type === ParameterType.STRING_LIST) {

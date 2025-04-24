@@ -79,7 +79,7 @@ function useStudy(studyUuidRequest) {
                             );
                         }
                     })
-                    .catch((error) => {
+                    .catch(() => {
                         // Handle errors when fetching root networks
                         setErrMessage(
                             intlRef.current.formatMessage(
@@ -364,11 +364,7 @@ export function StudyContainer({ view, onChangeTab }) {
                                 dispatch(loadNetworkModificationTreeSuccess(networkModificationTreeModel));
                             }
                         })
-                        .catch((err) => {
-                            snackWarning({
-                                headerId: 'CaseNameLoadError',
-                            });
-                        });
+                        .catch(() => snackWarning({ headerId: 'CaseNameLoadError' }));
                     // If a current node is already defined then override it cause it could have diferent status in different root networks
                     if (currentNodeRef.current) {
                         // Find the updated current node in the tree model
