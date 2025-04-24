@@ -103,7 +103,7 @@ export const getLccConverterStationModificationSchema = () =>
             .array()
             .of(
                 yup.object().shape({
-                    [SHUNT_COMPENSATOR_ID]: yup.string().nullable().required(),
+                    [SHUNT_COMPENSATOR_ID]: yup.string().required(),
                     [SHUNT_COMPENSATOR_NAME]: yup.string().nullable(),
                     [MAX_Q_AT_NOMINAL_V]: yup
                         .number()
@@ -203,19 +203,84 @@ export const getShuntCompensatorOnSideFormData = (
 };
 
 export const getShuntCompensatorOnSideFormModificationData = (
-    shuntCompensatorInfos?: LccShuntCompensatorInfos[]
+    infos?: LccShuntCompensatorInfos[]
 ): ShuntCompensatorFormSchema[] => {
-    shuntCompensatorInfos?.forEach((shuntCompensatorInfo) =>
-        console.log('shuntCompensatorInfo.connectedToHvdc : ', shuntCompensatorInfo.connectedToHvdc ?? null)
-    );
     return (
-        shuntCompensatorInfos?.map((shuntCp) => ({
+        infos?.map((shuntCp) => ({
             [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
-            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc === undefined ? null : shuntCp.connectedToHvdc, //TODO basseche : should be null
+            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc === undefined ? null : shuntCp.connectedToHvdc,
         })) ?? []
     );
+};
+
+export const getConcatenatedShuntCompensatorOnSideInfos = (
+    infos?: LccShuntCompensatorInfos[],
+    infosToConcatenate?: LccShuntCompensatorInfos[]
+): ShuntCompensatorFormSchema[] => {
+    const result: LccShuntCompensatorInfos[] | null = mergeModificationAndEquipmentShuntCompensatorInfos(
+        infos,
+        infosToConcatenate
+    );
+    return (
+        result?.map((shuntCp) => ({
+            [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
+            [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
+            [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
+            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc === undefined ? null : shuntCp.connectedToHvdc,
+        })) ?? []
+    );
+};
+
+export const mergeModificationAndEquipmentShuntCompensatorInfos = (
+    infosModification?: LccShuntCompensatorInfos[],
+    infosMapServer?: LccShuntCompensatorInfos[]
+): LccShuntCompensatorInfos[] => {
+    let result = new Map<string, LccShuntCompensatorInfos>();
+    if (!infosModification && infosMapServer) {
+        for (const info of infosMapServer) {
+            result.set(info.id, { ...info, connectedToHvdc: null }); //we only consider
+        }
+        return Array.from(result.values());
+    }
+
+    if (!infosModification) {
+        return [];
+    }
+
+    //initialize with network modification infos
+    for (const info of infosModification) {
+        if (info.id) {
+            result.set(info.id, info);
+        }
+    }
+
+    // Add map server infos
+    if (infosMapServer) {
+        infosMapServer.forEach((value: LccShuntCompensatorInfos) => {
+            if (value.id !== null) {
+                let concatenatedInfos = null;
+                // If the property is present in the modification and in the equipment
+                if (result.has(value.id)) {
+                    const modInfos = result.get(value.id);
+                    console.log(' modInfos : ', modInfos);
+                    if (modInfos) {
+                        concatenatedInfos = {
+                            ...modInfos,
+                            name: modInfos.name || value.name,
+                            maxQAtNominalV: modInfos.maxQAtNominalV || value.maxQAtNominalV,
+                        };
+                    }
+                }
+
+                if (concatenatedInfos) {
+                    result.set(value.id, concatenatedInfos);
+                }
+            }
+        });
+    }
+    return Array.from(result.values());
 };
 
 export function getLccConverterStationFromEditData(lccConverterStationCreationInfos: LccConverterStationCreationInfos) {
@@ -242,8 +307,6 @@ export function getLccConverterStationFromEditData(lccConverterStationCreationIn
 export function getLccConverterStationModificationFromEditData(
     lccConverterStationInfos: LccConverterStationModificationInfos
 ) {
-    console.log('------lccConverterStationInfos : ', lccConverterStationInfos);
-
     return {
         [CONVERTER_STATION_ID]: lccConverterStationInfos.equipmentId,
         [CONVERTER_STATION_NAME]: lccConverterStationInfos?.equipmentName?.value ?? '',

@@ -28,6 +28,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { FetchStatus } from 'services/utils.type';
 import {
+    getConcatenatedShuntCompensatorOnSideInfos,
     getLccConverterStationModificationData,
     getLccConverterStationModificationEmptyFormData,
     getLccConverterStationModificationFromEditData,
@@ -35,7 +36,6 @@ import {
     getLccHvdcLineEmptyFormData,
     getLccHvdcLineFromModificationEditData,
     getLccHvdcLineModificationSchema,
-    getShuntCompensatorOnSideFormModificationData,
 } from '../common/lcc-utils';
 import { modifyLcc } from 'services/study/network-modifications';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
@@ -212,13 +212,15 @@ export const LccModificationDialog = ({
                                 },
                                 [CONVERTER_STATION_1]: {
                                     ...formValues,
-                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormModificationData(
+                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getConcatenatedShuntCompensatorOnSideInfos(
+                                        editData?.converterStation1.shuntCompensatorsOnSide,
                                         value.lccConverterStation1.shuntCompensatorsOnSide
                                     ),
                                 },
                                 [CONVERTER_STATION_2]: {
                                     ...formValues,
-                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormModificationData(
+                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getConcatenatedShuntCompensatorOnSideInfos(
+                                        editData?.converterStation2.shuntCompensatorsOnSide,
                                         value.lccConverterStation2.shuntCompensatorsOnSide
                                     ),
                                 },
@@ -235,7 +237,7 @@ export const LccModificationDialog = ({
                     });
             }
         },
-        [clear, currentNode.id, currentRootNetworkUuid, editData?.equipmentId, getValues, reset, studyUuid]
+        [clear, currentNode.id, currentRootNetworkUuid, editData, getValues, reset, studyUuid]
     );
 
     useEffect(() => {

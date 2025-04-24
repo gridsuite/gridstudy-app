@@ -18,9 +18,17 @@ interface CheckboxNullableInputProps {
     id?: string;
     formProps?: CheckboxProps;
     previousValue?: string;
+    nullDisabled?: boolean;
 }
 
-const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Readonly<CheckboxNullableInputProps>) => {
+const CheckboxNullableInput = ({
+    name,
+    label,
+    id,
+    formProps,
+    previousValue,
+    nullDisabled,
+}: Readonly<CheckboxNullableInputProps>) => {
     const {
         field: { onChange, value },
     } = useController({ name });
@@ -45,7 +53,7 @@ const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Re
                 control={
                     <Checkbox
                         checked={value === true}
-                        indeterminate={value === null}
+                        indeterminate={nullDisabled ? undefined : value === null}
                         onChange={handleChangeValue}
                         value="checked"
                         inputProps={{

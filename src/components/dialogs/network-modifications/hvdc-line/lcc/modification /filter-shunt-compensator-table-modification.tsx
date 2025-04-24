@@ -10,7 +10,7 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useIntl } from 'react-intl';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFieldArray } from 'react-hook-form';
 import {
@@ -95,24 +95,51 @@ export function ModificationFiltersShuntCompensatorTable({
         return newRowData;
     }, [columnsDefinition]);
 
-    const PreviousConnexion = (index: number) => {
-        const previousValue = previousValues?.[index]?.connectedToHvdc;
-        const value = previousValue
-            ? intl.formatMessage({ id: 'connected' })
-            : previousValue === false
-              ? intl.formatMessage({ id: 'disconnected' })
-              : '';
+    const PreviousConnexion = useCallback(
+        (index: number) => {
+            const previousValue = previousValues?.[index]?.connectedToHvdc;
+            const value = previousValue
+                ? intl.formatMessage({ id: 'connected' })
+                : previousValue === false
+                  ? intl.formatMessage({ id: 'disconnected' })
+                  : '';
 
-        return (
-            <TextField
-                size="small"
-                fullWidth
-                value={value}
-                name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
-                disabled
-            />
-        );
-    };
+            return (
+                <TextField
+                    size="small"
+                    fullWidth
+                    value={value}
+                    name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
+                    disabled
+                />
+            );
+        },
+        [id, intl, previousValues]
+    );
+
+    const IdField = useCallback(
+        (index: number) => {
+            return previousValues && index >= previousValues.length ? (
+                <TextInput name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`} />
+            ) : (
+                <TextField fullWidth size="small" value={previousValues?.[index]?.id ?? ''} name={``} disabled />
+            );
+        },
+        [id, previousValues]
+    );
+
+    const ShuntCompensatorSelectedField = useCallback(
+        (index: number) => {
+            return (
+                <CheckboxNullableInput
+                    name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
+                    label=""
+                    nullDisabled={previousValues && index >= previousValues.length}
+                />
+            );
+        },
+        [id, previousValues]
+    );
 
     return (
         <TableContainer>
@@ -149,15 +176,7 @@ export function ModificationFiltersShuntCompensatorTable({
                         >
                             {columnsDefinition.map((column) => (
                                 <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
-                                    {column.dataKey === SHUNT_COMPENSATOR_ID && (
-                                        <TextField
-                                            fullWidth
-                                            size="small"
-                                            value={previousValues?.[index]?.id ?? ''}
-                                            name={``}
-                                            disabled
-                                        />
-                                    )}
+                                    {column.dataKey === SHUNT_COMPENSATOR_ID && IdField(index)}
                                     {column.dataKey === SHUNT_COMPENSATOR_NAME && (
                                         <TextInput
                                             name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_NAME}`}
@@ -170,12 +189,8 @@ export function ModificationFiltersShuntCompensatorTable({
                                         />
                                     )}
                                     {column.dataKey === PREVIOUS_SHUNT_COMPENSATOR_SELECTED && PreviousConnexion(index)}
-                                    {column.dataKey === SHUNT_COMPENSATOR_SELECTED && (
-                                        <CheckboxNullableInput
-                                            name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
-                                            label=""
-                                        />
-                                    )}
+                                    {column.dataKey === SHUNT_COMPENSATOR_SELECTED &&
+                                        ShuntCompensatorSelectedField(index)}
                                 </TableCell>
                             ))}
                             <TableCell>
