@@ -12,14 +12,12 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 
 const styles = {
-    header: (theme: Theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        padding: theme.spacing(1),
-    }),
     minimizedPanel: (theme: Theme) => ({
         flexGrow: 1,
         marginLeft: theme.spacing(2),
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(1),
     }),
     icon: {
         display: 'flex',
@@ -38,16 +36,14 @@ const RootNetworkMinimizedPanelContent = () => {
 
     return (
         <Box sx={styles.minimizedPanel}>
-            <Box sx={styles.header}>
-                <Stack direction="row" spacing={1.5}>
-                    <Chip size="small" label={currentRootNetwork?.tag} color="primary" />
-                    <Box sx={styles.icon}>
-                        <Badge overlap="circular" color="primary" variant="dot">
-                            <RemoveRedEyeIcon />
-                        </Badge>
-                    </Box>
-                </Stack>
-            </Box>
+            <Stack direction="row" spacing={1.5}>
+                <Chip size="small" label={currentRootNetwork?.tag} color="primary" />
+                <Box sx={styles.icon}>
+                    <Badge overlap="circular" color="primary" variant="dot">
+                        <RemoveRedEyeIcon />
+                    </Badge>
+                </Box>
+            </Stack>
         </Box>
     );
 };
