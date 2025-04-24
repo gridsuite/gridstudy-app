@@ -50,6 +50,7 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
         filterOptions: IFilterOptionDef[];
     };
     tabUuid?: UUID;
+    columnUuid?: UUID;
     columnType?: COLUMN_TYPES;
     columnWidth?: number;
     fractionDigits?: number;

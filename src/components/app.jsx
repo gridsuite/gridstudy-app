@@ -56,6 +56,7 @@ import {
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
 import { StudyView } from './utils/utils';
+import { processSpreadsheetsCollectionData } from './spreadsheet/custom-spreadsheet/custom-spreadsheet-utils';
 
 const noUserManager = { instance: null, error: null };
 
@@ -211,26 +212,10 @@ const App = () => {
                 });
             });
 
-            const mapColumns = (columns) => {
-                return columns.map((column) => {
-                    return {
-                        ...column,
-                        dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
-                    };
-                });
-            };
-
             const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((config) => {
-                const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                    return {
-                        uuid: spreadsheetConfig.id,
-                        index: index,
-                        name: spreadsheetConfig.name,
-                        columns: mapColumns(spreadsheetConfig.columns),
-                        type: spreadsheetConfig.sheetType,
-                    };
-                });
-                dispatch(initTableDefinitions(config.id, tableDefinitions));
+                const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                    processSpreadsheetsCollectionData(config);
+                dispatch(initTableDefinitions(config.id, tableDefinitions, tablesFilters, tableGlobalFilters));
             });
 
             const fetchOptionalServices = getOptionalServices()

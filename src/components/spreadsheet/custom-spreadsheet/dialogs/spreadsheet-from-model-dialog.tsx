@@ -28,11 +28,12 @@ import {
     getSpreadsheetFromModelFormSchema,
     initialSpreadsheetFromModelForm,
 } from '../custom-spreadsheet-form';
-import { addNewSpreadsheet, mapColumnsDto } from '../custom-spreadsheet-utils';
+import { addNewSpreadsheet } from '../custom-spreadsheet-utils';
 import { getSpreadsheetModel } from 'services/study-config';
 import { UUID } from 'crypto';
 import { dialogStyles } from './styles';
 import { ColumnDefinitionDto, SpreadsheetEquipmentType } from 'components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetGlobalFilter } from 'services/study/filter';
 
 interface SpreadsheetFromModelDialogProps {
     open: UseStateBooleanReturn;
@@ -83,20 +84,25 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
             const modelId = formData[SPREADSHEET_MODEL][0].id;
 
             getSpreadsheetModel(modelId)
-                .then((selectedModel: { columns: ColumnDefinitionDto[]; sheetType: SpreadsheetEquipmentType }) => {
-                    const columns = mapColumnsDto(selectedModel.columns);
-
-                    addNewSpreadsheet({
-                        columns,
-                        sheetType: selectedModel.sheetType,
-                        tabIndex,
-                        tabName,
-                        spreadsheetsCollectionUuid: spreadsheetsCollectionUuid as UUID,
-                        dispatch,
-                        snackError,
-                        open,
-                    });
-                })
+                .then(
+                    (selectedModel: {
+                        columns: ColumnDefinitionDto[];
+                        sheetType: SpreadsheetEquipmentType;
+                        globalFilters: SpreadsheetGlobalFilter[];
+                    }) => {
+                        addNewSpreadsheet({
+                            columns: selectedModel.columns,
+                            globalFilters: selectedModel.globalFilters,
+                            sheetType: selectedModel.sheetType,
+                            tabIndex,
+                            tabName,
+                            spreadsheetsCollectionUuid: spreadsheetsCollectionUuid as UUID,
+                            dispatch,
+                            snackError,
+                            open,
+                        });
+                    }
+                )
                 .catch((error) => {
                     snackError({
                         messageTxt: error,

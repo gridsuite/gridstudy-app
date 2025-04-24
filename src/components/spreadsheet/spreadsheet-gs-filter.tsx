@@ -7,7 +7,7 @@
 
 import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo } from 'react';
-import { Box } from '@mui/material';
+import { Box, debounce } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,6 +23,7 @@ import {
 import { SPREADSHEET_GS_FILTER } from '../utils/field-constants';
 import { AppState } from '../../redux/reducer';
 import { ExpertFilter, SpreadsheetGlobalFilter } from '../../services/study/filter';
+import { setGlobalFiltersToSpreadsheetConfig } from 'services/study-config';
 
 export type SpreadsheetGsFilterProps = {
     equipmentType: SpreadsheetEquipmentType;
@@ -41,12 +42,23 @@ export default function SpreadsheetGsFilter({ equipmentType, index, name, uuid }
     });
     const { reset } = formMethods;
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debouncedSetFilters = useCallback(
+        debounce((uuid: UUID, filters: SpreadsheetGlobalFilter[]) => {
+            setGlobalFiltersToSpreadsheetConfig(uuid, filters).catch((error) =>
+                console.error('Failed to update global filters:', error)
+            );
+        }, 300),
+        []
+    );
+
     const handleChange = useCallback(
         (values: ExpertFilter[]) => {
-            const filters = values.map(({ id, name }) => ({ id, name }) as SpreadsheetGlobalFilter);
+            const filters = values.map(({ id, name }) => ({ filterId: id, name }) as SpreadsheetGlobalFilter);
             dispatch(saveSpreadsheetGsFilters(uuid, filters));
+            debouncedSetFilters(uuid, filters);
         },
-        [dispatch, uuid]
+        [dispatch, uuid, debouncedSetFilters]
     );
 
     useEffect(() => {

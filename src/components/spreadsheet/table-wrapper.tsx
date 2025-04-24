@@ -31,7 +31,7 @@ import { FilterType } from '../../types/custom-aggrid-types';
 import { updateFilters } from '../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useEquipmentModification } from './equipment-modification/use-equipment-modification';
 import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
-import { initTableDefinitions, resetAllSpreadsheetGsFilters, updateTableDefinition } from 'redux/actions';
+import { initTableDefinitions, updateTableDefinition } from 'redux/actions';
 import { CurrentTreeNode, NodeType } from '../graph/tree-node.type';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { reorderSpreadsheetColumns } from 'services/study-config';
@@ -42,7 +42,7 @@ import { useGridCalculations } from '../../hooks/use-grid-calculations';
 import { spreadsheetStyles } from './utils/style';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
-import { mapColumnsDto } from './custom-spreadsheet/custom-spreadsheet-utils';
+import { processSpreadsheetsCollectionData } from './custom-spreadsheet/custom-spreadsheet-utils';
 import { ROW_INDEX_COLUMN_ID } from './constants';
 
 const styles = {
@@ -447,19 +447,11 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }
 
         getSpreadsheetConfigCollection(studyUuid).then((collectionData: SpreadsheetCollectionDto) => {
-            const tableDefinitions = collectionData.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                return {
-                    uuid: spreadsheetConfig.id,
-                    index: index,
-                    name: spreadsheetConfig.name,
-                    columns: mapColumnsDto(spreadsheetConfig.columns),
-                    type: spreadsheetConfig.sheetType,
-                };
-            });
-            dispatch(initTableDefinitions(collectionData.id, tableDefinitions));
+            const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                processSpreadsheetsCollectionData(collectionData);
+            dispatch(initTableDefinitions(collectionData.id, tableDefinitions, tablesFilters, tableGlobalFilters));
             if (tableDefinitions.length > 0) {
                 handleSwitchTab(tableDefinitions[0].uuid);
-                dispatch(resetAllSpreadsheetGsFilters());
             }
             resetNodeAliases(false, collectionData.nodeAliases);
         });

@@ -952,7 +952,13 @@ export const reducer = createReducer(initialState, (builder) => {
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
-            .reduce((acc, tabUuid) => ({ ...acc, [tabUuid]: [] }), {});
+            .reduce(
+                (acc, tabUuid) => ({
+                    ...acc,
+                    [tabUuid]: action?.tablesFilters?.[tabUuid] ?? [],
+                }),
+                {}
+            );
         state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce((acc, tabUuid) => {
@@ -964,6 +970,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 ];
                 return acc;
             }, {} as TableSortConfig);
+        state.gsFilterSpreadsheetState = action?.gsFilterSpreadsheetState ?? {};
     });
 
     builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {

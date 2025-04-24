@@ -23,8 +23,10 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import type {
     AppState,
     EquipmentUpdateType,
+    GsFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
+    SpreadsheetFilterState,
     StudyIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
@@ -1302,15 +1304,21 @@ export type InitTableDefinitionsAction = {
     type: typeof INIT_TABLE_DEFINITIONS;
     collectionUuid: UUID;
     tableDefinitions: SpreadsheetTabDefinition[];
+    tablesFilters?: SpreadsheetFilterState;
+    gsFilterSpreadsheetState?: GsFilterSpreadsheetState;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
-    tableDefinitions: SpreadsheetTabDefinition[]
+    tableDefinitions: SpreadsheetTabDefinition[],
+    tablesFilters: SpreadsheetFilterState = {},
+    gsFilterSpreadsheetState: GsFilterSpreadsheetState = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
+    tablesFilters,
+    gsFilterSpreadsheetState,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
