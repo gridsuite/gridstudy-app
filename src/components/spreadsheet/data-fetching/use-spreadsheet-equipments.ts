@@ -23,7 +23,8 @@ import { validAlias } from '../custom-columns/use-node-aliases';
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
     highlightUpdatedEquipment: () => void,
-    nodeAliases: NodeAlias[] | undefined
+    nodeAliases: NodeAlias[] | undefined,
+    active: boolean = false
 ) => {
     const dispatch = useDispatch();
     const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[type]);
@@ -182,6 +183,7 @@ export const useSpreadsheetEquipments = (
     // For example, we have 3 currentNode properties in deps rather than currentNode object itself.
     useEffect(() => {
         if (
+            active &&
             currentNode?.id &&
             currentRootNetworkUuid &&
             nodesIdToFetch.size > 0 &&
@@ -192,6 +194,7 @@ export const useSpreadsheetEquipments = (
             fetchNodesEquipmentData(nodesIdToFetch, currentNode.id, currentRootNetworkUuid, onFetchingDone);
         }
     }, [
+        active,
         isNetworkModificationTreeModelUpToDate,
         currentNode?.id,
         currentNode?.type,

@@ -56,6 +56,7 @@ interface SpreadsheetTabContentProps {
     shouldDisableButtons: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
+    active: boolean;
 }
 
 export const SpreadsheetTabContent = React.memo(
@@ -69,6 +70,7 @@ export const SpreadsheetTabContent = React.memo(
         disabled,
         equipmentId,
         onEquipmentScrolled,
+        active,
     }: SpreadsheetTabContentProps) => {
         const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
         const [isGridReady, setIsGridReady] = useState(false);
@@ -91,10 +93,12 @@ export const SpreadsheetTabContent = React.memo(
             setEquipmentToUpdateId(null);
         }, [equipmentToUpdateId, gridRef]);
 
+        // Only fetch when active
         const { equipments, isFetching } = useSpreadsheetEquipments(
             tableDefinition?.type,
             highlightUpdatedEquipment,
-            nodeAliases
+            nodeAliases,
+            active
         );
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);

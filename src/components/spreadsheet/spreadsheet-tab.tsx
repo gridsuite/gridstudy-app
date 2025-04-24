@@ -25,6 +25,7 @@ interface SpreadsheetTabProps {
     updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
+    active: boolean;
 }
 
 export const SpreadsheetTab = React.memo(
@@ -37,6 +38,7 @@ export const SpreadsheetTab = React.memo(
         updateNodeAliases,
         equipmentId,
         onEquipmentScrolled,
+        active,
     }: SpreadsheetTabProps) => {
         const gridRef = useRef<AgGridReact>(null);
 
@@ -82,6 +84,7 @@ export const SpreadsheetTab = React.memo(
                     disabled={disabled}
                     equipmentId={equipmentId}
                     onEquipmentScrolled={onEquipmentScrolled}
+                    active={active}
                 />
             </>
         );

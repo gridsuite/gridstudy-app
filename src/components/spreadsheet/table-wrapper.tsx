@@ -160,6 +160,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                                 updateNodeAliases={updateNodeAliases}
                                 equipmentId={equipmentIdToScrollTo}
                                 onEquipmentScrolled={onEquipmentScrolled}
+                                active={isActive}
                             />
                         </Paper>
                     </TabPanelLazy>
