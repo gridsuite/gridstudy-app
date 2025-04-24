@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { InfoOutlined, WarningAmberRounded } from '@mui/icons-material';
 
 export const HeaderComponentWithTooltip = (props: any) => {
-    const { displayName, isNodeBuilt } = props;
+    const { displayName, tooltipTitle, isNodeBuilt, disabledTooltip } = props;
 
     return (
         <div
@@ -23,40 +23,42 @@ export const HeaderComponentWithTooltip = (props: any) => {
             }}
         >
             <span style={{ marginRight: '8px' }}>{displayName}</span>
-            <FormHelperText
-                error={false}
-                sx={{
-                    m: 0,
-                    p: 0,
-                    minWidth: 'auto',
-                    lineHeight: 1,
-                    display: 'flex',
-                }}
-            >
-                <Tooltip
-                    title={'builtNodeTooltip'}
-                    placement="right"
-                    arrow
-                    PopperProps={{
-                        modifiers: [
-                            {
-                                name: 'offset',
-                                options: {
-                                    offset: [0, -10],
-                                },
-                            },
-                        ],
+            {!disabledTooltip && (
+                <FormHelperText
+                    error={false}
+                    sx={{
+                        m: 0,
+                        p: 0,
+                        minWidth: 'auto',
+                        lineHeight: 1,
+                        display: 'flex',
                     }}
                 >
-                    <span style={{ display: 'flex', alignItems: 'center' }}>
-                        {isNodeBuilt ? (
-                            <InfoOutlined color="info" fontSize="small" />
-                        ) : (
-                            <WarningAmberRounded color="warning" fontSize="small" />
-                        )}
-                    </span>
-                </Tooltip>
-            </FormHelperText>
+                    <Tooltip
+                        title={tooltipTitle}
+                        placement="right"
+                        arrow
+                        PopperProps={{
+                            modifiers: [
+                                {
+                                    name: 'offset',
+                                    options: {
+                                        offset: [0, -10],
+                                    },
+                                },
+                            ],
+                        }}
+                    >
+                        <span style={{ display: 'flex', alignItems: 'center' }}>
+                            {isNodeBuilt ? (
+                                <InfoOutlined color="info" fontSize="small" />
+                            ) : (
+                                <WarningAmberRounded color="warning" fontSize="small" />
+                            )}
+                        </span>
+                    </Tooltip>
+                </FormHelperText>
+            )}
         </div>
     );
 };

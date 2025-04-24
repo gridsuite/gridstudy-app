@@ -17,7 +17,7 @@ export const BooleanNullableCellRenderer = (props: any) => {
             name={`${TOPOLOGY_MODIFICATION_TABLE}[${props.node.rowIndex}].${props.colDef.field}`}
             label={
                 props.data.currentConnectionStatus !== null
-                    ? intl.formatMessage({ id: props.data.currentConnectionStatus ? 'Open' : 'Close' })
+                    ? intl.formatMessage({ id: props.data.currentConnectionStatus ? 'Open' : 'Closed' })
                     : intl.formatMessage({ id: 'NoModification' })
             }
         />

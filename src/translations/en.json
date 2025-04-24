@@ -1491,9 +1491,13 @@
   "qmax": "Max Q",
   "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
   "nodeAliasesUpdateError": "An error occured while updating node aliases",
+  "VoltageLevelTopologyModificationError": "Voltage level topology modification error",
+  "builtNodeTooltipVlTopoModif": "Switches list taking into account all applied modifications",
+  "notBuiltNodeTooltipVlTopoModif": "Switches list from last built node in current branch",
+  "copyPreviousTopologyStatus": "Reset to previous status",
   "switchId": "Switch ID",
   "previousStatus": "Prev. status",
-  "currentStatus": "Status",
+  "currentStatus": "Actual status",
   "Open": "Open",
   "Closed": "Closed"
 }

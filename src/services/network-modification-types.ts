@@ -749,6 +749,7 @@ export interface GenerationDispatchInfo {
 
 export interface TopologyVoltageLevelModificationInfos {
     type: string;
+    uuid: string | null;
     equipmentId: string;
     equipmentAttributeModification: EquipmentAttributeModificationInfos[];
 }

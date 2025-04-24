@@ -17,7 +17,7 @@ import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector';
 import yup from '../../../utils/yup-config';
-import { SwitchInfos } from './voltage-level-topology.type';
+import { SwitchInfos, VoltageLevelTopologyModificationDialogProps } from './voltage-level-topology.type';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
@@ -30,53 +30,75 @@ import { DeepNullable } from '../../../utils/ts-utils';
 import { TopologyVoltageLevelModificationInfos } from '../../../../services/network-modification-types';
 
 const formSchema = yup.object().shape({
-    [TOPOLOGY_MODIFICATION_TABLE]: yup.array().of(
-        yup.object().shape({
-            [SWITCH_ID]: yup.string(),
-            [PREV_CONNECTION_STATUS]: yup.string(),
-            [CURRENT_CONNECTION_STATUS]: yup.boolean().nullable().defined(),
-        })
-    ),
+    [TOPOLOGY_MODIFICATION_TABLE]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [SWITCH_ID]: yup.string(),
+                [PREV_CONNECTION_STATUS]: yup.string(),
+                [CURRENT_CONNECTION_STATUS]: yup.boolean().nullable().defined(),
+            })
+        )
+        .required(),
 });
 
 const emptyFormData = {
-    [TOPOLOGY_MODIFICATION_TABLE]: [
-        {
-            [SWITCH_ID]: '',
-            [PREV_CONNECTION_STATUS]: '',
-            [CURRENT_CONNECTION_STATUS]: null,
-        },
-    ],
+    [TOPOLOGY_MODIFICATION_TABLE]: [],
 };
 
-export type TopologyModificationFormSchema = yup.InferType<typeof formSchema>;
+export type VoltageLevelTopologyModificationFormSchema = yup.InferType<typeof formSchema>;
 
+/**
+ * Dialog to delete a list of equipment by filter.
+ * @param studyUuid the study we are currently working on
+ * @param currentNode the node we are currently working on
+ * @param currentRootNetworkUuid The root network uuid we are currently working on
+ * @param editData the data to edit
+ * @param defaultIdValue the default line id
+ * @param isUpdate check if edition form
+ * @param editDataFetchStatus indicates the status of fetching EditData
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ */
 export default function VoltageLevelTopologyModificationDialog({
-    editData,
-    defaultIdValue,
+    studyUuid,
     currentNode,
     currentRootNetworkUuid,
-    studyUuid,
+    editData,
+    defaultIdValue,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}: any) {
+}: Readonly<VoltageLevelTopologyModificationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
-    const [switchInfos, setSwitchInfos] = useState<SwitchInfos[]>([]);
+    const [switchesToModify, setSwitchesToModify] = useState<SwitchInfos[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
 
-    const formMethods = useForm<DeepNullable<TopologyModificationFormSchema>>({
+    const formMethods = useForm<DeepNullable<VoltageLevelTopologyModificationFormSchema>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<TopologyModificationFormSchema>>(formSchema),
+        resolver: yupResolver<DeepNullable<VoltageLevelTopologyModificationFormSchema>>(formSchema),
     });
 
-    const fromEditDataToFormValues = useCallback((editData: TopologyVoltageLevelModificationInfos) => {
-        if (editData && editData?.equipmentId) {
-            setSelectedId(editData?.equipmentId);
-        }
-    }, []);
+    const { reset } = formMethods;
+
+    const fromEditDataToFormValues = useCallback(
+        (editData: TopologyVoltageLevelModificationInfos) => {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
+            const equipmentAttributeModificationEditData =
+                editData?.equipmentAttributeModification?.map((item) => ({
+                    [SWITCH_ID]: item.equipmentId,
+                    [PREV_CONNECTION_STATUS]: item.equipmentAttributeValue ? 'Closed' : 'Open',
+                    [CURRENT_CONNECTION_STATUS]: item.equipmentAttributeValue,
+                })) || emptyFormData[TOPOLOGY_MODIFICATION_TABLE];
+            reset({
+                [TOPOLOGY_MODIFICATION_TABLE]: equipmentAttributeModificationEditData,
+            });
+        },
+        [reset]
+    );
 
     useEffect(() => {
         if (editData) {
@@ -86,21 +108,31 @@ export default function VoltageLevelTopologyModificationDialog({
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: string) => {
-            if (equipmentId) {
+            if (!equipmentId) {
+                setSwitchesToModify([]);
+                reset(emptyFormData, { keepDefaultValues: true });
+            } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchSwitchesOfVoltageLevel(studyUuid, currentNodeUuid, currentRootNetworkUuid, equipmentId)
                     .then((switchesInfos) => {
-                        setSwitchInfos(switchesInfos);
+                        if (switchesInfos.length) {
+                            setSwitchesToModify(switchesInfos);
+                            reset((formValues) => ({
+                                ...formValues,
+                            }));
+                        }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setSwitchesToModify([]);
+                            reset(emptyFormData);
+                        }
                     });
-            } else {
-                setSwitchInfos([]);
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+        [reset, studyUuid, currentNodeUuid, currentRootNetworkUuid, editData?.equipmentId]
     );
 
     useEffect(() => {
@@ -110,17 +142,23 @@ export default function VoltageLevelTopologyModificationDialog({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
-        (topologyVLModificationInfos: any) => {
-            const equipmentAttributeModificationInfos = topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE].filter(
-                (item: any) =>
-                    item.currentConnectionStatus !== null && item.currentConnectionStatus !== item.prevConnectionStatus
-            ).map((item: any) => ({
-                type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
-                equipmentId: item.switchId,
-                equipmentAttributeName: 'open',
-                equipmentAttributeValue: item.currentConnectionStatus,
-                equipmentType: EquipmentType.SWITCH,
-            }));
+        (topologyVLModificationInfos: VoltageLevelTopologyModificationFormSchema) => {
+            const equipmentAttributeModificationInfos =
+                topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE]?.length > 0
+                    ? topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE].filter(
+                          (item) =>
+                              item.currentConnectionStatus !== null &&
+                              item.prevConnectionStatus != null &&
+                              // Convert string to boolean before comparison
+                              item.currentConnectionStatus !== (item.prevConnectionStatus === 'Closed')
+                      ).map((item) => ({
+                          type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
+                          equipmentId: item.switchId ?? '',
+                          equipmentAttributeName: 'Open',
+                          equipmentAttributeValue: item.currentConnectionStatus === true,
+                          equipmentType: EquipmentType.SWITCH,
+                      }))
+                    : [];
             const voltageLevelTopologyModificationInfos = {
                 type: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
                 uuid: editData?.uuid,
@@ -197,8 +235,9 @@ export default function VoltageLevelTopologyModificationDialog({
                     <VoltageLevelTopologyModificationForm
                         currentNode={currentNode}
                         equipmentId={selectedId}
-                        switches={switchInfos}
-                        equipmentAttributeModification={editData?.equipmentAttributeModification}
+                        switchesToModify={switchesToModify}
+                        switchesEditData={editData?.equipmentAttributeModification}
+                        isUpdate={isUpdate}
                     />
                 )}
             </ModificationDialog>
