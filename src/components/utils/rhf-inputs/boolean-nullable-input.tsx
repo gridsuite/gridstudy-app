@@ -19,6 +19,7 @@ interface CheckboxNullableInputProps {
     formProps?: CheckboxProps;
     previousValue?: string;
     nullDisabled?: boolean;
+    disabled?: boolean;
 }
 
 const CheckboxNullableInput = ({
@@ -28,6 +29,7 @@ const CheckboxNullableInput = ({
     formProps,
     previousValue,
     nullDisabled,
+    disabled,
 }: Readonly<CheckboxNullableInputProps>) => {
     const {
         field: { onChange, value },
@@ -60,6 +62,7 @@ const CheckboxNullableInput = ({
                             'aria-label': 'primary checkbox',
                         }}
                         {...formProps}
+                        disabled={disabled}
                     />
                 }
                 label={
