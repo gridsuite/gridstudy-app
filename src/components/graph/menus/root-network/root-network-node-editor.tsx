@@ -50,6 +50,7 @@ import { customizeCurrentParameters, formatCaseImportParameters } from '../../ut
 const styles = {
     checkboxListItem: (theme: Theme) => ({
         paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
     }),
     rootNetworksTitle: (theme: Theme) => ({
         display: 'flex',
@@ -66,6 +67,7 @@ const styles = {
         '&': {
             // Necessary to overrides some @media specific styles that are defined elsewhere
             padding: 0,
+            paddingLeft: theme.spacing(1),
             minHeight: 0,
         },
         border: theme.spacing(1),
@@ -73,9 +75,6 @@ const styles = {
     }),
     toolbarIcon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
-    }),
-    toolbarCheckbox: (theme: Theme) => ({
-        marginLeft: theme.spacing(1.5),
     }),
     filler: {
         flexGrow: 1,
@@ -349,10 +348,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
         <>
             <Toolbar sx={styles.toolbar}>
                 <Checkbox
-                    sx={styles.toolbarCheckbox}
                     disabled={isRootNetworksProcessing}
-                    color={'primary'}
-                    edge="start"
                     checked={isChecked(selectedItems.length)}
                     indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
                     disableRipple
