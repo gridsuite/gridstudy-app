@@ -233,14 +233,16 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
                 </Grid>
                 <Grid item padding={1}>
                     <Tooltip title={<FormattedMessage id="spreadsheet/reset_spreadsheet_collection/button_tooltip" />}>
-                        <Button
-                            sx={styles.resetButton}
-                            size={'small'}
-                            onClick={handleResetCollectionClick}
-                            disabled={disabled}
-                        >
-                            <RestoreIcon />
-                        </Button>
+                        <span>
+                            <Button
+                                sx={styles.resetButton}
+                                size={'small'}
+                                onClick={handleResetCollectionClick}
+                                disabled={disabled}
+                            >
+                                <RestoreIcon />
+                            </Button>
+                        </span>
                     </Tooltip>
                 </Grid>
             </Grid>
