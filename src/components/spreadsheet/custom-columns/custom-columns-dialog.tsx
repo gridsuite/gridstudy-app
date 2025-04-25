@@ -54,9 +54,9 @@ import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
 import { AppState } from 'redux/reducer';
-import { createSpreadsheetColumn, updateSpreadsheetColumn } from 'services/study-config';
 import { UUID } from 'crypto';
 import { ColumnDefinition } from '../config/spreadsheet.type';
+import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../services/study/study-config';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -97,6 +97,7 @@ export default function CustomColumnDialog({
     const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
     const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const columnDefinition = useMemo(
         () => columnsDefinitions?.find((column) => column?.uuid === colUuid),
         [colUuid, columnsDefinitions]
@@ -200,7 +201,7 @@ export default function CustomColumnDialog({
 
     const onSubmit = useCallback(
         async (newParams: CustomColumnForm) => {
-            if (!validateParams(columnsDefinitions, newParams, colUuid, setError)) {
+            if (!studyUuid || !validateParams(columnsDefinitions, newParams, colUuid, setError)) {
                 return;
             }
 
@@ -220,8 +221,8 @@ export default function CustomColumnDialog({
 
             const updateOrCreateColumn =
                 isUpdate && columnDefinition
-                    ? updateSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
-                    : createSpreadsheetColumn(spreadsheetConfigUuid, formattedParams);
+                    ? updateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
+                    : createSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, formattedParams);
 
             // we reset and close the dialog to avoid multiple submissions
             reset(initialCustomColumnForm);
@@ -254,17 +255,18 @@ export default function CustomColumnDialog({
                 });
         },
         [
+            studyUuid,
             columnsDefinitions,
             colUuid,
             setError,
             columnDefinition,
             spreadsheetConfigUuid,
+            reset,
+            open,
             filters,
             dispatchFilters,
             dispatch,
             tabIndex,
-            reset,
-            open,
             snackError,
         ]
     );
