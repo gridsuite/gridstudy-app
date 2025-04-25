@@ -28,7 +28,12 @@ export function fetchDynamicSecurityAnalysisProviders() {
     return backendFetchJson(url);
 }
 
-export function startDynamicSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function startDynamicSecurityAnalysis(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    debug: boolean
+) {
     console.info(`Running dynamic security analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const startDynamicSecurityAnalysisUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(

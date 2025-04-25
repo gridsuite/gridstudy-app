@@ -10,7 +10,7 @@ import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { VoltageInitParam } from '../../components/dialogs/parameters/voltageinit/voltage-init-utils';
 
-export function startVoltageInit(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function startVoltageInit(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID, debug: boolean) {
     console.info(
         `Running voltage init on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );

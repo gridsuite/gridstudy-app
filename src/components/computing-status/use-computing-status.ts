@@ -9,11 +9,15 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ComputingType } from './computing-type';
+import { ComputingType, formatComputingTypeLabel } from './computing-type';
 import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
+
+import { downloadZipFile, fetchDebugFile } from '../../services/utils';
+import { HttpStatusCode } from '../../utils/http-status-code';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 interface UseComputingStatusProps {
     (
@@ -102,6 +106,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     computingType,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
+    const { snackError, snackWarning } = useSnackMessage();
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);
 
@@ -118,7 +123,7 @@ export const useComputingStatus: UseComputingStatusProps = (
         [completions]
     );
 
-    const update = useCallback(() => {
+    const updateStatus = useCallback(() => {
         // this is used to prevent race conditions from happening
         // if another request is sent, the previous one won't do anything
         let canceledRequest = false;
@@ -162,6 +167,39 @@ export const useComputingStatus: UseComputingStatusProps = (
         isComputationCompleted,
     ]);
 
+    const downloadDebugFile = useCallback(() => {
+        fetchDebugFile(studyUuid, nodeUuid, currentRootNetworkUuid, computingType)
+            .then(async (response) => {
+                // Get the filename
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = `${formatComputingTypeLabel(computingType)}.zip`;
+                if (contentDisposition && contentDisposition.includes('filename=')) {
+                    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                    if (match && match[1]) {
+                        filename = match[1];
+                    }
+                }
+
+                const blob = await response.blob();
+                downloadZipFile(blob, filename);
+            })
+            .catch((responseError) => {
+                const error = responseError as Error & { status: number };
+                if (error.status === HttpStatusCode.NOT_FOUND) {
+                    // not found
+                    snackWarning({
+                        headerId: 'debugFileNotFoundHeader',
+                    });
+                } else {
+                    // or whatever error
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'debugFileErrorHeader',
+                    });
+                }
+            });
+    }, [studyUuid, nodeUuid, currentRootNetworkUuid, computingType, snackWarning, snackError]);
+
     /* initial fetch and update */
     useEffect(() => {
         if (
@@ -184,10 +222,15 @@ export const useComputingStatus: UseComputingStatusProps = (
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (isUpdateForUs) {
-            update();
+            updateStatus();
+            // download automatically debug file
+            if (studyUpdatedForce.eventData?.headers?.debug) {
+                downloadDebugFile();
+            }
         }
     }, [
-        update,
+        updateStatus,
+        downloadDebugFile,
         fetcher,
         nodeUuid,
         invalidations,

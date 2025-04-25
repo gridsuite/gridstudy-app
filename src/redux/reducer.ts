@@ -437,6 +437,11 @@ type RootNetworkDeletionStartedNotification = {
 // Redux state
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
+    eventData: {
+        headers: {
+            debug?: boolean;
+        };
+    };
 } & (
     | StudyUpdatedUndefined
     | StudyUpdatedStudy

@@ -272,6 +272,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const handleStudyUpdate = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
+            console.log(`XXX notified`, { eventData });
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             if (updateTypeHeader === 'STUDY_ALERT') {
                 sendAlert(eventData);
