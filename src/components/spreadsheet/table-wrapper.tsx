@@ -61,7 +61,10 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     useEffect(() => {
         if (tablesDefinitions.length === 0) {
             setActiveTabUuid(null);
-        } else if (!activeTabUuid && tablesDefinitions.length > 0) {
+        } else if (
+            (!activeTabUuid && tablesDefinitions.length > 0) ||
+            (activeTabUuid && !tablesDefinitions.some((def) => def.uuid === activeTabUuid))
+        ) {
             setActiveTabUuid(tablesDefinitions[0].uuid);
         }
     }, [activeTabUuid, tablesDefinitions]);
