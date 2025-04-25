@@ -59,7 +59,6 @@ import {
     isLoadflowResultNotification,
     isNodeBuildCompletedNotification,
     isStudyNotification,
-    NotificationType,
 } from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 

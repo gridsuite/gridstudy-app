@@ -288,7 +288,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
+import { LineFlowMode } from '@powsybl/network-viewer';
 import type { ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';

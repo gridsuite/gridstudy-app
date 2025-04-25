@@ -57,11 +57,11 @@ import {
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
 import { StudyView } from './utils/utils';
-import { NotificationType } from '../redux/reducer.js';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
     getSpreadsheetModel,
 } from '../services/study-config.js';
+import { NotificationType } from 'types/notification-types';
 
 const noUserManager = { instance: null, error: null };
 
