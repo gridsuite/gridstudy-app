@@ -213,6 +213,8 @@ import {
     SetEditNadModeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
+    UPDATE_TABLE_COLUMNS,
+    UpdateTableColumnsAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -295,6 +297,7 @@ import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../c
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
+    ColumnDefinition,
     SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
@@ -314,6 +317,9 @@ export enum NotificationType {
     ROOT_NETWORKS_DELETION_STARTED = 'rootNetworksDeletionStarted',
     ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
     ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
+    SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
+    SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
+    SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
 }
 
 export enum StudyIndexationStatus {
@@ -821,6 +827,26 @@ export const reducer = createReducer(initialState, (builder) => {
             Object.assign(existingTableDefinition, newTableDefinition);
         } else {
             state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
+        }
+    });
+
+    builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
+        const { spreadsheetConfigDto } = action;
+        const existingTableDefinition = state.tables.definitions.find(
+            (tabDef) => tabDef.uuid === spreadsheetConfigDto.id
+        );
+        if (existingTableDefinition) {
+            existingTableDefinition.name = spreadsheetConfigDto.name;
+            existingTableDefinition.columns = spreadsheetConfigDto.columns.map((column) => {
+                const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
+                const colDef: ColumnDefinition = {
+                    ...column,
+                    dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
+                    visible: existingColDef ? existingColDef.visible : true,
+                    locked: existingColDef ? existingColDef.locked : false,
+                };
+                return colDef;
+            });
         }
     });
 

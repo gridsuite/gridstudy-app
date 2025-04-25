@@ -34,14 +34,17 @@ import { useSpreadsheetGsFilter } from './use-spreadsheet-gs-filter';
 import { initTableDefinitions, resetAllSpreadsheetGsFilters, updateTableDefinition } from 'redux/actions';
 import { CurrentTreeNode, NodeType } from '../graph/tree-node.type';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { reorderSpreadsheetColumns } from 'services/study-config';
 import { UUID } from 'crypto';
 import { useNodeAliases } from './custom-columns/use-node-aliases';
 import { rowIndexColumnDefinition } from './config/common-column-definitions';
 import { useGridCalculations } from '../../hooks/use-grid-calculations';
 import { spreadsheetStyles } from './utils/style';
 import RestoreIcon from '@mui/icons-material/Restore';
-import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
+import {
+    getSpreadsheetConfigCollection,
+    reorderSpreadsheetColumns,
+    setSpreadsheetConfigCollection,
+} from 'services/study/study-config';
 import { mapColumnsDto } from './custom-spreadsheet/custom-spreadsheet-utils';
 import { ROW_INDEX_COLUMN_ID } from './constants';
 
@@ -373,7 +376,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
             const colId = event.column?.getColId();
-            if (colId && event.finished && event.toIndex !== undefined) {
+            if (studyUuid && colId && event.finished && event.toIndex !== undefined) {
                 // Adjust toIndex to account for the row index column which is always first
                 // When moving a column, we need to subtract 1 from AG Grid's toIndex
                 // because our tableDefinition doesn't include the row index column
@@ -396,6 +399,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 });
 
                 reorderSpreadsheetColumns(
+                    studyUuid,
                     tableDefinition.uuid,
                     updatedColumns.map((col) => col.uuid)
                 )
@@ -415,7 +419,7 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     });
             }
         },
-        [tableDefinition, originalColumnPositions, dispatch, snackError]
+        [tableDefinition, studyUuid, originalColumnPositions, dispatch, snackError]
     );
 
     const { modificationDialog, handleOpenModificationDialog, isModificationDialogForEquipmentType } =
