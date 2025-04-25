@@ -14,6 +14,7 @@ import {
 } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
+    AnnouncementNotification,
     AuthenticationRouter,
     CardErrorBoundary,
     getPreLoginPath,
@@ -312,6 +313,7 @@ const App = () => {
             }}
         >
             <AppTopBar user={user} onChangeTab={onChangeTab} userManager={userManager} />
+            <AnnouncementNotification user={user} />
             <CardErrorBoundary>
                 <div
                     className="singlestretch-parent"

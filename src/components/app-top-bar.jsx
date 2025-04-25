@@ -12,7 +12,6 @@ import {
     logout,
     OverflowableText,
     TopBar,
-    useGlobalAnnouncement,
 } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
@@ -90,8 +89,6 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
     const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const announcementInfos = useGlobalAnnouncement(user);
-
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
@@ -134,7 +131,6 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
                 equipmentLabelling={useNameLocal}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
-                announcementInfos={announcementInfos}
             >
                 {/* Add current Node name between Logo and Tabs */}
                 {user && currentNode && (
