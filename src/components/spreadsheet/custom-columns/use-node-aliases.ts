@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AppState, NotificationType } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../services/study/node-alias';
@@ -14,6 +14,7 @@ import { NodeAlias } from './node-alias.type';
 import { UUID } from 'crypto';
 import { deletedOrRenamedNodes } from 'redux/actions';
 import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
+import { NotificationType } from 'types/notification-types';
 
 // NodeAlias may have invalid id/name, in error cases
 export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;

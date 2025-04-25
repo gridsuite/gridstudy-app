@@ -82,6 +82,11 @@ export enum NotificationType {
     STATE_ESTIMATION_RESULT = 'stateEstimationResult',
     STATE_ESTIMATION_FAILED = 'stateEstimation_failed',
     STATE_ESTIMATION_STATUS = 'stateEstimation_status',
+
+    // spreadsheets
+    SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
+    SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
+    SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
 }
 
 export const PENDING_MODIFICATION_NOTIFICATION_TYPES = [
