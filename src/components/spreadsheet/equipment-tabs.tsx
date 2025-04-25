@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Button, Grid, Theme, Tooltip } from '@mui/material';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -13,7 +13,7 @@ import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-con
 import { AppDispatch } from 'redux/store';
 import { removeTableDefinition, renameTableDefinition, reorderTableDefinitions } from 'redux/actions';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
@@ -22,6 +22,7 @@ import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import TabLabel from './tab-label';
 import { ResetNodeAliasCallback } from './custom-columns/use-node-aliases';
+import RestoreIcon from '@mui/icons-material/Restore';
 import {
     removeSpreadsheetConfigFromCollection,
     renameSpreadsheetModel,
@@ -44,11 +45,18 @@ const draggableTabStyles = {
     },
 };
 
+const styles = {
+    resetButton: (theme: Theme) => ({
+        color: theme.palette.primary.main,
+    }),
+};
+
 interface EquipmentTabsProps {
     selectedTabUuid: UUID | null;
     handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
     resetNodeAliases: ResetNodeAliasCallback;
+    handleResetCollectionClick?: () => void;
 }
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
@@ -56,6 +64,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
     handleSwitchTab,
     disabled,
     resetNodeAliases,
+    handleResetCollectionClick,
 }) => {
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
@@ -208,7 +217,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
                         resetNodeAliases={resetNodeAliases}
                     />
                 </Grid>
-                <Grid item sx={{ overflow: 'hidden' }}>
+                <Grid item sx={{ overflow: 'hidden', flexGrow: 1 }}>
                     <DroppableTabs
                         id="equipment-tabs"
                         value={selectedTabIndex}
@@ -221,6 +230,18 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
                         tabsRender={renderTabs}
                         onDragEnd={handleDragEnd}
                     />
+                </Grid>
+                <Grid item padding={1}>
+                    <Tooltip title={<FormattedMessage id="spreadsheet/reset_spreadsheet_collection/button_tooltip" />}>
+                        <Button
+                            sx={styles.resetButton}
+                            size={'small'}
+                            onClick={handleResetCollectionClick}
+                            disabled={disabled}
+                        >
+                            <RestoreIcon />
+                        </Button>
+                    </Tooltip>
                 </Grid>
             </Grid>
             {confirmationDialogOpen && (

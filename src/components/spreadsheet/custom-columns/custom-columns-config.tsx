@@ -15,13 +15,14 @@ import { AppState } from '../../../redux/reducer';
 import { LIGHT_THEME, useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnDialog from './custom-columns-dialog';
 import { spreadsheetStyles } from '../utils/style';
+import { SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 
 export type CustomColumnsConfigProps = {
-    tabIndex: number;
+    tableDefinition: SpreadsheetTabDefinition;
     disabled?: boolean;
 };
 
-export default function CustomColumnsConfig({ tabIndex, disabled }: Readonly<CustomColumnsConfigProps>) {
+export default function CustomColumnsConfig({ tableDefinition, disabled }: Readonly<CustomColumnsConfigProps>) {
     const dialogOpen = useStateBoolean(false);
     const theme = useSelector((state: AppState) => state.theme);
 
@@ -44,7 +45,7 @@ export default function CustomColumnsConfig({ tabIndex, disabled }: Readonly<Cus
                 <FormattedMessage id="spreadsheet/custom_column/add_columns" />
             </Button>
 
-            <CustomColumnDialog tabIndex={tabIndex} open={dialogOpen} />
+            <CustomColumnDialog tableDefinition={tableDefinition} open={dialogOpen} />
         </>
     );
 }
