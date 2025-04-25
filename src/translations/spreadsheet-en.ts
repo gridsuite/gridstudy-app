@@ -42,7 +42,6 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/creates_cyclic_dependency': 'Column dependencies create a cyclic dependency',
     'spreadsheet/custom_column/error_saving_or_updating_column': 'Error while saving or updating column',
     'spreadsheet/save/button': 'Save',
-    'spreadsheet/reset/button': 'Reset',
     'spreadsheet/save/options/model': 'As a model',
     'spreadsheet/save/options/collection': 'Collection',
     'spreadsheet/save/options/csv': 'Export CSV',
@@ -92,6 +91,7 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': 'Error while adding spreadsheet',
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Error while resetting spreadsheet collection',
+    'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Reset spreadsheet collection',
     'spreadsheet/parameter_aliases/node_name': 'Node name',
     'spreadsheet/parameter_aliases/node_alias': 'Node alias',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Cannot exceed 10 characters',

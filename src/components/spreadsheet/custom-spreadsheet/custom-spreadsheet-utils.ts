@@ -136,6 +136,7 @@ const handleSuccess = (
 };
 
 interface AddNewSpreadsheetParams {
+    studyUuid: UUID;
     columns: ColumnDefinitionDto[];
     globalFilters?: SpreadsheetGlobalFilter[];
     sheetType: SpreadsheetEquipmentType;
@@ -148,6 +149,7 @@ interface AddNewSpreadsheetParams {
 }
 
 export const addNewSpreadsheet = ({
+    studyUuid,
     columns,
     globalFilters = [],
     sheetType,
@@ -162,7 +164,7 @@ export const addNewSpreadsheet = ({
     const newTableDefinition = createNewTableDefinition(columnsDefinition, sheetType, tabIndex, tabName);
     const spreadsheetConfig = createSpreadsheetConfig(columns, globalFilters, sheetType, tabName);
 
-    addSpreadsheetConfigToCollection(spreadsheetsCollectionUuid, spreadsheetConfig)
+    addSpreadsheetConfigToCollection(studyUuid, spreadsheetsCollectionUuid, spreadsheetConfig)
         .then((uuid: UUID) => handleSuccess(uuid, newTableDefinition, dispatch, snackError, open))
         .catch((error) => {
             snackError({

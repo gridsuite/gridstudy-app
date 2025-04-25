@@ -53,6 +53,7 @@ import {
     ColumnDefinition,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
+    SpreadsheetConfigDto,
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
@@ -61,7 +62,7 @@ import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export type TableValue<TValue = unknown> = {
-    index: number;
+    uuid: UUID;
     value: TValue;
 };
 
@@ -1282,6 +1283,18 @@ export type UpdateTableDefinitionAction = {
 export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefinition): UpdateTableDefinitionAction => ({
     type: UPDATE_TABLE_DEFINITION,
     newTableDefinition,
+});
+
+export const UPDATE_TABLE_COLUMNS = 'UPDATE_TABLE_COLUMNS';
+
+export type UpdateTableColumnsAction = {
+    type: typeof UPDATE_TABLE_COLUMNS;
+    spreadsheetConfigDto: SpreadsheetConfigDto;
+};
+
+export const updateTableColumns = (spreadsheetConfigDto: SpreadsheetConfigDto): UpdateTableColumnsAction => ({
+    type: UPDATE_TABLE_COLUMNS,
+    spreadsheetConfigDto,
 });
 
 export const RENAME_TABLE_DEFINITION = 'RENAME_TABLE_DEFINITION';
