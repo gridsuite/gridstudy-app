@@ -110,7 +110,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     }, [studyUuid]);
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
-        window.addEventListener('beforeunload', (event) => {
+        window.addEventListener('beforeunload', () => {
             if (true === isInitiatingCopyTab.current) {
                 broadcastChannel.postMessage(noNodeSelectionForCopy);
             }

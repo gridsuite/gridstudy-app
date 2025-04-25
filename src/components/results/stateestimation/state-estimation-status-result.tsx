@@ -25,7 +25,7 @@ export const StateEstimationStatusResult: FunctionComponent<StateEstimationResul
     const renderStateEstimationStatusResult = () => {
         return (
             <>
-                {result.hasOwnProperty('status') && (
+                {'status' in result && (
                     <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
                         <Typography sx={styles.typography}>
                             <FormattedMessage id="StateEstimationStatus" />
@@ -34,7 +34,7 @@ export const StateEstimationStatusResult: FunctionComponent<StateEstimationResul
                     </Stack>
                 )}
 
-                {result.hasOwnProperty('qualityLevel') && (
+                {'qualityLevel' in result && (
                     <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
                         <Typography sx={styles.typography}>
                             <FormattedMessage id="StateEstimationQuality" />

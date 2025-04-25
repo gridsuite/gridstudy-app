@@ -21,6 +21,7 @@
         "src",
         "jest.setup.ts",
         // We must list config files in typescript because needed by prettier when called by eslint as plugin
+        "eslint.config.js",
         "jest.config.ts",
         "prettier.config.js",
         "vite.config.ts"
