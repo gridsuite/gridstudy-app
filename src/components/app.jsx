@@ -14,12 +14,14 @@ import {
 } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
+    AnnouncementNotification,
     AuthenticationRouter,
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
-    useSnackMessage,
+    NotificationsUrlKeys,
     useNotificationsListener,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -53,7 +55,6 @@ import {
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
 } from '../redux/actions';
-import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
 import { StudyView } from './utils/utils';
 
@@ -135,7 +136,7 @@ const App = () => {
         [snackError, updateParams]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.CONFIG, {
+    useNotificationsListener(NotificationsUrlKeys.CONFIG, {
         listenerCallbackMessage: updateConfig,
     });
 
@@ -312,6 +313,7 @@ const App = () => {
             }}
         >
             <AppTopBar user={user} onChangeTab={onChangeTab} userManager={userManager} />
+            <AnnouncementNotification user={user} />
             <CardErrorBoundary>
                 <div
                     className="singlestretch-parent"

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNotificationsListener } from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +13,6 @@ import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments }
 import { AppState, NotificationType } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
 import { NodeAlias } from '../custom-columns/node-alias.type';
 import { isStatusBuilt } from '../../graph/util/model-functions';
 import { useFetchEquipment } from './use-fetch-equipment';
@@ -173,7 +172,7 @@ export const useSpreadsheetEquipments = (
         [currentNode?.id, currentRootNetworkUuid, studyUuid, updateEquipmentsLocal]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: listenerUpdateEquipmentsLocal,
     });
 
