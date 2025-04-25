@@ -9,12 +9,12 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { StudyDisplayMode } from '../network-modification.type';
-import { StudyIndexationStatus } from 'types/notification-types';
+import { RootNetworkIndexationStatus } from 'types/notification-types';
 
 export const useDisabledSearchReason = () => {
     const intl = useIntl();
     const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
-    const studyIndexationStatus = useSelector((state: AppState) => state.studyIndexationStatus);
+    const rootNetworkIndexationStatus = useSelector((state: AppState) => state.rootNetworkIndexationStatus);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     if (studyDisplayMode === StudyDisplayMode.TREE) {
@@ -25,9 +25,9 @@ export const useDisabledSearchReason = () => {
         return intl.formatMessage({
             id: 'InvalidNode',
         });
-    } else if (studyIndexationStatus !== StudyIndexationStatus.INDEXED) {
+    } else if (rootNetworkIndexationStatus !== RootNetworkIndexationStatus.INDEXED) {
         return intl.formatMessage({
-            id: 'waitingStudyIndexation',
+            id: 'waitingRootNetworkIndexation',
         });
     } else {
         return '';

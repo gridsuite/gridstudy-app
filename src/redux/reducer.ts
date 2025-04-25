@@ -163,7 +163,7 @@ import {
     SET_ROOT_NETWORKS,
     SET_RELOAD_MAP_NEEDED,
     SET_STUDY_DISPLAY_MODE,
-    SET_STUDY_INDEXATION_STATUS,
+    SET_ROOT_NETWORK_INDEXATION_STATUS,
     SetAppTabIndexAction,
     SetCalculationSelectionsAction,
     SetComputationStartingAction,
@@ -179,7 +179,7 @@ import {
     SetRootNetworksAction,
     SetReloadMapNeededAction,
     SetStudyDisplayModeAction,
-    SetStudyIndexationStatusAction,
+    SetRootNetworkIndexationStatusAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
@@ -306,7 +306,7 @@ import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
-import { StudyIndexationStatus, NodeInsertModes, StudyUpdateNotification } from 'types/notification-types';
+import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 
 // Redux state
 export type StudyUpdated = {
@@ -428,7 +428,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
-    studyIndexationStatus: StudyIndexationStatus;
+    rootNetworkIndexationStatus: RootNetworkIndexationStatus;
     tableSort: TableSort;
     tables: TablesState;
 
@@ -612,7 +612,7 @@ const initialState: AppState = {
         status: OptionalServicesStatus.Pending,
     })),
     oneBusShortCircuitAnalysisDiagram: null,
-    studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
+    rootNetworkIndexationStatus: RootNetworkIndexationStatus.NOT_INDEXED,
     deletedOrRenamedNodes: [],
 
     // params
@@ -1688,8 +1688,8 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     );
 
-    builder.addCase(SET_STUDY_INDEXATION_STATUS, (state, action: SetStudyIndexationStatusAction) => {
-        state.studyIndexationStatus = action.studyIndexationStatus;
+    builder.addCase(SET_ROOT_NETWORK_INDEXATION_STATUS, (state, action: SetRootNetworkIndexationStatusAction) => {
+        state.rootNetworkIndexationStatus = action.rootNetworkIndexationStatus;
     });
 
     builder.addCase(ADD_TO_RECENT_GLOBAL_FILTERS, (state, action: AddToRecentGlobalFiltersAction) => {

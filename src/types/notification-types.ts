@@ -162,7 +162,7 @@ export const COMPUTATION_NOTIFIACTION_TYPES = [
     NotificationType.STATE_ESTIMATION_STATUS,
 ] as NotificationType[];
 
-export enum StudyIndexationStatus {
+export enum RootNetworkIndexationStatus {
     NOT_INDEXED = 'NOT_INDEXED',
     INDEXING_ONGOING = 'INDEXING_ONGOING',
     INDEXED = 'INDEXED',

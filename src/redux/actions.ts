@@ -55,7 +55,7 @@ import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { NodeInsertModes, StudyIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -112,7 +112,7 @@ export type AppActions =
     | NetworkAreaDiagramNbVoltageLevelsAction
     | SetComputingStatusAction
     | SetComputationStartingAction
-    | SetStudyIndexationStatusAction
+    | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
     | SetOneBusShortcircuitAnalysisDiagramAction
     | AddToRecentGlobalFiltersAction
@@ -1004,15 +1004,17 @@ export function setComputationStarting(computationStarting: boolean): SetComputa
     };
 }
 
-export const SET_STUDY_INDEXATION_STATUS = 'SET_STUDY_INDEXATION_STATUS';
-export type SetStudyIndexationStatusAction = Readonly<Action<typeof SET_STUDY_INDEXATION_STATUS>> & {
-    studyIndexationStatus: StudyIndexationStatus;
+export const SET_ROOT_NETWORK_INDEXATION_STATUS = 'SET_ROOT_NETWORK_INDEXATION_STATUS';
+export type SetRootNetworkIndexationStatusAction = Readonly<Action<typeof SET_ROOT_NETWORK_INDEXATION_STATUS>> & {
+    rootNetworkIndexationStatus: RootNetworkIndexationStatus;
 };
 
-export function setStudyIndexationStatus(studyIndexationStatus: StudyIndexationStatus): SetStudyIndexationStatusAction {
+export function setRootNetworkIndexationStatus(
+    rootNetworkIndexationStatus: RootNetworkIndexationStatus
+): SetRootNetworkIndexationStatusAction {
     return {
-        type: SET_STUDY_INDEXATION_STATUS,
-        studyIndexationStatus: studyIndexationStatus,
+        type: SET_ROOT_NETWORK_INDEXATION_STATUS,
+        rootNetworkIndexationStatus: rootNetworkIndexationStatus,
     };
 }
 

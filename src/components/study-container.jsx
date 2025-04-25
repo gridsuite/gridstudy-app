@@ -20,7 +20,7 @@ import {
     setCurrentRootNetworkUuid,
     setCurrentTreeNode,
     setRootNetworks,
-    setStudyIndexationStatus,
+    setRootNetworkIndexationStatus,
     studyUpdated,
 } from '../redux/actions';
 import { fetchRootNetworks } from 'services/root-network';
@@ -41,8 +41,8 @@ import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchCaseName, fetchStudyExists } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
-import { fetchNetworkExistence, fetchStudyIndexationStatus } from '../services/study/network';
-import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
+import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
+import { recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { NodeType } from './graph/tree-node.type';
@@ -52,6 +52,7 @@ import {
     isMetadataUpdatedNotification,
     isStudyNetworkRecreationNotification,
     NotificationType,
+    RootNetworkIndexationStatus,
     StudyIndexationStatus,
 } from 'types/notification-types';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
@@ -136,11 +137,11 @@ export function StudyContainer({ view, onChangeTab }) {
     // For the first network existence check and indexation check StudyPane is not rendered until network is found
     // then those states will be true even after root network change
     const [isFirstStudyNetworkFound, setIsFirstStudyNetworkFound] = useState(false);
-    const [isFirstStudyIndexationFound, setIsFirstStudyIndexationFound] = useState(false);
+    const [isFirstRootNetworkIndexationFound, setIsFirstRootNetworkIndexationFound] = useState(false);
 
-    const studyIndexationStatus = useSelector((state) => state.studyIndexationStatus);
-    const studyIndexationStatusRef = useRef();
-    studyIndexationStatusRef.current = studyIndexationStatus;
+    const rootNetworkIndexationStatus = useSelector((state) => state.rootNetworkIndexationStatus);
+    const rootNetworkIndexationStatusRef = useRef();
+    rootNetworkIndexationStatusRef.current = rootNetworkIndexationStatus;
 
     const [initialTitle] = useState(document.title);
 
@@ -389,7 +390,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     // if reindexation is ongoing then stay on root node, all variants will be removed
                     // if indexation is done then look for the next built node.
                     // This is to avoid future fetch on variants removed during reindexation process
-                    if (initIndexationStatus === StudyIndexationStatus.INDEXED) {
+                    if (initIndexationStatus === RootNetworkIndexationStatus.INDEXED) {
                         firstSelectedNode =
                             getFirstNodeOfType(tree, NodeType.NETWORK_MODIFICATION, [
                                 BUILD_STATUS.BUILT,
@@ -416,27 +417,27 @@ export function StudyContainer({ view, onChangeTab }) {
         [studyUuid, currentRootNetworkUuid, dispatch, snackError, snackWarning]
     );
 
-    const checkStudyIndexation = useCallback(() => {
-        return fetchStudyIndexationStatus(studyUuid, currentRootNetworkUuid)
+    const checkRootNetworkIndexation = useCallback(() => {
+        return fetchRootNetworkIndexationStatus(studyUuid, currentRootNetworkUuid)
             .then((status) => {
                 switch (status) {
-                    case StudyIndexationStatus.INDEXED: {
-                        dispatch(setStudyIndexationStatus(status));
-                        setIsFirstStudyIndexationFound(true);
+                    case RootNetworkIndexationStatus.INDEXED: {
+                        dispatch(setRootNetworkIndexationStatus(status));
+                        setIsFirstRootNetworkIndexationFound(true);
                         break;
                     }
-                    case StudyIndexationStatus.INDEXING_ONGOING: {
-                        dispatch(setStudyIndexationStatus(status));
+                    case RootNetworkIndexationStatus.INDEXING_ONGOING: {
+                        dispatch(setRootNetworkIndexationStatus(status));
                         break;
                     }
-                    case StudyIndexationStatus.NOT_INDEXED: {
-                        dispatch(setStudyIndexationStatus(status));
-                        reindexAllStudy(studyUuid, currentRootNetworkUuid)
-                            .then(() => setIsFirstStudyIndexationFound(true))
+                    case RootNetworkIndexationStatus.NOT_INDEXED: {
+                        dispatch(setRootNetworkIndexationStatus(status));
+                        reindexAllRootNetwork(studyUuid, currentRootNetworkUuid)
+                            .then(() => setIsFirstRootNetworkIndexationFound(true))
                             .catch((error) => {
-                                // unknown error when trying to reindex study
+                                // unknown error when trying to reindex root network
                                 snackError({
-                                    headerId: 'studyIndexationError',
+                                    headerId: 'rootNetworkIndexationError',
                                     messageTxt: error,
                                 });
                             });
@@ -444,7 +445,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     }
                     default: {
                         snackError({
-                            headerId: 'studyIndexationStatusUnknown',
+                            headerId: 'rootNetworkIndexationStatusUnknown',
                             headerValues: { status: status },
                         });
                         break;
@@ -453,9 +454,9 @@ export function StudyContainer({ view, onChangeTab }) {
                 return status;
             })
             .catch(() => {
-                // unknown error when checking study indexation status
+                // unknown error when checking root network indexation status
                 snackError({
-                    headerId: 'checkstudyIndexationError',
+                    headerId: 'checkRootNetworkIndexationError',
                 });
             });
     }, [studyUuid, currentRootNetworkUuid, dispatch, snackError]);
@@ -467,7 +468,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     if (response.status === HttpStatusCode.OK) {
                         successCallback && successCallback();
                         setIsFirstStudyNetworkFound(true);
-                        checkStudyIndexation().then(loadTree);
+                        checkRootNetworkIndexation().then(loadTree);
                     } else {
                         // response.state === NO_CONTENT
                         // if network is not found, we try to recreate study network from existing case
@@ -506,7 +507,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     );
                 });
         },
-        [studyUuid, currentRootNetworkUuid, checkStudyIndexation, loadTree, snackWarning, intlRef]
+        [studyUuid, currentRootNetworkUuid, checkRootNetworkIndexation, loadTree, snackWarning, intlRef]
     );
 
     useEffect(() => {
@@ -524,15 +525,20 @@ export function StudyContainer({ view, onChangeTab }) {
     // checking another time if we can find network, if we do, we display a snackbar info
     useEffect(() => {
         if (isIndexationStatusNotification(studyUpdatedForce.eventData)) {
+            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetworkUuid;
+            if (currentRootNetworkUuidRef.current && rootNetworkUuidFromNotif !== currentRootNetworkUuidRef.current) {
+                return;
+            }
+            dispatch(setRootNetworkIndexationStatus(studyUpdatedForce.eventData.headers.indexation_status));
             if (studyUpdatedForce.eventData.headers.indexation_status === StudyIndexationStatus.INDEXED) {
                 snackInfo({
-                    headerId: 'studyIndexationDone',
+                    headerId: 'rootNetworkIndexationDone',
                 });
             }
             // notification that the study is not indexed anymore then ask to refresh
             if (studyUpdatedForce.eventData.headers.indexation_status === StudyIndexationStatus.NOT_INDEXED) {
                 snackWarning({
-                    headerId: 'studyIndexationNotIndexed',
+                    headerId: 'rootNetworkIndexationNotIndexed',
                 });
             }
         }
@@ -638,7 +644,7 @@ export function StudyContainer({ view, onChangeTab }) {
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || errorMessage}
-            loading={studyPending || !paramsLoaded || !isFirstStudyNetworkFound || !isFirstStudyIndexationFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            loading={studyPending || !paramsLoaded || !isFirstStudyNetworkFound || !isFirstRootNetworkIndexationFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
             <StudyPane
