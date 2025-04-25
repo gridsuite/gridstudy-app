@@ -96,6 +96,10 @@ const styles = {
     }),
 };
 
+const ItemLabelSecondary = (item: RootNetworkMetadata) => {
+    return <Chip size="small" label={item.tag} color="primary" />;
+};
+
 const RootNetworkNodeEditor = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
@@ -272,7 +276,7 @@ const RootNetworkNodeEditor = () => {
                 items={rootNetworks}
                 getItemId={(val) => val.rootNetworkUuid}
                 getItemLabel={(val) => val.name}
-                getItemLabelSecondary={(val) => <Chip size="small" label={val.tag} color="primary" />}
+                getItemLabelSecondary={ItemLabelSecondary}
                 secondaryAction={handleSecondaryAction}
             />
         );
