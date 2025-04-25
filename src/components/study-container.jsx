@@ -42,7 +42,7 @@ import { useAllComputingStatus } from './computing-status/use-all-computing-stat
 import { fetchCaseName, fetchStudyExists } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
-import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
+import { recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { RootNetworkIndexationStatus } from 'redux/reducer';
@@ -429,10 +429,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     }
                     case RootNetworkIndexationStatus.NOT_INDEXED: {
                         dispatch(setRootNetworkIndexationStatus(status));
-                        reindexAllStudy(studyUuid, currentRootNetworkUuid)
+                        reindexAllRootNetwork(studyUuid, currentRootNetworkUuid)
                             .then(() => setIsFirstRootNetworkIndexationFound(true))
                             .catch((error) => {
-                                // unknown error when trying to reindex study
+                                // unknown error when trying to reindex root network
                                 snackError({
                                     headerId: 'rootNetworkIndexationError',
                                     messageTxt: error,
@@ -543,7 +543,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     headerId: 'rootNetworkIndexationDone',
                 });
             }
-            // notification that the study is not indexed anymore then ask to refresh
+            // notification that the root network is not indexed anymore then ask to refresh
             if (
                 studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] ===
                 RootNetworkIndexationStatus.NOT_INDEXED
