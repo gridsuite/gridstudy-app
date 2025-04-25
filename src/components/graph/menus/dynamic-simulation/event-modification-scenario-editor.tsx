@@ -22,11 +22,10 @@ import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulati
 import { isChecked, isPartial, styles } from '../network-modifications/network-modification-node-editor-utils';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
-import { AppState, StudyUpdated } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
-    EVENT_CRUD_NOTIFICATION_TYPES,
     EventCreatingInProgressEventData,
     EventDeletingInProgressEventData,
     EventUpdatingInProgressEventData,

@@ -1085,3 +1085,32 @@ export type StudyUpdateEventData =
 export type StudyUpdateNotification = {
     eventData: StudyUpdateEventData;
 };
+
+/******************* TO REMOVE LATER ****************/
+// Headers
+/**
+ * @deprecated The type should not be used
+ * @note TODO Remove later after useNodeData and useComputationStatus refactorization
+ */
+export interface StudyUpdatedEventDataHeader {
+    studyUuid: UUID;
+    updateType: string;
+    parentNode: UUID;
+    rootNetworkUuid: UUID;
+    timestamp: number;
+    node?: UUID;
+    nodes?: UUID[];
+    error?: string;
+    userId?: string;
+    computationType?: ComputingType;
+}
+// EventData
+/**
+ * @deprecated The type should not be used
+ * @note TODO Remove later after useNodeData and useComputationStatus refactorization
+ */
+export interface StudyUpdatedEventData {
+    headers: StudyUpdatedEventDataHeader;
+    payload: NetworkImpactsInfos;
+}
+/******************* TO REMOVE LATER ****************/
