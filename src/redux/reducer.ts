@@ -998,20 +998,23 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {
-        state.tables.definitions = action.definitions.map((def, idx) => ({
-            ...def,
-            index: idx,
-        }));
+        const reorderedTabs = action.definitions;
+
+        // Create a map of existing tabs to preserve their references
+        const existingTabsMap = new Map(state.tables.definitions.map((tab) => [tab.uuid, tab]));
+
+        // Use the exact same object references in the new order
+        state.tables.definitions = reorderedTabs.map((newTab) => existingTabsMap.get(newTab.uuid) || newTab);
     });
 
     builder.addCase(REMOVE_TABLE_DEFINITION, (state, action: RemoveTableDefinitionAction) => {
         const removedTable = state.tables.definitions[action.tabIndex];
-        state.tables.definitions.splice(action.tabIndex, 1);
 
-        // Update indexes of remaining table definitions
-        state.tables.definitions.forEach((table, idx) => {
-            table.index = idx;
-        });
+        // Create a new array without the removed tab while preserving object references
+        const newDefinitions = state.tables.definitions.filter((_, idx) => idx !== action.tabIndex);
+
+        // Replace the definitions array with the new one
+        state.tables.definitions = newDefinitions;
 
         if (state[SPREADSHEET_STORE_FIELD]) {
             delete state[SPREADSHEET_STORE_FIELD][removedTable.uuid];
@@ -1905,7 +1908,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const { colData } = action;
 
         // Retrieve the table definition by index
-        const tableDefinition = state.tables.definitions[colData.index];
+        const tableDefinition = state.tables.definitions.find((tabDef) => tabDef.uuid === colData.uuid);
 
         if (tableDefinition) {
             const existingColumnIndex = tableDefinition.columns.findIndex((col) => col.uuid === colData.value.uuid);
@@ -1921,8 +1924,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(REMOVE_COLUMN_DEFINITION, (state, action: RemoveColumnDefinitionAction) => {
-        const { index, value } = action.definition;
-        const tableDefinition = state.tables.definitions[index];
+        const { uuid, value } = action.definition;
+        const tableDefinition = state.tables.definitions.find((tabDef) => tabDef.uuid === uuid);
         const tableSort = state.tableSort[SPREADSHEET_SORT_STORE];
         const tableFilter = state[SPREADSHEET_STORE_FIELD];
 
@@ -1930,10 +1933,10 @@ export const reducer = createReducer(initialState, (builder) => {
             tableDefinition.columns = tableDefinition.columns.filter((col) => col.id !== value);
         }
         // remove sort and filter for the removed column
-        if (tableSort[tableDefinition.name]) {
+        if (tableDefinition && tableSort[tableDefinition.name]) {
             tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter((sort) => sort.colId !== value);
         }
-        if (tableFilter[tableDefinition.uuid]) {
+        if (tableDefinition && tableFilter[tableDefinition.uuid]) {
             tableFilter[tableDefinition.uuid] = tableFilter[tableDefinition.uuid].filter(
                 (filter) => filter.column !== value
             );
