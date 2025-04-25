@@ -1017,6 +1017,18 @@ export function isComputationNotification(notif: unknown): notif is ComputationE
     return COMPUTATION_NOTIFIACTION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
 }
 
+export function isIndexationStatusNotification(notif: unknown): notif is IndexationStatusEventData {
+    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.INDEXATION_STATUS;
+}
+
+export function isStudyNetworkRecreationNotification(notif: unknown): notif is StudyNetworkRecreationEventData {
+    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.STUDY_NETWORK_RECREATION_DONE;
+}
+
+export function isMetadataUpdatedNotification(notif: unknown): notif is MetadataUpdatedEventData {
+    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.METADATA_UPDATED;
+}
+
 // Notification types
 export type StudyUpdateEventData =
     | StudyEventData

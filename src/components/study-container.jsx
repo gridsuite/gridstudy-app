@@ -47,11 +47,14 @@ import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
 import { HttpStatusCode } from 'utils/http-status-code';
 import { NodeType } from './graph/tree-node.type';
 import {
+    isIndexationStatusNotification,
     isLoadflowResultNotification,
-    isOtherStudyNotification,
+    isMetadataUpdatedNotification,
+    isStudyNetworkRecreationNotification,
     NotificationType,
     StudyIndexationStatus,
 } from 'types/notification-types';
+import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -520,28 +523,26 @@ export function StudyContainer({ view, onChangeTab }) {
 
     // checking another time if we can find network, if we do, we display a snackbar info
     useEffect(() => {
-        if (isOtherStudyNotification(studyUpdatedForce.eventData)) {
-            if (studyUpdatedForce.eventData.headers.updateType === NotificationType.STUDY_NETWORK_RECREATION_DONE) {
-                const successCallback = () =>
-                    snackInfo({
-                        headerId: 'studyNetworkRecovered',
-                    });
-
-                checkNetworkExistenceAndRecreateIfNotFound(successCallback);
-            } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.INDEXATION_STATUS) {
-                dispatch(setStudyIndexationStatus(studyUpdatedForce.eventData.headers.indexation_status));
-                if (studyUpdatedForce.eventData.headers.indexation_status === StudyIndexationStatus.INDEXED) {
-                    snackInfo({
-                        headerId: 'studyIndexationDone',
-                    });
-                }
-                // notification that the study is not indexed anymore then ask to refresh
-                if (studyUpdatedForce.eventData.headers.indexation_status === StudyIndexationStatus.NOT_INDEXED) {
-                    snackWarning({
-                        headerId: 'studyIndexationNotIndexed',
-                    });
-                }
+        if (isIndexationStatusNotification(studyUpdatedForce.eventData)) {
+            if (studyUpdatedForce.eventData.headers.indexation_status === StudyIndexationStatus.INDEXED) {
+                snackInfo({
+                    headerId: 'studyIndexationDone',
+                });
             }
+            // notification that the study is not indexed anymore then ask to refresh
+            if (studyUpdatedForce.eventData.headers.indexation_status === StudyIndexationStatus.NOT_INDEXED) {
+                snackWarning({
+                    headerId: 'studyIndexationNotIndexed',
+                });
+            }
+        }
+        if (isStudyNetworkRecreationNotification(studyUpdatedForce.eventData)) {
+            const successCallback = () =>
+                snackInfo({
+                    headerId: 'studyNetworkRecovered',
+                });
+
+            checkNetworkExistenceAndRecreateIfNotFound(successCallback);
         }
     }, [studyUpdatedForce, checkNetworkExistenceAndRecreateIfNotFound, snackInfo, snackWarning, dispatch]);
 
@@ -612,11 +613,8 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, initialTitle, fetchStudyPath]);
 
     useEffect(() => {
-        if (isOtherStudyNotification(studyUpdatedForce.eventData)) {
-            if (
-                studyUpdatedForce.eventData.headers.studyUuid === studyUuid &&
-                studyUpdatedForce.eventData.headers.updateType === NotificationType.METADATA_UPDATED
-            ) {
+        if (isMetadataUpdatedNotification(studyUpdatedForce.eventData)) {
+            if (studyUpdatedForce.eventData.headers.studyUuid === studyUuid) {
                 fetchStudyPath();
             }
         }
