@@ -10,7 +10,7 @@ import { useDebounce } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { CalculationRowData, generateCalculationRows } from 'components/spreadsheet/utils/calculation-utils';
 import { UUID } from 'crypto';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { CalculationRowType } from 'components/spreadsheet/utils/calculation.type';
@@ -24,30 +24,27 @@ const DEFAULT_ROWS = [{ rowType: CalculationRowType.CALCULATION_BUTTON }];
 export const useGridCalculations = (
     gridRef: React.RefObject<AgGridReact>,
     tabUuid: UUID | null,
-    columnDefs: CustomColDef[],
-    hasData: boolean
+    columnDefs: CustomColDef[]
 ) => {
-    const calculationSelections = useSelector((state: AppState) =>
-        tabUuid ? state.calculationSelections?.[tabUuid] || [] : []
+    const calculationSelections = useSelector(
+        (state: AppState) => (tabUuid ? state.calculationSelections?.[tabUuid] || [] : []),
+        shallowEqual // used to prevent unnecessary re-renders of other tabs
     );
 
     const updateCalculations = useCallback(() => {
+        const api = gridRef?.current?.api;
+        if (!api) {
+            return;
+        }
         let newRows: CalculationRowData[] = DEFAULT_ROWS;
-
+        const hasData = api?.getDisplayedRowCount() > 0;
         // Only calculate if we have selections and data
         if (calculationSelections.length > 0 && hasData) {
-            const api = gridRef?.current?.api;
-            if (api) {
-                newRows = generateCalculationRows(calculationSelections, columnDefs, api);
-            }
+            newRows = generateCalculationRows(calculationSelections, columnDefs, api);
         }
 
-        // Update grid directly
-        const api = gridRef?.current?.api;
-        if (api) {
-            api.setGridOption('pinnedBottomRowData', newRows);
-        }
-    }, [calculationSelections, columnDefs, gridRef, hasData]);
+        api.setGridOption('pinnedBottomRowData', newRows);
+    }, [calculationSelections, columnDefs, gridRef]);
 
     // Debounce the update to prevent multiple unnecessary calculations
     const debouncedUpdateCalculations = useDebounce(updateCalculations, 5);

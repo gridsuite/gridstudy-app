@@ -1510,6 +1510,7 @@
 
     "chooseCase": "Select a case",
     "addNetwork": "Add network",
+    "deleteNetwork": "{count, plural,=0 {Delete network} =1 {Delete 1 network} other {Delete # networks}}",
     "updateNetwork": "Update network",
     "rootName": "Network name",
     "rootTag": "Network tag",

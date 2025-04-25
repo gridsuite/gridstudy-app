@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Box,
@@ -53,15 +53,15 @@ import { hasCyclicDependencies, Item } from '../utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
-import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
-import { ColumnDefinition } from '../config/spreadsheet.type';
+import { ColumnDefinition, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../services/study/study-config';
+import { AppState } from 'redux/reducer';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
     colUuid?: UUID;
-    tabIndex: number;
+    tableDefinition: SpreadsheetTabDefinition;
     isCreate?: boolean;
 };
 
@@ -82,7 +82,7 @@ const COLUMN_NAME_REGEX = /\W/g;
 export default function CustomColumnDialog({
     open,
     colUuid,
-    tabIndex,
+    tableDefinition,
     isCreate = true,
 }: Readonly<CustomColumnDialogProps>) {
     const formMethods = useForm({
@@ -94,8 +94,8 @@ export default function CustomColumnDialog({
     const columnId = useWatch({ control, name: COLUMN_ID });
     const watchColumnName = useWatch({ control, name: COLUMN_NAME });
     const watchColumnType = useWatch({ control, name: COLUMN_TYPE });
-    const columnsDefinitions = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.columns);
-    const spreadsheetConfigUuid = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.uuid);
+    const columnsDefinitions = tableDefinition?.columns;
+    const spreadsheetConfigUuid = tableDefinition?.uuid;
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const columnDefinition = useMemo(
@@ -232,7 +232,7 @@ export default function CustomColumnDialog({
                 .then((uuid) => {
                     dispatch(
                         setUpdateColumnsDefinitions({
-                            index: tabIndex,
+                            uuid: tableDefinition.uuid,
                             value: {
                                 uuid: columnDefinition?.uuid ?? uuid,
                                 id: newParams.id,
@@ -266,7 +266,7 @@ export default function CustomColumnDialog({
             filters,
             dispatchFilters,
             dispatch,
-            tabIndex,
+            tableDefinition,
             snackError,
         ]
     );
@@ -285,7 +285,7 @@ export default function CustomColumnDialog({
         } else {
             reset(initialCustomColumnForm);
         }
-    }, [columnDefinition, tabIndex, open.value, reset]);
+    }, [columnDefinition, open.value, reset]);
 
     return (
         <CustomFormProvider validationSchema={customColumnFormSchema} {...formMethods}>
