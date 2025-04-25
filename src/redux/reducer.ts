@@ -212,6 +212,8 @@ import {
     SetEditNadModeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
+    REMOVE_EQUIPMENT_DATA,
+    RemoveEquipmentDataAction,
     UPDATE_TABLE_COLUMNS,
     UpdateTableColumnsAction,
 } from './actions';
@@ -1692,6 +1694,13 @@ export const reducer = createReducer(initialState, (builder) => {
             },
             {} as Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>
         );
+    });
+
+    builder.addCase(REMOVE_EQUIPMENT_DATA, (state, action: RemoveEquipmentDataAction) => {
+        state.spreadsheetNetwork[action.equipmentType] = {
+            nodesId: [],
+            equipmentsByNodeId: {},
+        };
     });
 
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {

@@ -11,7 +11,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { AppDispatch } from 'redux/store';
-import { removeTableDefinition, renameTableDefinition, reorderTableDefinitions } from 'redux/actions';
+import {
+    removeEquipmentData,
+    removeTableDefinition,
+    renameTableDefinition,
+    reorderTableDefinitions,
+} from 'redux/actions';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DropResult } from '@hello-pangea/dnd';
@@ -90,21 +95,30 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
         }
 
         const tabToBeRemovedIndex = tablesDefinitions.findIndex((def) => def.uuid === tabToBeRemovedOrRenamedUuid);
+        const tabToBeRemoved = tablesDefinitions[tabToBeRemovedIndex];
 
         removeSpreadsheetConfigFromCollection(studyUuid, spreadsheetsCollectionUuid, tabToBeRemovedOrRenamedUuid)
             .then(() => {
+                const remainingTabs = tablesDefinitions.filter((tab) => tab.uuid !== tabToBeRemovedOrRenamedUuid);
+
                 // If we're removing the currently selected tab or a tab before it,
                 // we need to update the selection
                 if (tabToBeRemovedOrRenamedUuid === selectedTabUuid) {
-                    const remainingTabs = tablesDefinitions.filter((tab) => tab.uuid !== tabToBeRemovedOrRenamedUuid);
-                    // Select the next tab, or the previous if this is the last tab
                     const newIndex = Math.min(selectedTabIndex, remainingTabs.length - 1);
                     if (newIndex >= 0) {
                         handleSwitchTab(remainingTabs[newIndex].uuid);
                     }
                 }
+
+                // Check if there are still tabs of the same type
+                const stillHasType = remainingTabs.some((tab) => tab.type === tabToBeRemoved.type);
+
                 dispatch(removeTableDefinition(tabToBeRemovedIndex));
                 setConfirmationDialogOpen(false);
+
+                if (!stillHasType) {
+                    dispatch(removeEquipmentData(tabToBeRemoved.type));
+                }
             })
             .catch((error) => {
                 snackError({
