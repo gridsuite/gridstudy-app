@@ -44,6 +44,7 @@ import {
     useDebounce,
     useSnackMessage,
     Identifiable,
+    StudyUpdatedEventData,
 } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
@@ -51,7 +52,7 @@ import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from
 import { fetchSvg, getNetworkAreaDiagramUrl, getNetworkAreaDiagramUrlFromConfig } from '../../services/study';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
-import { AppState, DiagramState, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState, DiagramState } from 'redux/reducer';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { DiagramType, isNadType, isSldType, ViewState } from './diagram.type';
 import { useDiagram } from './use-diagram';

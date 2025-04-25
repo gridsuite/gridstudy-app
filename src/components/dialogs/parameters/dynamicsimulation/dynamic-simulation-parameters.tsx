@@ -25,14 +25,21 @@ import {
 } from '../../../../services/study/dynamic-simulation';
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
-import { CustomFormProvider, isObjectEmpty, mergeSx, SubmitButton } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    isObjectEmpty,
+    mergeSx,
+    SubmitButton,
+    ProviderParam,
+    useParametersBackend,
+    parametersStyles,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 import { User } from 'oidc-client';
 import { PROVIDER } from '../../../utils/field-constants';
-import ProviderParam from '../common/ProviderParam';
 import { SolverInfos } from 'services/study/dynamic-simulation.type';
 import {
     Curve,
@@ -46,9 +53,9 @@ import {
     TimeDelay,
     timeDelayEmptyFormData,
 } from './dynamic-simulation-utils';
-import { useParametersBackend } from '../use-parameters-backend';
-import { styles } from '../parameters-style';
 import { DynamicSimulationForm, formSchema, TAB_VALUES } from './dynamic-simulation.type';
+import { useSelector } from 'react-redux';
+import type { AppState } from '../../../../redux/reducer';
 
 interface DynamicSimulationParametersProps {
     user: User | null;
@@ -69,9 +76,13 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     setHaveDirtyFields,
 }) => {
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
 
     const [providers, provider, , resetProvider, parameters, updateParameters, resetParameters] = useParametersBackend(
         user,
+        studyUuid,
+        studyUpdatedForce,
         ComputingType.DYNAMIC_SIMULATION,
         dynamicSimulationAvailability,
         fetchDynamicSimulationProviders,
@@ -206,7 +217,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                 <ProviderParam options={formattedProviders} />
                 <Grid
                     key="dsParameters"
-                    sx={mergeSx(styles.scrollableGrid, {
+                    sx={mergeSx(parametersStyles.scrollableGrid, {
                         height: '100%',
                         paddingTop: 0,
                     })}
@@ -274,7 +285,12 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingTop: 4 })}>
+            <Grid
+                container
+                sx={mergeSx(parametersStyles.controlParametersItem, parametersStyles.marginTopButton, {
+                    paddingTop: 4,
+                })}
+            >
                 <LabelledButton callback={handleResetParametersAndProvider} label="resetToDefault" />
                 <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onError)}>
                     <FormattedMessage id={'validate'} />

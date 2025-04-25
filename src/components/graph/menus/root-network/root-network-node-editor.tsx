@@ -5,7 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, Parameter, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CheckBoxList,
+    Parameter,
+    useNotificationsListener,
+    useSnackMessage,
+    RootNetworksDeletionStartedEventData,
+    RootNetworksUpdatedEventData,
+} from '@gridsuite/commons-ui';
 
 import {
     Delete as DeleteIcon,
@@ -31,12 +38,7 @@ import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
-import {
-    AppState,
-    NotificationType,
-    RootNetworksDeletionStartedEventData,
-    RootNetworksUpdatedEventData,
-} from 'redux/reducer';
+import { AppState, NotificationType } from 'redux/reducer';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 
 import { getCaseImportParameters } from 'services/network-conversion';

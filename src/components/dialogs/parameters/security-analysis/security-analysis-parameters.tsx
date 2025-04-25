@@ -10,28 +10,31 @@ import { Box, Grid } from '@mui/material';
 import { LabelledButton } from '../parameters';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    CreateParameterDialog,
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
-    mergeSx,
-    MuiSelectInput,
-    SubmitButton,
-    TreeViewFinderNodeProps,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
-import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis';
-import SecurityAnalysisParametersSelector from './security-analysis-parameters-selector';
-import CreateParameterDialog from '../common/parameters-creation-dialog';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import {
     getSAParametersFromSchema,
     ILimitReductionsByVoltageLevel,
     ISAParameters,
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
-} from '../common/limitreductions/columns-definitions';
+    mergeSx,
+    MuiSelectInput,
+    parametersStyles,
+    SubmitButton,
+    toFormValueSaParameters,
+    toFormValuesLimitReductions,
+    TreeViewFinderNodeProps,
+    UseParametersBackendReturnProps,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis';
+import SecurityAnalysisParametersSelector from './security-analysis-parameters-selector';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+
 import {
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
@@ -40,20 +43,18 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
     PARAM_SA_PROVIDER,
 } from 'utils/config-params';
-import {
-    toFormValueSaParameters,
-    toFormValuesLimitReductions,
-} from '../common/limitreductions/limit-reductions-form-util';
 import LineSeparator from '../../commons/line-separator';
-import { UseParametersBackendReturnProps } from '../parameters.type';
 import ComputingType from 'components/computing-status/computing-type';
-import { styles } from '../parameters-style';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
+
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SECURITY_ANALYSIS>;
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
 }> = ({ parametersBackend, setHaveDirtyFields }) => {
     const [providers, provider, , resetProvider, params, updateParameters, resetParameters, , defaultLimitReductions] =
         parametersBackend;
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const intl = useIntl();
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
@@ -220,10 +221,10 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                             }}
                             justifyContent={'space-between'}
                         >
-                            <Grid item xs={'auto'} sx={styles.parameterName}>
+                            <Grid item xs={'auto'} sx={parametersStyles.parameterName}>
                                 <FormattedMessage id="Provider" />
                             </Grid>
-                            <Grid item xs={'auto'} sx={styles.controlItem}>
+                            <Grid item xs={'auto'} sx={parametersStyles.controlItem}>
                                 <MuiSelectInput
                                     name={PARAM_SA_PROVIDER}
                                     size="small"
@@ -242,7 +243,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                     >
                         <Grid
                             container
-                            sx={mergeSx(styles.scrollableGrid, {
+                            sx={mergeSx(parametersStyles.scrollableGrid, {
                                 maxHeight: '100%',
                             })}
                         >
@@ -257,7 +258,9 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                         <Grid
                             container
                             item
-                            sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingBottom: 0 })}
+                            sx={mergeSx(parametersStyles.controlParametersItem, parametersStyles.marginTopButton, {
+                                paddingBottom: 0,
+                            })}
                         >
                             <LabelledButton
                                 callback={() => setOpenSelectParameterDialog(true)}
@@ -275,6 +278,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
             </Grid>
             {openCreateParameterDialog && (
                 <CreateParameterDialog
+                    studyUuid={studyUuid}
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={() => formatNewParams(getValues())}

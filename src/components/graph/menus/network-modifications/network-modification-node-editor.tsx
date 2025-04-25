@@ -14,6 +14,8 @@ import {
     NetworkModificationMetadata,
     usePrevious,
     useSnackMessage,
+    StudyUpdated,
+    StudyUpdatedEventData,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -71,7 +73,7 @@ import { RestoreFromTrash, FileUpload } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
-import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { fetchNetworkModification } from '../../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../../services/study';

@@ -6,8 +6,9 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { DeletedEquipment, NetworkImpactsInfos, AppState, NotificationType } from '../redux/reducer';
+import { AppState, NotificationType } from '../redux/reducer';
 import { UUID } from 'crypto';
+import { DeletedEquipment, NetworkImpactsInfos } from '@gridsuite/commons-ui';
 
 interface StudyImpactsWithReset extends NetworkImpactsInfos {
     resetImpactedSubstationsIds: () => void;

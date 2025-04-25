@@ -5,7 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, mergeSx, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    mergeSx,
+    MuiSelectInput,
+    parametersStyles,
+    SubmitButton,
+    UseParametersBackendReturnProps,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -59,9 +67,7 @@ import {
 import ComputingType from '../../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
 import LineSeparator from '../../commons/line-separator';
-import { UseParametersBackendReturnProps } from '../parameters.type';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
-import { styles } from '../parameters-style';
 
 interface NonEvacuatedEnergyParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.NON_EVACUATED_ENERGY_ANALYSIS>;
@@ -371,10 +377,10 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
         <>
             <CustomFormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid container spacing={1} paddingTop={1}>
-                    <Grid item xs={8} sx={styles.parameterName}>
+                    <Grid item xs={8} sx={parametersStyles.parameterName}>
                         <FormattedMessage id="Provider" />
                     </Grid>
-                    <Grid item xs={4} sx={styles.controlItem}>
+                    <Grid item xs={4} sx={parametersStyles.controlItem}>
                         <MuiSelectInput
                             fullWidth
                             name={PROVIDER}
@@ -385,7 +391,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                         />
                     </Grid>
                 </Grid>
-                <Grid container sx={styles.scrollableGrid} key="nonEvacuatedEnergyParameters">
+                <Grid container sx={parametersStyles.scrollableGrid} key="nonEvacuatedEnergyParameters">
                     <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
@@ -397,7 +403,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
 
                 <Grid item container>
                     <DialogActions
-                        sx={mergeSx(styles.controlParametersItem, {
+                        sx={mergeSx(parametersStyles.controlParametersItem, {
                             paddingLeft: 0,
                             paddingBottom: 2,
                         })}

@@ -9,12 +9,11 @@ import { VoltageInitParam } from './voltage-init-utils';
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { isComputationParametersUpdated, useSnackMessage } from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
 import { getVoltageInitStudyParameters } from '../../../../services/study/voltage-init';
 import ComputingType from '../../../computing-status/computing-type';
-import { isComputationParametersUpdated } from '../common/computation-parameters-util';
 import { UUID } from 'crypto';
 
 export const useGetVoltageInitParameters = (): [
