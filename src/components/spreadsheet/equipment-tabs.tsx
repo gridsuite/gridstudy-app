@@ -12,11 +12,6 @@ import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { AppDispatch } from 'redux/store';
 import { removeTableDefinition, renameTableDefinition, reorderTableDefinitions } from 'redux/actions';
-import {
-    removeSpreadsheetConfigFromCollection,
-    renameSpreadsheetModel,
-    reorderSpreadsheetConfigs,
-} from 'services/study-config';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { DropResult } from '@hello-pangea/dnd';
@@ -27,6 +22,11 @@ import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import TabLabel from './tab-label';
 import { ResetNodeAliasCallback } from './custom-columns/use-node-aliases';
+import {
+    removeSpreadsheetConfigFromCollection,
+    renameSpreadsheetModel,
+    reorderSpreadsheetConfigs,
+} from 'services/study/study-config';
 
 const draggableTabStyles = {
     container: {
@@ -59,6 +59,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
 }) => {
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch<AppDispatch>();
@@ -75,13 +76,13 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
     }, [selectedTabUuid, tablesDefinitions]);
 
     const handleRemoveTab = () => {
-        if (!tabToBeRemovedOrRenamedUuid || !spreadsheetsCollectionUuid) {
+        if (!studyUuid || !tabToBeRemovedOrRenamedUuid || !spreadsheetsCollectionUuid) {
             return;
         }
 
         const tabToBeRemovedIndex = tablesDefinitions.findIndex((def) => def.uuid === tabToBeRemovedOrRenamedUuid);
 
-        removeSpreadsheetConfigFromCollection(spreadsheetsCollectionUuid, tabToBeRemovedOrRenamedUuid)
+        removeSpreadsheetConfigFromCollection(studyUuid, spreadsheetsCollectionUuid, tabToBeRemovedOrRenamedUuid)
             .then(() => {
                 // If we're removing the currently selected tab or a tab before it,
                 // we need to update the selection
@@ -105,10 +106,10 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
     };
 
     const handleRenameTab = (newName: string) => {
-        if (!tabToBeRemovedOrRenamedUuid) {
+        if (!studyUuid || !tabToBeRemovedOrRenamedUuid) {
             return;
         }
-        renameSpreadsheetModel(tabToBeRemovedOrRenamedUuid, newName)
+        renameSpreadsheetModel(studyUuid, tabToBeRemovedOrRenamedUuid, newName)
             .then(() => {
                 dispatch(renameTableDefinition(tabToBeRemovedOrRenamedUuid, newName));
                 setIsRenameDialogOpen(false);
@@ -142,7 +143,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
 
     const handleDragEnd = useCallback(
         (result: DropResult) => {
-            if (!result.destination || result.destination.index === result.source.index) {
+            if (!studyUuid || !result.destination || result.destination.index === result.source.index) {
                 return;
             }
 
@@ -158,7 +159,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
 
             if (spreadsheetsCollectionUuid) {
                 const newOrder = reorderedTabs.map((tab) => tab.uuid);
-                reorderSpreadsheetConfigs(spreadsheetsCollectionUuid, newOrder).catch((error) => {
+                reorderSpreadsheetConfigs(studyUuid, spreadsheetsCollectionUuid, newOrder).catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'spreadsheet/reorder_tabs_error',
@@ -166,7 +167,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({
                 });
             }
         },
-        [tablesDefinitions, dispatch, spreadsheetsCollectionUuid, snackError]
+        [studyUuid, tablesDefinitions, dispatch, spreadsheetsCollectionUuid, snackError]
     );
 
     const renderTabs = useCallback(() => {
