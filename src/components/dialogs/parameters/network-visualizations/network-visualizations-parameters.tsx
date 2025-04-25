@@ -37,7 +37,7 @@ import {
 import { UUID } from 'crypto';
 import { setUpdateNetworkVisualizationParameters } from '../../../../redux/actions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
-import { fetchNetworkVisualizationsParameters } from '../../../../services/study-config';
+import { getNetworkVisualizationsParameters } from '../../../../services/study-config';
 import { User } from 'oidc-client';
 import { getAvailableComponentLibraries } from 'services/study';
 import { styles } from '../parameters-style';
@@ -132,7 +132,7 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
         (newParams: TreeViewFinderNodeProps[]) => {
             if (newParams && newParams.length > 0) {
                 const paramUuid = newParams[0].id;
-                fetchNetworkVisualizationsParameters(paramUuid as UUID)
+                getNetworkVisualizationsParameters(paramUuid)
                     .then((parameters: NetworkVisualizationParameters) => {
                         console.info('loading network visualization parameters', paramUuid);
                         reset(parameters, { keepDefaultValues: true });

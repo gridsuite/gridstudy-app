@@ -9,7 +9,7 @@ import { Button, Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, L
 import { Theme } from '@mui/material/styles';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -19,9 +19,10 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateTableDefinition } from 'redux/actions';
 import { spreadsheetStyles } from './utils/style';
 import { UUID } from 'crypto';
-import { reorderSpreadsheetColumns } from 'services/study-config';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
+import { reorderSpreadsheetColumns } from 'services/study/study-config';
+import { AppState } from 'redux/reducer';
 
 const MAX_LOCKS_PER_TAB = 5;
 
@@ -53,6 +54,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [localColumns, setLocalColumns] = useState(tableDefinition?.columns);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState<boolean>(false);
@@ -79,12 +81,14 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         const hasOrderChanged = tableDefinition.columns.some((col, index) => col.uuid !== localColumns[index].uuid);
 
         // create a Promise chain that conditionally includes the reorder request
-        const updatePromise = hasOrderChanged
-            ? reorderSpreadsheetColumns(
-                  tableDefinition.uuid,
-                  localColumns.map((col) => col.uuid)
-              )
-            : Promise.resolve();
+        const updatePromise =
+            hasOrderChanged && studyUuid
+                ? reorderSpreadsheetColumns(
+                      studyUuid,
+                      tableDefinition.uuid,
+                      localColumns.map((col) => col.uuid)
+                  )
+                : Promise.resolve();
 
         updatePromise
             .then(() => {
@@ -103,7 +107,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
             });
 
         handleCloseColumnsSettingDialog();
-    }, [tableDefinition, localColumns, handleCloseColumnsSettingDialog, dispatch, snackError]);
+    }, [tableDefinition, studyUuid, localColumns, handleCloseColumnsSettingDialog, dispatch, snackError]);
 
     const handleToggle = (value: UUID) => () => {
         const newLocalColumns = localColumns.map((col) => {

@@ -13,13 +13,14 @@ import { ROW_INDEX_COLUMN_ID } from '../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
-import { reorderSpreadsheetColumns } from 'services/study-config';
 import { updateTableDefinition } from 'redux/actions';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { reorderSpreadsheetColumns } from 'services/study/study-config';
 
 export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, tableDefinition: SpreadsheetTabDefinition) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SPREADSHEET_SORT_STORE]?.[tableDefinition?.uuid]
     );
@@ -75,7 +76,7 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
             const colId = event.column?.getColId();
-            if (colId && event.finished && event.toIndex !== undefined) {
+            if (studyUuid && colId && event.finished && event.toIndex !== undefined) {
                 // Adjust toIndex to account for the row index column which is always first
                 // When moving a column, we need to subtract 1 from AG Grid's toIndex
                 // because our tableDefinition doesn't include the row index column
@@ -98,6 +99,7 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
                 });
 
                 reorderSpreadsheetColumns(
+                    studyUuid,
                     tableDefinition.uuid,
                     updatedColumns.map((col) => col.uuid)
                 )
@@ -117,7 +119,7 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
                     });
             }
         },
-        [tableDefinition, originalColumnPositions, dispatch, snackError]
+        [studyUuid, tableDefinition, originalColumnPositions, dispatch, snackError]
     );
 
     return {
