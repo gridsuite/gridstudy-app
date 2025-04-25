@@ -14,7 +14,7 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import { Action } from 'redux';
-import { GsLang, GsLangUser, GsTheme, Identifiable } from '@gridsuite/commons-ui';
+import { GsLang, GsLangUser, GsTheme, Identifiable, StudyUpdatedEventData } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
@@ -26,7 +26,6 @@ import type {
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     StudyIndexationStatus,
-    StudyUpdatedEventData,
     TableSortKeysType,
 } from './reducer';
 import { ComputingType } from '../components/computing-status/computing-type';

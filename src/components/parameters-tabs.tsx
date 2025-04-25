@@ -39,7 +39,6 @@ import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis
 import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
 import { ShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
-import LoadFlowParameters from './dialogs/parameters/loadflow/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import {
@@ -59,11 +58,11 @@ import { useGetStateEstimationParameters } from './dialogs/parameters/state-esti
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 import { useGetNonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/use-get-non-evacuated-energy-parameters';
 import { stylesLayout, tabStyles } from './utils/tab-utils';
-import { useParametersBackend } from './dialogs/parameters/use-parameters-backend';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
 import { StudyView, StudyViewType } from './utils/utils';
+import { useParametersBackend, LoadFlowParametersInline } from '@gridsuite/commons-ui';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -86,6 +85,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const dispatch = useDispatch();
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
 
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
@@ -118,6 +119,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
+        studyUuid,
+        studyUpdated,
         ComputingType.LOAD_FLOW,
         OptionalServicesStatus.Up,
         getLoadFlowProviders,
@@ -132,6 +135,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
 
     const securityAnalysisParametersBackend = useParametersBackend(
         user,
+        studyUuid,
+        studyUpdated,
         ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
         fetchSecurityAnalysisProviders,
@@ -146,6 +151,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
 
     const sensitivityAnalysisBackend = useParametersBackend(
         user,
+        studyUuid,
+        studyUpdated,
         ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability,
         fetchSensitivityAnalysisProviders,
@@ -157,6 +164,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
 
     const nonEvacuatedEnergyBackend = useParametersBackend(
         user,
+        studyUuid,
+        studyUpdated,
         ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
         nonEvacuatedEnergyAvailability,
         fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
@@ -239,9 +248,11 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         switch (tabValue) {
             case TAB_VALUES.lfParamsTabValue:
                 return (
-                    <LoadFlowParameters
+                    <LoadFlowParametersInline
+                        studyUuid={studyUuid}
                         parametersBackend={loadFlowParametersBackend}
                         setHaveDirtyFields={setHaveDirtyFields}
+                        enableDeveloperMode={enableDeveloperMode}
                     />
                 );
             case TAB_VALUES.securityAnalysisParamsTabValue:
@@ -291,7 +302,9 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     }, [
         view,
         tabValue,
+        studyUuid,
         loadFlowParametersBackend,
+        enableDeveloperMode,
         securityAnalysisParametersBackend,
         sensitivityAnalysisBackend,
         nonEvacuatedEnergyBackend,
