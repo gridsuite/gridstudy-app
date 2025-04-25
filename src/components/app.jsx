@@ -146,27 +146,11 @@ const App = () => {
         listenerCallbackMessage: updateConfig,
     });
 
-    const mapColumns = (columns) => {
-        return columns.map((column) => {
-            return {
-                ...column,
-                dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
-            };
-        });
-    };
-
     const resetTableDefinitions = useCallback(
         (collection) => {
-            const tableDefinitions = collection.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                return {
-                    uuid: spreadsheetConfig.id,
-                    index: index,
-                    name: spreadsheetConfig.name,
-                    columns: mapColumns(spreadsheetConfig.columns),
-                    type: spreadsheetConfig.sheetType,
-                };
-            });
-            dispatch(initTableDefinitions(collection.id, tableDefinitions));
+            const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                processSpreadsheetsCollectionData(collection);
+            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters));
         },
         [dispatch]
     );
@@ -300,10 +284,6 @@ const App = () => {
 
             const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((collection) => {
                 resetTableDefinitions(collection);
-            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((config) => {
-                const { tablesFilters, tableGlobalFilters, tableDefinitions } =
-                    processSpreadsheetsCollectionData(config);
-                dispatch(initTableDefinitions(config.id, tableDefinitions, tablesFilters, tableGlobalFilters));
             });
 
             const fetchOptionalServices = getOptionalServices()

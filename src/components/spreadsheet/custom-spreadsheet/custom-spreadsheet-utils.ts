@@ -24,10 +24,11 @@ import {
     updateTableDefinition,
 } from 'redux/actions';
 import { FilterConfig, SortWay } from 'types/custom-aggrid-types';
-import { addSpreadsheetConfigToCollection, getSpreadsheetModel } from 'services/study-config';
+import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 import { GsFilterSpreadsheetState, SpreadsheetFilterState } from 'redux/reducer';
 import { SpreadsheetGlobalFilter } from 'services/study/filter';
+import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
 
 const createNewTableDefinition = (
     columns: ColumnDefinition[],

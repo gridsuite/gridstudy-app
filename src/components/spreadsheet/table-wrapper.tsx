@@ -19,8 +19,8 @@ import TabPanelLazy from 'components/results/common/tab-panel-lazy';
 import { SpreadsheetTab } from './spreadsheet-tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
-import { mapColumnsDto } from './custom-spreadsheet/custom-spreadsheet-utils';
-import { initTableDefinitions, resetAllSpreadsheetGsFilters } from 'redux/actions';
+import { processSpreadsheetsCollectionData } from './custom-spreadsheet/custom-spreadsheet-utils';
+import { initTableDefinitions } from 'redux/actions';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
