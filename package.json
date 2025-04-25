@@ -67,6 +67,7 @@
         "start": "vite",
         "start:open": "vite --open",
         "build": "tsc && vite build",
+        "type": "tsc",
         "serve": "vite preview",
         "test": "jest",
         "test:coverage": "jest --coverage",

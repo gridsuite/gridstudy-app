@@ -211,7 +211,7 @@ interface RootNetworkDeletionStartedEventDataHeaders extends CommonStudyEventDat
 
 interface IndexationStatusEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.INDEXATION_STATUS;
-    indexation_status: StudyIndexationStatus;
+    indexation_status: RootNetworkIndexationStatus;
 }
 
 interface StudyNetworkRecreationEventDataHeaders extends CommonStudyEventDataHeaders {

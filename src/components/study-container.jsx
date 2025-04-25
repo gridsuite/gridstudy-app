@@ -53,7 +53,6 @@ import {
     isStudyNetworkRecreationNotification,
     NotificationType,
     RootNetworkIndexationStatus,
-    StudyIndexationStatus,
 } from 'types/notification-types';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 
@@ -530,13 +529,13 @@ export function StudyContainer({ view, onChangeTab }) {
                 return;
             }
             dispatch(setRootNetworkIndexationStatus(studyUpdatedForce.eventData.headers.indexation_status));
-            if (studyUpdatedForce.eventData.headers.indexation_status === StudyIndexationStatus.INDEXED) {
+            if (studyUpdatedForce.eventData.headers.indexation_status === RootNetworkIndexationStatus.INDEXED) {
                 snackInfo({
                     headerId: 'rootNetworkIndexationDone',
                 });
             }
             // notification that the study is not indexed anymore then ask to refresh
-            if (studyUpdatedForce.eventData.headers.indexation_status === StudyIndexationStatus.NOT_INDEXED) {
+            if (studyUpdatedForce.eventData.headers.indexation_status === RootNetworkIndexationStatus.NOT_INDEXED) {
                 snackWarning({
                     headerId: 'rootNetworkIndexationNotIndexed',
                 });
