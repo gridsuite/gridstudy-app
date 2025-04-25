@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
@@ -20,9 +20,7 @@ import {
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Box } from '@mui/material';
 import NetworkModificationTree from './network-modification-tree';
-import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/network-modifications/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -45,16 +43,9 @@ import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/ind
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 import { StudyDisplayMode, CopyType } from './network-modification.type';
+import { NetworkModificationTreePanePanels } from './network-modification-tree-pane-panels';
 import { NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'redux/reducer';
 
-const styles = {
-    container: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-    },
-};
 
 // We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
 // But the MAP display is neutral for this computation: We need to know what was the last HYBRID or TREE display and its width.
@@ -553,25 +544,37 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
         },
         [studyUuid, dispatch, snackError]
     );
+
+    const networkModificationTreeComponent = useMemo(
+        () => (
+            <NetworkModificationTree
+                onNodeContextMenu={onNodeContextMenu}
+                studyUuid={studyUuid}
+                studyMapTreeDisplay={studyMapTreeDisplay}
+                isStudyDrawerOpen={isStudyDrawerOpen}
+                prevTreeDisplay={prevTreeDisplay}
+            />
+        ),
+        [studyUuid, onNodeContextMenu, studyMapTreeDisplay, isStudyDrawerOpen, prevTreeDisplay]
+    );
+
+    const networkModificationPanelComponent = useMemo(
+        () => (
+            <>
+                {isModificationsDrawerOpen && <NodeEditor />}
+                {isEventScenarioDrawerOpen && <ScenarioEditor />}
+            </>
+        ),
+        [isModificationsDrawerOpen, isEventScenarioDrawerOpen]
+    );
+
     return (
         <>
-            <Box sx={styles.container}>
-                <NetworkModificationTree
-                    onNodeContextMenu={onNodeContextMenu}
-                    studyUuid={studyUuid}
-                    studyMapTreeDisplay={studyMapTreeDisplay}
-                    isStudyDrawerOpen={isStudyDrawerOpen}
-                    prevTreeDisplay={prevTreeDisplay}
-                />
-
-                <StudyDrawer
-                    open={isStudyDrawerOpen}
-                    anchor={prevTreeDisplay?.display === StudyDisplayMode.TREE ? 'right' : 'left'}
-                >
-                    {isModificationsDrawerOpen && <NodeEditor />}
-                    {isEventScenarioDrawerOpen && <ScenarioEditor />}
-                </StudyDrawer>
-            </Box>
+            <NetworkModificationTreePanePanels
+                leftComponent={networkModificationTreeComponent}
+                rightComponent={networkModificationPanelComponent}
+                showRightPanel={isModificationsDrawerOpen || isEventScenarioDrawerOpen}
+            />
             {createNodeMenu.display && (
                 <CreateNodeMenu
                     position={createNodeMenu.position}

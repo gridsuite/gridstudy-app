@@ -22,18 +22,16 @@ import {
 } from './utils/spreadsheet-gs-filter-utils';
 import { SPREADSHEET_GS_FILTER } from '../utils/field-constants';
 import { AppState } from '../../redux/reducer';
-import { ExpertFilter } from '../../services/study/filter';
+import { ExpertFilter, SpreadsheetGlobalFilter } from '../../services/study/filter';
 
 export type SpreadsheetGsFilterProps = {
     equipmentType: SpreadsheetEquipmentType;
     uuid: UUID;
-    index: number;
-    name: string;
 };
 
-export default function SpreadsheetGsFilter({ equipmentType, index, name, uuid }: Readonly<SpreadsheetGsFilterProps>) {
+export default function SpreadsheetGsFilter({ equipmentType, uuid }: Readonly<SpreadsheetGsFilterProps>) {
     const dispatch = useDispatch();
-    const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
+    const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState[uuid]);
 
     const formMethods = useForm<SpreadsheetGsFilterForm>({
         defaultValues: initialSpreadsheetGsFilterForm,
@@ -43,22 +41,20 @@ export default function SpreadsheetGsFilter({ equipmentType, index, name, uuid }
 
     const handleChange = useCallback(
         (values: ExpertFilter[]) => {
-            //Converts readonly values to a mutable one, prevents read-only type error
-            const mutableValues = values.map((f) => ({ ...f }));
-            dispatch(saveSpreadsheetGsFilters(uuid, mutableValues));
+            const filters = values.map(({ id, name }) => ({ id, name }) as SpreadsheetGlobalFilter);
+            dispatch(saveSpreadsheetGsFilters(uuid, filters));
         },
         [dispatch, uuid]
     );
 
     useEffect(() => {
-        reset(toFormFormat(gsFilterSpreadsheetState[uuid] ?? []));
+        reset(toFormFormat(gsFilterSpreadsheetState ?? []));
     }, [uuid, reset, gsFilterSpreadsheetState]);
 
     return (
         <CustomFormProvider validationSchema={spreadsheetGsFilterFormSchema} {...formMethods}>
             <Box minWidth="12em" /* TODO add sx props to DirectoryItemsInput in commons-ui to remove this div */>
                 <DirectoryItemsInput
-                    key={`filter-spreadsheet-${uuid || index + name + equipmentType}`} // force refresh on equipment type change
                     name={SPREADSHEET_GS_FILTER}
                     titleId="FiltersListsSelection"
                     label="filter"

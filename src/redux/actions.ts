@@ -48,16 +48,17 @@ import {
     ColumnDefinition,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
+    SpreadsheetConfigDto,
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import { ExpertFilter } from '../services/study/filter';
+import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { NodeInsertModes, StudyIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 
 export type TableValue<TValue = unknown> = {
-    index: number;
+    uuid: UUID;
     value: TValue;
 };
 
@@ -1280,6 +1281,18 @@ export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefiniti
     newTableDefinition,
 });
 
+export const UPDATE_TABLE_COLUMNS = 'UPDATE_TABLE_COLUMNS';
+
+export type UpdateTableColumnsAction = {
+    type: typeof UPDATE_TABLE_COLUMNS;
+    spreadsheetConfigDto: SpreadsheetConfigDto;
+};
+
+export const updateTableColumns = (spreadsheetConfigDto: SpreadsheetConfigDto): UpdateTableColumnsAction => ({
+    type: UPDATE_TABLE_COLUMNS,
+    spreadsheetConfigDto,
+});
+
 export const RENAME_TABLE_DEFINITION = 'RENAME_TABLE_DEFINITION';
 export type RenameTableDefinitionAction = Readonly<Action<typeof RENAME_TABLE_DEFINITION>> & {
     tabUuid: UUID;
@@ -1372,10 +1385,13 @@ export function setStateEstimationResultFilter(
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
 export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
     tabUuid: UUID;
-    filters: ExpertFilter[];
+    filters: SpreadsheetGlobalFilter[];
 };
 
-export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: ExpertFilter[]): SaveSpreadSheetGsFilterAction {
+export function saveSpreadsheetGsFilters(
+    tabUuid: UUID,
+    filters: SpreadsheetGlobalFilter[]
+): SaveSpreadSheetGsFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
         tabUuid: tabUuid,

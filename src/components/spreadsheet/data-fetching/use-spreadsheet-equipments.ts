@@ -24,11 +24,11 @@ import { validAlias } from '../custom-columns/use-node-aliases';
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
     highlightUpdatedEquipment: () => void,
-    nodeAliases: NodeAlias[] | undefined
+    nodeAliases: NodeAlias[] | undefined,
+    active: boolean = false
 ) => {
     const dispatch = useDispatch();
-    const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
-    const equipments = useMemo(() => allEquipments[type], [allEquipments, type]);
+    const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[type]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isNetworkModificationTreeModelUpToDate = useSelector(
         (state: AppState) => state.isNetworkModificationTreeModelUpToDate
@@ -38,7 +38,7 @@ export const useSpreadsheetEquipments = (
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
     const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>();
 
-    const [isFetching, setIsFetching] = useState<boolean>();
+    const [isFetching, setIsFetching] = useState<boolean>(false);
 
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
@@ -93,21 +93,19 @@ export const useSpreadsheetEquipments = (
 
     // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
-        if (!allEquipments || !builtAliasedNodesIds) {
+        if (!equipments || !builtAliasedNodesIds) {
             return;
         }
         const currentNodeId = currentNode?.id as UUID;
         let unwantedFetchedNodes = new Set<string>();
-        Object.values(allEquipments).forEach((value) => {
-            unwantedFetchedNodes = new Set([...unwantedFetchedNodes, ...value.nodesId]);
-        });
+        unwantedFetchedNodes = new Set([...unwantedFetchedNodes, ...equipments.nodesId]);
         const usedNodesId = new Set(builtAliasedNodesIds);
         usedNodesId.add(currentNodeId);
         usedNodesId.forEach((nodeId) => unwantedFetchedNodes.delete(nodeId));
         if (unwantedFetchedNodes.size !== 0) {
             dispatch(removeNodeData(Array.from(unwantedFetchedNodes)));
         }
-    }, [builtAliasedNodesIds, currentNode, dispatch, allEquipments]);
+    }, [builtAliasedNodesIds, currentNode, dispatch, equipments]);
 
     const updateEquipmentsLocal = useCallback(
         (impactedSubstationsIds: string[], deletedEquipments: { equipmentType: string; equipmentId: string }[]) => {
@@ -185,6 +183,7 @@ export const useSpreadsheetEquipments = (
     // For example, we have 3 currentNode properties in deps rather than currentNode object itself.
     useEffect(() => {
         if (
+            active &&
             currentNode?.id &&
             currentRootNetworkUuid &&
             nodesIdToFetch.size > 0 &&
@@ -195,6 +194,7 @@ export const useSpreadsheetEquipments = (
             fetchNodesEquipmentData(nodesIdToFetch, currentNode.id, currentRootNetworkUuid, onFetchingDone);
         }
     }, [
+        active,
         isNetworkModificationTreeModelUpToDate,
         currentNode?.id,
         currentNode?.type,

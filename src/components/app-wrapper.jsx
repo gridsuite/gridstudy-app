@@ -5,10 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { useMemo } from 'react';
 import App from './app';
-import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { createTheme, CssBaseline, responsiveFontSizes, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
     LIGHT_THEME,
+    LANG_FRENCH,
     CardErrorBoundary,
     loginEn,
     loginFr,
@@ -55,8 +58,8 @@ import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import messages_plugins from '../plugins/translations';
-import aggrid_locale_en from '../translations/external/aggrid-locale-en';
-import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
+import { grid_en } from '../translations/grid-en';
+import { grid_fr } from '../translations/grid-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
 import dynamic_mapping_models_en from '../translations/external/dynamic-mapping-models-en';
@@ -76,7 +79,6 @@ import events_locale_en from '../translations/dynamic/events-locale-en';
 import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
 import { store } from '../redux/store';
-import CssBaseline from '@mui/material/CssBaseline';
 import {
     PARAM_THEME,
     basemap_style_theme_key,
@@ -93,7 +95,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 // Mark all grids as using legacy themes (migration to V33)
 provideGlobalGridOptions({ theme: 'legacy' });
 
-let lightTheme = createTheme({
+const lightTheme = createTheme({
     components: {
         MuiTab: {
             styleOverrides: {
@@ -160,25 +162,16 @@ let lightTheme = createTheme({
             background: '#e6e6e6',
         },
     },
-});
-
-lightTheme = createTheme(lightTheme, {
-    palette: {
-        cancelButtonColor: {
-            main: lightTheme.palette.text.secondary,
-        },
-        tabBackground: lightTheme.palette.background.default,
+    networkModificationPanel: {
+        backgroundColor: 'white',
+        border: 'solid 1px #babfc7',
     },
-    components: {
-        CancelButton: {
-            defaultProps: {
-                color: 'cancelButtonColor',
-            },
-        },
+    reactflow: {
+        backgroundColor: 'white',
     },
 });
 
-let darkTheme = createTheme({
+const darkTheme = createTheme({
     components: {
         MuiTab: {
             styleOverrides: {
@@ -197,6 +190,7 @@ let darkTheme = createTheme({
     },
     palette: {
         mode: 'dark',
+        tabBackground: '#1e1e1e',
     },
     link: {
         color: 'green',
@@ -244,31 +238,46 @@ let darkTheme = createTheme({
             background: '#121212',
         },
     },
+    networkModificationPanel: {
+        backgroundColor: '#252525',
+        border: 'solid 1px #68686e',
+    },
+    reactflow: {
+        backgroundColor: '#414141',
+    },
 });
 
-darkTheme = createTheme(darkTheme, {
-    palette: {
-        cancelButtonColor: {
-            main: darkTheme.palette.text.secondary,
-        },
-        tabBackground: '#1e1e1e',
-    },
-    components: {
-        CancelButton: {
-            defaultProps: {
-                color: 'cancelButtonColor',
+// no other way to copy style: https://mui.com/material-ui/customization/theming/#api
+function createThemeWithComponents(baseTheme, ...args) {
+    return createTheme(
+        baseTheme,
+        {
+            palette: {
+                cancelButtonColor: {
+                    main: baseTheme.palette.text.secondary,
+                },
+                tabBackground: baseTheme.palette.tabBackground ?? baseTheme.palette.background.default,
+            },
+            components: {
+                CancelButton: {
+                    defaultProps: {
+                        color: 'cancelButtonColor',
+                    },
+                },
             },
         },
-    },
-});
+        ...args
+    );
+}
 
-const getMuiTheme = (theme) => {
-    if (theme === LIGHT_THEME) {
-        return lightTheme;
-    } else {
-        return darkTheme;
-    }
-};
+function getMuiTheme(theme, locale) {
+    return responsiveFontSizes(
+        createThemeWithComponents(
+            theme === LIGHT_THEME ? lightTheme : darkTheme,
+            locale === LANG_FRENCH ? MuiCoreFrFR : MuiCoreEnUS // MUI core translations
+        )
+    );
+}
 
 const messages = {
     en: {
@@ -291,7 +300,7 @@ const messages = {
         ...commonButtonEn,
         ...componentsEn,
         ...equipmentsEn,
-        ...aggrid_locale_en,
+        ...grid_en,
         ...backend_locale_en,
         ...dynamic_mapping_models_en,
         ...csv_locale_en,
@@ -323,7 +332,7 @@ const messages = {
         ...commonButtonFr,
         ...componentsFr,
         ...equipmentsFr,
-        ...aggrid_locale_fr,
+        ...grid_fr,
         ...backend_locale_fr,
         ...dynamic_mapping_models_fr,
         ...csv_locale_fr,
@@ -341,8 +350,8 @@ const basename = new URL(document.querySelector('base').href).pathname;
 
 const AppWrapperWithRedux = () => {
     const computedLanguage = useSelector((state) => state.computedLanguage);
-
     const theme = useSelector((state) => state[PARAM_THEME]);
+    const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
     const urlMapper = useNotificationsUrlGenerator();
 
@@ -350,7 +359,7 @@ const AppWrapperWithRedux = () => {
         <IntlProvider locale={computedLanguage} messages={messages[computedLanguage]}>
             <BrowserRouter basename={basename}>
                 <StyledEngineProvider injectFirst>
-                    <ThemeProvider theme={getMuiTheme(theme)}>
+                    <ThemeProvider theme={themeCompiled}>
                         <SnackbarProvider hideIconVariant={false}>
                             <CssBaseline />
                             <CardErrorBoundary>

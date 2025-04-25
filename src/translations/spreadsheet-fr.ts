@@ -43,7 +43,6 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/error_saving_or_updating_column':
         'Erreur lors de la sauvegarde ou de la mise à jour de la colonne',
     'spreadsheet/save/button': 'Enregistrer',
-    'spreadsheet/reset/button': 'Réinitialiser',
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/collection': 'Collection',
     'spreadsheet/save/options/csv': 'Export CSV',
@@ -65,6 +64,8 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Créer une feuille de calcul vide',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Appliquer un modèle de tableur',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection': 'Appliquer une collection de tableurs',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace': 'Remplacer',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append': 'Ajouter',
     'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
         "Vous êtes sur le point de remplacer le contenu actuel de l'onglet 'Tableur'. Ce contenu sera perdu si vous ne le sauvegardez pas d'abord dans GridExplore. Souhaitez-vous poursuivre sans sauvegarder le contenu actuel?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Ajouter feuille de calcul',
@@ -89,6 +90,7 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': "Erreur lors de l'ajout du tableur",
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Erreur lors de la réinitialisation de la collection de tableurs',
+    'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Réinitialiser la collection de tableurs',
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',

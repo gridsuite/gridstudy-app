@@ -5,17 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { AppState } from '../../../redux/reducer';
+import { AppState, NotificationType } from '../../../redux/reducer';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../services/study/node-alias';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from './node-alias.type';
 import { UUID } from 'crypto';
 import { deletedOrRenamedNodes } from 'redux/actions';
+import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
 
 // NodeAlias may have invalid id/name, in error cases
 export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
+
+export type ResetNodeAliasCallback = (appendMode: boolean, aliases?: string[]) => void;
 
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -54,6 +57,8 @@ export const useNodeAliases = () => {
         }
     }, [snackError, studyUuid]);
 
+    // There are 3 cases where we update the aliases
+
     useEffect(() => {
         // initial state
         fetchNodeAliases();
@@ -66,6 +71,24 @@ export const useNodeAliases = () => {
             dispatch(deletedOrRenamedNodes([]));
         }
     }, [dispatch, fetchNodeAliases, someAliasToRefresh]);
+
+    const listenerAliasesUpdated = useCallback(
+        (event: MessageEvent) => {
+            const eventData = JSON.parse(event.data);
+            if (
+                eventData.headers.updateType === NotificationType.SPREADSHEET_NODE_ALIASES_UPDATED &&
+                eventData.headers.studyUuid === studyUuid
+            ) {
+                // aliases change notification
+                fetchNodeAliases();
+            }
+        },
+        [fetchNodeAliases, studyUuid]
+    );
+
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+        listenerCallbackMessage: listenerAliasesUpdated,
+    });
 
     const updateNodeAliases = useCallback(
         (newNodeAliases: NodeAlias[]) => {
@@ -83,10 +106,25 @@ export const useNodeAliases = () => {
         [snackError, studyUuid]
     );
 
-    const resetNodeAliases = useCallback(
-        (aliases: string[] | undefined) => {
+    const resetNodeAliases: ResetNodeAliasCallback = useCallback(
+        (appendMode: boolean, aliases?: string[]) => {
             let newNodeAliases: NodeAlias[] = [];
-            if (aliases) {
+            if (appendMode && nodeAliases?.length) {
+                // Append mode: keep existing study aliases, but import+reset the appended ones
+                newNodeAliases = nodeAliases;
+                if (aliases?.length) {
+                    const currentAliases = nodeAliases.map((n) => n.alias);
+                    // we add imported aliases and set them undefined, only if an alias is not already defined in the study
+                    const appendedNodeAliases = aliases
+                        .filter((alias) => !currentAliases?.includes(alias))
+                        .map((alias) => {
+                            let nodeAlias: NodeAlias = { id: undefined, name: undefined, alias: alias };
+                            return nodeAlias;
+                        });
+                    newNodeAliases = newNodeAliases.concat(appendedNodeAliases);
+                }
+            } else if (aliases?.length) {
+                // Replace mode: we reset alias list with incoming one, keeping only the 'alias' prop
                 newNodeAliases = aliases.map((alias) => {
                     let nodeAlias: NodeAlias = { id: undefined, name: undefined, alias: alias };
                     return nodeAlias;
@@ -94,7 +132,7 @@ export const useNodeAliases = () => {
             }
             updateNodeAliases(newNodeAliases);
         },
-        [updateNodeAliases]
+        [nodeAliases, updateNodeAliases]
     );
 
     return { nodeAliases, updateNodeAliases, resetNodeAliases };

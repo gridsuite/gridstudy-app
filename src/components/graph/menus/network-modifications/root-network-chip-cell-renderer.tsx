@@ -6,11 +6,10 @@
  */
 
 import { useState, useCallback, useMemo, SetStateAction } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ActivableChip, useSnackMessage } from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { ChipCellRenderer } from '../../../spreadsheet/utils/chip-cell-renderer';
 import { NetworkModificationInfos, RootNetworkMetadata } from './network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 
@@ -91,7 +90,7 @@ const RootNetworkChipCellRenderer = (props: RootNetworkChipCellRendererProps) =>
     }, [modificationUuid, setModifications, updateStatus, rootNetwork.rootNetworkUuid]);
 
     return (
-        <ChipCellRenderer
+        <ActivableChip
             label={rootNetworkTag}
             tooltipMessage={rootNetwork.name}
             isActivated={modificationActivatedByRootNetwork}

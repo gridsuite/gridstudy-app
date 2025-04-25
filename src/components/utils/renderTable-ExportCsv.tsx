@@ -11,6 +11,7 @@ import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle }
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { Box } from '@mui/material';
+import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 
 const styles = {
     gridContainer: {
@@ -77,6 +78,14 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
                         onGridReady={onGridReady}
                         getRowStyle={getRowStyle}
                         overlayNoRowsTemplate={overlayNoRowsTemplate}
+                        onModelUpdated={({ api }) => {
+                            if (api.getDisplayedRowCount()) {
+                                api.hideOverlay();
+                            } else {
+                                api.showNoRowsOverlay();
+                            }
+                        }}
+                        overrideLocales={AGGRID_LOCALES}
                     />
                 </Box>
             )}

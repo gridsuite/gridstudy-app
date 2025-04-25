@@ -22,6 +22,7 @@ import { useFetchEquipment } from '../data-fetching/use-fetch-equipment';
 import { validAlias } from './use-node-aliases';
 import { NodeType } from '../../graph/tree-node.type';
 import { isStatusBuilt } from '../../graph/util/model-functions';
+import { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 
 const styles = {
     icon: {
@@ -37,14 +38,14 @@ enum NodesOptionId {
 
 type CustomColumnsNodesConfigProps = {
     disabled?: boolean;
-    tabIndex: number;
+    tableType: SpreadsheetEquipmentType;
     nodeAliases: NodeAlias[] | undefined;
     updateNodeAliases: (newNodeAliases: NodeAlias[]) => void;
 };
 
 export default function CustomColumnsNodesConfig({
     disabled,
-    tabIndex,
+    tableType,
     nodeAliases,
     updateNodeAliases,
 }: Readonly<CustomColumnsNodesConfigProps>) {
@@ -52,7 +53,6 @@ export default function CustomColumnsNodesConfig({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const tableType = useSelector((state: AppState) => state.tables.definitions[tabIndex]?.type);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
 
     const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
@@ -99,18 +99,25 @@ export default function CustomColumnsNodesConfig({
 
     return (
         <>
-            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
-                <BuildIcon sx={styles.icon} />
-                <FormattedMessage id="spreadsheet/custom_column/nodes" />
-                {showWarning && (
-                    <Badge
-                        badgeContent="!"
-                        color="warning"
-                        overlap="circular"
-                        style={{ transform: 'translate(10px, -15px)' }}
-                    ></Badge>
-                )}
-            </Button>
+            <Badge color="secondary" variant={nodeAliases?.length && !showWarning ? 'dot' : undefined}>
+                <Button
+                    sx={spreadsheetStyles.spreadsheetButton}
+                    size={'small'}
+                    onClick={handleClick}
+                    disabled={disabled}
+                >
+                    <BuildIcon sx={styles.icon} />
+                    <FormattedMessage id="spreadsheet/custom_column/nodes" />
+                    {showWarning && (
+                        <Badge
+                            badgeContent="!"
+                            color="warning"
+                            overlap="circular"
+                            style={{ transform: 'translate(10px, -15px)' }}
+                        ></Badge>
+                    )}
+                </Button>
+            </Badge>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem
                     key={NodesOptionId.CONFIG}
@@ -137,7 +144,7 @@ export default function CustomColumnsNodesConfig({
                             handleClose();
                             handleRefresh();
                         }}
-                        disabled={nodesToReload ? nodesToReload.length === 0 : true}
+                        disabled={tableType && nodesToReload ? nodesToReload.length === 0 : true}
                     >
                         <FormattedMessage id={'spreadsheet/custom_column/option/refresh'} />
                     </MenuItem>

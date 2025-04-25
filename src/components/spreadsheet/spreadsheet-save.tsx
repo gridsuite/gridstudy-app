@@ -5,17 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, MouseEvent, useCallback, useMemo } from 'react';
+import { useState, MouseEvent, useCallback, useMemo, RefObject } from 'react';
 import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import CustomSpreadsheetSaveDialog from './custom-spreadsheet/custom-spreadsheet-save-dialog';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import { useCsvExport } from './csv-export/use-csv-export';
-import { CsvExportProps } from './csv-export/csv-export.type';
 import { spreadsheetStyles } from './utils/style';
 import { SpreadsheetCollectionSaveDialog } from './custom-spreadsheet/spreadsheet-collection-save-dialog';
 import { NodeAlias } from './custom-columns/node-alias.type';
+import { ROW_INDEX_COLUMN_ID } from './constants';
+import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
+import { AgGridReact } from 'ag-grid-react';
+import { ColDef } from 'ag-grid-community';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
@@ -30,17 +33,19 @@ interface SpreadsheetSaveOption {
     disabled?: boolean;
 }
 
-interface SpreadsheetSaveProps extends CsvExportProps {
-    tabIndex: number;
+interface SpreadsheetSaveProps {
+    gridRef: RefObject<AgGridReact>;
+    columns: ColDef[];
+    disabled: boolean;
+    tableDefinition: SpreadsheetTabDefinition;
     dataSize?: number;
     nodeAliases: NodeAlias[] | undefined;
 }
 
 export default function SpreadsheetSave({
-    tabIndex,
+    tableDefinition,
     gridRef,
     columns,
-    tableName,
     disabled,
     dataSize,
     nodeAliases,
@@ -73,7 +78,11 @@ export default function SpreadsheetSave({
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
                 label: 'spreadsheet/save/options/csv',
-                action: () => downloadCSVData({ gridRef, columns, tableName }),
+                action: () => {
+                    // Filter out the rowIndex column before exporting to CSV
+                    const columnsForExport = columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID);
+                    downloadCSVData({ gridRef, columns: columnsForExport, tableName: tableDefinition.name });
+                },
                 disabled: dataSize === 0,
             },
         }),
@@ -81,10 +90,10 @@ export default function SpreadsheetSave({
             customSaveDialogOpen.setTrue,
             saveCollectionDialogOpen.setTrue,
             dataSize,
+            columns,
             downloadCSVData,
             gridRef,
-            columns,
-            tableName,
+            tableDefinition.name,
         ]
     );
 
@@ -116,7 +125,7 @@ export default function SpreadsheetSave({
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 {Object.values(spreadsheetOptions).map(renderMenuItem)}
             </Menu>
-            <CustomSpreadsheetSaveDialog tabIndex={tabIndex} open={customSaveDialogOpen} />
+            <CustomSpreadsheetSaveDialog tableDefinition={tableDefinition} open={customSaveDialogOpen} />
             <SpreadsheetCollectionSaveDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
         </>
     );

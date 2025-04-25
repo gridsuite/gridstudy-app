@@ -14,14 +14,15 @@ import { SelectOptionsDialog } from 'utils/dialogs';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { AppState } from '../../redux/reducer';
 import { updateTableDefinition } from 'redux/actions';
 import { spreadsheetStyles } from './utils/style';
 import { UUID } from 'crypto';
-import { reorderSpreadsheetColumns } from 'services/study-config';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
+import { reorderSpreadsheetColumns } from 'services/study/study-config';
+import { AppState } from 'redux/reducer';
 
 const MAX_LOCKS_PER_TAB = 5;
 
@@ -45,16 +46,15 @@ const styles = {
 };
 
 interface ColumnsConfigProps {
-    tabIndex: number;
+    tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
 }
 
-export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex, disabled }) => {
+export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefinition, disabled }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-
-    const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [localColumns, setLocalColumns] = useState(tableDefinition?.columns);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState<boolean>(false);
@@ -81,12 +81,14 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
         const hasOrderChanged = tableDefinition.columns.some((col, index) => col.uuid !== localColumns[index].uuid);
 
         // create a Promise chain that conditionally includes the reorder request
-        const updatePromise = hasOrderChanged
-            ? reorderSpreadsheetColumns(
-                  tableDefinition.uuid,
-                  localColumns.map((col) => col.uuid)
-              )
-            : Promise.resolve();
+        const updatePromise =
+            hasOrderChanged && studyUuid
+                ? reorderSpreadsheetColumns(
+                      studyUuid,
+                      tableDefinition.uuid,
+                      localColumns.map((col) => col.uuid)
+                  )
+                : Promise.resolve();
 
         updatePromise
             .then(() => {
@@ -105,7 +107,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
             });
 
         handleCloseColumnsSettingDialog();
-    }, [tableDefinition, localColumns, handleCloseColumnsSettingDialog, dispatch, snackError]);
+    }, [tableDefinition, studyUuid, localColumns, handleCloseColumnsSettingDialog, dispatch, snackError]);
 
     const handleToggle = (value: UUID) => () => {
         const newLocalColumns = localColumns.map((col) => {
@@ -201,9 +203,9 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                             <div ref={provided.innerRef} {...provided.droppableProps}>
                                 {[...localColumns].map(({ uuid, name, visible }, index) => (
                                     <Draggable
-                                        draggableId={tabIndex + '-' + index}
+                                        draggableId={tableDefinition.uuid + '-' + index}
                                         index={index}
-                                        key={tabIndex + '-' + index}
+                                        key={tableDefinition.uuid + '-' + index}
                                     >
                                         {(provided) => (
                                             <div ref={provided.innerRef} {...provided.draggableProps}>
@@ -264,7 +266,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tabIndex,
                     id: 'spreadsheet/column/dialog/title',
                 })}
                 child={checkListColumnsNames()}
-                //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beautiful-dnd warning related to nested scroll containers
+                //Replacing overflow default value 'auto' by 'visible' in order to prevent a @hello-pangea/dnd warning related to nested scroll containers
                 style={{
                     '& .MuiPaper-root': {
                         overflowY: 'visible',

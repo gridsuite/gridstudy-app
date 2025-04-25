@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { IRowNode } from 'ag-grid-community';
-import { evaluateFilters, ExpertFilter } from '../../services/study/filter';
+import { evaluateFilters, SpreadsheetGlobalFilter } from '../../services/study/filter';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
@@ -16,16 +16,16 @@ export const useSpreadsheetGsFilter = (tabUuid: UUID) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [filterIds, setFilterIds] = useState<string[]>([]);
-    const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
+    const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState[tabUuid]);
 
     const applyGsFilter = useCallback(
-        async (filters: ExpertFilter[]) => {
+        async (filters: SpreadsheetGlobalFilter[]) => {
             if (!filters?.length || !currentRootNetworkUuid) {
                 setFilterIds([]);
                 return;
             }
 
-            const filtersUuid = filters.filter((filter) => filter.id).map((filter) => filter.id as UUID);
+            const filtersUuid = filters.map((filter) => filter.id);
             if (filtersUuid.length > 0) {
                 const response = await evaluateFilters(studyUuid as UUID, currentRootNetworkUuid, filtersUuid);
                 const equipmentsIds = response.flatMap((filterEquipments) =>
@@ -38,15 +38,12 @@ export const useSpreadsheetGsFilter = (tabUuid: UUID) => {
     );
 
     useEffect(() => {
-        applyGsFilter(gsFilterSpreadsheetState[tabUuid]);
+        applyGsFilter(gsFilterSpreadsheetState);
     }, [applyGsFilter, tabUuid, gsFilterSpreadsheetState]);
 
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
-    const isExternalFilterPresent = useCallback(
-        () => gsFilterSpreadsheetState[tabUuid]?.length > 0,
-        [tabUuid, gsFilterSpreadsheetState]
-    );
+    const isExternalFilterPresent = useCallback(() => gsFilterSpreadsheetState?.length > 0, [gsFilterSpreadsheetState]);
 
     return { doesFormulaFilteringPass, isExternalFilterPresent };
 };

@@ -26,12 +26,16 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
     return mergeSx(resultsGlobalFilterStyles.chip, chipStyle);
 };
 
+const AUTOCOMPLETE_WIDTH: number = 520;
+const POPPER_EXTRA_WIDTH: number = 250;
+export const GLOBAL_FILTERS_CELL_HEIGHT: number = 400;
+export const IMPORT_FILTER_HEIGHT: number = 40;
+
 export const resultsGlobalFilterStyles = {
     autocomplete: (theme: Theme) => ({
-        width: '420px',
+        width: AUTOCOMPLETE_WIDTH + 'px',
         '.MuiAutocomplete-inputRoot': {
             height: '40px',
-            backgroundColor: 'unset', // prevents the field from changing size when selected with the keyboard
         },
         '.Mui-expanded, .Mui-focused, .Mui-focusVisible': {
             position: 'absolute',
@@ -45,22 +49,50 @@ export const resultsGlobalFilterStyles = {
             width: 'auto',
         },
     }),
-    chipBox: {
-        width: '100%',
-        display: 'flex',
-        flexWrap: 'wrap',
-        padding: '0.5em',
-    },
-    filterTypeBox: (theme: Theme) => ({
-        borderTop: '1px solid',
+    // from the expanded part :
+    dropdown: () => ({
+        position: 'relative',
+        left: `0px`,
+        width: `${AUTOCOMPLETE_WIDTH + POPPER_EXTRA_WIDTH}px`,
+    }),
+    cellHeader: (theme: Theme) => ({
+        color: theme.palette.text.secondary,
+        fontSize: '1em',
+        padding: 1,
+        border: '1px solid',
         borderColor: theme.palette.divider,
     }),
-    groupLabel: (theme: Theme) => ({
+    cell: (theme: Theme) => ({
+        borderLeft: '1px solid',
+        borderColor: theme.palette.divider,
+    }),
+    list: (theme: Theme) => ({
         display: 'flex',
+        flexDirection: 'column',
         color: theme.palette.text.secondary,
-        fontSize: '0.9em',
+        fontSize: '1em',
         width: '100%',
-        paddingLeft: 1,
+        maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
+    }),
+    importFilterButton: (theme: Theme) => ({
+        color: theme.palette.text.secondary,
+        fontSize: '0.8em',
+        borderTop: '1px solid',
+        borderColor: theme.palette.divider,
+        height: `${IMPORT_FILTER_HEIGHT}px`,
+        justifyContent: 'flex-start',
+        paddingLeft: '24px',
+    }),
+    miniButton: (theme: Theme) => ({
+        color: theme.palette.text.primary,
+        border: '1px solid',
+        borderColor: theme.palette.text.primary,
+        padding: 0,
+        paddingLeft: 0.5,
+        paddingRight: 0.5,
+        position: 'absolute',
+        top: 12,
+        right: 8,
     }),
     chip: {
         '&.MuiChip-root': {

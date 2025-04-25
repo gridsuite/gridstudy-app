@@ -41,7 +41,6 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/creates_cyclic_dependency': 'Column dependencies create a cyclic dependency',
     'spreadsheet/custom_column/error_saving_or_updating_column': 'Error while saving or updating column',
     'spreadsheet/save/button': 'Save',
-    'spreadsheet/reset/button': 'Reset',
     'spreadsheet/save/options/model': 'As a model',
     'spreadsheet/save/options/collection': 'Collection',
     'spreadsheet/save/options/csv': 'Export CSV',
@@ -62,6 +61,8 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Create an empty spreadsheet',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Apply a spreadsheet model',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection': 'Apply a spreadsheet collection',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace': 'Replace',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append': 'Append',
     'spreadsheet/create_new_spreadsheet/replace_collection_confirmation':
         "You are about to replace the current content of the 'Spreadsheet' tab. This content will be lost if you do not save it to GridExplore first. Would you like to pursue without saving the current content?",
     'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Add spreadsheet',
@@ -84,6 +85,7 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': 'Error while adding spreadsheet',
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Error while resetting spreadsheet collection',
+    'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Reset spreadsheet collection',
     'spreadsheet/parameter_aliases/node_name': 'Node name',
     'spreadsheet/parameter_aliases/node_alias': 'Node alias',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Cannot exceed 10 characters',
