@@ -161,7 +161,8 @@ export const useSpreadsheetEquipments = (
                     currentNode?.id === eventNodeUuid &&
                     currentRootNetworkUuid === eventRootNetworkUuid
                 ) {
-                    const payload = JSON.parse(eventData.payload);
+                    // @ts-ignore
+                    const payload = JSON.parse(eventData.payload) as NetworkImpactsInfos;
                     const impactedSubstationsIds = payload.impactedSubstationsIds;
                     const deletedEquipments = payload.deletedEquipments;
                     updateEquipmentsLocal(impactedSubstationsIds, deletedEquipments);
