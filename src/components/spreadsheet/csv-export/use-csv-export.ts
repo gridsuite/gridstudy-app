@@ -36,7 +36,7 @@ export const useCsvExport = () => {
             const prefix = props.tableNamePrefix ?? '';
 
             props.gridRef?.current?.api?.exportDataAsCsv({
-                suppressQuotes: true,
+                suppressQuotes: false,
                 columnKeys: props.columns.map((col) => col.colId).filter(hasColId),
                 skipColumnHeaders: props.skipColumnHeaders,
                 processHeaderCallback: (params) =>

@@ -32,6 +32,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     loader: {
@@ -181,6 +182,7 @@ const DynamicSimulationResultTimeline = memo(
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
                     overlayNoRowsTemplate={overlayMessage}
+                    overrideLocales={AGGRID_LOCALES}
                 />
             </>
         );

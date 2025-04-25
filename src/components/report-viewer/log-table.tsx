@@ -34,6 +34,7 @@ import {
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
 } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -371,6 +372,7 @@ const LogTable = ({
                     getRowStyle={rowStyleFormat}
                     onGridReady={onGridReady}
                     defaultColDef={defaultColumnDefinition}
+                    overrideLocales={AGGRID_LOCALES}
                 />
             </Box>
         </Box>
