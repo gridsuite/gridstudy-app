@@ -6,9 +6,6 @@
  */
 import { catchErrorHandler, fetchStudyMetadata, StudyMetadata } from '@gridsuite/commons-ui';
 import { getUserToken } from '../redux/user-store';
-import { UUID } from 'crypto';
-import ComputingType from '../components/computing-status/computing-type';
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './study';
 
 export const FetchStatus = {
     SUCCEED: 'SUCCEED',
@@ -166,28 +163,4 @@ export function getUrlWithToken(baseUrl: string) {
 export function fetchMapBoxToken() {
     console.info(`Fetching MapBoxToken...`);
     return fetchEnv().then((res) => res.mapBoxToken);
-}
-
-export function fetchDebugFile(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    computingType: ComputingType
-): Promise<Response> {
-    console.info(
-        `Fetching debug file on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
-    );
-
-    const urlParams = new URLSearchParams();
-    urlParams.append('computingType', `${computingType}`);
-
-    const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        `/debug-file?${urlParams}`;
-
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json' },
-    });
 }

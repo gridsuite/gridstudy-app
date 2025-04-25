@@ -6,8 +6,9 @@
  */
 
 import { UUID } from 'crypto';
-import { PREFIX_STUDY_QUERIES } from '.';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from '.';
 import { backendFetch } from '../utils';
+import ComputingType from '../../components/computing-status/computing-type';
 
 interface BasicStudyInfos {
     uniqueId: string;
@@ -75,3 +76,27 @@ export const reindexAllStudy = (studyUuid: UUID, currentRootNetworkUuid: UUID): 
         headers: { 'Content-Type': 'application/json' },
     });
 };
+
+export function fetchDebugFile(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    computingType: ComputingType
+): Promise<Response> {
+    console.info(
+        `Fetching debug file on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const urlParams = new URLSearchParams();
+    urlParams.append('computingType', `${computingType}`);
+
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        `/debug-file?${urlParams}`;
+
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+    });
+}

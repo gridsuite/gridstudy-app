@@ -15,9 +15,10 @@ import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
 
-import { downloadZipFile, fetchDebugFile } from '../../services/utils';
+import { downloadZipFile } from '../../services/utils';
 import { HttpStatusCode } from '../../utils/http-status-code';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchDebugFile } from '../../services/study/study';
 
 interface UseComputingStatusProps {
     (
