@@ -89,6 +89,7 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                     index,
                 }))
             );
+            setAreFiltersIncluded(false);
         }
     }, [open.value, tables]);
 
