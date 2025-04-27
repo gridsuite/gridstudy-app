@@ -209,7 +209,7 @@ export const useComputingStatus: UseComputingStatusProps = (
                             });
                 });
         },
-        [studyUuid, nodeUuid, currentRootNetworkUuid, computingType, debugFileFetcher, snackWarning, snackError]
+        [studyUuid, nodeUuid, currentRootNetworkUuid, computingType, snackWarning, snackError]
     );
 
     /* initial fetch and update */
