@@ -28,6 +28,19 @@ export function fetchDynamicSimulationProviders() {
     return backendFetchJson(url);
 }
 
+export function downloadDynamicSimulationDebugFile(resultUuid: UUID): Promise<Response> {
+    console.info(`Download debug file of '${resultUuid}' ...`);
+
+    const url = getDynamicSimulationUrl() + `results/${resultUuid}/download/debug-file`;
+
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
+// TODO move all following API to study/dynamic-simulation.ts
 export function fetchDynamicSimulationTimeSeriesMetadata(
     studyUuid: UUID,
     currentNodeUuid: UUID,

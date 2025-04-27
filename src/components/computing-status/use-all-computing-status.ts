@@ -34,6 +34,7 @@ import { useOptionalServiceStatus } from '../../hooks/use-optional-service-statu
 import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
 import { fetchStateEstimationStatus } from '../../services/study/state-estimation';
 import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic-security-analysis';
+import { downloadDynamicSimulationDebugFile } from '../../services/dynamic-simulation';
 
 // status invalidations
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
@@ -90,6 +91,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         currentNodeUuid,
         currentRootNetworkUuid,
         fetchLoadFlowStatus,
+        null,
         loadFlowStatusInvalidations,
         loadFlowStatusCompletions,
         getLoadFlowRunningStatus,
@@ -101,6 +103,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         currentNodeUuid,
         currentRootNetworkUuid,
         fetchSecurityAnalysisStatus,
+        null,
         securityAnalysisStatusInvalidations,
         securityAnalysisStatusCompletions,
         getSecurityAnalysisRunningStatus,
@@ -113,6 +116,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         currentNodeUuid,
         currentRootNetworkUuid,
         fetchSensitivityAnalysisStatus,
+        null,
         sensitivityAnalysisStatusInvalidations,
         sensitivityAnalysisStatusCompletions,
         getSensitivityAnalysisRunningStatus,
@@ -125,6 +129,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         currentNodeUuid,
         currentRootNetworkUuid,
         fetchNonEvacuatedEnergyStatus,
+        null,
         nonEvacuatedEnergyStatusInvalidations,
         nonEvacuatedEnergyStatusCompletions,
         getNonEvacuatedEnergyRunningStatus,
@@ -137,6 +142,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         currentNodeUuid,
         currentRootNetworkUuid,
         fetchShortCircuitAnalysisStatus,
+        null,
         shortCircuitAnalysisStatusInvalidations,
         shortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
@@ -149,6 +155,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         currentNodeUuid,
         currentRootNetworkUuid,
         fetchOneBusShortCircuitAnalysisStatus,
+        null,
         oneBusShortCircuitAnalysisStatusInvalidations,
         oneBusShortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
@@ -161,6 +168,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         currentNodeUuid,
         currentRootNetworkUuid,
         fetchDynamicSimulationStatus,
+        downloadDynamicSimulationDebugFile,
         dynamicSimulationStatusInvalidations,
         dynamicSimulationStatusCompletions,
         getDynamicSimulationRunningStatus,
@@ -173,6 +181,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         currentNodeUuid,
         currentRootNetworkUuid,
         fetchDynamicSecurityAnalysisStatus,
+        null,
         dynamicSecurityAnalysisStatusInvalidations,
         dynamicSecurityAnalysisStatusCompletions,
         getDynamicSecurityAnalysisRunningStatus,
@@ -185,6 +194,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         currentNodeUuid,
         currentRootNetworkUuid,
         fetchVoltageInitStatus,
+        null,
         voltageInitStatusInvalidations,
         voltageInitStatusCompletions,
         getVoltageInitRunningStatus,
@@ -197,6 +207,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         currentNodeUuid,
         currentRootNetworkUuid,
         fetchStateEstimationStatus,
+        null,
         stateEstimationStatusInvalidations,
         stateEstimationStatusCompletions,
         getStateEstimationRunningStatus,
