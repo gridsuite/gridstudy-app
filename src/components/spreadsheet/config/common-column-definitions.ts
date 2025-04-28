@@ -38,12 +38,10 @@ import { updateSpreadsheetColumn } from 'services/study/study-config';
 const updateAndPersistFilters = (colDef: ColumnDefinition, tab: string, api: GridApi, filters: FilterConfig[]) => {
     updateFilters(api, filters);
     const studyUuid = api.getGridOption('context')?.studyUuid;
-    if (studyUuid && filters?.length > 0) {
-        const filter = filters.find((f) => f.column === colDef.id);
-        if (filter) {
-            const columnDto = mapColDefToDto(colDef, filter);
-            updateSpreadsheetColumn(studyUuid, tab as UUID, colDef.uuid, columnDto);
-        }
+    if (studyUuid) {
+        const filter = filters?.find((f) => f.column === colDef.id);
+        const columnDto = mapColDefToDto(colDef, filter);
+        updateSpreadsheetColumn(studyUuid, tab as UUID, colDef.uuid, columnDto);
     }
 };
 

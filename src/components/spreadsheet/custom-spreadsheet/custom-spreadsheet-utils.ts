@@ -48,7 +48,7 @@ const createNewTableDefinition = (
 });
 
 // This function is used to map the ColumnDefinition to ColumnDefinitionDto before sending it to the backend
-export const mapColDefToDto = (colDef: ColumnDefinition, colFilter: FilterConfig) => ({
+export const mapColDefToDto = (colDef: ColumnDefinition, colFilter?: FilterConfig) => ({
     uuid: colDef.uuid,
     id: colDef.id,
     name: colDef.name,
@@ -56,10 +56,10 @@ export const mapColDefToDto = (colDef: ColumnDefinition, colFilter: FilterConfig
     precision: colDef.precision,
     formula: colDef.formula,
     dependencies: colDef.dependencies?.length ? JSON.stringify(colDef.dependencies) : undefined,
-    filterDataType: colFilter.dataType,
-    filterType: colFilter.type,
-    filterValue: colFilter.value ? JSON.stringify(colFilter.value) : undefined,
-    filterTolerance: colFilter.tolerance,
+    filterDataType: colFilter?.dataType,
+    filterType: colFilter?.type,
+    filterValue: colFilter?.value ? JSON.stringify(colFilter.value) : undefined,
+    filterTolerance: colFilter?.tolerance,
 });
 
 export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {

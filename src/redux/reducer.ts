@@ -944,17 +944,15 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
-        const { spreadsheetConfigDto } = action;
+        const { spreadsheetConfigUuid, columns } = action;
         const existingTableDefinition = state.tables.definitions.find(
-            (tabDef) => tabDef.uuid === spreadsheetConfigDto.id
+            (tabDef) => tabDef.uuid === spreadsheetConfigUuid
         );
         if (existingTableDefinition) {
-            existingTableDefinition.name = spreadsheetConfigDto.name;
-            existingTableDefinition.columns = spreadsheetConfigDto.columns.map((column) => {
+            existingTableDefinition.columns = columns.map((column) => {
                 const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
                 const colDef: ColumnDefinition = {
                     ...column,
-                    dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
                     visible: existingColDef ? existingColDef.visible : true,
                     locked: existingColDef ? existingColDef.locked : false,
                 };

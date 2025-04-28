@@ -1291,12 +1291,17 @@ export const UPDATE_TABLE_COLUMNS = 'UPDATE_TABLE_COLUMNS';
 
 export type UpdateTableColumnsAction = {
     type: typeof UPDATE_TABLE_COLUMNS;
-    spreadsheetConfigDto: SpreadsheetConfigDto;
+    spreadsheetConfigUuid: UUID;
+    columns: ColumnDefinition[];
 };
 
-export const updateTableColumns = (spreadsheetConfigDto: SpreadsheetConfigDto): UpdateTableColumnsAction => ({
+export const updateTableColumns = (
+    spreadsheetConfigUuid: UUID,
+    columns: ColumnDefinition[]
+): UpdateTableColumnsAction => ({
     type: UPDATE_TABLE_COLUMNS,
-    spreadsheetConfigDto,
+    spreadsheetConfigUuid,
+    columns,
 });
 
 export const RENAME_TABLE_DEFINITION = 'RENAME_TABLE_DEFINITION';

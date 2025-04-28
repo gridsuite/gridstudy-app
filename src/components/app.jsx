@@ -40,8 +40,11 @@ import { fetchConfigParameter, fetchConfigParameters } from '../services/config'
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
+    addFilterForNewSpreadsheet,
     attemptLeaveParametersTab,
     initTableDefinitions,
+    renameTableDefinition,
+    saveSpreadsheetGsFilters,
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
@@ -62,7 +65,11 @@ import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
     getSpreadsheetModel,
 } from '../services/study-config.js';
-import { processSpreadsheetsCollectionData } from './spreadsheet/custom-spreadsheet/custom-spreadsheet-utils';
+import {
+    extractColumnsFilters,
+    mapColumnsDto,
+    processSpreadsheetsCollectionData,
+} from './spreadsheet/custom-spreadsheet/custom-spreadsheet-utils';
 
 const noUserManager = { instance: null, error: null };
 
@@ -160,7 +167,14 @@ const App = () => {
             console.debug('Update spreadsheet tab on notification', configUuid);
             getSpreadsheetModel(configUuid)
                 .then((model) => {
-                    dispatch(updateTableColumns(model));
+                    const tabUuid = model.id;
+                    const formattedColumns = mapColumnsDto(model.columns);
+                    const columnsFilters = extractColumnsFilters(model.columns);
+                    const formattedGlobalFilters = model.globalFilters ?? [];
+                    dispatch(renameTableDefinition(tabUuid, model.name));
+                    dispatch(updateTableColumns(tabUuid, formattedColumns));
+                    dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
+                    dispatch(saveSpreadsheetGsFilters(tabUuid, formattedGlobalFilters));
                 })
                 .catch((error) => {
                     snackError({
