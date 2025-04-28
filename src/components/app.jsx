@@ -18,8 +18,8 @@ import {
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
-    useSnackMessage,
     useNotificationsListener,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -62,6 +62,7 @@ import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
     getSpreadsheetModel,
 } from '../services/study-config.js';
+import useInitializeBrowserTabUuid from '../hooks/use-initialize-browser-tab-uuid.js';
 
 const noUserManager = { instance: null, error: null };
 
@@ -69,6 +70,11 @@ const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, St
 
 const App = () => {
     const { snackError } = useSnackMessage();
+
+    // provide each opened browser tab a unique uuid, maintained even refreshing tab by F5
+    // this unique uuid is used to filter a notification which will be consumed once by the current tab,
+    // e.g. trigger a downloading of the debug file after a computation finished
+    useInitializeBrowserTabUuid();
 
     const appTabIndex = useSelector((state) => state.appTabIndex);
     const user = useSelector((state) => state.user);

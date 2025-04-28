@@ -19,6 +19,7 @@ import { downloadZipFile } from '../../services/utils';
 import { HttpStatusCode } from '../../utils/http-status-code';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchResultUuid } from '../../services/study/study';
+import { getBrowserTabUuid } from '../../redux/session-storage/browser-tab-uuid-state';
 
 interface UseComputingStatusProps {
     (
@@ -235,8 +236,11 @@ export const useComputingStatus: UseComputingStatusProps = (
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (isUpdateForUs) {
             updateStatus();
-            // download automatically debug file
-            if (studyUpdatedForce.eventData?.headers?.debug) {
+            // download automatically debug file only for the current browser tab
+            if (
+                studyUpdatedForce.eventData?.headers?.debug &&
+                studyUpdatedForce.eventData?.headers?.browserTabUuid === getBrowserTabUuid()
+            ) {
                 debugFileFetcher && downloadDebugFile(debugFileFetcher);
             }
         }

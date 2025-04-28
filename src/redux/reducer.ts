@@ -57,6 +57,8 @@ import {
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
+    DELETED_OR_RENAMED_NODES,
+    DeletedOrRenamedNodesAction,
     DeleteEquipmentsAction,
     DYNAMIC_SIMULATION_RESULT_FILTER,
     DynamicSimulationResultFilterAction,
@@ -152,6 +154,7 @@ import {
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
+    SET_EDIT_NAD_MODE,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     SET_FULLSCREEN_DIAGRAM,
     SET_LAST_COMPLETED_COMPUTATION,
@@ -160,14 +163,15 @@ import {
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
-    SET_ROOT_NETWORKS,
     SET_RELOAD_MAP_NEEDED,
-    SET_STUDY_DISPLAY_MODE,
     SET_ROOT_NETWORK_INDEXATION_STATUS,
+    SET_ROOT_NETWORKS,
+    SET_STUDY_DISPLAY_MODE,
     SetAppTabIndexAction,
     SetCalculationSelectionsAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
+    SetEditNadModeAction,
     SetEventScenarioDrawerOpenAction,
     SetFullscreenDiagramAction,
     SetLastCompletedComputationAction,
@@ -176,10 +180,10 @@ import {
     SetOneBusShortcircuitAnalysisDiagramAction,
     SetOptionalServicesAction,
     SetParamsLoadedAction,
-    SetRootNetworksAction,
     SetReloadMapNeededAction,
-    SetStudyDisplayModeAction,
     SetRootNetworkIndexationStatusAction,
+    SetRootNetworksAction,
+    SetStudyDisplayModeAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
@@ -201,19 +205,15 @@ import {
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+    UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
     UpdateColumnsDefinitionsAction,
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
+    UpdateTableColumnsAction,
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    SET_EDIT_NAD_MODE,
-    SetEditNadModeAction,
-    DELETED_OR_RENAMED_NODES,
-    DeletedOrRenamedNodesAction,
-    UPDATE_TABLE_COLUMNS,
-    UpdateTableColumnsAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -440,6 +440,7 @@ export type StudyUpdated = {
     eventData: {
         headers: {
             debug?: boolean;
+            browserTabUuid?: UUID;
         };
     };
 } & (

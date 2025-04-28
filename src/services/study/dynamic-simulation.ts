@@ -11,6 +11,7 @@ import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromLi
 import { UUID } from 'crypto';
 import { DynamicSimulationParametersFetchReturn, DynamicSimulationParametersInfos } from './dynamic-simulation.type';
 import { Timeseries } from '../../components/results/dynamicsimulation/types/dynamic-simulation-result.type';
+import { getBrowserTabUuid } from '../../redux/session-storage/browser-tab-uuid-state';
 
 export function getDynamicMappings(studyUuid: UUID) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
@@ -37,7 +38,11 @@ export function startDynamicSimulation({
     );
 
     const urlParams = new URLSearchParams();
-    urlParams.append('debug', `${debug}`);
+
+    if (debug) {
+        urlParams.append('debug', `${debug}`);
+        urlParams.append('browserTabUuid', `${getBrowserTabUuid()}`);
+    }
 
     const startDynamicSimulationUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
