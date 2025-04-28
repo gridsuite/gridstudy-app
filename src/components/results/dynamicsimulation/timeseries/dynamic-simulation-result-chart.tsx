@@ -502,9 +502,9 @@ function DynamicSimulationResultChart({
                                         }}
                                     >
                                         <DynamicSimulationResultSeriesChart
-                                            key={`${plot.id}`}
-                                            id={`${plot.id}`}
-                                            groupId={`${groupId}`}
+                                            key={`chart-${plot.id}`}
+                                            id={plot.id}
+                                            groupId={groupId}
                                             index={index}
                                             selected={selectedIndex === index}
                                             onSelect={handleSelectIndex}

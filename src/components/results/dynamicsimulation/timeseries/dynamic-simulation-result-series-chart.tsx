@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import PlotlySeriesChart from '../plot/plotly-series-chart';
-import { Card, CardContent, CardHeader, Theme, ToggleButton, Tooltip, Typography } from '@mui/material';
+import { Card, CardContent, CardHeader, Theme, Typography } from '@mui/material';
 import { memo, useCallback, useState } from 'react';
 import TooltipIconButton from '../common/tooltip-icon-button';
 import { lighten } from '@mui/material/styles';
@@ -18,8 +18,8 @@ import { Series } from '../plot/plot-types';
 import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
-    plotScaleButton: (theme: Theme) => ({
-        marginRight: theme.spacing(2),
+    cardActionButton: (theme: Theme) => ({
+        marginRight: theme.spacing(0.5),
         border: 'none',
         borderRadius: '50%',
     }),
@@ -99,37 +99,45 @@ function DynamicSimulationResultSeriesChart({
                 }
                 action={
                     <>
-                        <ToggleButton
-                            sx={styles.plotScaleButton}
-                            size={'small'}
-                            value={'plotScale'}
-                            selected={plotScale}
-                            onChange={() => handlePlotScale(id)}
-                        >
-                            {plotScale ? (
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'DynamicSimulationPlotScaleDisable',
-                                    })}
-                                >
-                                    <FullscreenExitSharpIcon />
-                                </Tooltip>
-                            ) : (
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'DynamicSimulationPlotScaleEnable',
-                                    })}
-                                >
-                                    <FitScreenSharpIcon />
-                                </Tooltip>
-                            )}
-                        </ToggleButton>
+                        {plotScale ? (
+                            <TooltipIconButton
+                                key={'disabledScale'}
+                                sx={styles.cardActionButton}
+                                tooltip={intl.formatMessage({
+                                    id: 'DynamicSimulationPlotScaleDisable',
+                                })}
+                                onMouseDown={(event) => {
+                                    event.stopPropagation();
+                                    handlePlotScale(id);
+                                }}
+                            >
+                                <FullscreenExitSharpIcon />
+                            </TooltipIconButton>
+                        ) : (
+                            <TooltipIconButton
+                                key={'enableScale'}
+                                sx={styles.cardActionButton}
+                                tooltip={intl.formatMessage({
+                                    id: 'DynamicSimulationPlotScaleEnable',
+                                })}
+                                onMouseDown={(event) => {
+                                    event.stopPropagation();
+                                    handlePlotScale(id);
+                                }}
+                            >
+                                <FitScreenSharpIcon />
+                            </TooltipIconButton>
+                        )}
                         {!plotScale && (
                             <TooltipIconButton
+                                sx={styles.cardActionButton}
                                 tooltip={intl.formatMessage({
                                     id: 'DynamicSimulationCloseGraph',
                                 })}
-                                onClick={() => onClose(index)}
+                                onMouseDown={(event) => {
+                                    event.stopPropagation();
+                                    onClose(index);
+                                }}
                             >
                                 <CloseIcon />
                             </TooltipIconButton>

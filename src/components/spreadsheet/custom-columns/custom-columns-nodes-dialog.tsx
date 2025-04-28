@@ -84,7 +84,7 @@ export default function CustomColumnNodesDialog({
     };
 
     useEffect(() => {
-        if (open.value && nodeAliases && nodeAliases.length > 0) {
+        if (open.value && nodeAliases != null) {
             let selected = { selected: false };
             reset(
                 toCustomColumnNodesDialogFormValues(
