@@ -167,7 +167,7 @@ function PagedSensitivityAnalysisResult({
             ...sortSelector,
         };
         setIsLoading(true);
-        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
+        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector, filters)
             .then((res) => {
                 const { filteredSensitivitiesCount = 0 } = res || {};
 
