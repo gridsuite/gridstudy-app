@@ -99,7 +99,10 @@ export default function CustomColumnsNodesConfig({
 
     return (
         <>
-            <Badge color="secondary" variant={nodeAliases?.length && !showWarning ? 'dot' : undefined}>
+            <Badge
+                color="secondary"
+                badgeContent={nodeAliases?.length && !showWarning ? nodeAliases.length : undefined}
+            >
                 <Button
                     sx={spreadsheetStyles.spreadsheetButton}
                     size={'small'}
