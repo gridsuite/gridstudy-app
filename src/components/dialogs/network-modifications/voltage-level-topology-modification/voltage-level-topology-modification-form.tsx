@@ -138,7 +138,7 @@ export function VoltageLevelTopologyModificationForm({
                     colDef: { field: any };
                     data: { currentConnectionStatus: null | boolean };
                 }) => ({
-                    name: `${TOPOLOGY_MODIFICATION_TABLE}[${params.node.rowIndex}].${params.colDef.field}`,
+                    name: `${TOPOLOGY_MODIFICATION_TABLE}[${params.node.rowIndex}].${CURRENT_CONNECTION_STATUS}`,
                     connected: params.data.currentConnectionStatus,
                 }),
                 cellStyle: () => ({ textAlign: 'center' }),

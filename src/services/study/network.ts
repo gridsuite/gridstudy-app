@@ -11,7 +11,7 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
-import { SwitchInfos } from '../../components/dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology.type';
+import { SwitchInfos } from './network-map.type';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
