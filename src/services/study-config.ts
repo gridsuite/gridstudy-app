@@ -8,7 +8,6 @@
 import { backendFetchJson } from '@gridsuite/commons-ui';
 import { SpreadsheetCollectionDto, SpreadsheetConfigDto } from 'components/spreadsheet/config/spreadsheet.type';
 import { UUID } from 'crypto';
-import { SpreadsheetGlobalFilter } from './study/filter';
 
 const PREFIX_STUDY_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study-config';
 
@@ -28,17 +27,6 @@ export function getSpreadsheetModel(spreadsheetModelUuid: UUID): Promise<Spreads
 
 function getSpreadsheetConfigsCollectionsUrl() {
     return `${PREFIX_STUDY_CONFIG_QUERIES}/v1/spreadsheet-config-collections`;
-}
-
-export function setGlobalFiltersToSpreadsheetConfig(spreadsheetModelUuid: UUID, filters: SpreadsheetGlobalFilter[]) {
-    const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}/global-filters`;
-    return backendFetchJson(fetchUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(filters),
-    });
 }
 
 export function getSpreadsheetConfigCollection(collectionUuid: UUID): Promise<SpreadsheetCollectionDto> {

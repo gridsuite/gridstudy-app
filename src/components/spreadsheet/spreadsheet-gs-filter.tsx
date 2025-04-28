@@ -23,7 +23,7 @@ import {
 import { SPREADSHEET_GS_FILTER } from '../utils/field-constants';
 import { AppState } from '../../redux/reducer';
 import { ExpertFilter, SpreadsheetGlobalFilter } from '../../services/study/filter';
-import { setGlobalFiltersToSpreadsheetConfig } from 'services/study-config';
+import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 
 export type SpreadsheetGsFilterProps = {
     equipmentType: SpreadsheetEquipmentType;
@@ -33,6 +33,7 @@ export type SpreadsheetGsFilterProps = {
 export default function SpreadsheetGsFilter({ equipmentType, uuid }: Readonly<SpreadsheetGsFilterProps>) {
     const dispatch = useDispatch();
     const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState[uuid]);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const formMethods = useForm<SpreadsheetGsFilterForm>({
         defaultValues: initialSpreadsheetGsFilterForm,
@@ -43,7 +44,10 @@ export default function SpreadsheetGsFilter({ equipmentType, uuid }: Readonly<Sp
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedSetFilters = useCallback(
         debounce((uuid: UUID, filters: SpreadsheetGlobalFilter[]) => {
-            setGlobalFiltersToSpreadsheetConfig(uuid, filters).catch((error) =>
+            if (!studyUuid) {
+                return;
+            }
+            setGlobalFiltersToSpreadsheetConfig(studyUuid, uuid, filters).catch((error) =>
                 console.error('Failed to update global filters:', error)
             );
         }, 300),
