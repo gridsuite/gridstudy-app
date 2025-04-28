@@ -38,9 +38,9 @@ interface EquipmentIdSelectorProps {
     fillerHeight?: number;
     fillerMessageId?: string;
     loading?: boolean;
-    allowFreeInput?: boolean;
-    enableAutoSelect?: boolean;
-    enableAutoHighlight?: boolean;
+    freeInputAllowed?: boolean;
+    autoSelectEnabled?: boolean;
+    autoHighlightEnabled?: boolean;
 }
 
 export function EquipmentIdSelector({
@@ -51,9 +51,9 @@ export function EquipmentIdSelector({
     fillerHeight,
     fillerMessageId = 'idSelector.idNeeded',
     loading = false,
-    allowFreeInput = true,
-    enableAutoSelect = false,
-    enableAutoHighlight = false,
+    freeInputAllowed = true,
+    autoSelectEnabled = false,
+    autoHighlightEnabled = false,
 }: Readonly<EquipmentIdSelectorProps>) {
     const [equipmentOptions, setEquipmentOptions] = useState<string[]>([]);
     const [selectedValue, setSelectedValue] = useState<string>();
@@ -89,16 +89,16 @@ export function EquipmentIdSelector({
     const equipmentIdField = (
         <Autocomplete
             value={defaultValue}
-            freeSolo={allowFreeInput}
+            freeSolo={freeInputAllowed}
             size="small"
             autoComplete
             blurOnSelect
-            autoSelect={enableAutoSelect}
+            autoSelect={autoSelectEnabled}
             forcePopupIcon
             onChange={(_, data, reason) => handleChange(data, reason)}
             onInputChange={(_, data, reason) => handleChange(data, reason)}
             options={equipmentOptions}
-            autoHighlight={enableAutoHighlight}
+            autoHighlight={autoHighlightEnabled}
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     label={FieldLabel({

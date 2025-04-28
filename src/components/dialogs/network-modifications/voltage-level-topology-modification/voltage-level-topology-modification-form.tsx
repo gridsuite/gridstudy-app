@@ -4,70 +4,55 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-import {
-    CellRendererParams,
-    CellStyleParams,
-    ColumnDef,
-    styles,
-    SwitchInfos,
-    SwitchRowData,
-} from './voltage-level-topology.type';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useFieldArray } from 'react-hook-form';
 import { EquipmentAttributeModificationInfos } from '../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { Grid, TextField } from '@mui/material';
+import { Button, Grid, Paper, TextField, Typography } from '@mui/material';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
     SWITCH_ID,
     TOPOLOGY_MODIFICATION_TABLE,
 } from '../../../utils/field-constants';
-import { HeaderComponentWithTooltip } from './header-component-with-tooltip';
-import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { BooleanNullableCellRenderer } from './multi-state-checkbox-cell-render';
-import { RowClassParams } from 'ag-grid-community';
-import { filledTextField } from '../../dialog-utils';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import Button from '@mui/material/Button';
+import { filledTextField } from '../../dialog-utils';
+import { HeaderWithTooltip } from './header-with-tooltip';
+import { isNodeBuilt } from '../../../graph/util/model-functions';
+import { SwitchInfos } from '../../../../services/study/network-map.type';
+import { BooleanNullableCellRenderer } from './boolean-nullable-cell-render';
+import { ResetSettingsIcon } from './ResetSettingsIcon';
 
-export function VoltageLevelTopologyModificationForm({
-    currentNode,
-    equipmentId,
-    switchesToModify,
-    switchesEditData,
-    isUpdate,
-}: {
+interface VoltageLevelTopologyModificationFormProps {
     currentNode: CurrentTreeNode;
-    equipmentId: string;
+    selectedId: string;
     switchesToModify: SwitchInfos[];
     switchesEditData?: EquipmentAttributeModificationInfos[];
     isUpdate: boolean;
-}) {
+}
+
+export function VoltageLevelTopologyModificationForm({
+    currentNode,
+    selectedId,
+    switchesToModify,
+    switchesEditData,
+    isUpdate,
+}: VoltageLevelTopologyModificationFormProps) {
     const intl = useIntl();
     const { replace } = useFieldArray({
         name: `${TOPOLOGY_MODIFICATION_TABLE}`,
     });
 
-    const rowData = useMemo(() => {
-        const isSwitchModified = (switchId: string) => {
+    const isSwitchModified = useCallback(
+        (switchId: string): boolean => {
             return switchesEditData?.some((mod) => mod.equipmentId === switchId) || false;
-        };
-        const unmodifiedSwitches = switchesToModify
-            .filter((sw) => !isSwitchModified(sw.id))
-            .map((switchRow) => ({
-                [SWITCH_ID]: switchRow.id,
-                [PREV_CONNECTION_STATUS]: intl.formatMessage({
-                    id: switchRow.open ? 'Open' : 'Closed',
-                }),
-                [CURRENT_CONNECTION_STATUS]: null,
-                isModified: false,
-            }))
-            .sort((a, b) => a[SWITCH_ID].localeCompare(b[SWITCH_ID]));
+        },
+        [switchesEditData]
+    );
 
-        const modifiedSwitches = switchesToModify
+    const { modifiedSwitches, unmodifiedSwitches } = useMemo(() => {
+        const modified = switchesToModify
             .filter((sw) => isSwitchModified(sw.id))
             .map((switchRow) => ({
                 [SWITCH_ID]: switchRow.id,
@@ -80,49 +65,47 @@ export function VoltageLevelTopologyModificationForm({
             }))
             .sort((a, b) => a[SWITCH_ID].localeCompare(b[SWITCH_ID]));
 
-        const separatorRow: SwitchRowData = {
-            [SWITCH_ID]: '',
-            [PREV_CONNECTION_STATUS]: '',
-            [CURRENT_CONNECTION_STATUS]: null,
-            isSeparator: true,
-        };
-        return [...modifiedSwitches, separatorRow, ...unmodifiedSwitches];
-    }, [switchesEditData, intl, switchesToModify]);
+        const unmodified = switchesToModify
+            .filter((sw) => !isSwitchModified(sw.id))
+            .map((switchRow) => ({
+                [SWITCH_ID]: switchRow.id,
+                [PREV_CONNECTION_STATUS]: intl.formatMessage({
+                    id: switchRow.open ? 'Open' : 'Closed',
+                }),
+                [CURRENT_CONNECTION_STATUS]: null,
+                isModified: false,
+            }))
+            .sort((a, b) => a[SWITCH_ID].localeCompare(b[SWITCH_ID]));
+
+        return { modifiedSwitches: modified, unmodifiedSwitches: unmodified };
+    }, [switchesEditData, intl, switchesToModify, isSwitchModified]);
 
     useEffect(() => {
-        if (rowData.length > 0) {
-            const updatedData = rowData.map((row) => ({
-                ...row,
-                [CURRENT_CONNECTION_STATUS]:
-                    row[CURRENT_CONNECTION_STATUS] === undefined ? null : row[CURRENT_CONNECTION_STATUS],
-            }));
-            replace(updatedData);
+        const allData = [...modifiedSwitches, ...unmodifiedSwitches];
+        if (allData.length > 0) {
+            replace(allData);
         }
-    }, [rowData, replace]);
+    }, [modifiedSwitches, unmodifiedSwitches, replace]);
 
-    const defaultColDef = {
-        sortable: false,
-        resizable: true,
-        wrapHeaderText: true,
-        editable: false,
-        headerClass: 'centered-header',
-    };
+    const defaultColDef = useMemo(
+        () => ({
+            sortable: false,
+            resizable: true,
+            wrapHeaderText: true,
+            editable: false,
+            headerClass: 'centered-header',
+            suppressMovable: true,
+        }),
+        []
+    );
 
-    const columnDefs: ColumnDef[] = useMemo(
+    const columnDefs = useMemo(
         () => [
             {
                 field: SWITCH_ID,
                 filter: true,
-                flex: 1,
-                cellStyle: (params: CellStyleParams) => {
-                    return params.data.isSeparator
-                        ? {
-                              backgroundColor: '#f0f0f0',
-                              fontWeight: 'bold',
-                          }
-                        : {};
-                },
-                headerComponent: HeaderComponentWithTooltip,
+                flex: 2,
+                headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: 'switchId' }),
                     tooltipTitle: intl.formatMessage({
@@ -131,22 +114,12 @@ export function VoltageLevelTopologyModificationForm({
                     isNodeBuilt: isNodeBuilt(currentNode),
                     disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
                 },
-            } as ColumnDef,
+            },
             {
                 field: PREV_CONNECTION_STATUS,
                 flex: 1,
-                cellStyle: (params: CellStyleParams): Record<string, string> => {
-                    if (params.data.isSeparator) {
-                        return {
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                        };
-                    } else {
-                        return {};
-                    }
-                },
                 cellClass: 'ag-cell-center',
-                headerComponent: HeaderComponentWithTooltip,
+                headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: 'previousStatus' }),
                     tooltipTitle: intl.formatMessage({
@@ -155,29 +128,21 @@ export function VoltageLevelTopologyModificationForm({
                     isNodeBuilt: isNodeBuilt(currentNode),
                     disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
                 },
-            } as ColumnDef,
+            },
             {
-                field: CURRENT_CONNECTION_STATUS,
+                field: 'CURRENT_CONNECTION_STATUS',
                 flex: 1,
-                cellRenderer: (params: CellRendererParams) => {
-                    if (params.data.isSeparator) {
-                        return '';
-                    }
-                    return BooleanNullableCellRenderer(params);
-                },
-                cellStyle: (params: CellStyleParams): Record<string, string> => {
-                    if (params.data.isSeparator) {
-                        return {
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                        };
-                    } else {
-                        return {
-                            textAlign: 'center',
-                        };
-                    }
-                },
-                headerComponent: HeaderComponentWithTooltip,
+                cellRenderer: BooleanNullableCellRenderer,
+                cellRendererParams: (params: {
+                    node: { rowIndex: number };
+                    colDef: { field: any };
+                    data: { currentConnectionStatus: null | boolean };
+                }) => ({
+                    name: `${TOPOLOGY_MODIFICATION_TABLE}[${params.node.rowIndex}].${params.colDef.field}`,
+                    connected: params.data.currentConnectionStatus,
+                }),
+                cellStyle: () => ({ textAlign: 'center' }),
+                headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: 'currentStatus' }),
                     tooltipTitle: intl.formatMessage({
@@ -187,67 +152,35 @@ export function VoltageLevelTopologyModificationForm({
                     disabledTooltip: true,
                 },
                 editable: false,
-            } as ColumnDef,
+            },
         ],
         [currentNode, intl, isUpdate]
     );
 
-    const getRowId = (params: { data: SwitchRowData }) => {
-        if (params.data.isSeparator) {
-            return 'separator-row';
-        }
-        return params.data[SWITCH_ID];
-    };
-
-    const modifiedSwitchIds = useMemo(() => {
-        const switchSet = new Set<string>();
-        if (switchesEditData && switchesEditData.length > 0) {
-            switchesEditData.forEach((mod: EquipmentAttributeModificationInfos) => {
-                switchSet.add(mod.equipmentId);
-            });
-        }
-        return switchSet;
-    }, [switchesEditData]);
-
-    const getRowClass = (params: RowClassParams<SwitchRowData, unknown>): string => {
-        if (params.rowIndex > 0) {
-            const currentRowId = params.data?.[SWITCH_ID];
-            const currentRowIsModified = currentRowId ? modifiedSwitchIds.has(currentRowId) : false;
-
-            const prevRowNode = params.api.getDisplayedRowAtIndex(params.rowIndex - 1);
-            const prevRowData = prevRowNode?.data;
-
-            if (prevRowData) {
-                const prevRowId = prevRowData[SWITCH_ID];
-                const prevRowIsModified = prevRowId ? modifiedSwitchIds.has(prevRowId) : false;
-
-                if (!currentRowIsModified && prevRowIsModified) {
-                    return 'separator-row';
-                }
-            }
-        }
-        return '';
-    };
-
     const copyPreviousToCurrentStatus = useCallback(() => {
-        const updatedData = rowData.map((row) => {
-            if ('isSeparator' in row && row.isSeparator) {
-                return row;
-            }
-
-            return {
-                ...row,
-                [CURRENT_CONNECTION_STATUS]:
-                    row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Open' })
-                        ? true
-                        : row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Closed' })
-                          ? false
-                          : null,
-                isModified: true,
-            };
-        });
+        const updatedData = [...modifiedSwitches, ...unmodifiedSwitches].map((row) => ({
+            ...row,
+            [CURRENT_CONNECTION_STATUS]:
+                row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Open' })
+                    ? true
+                    : row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Closed' })
+                      ? false
+                      : null,
+            isModified: true,
+        }));
         replace(updatedData);
-    }, [rowData, replace, intl]);
+    }, [modifiedSwitches, unmodifiedSwitches, replace, intl]);
+
+    const getTableHeight = (items: string | any[]) => {
+        const rowHeight = 48;
+        const headerHeight = 56;
+        const minHeight = 150;
+        const maxHeight = 350;
+
+        const calculatedHeight = headerHeight + items.length * rowHeight;
+
+        return Math.max(minHeight, Math.min(calculatedHeight, maxHeight));
+    };
 
     return (
         <Grid container spacing={2}>
@@ -255,7 +188,7 @@ export function VoltageLevelTopologyModificationForm({
                 <TextField
                     fullWidth
                     label="ID"
-                    value={equipmentId}
+                    value={selectedId}
                     size="small"
                     InputProps={{ readOnly: true }}
                     disabled
@@ -268,22 +201,98 @@ export function VoltageLevelTopologyModificationForm({
                     color="primary"
                     size="small"
                     onClick={copyPreviousToCurrentStatus}
-                    //startIcon=
+                    startIcon={<ResetSettingsIcon />}
                     disabled={!isUpdate}
                 >
                     {intl.formatMessage({ id: 'copyPreviousTopologyStatus' })}
                 </Button>
             </Grid>
-            <Grid item xs={12} sx={styles.grid}>
-                <div className="ag-theme-material" style={{ height: 500, width: '100%' }}>
-                    <CustomAGGrid
-                        getRowId={getRowId}
-                        rowData={rowData}
-                        defaultColDef={defaultColDef}
-                        columnDefs={columnDefs}
-                        getRowClass={getRowClass}
-                    />
-                </div>
+
+            {modifiedSwitches.length > 0 && (
+                <Grid item xs={12} sx={{ mb: 0 }}>
+                    <Paper
+                        elevation={1}
+                        sx={{
+                            overflow: 'hidden',
+                            border: '1px solid #e0e0e0',
+                            borderRadius: '4px 4px 0 0',
+                            borderBottom: 'none',
+                        }}
+                    >
+                        <Typography
+                            variant="subtitle1"
+                            sx={{
+                                backgroundColor: '#f3f3f3',
+                                padding: '12px 16px',
+                                fontWeight: 'bold',
+                                fontSize: '0.95rem',
+                                borderBottom: '1px solid #e0e0e0',
+                            }}
+                        >
+                            {intl.formatMessage({ id: 'modifiedSwitchesSeparatorTitle' })} ({modifiedSwitches.length})
+                        </Typography>
+                        <div
+                            className="ag-theme-material"
+                            style={{
+                                height: getTableHeight(modifiedSwitches),
+                                width: '100%',
+                            }}
+                        >
+                            <CustomAGGrid
+                                rowData={modifiedSwitches}
+                                defaultColDef={defaultColDef}
+                                columnDefs={columnDefs}
+                                rowSelection="multiple"
+                                suppressMovableColumns={true}
+                                animateRows={false}
+                                domLayout="normal"
+                                headerHeight={48}
+                            />
+                        </div>
+                    </Paper>
+                </Grid>
+            )}
+
+            <Grid item xs={12} sx={{ mt: modifiedSwitches.length > 0 ? '-1px' : 0 }}>
+                <Paper
+                    elevation={1}
+                    sx={{
+                        overflow: 'hidden',
+                        border: '1px solid #e0e0e0',
+                        borderRadius: modifiedSwitches.length > 0 ? '0 0 4px 4px' : '4px',
+                    }}
+                >
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            backgroundColor: '#f3f3f3',
+                            padding: '12px 16px',
+                            fontWeight: 'bold',
+                            fontSize: '0.95rem',
+                            borderBottom: '1px solid #e0e0e0',
+                        }}
+                    >
+                        {intl.formatMessage({ id: 'unModifiedSwitchesSeparatorTitle' })} ({unmodifiedSwitches.length})
+                    </Typography>
+                    <div
+                        className="ag-theme-material"
+                        style={{
+                            height: getTableHeight(unmodifiedSwitches),
+                            width: '100%',
+                        }}
+                    >
+                        <CustomAGGrid
+                            rowData={unmodifiedSwitches}
+                            defaultColDef={defaultColDef}
+                            columnDefs={columnDefs}
+                            rowSelection="multiple"
+                            suppressMovableColumns={true}
+                            animateRows={false}
+                            domLayout="normal"
+                            headerHeight={modifiedSwitches.length > 0 ? 0 : 48}
+                        />
+                    </div>
+                </Paper>
             </Grid>
         </Grid>
     );

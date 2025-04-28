@@ -924,7 +924,6 @@
     "DuplicateId": "Duplicate id",
     "CouplingOmnibusBetweenSameBusbar": "Forbidden to have a Coupler between the same bus bar section",
     "VoltageLevelModificationError": "Error while modifying a voltage level",
-    "TopologyNotRetrieved": "The voltage level topology could not be retrieved",
     "BusBarSectionsCopyingNotSupported": "Copying bus bar sections is not supported for this voltage level : values were set to their default",
 
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",
@@ -1579,13 +1578,18 @@
     "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
     "nodeAliasesUpdateError": "An error occured while updating node aliases",
     "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
+    "VOLTAGE_LEVEL_TOPOLOGY": "Voltage Level topology",
+    "ModifyVoltageLevelTopology": "Modify voltage level topology",
+    "TopologyNotRetrieved": "The voltage level topology could not be retrieved",
     "VoltageLevelTopologyModificationError": "Voltage level topology modification error",
     "builtNodeTooltipVlTopoModif": "Switches list taking into account all applied modifications",
     "notBuiltNodeTooltipVlTopoModif": "Switches list from last built node in current branch",
     "copyPreviousTopologyStatus": "Reset to previous status",
+    "modifiedSwitchesSeparatorTitle": "modification",
+    "unModifiedSwitchesSeparatorTitle": "no-modification",
     "switchId": "Switch ID",
-    "previousStatus": "Prev. status",
-    "currentStatus": "Actual status",
+    "previousStatus": "Previous status",
+    "currentStatus": "Modified status",
     "Open": "Open",
     "Closed": "Closed"
 }

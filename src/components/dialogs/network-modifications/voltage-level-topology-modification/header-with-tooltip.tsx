@@ -4,16 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FormHelperText } from '@mui/material';
+import { Box, FormHelperText } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { InfoOutlined, WarningAmberRounded } from '@mui/icons-material';
 
-export const HeaderComponentWithTooltip = (props: any) => {
+export const HeaderWithTooltip = (props: {
+    displayName: any;
+    tooltipTitle: any;
+    isNodeBuilt: any;
+    disabledTooltip: any;
+}) => {
     const { displayName, tooltipTitle, isNodeBuilt, disabledTooltip } = props;
 
     return (
-        <div
-            style={{
+        <Box
+            sx={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -59,6 +64,6 @@ export const HeaderComponentWithTooltip = (props: any) => {
                     </Tooltip>
                 </FormHelperText>
             )}
-        </div>
+        </Box>
     );
 };

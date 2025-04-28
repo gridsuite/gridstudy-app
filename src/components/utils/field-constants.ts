@@ -465,4 +465,4 @@ export const PHASE_TAP_CHANGER_STATUS = 'phaseTapChangerStatus';
 export const SWITCH_ID = 'switchId';
 export const PREV_CONNECTION_STATUS = 'prevConnectionStatus';
 export const CURRENT_CONNECTION_STATUS = 'currentConnectionStatus';
-export const TOPOLOGY_MODIFICATION_TABLE = 'topologyTable';
+export const TOPOLOGY_MODIFICATION_TABLE = 'topologyModificationTable';

@@ -7,17 +7,16 @@
 
 import React from 'react';
 import CheckboxNullableInput from '../../../utils/rhf-inputs/boolean-nullable-input';
-import { TOPOLOGY_MODIFICATION_TABLE } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
 
-export const BooleanNullableCellRenderer = (props: any) => {
+export const BooleanNullableCellRenderer = (props: { name: string; connected: null }) => {
     const intl = useIntl();
     return (
         <CheckboxNullableInput
-            name={`${TOPOLOGY_MODIFICATION_TABLE}[${props.node.rowIndex}].${props.colDef.field}`}
+            name={props.name}
             label={
-                props.data.currentConnectionStatus !== null
-                    ? intl.formatMessage({ id: props.data.currentConnectionStatus ? 'Open' : 'Closed' })
+                props.connected !== null
+                    ? intl.formatMessage({ id: props.connected ? 'Open' : 'Closed' })
                     : intl.formatMessage({ id: 'NoModification' })
             }
         />
