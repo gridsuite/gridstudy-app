@@ -12,7 +12,7 @@ import {
     NumericCellRenderer,
     RowIndexCellRenderer,
 } from '../utils/cell-renderers';
-import { ColDef } from 'ag-grid-community';
+import type { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
@@ -49,7 +49,7 @@ export const textColumnDefinition = (displayName: string, tab: string): ColDef =
                     updateFilterCallback: updateFilters,
                     dataType: FILTER_DATA_TYPES.TEXT,
                     comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                    debounceMs: 200,
+                    debounceMs: 400,
                 },
             },
         },
@@ -66,12 +66,12 @@ export const enumColumnDefinition = (displayName: string, tab: string): ColDef =
             filterOptions: [
                 {
                     displayKey: 'customInRange',
-                    displayName: 'customInRange',
+                    displayName: 'customInRange', // translation key
                     predicate: (filterValues: string[], cellValue: string) =>
                         // We receive here the filter enum values as a string (filterValue)
                         filterValues[0]?.includes(cellValue) ?? false,
                 },
-            ],
+            ] as IFilterOptionDef[],
         },
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
@@ -87,7 +87,7 @@ export const enumColumnDefinition = (displayName: string, tab: string): ColDef =
                     tab,
                     updateFilterCallback: updateFilters,
                     dataType: FILTER_DATA_TYPES.TEXT,
-                    debounceMs: 200,
+                    debounceMs: 800,
                 },
             },
         },
@@ -116,7 +116,7 @@ export const numberColumnDefinition = (displayName: string, tab: string, fractio
                     updateFilterCallback: updateFilters,
                     dataType: FILTER_DATA_TYPES.NUMBER,
                     comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                    debounceMs: 200,
+                    debounceMs: 400,
                 },
             },
         },
@@ -136,7 +136,7 @@ export const booleanColumnDefinition = (displayName: string, tab: string): ColDe
             filterOptions: [
                 {
                     displayKey: 'booleanMatches',
-                    displayName: 'booleanMatches',
+                    displayName: 'booleanMatches', // translation key
                     predicate: (filterValues: string[], cellValue: boolean) => {
                         const filterValue = filterValues.at(0);
                         if (filterValue === undefined) {
@@ -152,7 +152,7 @@ export const booleanColumnDefinition = (displayName: string, tab: string): ColDe
                         return filterValue === BooleanFilterValue.UNDEFINED;
                     },
                 },
-            ],
+            ] as IFilterOptionDef[],
         },
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
