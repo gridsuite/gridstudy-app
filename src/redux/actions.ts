@@ -53,7 +53,6 @@ import {
     ColumnDefinition,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-    SpreadsheetConfigDto,
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
