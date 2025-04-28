@@ -8,7 +8,6 @@
 import { CheckBoxList, Parameter, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 
 import {
-    FileUpload,
     Delete as DeleteIcon,
     RemoveRedEye as RemoveRedEyeIcon,
     VisibilityOff as VisibilityOffIcon,
@@ -20,15 +19,14 @@ import {
     CircularProgress,
     Theme,
     Toolbar,
-    Tooltip,
     Typography,
     Badge,
     IconButton,
-    Stack,
     Chip,
+    Tooltip,
 } from '@mui/material';
 
-import { useCallback, useRef, useState } from 'react';
+import { SetStateAction, useCallback, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -39,54 +37,21 @@ import {
     RootNetworksDeletionStartedEventData,
     RootNetworksUpdatedEventData,
 } from 'redux/reducer';
-import { RootNetworkMetadata } from './network-modifications/network-modification-menu.type';
+import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 
-import {
-    CaseImportParameters,
-    GetCaseImportParametersReturn,
-    getCaseImportParameters,
-} from 'services/network-conversion';
-import { createRootNetwork, deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
+import { getCaseImportParameters } from 'services/network-conversion';
+import { deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
 import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
-import { isChecked, isPartial } from './network-modifications/network-modification-node-editor-utils';
+import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
+import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 
 const styles = {
-    checkBoxLabel: { flexGrow: '1' },
-    checkboxListItem: {
-        display: 'flex',
-        alignItems: 'flex-start',
-        paddingRight: '16px',
-        '& .MuiListItemSecondaryAction-root': {
-            paddingLeft: '4px',
-            position: 'relative',
-            top: 0,
-            right: 0,
-            transform: 'translateX(0px)',
-        },
-    },
-    // TODO WHY it doesn't work with using the Theme here ?????
-    // checkboxListItem: (theme: Theme) => ({
-    //     display: 'flex',
-    //     alignItems: 'flex-start',
-    //     paddingRight: theme.spacing(4),
-    //     '& .MuiListItemSecondaryAction-root': {
-    //         position: 'relative',
-    //         top: 0,
-    //         right: 0,
-    //         transform: 'translateX(0px)',
-    //     },
-    // }),
-    checkbox: { paddingTop: '4px' },
-    // checkbox: (theme: Theme) => ({ paddingTop: theme.spacing(1) }),
-    checkBoxIcon: { minWidth: 0, padding: 0, marginLeft: 2 },
-    checkboxButton: {
-        padding: 0.5,
-        margin: 0,
-        display: 'flex',
-        alignItems: 'center',
-    },
+    checkboxListItem: (theme: Theme) => ({
+        paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+    }),
     rootNetworksTitle: (theme: Theme) => ({
         display: 'flex',
         padding: theme.spacing(1),
@@ -102,6 +67,7 @@ const styles = {
         '&': {
             // Necessary to overrides some @media specific styles that are defined elsewhere
             padding: 0,
+            paddingLeft: theme.spacing(1),
             minHeight: 0,
         },
         border: theme.spacing(1),
@@ -109,9 +75,6 @@ const styles = {
     }),
     toolbarIcon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
-    }),
-    toolbarCheckbox: (theme: Theme) => ({
-        marginLeft: theme.spacing(1.5),
     }),
     filler: {
         flexGrow: 1,
@@ -128,7 +91,19 @@ const styles = {
     }),
 };
 
-const RootNetworkNodeEditor = () => {
+const ItemLabelSecondary = (item: RootNetworkMetadata) => {
+    return <Chip size="small" label={item.tag} color="primary" />;
+};
+
+interface RootNetworkNodeEditorProps {
+    isRootNetworksProcessing: boolean;
+    setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
+}
+
+const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
+    isRootNetworksProcessing,
+    setIsRootNetworksProcessing,
+}) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
@@ -140,11 +115,9 @@ const RootNetworkNodeEditor = () => {
 
     const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
 
-    const [rootNetworkCreationDialogOpen, setRootNetworkCreationDialogOpen] = useState(false);
     const [rootNetworkModificationDialogOpen, setRootNetworkModificationDialogOpen] = useState(false);
     const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
     const dispatch = useDispatch();
-    const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
 
     const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
     rootNetworksRef.current = rootNetworks;
@@ -172,7 +145,7 @@ const RootNetworkNodeEditor = () => {
                     });
                 });
         }
-    }, [studyUuid, updateSelectedItems, snackError, dispatch]);
+    }, [studyUuid, updateSelectedItems, dispatch, setIsRootNetworksProcessing, snackError]);
 
     const rootNetworkModifiedNotification = useCallback(
         (event: MessageEvent<string>) => {
@@ -239,10 +212,6 @@ const RootNetworkNodeEditor = () => {
         listenerCallbackMessage: rootNetworkDeletionStartedNotification,
     });
 
-    const openRootNetworkCreationDialog = useCallback(() => {
-        setRootNetworkCreationDialogOpen(true);
-    }, []);
-
     const doDeleteRootNetwork = useCallback(() => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
 
@@ -268,7 +237,6 @@ const RootNetworkNodeEditor = () => {
 
             return (
                 <IconButton
-                    size="small"
                     onClick={() => {
                         dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
                     }}
@@ -293,13 +261,7 @@ const RootNetworkNodeEditor = () => {
                 isDisabled={(_rootNetwork) => isRootNetworksProcessing}
                 sx={{
                     items: () => ({
-                        label: {
-                            ...styles.checkBoxLabel,
-                        },
                         checkboxListItem: styles.checkboxListItem,
-                        checkbox: styles.checkbox,
-                        checkBoxIcon: styles.checkBoxIcon,
-                        checkboxButton: styles.checkboxButton,
                     }),
                 }}
                 onItemClick={(rootNetwork) => {
@@ -310,16 +272,8 @@ const RootNetworkNodeEditor = () => {
                 onSelectionChange={setSelectedItems}
                 items={rootNetworks}
                 getItemId={(val) => val.rootNetworkUuid}
-                getItemLabel={(val) => {
-                    return (
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            {val.name}
-                            <Stack direction="row" spacing={1}>
-                                <Chip size="small" label={val.tag} color="primary" />
-                            </Stack>
-                        </Box>
-                    );
-                }}
+                getItemLabel={(val) => val.name}
+                getItemLabelSecondary={ItemLabelSecondary}
                 secondaryAction={handleSecondaryAction}
             />
         );
@@ -345,17 +299,6 @@ const RootNetworkNodeEditor = () => {
         );
     };
 
-    const renderRootNetworkCreationDialog = () => {
-        return (
-            <RootNetworkDialog
-                open={rootNetworkCreationDialogOpen}
-                onClose={() => setRootNetworkCreationDialogOpen(false)}
-                onSave={doCreateRootNetwork}
-                titleId={'addNetwork'}
-            />
-        );
-    };
-
     const renderRootNetworkModificationDialog = () => {
         if (!editedRootNetwork) {
             return null;
@@ -369,59 +312,6 @@ const RootNetworkNodeEditor = () => {
                 titleId={'updateNetwork'}
             />
         );
-    };
-
-    function formatCaseImportParameters(params: CaseImportParameters[]): CaseImportParameters[] {
-        // sort possible values alphabetically to display select options sorted
-        return params?.map((parameter) => ({
-            ...parameter,
-            possibleValues: parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b)),
-        }));
-    }
-
-    function customizeCurrentParameters(params: Parameter[]): Record<string, string> {
-        return params.reduce(
-            (obj, parameter) => {
-                // we check if the parameter is for extensions. If so, we select all possible values by default.
-                // the only way for the moment to check if the parameter is for extension, is by checking his name.
-                // TODO: implement a cleaner way to determine the extensions field
-                if (parameter.type === 'STRING_LIST' && parameter.name?.endsWith('extensions')) {
-                    return { ...obj, [parameter.name]: parameter.possibleValues.toString() };
-                }
-                return obj;
-            },
-            {} as Record<string, string>
-        );
-    }
-
-    const doCreateRootNetwork = ({ name, tag, caseName, caseId }: FormData) => {
-        if (!studyUuid) {
-            return;
-        }
-        setIsRootNetworksProcessing(true);
-        getCaseImportParameters(caseId as UUID)
-            .then((params: GetCaseImportParametersReturn) => {
-                // Format the parameters
-                const formattedParams = formatCaseImportParameters(params.parameters);
-                const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
-                // Call createRootNetwork with formatted parameters
-                return createRootNetwork(
-                    caseId as UUID,
-                    params.formatName,
-                    name,
-                    tag,
-                    studyUuid,
-                    customizedCurrentParameters
-                );
-            })
-
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'createRootNetworksError',
-                });
-                setIsRootNetworksProcessing(false);
-            });
     };
 
     const doUpdateRootNetwork = async ({ name, tag, caseName, caseId }: FormData) => {
@@ -458,45 +348,31 @@ const RootNetworkNodeEditor = () => {
         <>
             <Toolbar sx={styles.toolbar}>
                 <Checkbox
-                    sx={styles.toolbarCheckbox}
                     disabled={isRootNetworksProcessing}
-                    color={'primary'}
-                    edge="start"
                     checked={isChecked(selectedItems.length)}
                     indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
                     disableRipple
                     onClick={toggleSelectAllRootNetworks}
                 />
                 <Box sx={styles.filler} />
-
-                <Tooltip title={<FormattedMessage id={'addNetwork'} />}>
+                <Tooltip title={<FormattedMessage id={'deleteNetwork'} values={{ count: selectedItems.length }} />}>
                     <span>
                         <IconButton
-                            onClick={openRootNetworkCreationDialog}
+                            onClick={doDeleteRootNetwork}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
+                            disabled={
+                                selectedItems.length === 0 ||
+                                !currentNode ||
+                                rootNetworks.length === selectedItems.length ||
+                                isRootNetworksProcessing
+                            }
                         >
-                            <FileUpload />
+                            <DeleteIcon />
                         </IconButton>
                     </span>
                 </Tooltip>
-
-                <IconButton
-                    onClick={doDeleteRootNetwork}
-                    size={'small'}
-                    sx={styles.toolbarIcon}
-                    disabled={
-                        selectedItems.length === 0 ||
-                        !currentNode ||
-                        rootNetworks.length === selectedItems.length ||
-                        isRootNetworksProcessing
-                    }
-                >
-                    <DeleteIcon />
-                </IconButton>
             </Toolbar>
-            {rootNetworkCreationDialogOpen && renderRootNetworkCreationDialog()}
             {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
             {renderRootNetworksListTitle()}
 
