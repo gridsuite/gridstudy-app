@@ -158,16 +158,14 @@ function PagedSensitivityAnalysisResult({
             offset: typeof rowsPerPage === 'number' ? page * rowsPerPage : rowsPerPage.value,
             pageSize: typeof rowsPerPage === 'number' ? rowsPerPage : rowsPerPage.value,
             pageNumber: page,
-            ...Object.fromEntries(
-                filters?.map((elem) => [
-                    DATA_KEY_TO_FILTER_KEY[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY],
-                    elem.value,
-                ])
-            ),
             ...sortSelector,
         };
+        const mappedFilters = filters?.map((elem) => {
+            const newColumn = DATA_KEY_TO_FILTER_KEY[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY];
+            return { ...elem, column: newColumn };
+        });
         setIsLoading(true);
-        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector, filters)
+        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector, mappedFilters)
             .then((res) => {
                 const { filteredSensitivitiesCount = 0 } = res || {};
 
