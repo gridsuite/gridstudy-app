@@ -163,7 +163,7 @@ import {
     SET_ROOT_NETWORKS,
     SET_RELOAD_MAP_NEEDED,
     SET_STUDY_DISPLAY_MODE,
-    SET_STUDY_INDEXATION_STATUS,
+    SET_ROOT_NETWORK_INDEXATION_STATUS,
     SetAppTabIndexAction,
     SetCalculationSelectionsAction,
     SetComputationStartingAction,
@@ -179,7 +179,7 @@ import {
     SetRootNetworksAction,
     SetReloadMapNeededAction,
     SetStudyDisplayModeAction,
-    SetStudyIndexationStatusAction,
+    SetRootNetworkIndexationStatusAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
@@ -321,7 +321,7 @@ export enum NotificationType {
     SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
 }
 
-export enum StudyIndexationStatus {
+export enum RootNetworkIndexationStatus {
     NOT_INDEXED = 'NOT_INDEXED',
     INDEXING_ONGOING = 'INDEXING_ONGOING',
     INDEXED = 'INDEXED',
@@ -556,7 +556,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
-    studyIndexationStatus: StudyIndexationStatus;
+    rootNetworkIndexationStatus: RootNetworkIndexationStatus;
     tableSort: TableSort;
     tables: TablesState;
 
@@ -740,7 +740,7 @@ const initialState: AppState = {
         status: OptionalServicesStatus.Pending,
     })),
     oneBusShortCircuitAnalysisDiagram: null,
-    studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
+    rootNetworkIndexationStatus: RootNetworkIndexationStatus.NOT_INDEXED,
     deletedOrRenamedNodes: [],
 
     // params
@@ -1823,8 +1823,8 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     );
 
-    builder.addCase(SET_STUDY_INDEXATION_STATUS, (state, action: SetStudyIndexationStatusAction) => {
-        state.studyIndexationStatus = action.studyIndexationStatus;
+    builder.addCase(SET_ROOT_NETWORK_INDEXATION_STATUS, (state, action: SetRootNetworkIndexationStatusAction) => {
+        state.rootNetworkIndexationStatus = action.rootNetworkIndexationStatus;
     });
 
     builder.addCase(ADD_TO_RECENT_GLOBAL_FILTERS, (state, action: AddToRecentGlobalFiltersAction) => {
