@@ -27,7 +27,6 @@ import type {
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
-    StudyIndexationStatus,
     RootNetworkIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
