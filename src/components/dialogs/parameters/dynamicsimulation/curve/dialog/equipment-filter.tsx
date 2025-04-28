@@ -19,6 +19,7 @@ import { buildExpertFilter, CURVE_EQUIPMENT_TYPES, NOMINAL_VOLTAGE_UNIT } from '
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { AppState } from 'redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
+import { AGGRID_LOCALES } from '../../../../../../translations/not-intl/aggrid-locales';
 
 export interface GetSelectedEquipmentsHandle {
     api: {
@@ -325,6 +326,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                                 onSelectionChanged={handleEquipmentSelectionChanged}
                                 loading={isFetching}
                                 overlayLoadingTemplate={intl.formatMessage({ id: 'LoadingRemoteData' })}
+                                overrideLocales={AGGRID_LOCALES}
                             />
                         </Box>
                     </Grid>
