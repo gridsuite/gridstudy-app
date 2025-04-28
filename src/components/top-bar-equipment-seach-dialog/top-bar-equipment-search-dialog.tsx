@@ -11,9 +11,10 @@ import {
     Equipment,
     EquipmentInfos,
     EquipmentItem,
-    TagRendererProps,
-    EquipmentType,
     equipmentStyles,
+    EquipmentType,
+    ExtendedEquipmentType,
+    TagRendererProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FunctionComponent, useCallback, useState } from 'react';
@@ -43,7 +44,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const [equipmentTypeFilter, setEquipmentTypeFilter] = useState<EquipmentType | null>(null);
+    const [equipmentTypeFilter, setEquipmentTypeFilter] = useState<EquipmentType | ExtendedEquipmentType | null>(null);
 
     const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } = useTopBarSearchMatchingEquipment({
         // @ts-expect-error TODO: manage null case
