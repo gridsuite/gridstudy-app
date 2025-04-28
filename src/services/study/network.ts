@@ -644,13 +644,15 @@ export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID) =>
     return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
 };
 
-export const fetchStudyIndexationStatus = (studyUuid: UUID, rootNetworkUuid: UUID) => {
-    console.info(`Fetching study indexation status of study '${studyUuid}' ...`);
-    const fetchStudyIndexationUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/indexation/status`;
+export const fetchRootNetworkIndexationStatus = (studyUuid: UUID, rootNetworkUuid: UUID) => {
+    console.info(
+        `Fetching root network indexation status of study '${studyUuid}' and root network '${rootNetworkUuid}' ...`
+    );
+    const fetchRootNetworkIndexationUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/indexation/status`;
 
-    console.debug(fetchStudyIndexationUrl);
+    console.debug(fetchRootNetworkIndexationUrl);
 
-    return backendFetchText(fetchStudyIndexationUrl);
+    return backendFetchText(fetchRootNetworkIndexationUrl);
 };
 
 /* export-network */

@@ -28,7 +28,7 @@ import {
     snapGrid,
 } from './graph/layout';
 import TreeControlButton from './graph/util/tree-control-button';
-import RootNetworkPanel from './root-network-panel';
+import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
