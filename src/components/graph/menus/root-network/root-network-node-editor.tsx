@@ -63,6 +63,16 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'space-between',
     }),
+    rootNetworkMonoRoot: (theme: Theme) => ({
+        display: 'flex',
+        padding: theme.spacing(1),
+        overflow: 'hidden',
+        marginRight: theme.spacing(1),
+        marginTop: theme.spacing(2),
+        marginLeft: theme.spacing(1),
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    }),
     toolbar: (theme: Theme) => ({
         '&': {
             // Necessary to overrides some @media specific styles that are defined elsewhere
@@ -107,6 +117,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -298,6 +309,13 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
             </Box>
         );
     };
+    const renderRootNetworkForMonoRootStudy = () => {
+        return (
+            <Box sx={styles.rootNetworkMonoRoot}>
+                <Typography noWrap>{rootNetworks[0].name}</Typography>
+            </Box>
+        );
+    };
 
     const renderRootNetworkModificationDialog = () => {
         if (!editedRootNetwork) {
@@ -346,37 +364,40 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
     return (
         <>
-            <Toolbar sx={styles.toolbar}>
-                <Checkbox
-                    disabled={isRootNetworksProcessing}
-                    checked={isChecked(selectedItems.length)}
-                    indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
-                    disableRipple
-                    onClick={toggleSelectAllRootNetworks}
-                />
-                <Box sx={styles.filler} />
-                <Tooltip title={<FormattedMessage id={'deleteNetwork'} values={{ count: selectedItems.length }} />}>
-                    <span>
-                        <IconButton
-                            onClick={doDeleteRootNetwork}
-                            size={'small'}
-                            sx={styles.toolbarIcon}
-                            disabled={
-                                selectedItems.length === 0 ||
-                                !currentNode ||
-                                rootNetworks.length === selectedItems.length ||
-                                isRootNetworksProcessing
-                            }
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </span>
-                </Tooltip>
-            </Toolbar>
-            {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
-            {renderRootNetworksListTitle()}
+            {!isMonoRootStudy && (
+                <Toolbar sx={styles.toolbar}>
+                    <Checkbox
+                        disabled={isRootNetworksProcessing}
+                        checked={isChecked(selectedItems.length)}
+                        indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
+                        disableRipple
+                        onClick={toggleSelectAllRootNetworks}
+                    />
+                    <Box sx={styles.filler} />
+                    <Tooltip title={<FormattedMessage id={'deleteNetwork'} values={{ count: selectedItems.length }} />}>
+                        <span>
+                            <IconButton
+                                onClick={doDeleteRootNetwork}
+                                size={'small'}
+                                sx={styles.toolbarIcon}
+                                disabled={
+                                    selectedItems.length === 0 ||
+                                    !currentNode ||
+                                    rootNetworks.length === selectedItems.length ||
+                                    isRootNetworksProcessing
+                                }
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                </Toolbar>
+            )}
 
-            {renderRootNetworksList()}
+            {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
+            {!isMonoRootStudy && renderRootNetworksListTitle()}
+
+            {isMonoRootStudy ? renderRootNetworkForMonoRootStudy() : renderRootNetworksList()}
         </>
     );
 };

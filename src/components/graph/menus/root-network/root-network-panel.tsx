@@ -10,6 +10,8 @@ import { Paper, useTheme } from '@mui/material';
 import RootNetworkPanelHeader from './root-network-panel-header';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import RootNetworkNodeEditor from './root-network-node-editor';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 const styles = {
     paper: {
@@ -25,16 +27,20 @@ const styles = {
 const RootNetworkPanel: FunctionComponent = () => {
     const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
     const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(false);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
 
     const theme = useTheme();
-
     const panelStyle = useMemo(() => {
         return {
             ...styles.paper,
             width: isRootNetworkPanelMinimized ? theme.spacing(22) : theme.spacing(38),
-            minHeight: isRootNetworkPanelMinimized ? theme.spacing(12) : theme.spacing(38),
+            minHeight: isRootNetworkPanelMinimized
+                ? isMonoRootStudy
+                    ? theme.spacing(6)
+                    : theme.spacing(12)
+                : theme.spacing(38),
         };
-    }, [isRootNetworkPanelMinimized, theme]);
+    }, [isMonoRootStudy, isRootNetworkPanelMinimized, theme]);
     return (
         <Paper elevation={3} sx={panelStyle}>
             <RootNetworkPanelHeader
@@ -45,7 +51,9 @@ const RootNetworkPanel: FunctionComponent = () => {
             />
 
             {isRootNetworkPanelMinimized ? (
-                <RootNetworkMinimizedPanelContent />
+                !isMonoRootStudy ? (
+                    <RootNetworkMinimizedPanelContent />
+                ) : null
             ) : (
                 <RootNetworkNodeEditor
                     isRootNetworksProcessing={isRootNetworksProcessing}

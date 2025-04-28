@@ -214,6 +214,8 @@ import {
     DeletedOrRenamedNodesAction,
     UPDATE_TABLE_COLUMNS,
     UpdateTableColumnsAction,
+    SET_MONO_ROOT_STUDY,
+    SetMonoRootStudyAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -577,6 +579,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isEventScenarioDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
+    isMonoRootStudy: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;
     freezeMapUpdates: boolean;
@@ -710,6 +713,7 @@ const initialState: AppState = {
     centerOnSubstation: undefined,
     notificationIdList: [],
     isModificationsInProgress: false,
+    isMonoRootStudy: true,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     nadNodeMovements: [],
@@ -1327,6 +1331,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
             state.studyDisplayMode = action.studyDisplayMode;
         }
+    });
+
+    builder.addCase(SET_MONO_ROOT_STUDY, (state, action: SetMonoRootStudyAction) => {
+        state.isMonoRootStudy = action.isMonoRootStudy;
     });
 
     /*

@@ -22,7 +22,8 @@ import { createRootNetwork } from 'services/root-network';
 import { UUID } from 'crypto';
 import { GetCaseImportParametersReturn, getCaseImportParameters } from 'services/network-conversion';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { SetMonoRootStudy } from 'redux/actions';
 
 const styles = {
     headerPanel: (theme: Theme) => ({
@@ -58,6 +59,9 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
 }) => {
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
+    const dispatch = useDispatch();
+
     const intl = useIntl();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -89,14 +93,10 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                 const formattedParams = formatCaseImportParameters(params.parameters);
                 const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
                 // Call createRootNetwork with formatted parameters
-                return createRootNetwork(
-                    caseId as UUID,
-                    params.formatName,
-                    name,
-                    tag,
-                    studyUuid,
-                    customizedCurrentParameters
-                );
+                createRootNetwork(caseId as UUID, params.formatName, name, tag, studyUuid, customizedCurrentParameters);
+                if (isMonoRootStudy && rootNetworks.length === 1) {
+                    dispatch(SetMonoRootStudy(false));
+                }
             })
 
             .catch((error) => {
@@ -118,14 +118,16 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                     <OverflowableText sx={styles.rootNameTitle} text={intl.formatMessage({ id: 'root' })} />
 
                     <Tooltip title={<FormattedMessage id={'addNetwork'} />}>
-                        <IconButton
-                            onClick={openRootNetworkCreationDialog}
-                            size={'small'}
-                            sx={styles.uploadButton}
-                            disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
-                        >
-                            <FileUpload />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                onClick={openRootNetworkCreationDialog}
+                                size={'small'}
+                                sx={styles.uploadButton}
+                                disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
+                            >
+                                <FileUpload />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Box>
                 <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
