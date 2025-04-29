@@ -997,7 +997,7 @@
     "OnLoad": "On-load",
     "VoltageRegulation": "Voltage regulation",
     "Regulating": "Regulating",
-    "TargetVoltage": "Voltage",
+    "TargetVoltage": "Voltage setpoint",
     "TargetVoltageMustBeGreaterThanZero": "Voltage value must be greater than 0",
     "Deadband": "Deadband",
     "TargetDeadbandMustBeGreaterOrEqualToZero": "Deadband value must be greater than or equal to 0",

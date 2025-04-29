@@ -948,17 +948,15 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
-        const { spreadsheetConfigDto } = action;
+        const { spreadsheetConfigUuid, columns } = action;
         const existingTableDefinition = state.tables.definitions.find(
-            (tabDef) => tabDef.uuid === spreadsheetConfigDto.id
+            (tabDef) => tabDef.uuid === spreadsheetConfigUuid
         );
         if (existingTableDefinition) {
-            existingTableDefinition.name = spreadsheetConfigDto.name;
-            existingTableDefinition.columns = spreadsheetConfigDto.columns.map((column) => {
+            existingTableDefinition.columns = columns.map((column) => {
                 const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
                 const colDef: ColumnDefinition = {
                     ...column,
-                    dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
                     visible: existingColDef ? existingColDef.visible : true,
                     locked: existingColDef ? existingColDef.locked : false,
                 };
@@ -982,7 +980,13 @@ export const reducer = createReducer(initialState, (builder) => {
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
-            .reduce((acc, tabUuid) => ({ ...acc, [tabUuid]: [] }), {});
+            .reduce(
+                (acc, tabUuid) => ({
+                    ...acc,
+                    [tabUuid]: action?.tablesFilters?.[tabUuid] ?? [],
+                }),
+                {}
+            );
         state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce((acc, tabUuid) => {
@@ -994,6 +998,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 ];
                 return acc;
             }, {} as TableSortConfig);
+        state.gsFilterSpreadsheetState = action?.gsFilterSpreadsheetState ?? {};
     });
 
     builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {
