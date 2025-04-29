@@ -19,8 +19,8 @@ import TabPanelLazy from 'components/results/common/tab-panel-lazy';
 import { SpreadsheetTab } from './spreadsheet-tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
-import { mapColumnsDto } from './custom-spreadsheet/custom-spreadsheet-utils';
-import { initTableDefinitions, resetAllSpreadsheetGsFilters } from 'redux/actions';
+import { processSpreadsheetsCollectionData } from './custom-spreadsheet/custom-spreadsheet-utils';
+import { initTableDefinitions } from 'redux/actions';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
@@ -90,19 +90,11 @@ export const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }
 
         getSpreadsheetConfigCollection(studyUuid).then((collectionData: SpreadsheetCollectionDto) => {
-            const tableDefinitions = collectionData.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                return {
-                    uuid: spreadsheetConfig.id,
-                    index: index,
-                    name: spreadsheetConfig.name,
-                    columns: mapColumnsDto(spreadsheetConfig.columns),
-                    type: spreadsheetConfig.sheetType,
-                };
-            });
-            dispatch(initTableDefinitions(collectionData.id, tableDefinitions));
+            const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                processSpreadsheetsCollectionData(collectionData);
+            dispatch(initTableDefinitions(collectionData.id, tableDefinitions, tablesFilters, tableGlobalFilters));
             if (tableDefinitions.length > 0) {
                 handleSwitchTab(tableDefinitions[0].uuid);
-                dispatch(resetAllSpreadsheetGsFilters());
             }
             resetNodeAliases(false, collectionData.nodeAliases);
         });

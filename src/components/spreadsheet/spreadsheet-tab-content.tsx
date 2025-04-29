@@ -187,10 +187,9 @@ export const SpreadsheetTabContent = React.memo(
 
         useEffect(() => {
             const api = gridRef.current?.api;
-            if (!api || !isGridReady || !filters.length) {
+            if (!api || !isGridReady) {
                 return;
             }
-
             updateFilters(api, filters);
         }, [filters, gridRef, isGridReady, equipments]);
 

@@ -25,7 +25,7 @@ export const useSpreadsheetGsFilter = (tabUuid: UUID) => {
                 return;
             }
 
-            const filtersUuid = filters.map((filter) => filter.id);
+            const filtersUuid = filters.map((filter) => filter.filterId);
             if (filtersUuid.length > 0) {
                 const response = await evaluateFilters(studyUuid as UUID, currentRootNetworkUuid, filtersUuid);
                 const equipmentsIds = response.flatMap((filterEquipments) =>

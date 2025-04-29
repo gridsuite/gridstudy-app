@@ -30,6 +30,8 @@ import {
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../services/explore';
 import { NodeAlias } from '../custom-columns/node-alias.type';
+import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { SpreadsheetGlobalFilter } from 'services/study/filter';
 
 interface SpreadsheetCollectionSaveDialogProps {
     open: UseStateBooleanReturn;
@@ -37,6 +39,11 @@ interface SpreadsheetCollectionSaveDialogProps {
 }
 
 const styles = {
+    checkboxForFilters: (theme: Theme) => ({
+        padding: theme.spacing(0, 3, 0, 2),
+        fontWeight: 'bold',
+        cursor: 'pointer',
+    }),
     checkboxSelectAll: (theme: Theme) => ({
         padding: theme.spacing(0, 3, 2, 2),
         fontWeight: 'bold',
@@ -62,11 +69,14 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
     const { snackError, snackInfo } = useSnackMessage();
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
+    const tablesFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD]);
+    const tablesFiltersState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [localTablesState, setLocalTablesState] = useState<TableState[]>([]);
     const [selectedConfigs, setSelectedConfigs] = useState<SpreadsheetConfig[]>([]);
     const [showElementCreationDialog, setShowElementCreationDialog] = useState(false);
+    const [areFiltersIncluded, setAreFiltersIncluded] = useState(false);
 
     // Initialize local state when dialog opens
     useEffect(() => {
@@ -79,6 +89,7 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                     index,
                 }))
             );
+            setAreFiltersIncluded(false);
         }
     }, [open.value, tables]);
 
@@ -106,6 +117,10 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
         });
     }, []);
 
+    const handleToggleFilters = useCallback(() => {
+        setAreFiltersIncluded((prev) => !prev);
+    }, []);
+
     const handleDrag = useCallback(({ source, destination }: DropResult) => {
         if (destination) {
             setLocalTablesState((prev) => {
@@ -127,6 +142,16 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                     if (!column) {
                         return null;
                     }
+                    const columnFilter: Partial<ColumnDefinitionDto> = {};
+                    if (areFiltersIncluded) {
+                        const filter = tablesFilters[table.uuid]?.find((f) => f.column === column.id);
+                        if (filter) {
+                            columnFilter.filterDataType = filter.dataType;
+                            columnFilter.filterTolerance = filter.tolerance;
+                            columnFilter.filterType = filter.type;
+                            columnFilter.filterValue = JSON.stringify(filter.value);
+                        }
+                    }
                     const dto: ColumnDefinitionDto = {
                         uuid: column.uuid ?? uuid4(),
                         id: column.id,
@@ -135,12 +160,21 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                         precision: column.precision,
                         formula: column.formula || '',
                         dependencies: column.dependencies?.length ? JSON.stringify(column.dependencies) : undefined,
+                        ...columnFilter,
                     };
                     return dto;
                 })
                 .filter((col): col is ColumnDefinitionDto => col !== null);
         },
-        [tables]
+        [areFiltersIncluded, tables, tablesFilters]
+    );
+
+    const getTableGlobalFilters = useCallback(
+        (tableIndex: number): SpreadsheetGlobalFilter[] => {
+            const tableUuid = tables[tableIndex].uuid;
+            return tablesFiltersState[tableUuid] ?? [];
+        },
+        [tablesFiltersState, tables]
     );
 
     const handleNext = useCallback(() => {
@@ -150,12 +184,13 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
                 name: table.name,
                 sheetType: table.type,
                 columns: getReorderedColumns(table.index),
+                globalFilters: areFiltersIncluded ? getTableGlobalFilters(table.index) : undefined,
             }));
 
         setSelectedConfigs(configs);
         handleClose();
         setShowElementCreationDialog(true);
-    }, [localTablesState, getReorderedColumns, handleClose]);
+    }, [localTablesState, handleClose, getReorderedColumns, areFiltersIncluded, getTableGlobalFilters]);
 
     const handleSaveCollection = useCallback(
         async (element: IElementCreationDialog) => {
@@ -217,6 +252,12 @@ export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetColle
 
     const checkListContent = (
         <>
+            <ListItem sx={styles.checkboxForFilters}>
+                <ListItemButton role={undefined} onClick={handleToggleFilters} dense>
+                    <Checkbox style={{ marginLeft: '21px' }} checked={areFiltersIncluded} />
+                    <FormattedMessage id="spreadsheet/column/dialog/include_filters" />
+                </ListItemButton>
+            </ListItem>
             <ListItem sx={styles.checkboxSelectAll}>
                 <ListItemButton role={undefined} onClick={handleToggleAll} dense>
                     <Checkbox

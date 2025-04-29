@@ -12,7 +12,7 @@ import {
     NumericCellRenderer,
     RowIndexCellRenderer,
 } from '../utils/cell-renderers';
-import type { ColDef, IFilterOptionDef } from 'ag-grid-community';
+import type { ColDef, IFilterOptionDef, GridApi } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { SPREADSHEET_SORT_STORE } from '../../../utils/store-sort-filter-fields';
@@ -20,7 +20,7 @@ import {
     BooleanFilterValue,
     updateFilters,
 } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-import { FilterType } from '../../../types/custom-aggrid-types';
+import { FilterConfig, FilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
     CustomColDef,
@@ -31,12 +31,25 @@ import {
 import { UUID } from 'crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
 import { ROW_INDEX_COLUMN_ID } from '../constants';
+import { ColumnDefinition } from './spreadsheet.type';
+import { mapColDefToDto } from '../custom-spreadsheet/custom-spreadsheet-utils';
+import { updateSpreadsheetColumn } from 'services/study/study-config';
 
-export const textColumnDefinition = (displayName: string, tab: string): ColDef => {
+const updateAndPersistFilters = (colDef: ColumnDefinition, tab: string, api: GridApi, filters: FilterConfig[]) => {
+    updateFilters(api, filters);
+    const studyUuid = api.getGridOption('context')?.studyUuid;
+    if (studyUuid) {
+        const filter = filters?.find((f) => f.column === colDef.id);
+        const columnDto = mapColDefToDto(colDef, filter);
+        updateSpreadsheetColumn(studyUuid, tab as UUID, colDef.uuid, columnDto);
+    }
+};
+
+export const textColumnDefinition = (colDef: ColumnDefinition, tab: string): ColDef => {
     return {
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
-            displayName,
+            displayName: colDef.name,
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
@@ -46,7 +59,7 @@ export const textColumnDefinition = (displayName: string, tab: string): ColDef =
                 filterParams: {
                     type: FilterType.Spreadsheet,
                     tab,
-                    updateFilterCallback: updateFilters,
+                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab),
                     dataType: FILTER_DATA_TYPES.TEXT,
                     comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                     debounceMs: 400,
@@ -60,7 +73,7 @@ export const textColumnDefinition = (displayName: string, tab: string): ColDef =
     };
 };
 
-export const enumColumnDefinition = (displayName: string, tab: string): ColDef => {
+export const enumColumnDefinition = (colDef: ColumnDefinition, tab: string): ColDef => {
     return {
         filterParams: {
             filterOptions: [
@@ -75,7 +88,7 @@ export const enumColumnDefinition = (displayName: string, tab: string): ColDef =
         },
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
-            displayName,
+            displayName: colDef.name,
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
@@ -85,7 +98,7 @@ export const enumColumnDefinition = (displayName: string, tab: string): ColDef =
                 filterParams: {
                     type: FilterType.Spreadsheet,
                     tab,
-                    updateFilterCallback: updateFilters,
+                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab),
                     dataType: FILTER_DATA_TYPES.TEXT,
                     debounceMs: 800,
                 },
@@ -98,12 +111,12 @@ export const enumColumnDefinition = (displayName: string, tab: string): ColDef =
     };
 };
 
-export const numberColumnDefinition = (displayName: string, tab: string, fractionDigits?: number): ColDef => {
+export const numberColumnDefinition = (colDef: ColumnDefinition, tab: string): ColDef => {
     return {
         filter: 'agNumberColumnFilter',
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
-            displayName,
+            displayName: colDef.name,
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
@@ -113,7 +126,7 @@ export const numberColumnDefinition = (displayName: string, tab: string, fractio
                 filterParams: {
                     type: FilterType.Spreadsheet,
                     tab,
-                    updateFilterCallback: updateFilters,
+                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab),
                     dataType: FILTER_DATA_TYPES.NUMBER,
                     comparators: Object.values(FILTER_NUMBER_COMPARATORS),
                     debounceMs: 400,
@@ -122,7 +135,7 @@ export const numberColumnDefinition = (displayName: string, tab: string, fractio
         },
         cellRenderer: NumericCellRenderer,
         cellRendererParams: {
-            fractionDigits,
+            fractionDigits: colDef?.precision,
         },
         context: {
             columnType: COLUMN_TYPES.NUMBER,
@@ -130,7 +143,7 @@ export const numberColumnDefinition = (displayName: string, tab: string, fractio
     };
 };
 
-export const booleanColumnDefinition = (displayName: string, tab: string): ColDef => {
+export const booleanColumnDefinition = (colDef: ColumnDefinition, tab: string): ColDef => {
     return {
         filterParams: {
             filterOptions: [
@@ -156,7 +169,7 @@ export const booleanColumnDefinition = (displayName: string, tab: string): ColDe
         },
         headerComponent: CustomHeaderComponent,
         headerComponentParams: {
-            displayName,
+            displayName: colDef.name,
             sortParams: {
                 table: SPREADSHEET_SORT_STORE,
                 tab,
@@ -167,7 +180,7 @@ export const booleanColumnDefinition = (displayName: string, tab: string): ColDe
                     type: FilterType.Spreadsheet,
                     tab,
                     dataType: FILTER_DATA_TYPES.BOOLEAN,
-                    updateFilterCallback: updateFilters,
+                    updateFilterCallback: updateAndPersistFilters.bind(null, colDef, tab),
                     debounceMs: 50,
                 },
             },
