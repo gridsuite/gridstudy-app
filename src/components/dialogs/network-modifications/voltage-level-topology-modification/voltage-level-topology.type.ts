@@ -10,3 +10,11 @@ export const styles = {
         marginTop: 2,
     },
 };
+
+export type SwitchRowForm = {
+    switchId: string;
+    prevConnectionStatus: string;
+    currentConnectionStatus: boolean | null;
+    type?: string;
+    isModified?: boolean;
+};

@@ -4,12 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { useFieldArray } from 'react-hook-form';
 import { EquipmentAttributeModificationInfos } from '../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { Button, Grid, Paper, TextField, Typography } from '@mui/material';
+import { Button, Grid, Paper, TextField, Typography, useTheme } from '@mui/material';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
@@ -22,7 +21,9 @@ import { HeaderWithTooltip } from './header-with-tooltip';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { SwitchInfos } from '../../../../services/study/network-map.type';
 import { BooleanNullableCellRenderer } from './boolean-nullable-cell-render';
-import { ResetSettingsIcon } from './ResetSettingsIcon';
+import ResetSettings from '@material-symbols/svg-400/outlined/reset_settings.svg?react';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { SwitchRowForm } from './voltage-level-topology.type';
 
 interface VoltageLevelTopologyModificationFormProps {
     currentNode: CurrentTreeNode;
@@ -40,10 +41,8 @@ export function VoltageLevelTopologyModificationForm({
     isUpdate,
 }: VoltageLevelTopologyModificationFormProps) {
     const intl = useIntl();
-    const { replace } = useFieldArray({
-        name: `${TOPOLOGY_MODIFICATION_TABLE}`,
-    });
-
+    const theme = useTheme();
+    const { getValues, setValue } = useFormContext();
     const isSwitchModified = useCallback(
         (switchId: string): boolean => {
             return switchesEditData?.some((mod) => mod.equipmentId === switchId) || false;
@@ -51,41 +50,85 @@ export function VoltageLevelTopologyModificationForm({
         [switchesEditData]
     );
 
-    const { modifiedSwitches, unmodifiedSwitches } = useMemo(() => {
-        const modified = switchesToModify
-            .filter((sw) => isSwitchModified(sw.id))
-            .map((switchRow) => ({
-                [SWITCH_ID]: switchRow.id,
-                [PREV_CONNECTION_STATUS]: intl.formatMessage({
-                    id: switchRow.open ? 'Open' : 'Closed',
-                }),
-                [CURRENT_CONNECTION_STATUS]:
-                    switchesEditData?.find((mod) => mod.equipmentId === switchRow.id)?.equipmentAttributeValue ?? null,
-                isModified: true,
-            }))
-            .sort((a, b) => a[SWITCH_ID].localeCompare(b[SWITCH_ID]));
+    const watchTable = useWatch({
+        name: TOPOLOGY_MODIFICATION_TABLE,
+    });
 
-        const unmodified = switchesToModify
-            .filter((sw) => !isSwitchModified(sw.id))
-            .map((switchRow) => ({
-                [SWITCH_ID]: switchRow.id,
-                [PREV_CONNECTION_STATUS]: intl.formatMessage({
-                    id: switchRow.open ? 'Open' : 'Closed',
-                }),
+    const mergedRowData = useMemo(() => {
+        const SEPARATOR_TYPE = 'SEPARATOR';
+        const SWITCH_TYPE = 'SWITCH';
+        const result = [];
+
+        const sortedWatchTable = [...(watchTable || [])].sort((a, b) =>
+            (a.switchId || '').localeCompare(b.switchId || '')
+        );
+
+        const modifiedSwitches =
+            sortedWatchTable
+                ?.filter((sw: SwitchRowForm) => sw.switchId && isSwitchModified(sw.switchId))
+                .sort((a: SwitchRowForm, b: SwitchRowForm) => a.switchId.localeCompare(b.switchId)) || [];
+        const unmodifiedSwitches =
+            sortedWatchTable
+                ?.filter((sw: SwitchRowForm) => sw.switchId && !isSwitchModified(sw.switchId))
+                .sort((a: SwitchRowForm, b: SwitchRowForm) => a.switchId.localeCompare(b.switchId)) || [];
+
+        if (modifiedSwitches.length > 0) {
+            result.push({
+                type: SEPARATOR_TYPE,
+                id: 'modified-separator',
+                title: intl.formatMessage({ id: 'modifiedSwitchesSeparatorTitle' }) + ` (${modifiedSwitches.length})`,
+                count: modifiedSwitches.length,
+                [SWITCH_ID]: '',
+                [PREV_CONNECTION_STATUS]: '',
                 [CURRENT_CONNECTION_STATUS]: null,
-                isModified: false,
-            }))
-            .sort((a, b) => a[SWITCH_ID].localeCompare(b[SWITCH_ID]));
+            });
+            modifiedSwitches.forEach((sw: SwitchInfos) => {
+                const matchingAttributeEditData = switchesEditData?.find(
+                    (attr: EquipmentAttributeModificationInfos) => attr.equipmentId === sw.id
+                );
+                result.push({
+                    ...sw,
+                    type: SWITCH_TYPE,
+                    isModified: true,
+                    [CURRENT_CONNECTION_STATUS]: isNodeBuilt(currentNode)
+                        ? sw.open
+                        : matchingAttributeEditData
+                          ? matchingAttributeEditData.equipmentAttributeValue
+                          : sw.open,
+                });
+            });
+            if (unmodifiedSwitches.length > 0) {
+                result.push({
+                    type: SEPARATOR_TYPE,
+                    id: 'unmodified-separator',
+                    title:
+                        intl.formatMessage({ id: 'unModifiedSwitchesSeparatorTitle' }) +
+                        ` (${unmodifiedSwitches.length})`,
+                    count: unmodifiedSwitches.length,
+                    [SWITCH_ID]: '',
+                    [PREV_CONNECTION_STATUS]: '',
+                    [CURRENT_CONNECTION_STATUS]: null,
+                });
 
-        return { modifiedSwitches: modified, unmodifiedSwitches: unmodified };
-    }, [switchesEditData, intl, switchesToModify, isSwitchModified]);
-
-    useEffect(() => {
-        const allData = [...modifiedSwitches, ...unmodifiedSwitches];
-        if (allData.length > 0) {
-            replace(allData);
+                unmodifiedSwitches.forEach((sw: SwitchInfos) => {
+                    result.push({
+                        ...sw,
+                        type: SWITCH_TYPE,
+                        isModified: false,
+                    });
+                });
+            }
+        } else {
+            unmodifiedSwitches.forEach((sw: SwitchInfos) => {
+                result.push({
+                    ...sw,
+                    type: SWITCH_TYPE,
+                    isModified: false,
+                });
+            });
         }
-    }, [modifiedSwitches, unmodifiedSwitches, replace]);
+        return result;
+    }, [watchTable, isSwitchModified, intl, switchesEditData, currentNode]);
 
     const defaultColDef = useMemo(
         () => ({
@@ -99,12 +142,41 @@ export function VoltageLevelTopologyModificationForm({
         []
     );
 
+    const SeparatorCellRenderer = (props: { data: { type: string }; value: string }) => {
+        if (props.data.type === 'SEPARATOR') {
+            return (
+                <Typography
+                    variant="subtitle1"
+                    sx={{
+                        backgroundColor: '#f3f3f3',
+                        fontWeight: 'bold',
+                        fontSize: '0.95rem',
+                        width: '100%',
+                    }}
+                >
+                    {props.value}
+                </Typography>
+            );
+        }
+        return props.value;
+    };
+
     const columnDefs = useMemo(
         () => [
             {
                 field: SWITCH_ID,
                 filter: true,
                 flex: 2,
+                cellRenderer: (params: { data?: any; node?: any }) => {
+                    if (params.data.type === 'SEPARATOR') {
+                        return SeparatorCellRenderer({
+                            data: params.data,
+                            value: params.data.title,
+                        });
+                    } else {
+                        return params.data[SWITCH_ID];
+                    }
+                },
                 headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: 'switchId' }),
@@ -118,7 +190,6 @@ export function VoltageLevelTopologyModificationForm({
             {
                 field: PREV_CONNECTION_STATUS,
                 flex: 1,
-                cellClass: 'ag-cell-center',
                 headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: 'previousStatus' }),
@@ -130,18 +201,20 @@ export function VoltageLevelTopologyModificationForm({
                 },
             },
             {
-                field: 'CURRENT_CONNECTION_STATUS',
+                field: CURRENT_CONNECTION_STATUS,
                 flex: 1,
-                cellRenderer: BooleanNullableCellRenderer,
-                cellRendererParams: (params: {
-                    node: { rowIndex: number };
-                    colDef: { field: any };
-                    data: { currentConnectionStatus: null | boolean };
-                }) => ({
-                    name: `${TOPOLOGY_MODIFICATION_TABLE}[${params.node.rowIndex}].${CURRENT_CONNECTION_STATUS}`,
-                    connected: params.data.currentConnectionStatus,
-                }),
-                cellStyle: () => ({ textAlign: 'center' }),
+                cellRenderer: (params: { data?: any; node?: any }) => {
+                    if (params.data.type === 'SEPARATOR') {
+                        return null;
+                    }
+                    const formIndex = watchTable.findIndex(
+                        (item: SwitchRowForm) => item.switchId === params.data.switchId
+                    );
+                    return BooleanNullableCellRenderer({
+                        name: `${TOPOLOGY_MODIFICATION_TABLE}[${formIndex}].${CURRENT_CONNECTION_STATUS}`,
+                        connected: params.data.currentConnectionStatus,
+                    });
+                },
                 headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: 'currentStatus' }),
@@ -154,33 +227,21 @@ export function VoltageLevelTopologyModificationForm({
                 editable: false,
             },
         ],
-        [currentNode, intl, isUpdate]
+        [currentNode, intl, isUpdate, watchTable]
     );
 
     const copyPreviousToCurrentStatus = useCallback(() => {
-        const updatedData = [...modifiedSwitches, ...unmodifiedSwitches].map((row) => ({
-            ...row,
-            [CURRENT_CONNECTION_STATUS]:
-                row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Open' })
-                    ? true
-                    : row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Closed' })
-                      ? false
-                      : null,
-            isModified: true,
-        }));
-        replace(updatedData);
-    }, [modifiedSwitches, unmodifiedSwitches, replace, intl]);
-
-    const getTableHeight = (items: string | any[]) => {
-        const rowHeight = 48;
-        const headerHeight = 56;
-        const minHeight = 150;
-        const maxHeight = 350;
-
-        const calculatedHeight = headerHeight + items.length * rowHeight;
-
-        return Math.max(minHeight, Math.min(calculatedHeight, maxHeight));
-    };
+        const formValues = getValues(TOPOLOGY_MODIFICATION_TABLE);
+        formValues.forEach((row: SwitchRowForm, index: number) => {
+            if (row.type === 'SEPARATOR') {
+                return;
+            }
+            const isOpen = row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Open' });
+            const isClosed = row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Closed' });
+            const newValue = isOpen ? true : isClosed ? false : null;
+            setValue(`${TOPOLOGY_MODIFICATION_TABLE}[${index}].${CURRENT_CONNECTION_STATUS}`, newValue);
+        });
+    }, [getValues, setValue, intl]);
 
     return (
         <Grid container spacing={2}>
@@ -201,95 +262,40 @@ export function VoltageLevelTopologyModificationForm({
                     color="primary"
                     size="small"
                     onClick={copyPreviousToCurrentStatus}
-                    startIcon={<ResetSettingsIcon />}
+                    startIcon={
+                        <ResetSettings
+                            style={{
+                                width: 24,
+                                height: 24,
+                                fill: !isUpdate ? theme.palette.action.disabled : theme.palette.primary.main,
+                                opacity: !isUpdate ? 0.3 : 1,
+                            }}
+                        />
+                    }
                     disabled={!isUpdate}
                 >
                     {intl.formatMessage({ id: 'copyPreviousTopologyStatus' })}
                 </Button>
             </Grid>
 
-            {modifiedSwitches.length > 0 && (
-                <Grid item xs={12} sx={{ mb: 0 }}>
-                    <Paper
-                        elevation={1}
-                        sx={{
-                            overflow: 'hidden',
-                            border: '1px solid #e0e0e0',
-                            borderRadius: '4px 4px 0 0',
-                            borderBottom: 'none',
-                        }}
-                    >
-                        <Typography
-                            variant="subtitle1"
-                            sx={{
-                                backgroundColor: '#f3f3f3',
-                                padding: '12px 16px',
-                                fontWeight: 'bold',
-                                fontSize: '0.95rem',
-                                borderBottom: '1px solid #e0e0e0',
-                            }}
-                        >
-                            {intl.formatMessage({ id: 'modifiedSwitchesSeparatorTitle' })} ({modifiedSwitches.length})
-                        </Typography>
-                        <div
-                            className="ag-theme-material"
-                            style={{
-                                height: getTableHeight(modifiedSwitches),
-                                width: '100%',
-                            }}
-                        >
-                            <CustomAGGrid
-                                rowData={modifiedSwitches}
-                                defaultColDef={defaultColDef}
-                                columnDefs={columnDefs}
-                                rowSelection="multiple"
-                                suppressMovableColumns={true}
-                                animateRows={false}
-                                domLayout="normal"
-                                headerHeight={48}
-                            />
-                        </div>
-                    </Paper>
-                </Grid>
-            )}
-
-            <Grid item xs={12} sx={{ mt: modifiedSwitches.length > 0 ? '-1px' : 0 }}>
+            <Grid item xs={12}>
                 <Paper
                     elevation={1}
                     sx={{
                         overflow: 'hidden',
                         border: '1px solid #e0e0e0',
-                        borderRadius: modifiedSwitches.length > 0 ? '0 0 4px 4px' : '4px',
+                        borderRadius: '4px',
                     }}
                 >
-                    <Typography
-                        variant="subtitle1"
-                        sx={{
-                            backgroundColor: '#f3f3f3',
-                            padding: '12px 16px',
-                            fontWeight: 'bold',
-                            fontSize: '0.95rem',
-                            borderBottom: '1px solid #e0e0e0',
-                        }}
-                    >
-                        {intl.formatMessage({ id: 'unModifiedSwitchesSeparatorTitle' })} ({unmodifiedSwitches.length})
-                    </Typography>
-                    <div
-                        className="ag-theme-material"
-                        style={{
-                            height: getTableHeight(unmodifiedSwitches),
-                            width: '100%',
-                        }}
-                    >
+                    <div className="ag-theme-material" style={{ height: 600, width: '100%' }}>
                         <CustomAGGrid
-                            rowData={unmodifiedSwitches}
+                            rowData={mergedRowData}
                             defaultColDef={defaultColDef}
                             columnDefs={columnDefs}
-                            rowSelection="multiple"
                             suppressMovableColumns={true}
                             animateRows={false}
                             domLayout="normal"
-                            headerHeight={modifiedSwitches.length > 0 ? 0 : 48}
+                            headerHeight={48}
                         />
                     </div>
                 </Paper>
