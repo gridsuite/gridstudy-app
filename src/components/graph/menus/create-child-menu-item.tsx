@@ -8,7 +8,7 @@
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import { CustomMenuItem } from '../../utils/custom-nested-menu';
+import { CustomMenuItem } from '@gridsuite/commons-ui';
 import { FunctionComponent } from 'react';
 
 const styles = {

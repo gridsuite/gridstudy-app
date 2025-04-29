@@ -8,7 +8,7 @@
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import ChildMenuItem from '../create-child-menu-item';
-import { CustomNestedMenuItem } from '../../../utils/custom-nested-menu';
+import { CustomNestedMenuItem } from '@gridsuite/commons-ui';
 import { MenuDefinition } from './network-modification-menu.type';
 
 interface NetworkModificationMenuProps {
