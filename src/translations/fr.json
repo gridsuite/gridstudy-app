@@ -8,6 +8,7 @@
     "voltageRange": "Niveau de tension",
 
     "button.delete": "Supprimer",
+    "button.continue": "Continuer",
     "filter": "Filtre",
     "enable": "Activer",
     "disable": "Désactiver",
@@ -1574,5 +1575,7 @@
     "qmax": "Q Max",
     "nodeAliasesRetrievingError": "Erreur lors de la récupération des alias de nœuds",
     "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds",
-    "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0"
+    "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",     
+    "confirmRootNetworkCreation": "L’étude {studyName}, va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible."
 }
+      

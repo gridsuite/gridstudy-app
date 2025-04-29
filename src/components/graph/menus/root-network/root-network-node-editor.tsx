@@ -67,8 +67,9 @@ const styles = {
         display: 'flex',
         padding: theme.spacing(1),
         overflow: 'hidden',
+        borderTop: `1px solid ${theme.palette.divider}`,
+
         marginRight: theme.spacing(1),
-        marginTop: theme.spacing(2),
         marginLeft: theme.spacing(1),
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -309,10 +310,19 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
             </Box>
         );
     };
+    const handleMonoRootUpdate = () => {
+        setEditedRootNetwork(rootNetworks[0]);
+        setRootNetworkModificationDialogOpen(true);
+    };
+
     const renderRootNetworkForMonoRootStudy = () => {
         return (
-            <Box sx={styles.rootNetworkMonoRoot}>
-                <Typography noWrap>{rootNetworks[0].name}</Typography>
+            <Box sx={styles.rootNetworkMonoRoot} onClick={handleMonoRootUpdate}>
+                <Tooltip title={rootNetworks[0].name} arrow>
+                    <Typography noWrap sx={{ paddingTop: '8px' }}>
+                        {rootNetworks[0].name}
+                    </Typography>
+                </Tooltip>
             </Box>
         );
     };

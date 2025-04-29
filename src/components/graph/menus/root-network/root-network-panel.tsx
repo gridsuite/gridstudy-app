@@ -31,14 +31,19 @@ const RootNetworkPanel: FunctionComponent = () => {
 
     const theme = useTheme();
     const panelStyle = useMemo(() => {
+        const widthSpacing = isRootNetworkPanelMinimized ? theme.spacing(22) : theme.spacing(38);
+        const minHeightSpacing = isRootNetworkPanelMinimized
+            ? isMonoRootStudy
+                ? theme.spacing(6)
+                : theme.spacing(12)
+            : isMonoRootStudy
+              ? theme.spacing(14)
+              : theme.spacing(38);
+
         return {
             ...styles.paper,
-            width: isRootNetworkPanelMinimized ? theme.spacing(22) : theme.spacing(38),
-            minHeight: isRootNetworkPanelMinimized
-                ? isMonoRootStudy
-                    ? theme.spacing(6)
-                    : theme.spacing(12)
-                : theme.spacing(38),
+            width: widthSpacing,
+            minHeight: minHeightSpacing,
         };
     }, [isMonoRootStudy, isRootNetworkPanelMinimized, theme]);
     return (
