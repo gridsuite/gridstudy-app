@@ -56,16 +56,16 @@ export function useCustomColumn(tableDefinition: SpreadsheetTabDefinition) {
 
                 switch (colDef.type) {
                     case COLUMN_TYPES.NUMBER:
-                        baseDefinition = numberColumnDefinition(colDef.name, tableDefinition.uuid, colDef.precision);
+                        baseDefinition = numberColumnDefinition(colDef, tableDefinition.uuid);
                         break;
                     case COLUMN_TYPES.TEXT:
-                        baseDefinition = textColumnDefinition(colDef.name, tableDefinition.uuid);
+                        baseDefinition = textColumnDefinition(colDef, tableDefinition.uuid);
                         break;
                     case COLUMN_TYPES.BOOLEAN:
-                        baseDefinition = booleanColumnDefinition(colDef.name, tableDefinition.uuid);
+                        baseDefinition = booleanColumnDefinition(colDef, tableDefinition.uuid);
                         break;
                     case COLUMN_TYPES.ENUM:
-                        baseDefinition = enumColumnDefinition(colDef.name, tableDefinition.uuid);
+                        baseDefinition = enumColumnDefinition(colDef, tableDefinition.uuid);
                         break;
                     default:
                         baseDefinition = {};
