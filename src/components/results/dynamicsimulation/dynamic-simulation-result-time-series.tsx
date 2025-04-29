@@ -82,7 +82,7 @@ const DynamicSimulationResultTimeSeries = memo(function ({
         const newTabs = Array.from(tabs);
         newTabs.splice(index, 1);
         setSelectedIndex((prevSelectedIndex) => {
-            // IF close a tab after current selected tab or current selected tab its self => keep the same previous selected index
+            // IF close a tab after current selected tab or current selected tab itself => keep the same previous selected index
             // IF close a tab before current selected tab => shift one before previous selected tab
             const newSelectedIndex = index >= prevSelectedIndex ? prevSelectedIndex : prevSelectedIndex - 1;
             // IF newSelectedIndex is the last index of previous tabs, take the last index of new tabs
