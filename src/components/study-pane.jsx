@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Box, Paper } from '@mui/material';
 import PropTypes from 'prop-types';
 import { ReportViewerTab } from './report-viewer-tab';
@@ -49,7 +49,6 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
-        changed: false,
     });
 
     const { openDiagramView } = useDiagram();
@@ -64,9 +63,9 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
         }
     }
 
-    const unsetTableEquipment = () => {
-        setTableEquipment({ id: null, type: null, changed: false });
-    };
+    const unsetTableEquipment = useCallback(() => {
+        setTableEquipment({ id: null, type: null });
+    }, []);
 
     return (
         <>
@@ -96,7 +95,6 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                         currentNode={currentNode}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
-                        equipmentChanged={tableEquipment.changed}
                         disabled={disabled}
                         onEquipmentScrolled={unsetTableEquipment}
                     />

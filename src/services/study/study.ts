@@ -59,8 +59,8 @@ export const recreateStudyNetwork = (studyUuid: UUID, currentRootNetworkUuid: UU
     });
 };
 
-export const reindexAllStudy = (studyUuid: UUID, currentRootNetworkUuid: UUID): Promise<void> => {
-    const reindexAllStudyUrl =
+export const reindexAllRootNetwork = (studyUuid: UUID, currentRootNetworkUuid: UUID): Promise<void> => {
+    const reindexAllRootNetworkUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
@@ -68,9 +68,9 @@ export const reindexAllStudy = (studyUuid: UUID, currentRootNetworkUuid: UUID): 
         encodeURIComponent(currentRootNetworkUuid) +
         '/reindex-all';
 
-    console.debug(reindexAllStudyUrl);
+    console.debug(reindexAllRootNetworkUrl);
 
-    return backendFetch(reindexAllStudyUrl, {
+    return backendFetch(reindexAllRootNetworkUrl, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
     });
