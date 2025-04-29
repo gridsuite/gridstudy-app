@@ -13,6 +13,11 @@ export enum NodeType {
     NETWORK_MODIFICATION = 'NETWORK_MODIFICATION',
 }
 
+export enum NetworkModificationNodeType {
+    CONSTRUCTION = 'CONSTRUCTION',
+    SECURITY = 'SECURITY',
+}
+
 export type AbstractNode = {
     id: UUID;
     name: string;
@@ -53,6 +58,7 @@ export type NetworkModificationNodeData = AbstractNode & {
     dynamicSimulationResultUuid?: UUID;
     stateEstimationResultUuid?: UUID;
     nodeBuildStatus?: NodeBuildStatus;
+    nodeType?: NetworkModificationNodeType;
 };
 
 type NodeCommonData = {
