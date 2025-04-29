@@ -19,8 +19,3 @@ export enum CopyType {
     SUBTREE_COPY = 'SUBTREE_COPY',
     SUBTREE_CUT = 'SUBTREE_CUT',
 }
-
-export enum UpdateType {
-    NODE_CREATED = 'nodeCreated',
-    NODE_DELETED = 'nodeDeleted',
-}

@@ -8,10 +8,9 @@
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { UUID } from 'crypto';
-import { AppState, StudyUpdated, StudyUpdatedEventData } from '../redux/reducer';
+import { AppState, StudyUpdated } from '../redux/reducer';
 import { identity } from '@gridsuite/commons-ui';
-
-export const UPDATE_TYPE_HEADER = 'updateType';
+import { StudyUpdatedEventData } from 'types/notification-types';
 
 export type ResultFetcher<T> = (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<T | null>;
 
@@ -48,7 +47,7 @@ function shouldUpdate<T>({
 }: ShouldUpdateParams<T>) {
     const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData; // TODO narrowing by predicate
     const headers = studyUpdatedEventData?.headers;
-    const updateType = headers?.[UPDATE_TYPE_HEADER];
+    const updateType = headers?.updateType;
     const nodeUuidFromNotif = headers?.node;
     const nodeUuidsFromNotif = headers?.nodes;
     const rootNetworkFromNotif = headers?.rootNetworkUuid;
