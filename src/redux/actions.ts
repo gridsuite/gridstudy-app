@@ -23,9 +23,11 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import type {
     AppState,
     EquipmentUpdateType,
+    GsFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
-    StudyIndexationStatus,
+    SpreadsheetFilterState,
+    RootNetworkIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
 } from './reducer';
@@ -51,7 +53,6 @@ import {
     ColumnDefinition,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-    SpreadsheetConfigDto,
 } from '../components/spreadsheet/config/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
@@ -60,7 +61,7 @@ import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export type TableValue<TValue = unknown> = {
-    index: number;
+    uuid: UUID;
     value: TValue;
 };
 
@@ -114,7 +115,7 @@ export type AppActions =
     | NetworkAreaDiagramNbVoltageLevelsAction
     | SetComputingStatusAction
     | SetComputationStartingAction
-    | SetStudyIndexationStatusAction
+    | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
     | SetOneBusShortcircuitAnalysisDiagramAction
     | AddToRecentGlobalFiltersAction
@@ -1006,15 +1007,17 @@ export function setComputationStarting(computationStarting: boolean): SetComputa
     };
 }
 
-export const SET_STUDY_INDEXATION_STATUS = 'SET_STUDY_INDEXATION_STATUS';
-export type SetStudyIndexationStatusAction = Readonly<Action<typeof SET_STUDY_INDEXATION_STATUS>> & {
-    studyIndexationStatus: StudyIndexationStatus;
+export const SET_ROOT_NETWORK_INDEXATION_STATUS = 'SET_ROOT_NETWORK_INDEXATION_STATUS';
+export type SetRootNetworkIndexationStatusAction = Readonly<Action<typeof SET_ROOT_NETWORK_INDEXATION_STATUS>> & {
+    rootNetworkIndexationStatus: RootNetworkIndexationStatus;
 };
 
-export function setStudyIndexationStatus(studyIndexationStatus: StudyIndexationStatus): SetStudyIndexationStatusAction {
+export function setRootNetworkIndexationStatus(
+    rootNetworkIndexationStatus: RootNetworkIndexationStatus
+): SetRootNetworkIndexationStatusAction {
     return {
-        type: SET_STUDY_INDEXATION_STATUS,
-        studyIndexationStatus: studyIndexationStatus,
+        type: SET_ROOT_NETWORK_INDEXATION_STATUS,
+        rootNetworkIndexationStatus: rootNetworkIndexationStatus,
     };
 }
 
@@ -1287,12 +1290,17 @@ export const UPDATE_TABLE_COLUMNS = 'UPDATE_TABLE_COLUMNS';
 
 export type UpdateTableColumnsAction = {
     type: typeof UPDATE_TABLE_COLUMNS;
-    spreadsheetConfigDto: SpreadsheetConfigDto;
+    spreadsheetConfigUuid: UUID;
+    columns: ColumnDefinition[];
 };
 
-export const updateTableColumns = (spreadsheetConfigDto: SpreadsheetConfigDto): UpdateTableColumnsAction => ({
+export const updateTableColumns = (
+    spreadsheetConfigUuid: UUID,
+    columns: ColumnDefinition[]
+): UpdateTableColumnsAction => ({
     type: UPDATE_TABLE_COLUMNS,
-    spreadsheetConfigDto,
+    spreadsheetConfigUuid,
+    columns,
 });
 
 export const RENAME_TABLE_DEFINITION = 'RENAME_TABLE_DEFINITION';
@@ -1315,15 +1323,21 @@ export type InitTableDefinitionsAction = {
     type: typeof INIT_TABLE_DEFINITIONS;
     collectionUuid: UUID;
     tableDefinitions: SpreadsheetTabDefinition[];
+    tablesFilters?: SpreadsheetFilterState;
+    gsFilterSpreadsheetState?: GsFilterSpreadsheetState;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
-    tableDefinitions: SpreadsheetTabDefinition[]
+    tableDefinitions: SpreadsheetTabDefinition[],
+    tablesFilters: SpreadsheetFilterState = {},
+    gsFilterSpreadsheetState: GsFilterSpreadsheetState = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
+    tablesFilters,
+    gsFilterSpreadsheetState,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';

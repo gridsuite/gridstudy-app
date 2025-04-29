@@ -7,13 +7,13 @@
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { AppState, StudyIndexationStatus } from 'redux/reducer';
+import { AppState, RootNetworkIndexationStatus } from 'redux/reducer';
 import { StudyDisplayMode } from '../network-modification.type';
 
 export const useDisabledSearchReason = () => {
     const intl = useIntl();
     const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
-    const studyIndexationStatus = useSelector((state: AppState) => state.studyIndexationStatus);
+    const rootNetworkIndexationStatus = useSelector((state: AppState) => state.rootNetworkIndexationStatus);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     if (studyDisplayMode === StudyDisplayMode.TREE) {
@@ -24,9 +24,9 @@ export const useDisabledSearchReason = () => {
         return intl.formatMessage({
             id: 'InvalidNode',
         });
-    } else if (studyIndexationStatus !== StudyIndexationStatus.INDEXED) {
+    } else if (rootNetworkIndexationStatus !== RootNetworkIndexationStatus.INDEXED) {
         return intl.formatMessage({
-            id: 'waitingStudyIndexation',
+            id: 'waitingRootNetworkIndexation',
         });
     } else {
         return '';

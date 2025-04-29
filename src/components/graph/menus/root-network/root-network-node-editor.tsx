@@ -22,8 +22,8 @@ import {
     Typography,
     Badge,
     IconButton,
-    Stack,
     Chip,
+    Tooltip,
 } from '@mui/material';
 
 import { SetStateAction, useCallback, useRef, useState } from 'react';
@@ -48,40 +48,10 @@ import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-u
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 
 const styles = {
-    checkBoxLabel: { flexGrow: '1' },
-    checkboxListItem: {
-        display: 'flex',
-        alignItems: 'flex-start',
-        paddingRight: '16px',
-        '& .MuiListItemSecondaryAction-root': {
-            paddingLeft: '4px',
-            position: 'relative',
-            top: 0,
-            right: 0,
-            transform: 'translateX(0px)',
-        },
-    },
-    // TODO WHY it doesn't work with using the Theme here ?????
-    // checkboxListItem: (theme: Theme) => ({
-    //     display: 'flex',
-    //     alignItems: 'flex-start',
-    //     paddingRight: theme.spacing(4),
-    //     '& .MuiListItemSecondaryAction-root': {
-    //         position: 'relative',
-    //         top: 0,
-    //         right: 0,
-    //         transform: 'translateX(0px)',
-    //     },
-    // }),
-    checkbox: { paddingTop: '4px' },
-    // checkbox: (theme: Theme) => ({ paddingTop: theme.spacing(1) }),
-    checkBoxIcon: { minWidth: 0, padding: 0, marginLeft: 2 },
-    checkboxButton: {
-        padding: 0.5,
-        margin: 0,
-        display: 'flex',
-        alignItems: 'center',
-    },
+    checkboxListItem: (theme: Theme) => ({
+        paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+    }),
     rootNetworksTitle: (theme: Theme) => ({
         display: 'flex',
         padding: theme.spacing(1),
@@ -97,6 +67,7 @@ const styles = {
         '&': {
             // Necessary to overrides some @media specific styles that are defined elsewhere
             padding: 0,
+            paddingLeft: theme.spacing(1),
             minHeight: 0,
         },
         border: theme.spacing(1),
@@ -104,9 +75,6 @@ const styles = {
     }),
     toolbarIcon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
-    }),
-    toolbarCheckbox: (theme: Theme) => ({
-        marginLeft: theme.spacing(1.5),
     }),
     filler: {
         flexGrow: 1,
@@ -121,6 +89,10 @@ const styles = {
     icon: (theme: Theme) => ({
         width: theme.spacing(3),
     }),
+};
+
+const ItemLabelSecondary = (item: RootNetworkMetadata) => {
+    return <Chip size="small" label={item.tag} color="primary" />;
 };
 
 interface RootNetworkNodeEditorProps {
@@ -265,7 +237,6 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
             return (
                 <IconButton
-                    size="small"
                     onClick={() => {
                         dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
                     }}
@@ -290,13 +261,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                 isDisabled={(_rootNetwork) => isRootNetworksProcessing}
                 sx={{
                     items: () => ({
-                        label: {
-                            ...styles.checkBoxLabel,
-                        },
                         checkboxListItem: styles.checkboxListItem,
-                        checkbox: styles.checkbox,
-                        checkBoxIcon: styles.checkBoxIcon,
-                        checkboxButton: styles.checkboxButton,
                     }),
                 }}
                 onItemClick={(rootNetwork) => {
@@ -307,16 +272,8 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                 onSelectionChange={setSelectedItems}
                 items={rootNetworks}
                 getItemId={(val) => val.rootNetworkUuid}
-                getItemLabel={(val) => {
-                    return (
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            {val.name}
-                            <Stack direction="row" spacing={1}>
-                                <Chip size="small" label={val.tag} color="primary" />
-                            </Stack>
-                        </Box>
-                    );
-                }}
+                getItemLabel={(val) => val.name}
+                getItemLabelSecondary={ItemLabelSecondary}
                 secondaryAction={handleSecondaryAction}
             />
         );
@@ -391,30 +348,30 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
         <>
             <Toolbar sx={styles.toolbar}>
                 <Checkbox
-                    sx={styles.toolbarCheckbox}
                     disabled={isRootNetworksProcessing}
-                    color={'primary'}
-                    edge="start"
                     checked={isChecked(selectedItems.length)}
                     indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
                     disableRipple
                     onClick={toggleSelectAllRootNetworks}
                 />
                 <Box sx={styles.filler} />
-
-                <IconButton
-                    onClick={doDeleteRootNetwork}
-                    size={'small'}
-                    sx={styles.toolbarIcon}
-                    disabled={
-                        selectedItems.length === 0 ||
-                        !currentNode ||
-                        rootNetworks.length === selectedItems.length ||
-                        isRootNetworksProcessing
-                    }
-                >
-                    <DeleteIcon />
-                </IconButton>
+                <Tooltip title={<FormattedMessage id={'deleteNetwork'} values={{ count: selectedItems.length }} />}>
+                    <span>
+                        <IconButton
+                            onClick={doDeleteRootNetwork}
+                            size={'small'}
+                            sx={styles.toolbarIcon}
+                            disabled={
+                                selectedItems.length === 0 ||
+                                !currentNode ||
+                                rootNetworks.length === selectedItems.length ||
+                                isRootNetworksProcessing
+                            }
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
             </Toolbar>
             {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
             {renderRootNetworksListTitle()}

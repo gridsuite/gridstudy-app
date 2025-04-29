@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, RefObject, useCallback, useMemo, useRef } from 'react';
+import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -13,9 +13,9 @@ import {
     ColDef,
     ColumnMovedEvent,
     GetRowIdParams,
+    GridOptions,
     RowClassParams,
     RowClickedEvent,
-    GridOptions,
     RowStyle,
 } from 'ag-grid-community';
 import { AppState } from '../../redux/reducer';
@@ -24,6 +24,7 @@ import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
 import { CalculationRowType } from './utils/calculation.type';
 import { isCalculationRow } from './utils/calculation-utils';
 import { useSelector } from 'react-redux';
+import { AgGridReact } from 'ag-grid-react';
 import { styles } from './equipment-table.style';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 
@@ -55,28 +56,28 @@ const defaultColDef: ColDef = {
 };
 
 interface EquipmentTableProps {
+    gridRef: React.RefObject<AgGridReact>;
     rowData: unknown[] | undefined;
     columnData: ColDef[];
-    gridRef: RefObject<any> | undefined;
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
-    handleRowDataUpdated: () => void;
     isFetching: boolean | undefined;
     shouldHidePinnedHeaderRightBorder: boolean;
     onRowClicked?: (event: RowClickedEvent) => void;
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
-    onModelUpdated: GridOptions['onModelUpdated'];
+    onModelUpdated?: GridOptions['onModelUpdated'];
     isDataEditable: boolean;
+    onFirstDataRendered: GridOptions['onFirstDataRendered'];
+    onGridReady: GridOptions['onGridReady'];
 }
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
-    rowData,
     columnData,
     gridRef,
+    rowData,
     currentNode,
     handleColumnDrag,
-    handleRowDataUpdated,
     isFetching,
     shouldHidePinnedHeaderRightBorder,
     onRowClicked,
@@ -84,6 +85,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     doesExternalFilterPass,
     onModelUpdated,
     isDataEditable,
+    onFirstDataRendered,
+    onGridReady,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -134,14 +137,6 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode, studyUuid, theme]
     );
 
-    const rowsToShow = useMemo(() => {
-        if (isFetching !== undefined && rowData !== undefined) {
-            return !isFetching && rowData.length > 0 ? rowData : [];
-        }
-        // If isFetching/rowData are not initialized, dont set [] for rowData to avoid an initial "no rows" state
-        return undefined;
-    }, [rowData, isFetching]);
-
     const handleCellMouseDown = useCallback(() => {
         clickTimeRef.current = Date.now();
     }, []);
@@ -166,16 +161,14 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             ref={gridRef}
             rowSelection={{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }}
             getRowId={getRowId}
-            rowData={rowsToShow}
             debounceVerticalScrollbar={true}
             getRowStyle={getRowStyle}
             columnDefs={columnData}
             defaultColDef={defaultColDef}
             undoRedoCellEditing={true}
-            onRowDataUpdated={handleRowDataUpdated}
             onColumnMoved={handleColumnDrag}
             suppressDragLeaveHidesColumns={true}
-            suppressColumnVirtualisation={true}
+            rowBuffer={5}
             onCellMouseDown={handleCellMouseDown}
             onRowClicked={handleRowClicked}
             onModelUpdated={onModelUpdated}
@@ -185,8 +178,11 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             overlayLoadingTemplate={intl.formatMessage({ id: 'LoadingRemoteData' })}
             isExternalFilterPresent={isExternalFilterPresent}
             doesExternalFilterPass={doesExternalFilterPass}
+            onFirstDataRendered={onFirstDataRendered}
+            onGridReady={onGridReady}
             sx={shouldHidePinnedHeaderRightBorder ? styles.noBorderRight : undefined}
             overrideLocales={AGGRID_LOCALES}
+            suppressNoRowsOverlay={rowData === undefined}
         />
     );
 };

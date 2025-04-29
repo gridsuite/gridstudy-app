@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback, useMemo } from 'react';
-import { AppState } from 'redux/reducer';
-import { useSelector } from 'react-redux';
 import { CustomColumnMenu } from '../../custom-aggrid/custom-column-menu';
 import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import { limitedEvaluate } from './math';
@@ -18,13 +16,11 @@ import {
     textColumnDefinition,
 } from '../config/common-column-definitions';
 import { validateFormulaResult } from './formula-validator';
-import { ColumnDefinition } from '../config/spreadsheet.type';
+import { ColumnDefinition, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 import { CustomColDef } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../utils/calculation-utils';
 
-export function useCustomColumn(tabIndex: number) {
-    const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
-
+export function useCustomColumn(tableDefinition: SpreadsheetTabDefinition) {
     const createValueGetter = useCallback(
         (colDef: ColumnDefinition) =>
             (params: ValueGetterParams): boolean | string | number | undefined => {
@@ -60,16 +56,16 @@ export function useCustomColumn(tabIndex: number) {
 
                 switch (colDef.type) {
                     case COLUMN_TYPES.NUMBER:
-                        baseDefinition = numberColumnDefinition(colDef.name, tableDefinition.uuid, colDef.precision);
+                        baseDefinition = numberColumnDefinition(colDef, tableDefinition.uuid);
                         break;
                     case COLUMN_TYPES.TEXT:
-                        baseDefinition = textColumnDefinition(colDef.name, tableDefinition.uuid);
+                        baseDefinition = textColumnDefinition(colDef, tableDefinition.uuid);
                         break;
                     case COLUMN_TYPES.BOOLEAN:
-                        baseDefinition = booleanColumnDefinition(colDef.name, tableDefinition.uuid);
+                        baseDefinition = booleanColumnDefinition(colDef, tableDefinition.uuid);
                         break;
                     case COLUMN_TYPES.ENUM:
-                        baseDefinition = enumColumnDefinition(colDef.name, tableDefinition.uuid);
+                        baseDefinition = enumColumnDefinition(colDef, tableDefinition.uuid);
                         break;
                     default:
                         baseDefinition = {};
@@ -85,7 +81,7 @@ export function useCustomColumn(tabIndex: number) {
                         menu: {
                             Menu: CustomColumnMenu,
                             menuParams: {
-                                tabIndex,
+                                tableDefinition,
                                 colUuid: colDef.uuid,
                             },
                         },
@@ -95,6 +91,6 @@ export function useCustomColumn(tabIndex: number) {
                     enableCellChangeFlash: true,
                 };
             }),
-        [tableDefinition?.columns, tableDefinition?.uuid, tabIndex, createValueGetter]
+        [tableDefinition, createValueGetter]
     );
 }
