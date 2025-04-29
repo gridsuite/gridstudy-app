@@ -18,8 +18,7 @@ import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
 import { isNodeReadOnly } from '../graph/util/model-functions';
-import { CustomMenuItem, CustomNestedMenuItem } from '../utils/custom-nested-menu';
-import { Equipment, EquipmentType } from '@gridsuite/commons-ui';
+import { Equipment, EquipmentType, CustomMenuItem, CustomNestedMenuItem } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 
 const styles = {
