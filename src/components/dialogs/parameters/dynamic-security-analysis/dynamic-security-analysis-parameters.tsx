@@ -40,6 +40,7 @@ import ContingencyParameters, { CONTINGENCIES_LIST_INFOS, CONTINGENCIES_START_TI
 import { ID, NAME, PROVIDER } from '../../../utils/field-constants';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
+import { useParametersNotification } from '../use-parameters-notification';
 
 const scenarioFormSchema = yup
     .object()
@@ -100,12 +101,10 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
 }) => {
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
 
-    const [providers, provider, , resetProvider, parameters, updateParameters, resetParameters] = useParametersBackend(
+    const dynamicSecurityParametersBackend = useParametersBackend(
         user,
         studyUuid,
-        studyUpdated,
         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
         dynamicSecurityAnalysisAvailability,
         fetchDynamicSecurityAnalysisProviders,
@@ -115,6 +114,14 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
         fetchDynamicSecurityAnalysisParameters,
         updateDynamicSecurityAnalysisParameters
     );
+    useParametersNotification(
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        dynamicSecurityParametersBackend
+    );
+
+    const [providers, provider, , , resetProvider, parameters, , updateParameters, resetParameters] =
+        dynamicSecurityParametersBackend;
 
     const formattedProviders = useMemo(
         () =>

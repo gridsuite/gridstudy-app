@@ -80,7 +80,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
 }) => {
     const { snackError } = useSnackMessage();
 
-    const [providers, provider, updateProvider, resetProvider] = parametersBackend;
+    const [providers, provider, , updateProvider, resetProvider] = parametersBackend;
 
     const emptyFormData = useMemo(() => {
         return {

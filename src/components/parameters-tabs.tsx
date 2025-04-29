@@ -63,6 +63,7 @@ import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short
 import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
 import { StudyView, StudyViewType } from './utils/utils';
 import { useParametersBackend, LoadFlowParametersInline } from '@gridsuite/commons-ui';
+import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -86,7 +87,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
 
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
@@ -120,7 +120,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const loadFlowParametersBackend = useParametersBackend(
         user,
         studyUuid,
-        studyUpdated,
         ComputingType.LOAD_FLOW,
         OptionalServicesStatus.Up,
         getLoadFlowProviders,
@@ -132,11 +131,11 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         getLoadFlowSpecificParametersDescription,
         getLoadFlowDefaultLimitReductions
     );
+    useParametersNotification(ComputingType.LOAD_FLOW, OptionalServicesStatus.Up, loadFlowParametersBackend);
 
     const securityAnalysisParametersBackend = useParametersBackend(
         user,
         studyUuid,
-        studyUpdated,
         ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
         fetchSecurityAnalysisProviders,
@@ -148,11 +147,15 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         undefined,
         getSecurityAnalysisDefaultLimitReductions
     );
+    useParametersNotification(
+        ComputingType.SECURITY_ANALYSIS,
+        securityAnalysisAvailability,
+        securityAnalysisParametersBackend
+    );
 
     const sensitivityAnalysisBackend = useParametersBackend(
         user,
         studyUuid,
-        studyUpdated,
         ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability,
         fetchSensitivityAnalysisProviders,
@@ -161,11 +164,15 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         null,
         getSensitivityAnalysisParameters
     );
+    useParametersNotification(
+        ComputingType.SENSITIVITY_ANALYSIS,
+        sensitivityAnalysisAvailability,
+        sensitivityAnalysisBackend
+    );
 
     const nonEvacuatedEnergyBackend = useParametersBackend(
         user,
         studyUuid,
-        studyUpdated,
         ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
         nonEvacuatedEnergyAvailability,
         fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis

@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import {isComputationParametersUpdated, useSnackMessage} from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { getShortCircuitParameters } from '../../../services/study/short-circuit-analysis';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
@@ -15,6 +15,7 @@ import ComputingType from '../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analysis.type';
+import { isComputationParametersUpdated } from './use-parameters-notification';
 
 export type UseGetShortCircuitParametersProps = [
     ShortCircuitParametersInfos | null,

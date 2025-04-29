@@ -20,7 +20,6 @@ import {
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
     ShowAuthenticationRouterLoginAction,
-    StudyUpdated,
     UNAUTHORIZED_USER_INFO,
     UnauthorizedUserAction,
     USER,
@@ -290,7 +289,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import { LineFlowMode } from '@powsybl/network-viewer';
+import { EQUIPMENT_TYPES as NetworkViewerEquipmentType, LineFlowMode } from '@powsybl/network-viewer';
 import type { ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
@@ -332,6 +331,120 @@ export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
     nodeId: UUID;
 }
+
+// Headers
+export interface StudyUpdatedEventDataHeader {
+    studyUuid: UUID;
+    updateType: string;
+    parentNode: UUID;
+    rootNetworkUuid: UUID;
+    timestamp: number;
+    node?: UUID;
+    nodes?: UUID[];
+    error?: string;
+    userId?: string;
+    computationType?: ComputingType;
+}
+
+interface RootNetworksDeletionStartedEventDataHeader {
+    studyUuid: UUID;
+    updateType: string;
+    rootNetworksUuids: UUID[];
+}
+
+interface LoadflowResultEventDataHeaders {
+    studyUuid: UUID;
+    updateType: string;
+    rootNetworkUuid: UUID;
+}
+
+interface RootNetworksUpdatedEventDataHeaders {
+    studyUuid: UUID;
+    updateType: string;
+    rootNetworkUuid?: UUID; // all root networks if absent
+    error?: string;
+}
+
+// Payloads
+export interface DeletedEquipment {
+    equipmentId: string;
+    equipmentType: NetworkViewerEquipmentType;
+}
+
+export interface NetworkImpactsInfos {
+    impactedSubstationsIds: UUID[];
+    deletedEquipments: DeletedEquipment[];
+    impactedElementTypes: string[];
+}
+
+// EventData
+export interface StudyUpdatedEventData {
+    headers: StudyUpdatedEventDataHeader;
+    payload: NetworkImpactsInfos;
+}
+
+interface StudyUpdatedEventDataUnknown {
+    headers: StudyUpdatedEventDataHeader;
+    payload: string;
+}
+
+export interface LoadflowResultEventData {
+    headers: LoadflowResultEventDataHeaders;
+    payload: undefined;
+}
+
+export interface RootNetworksDeletionStartedEventData {
+    headers: RootNetworksDeletionStartedEventDataHeader;
+    payload: undefined;
+}
+
+export interface RootNetworksUpdatedEventData {
+    headers: RootNetworksUpdatedEventDataHeaders;
+    payload: undefined;
+}
+
+// Notification types
+type StudyUpdatedStudy = {
+    type: NotificationType.STUDY;
+    eventData: StudyUpdatedEventData;
+};
+
+type StudyUpdatedUndefined = {
+    type: undefined;
+    eventData: StudyUpdatedEventDataUnknown;
+};
+
+type LoadflowResultNotification = {
+    type: NotificationType.LOADFLOW_RESULT;
+    eventData: LoadflowResultEventData;
+};
+
+type RootNetworksUpdatedNotification = {
+    type: NotificationType.ROOT_NETWORKS_UPDATED;
+    eventData: RootNetworksUpdatedEventData;
+};
+
+type RootNetworksUpdateFailedNotification = {
+    type: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
+    eventData: RootNetworksUpdatedEventData;
+};
+
+type RootNetworkDeletionStartedNotification = {
+    type: NotificationType.ROOT_NETWORKS_DELETION_STARTED;
+    eventData: RootNetworksDeletionStartedEventData;
+};
+
+// Redux state
+export type StudyUpdated = {
+    force: number; //IntRange<0, 1>;
+} & (
+    | StudyUpdatedUndefined
+    | StudyUpdatedStudy
+    | LoadflowResultNotification
+    | RootNetworksUpdatedNotification
+    | RootNetworksUpdateFailedNotification
+    | RootNetworkDeletionStartedNotification
+);
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;

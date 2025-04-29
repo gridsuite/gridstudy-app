@@ -56,6 +56,7 @@ import {
 import { DynamicSimulationForm, formSchema, TAB_VALUES } from './dynamic-simulation.type';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
+import { useParametersNotification } from '../use-parameters-notification';
 
 interface DynamicSimulationParametersProps {
     user: User | null;
@@ -77,12 +78,10 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
 }) => {
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
 
-    const [providers, provider, , resetProvider, parameters, updateParameters, resetParameters] = useParametersBackend(
+    const dynamicSimulationParametersBackend = useParametersBackend(
         user,
         studyUuid,
-        studyUpdatedForce,
         ComputingType.DYNAMIC_SIMULATION,
         dynamicSimulationAvailability,
         fetchDynamicSimulationProviders,
@@ -92,6 +91,14 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
         fetchDynamicSimulationParameters,
         updateDynamicSimulationParameters
     );
+    useParametersNotification(
+        ComputingType.DYNAMIC_SIMULATION,
+        dynamicSimulationAvailability,
+        dynamicSimulationParametersBackend
+    );
+
+    const [providers, provider, , , resetProvider, parameters, , updateParameters, resetParameters] =
+        dynamicSimulationParametersBackend;
 
     const formattedProviders = useMemo(
         () =>

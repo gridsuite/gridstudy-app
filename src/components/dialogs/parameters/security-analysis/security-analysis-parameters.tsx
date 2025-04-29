@@ -52,8 +52,19 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SECURITY_ANALYSIS>;
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
 }> = ({ parametersBackend, setHaveDirtyFields }) => {
-    const [providers, provider, , resetProvider, params, updateParameters, resetParameters, , defaultLimitReductions] =
-        parametersBackend;
+    const [
+        providers,
+        provider,
+        ,
+        ,
+        resetProvider,
+        params,
+        ,
+        updateParameters,
+        resetParameters,
+        ,
+        defaultLimitReductions,
+    ] = parametersBackend;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const intl = useIntl();

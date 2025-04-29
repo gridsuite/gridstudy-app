@@ -23,8 +23,7 @@ import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulati
 import { isChecked, isPartial, styles } from '../network-modifications/network-modification-node-editor-utils';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
-import type { StudyUpdated, StudyUpdatedEventData } from '@gridsuite/commons-ui';
-import { AppState } from '../../../../redux/reducer';
+import { AppState, StudyUpdated, StudyUpdatedEventData } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 

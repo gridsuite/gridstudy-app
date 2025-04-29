@@ -8,8 +8,8 @@
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { UUID } from 'crypto';
-import { AppState } from '../redux/reducer';
-import { identity, StudyUpdated, StudyUpdatedEventData } from '@gridsuite/commons-ui';
+import { AppState, StudyUpdated, StudyUpdatedEventData } from '../redux/reducer';
+import { identity } from '@gridsuite/commons-ui';
 
 export const UPDATE_TYPE_HEADER = 'updateType';
 

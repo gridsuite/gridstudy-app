@@ -91,7 +91,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] = useState(0);
-    const [providers, , , , params, updateParameters] = parametersBackend;
+    const [providers, , , , , params, , updateParameters] = parametersBackend;
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
 

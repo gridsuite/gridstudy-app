@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { isComputationParametersUpdated, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getNonEvacuatedEnergyParameters } from '../../../../services/study/non-evacuated-energy';
@@ -16,6 +16,7 @@ import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { UseGetNonEvacuatedEnergyParametersReturnProps } from './utils';
+import { isComputationParametersUpdated } from '../use-parameters-notification';
 
 export const useGetNonEvacuatedEnergyParameters = (): UseGetNonEvacuatedEnergyParametersReturnProps => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
