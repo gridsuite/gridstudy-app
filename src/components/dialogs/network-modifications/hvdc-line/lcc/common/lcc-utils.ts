@@ -15,6 +15,7 @@ import {
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
     CONVERTERS_MODE,
+    DELETION_MARK,
     FILTERS_SHUNT_COMPENSATOR_TABLE,
     ID,
     LOSS_FACTOR,
@@ -39,6 +40,7 @@ import {
     LccCreationInfos,
     LccFormInfos,
     ShuntCompensatorFormSchema,
+    ShuntCompensatorModificationFormSchema,
 } from './lcc-type';
 import {
     copyEquipmentPropertiesForCreation,
@@ -56,6 +58,7 @@ import {
     LccConverterStationModificationInfos,
     LccModificationInfos,
     LccShuntCompensatorInfos,
+    LccShuntCompensatorModificationInfos,
 } from '../../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../../utils/utils';
 
@@ -128,6 +131,7 @@ export const getEmptyShuntCompensatorOnSideModificationFormData = () => ({
     [SHUNT_COMPENSATOR_NAME]: '',
     [MAX_Q_AT_NOMINAL_V]: null,
     [SHUNT_COMPENSATOR_SELECTED]: null,
+    [DELETION_MARK]: false,
 });
 
 export const getEmptyFiltersShuntCompensatorModificationTableFormData = (count = 0) =>
@@ -203,7 +207,7 @@ export const getShuntCompensatorOnSideFormData = (
 };
 
 export const getShuntCompensatorOnSideFormModificationData = (
-    infos?: LccShuntCompensatorInfos[]
+    infos?: LccShuntCompensatorModificationInfos[]
 ): ShuntCompensatorFormSchema[] => {
     return (
         infos?.map((shuntCp) => ({
@@ -211,17 +215,18 @@ export const getShuntCompensatorOnSideFormModificationData = (
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
             [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc === undefined ? null : shuntCp.connectedToHvdc,
+            [DELETION_MARK]: shuntCp.deletionMark ?? false,
         })) ?? []
     );
 };
 
 export const getConcatenatedShuntCompensatorOnSideInfos = (
-    infos?: LccShuntCompensatorInfos[],
-    infosToConcatenate?: LccShuntCompensatorInfos[]
-): ShuntCompensatorFormSchema[] => {
-    const result: LccShuntCompensatorInfos[] | null = mergeModificationAndEquipmentShuntCompensatorInfos(
+    infos?: LccShuntCompensatorModificationInfos[],
+    infosMapServer?: LccShuntCompensatorInfos[]
+) => {
+    const result: LccShuntCompensatorModificationInfos[] | null = mergeModificationAndEquipmentShuntCompensatorInfos(
         infos,
-        infosToConcatenate
+        infosMapServer
     );
     return (
         result?.map((shuntCp) => ({
@@ -229,18 +234,24 @@ export const getConcatenatedShuntCompensatorOnSideInfos = (
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
             [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc === undefined ? null : shuntCp.connectedToHvdc,
+            [DELETION_MARK]: shuntCp.connectedToHvdc ?? false,
         })) ?? []
     );
 };
 
 export const mergeModificationAndEquipmentShuntCompensatorInfos = (
-    infosModification?: LccShuntCompensatorInfos[],
+    infosModification?: LccShuntCompensatorModificationInfos[],
     infosMapServer?: LccShuntCompensatorInfos[]
-): LccShuntCompensatorInfos[] => {
-    let result = new Map<string, LccShuntCompensatorInfos>();
+): LccShuntCompensatorModificationInfos[] => {
+    let result = new Map<string, LccShuntCompensatorModificationInfos>();
     if (!infosModification && infosMapServer) {
         for (const info of infosMapServer) {
-            result.set(info.id, { ...info, connectedToHvdc: null }); //we only consider
+            result.set(info.id, {
+                ...info,
+                connectedToHvdc: null,
+                deletionMark: false,
+                type: 'LCC_SHUNT_MODIFICATION',
+            }); //we only consider
         }
         return Array.from(result.values());
     }
@@ -264,7 +275,6 @@ export const mergeModificationAndEquipmentShuntCompensatorInfos = (
                 // If the property is present in the modification and in the equipment
                 if (result.has(value.id)) {
                     const modInfos = result.get(value.id);
-                    console.log(' modInfos : ', modInfos);
                     if (modInfos) {
                         concatenatedInfos = {
                             ...modInfos,
@@ -327,6 +337,22 @@ export const getShuntCompensatorOnSideCreateData = (
             name: shuntCp[SHUNT_COMPENSATOR_NAME],
             maxQAtNominalV: shuntCp[MAX_Q_AT_NOMINAL_V],
             connectedToHvdc: shuntCp[SHUNT_COMPENSATOR_SELECTED],
+            type: 'LCC_SHUNT_CREATION',
+        })) ?? []
+    );
+};
+
+export const getShuntCompensatorOnSideModificationData = (
+    shuntCompensatorInfos?: ShuntCompensatorModificationFormSchema[]
+): LccShuntCompensatorModificationInfos[] => {
+    return (
+        shuntCompensatorInfos?.map((shuntCp) => ({
+            id: shuntCp[SHUNT_COMPENSATOR_ID],
+            name: shuntCp[SHUNT_COMPENSATOR_NAME],
+            maxQAtNominalV: shuntCp[MAX_Q_AT_NOMINAL_V],
+            connectedToHvdc: shuntCp[SHUNT_COMPENSATOR_SELECTED],
+            deletionMark: shuntCp[DELETION_MARK],
+            type: 'LCC_SHUNT_MODIFICATION',
         })) ?? []
     );
 };
@@ -364,7 +390,9 @@ export function getLccConverterStationModificationData(
         equipmentName: toModificationOperation(converterStation[CONVERTER_STATION_NAME]),
         lossFactor: toModificationOperation(converterStation[LOSS_FACTOR]),
         powerFactor: toModificationOperation(converterStation[POWER_FACTOR]),
-        shuntCompensatorsOnSide: getShuntCompensatorOnSideCreateData(converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE]),
+        shuntCompensatorsOnSide: getShuntCompensatorOnSideModificationData(
+            converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE]
+        ),
     };
 }
 

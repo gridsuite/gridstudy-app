@@ -123,3 +123,7 @@ export interface ShuntCompensatorFormSchema {
     maxQAtNominalV: number;
     connectedToHvdc?: boolean | null;
 }
+
+export interface ShuntCompensatorModificationFormSchema extends ShuntCompensatorFormSchema {
+    deletionMark: boolean;
+}

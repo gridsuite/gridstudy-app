@@ -201,7 +201,6 @@ export const LccModificationDialog = ({
                     true
                 )
                     .then((value: LccFormInfos | null) => {
-                        console.log('onEquipment Id change - value : ', value);
                         if (value) {
                             setLccToModify({ ...value });
                             reset((formValues: any) => ({

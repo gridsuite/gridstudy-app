@@ -14,6 +14,7 @@ import { useCallback, useMemo, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import {
+    DELETION_MARK,
     FILTERS_SHUNT_COMPENSATOR_TABLE,
     MAX_Q_AT_NOMINAL_V,
     PREVIOUS_SHUNT_COMPENSATOR_SELECTED,
@@ -37,14 +38,10 @@ export function ModificationFiltersShuntCompensatorTable({
     previousValues,
 }: Readonly<ModificationFiltersShuntCompensatorTableProps>) {
     const intl = useIntl();
-    const {
-        fields: rows,
-        append: handleAddRow,
-        remove: handleRemoveRow,
-    } = useFieldArray({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
-    const { getValues } = useFormContext();
+    const { fields: rows, append: handleAddRow } = useFieldArray({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
+    const { getValues, setValue } = useFormContext();
+    const [deleteRows, setDeleteRows] = useState<Array<boolean>>(rows.map((row: any) => row.deletionMark));
     const [isHover, setIsHover] = useState<Record<number, boolean>>({});
-    const [rowsToDelete, setRowsToDelete] = useState<Array<number>>([]);
     const handleHover = (rowIndex: number, hoverState: boolean) => {
         setIsHover((prev) => ({
             ...prev,
@@ -100,13 +97,11 @@ export function ModificationFiltersShuntCompensatorTable({
 
     const markRowToDeleteOrRestore = useCallback(
         (index: number) => {
-            if (rowsToDelete.includes(index)) {
-                setRowsToDelete(rowsToDelete.filter((row) => row !== index));
-            } else {
-                setRowsToDelete([...rowsToDelete, index]);
-            }
+            setDeleteRows(deleteRows.map((value, i) => (i === index ? !value : value)));
+            const deleteMark = getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${DELETION_MARK}`);
+            setValue(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${DELETION_MARK}`, !deleteMark);
         },
-        [rowsToDelete]
+        [deleteRows, getValues, id, setValue]
     );
 
     const PreviousConnexion = useCallback(
@@ -179,13 +174,9 @@ export function ModificationFiltersShuntCompensatorTable({
 
     const DeleteOrRestoreIcon = useCallback(
         (index: number) => {
-            return rowsToDelete.find((element) => element === index) === undefined ? (
-                <DeleteIcon />
-            ) : (
-                <RestoreFromTrashIcon />
-            );
+            return !deleteRows?.[index] ? <DeleteIcon /> : <RestoreFromTrashIcon />;
         },
-        [rowsToDelete]
+        [deleteRows]
     );
 
     const ShuntCompensatorSelectedField = useCallback(
@@ -194,16 +185,16 @@ export function ModificationFiltersShuntCompensatorTable({
                 <CheckboxNullableInput
                     name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
                     label=""
-                    nullDisabled={previousValues && index >= previousValues.length}
+                    nullDisabled={false}
                     disabled={disabled}
                 />
             );
         },
-        [id, previousValues]
+        [id]
     );
 
     const renderTableCell = (index: number) => {
-        const disabled = rowsToDelete.includes(index);
+        const disabled = deleteRows?.[index] ?? false;
         return columnsDefinition.map((column) => (
             <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
                 {column.dataKey === SHUNT_COMPENSATOR_ID && IdField(index)}
@@ -232,7 +223,7 @@ export function ModificationFiltersShuntCompensatorTable({
                                 })}
                             >
                                 <span>
-                                    <IconButton onClick={() => handleAddRow(newRowData)}>
+                                    <IconButton onClick={() => handleAddRow(newRowData)} disabled>
                                         <AddCircleIcon />
                                     </IconButton>
                                 </span>
@@ -253,16 +244,10 @@ export function ModificationFiltersShuntCompensatorTable({
                                 {isHover[index] && (
                                     <Tooltip
                                         title={intl.formatMessage({
-                                            id: 'DeleteRows',
+                                            id: !deleteRows?.[index] ? 'DeleteRows' : 'button.restore',
                                         })}
                                     >
-                                        <IconButton
-                                            onClick={() =>
-                                                previousValues && index >= previousValues?.length
-                                                    ? handleRemoveRow(index)
-                                                    : markRowToDeleteOrRestore(index)
-                                            }
-                                        >
+                                        <IconButton onClick={() => markRowToDeleteOrRestore(index)}>
                                             {DeleteOrRestoreIcon(index)}
                                         </IconButton>
                                     </Tooltip>

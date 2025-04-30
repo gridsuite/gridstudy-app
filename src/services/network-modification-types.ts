@@ -373,6 +373,11 @@ export interface LccShuntCompensatorInfos {
     name?: string | null;
     maxQAtNominalV: number;
     connectedToHvdc?: boolean | null;
+    type?: string;
+}
+
+export interface LccShuntCompensatorModificationInfos extends LccShuntCompensatorInfos {
+    deletionMark: boolean;
 }
 
 export interface LCCCreationConverterStation {
@@ -717,7 +722,7 @@ export interface LccConverterStationModificationInfos {
     equipmentName: AttributeModification<string> | null;
     lossFactor: AttributeModification<number> | null;
     powerFactor: AttributeModification<number> | null;
-    shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
+    shuntCompensatorsOnSide: LccShuntCompensatorModificationInfos[];
 }
 
 export interface LccModificationInfos {
