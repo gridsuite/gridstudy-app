@@ -98,17 +98,12 @@ export default function VoltageLevelTopologyModificationDialog({
     });
 
     const { reset, getValues, setValue } = formMethods;
-    const fromEditDataToFormValues = useCallback((editData: TopologyVoltageLevelModificationInfos) => {
+
+    useEffect(() => {
         if (editData?.equipmentId) {
             setSelectedId(editData.equipmentId);
         }
-    }, []);
-
-    useEffect(() => {
-        if (editData) {
-            fromEditDataToFormValues(editData);
-        }
-    }, [fromEditDataToFormValues, editData]);
+    }, [editData]);
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: string) => {
@@ -124,13 +119,11 @@ export default function VoltageLevelTopologyModificationDialog({
                                 {
                                     [TOPOLOGY_MODIFICATION_TABLE]: switchesInfos?.map((row) => ({
                                         [SWITCH_ID]: row.id,
-                                        [PREV_CONNECTION_STATUS]: intl.formatMessage({
-                                            id: row.open ? 'Closed' : 'Open',
-                                        }),
+                                        [PREV_CONNECTION_STATUS]: row.open ? 'Closed' : 'Open',
                                         [CURRENT_CONNECTION_STATUS]: null,
                                     })),
                                 },
-                                { keepDefaultValues: true, keepDirty: true }
+                                { keepDirty: true }
                             );
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         } else {
@@ -144,7 +137,7 @@ export default function VoltageLevelTopologyModificationDialog({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, intl]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset]
     );
 
     useEffect(() => {
@@ -343,7 +336,6 @@ export default function VoltageLevelTopologyModificationDialog({
                 titleId="ModifyVoltageLevelTopology"
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={selectedId != null}
                 PaperProps={{
                     sx: {
                         height: '75vh',

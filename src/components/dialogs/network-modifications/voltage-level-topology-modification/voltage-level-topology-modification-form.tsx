@@ -101,6 +101,13 @@ export function VoltageLevelTopologyModificationForm({
                 field: PREV_CONNECTION_STATUS,
                 flex: 1,
                 headerComponent: HeaderWithTooltip,
+                cellRenderer: (params: { data?: any; node?: any }) => {
+                    if (params.data.type === 'SEPARATOR') {
+                        return null;
+                    } else {
+                        return intl.formatMessage({ id: params.data[PREV_CONNECTION_STATUS] });
+                    }
+                },
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: 'previousStatus' }),
                     tooltipTitle: intl.formatMessage({
@@ -146,12 +153,11 @@ export function VoltageLevelTopologyModificationForm({
             if (row.type === 'SEPARATOR') {
                 return;
             }
-            const isOpen = row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Open' });
-            const isClosed = row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Closed' });
-            const newValue = isOpen ? false : isClosed ? true : null;
+            const newValue =
+                row[PREV_CONNECTION_STATUS] === 'Open' ? false : row[PREV_CONNECTION_STATUS] === 'Closed' ? true : null;
             setValue(`${TOPOLOGY_MODIFICATION_TABLE}[${index}].${CURRENT_CONNECTION_STATUS}`, newValue);
         });
-    }, [getValues, setValue, intl]);
+    }, [getValues, setValue]);
 
     return (
         <Grid container spacing={2}>
