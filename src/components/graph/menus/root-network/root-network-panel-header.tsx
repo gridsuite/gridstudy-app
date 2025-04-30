@@ -118,16 +118,14 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
 
     const renderRootNetworkConfirmationContent = () => {
         return (
-            <>
-                <Typography sx={{ whiteSpace: 'pre-line' }}>
-                    <FormattedMessage
-                        id="confirmRootNetworkCreation"
-                        values={{
-                            studyName,
-                        }}
-                    />
-                </Typography>
-            </>
+            <Typography sx={{ whiteSpace: 'pre-line' }}>
+                <FormattedMessage
+                    id="confirmRootNetworkCreation"
+                    values={{
+                        studyName,
+                    }}
+                />
+            </Typography>
         );
     };
     const handleRootNetworkCreation = (data: FormData) => {
