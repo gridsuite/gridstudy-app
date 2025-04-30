@@ -10,8 +10,8 @@ import { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments } from 'redux/actions';
-import { AppState, NotificationType } from 'redux/reducer';
-import type { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
+import { AppState, EquipmentUpdateType, NotificationType } from 'redux/reducer';
+import { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
 import { NodeAlias } from '../custom-columns/node-alias.type';
@@ -19,9 +19,12 @@ import { isStatusBuilt } from '../../graph/util/model-functions';
 import { useFetchEquipment } from './use-fetch-equipment';
 import { NodeType } from '../../graph/tree-node.type';
 import { validAlias } from '../custom-columns/use-node-aliases';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { fetchNetworkElementInfos } from '../../../services/study/network';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
+    equipmentToUpdateId: string | null,
     highlightUpdatedEquipment: () => void,
     nodeAliases: NodeAlias[] | undefined,
     active: boolean = false
@@ -106,6 +109,47 @@ export const useSpreadsheetEquipments = (
         }
     }, [builtAliasedNodesIds, currentNode, dispatch, equipments]);
 
+    function getEquipmentUpdateTypeFromType(type: SpreadsheetEquipmentType): EquipmentUpdateType | undefined {
+        switch (type) {
+            case 'SUBSTATION':
+                return EquipmentUpdateType.SUBSTATIONS;
+            case 'VOLTAGE_LEVEL':
+                return EquipmentUpdateType.VOLTAGE_LEVELS;
+            case 'TIE_LINE':
+                return EquipmentUpdateType.TIE_LINES;
+            case 'LINE':
+                return EquipmentUpdateType.LINES;
+            case 'TWO_WINDINGS_TRANSFORMER':
+                return EquipmentUpdateType.TWO_WINDINGS_TRANSFORMERS;
+            case 'THREE_WINDINGS_TRANSFORMER':
+                return EquipmentUpdateType.THREE_WINDINGS_TRANSFORMERS;
+            case 'HVDC_LINE':
+                return EquipmentUpdateType.HVDC_LINES;
+            case 'BUS':
+                return EquipmentUpdateType.BUSES;
+            case 'BUSBAR_SECTION':
+                return EquipmentUpdateType.BUSBAR_SECTIONS;
+            case 'GENERATOR':
+                return EquipmentUpdateType.GENERATORS;
+            case 'BATTERY':
+                return EquipmentUpdateType.BATTERIES;
+            case 'LOAD':
+                return EquipmentUpdateType.LOADS;
+            case 'SHUNT_COMPENSATOR':
+                return EquipmentUpdateType.SHUNT_COMPENSATORS;
+            case 'DANGLING_LINE':
+                return EquipmentUpdateType.DANGLING_LINES;
+            case 'STATIC_VAR_COMPENSATOR':
+                return EquipmentUpdateType.STATIC_VAR_COMPENSATORS;
+            case 'VSC_CONVERTER_STATION':
+                return EquipmentUpdateType.VSC_CONVERTER_STATIONS;
+            case 'LCC_CONVERTER_STATION':
+                return EquipmentUpdateType.LCC_CONVERTER_STATIONS;
+            default:
+                return;
+        }
+    }
+
     const updateEquipmentsLocal = useCallback(
         (impactedSubstationsIds: string[], deletedEquipments: { equipmentType: string; equipmentId: string }[]) => {
             if (!type) {
@@ -114,12 +158,43 @@ export const useSpreadsheetEquipments = (
             // updating data related to impacted elements
             const nodeId = currentNode?.id as UUID;
 
-            if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid && currentNode?.id) {
+            if (
+                impactedSubstationsIds.length > 0 &&
+                studyUuid &&
+                currentRootNetworkUuid &&
+                currentNode?.id &&
+                equipmentToUpdateId
+            ) {
                 // The formatting of the fetched equipments is done in the reducer
-                fetchAllEquipments(studyUuid, nodeId, currentRootNetworkUuid, impactedSubstationsIds).then((values) => {
-                    highlightUpdatedEquipment();
-                    dispatch(updateEquipments(values, nodeId));
-                });
+                if (type === EQUIPMENT_TYPES.SUBSTATION || type === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
+                    // we must fetch data for all equipments, as substation data (country) and voltage level data(nominalV)
+                    // can be displayed for all equipment types
+                    fetchAllEquipments(studyUuid, nodeId, currentRootNetworkUuid, impactedSubstationsIds).then(
+                        (values) => {
+                            highlightUpdatedEquipment();
+                            dispatch(updateEquipments(values, nodeId));
+                        }
+                    );
+                } else {
+                    // here, we can fetch only the data for the modified equipment
+                    fetchNetworkElementInfos(
+                        studyUuid,
+                        nodeId,
+                        currentRootNetworkUuid,
+                        type,
+                        'TAB',
+                        equipmentToUpdateId,
+                        false
+                    ).then((values) => {
+                        highlightUpdatedEquipment();
+                        const updateType = getEquipmentUpdateTypeFromType(type);
+                        if (updateType) {
+                            let equipmentsToUpdate: any = {};
+                            equipmentsToUpdate[updateType] = [values];
+                            dispatch(updateEquipments(equipmentsToUpdate, nodeId));
+                        }
+                    });
+                }
             }
             if (deletedEquipments.length > 0) {
                 const equipmentsToDelete = deletedEquipments
@@ -145,7 +220,15 @@ export const useSpreadsheetEquipments = (
                 }
             }
         },
-        [studyUuid, currentRootNetworkUuid, currentNode?.id, dispatch, type, highlightUpdatedEquipment]
+        [
+            studyUuid,
+            currentRootNetworkUuid,
+            currentNode?.id,
+            dispatch,
+            type,
+            highlightUpdatedEquipment,
+            equipmentToUpdateId,
+        ]
     );
 
     const listenerUpdateEquipmentsLocal = useCallback(
