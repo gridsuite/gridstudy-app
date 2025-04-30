@@ -9,14 +9,14 @@ import React from 'react';
 import CheckboxNullableInput from '../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 
-export const BooleanNullableCellRenderer = (props: { name: string; connected: null }) => {
+export const BooleanNullableCellRenderer = (props: { name: string }) => {
     const intl = useIntl();
     return (
         <CheckboxNullableInput
             name={props.name}
-            label={
-                props.connected !== null
-                    ? intl.formatMessage({ id: props.connected ? 'Closed' : 'Open' })
+            label={(value: boolean | null) =>
+                value !== null
+                    ? intl.formatMessage({ id: value ? 'Closed' : 'Open' })
                     : intl.formatMessage({ id: 'NoModification' })
             }
         />

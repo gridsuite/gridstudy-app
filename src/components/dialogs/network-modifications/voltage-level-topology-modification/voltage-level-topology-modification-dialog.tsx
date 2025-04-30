@@ -97,7 +97,7 @@ export default function VoltageLevelTopologyModificationDialog({
         resolver: yupResolver<VoltageLevelTopologyModificationFormSchemaType>(formSchema),
     });
 
-    const { reset, getValues } = formMethods;
+    const { reset, getValues, setValue } = formMethods;
     const fromEditDataToFormValues = useCallback((editData: TopologyVoltageLevelModificationInfos) => {
         if (editData?.equipmentId) {
             setSelectedId(editData.equipmentId);
@@ -271,13 +271,17 @@ export default function VoltageLevelTopologyModificationDialog({
                         : matchingAttributeEditData
                           ? matchingAttributeEditData.equipmentAttributeValue
                           : matchingSwitchInfos?.open;
-                    console.log('xxx', currentConnectionStatus);
                     result.push({
                         ...sw,
                         type: SWITCH_TYPE,
                         isModified: false,
                         [CURRENT_CONNECTION_STATUS]: currentConnectionStatus,
                     });
+                    const formValues = getValues(TOPOLOGY_MODIFICATION_TABLE);
+                    const index = formValues?.findIndex((item) => item.switchId === sw.switchId);
+                    if (index !== -1) {
+                        setValue(`topologyModificationTable.${index}.currentConnectionStatus`, currentConnectionStatus);
+                    }
                 });
 
                 if (unmodifiedSwitches.length > 0) {

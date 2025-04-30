@@ -123,7 +123,6 @@ export function VoltageLevelTopologyModificationForm({
                     );
                     return BooleanNullableCellRenderer({
                         name: `${TOPOLOGY_MODIFICATION_TABLE}[${formIndex}].${CURRENT_CONNECTION_STATUS}`,
-                        connected: params.data.currentConnectionStatus,
                     });
                 },
                 headerComponent: HeaderWithTooltip,

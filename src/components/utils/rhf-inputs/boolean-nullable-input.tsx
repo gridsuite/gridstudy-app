@@ -14,7 +14,7 @@ import { useCustomFormContext, HelperPreviousValue } from '@gridsuite/commons-ui
 
 interface CheckboxNullableInputProps {
     name: string;
-    label: string;
+    label: string | ((value: boolean | null) => string);
     id?: string;
     formProps?: CheckboxProps;
     previousValue?: string;
@@ -38,10 +38,13 @@ const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Re
         }
     }, [onChange, value]);
 
+    // Get the current label based on value
+    const currentLabel = typeof label === 'function' ? label(value) : label;
+
     return (
         <FormControl fullWidth size="small">
             <FormControlLabel
-                id={id ? id : label}
+                id={id ? id : currentLabel}
                 control={
                     <Checkbox
                         checked={value === true}
@@ -55,7 +58,7 @@ const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Re
                     />
                 }
                 label={intl.formatMessage({
-                    id: label,
+                    id: currentLabel,
                 })}
             />
             {previousValue && (
