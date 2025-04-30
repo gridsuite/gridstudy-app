@@ -17,7 +17,7 @@ import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
-import { useDiagram } from './diagrams/use-diagram';
+import { useDiagramApi } from './diagrams/use-diagram-api';
 
 const styles = {
     map: {
@@ -52,7 +52,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
         changed: false,
     });
 
-    const { openDiagramView } = useDiagram();
+    const { openDiagramView } = useDiagramApi();
 
     const disabled = !isNodeBuilt(currentNode);
 

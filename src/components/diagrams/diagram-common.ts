@@ -9,7 +9,7 @@ import { INVALID_LOADFLOW_OPACITY, NAD_INVALID_LOADFLOW_OPACITY } from '../../ut
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
-import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
+import { SLDMetadata, DiagramMetadata as NADMetadata } from '@powsybl/network-viewer';
 import { UUID } from 'crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
 
@@ -195,47 +195,56 @@ export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentT
     }
 }
 
+// metadata types
 export interface SldAdditionalMetadata {
     id: string;
     country: string;
     substationId?: string;
 }
 
-export interface SldSvg {
-    svg: string | null;
-    metadata: SLDMetadata | null;
-    additionalMetadata: SldAdditionalMetadata | null;
-    error?: string | null;
-    svgUrl?: string | null;
-}
-
 export interface VoltageLevel {
-    id?: string;
+    id: string;
     substationId: UUID;
     country?: string;
     name?: string;
 }
 
-export interface DiagramAdditionalMetadata {
+export interface NADAdditionalMetadata {
     nbVoltageLevels: number;
     scalingFactor: number;
     voltageLevels: VoltageLevel[];
 }
 
+export interface PositionDiagramMetadata {
+}
+
+export interface PositionDiagramAdditionalMetadata {
+}
+
+// SVG types
 export interface DiagramSvg {
     svg: string | null;
-    metadata: DiagramMetadata | null;
-    additionalMetadata: DiagramAdditionalMetadata | null;
     error?: string | null;
     svgUrl?: string | null;
 }
 
-export type Svg = DiagramSvg | SldSvg;
+export interface SldSvg extends DiagramSvg {
+    metadata: SLDMetadata | null;
+    additionalMetadata: SldAdditionalMetadata | null;
+}
 
-export const NoSvg: Svg = {
+export interface NADSvg extends DiagramSvg {
+    metadata: NADMetadata | null;
+    additionalMetadata: NADAdditionalMetadata | null;
+}
+
+export interface PositionDiagramSvg extends DiagramSvg {
+    metadata?: PositionDiagramMetadata | null;
+    additionalMetadata?: PositionDiagramAdditionalMetadata | null;
+}
+
+export const NoSvg: DiagramSvg = {
     svg: null,
-    metadata: null,
-    additionalMetadata: null,
     error: undefined,
     svgUrl: undefined,
 };

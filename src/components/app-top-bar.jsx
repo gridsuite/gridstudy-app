@@ -29,7 +29,7 @@ import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
-import { useDiagram } from './diagrams/use-diagram';
+import { useDiagramApi } from './diagrams/use-diagram-api';
 
 const styles = {
     currentNodeBox: {
@@ -66,7 +66,7 @@ const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, St
 const AppTopBar = ({ user, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
-    const { openDiagramView } = useDiagram();
+    const { openDiagramView } = useDiagramApi();
 
     const theme = useSelector((state) => state[PARAM_THEME]);
     const appTabIndex = useSelector((state) => state.appTabIndex);

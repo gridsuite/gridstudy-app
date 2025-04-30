@@ -471,9 +471,70 @@ export type DiagramState = {
     id: UUID;
     svgType: DiagramType;
     state: ViewState;
-    needsToBlink?: boolean;
-    name?: string;
+    needsToBlink: boolean;
+    name: string;
 };
+
+export type SldState = DiagramState & {
+    svgType: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL;
+};
+
+export type NadState = DiagramState & {
+    svgType: DiagramType.NETWORK_AREA_DIAGRAM;
+    ids: string[];
+    depth: number;
+};
+
+export type NadFromConfigState = DiagramState & {
+    svgType: DiagramType.NAD_FROM_CONFIG;
+    depth: number;
+};
+
+export function createSldState(parameters: Omit<SldState, 'state' | 'name' | 'needsToBlink'>): SldState {
+    return {
+        state: ViewState.OPENED,
+        needsToBlink: false,
+        name: '',
+        ...parameters,
+    };
+}
+
+export function createNadState(
+    parameters: Omit<NadState, 'svgType' | 'state' | 'name' | 'needsToBlink' | 'depth'>
+): NadState {
+    return {
+        svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+        state: ViewState.OPENED,
+        needsToBlink: false,
+        depth: 0,
+        name: '',
+        ...parameters,
+    };
+}
+
+export function createNadFromConfigState(
+    parameters: Omit<NadFromConfigState, 'svgType' | 'state' | 'needsToBlink' | 'depth'>
+): NadFromConfigState {
+    return {
+        svgType: DiagramType.NAD_FROM_CONFIG,
+        state: ViewState.OPENED,
+        needsToBlink: false,
+        depth: 0,
+        ...parameters,
+    };
+}
+
+export function isSld(state: unknown): state is SldState {
+    return (state as DiagramState).svgType === (DiagramType.SUBSTATION || DiagramType.VOLTAGE_LEVEL);
+}
+
+export function isNad(state: unknown): state is NadState {
+    return (state as DiagramState).svgType === DiagramType.NETWORK_AREA_DIAGRAM;
+}
+
+export function isNadFromConfig(state: unknown): state is NadFromConfigState {
+    return (state as DiagramState).svgType === DiagramType.NAD_FROM_CONFIG;
+}
 
 export type NadNodeMovement = {
     nadIdentifier: string;
@@ -1321,8 +1382,7 @@ export const reducer = createReducer(initialState, (builder) => {
             // When opening a NETWORK_AREA_DIAGRAM, we remove all the NAD_FROM_CONFIG, and vice versa
             if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NAD_FROM_CONFIG);
-            }
-            if (action.svgType === DiagramType.NAD_FROM_CONFIG) {
+            } else if (action.svgType === DiagramType.NAD_FROM_CONFIG) {
                 diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
             }
 
@@ -1330,11 +1390,22 @@ export const reducer = createReducer(initialState, (builder) => {
             const firstNadIndex = diagramStates.findIndex((diagram) => isNadType(diagram.svgType));
             if (firstNadIndex < 0) {
                 // If there is no NAD, then we add the new one.
-                diagramStates.push({
-                    id: action.id as UUID,
-                    svgType: action.svgType,
-                    state: ViewState.OPENED,
-                });
+                if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+                    diagramStates.push(
+                        createNadState({
+                            id: action.id as UUID,
+                            ids: [action.id as UUID],
+                        })
+                    );
+                } else if (action.svgType === DiagramType.NAD_FROM_CONFIG) {
+                    diagramStates.push(
+                        createNadFromConfigState({
+                            id: action.id as UUID,
+                            name: '',
+                        })
+                    );
+                }
+
 
                 // If there is already a diagram in fullscreen mode, the new opened NAD will take its place.
                 if (state.fullScreenDiagram?.id) {
@@ -1353,12 +1424,8 @@ export const reducer = createReducer(initialState, (builder) => {
                     });
                 }
                 // If the NAD to open is not already in the diagramStates, we add it.
-                if (diagramToOpenIndex < 0) {
-                    diagramStates.push({
-                        id: action.id as UUID,
-                        svgType: action.svgType,
-                        state: diagramStates[firstNadIndex].state,
-                    });
+                if (diagramToOpenIndex < 0 && isNad(diagramStates[firstNadIndex])) {
+                    diagramStates[firstNadIndex].ids.push(action.id as UUID);
                 }
 
                 // If there is a SLD in fullscreen, we have to display in fullscreen the new NAD.
@@ -1406,11 +1473,12 @@ export const reducer = createReducer(initialState, (builder) => {
                     }
                 });
                 // And we add the new one.
-                diagramStates.push({
-                    id: action.id as UUID,
-                    svgType: action.svgType,
-                    state: ViewState.OPENED,
-                });
+                diagramStates.push(
+                    createSldState({
+                        id: action.id as UUID,
+                        svgType: action.svgType,
+                    })
+                );
             }
 
             // If there is already a diagram in fullscreen mode, the new opened SLD will take its place.
@@ -1430,13 +1498,15 @@ export const reducer = createReducer(initialState, (builder) => {
         // remove all existing NAD from store, we replace them with lists passed as param
         const diagramStatesWithoutNad = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
 
-        state.diagramStates = diagramStatesWithoutNad.concat(
-            uniqueIds.map((id) => ({
-                id: id as UUID,
-                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
-                state: ViewState.OPENED,
-            }))
-        );
+        // state.diagramStates = diagramStatesWithoutNad.concat(
+        //     uniqueIds.map((id) => ({
+        //         id: id as UUID,
+        //         svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+        //         state: ViewState.OPENED,
+        //     }))
+        // );
+        diagramStatesWithoutNad.push(createNadState({ id: uniqueIds[0] as UUID, ids: uniqueIds }));
+        state.diagramStates = diagramStatesWithoutNad;
     });
 
     builder.addCase(MINIMIZE_DIAGRAM, (state, action: MinimizeDiagramAction) => {
@@ -1542,19 +1612,19 @@ export const reducer = createReducer(initialState, (builder) => {
         let diagramStates = state.diagramStates;
         diagramStates = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
         // ... and create the new NAD
-        diagramStates.push({
-            id: action.nadConfigUuid as UUID,
-            name: action.nadName,
-            svgType: DiagramType.NAD_FROM_CONFIG,
-            state: ViewState.OPENED,
-        });
+        diagramStates.push(
+            createNadFromConfigState({
+                id: action.nadConfigUuid as UUID,
+                name: action.nadName,
+            })
+        );
         state.diagramStates = diagramStates;
     });
 
     builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {
         state.diagramStates.forEach((diagram) => {
             if (diagram.needsToBlink) {
-                diagram.needsToBlink = undefined;
+                diagram.needsToBlink = false;
             }
         });
     });

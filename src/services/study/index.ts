@@ -10,7 +10,7 @@ import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 import { EquipmentType, ExtendedEquipmentType, Parameter } from '@gridsuite/commons-ui';
 import { ComputingType } from '../../components/computing-status/computing-type';
-import type { Svg } from 'components/diagrams/diagram-common';
+import type { DiagramSvg } from 'components/diagrams/diagram-common';
 import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export function safeEncodeURIComponent(value: string | null | undefined): string {
@@ -170,7 +170,7 @@ export function fetchNodeSeverities(
     return backendFetchJson(url);
 }
 
-export function fetchSvg(svgUrl: string, fetchOptions?: RequestInit): Promise<Svg> {
+export function fetchSvg(svgUrl: string, fetchOptions?: RequestInit): Promise<DiagramSvg> {
     console.debug(svgUrl);
     return backendFetch(svgUrl, fetchOptions).then((response) => (response.status === 204 ? null : response.json()));
 }

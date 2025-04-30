@@ -7,7 +7,7 @@
 
 // Because of a circular import issue, we have to import the store to run the
 // unit tests, even if your IDE is showing that the import is unused.
-import { Actions, AppState, reducer as appReducer } from './reducer';
+import { Actions, AppState, reducer as appReducer, createSldState } from './reducer';
 import {
     closeDiagram,
     closeDiagrams,
@@ -105,22 +105,11 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
 
     // Open a SLD that is already opened
     const initialState2 = {
-        diagramStates: [
-            {
-                id: '174' as UUID,
-                svgType: DiagramType.VOLTAGE_LEVEL,
-                state: ViewState.OPENED,
-            },
-        ],
+        diagramStates: [createSldState({ svgType: DiagramType.VOLTAGE_LEVEL, id: '174' as UUID })],
     };
     const expectedState2 = {
         diagramStates: [
-            {
-                id: '174' as UUID,
-                svgType: DiagramType.VOLTAGE_LEVEL,
-                state: ViewState.OPENED,
-                needsToBlink: true,
-            },
+            { ...createSldState({ svgType: DiagramType.VOLTAGE_LEVEL, id: '174' as UUID }), needsToBlink: true },
         ],
     };
 
