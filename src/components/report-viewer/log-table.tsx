@@ -106,6 +106,11 @@ const LogTable = ({
 
     const [filtersInitialized, setFiltersInitialized] = useState(false);
 
+    // Reset filtersInitialized when reportType changes
+    useEffect(() => {
+        setFiltersInitialized(false);
+    }, [reportType]);
+
     const severityFilter = useMemo(() => getColumnFilterValue(filters, 'severity') ?? [], [filters]);
     const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);
 
