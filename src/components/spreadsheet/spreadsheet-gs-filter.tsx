@@ -7,7 +7,7 @@
 
 import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo } from 'react';
-import { Box } from '@mui/material';
+import { Box, debounce } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,17 +23,17 @@ import {
 import { SPREADSHEET_GS_FILTER } from '../utils/field-constants';
 import { AppState } from '../../redux/reducer';
 import { ExpertFilter, SpreadsheetGlobalFilter } from '../../services/study/filter';
+import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 
 export type SpreadsheetGsFilterProps = {
     equipmentType: SpreadsheetEquipmentType;
     uuid: UUID;
-    index: number;
-    name: string;
 };
 
-export default function SpreadsheetGsFilter({ equipmentType, index, name, uuid }: Readonly<SpreadsheetGsFilterProps>) {
+export default function SpreadsheetGsFilter({ equipmentType, uuid }: Readonly<SpreadsheetGsFilterProps>) {
     const dispatch = useDispatch();
-    const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
+    const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState[uuid]);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const formMethods = useForm<SpreadsheetGsFilterForm>({
         defaultValues: initialSpreadsheetGsFilterForm,
@@ -41,23 +41,36 @@ export default function SpreadsheetGsFilter({ equipmentType, index, name, uuid }
     });
     const { reset } = formMethods;
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debouncedSetFilters = useCallback(
+        debounce((uuid: UUID, filters: SpreadsheetGlobalFilter[]) => {
+            if (!studyUuid) {
+                return;
+            }
+            setGlobalFiltersToSpreadsheetConfig(studyUuid, uuid, filters).catch((error) =>
+                console.error('Failed to update global filters:', error)
+            );
+        }, 300),
+        []
+    );
+
     const handleChange = useCallback(
         (values: ExpertFilter[]) => {
-            const filters = values.map(({ id, name }) => ({ id, name }) as SpreadsheetGlobalFilter);
+            const filters = values.map(({ id, name }) => ({ filterId: id, name }) as SpreadsheetGlobalFilter);
             dispatch(saveSpreadsheetGsFilters(uuid, filters));
+            debouncedSetFilters(uuid, filters);
         },
-        [dispatch, uuid]
+        [dispatch, uuid, debouncedSetFilters]
     );
 
     useEffect(() => {
-        reset(toFormFormat(gsFilterSpreadsheetState[uuid] ?? []));
+        reset(toFormFormat(gsFilterSpreadsheetState ?? []));
     }, [uuid, reset, gsFilterSpreadsheetState]);
 
     return (
         <CustomFormProvider validationSchema={spreadsheetGsFilterFormSchema} {...formMethods}>
             <Box minWidth="12em" /* TODO add sx props to DirectoryItemsInput in commons-ui to remove this div */>
                 <DirectoryItemsInput
-                    key={`filter-spreadsheet-${uuid || index + name + equipmentType}`} // force refresh on equipment type change
                     name={SPREADSHEET_GS_FILTER}
                     titleId="FiltersListsSelection"
                     label="filter"

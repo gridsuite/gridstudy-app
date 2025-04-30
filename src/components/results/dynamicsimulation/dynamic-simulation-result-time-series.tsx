@@ -7,7 +7,7 @@
 
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { Box, LinearProgress, Theme } from '@mui/material';
+import { Box, Grid, LinearProgress, Theme } from '@mui/material';
 import DynamicSimulationResultChart from './timeseries/dynamic-simulation-result-chart';
 import { memo, SyntheticEvent, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -27,10 +27,11 @@ import { DropResult } from '@hello-pangea/dnd';
 const styles = {
     root: {
         height: '100%',
+        maxWidth: '100vw',
     },
     addButton: (theme: Theme) => ({
         borderRadius: '50%',
-        marginRight: theme.spacing(10),
+        marginRight: theme.spacing(2),
         color: theme.palette.primary.main,
     }),
     loader: {
@@ -78,16 +79,20 @@ const DynamicSimulationResultTimeSeries = memo(function ({
     };
 
     const handleClose = (index: number) => {
-        return () => {
-            const newTabs = Array.from(tabs);
-            newTabs.splice(index, 1);
-            setSelectedIndex(newTabs.length === 0 ? -1 : index === tabs.length - 1 ? newTabs.length - 1 : index); // get the next item in new tabs
-            setTabs(newTabs);
-            if (newTabs.length === 0) {
-                // reset tabId to zero
-                setTabIncId(0);
-            }
-        };
+        const newTabs = Array.from(tabs);
+        newTabs.splice(index, 1);
+        setSelectedIndex((prevSelectedIndex) => {
+            // IF close a tab after current selected tab or current selected tab itself => keep the same previous selected index
+            // IF close a tab before current selected tab => shift one before previous selected tab
+            const newSelectedIndex = index >= prevSelectedIndex ? prevSelectedIndex : prevSelectedIndex - 1;
+            // IF newSelectedIndex is the last index of previous tabs, take the last index of new tabs
+            return Math.min(newSelectedIndex, newTabs.length - 1);
+        });
+        setTabs(newTabs);
+        if (newTabs.length === 0) {
+            // reset tabId to zero
+            setTabIncId(0);
+        }
     };
 
     const handleDragEnd = (result: DropResult) => {
@@ -124,57 +129,65 @@ const DynamicSimulationResultTimeSeries = memo(function ({
             )}
             <Overlay message={overlayMessage}>
                 <Box sx={styles.root}>
-                    <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-                        {/* tab headers */}
-                        <DroppableTabs
-                            id={'1'}
-                            value={selectedIndex}
-                            onChange={handleTabsChange}
-                            tabsRender={() =>
-                                tabs.map((tab, index) => {
-                                    return (
-                                        <DraggableTab
-                                            key={`tab-${tab.id}`}
-                                            id={`tab-${index}`}
-                                            index={index}
-                                            value={index}
-                                            label={
-                                                <span
-                                                    style={{
-                                                        whiteSpace: 'nowrap',
-                                                    }}
-                                                >
-                                                    {`${intl.formatMessage({
-                                                        id: 'DynamicSimulationResultTab',
-                                                    })} ${tab.id}`}
-                                                    <TooltipIconButton
-                                                        tooltip={intl.formatMessage({
-                                                            id: 'DynamicSimulationCloseTab',
-                                                        })}
-                                                        size="small"
-                                                        component="span"
-                                                        onClick={handleClose(index)}
+                    {/* tab headers */}
+                    <Grid container direction="row" wrap="nowrap">
+                        <Grid sx={{ overflow: 'hidden' }}>
+                            <DroppableTabs
+                                id={'curves-tabs'}
+                                value={selectedIndex}
+                                onChange={handleTabsChange}
+                                tabsRender={() =>
+                                    tabs.map((tab, index) => {
+                                        return (
+                                            <DraggableTab
+                                                key={`tab-${tab.id}`}
+                                                id={`tab-${tab.id}`}
+                                                index={index}
+                                                value={index}
+                                                label={
+                                                    <span
+                                                        style={{
+                                                            whiteSpace: 'nowrap',
+                                                        }}
                                                     >
-                                                        <CloseIcon />
-                                                    </TooltipIconButton>
-                                                </span>
-                                            }
-                                        />
-                                    );
-                                })
-                            }
-                            onDragEnd={handleDragEnd}
-                        />
-                        <TooltipIconButton
-                            tooltip={intl.formatMessage({
-                                id: 'DynamicSimulationAddTab',
-                            })}
-                            sx={styles.addButton}
-                            onClick={handleAddNewTab}
-                        >
-                            <AddIcon />
-                        </TooltipIconButton>
-                    </Box>
+                                                        {`${intl.formatMessage({
+                                                            id: 'DynamicSimulationResultTab',
+                                                        })} ${tab.id}`}
+                                                        <TooltipIconButton
+                                                            tooltip={intl.formatMessage({
+                                                                id: 'DynamicSimulationCloseTab',
+                                                            })}
+                                                            size="small"
+                                                            component="span"
+                                                            onClick={(event) => {
+                                                                // prevent DroppableTabs#onChange fired
+                                                                event.stopPropagation();
+                                                                handleClose(index);
+                                                            }}
+                                                        >
+                                                            <CloseIcon />
+                                                        </TooltipIconButton>
+                                                    </span>
+                                                }
+                                            />
+                                        );
+                                    })
+                                }
+                                onDragEnd={handleDragEnd}
+                            />
+                        </Grid>
+                        <Grid padding={1}>
+                            <TooltipIconButton
+                                tooltip={intl.formatMessage({
+                                    id: 'DynamicSimulationAddTab',
+                                })}
+                                sx={styles.addButton}
+                                onClick={handleAddNewTab}
+                            >
+                                <AddIcon />
+                            </TooltipIconButton>
+                        </Grid>
+                    </Grid>
 
                     {/* tab contents */}
                     <Box

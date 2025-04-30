@@ -12,6 +12,7 @@ import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { AGGRID_LOCALES } from '../../../../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     grid: {
@@ -137,7 +138,7 @@ const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
         <>
             <Grid item>
                 <Typography sx={styles.h6} variant="h6">
-                    <FormattedMessage id={'DynamicSimulationCurveToAdd'}></FormattedMessage>
+                    <FormattedMessage id={'DynamicSimulationCurveToAdd'} />
                     {` (${selectedRowsLength} / ${rowData.length})`}
                 </Typography>
             </Grid>
@@ -150,7 +151,8 @@ const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
                         defaultColDef={defaultColDef}
                         rowSelection={'multiple'}
                         onSelectionChanged={onSelectionChanged}
-                    ></CustomAGGrid>
+                        overrideLocales={AGGRID_LOCALES}
+                    />
                 </Box>
             </Grid>
         </>

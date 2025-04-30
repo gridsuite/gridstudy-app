@@ -13,26 +13,59 @@ import {
     useSnackMessage,
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createSpreadsheetModel, updateSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { v4 as uuid4 } from 'uuid';
-import { ColumnDefinitionDto, SpreadsheetConfig } from '../config/spreadsheet.type';
+import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
+import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { FilterConfirmationDialog } from './filter-confirmation-dialog';
 
 export type CustomSpreadsheetSaveDialogProps = {
-    tabIndex: number;
+    tableDefinition: SpreadsheetTabDefinition;
     open: UseStateBooleanReturn;
 };
 
-export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly<CustomSpreadsheetSaveDialogProps>) {
+export default function CustomSpreadsheetSaveDialog({
+    tableDefinition,
+    open,
+}: Readonly<CustomSpreadsheetSaveDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
-    const tableDefinition = useSelector((state: AppState) => state.tables.definitions[tabIndex]);
+    const tableFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD][tableDefinition.uuid]);
+    const tableGlobalFilters = useSelector((state: AppState) => state.gsFilterSpreadsheetState[tableDefinition.uuid]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+
+    const [includeFilters, setIncludeFilters] = useState(false);
+    const [showFilterConfirmation, setShowFilterConfirmation] = useState(false);
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
+
+    const hasFilters = useMemo(() => {
+        return (tableFilters && tableFilters.length > 0) || (tableGlobalFilters && tableGlobalFilters.length > 0);
+    }, [tableFilters, tableGlobalFilters]);
+
+    // When the dialog is opened, decide which dialog to show first
+    useEffect(() => {
+        if (open.value) {
+            if (hasFilters) {
+                setShowFilterConfirmation(true);
+                setShowSaveDialog(false);
+            } else {
+                setShowFilterConfirmation(false);
+                setShowSaveDialog(true);
+            }
+        } else {
+            setShowFilterConfirmation(false);
+            setShowSaveDialog(false);
+        }
+    }, [open.value, hasFilters]);
 
     const customColumns = useMemo(() => {
         return tableDefinition?.columns.reduce(
             (acc, item) => {
+                const columnFilter = includeFilters
+                    ? tableFilters?.find((filter) => filter.column === item.id)
+                    : undefined;
                 acc[item.id] = {
                     uuid: item?.uuid ?? uuid4(),
                     id: item.id,
@@ -41,12 +74,16 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
                     precision: item.precision,
                     formula: item.formula,
                     dependencies: item.dependencies?.length ? JSON.stringify(item.dependencies) : undefined,
+                    filterDataType: columnFilter?.dataType,
+                    filterTolerance: columnFilter?.tolerance,
+                    filterType: columnFilter?.type,
+                    filterValue: JSON.stringify(columnFilter?.value) ?? undefined,
                 };
                 return acc;
             },
             {} as Record<string, ColumnDefinitionDto>
         );
-    }, [tableDefinition?.columns]);
+    }, [includeFilters, tableDefinition?.columns, tableFilters]);
 
     const reorderedColumns = useMemo(() => {
         return tableDefinition?.columns && customColumns
@@ -64,6 +101,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
             name: tableDefinition?.name,
             sheetType: tableDefinition?.type,
             columns: reorderedColumns,
+            globalFilters: includeFilters ? (tableGlobalFilters ?? []) : [],
         };
 
         createSpreadsheetModel(name, description, folderId, spreadsheetConfig)
@@ -93,6 +131,7 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
             name: tableDefinition?.name,
             sheetType: tableDefinition?.type,
             columns: reorderedColumns,
+            globalFilters: includeFilters ? (tableGlobalFilters ?? []) : [],
         };
 
         updateSpreadsheetModel(id, name, description, spreadsheetConfig)
@@ -115,12 +154,27 @@ export default function CustomSpreadsheetSaveDialog({ tabIndex, open }: Readonly
             });
     };
 
+    const handleFilterConfirmation = useCallback((include: boolean) => {
+        setIncludeFilters(include);
+        setShowFilterConfirmation(false);
+        setShowSaveDialog(true);
+    }, []);
+
+    const handleSaveDialogClose = useCallback(() => {
+        setShowSaveDialog(false);
+        open.setFalse();
+    }, [open]);
+
     return (
         <>
-            {open.value && studyUuid && (
+            {showFilterConfirmation && (
+                <FilterConfirmationDialog open={showFilterConfirmation} onConfirm={handleFilterConfirmation} />
+            )}
+
+            {showSaveDialog && studyUuid && (
                 <ElementSaveDialog
-                    open={open.value}
-                    onClose={open.setFalse}
+                    open={showSaveDialog}
+                    onClose={handleSaveDialogClose}
                     onSave={saveSpreadsheetColumnsConfiguration}
                     OnUpdate={updateSpreadsheetColumnsConfiguration}
                     type={ElementType.SPREADSHEET_CONFIG}

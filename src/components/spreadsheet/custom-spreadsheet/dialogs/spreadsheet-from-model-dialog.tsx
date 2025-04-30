@@ -28,11 +28,10 @@ import {
     getSpreadsheetFromModelFormSchema,
     initialSpreadsheetFromModelForm,
 } from '../custom-spreadsheet-form';
-import { addNewSpreadsheet, mapColumnsDto } from '../custom-spreadsheet-utils';
+import { addNewSpreadsheet } from '../custom-spreadsheet-utils';
 import { getSpreadsheetModel } from 'services/study-config';
 import { UUID } from 'crypto';
 import { dialogStyles } from './styles';
-import { ColumnDefinitionDto, SpreadsheetEquipmentType } from 'components/spreadsheet/config/spreadsheet.type';
 
 interface SpreadsheetFromModelDialogProps {
     open: UseStateBooleanReturn;
@@ -44,6 +43,7 @@ interface SpreadsheetFromModelDialogProps {
 export default function SpreadsheetFromModelDialog({ open }: Readonly<SpreadsheetFromModelDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
@@ -78,16 +78,19 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
 
     const onSubmit = useCallback(
         (formData: any) => {
+            if (!studyUuid) {
+                return;
+            }
             const tabIndex = tablesDefinitions.length;
             const tabName = formData[SPREADSHEET_NAME];
             const modelId = formData[SPREADSHEET_MODEL][0].id;
 
             getSpreadsheetModel(modelId)
-                .then((selectedModel: { columns: ColumnDefinitionDto[]; sheetType: SpreadsheetEquipmentType }) => {
-                    const columns = mapColumnsDto(selectedModel.columns);
-
+                .then((selectedModel) => {
                     addNewSpreadsheet({
-                        columns,
+                        studyUuid,
+                        columns: selectedModel.columns,
+                        globalFilters: selectedModel.globalFilters,
                         sheetType: selectedModel.sheetType,
                         tabIndex,
                         tabName,
@@ -105,7 +108,7 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
                 });
             open.setFalse();
         },
-        [tablesDefinitions.length, spreadsheetsCollectionUuid, dispatch, snackError, open]
+        [studyUuid, tablesDefinitions.length, open, spreadsheetsCollectionUuid, dispatch, snackError]
     );
 
     return (

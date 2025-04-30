@@ -19,12 +19,11 @@ import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
-import { CustomMenuItem } from '../utils/custom-nested-menu';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../utils/optional-services';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { tripEquipment } from '../../services/study/network-modifications';
-import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, useSnackMessage, CustomMenuItem } from '@gridsuite/commons-ui';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
