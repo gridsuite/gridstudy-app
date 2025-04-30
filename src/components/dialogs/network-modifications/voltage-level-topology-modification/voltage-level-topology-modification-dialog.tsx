@@ -317,7 +317,15 @@ export default function VoltageLevelTopologyModificationDialog({
             return result;
         }
         return [];
-    }, [getValues, isSwitchModified, intl, switchesToModify, editData, currentNode]);
+    }, [
+        getValues,
+        isSwitchModified,
+        intl,
+        switchesToModify,
+        editData?.equipmentAttributeModificationList,
+        currentNode,
+        setValue,
+    ]);
 
     return (
         <CustomFormProvider
