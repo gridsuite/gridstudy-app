@@ -16,7 +16,7 @@ export const BooleanNullableCellRenderer = (props: { name: string; connected: nu
             name={props.name}
             label={
                 props.connected !== null
-                    ? intl.formatMessage({ id: props.connected ? 'Open' : 'Closed' })
+                    ? intl.formatMessage({ id: props.connected ? 'Closed' : 'Open' })
                     : intl.formatMessage({ id: 'NoModification' })
             }
         />

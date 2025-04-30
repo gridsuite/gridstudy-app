@@ -12,7 +12,7 @@ import {
     ModificationType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -97,8 +97,7 @@ export default function VoltageLevelTopologyModificationDialog({
         resolver: yupResolver<VoltageLevelTopologyModificationFormSchemaType>(formSchema),
     });
 
-    const { reset } = formMethods;
-
+    const { reset, getValues } = formMethods;
     const fromEditDataToFormValues = useCallback((editData: TopologyVoltageLevelModificationInfos) => {
         if (editData?.equipmentId) {
             setSelectedId(editData.equipmentId);
@@ -126,7 +125,7 @@ export default function VoltageLevelTopologyModificationDialog({
                                     [TOPOLOGY_MODIFICATION_TABLE]: switchesInfos?.map((row) => ({
                                         [SWITCH_ID]: row.id,
                                         [PREV_CONNECTION_STATUS]: intl.formatMessage({
-                                            id: row.open ? 'Open' : 'Closed',
+                                            id: row.open ? 'Closed' : 'Open',
                                         }),
                                         [CURRENT_CONNECTION_STATUS]: null,
                                     })),
@@ -174,8 +173,13 @@ export default function VoltageLevelTopologyModificationDialog({
                             return false;
                         }
 
-                        const prevStatus = item.prevConnectionStatus !== 'Closed';
-                        return item.currentConnectionStatus !== prevStatus;
+                        const prevStatusIsClosed = item.prevConnectionStatus === 'Closed';
+                        const prevStatusIsOpen = item.prevConnectionStatus === 'Open';
+
+                        return (
+                            item.currentConnectionStatus !== prevStatusIsClosed ||
+                            item.currentConnectionStatus !== prevStatusIsOpen
+                        );
                     }
                 ).map((item) => ({
                     type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
@@ -219,6 +223,98 @@ export default function VoltageLevelTopologyModificationDialog({
         reset(emptyFormData);
     }, [reset]);
 
+    const isSwitchModified = useCallback(
+        (switchId: string): boolean => {
+            return editData?.equipmentAttributeModificationList?.some((mod) => mod.equipmentId === switchId) || false;
+        },
+        [editData]
+    );
+
+    const mergedRowData = useMemo(() => {
+        const SEPARATOR_TYPE = 'SEPARATOR';
+        const SWITCH_TYPE = 'SWITCH';
+        const result = [];
+        const watchTable = getValues(TOPOLOGY_MODIFICATION_TABLE);
+        if (watchTable && watchTable?.length > 0) {
+            const sortedWatchTable = [...(watchTable || [])].sort((a, b) =>
+                (a.switchId || '').localeCompare(b.switchId || '')
+            );
+
+            const modifiedSwitches = sortedWatchTable
+                .filter((sw) => sw.switchId && isSwitchModified(sw.switchId))
+                .sort((a, b) => a.switchId!.localeCompare(b.switchId!));
+
+            const unmodifiedSwitches = sortedWatchTable
+                .filter((sw) => sw.switchId && !isSwitchModified(sw.switchId))
+                .sort((a, b) => a.switchId!.localeCompare(b.switchId!));
+
+            if (modifiedSwitches.length > 0) {
+                result.push({
+                    type: SEPARATOR_TYPE,
+                    id: 'modified-separator',
+                    title:
+                        intl.formatMessage({ id: 'modifiedSwitchesSeparatorTitle' }) + ` (${modifiedSwitches.length})`,
+                    count: modifiedSwitches.length,
+                    [SWITCH_ID]: '',
+                    [PREV_CONNECTION_STATUS]: '',
+                    [CURRENT_CONNECTION_STATUS]: null,
+                });
+
+                modifiedSwitches.forEach((sw) => {
+                    const matchingSwitchInfos = switchesToModify?.find((attr) => attr.id === sw.switchId);
+                    const matchingAttributeEditData = editData?.equipmentAttributeModificationList?.find(
+                        (attr) => attr.equipmentId === sw.switchId
+                    );
+
+                    const currentConnectionStatus = isNodeBuilt(currentNode)
+                        ? matchingSwitchInfos?.open
+                        : matchingAttributeEditData
+                          ? matchingAttributeEditData.equipmentAttributeValue
+                          : matchingSwitchInfos?.open;
+                    console.log('xxx', currentConnectionStatus);
+                    result.push({
+                        ...sw,
+                        type: SWITCH_TYPE,
+                        isModified: false,
+                        [CURRENT_CONNECTION_STATUS]: currentConnectionStatus,
+                    });
+                });
+
+                if (unmodifiedSwitches.length > 0) {
+                    result.push({
+                        type: SEPARATOR_TYPE,
+                        id: 'unmodified-separator',
+                        title:
+                            intl.formatMessage({ id: 'unModifiedSwitchesSeparatorTitle' }) +
+                            ` (${unmodifiedSwitches.length})`,
+                        count: unmodifiedSwitches.length,
+                        [SWITCH_ID]: '',
+                        [PREV_CONNECTION_STATUS]: '',
+                        [CURRENT_CONNECTION_STATUS]: null,
+                    });
+
+                    unmodifiedSwitches.forEach((sw) => {
+                        result.push({
+                            ...sw,
+                            type: SWITCH_TYPE,
+                            isModified: false,
+                        });
+                    });
+                }
+            } else {
+                unmodifiedSwitches.forEach((sw) => {
+                    result.push({
+                        ...sw,
+                        type: SWITCH_TYPE,
+                        isModified: false,
+                    });
+                });
+            }
+            return result;
+        }
+        return [];
+    }, [getValues, isSwitchModified, intl, switchesToModify, editData, currentNode]);
+
     return (
         <CustomFormProvider
             validationSchema={formSchema}
@@ -261,8 +357,7 @@ export default function VoltageLevelTopologyModificationDialog({
                     <VoltageLevelTopologyModificationForm
                         currentNode={currentNode}
                         selectedId={selectedId}
-                        switchesToModify={switchesToModify}
-                        switchesEditData={editData?.equipmentAttributeModificationList}
+                        mergedRowData={mergedRowData}
                         isUpdate={isUpdate}
                     />
                 )}

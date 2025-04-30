@@ -6,7 +6,6 @@
  */
 import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { EquipmentAttributeModificationInfos } from '../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { Button, Grid, Paper, TextField, Typography, useTheme } from '@mui/material';
 import {
@@ -19,116 +18,27 @@ import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { filledTextField } from '../../dialog-utils';
 import { HeaderWithTooltip } from './header-with-tooltip';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { SwitchInfos } from '../../../../services/study/network-map.type';
 import { BooleanNullableCellRenderer } from './boolean-nullable-cell-render';
 import ResetSettings from '@material-symbols/svg-400/outlined/reset_settings.svg?react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { SwitchRowForm } from './voltage-level-topology.type';
 
 interface VoltageLevelTopologyModificationFormProps {
     currentNode: CurrentTreeNode;
     selectedId: string;
-    switchesToModify: SwitchInfos[];
-    switchesEditData?: EquipmentAttributeModificationInfos[];
+    mergedRowData: SwitchRowForm[];
     isUpdate: boolean;
 }
 
 export function VoltageLevelTopologyModificationForm({
     currentNode,
     selectedId,
-    switchesToModify,
-    switchesEditData,
+    mergedRowData,
     isUpdate,
 }: VoltageLevelTopologyModificationFormProps) {
     const intl = useIntl();
     const theme = useTheme();
     const { getValues, setValue } = useFormContext();
-    const isSwitchModified = useCallback(
-        (switchId: string): boolean => {
-            return switchesEditData?.some((mod) => mod.equipmentId === switchId) || false;
-        },
-        [switchesEditData]
-    );
-
-    const watchTable = useWatch({
-        name: TOPOLOGY_MODIFICATION_TABLE,
-    });
-
-    const mergedRowData = useMemo(() => {
-        const SEPARATOR_TYPE = 'SEPARATOR';
-        const SWITCH_TYPE = 'SWITCH';
-        const result = [];
-
-        const sortedWatchTable = [...(watchTable || [])].sort((a, b) =>
-            (a.switchId || '').localeCompare(b.switchId || '')
-        );
-
-        const modifiedSwitches =
-            sortedWatchTable
-                ?.filter((sw: SwitchRowForm) => sw.switchId && isSwitchModified(sw.switchId))
-                .sort((a: SwitchRowForm, b: SwitchRowForm) => a.switchId.localeCompare(b.switchId)) || [];
-        const unmodifiedSwitches =
-            sortedWatchTable
-                ?.filter((sw: SwitchRowForm) => sw.switchId && !isSwitchModified(sw.switchId))
-                .sort((a: SwitchRowForm, b: SwitchRowForm) => a.switchId.localeCompare(b.switchId)) || [];
-
-        if (modifiedSwitches.length > 0) {
-            result.push({
-                type: SEPARATOR_TYPE,
-                id: 'modified-separator',
-                title: intl.formatMessage({ id: 'modifiedSwitchesSeparatorTitle' }) + ` (${modifiedSwitches.length})`,
-                count: modifiedSwitches.length,
-                [SWITCH_ID]: '',
-                [PREV_CONNECTION_STATUS]: '',
-                [CURRENT_CONNECTION_STATUS]: null,
-            });
-            modifiedSwitches.forEach((sw: SwitchInfos) => {
-                const matchingAttributeEditData = switchesEditData?.find(
-                    (attr: EquipmentAttributeModificationInfos) => attr.equipmentId === sw.id
-                );
-                result.push({
-                    ...sw,
-                    type: SWITCH_TYPE,
-                    isModified: true,
-                    [CURRENT_CONNECTION_STATUS]: isNodeBuilt(currentNode)
-                        ? sw.open
-                        : matchingAttributeEditData
-                          ? matchingAttributeEditData.equipmentAttributeValue
-                          : sw.open,
-                });
-            });
-            if (unmodifiedSwitches.length > 0) {
-                result.push({
-                    type: SEPARATOR_TYPE,
-                    id: 'unmodified-separator',
-                    title:
-                        intl.formatMessage({ id: 'unModifiedSwitchesSeparatorTitle' }) +
-                        ` (${unmodifiedSwitches.length})`,
-                    count: unmodifiedSwitches.length,
-                    [SWITCH_ID]: '',
-                    [PREV_CONNECTION_STATUS]: '',
-                    [CURRENT_CONNECTION_STATUS]: null,
-                });
-
-                unmodifiedSwitches.forEach((sw: SwitchInfos) => {
-                    result.push({
-                        ...sw,
-                        type: SWITCH_TYPE,
-                        isModified: false,
-                    });
-                });
-            }
-        } else {
-            unmodifiedSwitches.forEach((sw: SwitchInfos) => {
-                result.push({
-                    ...sw,
-                    type: SWITCH_TYPE,
-                    isModified: false,
-                });
-            });
-        }
-        return result;
-    }, [watchTable, isSwitchModified, intl, switchesEditData, currentNode]);
 
     const defaultColDef = useMemo(
         () => ({
@@ -148,10 +58,10 @@ export function VoltageLevelTopologyModificationForm({
                 <Typography
                     variant="subtitle1"
                     sx={{
-                        backgroundColor: '#f3f3f3',
                         fontWeight: 'bold',
-                        fontSize: '0.95rem',
+                        fontSize: '1rem',
                         width: '100%',
+                        marginTop: '2%',
                     }}
                 >
                     {props.value}
@@ -207,6 +117,7 @@ export function VoltageLevelTopologyModificationForm({
                     if (params.data.type === 'SEPARATOR') {
                         return null;
                     }
+                    const watchTable: SwitchRowForm[] = getValues(TOPOLOGY_MODIFICATION_TABLE);
                     const formIndex = watchTable.findIndex(
                         (item: SwitchRowForm) => item.switchId === params.data.switchId
                     );
@@ -227,7 +138,7 @@ export function VoltageLevelTopologyModificationForm({
                 editable: false,
             },
         ],
-        [currentNode, intl, isUpdate, watchTable]
+        [currentNode, intl, isUpdate, getValues]
     );
 
     const copyPreviousToCurrentStatus = useCallback(() => {
@@ -238,7 +149,7 @@ export function VoltageLevelTopologyModificationForm({
             }
             const isOpen = row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Open' });
             const isClosed = row[PREV_CONNECTION_STATUS] === intl.formatMessage({ id: 'Closed' });
-            const newValue = isOpen ? true : isClosed ? false : null;
+            const newValue = isOpen ? false : isClosed ? true : null;
             setValue(`${TOPOLOGY_MODIFICATION_TABLE}[${index}].${CURRENT_CONNECTION_STATUS}`, newValue);
         });
     }, [getValues, setValue, intl]);
