@@ -224,14 +224,9 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
 
     const handleNextVoltageLevelClick = useCallback(
         (id: string) => {
-            // This function is called by powsybl-network-viewer when clicking on a navigation arrow in a single line diagram.
-            // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
-            if (!studyUuid || !currentNode) {
-                return;
-            }
             openDiagramView(id, DiagramType.VOLTAGE_LEVEL);
         },
-        [studyUuid, currentNode, openDiagramView]
+        [openDiagramView]
     );
 
     const [equipmentMenu, setEquipmentMenu] = useState<EquipmentMenuState>(defaultMenuState);

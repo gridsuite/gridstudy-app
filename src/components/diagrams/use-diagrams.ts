@@ -205,6 +205,7 @@ export const useDiagrams = () => {
 
     // Main state
     const [views, setViews] = useState<DiagramView[]>([]);
+    // TODO 2x svg size in memory.
     const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;
 
