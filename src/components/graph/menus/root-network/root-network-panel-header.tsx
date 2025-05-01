@@ -24,7 +24,7 @@ import { UUID } from 'crypto';
 import { GetCaseImportParametersReturn, getCaseImportParameters } from 'services/network-conversion';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 import { useDispatch, useSelector } from 'react-redux';
-import { SetMonoRootStudy } from 'redux/actions';
+import { setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 
 const styles = {
@@ -157,7 +157,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                 // Call createRootNetwork with formatted parameters
                 createRootNetwork(caseId as UUID, params.formatName, name, tag, studyUuid, customizedCurrentParameters);
                 if (isMonoRootStudy && rootNetworks.length === 1) {
-                    dispatch(SetMonoRootStudy(false));
+                    dispatch(setMonoRootStudy(false));
                 }
             })
 

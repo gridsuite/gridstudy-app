@@ -47,22 +47,6 @@ const RootNetworkPanel: FunctionComponent = () => {
         };
     }, [isMonoRootStudy, isRootNetworkPanelMinimized, theme]);
 
-    const renderRootNetworkPanelContent = () => {
-        let panelContent;
-        if (isRootNetworkPanelMinimized) {
-            panelContent = isMonoRootStudy ? null : <RootNetworkMinimizedPanelContent />;
-        } else {
-            panelContent = (
-                <RootNetworkNodeEditor
-                    isRootNetworksProcessing={isRootNetworksProcessing}
-                    setIsRootNetworksProcessing={setIsRootNetworksProcessing}
-                />
-            );
-        }
-
-        return panelContent;
-    };
-
     return (
         <Paper elevation={3} sx={panelStyle}>
             <RootNetworkPanelHeader
@@ -71,8 +55,13 @@ const RootNetworkPanel: FunctionComponent = () => {
                 isRootNetworkPanelMinimized={isRootNetworkPanelMinimized}
                 setIsRootNetworkPanelMinimized={setIsRootNetworkPanelMinimized}
             />
-
-            {renderRootNetworkPanelContent()}
+            {isRootNetworkPanelMinimized && !isMonoRootStudy && <RootNetworkMinimizedPanelContent />}
+            {!isRootNetworkPanelMinimized && (
+                <RootNetworkNodeEditor
+                    isRootNetworksProcessing={isRootNetworksProcessing}
+                    setIsRootNetworksProcessing={setIsRootNetworksProcessing}
+                />
+            )}
         </Paper>
     );
 };

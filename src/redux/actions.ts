@@ -708,7 +708,7 @@ export type SetMonoRootStudyAction = Readonly<Action<typeof SET_MONO_ROOT_STUDY>
     isMonoRootStudy: boolean;
 };
 
-export function SetMonoRootStudy(isMonoRootStudy: boolean): SetMonoRootStudyAction {
+export function setMonoRootStudy(isMonoRootStudy: boolean): SetMonoRootStudyAction {
     return {
         type: SET_MONO_ROOT_STUDY,
         isMonoRootStudy: isMonoRootStudy,
