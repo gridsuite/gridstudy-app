@@ -22,7 +22,7 @@ import {
     setRootNetworks,
     setRootNetworkIndexationStatus,
     studyUpdated,
-    SetMonoRootStudy,
+    setMonoRootStudy,
 } from '../redux/actions';
 import { fetchRootNetworks } from 'services/root-network';
 
@@ -62,7 +62,7 @@ function useStudy(studyUuidRequest) {
         fetchStudy(studyUuidRequest)
             .then((res) => {
                 setStudyUuid(studyUuidRequest);
-                dispatch(SetMonoRootStudy(res.monoRoot));
+                dispatch(setMonoRootStudy(res.monoRoot));
 
                 // Fetch root networks and set the first one as the current root network
                 fetchRootNetworks(studyUuidRequest)
