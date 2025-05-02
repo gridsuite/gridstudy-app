@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Badge, Button, Tooltip } from '@mui/material';
+import { Badge, Button, Theme, Tooltip } from '@mui/material';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnNodesDialog from './custom-columns-nodes-dialog';
 import BuildIcon from '@mui/icons-material/Build';
@@ -29,6 +29,14 @@ const styles = {
         height: '20px',
         width: '20px',
     },
+    badgeStyle: (theme: Theme) => ({
+        '& .MuiBadge-badge': {
+            minWidth: theme.spacing(2),
+            height: theme.spacing(2),
+            fontSize: theme.typography.caption.fontSize,
+            padding: theme.spacing(0, 0.5),
+        },
+    }),
 };
 
 enum NodesOptionId {
@@ -99,7 +107,12 @@ export default function CustomColumnsNodesConfig({
 
     return (
         <>
-            <Badge color="secondary" variant={nodeAliases?.length && !showWarning ? 'dot' : undefined}>
+            <Badge
+                sx={styles.badgeStyle}
+                max={99}
+                color="secondary"
+                badgeContent={nodeAliases?.length && !showWarning ? nodeAliases.length : undefined}
+            >
                 <Button
                     sx={spreadsheetStyles.spreadsheetButton}
                     size={'small'}

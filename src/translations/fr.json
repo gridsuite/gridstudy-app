@@ -992,7 +992,7 @@
     "VoltageRegulation": "Réglage de tension",
     "ResetRegulationRule": "Réinitialiser la loi de réglage",
     "Regulating": "En réglage",
-    "TargetVoltage": "Tension",
+    "TargetVoltage": "Consigne de tension",
     "TargetVoltageMustBeGreaterThanZero": "La tension doit être supérieure à 0",
     "Deadband": "Bande morte",
     "TargetDeadbandMustBeGreaterOrEqualToZero": "La valeur de la bande morte doit être supérieure ou égale à 0",
