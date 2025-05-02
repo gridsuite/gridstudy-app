@@ -18,6 +18,8 @@ export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) =>
             return option.label + ' kV';
         case FilterType.GENERIC_FILTER:
             return option.label;
+        case FilterType.REGION:
+            return option.label;
     }
     return '';
 };

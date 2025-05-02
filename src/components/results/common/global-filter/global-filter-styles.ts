@@ -22,6 +22,9 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
         case FilterType.GENERIC_FILTER:
             chipStyle = resultsGlobalFilterStyles.chipGenericFilter;
             break;
+        case FilterType.REGION:
+            chipStyle = resultsGlobalFilterStyles.chipRegion;
+            break;
     }
     return mergeSx(resultsGlobalFilterStyles.chip, chipStyle);
 };
@@ -137,6 +140,14 @@ export const resultsGlobalFilterStyles = {
         },
         '&.MuiChip-root:hover, &.MuiChip-root:focus': {
             backgroundColor: `${cyan['700']}!important`,
+        },
+    }),
+    chipRegion: (theme: Theme) => ({
+        '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
+            backgroundColor: `${theme.palette.info.main}!important`,
+        },
+        '&.MuiChip-root:hover, &.MuiChip-root:focus': {
+            backgroundColor: `${theme.palette.info.dark}!important`,
         },
     }),
 };

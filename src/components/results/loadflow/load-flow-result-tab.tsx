@@ -87,6 +87,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const [countriesFilter, setCountriesFilter] = useState<GlobalFilter[]>([]);
     const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<GlobalFilter[]>([]);
+    const [propertiesFilter, setPropertiesFilter] = useState<GlobalFilter[]>([]);
 
     const [globalFilter, setGlobalFilter] = useState<GlobalFilters>();
 
@@ -125,6 +126,13 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     headerId: 'FetchNominalVoltagesError',
                 });
             });
+        const test = ['LILLE', 'LYON', 'MARSEILLE', 'NANCY', 'NANTES', 'PARIS', 'TOULOUSE'];
+        setPropertiesFilter(
+            test.map((propertyValue: string) => ({
+                label: propertyValue,
+                filterType: FilterType.REGION
+            }))
+        );
     }, [nodeUuid, studyUuid, currentRootNetworkUuid, snackError, loadFlowStatus]);
 
     const getGlobalFilterParameter = useCallback(
@@ -134,7 +142,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 if (
                     (globalFilter.countryCode && globalFilter.countryCode.length > 0) ||
                     (globalFilter.nominalV && globalFilter.nominalV.length > 0) ||
-                    (globalFilter.genericFilter && globalFilter.genericFilter.length > 0)
+                    (globalFilter.genericFilter && globalFilter.genericFilter.length > 0) ||
+                    (globalFilter.properties)
                 ) {
                     shouldSentParameter = true;
                 }
@@ -266,9 +275,18 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
                     .map((filter: GlobalFilter) => filter.label)
             );
+            const regions = new Set(
+                value
+                    .filter((filter: GlobalFilter) => filter.filterType === FilterType.REGION)
+                    .map((filter: GlobalFilter) => filter.label)
+            );
             newGlobalFilter.nominalV = [...nominalVs];
             newGlobalFilter.countryCode = [...countryCodes];
             newGlobalFilter.genericFilter = [...genericFilters];
+            if (regions.size > 0) {
+                newGlobalFilter.properties = {'regionCvg': [...regions]};
+                newGlobalFilter.propertiesFieldType = {'regionCvg': 'substation'};
+            }
         }
         setGlobalFilter(newGlobalFilter);
     }, []);
@@ -297,11 +315,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         () => (
             <GlobalFilterSelector
                 onChange={handleGlobalFilterChange}
-                filters={[...voltageLevelsFilter, ...countriesFilter]}
+                filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
                 filterableEquipmentTypes={filterableEquipmentTypes}
             />
         ),
-        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter]
+        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter, propertiesFilter]
     );
 
     return (

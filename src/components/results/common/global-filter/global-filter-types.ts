@@ -19,6 +19,8 @@ export interface GlobalFilters {
     nominalV?: string[];
     countryCode?: string[];
     genericFilter?: string[]; // UUIDs of the generic filters
+    properties?: Object;
+    propertiesFieldType?: Object;
     limitViolationsTypes?: LimitTypes[];
 }
 
