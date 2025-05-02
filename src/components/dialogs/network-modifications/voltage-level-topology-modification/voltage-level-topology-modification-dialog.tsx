@@ -35,6 +35,7 @@ import { fetchSwitchesOfVoltageLevel } from '../../../../services/study/network'
 import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import { SwitchInfos } from '../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
+import { SwitchRowForm } from './voltage-level-topology.type';
 
 const formSchema = yup.object().shape({
     [TOPOLOGY_MODIFICATION_TABLE]: yup
@@ -320,6 +321,20 @@ export default function VoltageLevelTopologyModificationDialog({
         setValue,
     ]);
 
+    const copyPreviousToCurrentStatus = useCallback(() => {
+        const formValues = getValues(TOPOLOGY_MODIFICATION_TABLE);
+        formValues.forEach((row: SwitchRowForm, index: number) => {
+            if (row.type === 'SEPARATOR') {
+                return;
+            }
+
+            const prevStatus = row[PREV_CONNECTION_STATUS];
+            const newValue = prevStatus === 'Open' ? false : prevStatus === 'Closed' ? true : null;
+
+            setValue(`topologyModificationTable.${index}.currentConnectionStatus`, newValue);
+        });
+    }, [getValues, setValue]);
+
     return (
         <CustomFormProvider
             validationSchema={formSchema}
@@ -338,7 +353,7 @@ export default function VoltageLevelTopologyModificationDialog({
                 keepMounted={true}
                 PaperProps={{
                     sx: {
-                        height: '75vh',
+                        height: '95vh',
                     },
                 }}
                 isDataFetching={
@@ -362,6 +377,7 @@ export default function VoltageLevelTopologyModificationDialog({
                         currentNode={currentNode}
                         selectedId={selectedId}
                         mergedRowData={mergedRowData}
+                        copyPreviousToCurrentStatus={copyPreviousToCurrentStatus}
                         isUpdate={isUpdate}
                     />
                 )}

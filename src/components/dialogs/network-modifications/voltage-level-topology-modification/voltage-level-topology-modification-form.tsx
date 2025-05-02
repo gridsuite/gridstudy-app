@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { Button, Grid, Paper, TextField, Typography, useTheme } from '@mui/material';
+import { Button, Grid, TextField, useTheme } from '@mui/material';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
@@ -22,11 +22,13 @@ import { BooleanNullableCellRenderer } from './boolean-nullable-cell-render';
 import ResetSettings from '@material-symbols/svg-400/outlined/reset_settings.svg?react';
 import { useFormContext } from 'react-hook-form';
 import { SwitchRowForm } from './voltage-level-topology.type';
+import { SeparatorCellRenderer } from './separator-cell-renderer';
 
 interface VoltageLevelTopologyModificationFormProps {
     currentNode: CurrentTreeNode;
     selectedId: string;
     mergedRowData: SwitchRowForm[];
+    copyPreviousToCurrentStatus: () => void;
     isUpdate: boolean;
 }
 
@@ -34,11 +36,12 @@ export function VoltageLevelTopologyModificationForm({
     currentNode,
     selectedId,
     mergedRowData,
+    copyPreviousToCurrentStatus,
     isUpdate,
 }: VoltageLevelTopologyModificationFormProps) {
     const intl = useIntl();
     const theme = useTheme();
-    const { getValues, setValue } = useFormContext();
+    const { getValues } = useFormContext();
 
     const defaultColDef = useMemo(
         () => ({
@@ -52,39 +55,19 @@ export function VoltageLevelTopologyModificationForm({
         []
     );
 
-    const SeparatorCellRenderer = (props: { data: { type: string }; value: string }) => {
-        if (props.data.type === 'SEPARATOR') {
-            return (
-                <Typography
-                    variant="subtitle1"
-                    sx={{
-                        fontWeight: 'bold',
-                        fontSize: '1rem',
-                        width: '100%',
-                        marginTop: '2%',
-                    }}
-                >
-                    {props.value}
-                </Typography>
-            );
-        }
-        return props.value;
-    };
-
     const columnDefs = useMemo(
         () => [
             {
                 field: SWITCH_ID,
                 filter: true,
                 flex: 2,
-                cellRenderer: (params: { data?: any; node?: any }) => {
-                    if (params.data.type === 'SEPARATOR') {
+                cellRenderer: ({ data }: { data?: any }) => {
+                    if (data.type === 'SEPARATOR') {
                         return SeparatorCellRenderer({
-                            data: params.data,
-                            value: params.data.title,
+                            value: data.title,
                         });
                     } else {
-                        return params.data[SWITCH_ID];
+                        return data[SWITCH_ID];
                     }
                 },
                 headerComponent: HeaderWithTooltip,
@@ -101,11 +84,11 @@ export function VoltageLevelTopologyModificationForm({
                 field: PREV_CONNECTION_STATUS,
                 flex: 1,
                 headerComponent: HeaderWithTooltip,
-                cellRenderer: (params: { data?: any; node?: any }) => {
-                    if (params.data.type === 'SEPARATOR') {
+                cellRenderer: ({ data }: { data?: any }) => {
+                    if (data.type === 'SEPARATOR') {
                         return null;
                     } else {
-                        return intl.formatMessage({ id: params.data[PREV_CONNECTION_STATUS] });
+                        return intl.formatMessage({ id: data[PREV_CONNECTION_STATUS] });
                     }
                 },
                 headerComponentParams: {
@@ -120,14 +103,12 @@ export function VoltageLevelTopologyModificationForm({
             {
                 field: CURRENT_CONNECTION_STATUS,
                 flex: 1,
-                cellRenderer: (params: { data?: any; node?: any }) => {
-                    if (params.data.type === 'SEPARATOR') {
+                cellRenderer: ({ data }: { data?: any }) => {
+                    if (data.type === 'SEPARATOR') {
                         return null;
                     }
                     const watchTable: SwitchRowForm[] = getValues(TOPOLOGY_MODIFICATION_TABLE);
-                    const formIndex = watchTable.findIndex(
-                        (item: SwitchRowForm) => item.switchId === params.data.switchId
-                    );
+                    const formIndex = watchTable.findIndex((item: SwitchRowForm) => item.switchId === data.switchId);
                     return BooleanNullableCellRenderer({
                         name: `${TOPOLOGY_MODIFICATION_TABLE}[${formIndex}].${CURRENT_CONNECTION_STATUS}`,
                     });
@@ -147,74 +128,52 @@ export function VoltageLevelTopologyModificationForm({
         [currentNode, intl, isUpdate, getValues]
     );
 
-    const copyPreviousToCurrentStatus = useCallback(() => {
-        const formValues = getValues(TOPOLOGY_MODIFICATION_TABLE);
-        formValues.forEach((row: SwitchRowForm, index: number) => {
-            if (row.type === 'SEPARATOR') {
-                return;
-            }
-            const newValue =
-                row[PREV_CONNECTION_STATUS] === 'Open' ? false : row[PREV_CONNECTION_STATUS] === 'Closed' ? true : null;
-            setValue(`${TOPOLOGY_MODIFICATION_TABLE}[${index}].${CURRENT_CONNECTION_STATUS}`, newValue);
-        });
-    }, [getValues, setValue]);
-
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={4}>
-                <TextField
-                    fullWidth
-                    label="ID"
-                    value={selectedId}
-                    size="small"
-                    InputProps={{ readOnly: true }}
-                    disabled
-                    {...filledTextField}
+        <Grid container sx={{ height: '100%' }} direction="column">
+            <Grid container item spacing={2}>
+                <Grid item xs={4}>
+                    <TextField
+                        fullWidth
+                        label="ID"
+                        value={selectedId}
+                        size="small"
+                        InputProps={{ readOnly: true }}
+                        disabled
+                        {...filledTextField}
+                    />
+                </Grid>
+                <Grid item xs={8} container justifyContent="flex-end">
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        onClick={copyPreviousToCurrentStatus}
+                        startIcon={
+                            <ResetSettings
+                                style={{
+                                    width: 24,
+                                    height: 24,
+                                    fill: !isUpdate ? theme.palette.action.disabled : theme.palette.primary.main,
+                                    opacity: !isUpdate ? 0.3 : 1,
+                                }}
+                            />
+                        }
+                        disabled={!isUpdate}
+                    >
+                        {intl.formatMessage({ id: 'copyPreviousTopologyStatus' })}
+                    </Button>
+                </Grid>
+            </Grid>
+            <Grid xs paddingTop={2}>
+                <CustomAGGrid
+                    rowData={mergedRowData}
+                    defaultColDef={defaultColDef}
+                    columnDefs={columnDefs}
+                    suppressMovableColumns={true}
+                    animateRows={false}
+                    domLayout="normal"
+                    headerHeight={48}
                 />
-            </Grid>
-            <Grid item xs={8} container justifyContent="flex-end">
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    size="small"
-                    onClick={copyPreviousToCurrentStatus}
-                    startIcon={
-                        <ResetSettings
-                            style={{
-                                width: 24,
-                                height: 24,
-                                fill: !isUpdate ? theme.palette.action.disabled : theme.palette.primary.main,
-                                opacity: !isUpdate ? 0.3 : 1,
-                            }}
-                        />
-                    }
-                    disabled={!isUpdate}
-                >
-                    {intl.formatMessage({ id: 'copyPreviousTopologyStatus' })}
-                </Button>
-            </Grid>
-
-            <Grid item xs={12}>
-                <Paper
-                    elevation={1}
-                    sx={{
-                        overflow: 'hidden',
-                        border: '1px solid #e0e0e0',
-                        borderRadius: '4px',
-                    }}
-                >
-                    <div className="ag-theme-material" style={{ height: 600, width: '100%' }}>
-                        <CustomAGGrid
-                            rowData={mergedRowData}
-                            defaultColDef={defaultColDef}
-                            columnDefs={columnDefs}
-                            suppressMovableColumns={true}
-                            animateRows={false}
-                            domLayout="normal"
-                            headerHeight={48}
-                        />
-                    </div>
-                </Paper>
             </Grid>
         </Grid>
     );

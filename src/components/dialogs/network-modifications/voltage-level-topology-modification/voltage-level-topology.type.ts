@@ -5,16 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const styles = {
-    grid: {
-        marginTop: 2,
-    },
-};
-
 export type SwitchRowForm = {
-    switchId: string;
-    prevConnectionStatus: string;
-    currentConnectionStatus: boolean | null;
+    switchId?: string;
+    prevConnectionStatus?: string;
+    currentConnectionStatus?: boolean | null;
     type?: string;
     isModified?: boolean;
 };
