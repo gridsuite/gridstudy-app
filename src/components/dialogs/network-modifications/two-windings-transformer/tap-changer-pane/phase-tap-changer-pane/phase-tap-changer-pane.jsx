@@ -29,6 +29,7 @@ import { useMemo } from 'react';
 import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
+import PropTypes from 'prop-types';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -179,6 +180,10 @@ const PhaseTapChangerPane = ({
             />
         </>
     );
+};
+
+PhaseTapChangerPane.propTypes = {
+    phaseTapChanger: PropTypes.object.isRequired,
 };
 
 export default PhaseTapChangerPane;
