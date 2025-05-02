@@ -57,8 +57,6 @@ import {
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
-    DELETED_OR_RENAMED_NODES,
-    DeletedOrRenamedNodesAction,
     DeleteEquipmentsAction,
     DYNAMIC_SIMULATION_RESULT_FILTER,
     DynamicSimulationResultFilterAction,
@@ -154,7 +152,6 @@ import {
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
-    SET_EDIT_NAD_MODE,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     SET_FULLSCREEN_DIAGRAM,
     SET_LAST_COMPLETED_COMPUTATION,
@@ -163,15 +160,14 @@ import {
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
-    SET_RELOAD_MAP_NEEDED,
-    SET_ROOT_NETWORK_INDEXATION_STATUS,
     SET_ROOT_NETWORKS,
+    SET_RELOAD_MAP_NEEDED,
     SET_STUDY_DISPLAY_MODE,
+    SET_ROOT_NETWORK_INDEXATION_STATUS,
     SetAppTabIndexAction,
     SetCalculationSelectionsAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
-    SetEditNadModeAction,
     SetEventScenarioDrawerOpenAction,
     SetFullscreenDiagramAction,
     SetLastCompletedComputationAction,
@@ -180,10 +176,10 @@ import {
     SetOneBusShortcircuitAnalysisDiagramAction,
     SetOptionalServicesAction,
     SetParamsLoadedAction,
-    SetReloadMapNeededAction,
-    SetRootNetworkIndexationStatusAction,
     SetRootNetworksAction,
+    SetReloadMapNeededAction,
     SetStudyDisplayModeAction,
+    SetRootNetworkIndexationStatusAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
@@ -205,15 +201,21 @@ import {
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
-    UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
     UpdateColumnsDefinitionsAction,
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
-    UpdateTableColumnsAction,
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    SET_EDIT_NAD_MODE,
+    SetEditNadModeAction,
+    DELETED_OR_RENAMED_NODES,
+    DeletedOrRenamedNodesAction,
+    UPDATE_TABLE_COLUMNS,
+    UpdateTableColumnsAction,
+    SET_MONO_ROOT_STUDY,
+    SetMonoRootStudyAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -583,6 +585,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isEventScenarioDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
+    isMonoRootStudy: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;
     freezeMapUpdates: boolean;
@@ -716,6 +719,7 @@ const initialState: AppState = {
     centerOnSubstation: undefined,
     notificationIdList: [],
     isModificationsInProgress: false,
+    isMonoRootStudy: true,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     nadNodeMovements: [],
@@ -950,17 +954,15 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
-        const { spreadsheetConfigDto } = action;
+        const { spreadsheetConfigUuid, columns } = action;
         const existingTableDefinition = state.tables.definitions.find(
-            (tabDef) => tabDef.uuid === spreadsheetConfigDto.id
+            (tabDef) => tabDef.uuid === spreadsheetConfigUuid
         );
         if (existingTableDefinition) {
-            existingTableDefinition.name = spreadsheetConfigDto.name;
-            existingTableDefinition.columns = spreadsheetConfigDto.columns.map((column) => {
+            existingTableDefinition.columns = columns.map((column) => {
                 const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
                 const colDef: ColumnDefinition = {
                     ...column,
-                    dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
                     visible: existingColDef ? existingColDef.visible : true,
                     locked: existingColDef ? existingColDef.locked : false,
                 };
@@ -984,7 +986,13 @@ export const reducer = createReducer(initialState, (builder) => {
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
-            .reduce((acc, tabUuid) => ({ ...acc, [tabUuid]: [] }), {});
+            .reduce(
+                (acc, tabUuid) => ({
+                    ...acc,
+                    [tabUuid]: action?.tablesFilters?.[tabUuid] ?? [],
+                }),
+                {}
+            );
         state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce((acc, tabUuid) => {
@@ -996,6 +1004,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 ];
                 return acc;
             }, {} as TableSortConfig);
+        state.gsFilterSpreadsheetState = action?.gsFilterSpreadsheetState ?? {};
     });
 
     builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {
@@ -1333,6 +1342,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
             state.studyDisplayMode = action.studyDisplayMode;
         }
+    });
+
+    builder.addCase(SET_MONO_ROOT_STUDY, (state, action: SetMonoRootStudyAction) => {
+        state.isMonoRootStudy = action.isMonoRootStudy;
     });
 
     /*
