@@ -183,7 +183,7 @@ const PhaseTapChangerPane = ({
 };
 
 PhaseTapChangerPane.propTypes = {
-    phaseTapChanger: PropTypes.object.isRequired,
+    previousValues: PropTypes.object.isRequired,
 };
 
 export default PhaseTapChangerPane;
