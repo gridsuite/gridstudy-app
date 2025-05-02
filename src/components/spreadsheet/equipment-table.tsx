@@ -183,6 +183,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             sx={shouldHidePinnedHeaderRightBorder ? styles.noBorderRight : undefined}
             overrideLocales={AGGRID_LOCALES}
             suppressNoRowsOverlay={rowData === undefined}
+            valueCache={true}
         />
     );
 };
