@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { LineFlowMode } from '@powsybl/network-viewer';
-import { MAP_BASEMAP_CARTO, MAP_BASEMAP_CARTO_NOLABEL, MAP_BASEMAP_MAPBOX } from '../../../../utils/config-params';
+import {
+    MAP_BASEMAP_CARTO,
+    MAP_BASEMAP_CARTO_NOLABEL,
+    MAP_BASEMAP_ETALAB,
+    MAP_BASEMAP_MAPBOX,
+} from '../../../../utils/config-params';
 
 import { SubstationLayout } from '../../../diagrams/diagram.type';
 
@@ -51,6 +56,10 @@ export const INTL_MAP_BASE_MAP_OPTIONS = [
     {
         id: MAP_BASEMAP_CARTO_NOLABEL,
         label: 'CartoNoLabel',
+    },
+    {
+        id: MAP_BASEMAP_ETALAB,
+        label: 'Etalab',
     },
 ];
 
