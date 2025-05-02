@@ -36,7 +36,7 @@ export function VoltageLevelTopologyModificationForm({
     selectedId,
     mergedRowData,
     isUpdate,
-}: VoltageLevelTopologyModificationFormProps) {
+}: Readonly<VoltageLevelTopologyModificationFormProps>) {
     const intl = useIntl();
     const theme = useTheme();
     const { getValues, setValue } = useFormContext();
@@ -132,8 +132,14 @@ export function VoltageLevelTopologyModificationForm({
             if (row.type === 'SEPARATOR') {
                 return;
             }
-            const newValue =
-                row[PREV_CONNECTION_STATUS] === 'Open' ? true : row[PREV_CONNECTION_STATUS] === 'Closed' ? false : null;
+            let newValue;
+            if (row[PREV_CONNECTION_STATUS] === 'Open') {
+                newValue = true;
+            } else if (row[PREV_CONNECTION_STATUS] === 'Closed') {
+                newValue = false;
+            } else {
+                newValue = null;
+            }
             setValue(`${TOPOLOGY_MODIFICATION_TABLE}[${index}].${CURRENT_CONNECTION_STATUS}`, newValue, {
                 shouldDirty: true,
             });

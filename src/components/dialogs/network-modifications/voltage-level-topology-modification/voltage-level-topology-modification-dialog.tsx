@@ -214,7 +214,7 @@ export default function VoltageLevelTopologyModificationDialog({
 
     const isSwitchModified = useCallback(
         (switchId: string): boolean => {
-            return editData?.equipmentAttributeModificationList?.some((mod) => mod.equipmentId === switchId) || false;
+            return editData?.equipmentAttributeModificationList?.some((mod) => mod.equipmentId === switchId) ?? false;
         },
         [editData]
     );
@@ -225,7 +225,7 @@ export default function VoltageLevelTopologyModificationDialog({
         const result = [];
         const watchTable = getValues(TOPOLOGY_MODIFICATION_TABLE);
         if (watchTable?.length > 0) {
-            const sortedWatchTable = [...watchTable].sort((a, b) => (a.switchId || '').localeCompare(b.switchId || ''));
+            const sortedWatchTable = [...watchTable].sort((a, b) => (a.switchId ?? '').localeCompare(b.switchId ?? ''));
 
             const modifiedSwitches = sortedWatchTable
                 .filter((sw) => sw.switchId && isSwitchModified(sw.switchId))
