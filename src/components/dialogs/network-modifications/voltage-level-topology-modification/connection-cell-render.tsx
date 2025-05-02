@@ -20,7 +20,7 @@ export default function ConnectionCellRenderer({ name }: Readonly<ConnectionCell
             name={name}
             label={(value: boolean | null) =>
                 value !== null
-                    ? intl.formatMessage({ id: value ? 'Closed' : 'Open' })
+                    ? intl.formatMessage({ id: value ? 'Open' : 'Closed' })
                     : intl.formatMessage({ id: 'NoModification' })
             }
         />

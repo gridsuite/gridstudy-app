@@ -133,7 +133,7 @@ export function VoltageLevelTopologyModificationForm({
                 return;
             }
             const newValue =
-                row[PREV_CONNECTION_STATUS] === 'Open' ? false : row[PREV_CONNECTION_STATUS] === 'Closed' ? true : null;
+                row[PREV_CONNECTION_STATUS] === 'Open' ? true : row[PREV_CONNECTION_STATUS] === 'Closed' ? false : null;
             setValue(`${TOPOLOGY_MODIFICATION_TABLE}[${index}].${CURRENT_CONNECTION_STATUS}`, newValue, {
                 shouldDirty: true,
             });

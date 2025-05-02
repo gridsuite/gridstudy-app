@@ -119,7 +119,7 @@ export default function VoltageLevelTopologyModificationDialog({
                                 {
                                     [TOPOLOGY_MODIFICATION_TABLE]: switchesInfos?.map((row) => ({
                                         [SWITCH_ID]: row.id,
-                                        [PREV_CONNECTION_STATUS]: row.open ? 'Closed' : 'Open',
+                                        [PREV_CONNECTION_STATUS]: row.open ? 'Open' : 'Closed',
                                         [CURRENT_CONNECTION_STATUS]: null,
                                     })),
                                 },
@@ -158,11 +158,7 @@ export default function VoltageLevelTopologyModificationDialog({
             if (topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE]?.length > 0) {
                 equipmentAttributeModificationInfos = topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE].filter(
                     (item) => {
-                        if (
-                            !item ||
-                            item.currentConnectionStatus === null ||
-                            item.currentConnectionStatus === undefined
-                        ) {
+                        if (!item?.currentConnectionStatus) {
                             return false;
                         }
 
@@ -228,10 +224,8 @@ export default function VoltageLevelTopologyModificationDialog({
         const SWITCH_TYPE = 'SWITCH';
         const result = [];
         const watchTable = getValues(TOPOLOGY_MODIFICATION_TABLE);
-        if (watchTable && watchTable?.length > 0) {
-            const sortedWatchTable = [...(watchTable || [])].sort((a, b) =>
-                (a.switchId || '').localeCompare(b.switchId || '')
-            );
+        if (watchTable?.length > 0) {
+            const sortedWatchTable = [...watchTable].sort((a, b) => (a.switchId || '').localeCompare(b.switchId || ''));
 
             const modifiedSwitches = sortedWatchTable
                 .filter((sw) => sw.switchId && isSwitchModified(sw.switchId))
@@ -261,9 +255,7 @@ export default function VoltageLevelTopologyModificationDialog({
 
                     const currentConnectionStatus = isNodeBuilt(currentNode)
                         ? matchingSwitchInfos?.open
-                        : matchingAttributeEditData
-                          ? matchingAttributeEditData.equipmentAttributeValue
-                          : matchingSwitchInfos?.open;
+                        : (matchingAttributeEditData?.equipmentAttributeValue ?? matchingSwitchInfos?.open);
                     result.push({
                         ...sw,
                         type: SWITCH_TYPE,

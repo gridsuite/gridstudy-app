@@ -10,7 +10,7 @@ import { Checkbox, CheckboxProps, FormControlLabel } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useController } from 'react-hook-form';
 import { useCallback } from 'react';
-import { useCustomFormContext, HelperPreviousValue } from '@gridsuite/commons-ui';
+import { HelperPreviousValue, useCustomFormContext } from '@gridsuite/commons-ui';
 
 interface CheckboxNullableInputProps {
     name: string;
@@ -44,7 +44,7 @@ const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Re
     return (
         <FormControl fullWidth size="small">
             <FormControlLabel
-                id={id ? id : currentLabel}
+                id={id ?? currentLabel}
                 control={
                     <Checkbox
                         checked={value === true}
