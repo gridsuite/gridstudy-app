@@ -75,6 +75,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     ...nameHeaderProps
 }) => {
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
+
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const intl = useIntl();
@@ -129,48 +131,51 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 width: 60,
             },
         ];
-        const dynamicColumns: ColDef<NetworkModificationInfos>[] = enableDeveloperMode
-            ? rootNetworks.map((rootNetwork) => {
-                  const rootNetworkUuid = rootNetwork.rootNetworkUuid;
-                  const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
-                  return {
-                      colId: rootNetworkUuid,
-                      cellRenderer: RootNetworkChipCellRenderer,
-                      cellRendererParams: {
-                          rootNetwork: rootNetwork,
-                          setModifications: setModifications,
-                      },
-                      cellStyle: { textAlign: 'center' },
-                      headerStyle: { padding: 0 },
-                      width: 72,
-                      headerComponent: () =>
-                          isCurrentRootNetwork && (
-                              <Box
-                                  sx={{
-                                      width: '100%',
-                                      display: 'flex',
-                                      justifyContent: 'center',
-                                  }}
-                              >
-                                  <Badge overlap="circular" color="primary" variant="dot">
-                                      <RemoveRedEyeIcon />
-                                  </Badge>
-                              </Box>
-                          ),
-                  };
-              })
-            : [];
+        const dynamicColumns: ColDef<NetworkModificationInfos>[] =
+            enableDeveloperMode && !isMonoRootStudy
+                ? rootNetworks.map((rootNetwork) => {
+                      const rootNetworkUuid = rootNetwork.rootNetworkUuid;
+                      const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
+                      return {
+                          colId: rootNetworkUuid,
+                          cellRenderer: RootNetworkChipCellRenderer,
+                          cellRendererParams: {
+                              rootNetwork: rootNetwork,
+                              setModifications: setModifications,
+                          },
+                          cellStyle: { textAlign: 'center' },
+                          headerStyle: { padding: 0 },
+                          width: 72,
+                          headerComponent: () =>
+                              isCurrentRootNetwork &&
+                              modifications.length >= 1 && (
+                                  <Box
+                                      sx={{
+                                          width: '100%',
+                                          display: 'flex',
+                                          justifyContent: 'center',
+                                      }}
+                                  >
+                                      <Badge overlap="circular" color="primary" variant="dot">
+                                          <RemoveRedEyeIcon />
+                                      </Badge>
+                                  </Box>
+                              ),
+                      };
+                  })
+                : [];
 
         return [...staticColumns, ...dynamicColumns];
     }, [
         isRowDragDisabled,
         modifications?.length,
-        rootNetworks,
-        currentRootNetworkUuid,
-        enableDeveloperMode,
-        getModificationLabel,
-        setModifications,
         nameHeaderProps,
+        setModifications,
+        enableDeveloperMode,
+        isMonoRootStudy,
+        rootNetworks,
+        getModificationLabel,
+        currentRootNetworkUuid,
     ]);
 
     const getRowId = (params: GetRowIdParams<NetworkModificationInfos>) => params.data.modificationInfos.uuid;
