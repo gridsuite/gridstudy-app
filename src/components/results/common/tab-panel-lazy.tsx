@@ -45,6 +45,7 @@ function TabPanelLazy({ children, selected, ...otherProps }: Readonly<TabPanelLa
                           left: 0,
                           visibility: 'hidden',
                           zIndex: -1,
+                          opacity: 0,
                       }
             }
             sx={styles.fullHeight}
