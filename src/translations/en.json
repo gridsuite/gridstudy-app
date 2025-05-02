@@ -8,6 +8,7 @@
     "voltageRange": "Voltage range",
 
     "button.delete": "Delete",
+    "button.continue": "Continue",
     "filter": "Filter",
     "enable": "Enable",
     "disable": "Disable",
@@ -1578,6 +1579,7 @@
     "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
     "nodeAliasesUpdateError": "An error occured while updating node aliases",
     "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
+    "confirmRootNetworkCreation": "The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.",
     "VOLTAGE_LEVEL_TOPOLOGY": "Voltage Level topology",
     "ModifyVoltageLevelTopology": "Modify voltage level topology",
     "TopologyNotRetrieved": "The voltage level topology could not be retrieved",
