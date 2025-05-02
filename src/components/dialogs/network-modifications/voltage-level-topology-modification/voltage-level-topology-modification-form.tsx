@@ -132,13 +132,11 @@ export function VoltageLevelTopologyModificationForm({
             if (row.type === 'SEPARATOR') {
                 return;
             }
-            let newValue;
+            let newValue = null;
             if (row[PREV_CONNECTION_STATUS] === 'Open') {
                 newValue = true;
             } else if (row[PREV_CONNECTION_STATUS] === 'Closed') {
                 newValue = false;
-            } else {
-                newValue = null;
             }
             setValue(`${TOPOLOGY_MODIFICATION_TABLE}[${index}].${CURRENT_CONNECTION_STATUS}`, newValue, {
                 shouldDirty: true,
