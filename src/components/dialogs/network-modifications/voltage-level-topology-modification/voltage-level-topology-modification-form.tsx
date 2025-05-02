@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { Button, Grid, TextField, useTheme } from '@mui/material';
@@ -16,19 +16,18 @@ import {
 } from '../../../utils/field-constants';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { filledTextField } from '../../dialog-utils';
-import { HeaderWithTooltip } from './header-with-tooltip';
+import HeaderWithTooltip from './header-with-tooltip';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { BooleanNullableCellRenderer } from './boolean-nullable-cell-render';
+import ConnectionCellRenderer from './connection-cell-render';
 import ResetSettings from '@material-symbols/svg-400/outlined/reset_settings.svg?react';
 import { useFormContext } from 'react-hook-form';
 import { SwitchRowForm } from './voltage-level-topology.type';
-import { SeparatorCellRenderer } from './separator-cell-renderer';
+import SeparatorCellRenderer from './separator-cell-renderer';
 
 interface VoltageLevelTopologyModificationFormProps {
     currentNode: CurrentTreeNode;
     selectedId: string;
     mergedRowData: SwitchRowForm[];
-    copyPreviousToCurrentStatus: () => void;
     isUpdate: boolean;
 }
 
@@ -36,12 +35,11 @@ export function VoltageLevelTopologyModificationForm({
     currentNode,
     selectedId,
     mergedRowData,
-    copyPreviousToCurrentStatus,
     isUpdate,
 }: VoltageLevelTopologyModificationFormProps) {
     const intl = useIntl();
     const theme = useTheme();
-    const { getValues } = useFormContext();
+    const { getValues, setValue } = useFormContext();
 
     const defaultColDef = useMemo(
         () => ({
@@ -109,7 +107,7 @@ export function VoltageLevelTopologyModificationForm({
                     }
                     const watchTable: SwitchRowForm[] = getValues(TOPOLOGY_MODIFICATION_TABLE);
                     const formIndex = watchTable.findIndex((item: SwitchRowForm) => item.switchId === data.switchId);
-                    return BooleanNullableCellRenderer({
+                    return ConnectionCellRenderer({
                         name: `${TOPOLOGY_MODIFICATION_TABLE}[${formIndex}].${CURRENT_CONNECTION_STATUS}`,
                     });
                 },
@@ -127,6 +125,20 @@ export function VoltageLevelTopologyModificationForm({
         ],
         [currentNode, intl, isUpdate, getValues]
     );
+
+    const copyPreviousToCurrentStatus = useCallback(() => {
+        const formValues = getValues(TOPOLOGY_MODIFICATION_TABLE);
+        formValues.forEach((row: SwitchRowForm, index: number) => {
+            if (row.type === 'SEPARATOR') {
+                return;
+            }
+            const newValue =
+                row[PREV_CONNECTION_STATUS] === 'Open' ? false : row[PREV_CONNECTION_STATUS] === 'Closed' ? true : null;
+            setValue(`${TOPOLOGY_MODIFICATION_TABLE}[${index}].${CURRENT_CONNECTION_STATUS}`, newValue, {
+                shouldDirty: true,
+            });
+        });
+    }, [getValues, setValue]);
 
     return (
         <Grid container sx={{ height: '100%' }} direction="column">

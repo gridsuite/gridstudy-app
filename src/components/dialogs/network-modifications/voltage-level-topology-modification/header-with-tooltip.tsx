@@ -8,14 +8,19 @@ import { Box, FormHelperText } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { InfoOutlined, WarningAmberRounded } from '@mui/icons-material';
 
-export const HeaderWithTooltip = (props: {
-    displayName: any;
-    tooltipTitle: any;
-    isNodeBuilt: any;
-    disabledTooltip: any;
-}) => {
-    const { displayName, tooltipTitle, isNodeBuilt, disabledTooltip } = props;
+type HeaderWithTooltipProps = {
+    displayName: string;
+    tooltipTitle: string;
+    isNodeBuilt: boolean;
+    disabledTooltip: boolean;
+};
 
+export default function HeaderWithTooltip({
+    displayName,
+    tooltipTitle,
+    isNodeBuilt,
+    disabledTooltip,
+}: Readonly<HeaderWithTooltipProps>) {
     return (
         <Box
             sx={{
@@ -66,4 +71,4 @@ export const HeaderWithTooltip = (props: {
             )}
         </Box>
     );
-};
+}

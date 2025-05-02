@@ -9,21 +9,20 @@ import React from 'react';
 
 const styles = {
     separator: (theme: Theme) => ({
-        color: theme.palette.text.primary,
         fontWeight: 'bold',
         fontSize: '1rem',
         width: '100%',
-        marginTop: '2%',
+        marginTop: theme.spacing(1),
     }),
 };
 
-interface SeparatorCellRendererProps {
+type SeparatorCellRendererProps = {
     value: string;
-}
+};
 
-export function SeparatorCellRenderer({ value }: Readonly<SeparatorCellRendererProps>) {
+export default function SeparatorCellRenderer({ value }: Readonly<SeparatorCellRendererProps>) {
     return (
-        <Typography variant="subtitle1" sx={styles.separator}>
+        <Typography variant="subtitle1" color="primary" sx={styles.separator}>
             {value}
         </Typography>
     );
