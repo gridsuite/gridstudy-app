@@ -762,6 +762,14 @@ export interface VSCModificationInfo {
     modificationUuid: UUID;
 }
 
+export type EquipmentAttributeModificationInfos = {
+    type: string;
+    equipmentId: string;
+    equipmentAttributeName: string;
+    equipmentAttributeValue: boolean;
+    equipmentType: string;
+};
+
 export interface GenerationDispatchInfo {
     studyUuid: UUID;
     nodeUuid: UUID;
@@ -772,4 +780,11 @@ export interface GenerationDispatchInfo {
     generatorsWithFixedActivePower: any;
     generatorsFrequencyReserve: any;
     substationsGeneratorsOrdering: any;
+}
+
+export interface TopologyVoltageLevelModificationInfos {
+    type: ModificationType;
+    uuid: string | null;
+    equipmentId: string;
+    equipmentAttributeModificationList: EquipmentAttributeModificationInfos[];
 }

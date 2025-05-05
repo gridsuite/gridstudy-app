@@ -34,6 +34,7 @@ import {
     StaticVarCompensatorCreationInfo,
     SubstationCreationInfo,
     SubstationModificationInfo,
+    TopologyVoltageLevelModificationInfos,
     TwoWindingsTransformerCreationInfo,
     TwoWindingsTransformerModificationInfo,
     Variations,
@@ -44,6 +45,7 @@ import {
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { NetworkModificationInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
@@ -1333,6 +1335,36 @@ export function modifyVoltageLevel({
     });
 }
 
+export function modifyVoltageLevelTopology({
+    topologyVoltageLevelModificationInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    topologyVoltageLevelModificationInfos: TopologyVoltageLevelModificationInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+    modificationUuid: string | null;
+    isUpdate: boolean;
+}) {
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating voltage level topology modification');
+    } else {
+        console.info('Creating voltage level topology modification');
+    }
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(topologyVoltageLevelModificationInfos),
+    });
+}
+
 export function divideLine({
     studyUuid,
     nodeUuid,
@@ -1677,6 +1709,7 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
         }),
     });
 }
+
 export function createLcc({
     studyUuid,
     nodeUuid,
@@ -1723,6 +1756,7 @@ export function createLcc({
         }),
     });
 }
+
 export function modifyLcc({
     lccModificationInfos,
     studyUuid,
@@ -1754,6 +1788,7 @@ export function modifyLcc({
         body: JSON.stringify(lccModificationInfos),
     });
 }
+
 export function createVsc({
     studyUuid,
     nodeUuid,

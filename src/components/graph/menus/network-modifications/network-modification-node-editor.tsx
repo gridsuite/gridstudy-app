@@ -99,6 +99,7 @@ import { styles } from './network-modification-node-editor-utils';
 import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification /lcc-modification-dialog';
+import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -277,6 +278,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
                     label: 'VOLTAGE_LEVEL',
                     action: () => withDefaultParams(VoltageLevelModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
+                    label: 'VOLTAGE_LEVEL_TOPOLOGY',
+                    action: () => withDefaultParams(VoltageLevelTopologyModificationDialog),
                 },
                 {
                     id: MODIFICATION_TYPES.LINE_MODIFICATION.type,
