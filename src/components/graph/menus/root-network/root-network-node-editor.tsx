@@ -31,17 +31,12 @@ import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
-import {
-    AppState,
-    NotificationType,
-    RootNetworksDeletionStartedEventData,
-    RootNetworksUpdatedEventData,
-} from 'redux/reducer';
+import { AppState, NotificationType, RootNetworksDeletionStartedEventData } from 'redux/reducer';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 
 import { getCaseImportParameters } from 'services/network-conversion';
-import { deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
-import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
+import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
+import { setCurrentRootNetworkUuid } from 'redux/actions';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
@@ -134,57 +129,6 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
     const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
     rootNetworksRef.current = rootNetworks;
 
-    const updateSelectedItems = useCallback((rootNetworks: RootNetworkMetadata[]) => {
-        const toKeepIdsSet = new Set(rootNetworks.map((e) => e.rootNetworkUuid));
-        setSelectedItems((oldselectedItems) => oldselectedItems.filter((s) => toKeepIdsSet.has(s.rootNetworkUuid)));
-    }, []);
-
-    const dofetchRootNetworks = useCallback(() => {
-        if (studyUuid) {
-            fetchRootNetworks(studyUuid)
-                .then((res: RootNetworkMetadata[]) => {
-                    updateSelectedItems(res);
-                    dispatch(setRootNetworks(res));
-                    // This is used to hide the loader for creation, update and deletion of the root networks.
-                    // All the root networks must be fully established before the loader can be safely removed.
-                    if (res.every((network) => !network.isCreating)) {
-                        setIsRootNetworksProcessing(false);
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                    });
-                });
-        }
-    }, [studyUuid, updateSelectedItems, dispatch, setIsRootNetworksProcessing, snackError]);
-
-    const rootNetworkModifiedNotification = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
-                dofetchRootNetworks();
-            }
-        },
-        [dofetchRootNetworks]
-    );
-    const rootNetworksUpdateFailedNotification = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATE_FAILED) {
-                dofetchRootNetworks();
-                snackError({
-                    messageId: 'importCaseFailure',
-                    headerId: 'createRootNetworksError',
-                });
-            }
-        },
-        [dofetchRootNetworks, snackError]
-    );
     const rootNetworkDeletionStartedNotification = useCallback(
         (event: MessageEvent<string>) => {
             const parsedEventData: unknown = JSON.parse(event.data);
@@ -214,12 +158,6 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
         [dispatch]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
-        listenerCallbackMessage: rootNetworkModifiedNotification,
-    });
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
-        listenerCallbackMessage: rootNetworksUpdateFailedNotification,
-    });
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
         listenerCallbackMessage: rootNetworkDeletionStartedNotification,
     });
