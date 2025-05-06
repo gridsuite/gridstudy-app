@@ -70,7 +70,8 @@ import {
     mapColumnsDto,
     processSpreadsheetsCollectionData,
 } from './spreadsheet/custom-spreadsheet/custom-spreadsheet-utils';
-import useInitializeBrowserTabUuid from '../hooks/use-initialize-browser-tab-uuid.js';
+import { UPDATE_TYPE_HEADER } from './use-node-data.js';
+import useDebug, { UPDATE_TYPE_STUDY_DEBUG } from '../hooks/use-debug';
 
 const noUserManager = { instance: null, error: null };
 
@@ -78,11 +79,6 @@ const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, St
 
 const App = () => {
     const { snackError } = useSnackMessage();
-
-    // provide each opened browser tab a unique uuid, maintained even refreshing tab by F5
-    // this unique uuid is used to filter a notification which will be consumed once by the current tab,
-    // e.g. trigger a downloading of the debug file after a computation finished
-    useInitializeBrowserTabUuid();
 
     const appTabIndex = useSelector((state) => state.appTabIndex);
     const user = useSelector((state) => state.user);
@@ -229,6 +225,22 @@ const App = () => {
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
         listenerCallbackMessage: onSpreadsheetNotification,
     });
+
+    // debug file notification
+    const { downloadDebugFile } = useDebug();
+    const onDebugNotification = useCallback((event) => {
+        const eventData = JSON.parse(event.data);
+        console.log(`XXX notified`, { eventData });
+        const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+        if (updateTypeHeader === UPDATE_TYPE_STUDY_DEBUG) {
+            const resultUuid = eventData.headers?.resultUuid;
+            const computingType = eventData.headers?.computationType;
+
+            // perform download debug file once
+            downloadDebugFile(resultUuid, computingType);
+        }
+    }, []);
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, { listenerCallbackMessage: onDebugNotification });
 
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(

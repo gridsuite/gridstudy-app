@@ -9,17 +9,11 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ComputingType, formatComputingTypeLabel } from './computing-type';
+import { ComputingType } from './computing-type';
 import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
-
-import { downloadZipFile } from '../../services/utils';
-import { HttpStatusCode } from '../../utils/http-status-code';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { fetchResultUuid } from '../../services/study/study';
-import { getBrowserTabUuid } from '../../redux/session-storage/browser-tab-uuid-state';
 
 interface UseComputingStatusProps {
     (
@@ -27,7 +21,6 @@ interface UseComputingStatusProps {
         nodeUuid: UUID,
         currentRootNetworkUuid: UUID,
         fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
-        debugFileFetcher: ((resultUuid: UUID) => Promise<Response>) | null,
         invalidations: string[],
         completions: string[],
         resultConversion: (x: string | null) => RunningStatus,
@@ -92,9 +85,7 @@ function isWorthUpdate(
  *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
  * @param studyUuid current study uuid
  * @param nodeUuid current node uuid
- * @param currentRootNetworkUuid current root network uuid
  * @param fetcher method fetching current <computingType> state
- * @param debugFileFetcher method fetching current debug zip file
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
@@ -105,14 +96,12 @@ export const useComputingStatus: UseComputingStatusProps = (
     nodeUuid,
     currentRootNetworkUuid,
     fetcher,
-    debugFileFetcher,
     invalidations,
     completions,
     resultConversion,
     computingType,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
-    const { snackError, snackWarning } = useSnackMessage();
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);
 
@@ -129,7 +118,7 @@ export const useComputingStatus: UseComputingStatusProps = (
         [completions]
     );
 
-    const updateStatus = useCallback(() => {
+    const update = useCallback(() => {
         // this is used to prevent race conditions from happening
         // if another request is sent, the previous one won't do anything
         let canceledRequest = false;
@@ -173,46 +162,6 @@ export const useComputingStatus: UseComputingStatusProps = (
         isComputationCompleted,
     ]);
 
-    const downloadDebugFile = useCallback(
-        (debugFileFetcher: (resultUuid: UUID) => Promise<Response>) => {
-            fetchResultUuid(studyUuid, nodeUuid, currentRootNetworkUuid, computingType) // fetch result uuid from study server
-                .then((resultUuid) => {
-                    resultUuid &&
-                        debugFileFetcher(resultUuid) // download debug file from a specific computation server
-                            .then(async (response) => {
-                                // Get the filename
-                                const contentDisposition = response.headers.get('Content-Disposition');
-                                let filename = `${formatComputingTypeLabel(computingType)}.zip`;
-                                if (contentDisposition && contentDisposition.includes('filename=')) {
-                                    const match = contentDisposition.match(/filename="?([^"]+)"?/);
-                                    if (match && match[1]) {
-                                        filename = match[1];
-                                    }
-                                }
-
-                                const blob = await response.blob();
-                                downloadZipFile(blob, filename);
-                            })
-                            .catch((responseError) => {
-                                const error = responseError as Error & { status: number };
-                                if (error.status === HttpStatusCode.NOT_FOUND) {
-                                    // not found
-                                    snackWarning({
-                                        headerId: 'debugFileNotFoundHeader',
-                                    });
-                                } else {
-                                    // or whatever error
-                                    snackError({
-                                        messageTxt: error.message,
-                                        headerId: 'debugFileErrorHeader',
-                                    });
-                                }
-                            });
-                });
-        },
-        [studyUuid, nodeUuid, currentRootNetworkUuid, computingType, snackWarning, snackError]
-    );
-
     /* initial fetch and update */
     useEffect(() => {
         if (
@@ -235,20 +184,11 @@ export const useComputingStatus: UseComputingStatusProps = (
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (isUpdateForUs) {
-            updateStatus();
-            // download automatically debug file only for the current browser tab
-            if (
-                studyUpdatedForce.eventData?.headers?.debug &&
-                studyUpdatedForce.eventData?.headers?.browserTabUuid === getBrowserTabUuid()
-            ) {
-                debugFileFetcher && downloadDebugFile(debugFileFetcher);
-            }
+            update();
         }
     }, [
-        updateStatus,
-        downloadDebugFile,
+        update,
         fetcher,
-        debugFileFetcher,
         nodeUuid,
         invalidations,
         currentRootNetworkUuid,
