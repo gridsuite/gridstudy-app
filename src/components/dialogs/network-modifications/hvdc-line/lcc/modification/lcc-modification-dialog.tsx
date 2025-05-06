@@ -97,7 +97,7 @@ export const LccModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LccModificationSchemaForm>>(formSchema),
     });
-    const { reset, handleSubmit, getValues } = formMethods;
+    const { reset, getValues } = formMethods;
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -255,9 +255,8 @@ export const LccModificationDialog = ({
             <ModificationDialog
                 fullWidth
                 onClear={clear}
-                // @ts-ignore
-                onSave={handleSubmit(onSubmit)}
-                maxWidth={'md'}
+                onSave={onSubmit}
+                maxWidth={'lg'}
                 titleId="ModifyLcc"
                 PaperProps={{
                     sx: {

@@ -25,7 +25,7 @@ import FiltersShuntCompensatorTable from '../creation/filters-shunt-compensator-
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 import TextField from '@mui/material/TextField';
 import { LccConverterStationFormInfos } from './lcc-type';
-import { ModificationFiltersShuntCompensatorTable } from '../modification /filter-shunt-compensator-table-modification';
+import { ModificationFiltersShuntCompensatorTable } from '../modification/filter-shunt-compensator-table-modification';
 
 interface LccConverterStationProps {
     id: string;

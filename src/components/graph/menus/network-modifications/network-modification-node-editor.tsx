@@ -98,7 +98,7 @@ import { LccCreationDialog } from '../../../dialogs/network-modifications/hvdc-l
 import { styles } from './network-modification-node-editor-utils';
 import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
-import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification /lcc-modification-dialog';
+import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
 
 const nonEditableModificationTypes = new Set([
