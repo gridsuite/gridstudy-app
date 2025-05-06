@@ -19,8 +19,8 @@ export interface GlobalFilters {
     nominalV?: string[];
     countryCode?: string[];
     genericFilter?: string[]; // UUIDs of the generic filters
-    properties?: Object;
-    propertiesFieldType?: Object;
+    // substation property filters fetched from user configuration
+    substationProperty?: Object; // Map<string, string[]>;
     limitViolationsTypes?: LimitTypes[];
 }
 
@@ -28,6 +28,7 @@ export interface GlobalFilters {
 export interface GlobalFilter {
     label: string;
     filterType: string;
+    filterSubtype?: string; // when filterType needs more precise subcategories
     recent?: boolean;
     uuid?: UUID; // only useful for generic filters
     equipmentType?: string; // only useful for generic filters

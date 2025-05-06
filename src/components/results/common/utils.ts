@@ -35,5 +35,5 @@ export enum FilterType {
     VOLTAGE_LEVEL = 'voltageLevel',
     COUNTRY = 'country',
     GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library
-    REGION = 'region',
+    SUBSTATION_PROPERTY = 'substationProperty',
 }

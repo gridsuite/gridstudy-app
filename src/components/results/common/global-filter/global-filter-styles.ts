@@ -22,8 +22,8 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
         case FilterType.GENERIC_FILTER:
             chipStyle = resultsGlobalFilterStyles.chipGenericFilter;
             break;
-        case FilterType.REGION:
-            chipStyle = resultsGlobalFilterStyles.chipRegion;
+        case FilterType.SUBSTATION_PROPERTY:
+            chipStyle = resultsGlobalFilterStyles.chipProperty;
             break;
     }
     return mergeSx(resultsGlobalFilterStyles.chip, chipStyle);
@@ -142,7 +142,7 @@ export const resultsGlobalFilterStyles = {
             backgroundColor: `${cyan['700']}!important`,
         },
     }),
-    chipRegion: (theme: Theme) => ({
+    chipProperty: (theme: Theme) => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `${theme.palette.info.main}!important`,
         },

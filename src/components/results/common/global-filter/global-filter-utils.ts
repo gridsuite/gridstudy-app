@@ -7,6 +7,7 @@
 
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
+import { fetchStudyMetadata } from '@gridsuite/commons-ui';
 
 export const RECENT_FILTER: string = 'recent';
 
@@ -18,8 +19,17 @@ export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) =>
             return option.label + ' kV';
         case FilterType.GENERIC_FILTER:
             return option.label;
-        case FilterType.REGION:
+        case FilterType.SUBSTATION_PROPERTY:
             return option.label;
     }
     return '';
 };
+
+export async function fetchSubstationPropertiesGlobalFilters(): Promise<{
+    substationPropertiesGlobalFilters?: Map<string, string[]>;
+}> {
+    const { substationPropertiesGlobalFilters } = await fetchStudyMetadata();
+    return {
+        substationPropertiesGlobalFilters: new Map(Object.entries(substationPropertiesGlobalFilters)),
+    };
+}
