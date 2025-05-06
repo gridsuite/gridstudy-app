@@ -166,6 +166,7 @@ export default function SpreadsheetCollectionDialog({
                                     elementType={ElementType.SPREADSHEET_CONFIG_COLLECTION}
                                     titleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
                                     label="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
+                                    allowMultiSelect={false}
                                 />
                             </Grid>
                         </Grid>
