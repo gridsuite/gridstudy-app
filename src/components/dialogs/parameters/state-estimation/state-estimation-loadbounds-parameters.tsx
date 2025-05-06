@@ -11,7 +11,7 @@ import { useIntl } from 'react-intl';
 import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import GridSection from '../../commons/grid-section';
-import { CustomVoltageLevelTable, IColumnsDef } from '@gridsuite/commons-ui';
+import { CustomVoltageLevelTable, type IColumnsDef } from '@gridsuite/commons-ui';
 
 export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
     const intl = useIntl();

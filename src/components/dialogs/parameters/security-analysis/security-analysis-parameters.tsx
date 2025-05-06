@@ -46,7 +46,7 @@ import {
 import LineSeparator from '../../commons/line-separator';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import type { AppState } from '../../../../redux/reducer';
 
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SECURITY_ANALYSIS>;
