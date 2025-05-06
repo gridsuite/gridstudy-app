@@ -14,6 +14,7 @@ import PropertiesForm from 'components/dialogs/network-modifications/common/prop
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 import { LccFormInfos } from './lcc-type';
+import { useIntl } from 'react-intl';
 
 interface LccHvdcLineProps {
     id: string;
@@ -22,6 +23,7 @@ interface LccHvdcLineProps {
 }
 
 export default function LccHvdcLine({ id, previousValues, isModification }: Readonly<LccHvdcLineProps>) {
+    const intl = useIntl();
     const dcNominalVoltageField = (
         <FloatInput
             name={`${id}.${NOMINAL_V}`}
@@ -56,7 +58,11 @@ export default function LccHvdcLine({ id, previousValues, isModification }: Read
             options={Object.values(VSC_CONVERTER_MODE)}
             size={'small'}
             disableClearable
-            previousValue={previousValues?.convertersMode}
+            previousValue={
+                previousValues
+                    ? intl.formatMessage({ id: VSC_CONVERTER_MODE[previousValues.convertersMode].label })
+                    : ''
+            }
         />
     );
 
