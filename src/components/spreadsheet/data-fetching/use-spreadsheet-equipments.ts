@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNotificationsListener } from '@gridsuite/commons-ui';
+import { Identifiable, useNotificationsListener } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +21,7 @@ import { NodeType } from '../../graph/tree-node.type';
 import { validAlias } from '../custom-columns/use-node-aliases';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
+import { getEquipmentUpdateTypeFromType } from '../utils/convert-type-utils';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -109,47 +110,6 @@ export const useSpreadsheetEquipments = (
         }
     }, [builtAliasedNodesIds, currentNode, dispatch, equipments]);
 
-    function getEquipmentUpdateTypeFromType(type: SpreadsheetEquipmentType): EquipmentUpdateType | undefined {
-        switch (type) {
-            case 'SUBSTATION':
-                return EquipmentUpdateType.SUBSTATIONS;
-            case 'VOLTAGE_LEVEL':
-                return EquipmentUpdateType.VOLTAGE_LEVELS;
-            case 'TIE_LINE':
-                return EquipmentUpdateType.TIE_LINES;
-            case 'LINE':
-                return EquipmentUpdateType.LINES;
-            case 'TWO_WINDINGS_TRANSFORMER':
-                return EquipmentUpdateType.TWO_WINDINGS_TRANSFORMERS;
-            case 'THREE_WINDINGS_TRANSFORMER':
-                return EquipmentUpdateType.THREE_WINDINGS_TRANSFORMERS;
-            case 'HVDC_LINE':
-                return EquipmentUpdateType.HVDC_LINES;
-            case 'BUS':
-                return EquipmentUpdateType.BUSES;
-            case 'BUSBAR_SECTION':
-                return EquipmentUpdateType.BUSBAR_SECTIONS;
-            case 'GENERATOR':
-                return EquipmentUpdateType.GENERATORS;
-            case 'BATTERY':
-                return EquipmentUpdateType.BATTERIES;
-            case 'LOAD':
-                return EquipmentUpdateType.LOADS;
-            case 'SHUNT_COMPENSATOR':
-                return EquipmentUpdateType.SHUNT_COMPENSATORS;
-            case 'DANGLING_LINE':
-                return EquipmentUpdateType.DANGLING_LINES;
-            case 'STATIC_VAR_COMPENSATOR':
-                return EquipmentUpdateType.STATIC_VAR_COMPENSATORS;
-            case 'VSC_CONVERTER_STATION':
-                return EquipmentUpdateType.VSC_CONVERTER_STATIONS;
-            case 'LCC_CONVERTER_STATION':
-                return EquipmentUpdateType.LCC_CONVERTER_STATIONS;
-            default:
-                return;
-        }
-    }
-
     const updateEquipmentsLocal = useCallback(
         (impactedSubstationsIds: string[], deletedEquipments: { equipmentType: string; equipmentId: string }[]) => {
             if (!type) {
@@ -185,12 +145,13 @@ export const useSpreadsheetEquipments = (
                         'TAB',
                         equipmentToUpdateId,
                         false
-                    ).then((values) => {
+                    ).then((value: Identifiable) => {
                         highlightUpdatedEquipment();
                         const updateType = getEquipmentUpdateTypeFromType(type);
                         if (updateType) {
-                            let equipmentsToUpdate: any = {};
-                            equipmentsToUpdate[updateType] = [values];
+                            const equipmentsToUpdate: Partial<Record<EquipmentUpdateType, Identifiable[]>> = {
+                                [updateType]: [value],
+                            };
                             dispatch(updateEquipments(equipmentsToUpdate, nodeId));
                         }
                     });
