@@ -234,7 +234,7 @@ export const getConcatenatedShuntCompensatorOnSideInfos = (
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
             [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc === undefined ? null : shuntCp.connectedToHvdc,
-            [DELETION_MARK]: shuntCp.connectedToHvdc ?? false,
+            [DELETION_MARK]: shuntCp?.deletionMark ?? false,
         })) ?? []
     );
 };
@@ -244,6 +244,7 @@ export const mergeModificationAndEquipmentShuntCompensatorInfos = (
     infosMapServer?: LccShuntCompensatorInfos[]
 ): LccShuntCompensatorModificationInfos[] => {
     let result = new Map<string, LccShuntCompensatorModificationInfos>();
+
     if (!infosModification && infosMapServer) {
         for (const info of infosMapServer) {
             result.set(info.id, {

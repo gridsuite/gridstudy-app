@@ -110,7 +110,6 @@ export const LccModificationDialog = ({
             if (editData?.equipmentId) {
                 setEquipmentId(editData.equipmentId);
             }
-
             reset({
                 [EQUIPMENT_NAME]: lccModificationInfos.equipmentName?.value ?? '',
                 [HVDC_LINE_TAB]: getLccHvdcLineFromModificationEditData(lccModificationInfos),
