@@ -102,8 +102,10 @@ export const SpreadsheetTabContent = React.memo(
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
-        const { updateSortConfig, updateLockedColumnsConfig, isLockedColumnNamesEmpty, handleColumnDrag } =
-            useColumnManagement(gridRef, tableDefinition);
+        const { updateSortConfig, updateLockedColumnsConfig, handleColumnDrag } = useColumnManagement(
+            gridRef,
+            tableDefinition
+        );
 
         const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.uuid);
 
@@ -143,8 +145,9 @@ export const SpreadsheetTabContent = React.memo(
         }, [handleEquipmentScroll]);
 
         const onGridReady = useCallback(() => {
+            updateLockedColumnsConfig();
             setIsGridReady(true);
-        }, []);
+        }, [updateLockedColumnsConfig]);
 
         const transformedRowData = useMemo(() => {
             if (
@@ -183,8 +186,7 @@ export const SpreadsheetTabContent = React.memo(
             }
 
             updateSortConfig();
-            updateLockedColumnsConfig();
-        }, [updateSortConfig, updateLockedColumnsConfig, equipments, gridRef, isGridReady]);
+        }, [updateSortConfig, equipments, gridRef, isGridReady]);
 
         useEffect(() => {
             const api = gridRef.current?.api;
@@ -213,7 +215,6 @@ export const SpreadsheetTabContent = React.memo(
                             handleColumnDrag={handleColumnDrag}
                             isExternalFilterPresent={isExternalFilterPresent}
                             doesExternalFilterPass={doesFormulaFilteringPass}
-                            shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
                             onModelUpdated={onModelUpdated}
                             onFirstDataRendered={onFirstDataRendered}
                             onGridReady={onGridReady}
