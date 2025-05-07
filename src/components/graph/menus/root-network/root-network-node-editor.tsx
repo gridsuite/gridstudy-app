@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, Parameter, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, mergeSx, Parameter, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 
 import {
     Delete as DeleteIcon,
@@ -68,11 +68,17 @@ const styles = {
         padding: theme.spacing(1),
         overflow: 'hidden',
         borderTop: `1px solid ${theme.palette.divider}`,
-
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),
         alignItems: 'center',
         justifyContent: 'space-between',
+        paddingTop: theme.spacing(2),
+    }),
+    rootNetworkMonoRootHover: (theme: Theme) => ({
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+        },
     }),
     toolbar: (theme: Theme) => ({
         '&': {
@@ -310,21 +316,36 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
             </Box>
         );
     };
-    const handleMonoRootUpdate = () => {
-        setEditedRootNetwork(rootNetworks[0]);
-        setRootNetworkModificationDialogOpen(true);
-    };
-
     const renderRootNetworkForMonoRootStudy = () => {
         return (
-            <Box sx={styles.rootNetworkMonoRoot} onClick={handleMonoRootUpdate}>
-                <Tooltip title={rootNetworks[0].name} arrow>
-                    <Typography noWrap sx={{ paddingTop: '8px' }}>
-                        {rootNetworks[0].name}
-                    </Typography>
-                </Tooltip>
+            <Box
+                sx={mergeSx(
+                    styles.rootNetworkMonoRoot,
+                    isRootNetworksProcessing ? undefined : styles.rootNetworkMonoRootHover
+                )}
+                onClick={handleMonoRootUpdate}
+            >
+                <Typography
+                    noWrap
+                    style={{
+                        opacity: isRootNetworksProcessing ? 0.5 : 1,
+                    }}
+                >
+                    {rootNetworks[0].name}
+                </Typography>
+                {isRootNetworksProcessing && (
+                    <span>
+                        <CircularProgress size={'1em'} sx={styles.toolbarCircularProgress} />
+                    </span>
+                )}
             </Box>
         );
+    };
+    const handleMonoRootUpdate = () => {
+        if (!isRootNetworksProcessing) {
+            setEditedRootNetwork(rootNetworks[0]);
+            setRootNetworkModificationDialogOpen(true);
+        }
     };
 
     const renderRootNetworkModificationDialog = () => {

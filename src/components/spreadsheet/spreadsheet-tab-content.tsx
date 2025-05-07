@@ -94,6 +94,7 @@ export const SpreadsheetTabContent = React.memo(
         // Only fetch when active
         const { equipments, isFetching } = useSpreadsheetEquipments(
             tableDefinition?.type,
+            equipmentToUpdateId,
             highlightUpdatedEquipment,
             nodeAliases,
             active
