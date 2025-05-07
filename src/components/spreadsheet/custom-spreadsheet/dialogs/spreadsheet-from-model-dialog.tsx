@@ -139,6 +139,7 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
                                 elementType={ElementType.SPREADSHEET_CONFIG}
                                 titleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
                                 label="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
+                                allowMultiSelect={false}
                             />
                         </Grid>
                     </Grid>
