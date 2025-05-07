@@ -100,7 +100,13 @@ export function ModificationFiltersShuntCompensatorTable({
 
     const PreviousConnexion = useCallback(
         (index: number) => {
-            const previousValue = previousValues?.[index]?.connectedToHvdc;
+            const currentId = getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`);
+            const filteredValues = previousValues?.filter((value) => value.id === currentId);
+            let previousValue: boolean | null = null;
+
+            if (filteredValues?.length === 1) {
+                previousValue = filteredValues[0]?.connectedToHvdc ?? false;
+            }
             const value = previousValue
                 ? intl.formatMessage({ id: 'connected' })
                 : previousValue === false
@@ -117,18 +123,24 @@ export function ModificationFiltersShuntCompensatorTable({
                 />
             );
         },
-        [id, intl, previousValues]
+        [getValues, id, intl, previousValues]
     );
 
     const IdField = useCallback(
         (index: number) => {
-            return previousValues && index >= previousValues.length ? (
-                <TextInput name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`} />
-            ) : (
-                <TextField fullWidth size="small" value={previousValues?.[index]?.id ?? ''} name={``} disabled />
+            return (
+                <TextField
+                    fullWidth
+                    size="small"
+                    value={
+                        getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`) ?? ''
+                    }
+                    name={``}
+                    disabled
+                />
             );
         },
-        [id, previousValues]
+        [getValues, id]
     );
 
     const NameField = useCallback(
