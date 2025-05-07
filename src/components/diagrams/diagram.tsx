@@ -29,7 +29,7 @@ import DiagramResizableBox from './diagram-resizable-box';
 import AlertCustomMessageNode from '../utils/alert-custom-message-node';
 import { AppState } from 'redux/reducer';
 import { DiagramType, isNadType, isSldType } from './diagram.type';
-import { useDiagram } from './use-diagram';
+import { useDiagramApi } from './use-diagram-api';
 
 interface DiagramProps {
     align?: 'left' | 'right' | 'center';
@@ -63,7 +63,7 @@ const Diagram: React.FC<DiagramProps> = ({
     const dispatch = useDispatch();
     const intl = useIntl();
 
-    const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } = useDiagram();
+    const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } = useDiagramApi();
 
     const fullScreenDiagram = useSelector((state: AppState) => state.fullScreenDiagram);
 

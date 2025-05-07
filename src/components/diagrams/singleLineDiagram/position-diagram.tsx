@@ -12,7 +12,14 @@ import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
-import { styles, MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, NoSvg, MIN_WIDTH, Svg } from '../diagram-common';
+import {
+    styles,
+    MAX_HEIGHT_VOLTAGE_LEVEL,
+    MAX_WIDTH_VOLTAGE_LEVEL,
+    NoSvg,
+    MIN_WIDTH,
+    PositionDiagramSvg,
+} from '../diagram-common';
 import { mergeSx, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
@@ -28,13 +35,7 @@ interface PositionDiagramProps {
 }
 
 const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDivElement>) => {
-    const [svg, setSvg] = useState<Svg>({
-        svg: null,
-        metadata: null,
-        additionalMetadata: null,
-        error: null,
-        svgUrl: null,
-    });
+    const [svg, setSvg] = useState<PositionDiagramSvg>(NoSvg);
     const svgUrl = useRef('');
     const svgDraw = useRef<SingleLineDiagramViewer | null>(null);
     const { snackError } = useSnackMessage();
