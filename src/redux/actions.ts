@@ -703,6 +703,18 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen: boolean): 
     };
 }
 
+export const SET_MONO_ROOT_STUDY = 'SET_MONO_ROOT_STUDY';
+export type SetMonoRootStudyAction = Readonly<Action<typeof SET_MONO_ROOT_STUDY>> & {
+    isMonoRootStudy: boolean;
+};
+
+export function setMonoRootStudy(isMonoRootStudy: boolean): SetMonoRootStudyAction {
+    return {
+        type: SET_MONO_ROOT_STUDY,
+        isMonoRootStudy: isMonoRootStudy,
+    };
+}
+
 export const SET_EVENT_SCENARIO_DRAWER_OPEN = 'SET_EVENT_SCENARIO_DRAWER_OPEN';
 export type SetEventScenarioDrawerOpenAction = Readonly<Action<typeof SET_EVENT_SCENARIO_DRAWER_OPEN>> & {
     isEventScenarioDrawerOpen: boolean;
