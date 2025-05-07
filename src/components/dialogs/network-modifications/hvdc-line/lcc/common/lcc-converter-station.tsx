@@ -66,6 +66,7 @@ export default function LccConverterStation({
             name={`${id}.${CONVERTER_STATION_NAME}`}
             label={'converterStationName'}
             previousValue={previousValues?.name ?? ''}
+            clearable={isModification}
         />
     );
     const connectivityForm = (
@@ -86,6 +87,7 @@ export default function LccConverterStation({
             label={'lossFactorLabel'}
             adornment={percentageTextField}
             previousValue={previousValues?.lossFactor}
+            clearable={isModification}
         />
     );
 
@@ -103,6 +105,7 @@ export default function LccConverterStation({
             name={`${id}.${POWER_FACTOR}`}
             label={'powerFactorLabel'}
             previousValue={previousValues?.powerFactor}
+            clearable={isModification}
         />
     );
 

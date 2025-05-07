@@ -30,6 +30,7 @@ export default function LccHvdcLine({ id, previousValues, isModification }: Read
             adornment={VoltageAdornment}
             label={'dcNominalVoltageLabel'}
             previousValue={previousValues?.nominalV}
+            clearable={isModification}
         />
     );
 
@@ -39,6 +40,7 @@ export default function LccHvdcLine({ id, previousValues, isModification }: Read
             adornment={OhmAdornment}
             label={'dcResistanceLabel'}
             previousValue={previousValues?.r}
+            clearable={isModification}
         />
     );
 
@@ -48,6 +50,7 @@ export default function LccHvdcLine({ id, previousValues, isModification }: Read
             adornment={ActivePowerAdornment}
             label={'MaximumActivePowerText'}
             previousValue={previousValues?.maxP}
+            clearable={isModification}
         />
     );
 
@@ -72,6 +75,7 @@ export default function LccHvdcLine({ id, previousValues, isModification }: Read
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={previousValues?.activePowerSetpoint}
+            clearable={isModification}
         />
     );
 
