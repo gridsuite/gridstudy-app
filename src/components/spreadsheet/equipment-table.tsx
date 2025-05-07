@@ -179,6 +179,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             onGridReady={onGridReady}
             overrideLocales={AGGRID_LOCALES}
             suppressNoRowsOverlay={rowData === undefined}
+            valueCache={true}
         />
     );
 };
