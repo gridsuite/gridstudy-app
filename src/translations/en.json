@@ -1,4 +1,8 @@
 {
+    "debugText": "Computation data will be downloaded upon its completion",
+    "debugFileNotFoundHeader": "Computation data not found",
+    "debugFileErrorHeader": "Download computation data",
+
     "General": "General",
 
     "LimitReductions": "Limit reductions",

@@ -1,4 +1,8 @@
 {
+    "debugText": "Les données de calcul seront téléchargées à la fin de ce dernier",
+    "debugFileNotFoundHeader": "Les données de calcul non trouvées",
+    "debugFileErrorHeader": "Télechargement des données de calcul",
+
     "General": "Général",
 
     "LimitReductions": "Abattements",
