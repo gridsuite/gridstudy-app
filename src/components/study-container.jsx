@@ -19,10 +19,10 @@ import {
     resetEquipmentsPostLoadflow,
     setCurrentRootNetworkUuid,
     setCurrentTreeNode,
-    setRootNetworks,
-    setRootNetworkIndexationStatus,
-    studyUpdated,
     setMonoRootStudy,
+    setRootNetworkIndexationStatus,
+    setRootNetworks,
+    studyUpdated,
 } from '../redux/actions';
 import { fetchRootNetworks } from 'services/root-network';
 
@@ -43,13 +43,19 @@ import { useAllComputingStatus } from './computing-status/use-all-computing-stat
 import { fetchCaseName } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
-import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
+import { fetchResultUuid, fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { RootNetworkIndexationStatus } from 'redux/reducer';
 import { NodeType } from './graph/tree-node.type';
 import { UPDATE_TYPE_HEADER } from './use-node-data';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
+import useDownloadDebug, {
+    buildDebugIdentifier,
+    getDebug,
+    unsetDebug,
+    UPDATE_TYPE_STUDY_DEBUG,
+} from '../hooks/use-download-debug';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -288,6 +294,50 @@ export function StudyContainer({ view, onChangeTab }) {
     );
 
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, { listenerCallbackMessage: handleStudyUpdate });
+
+    // --- Begin STUDY_DEBUG notification --- //
+    const downloadDebug = useDownloadDebug();
+
+    const onDebugNotification = useCallback(
+        (event) => {
+            const eventData = JSON.parse(event.data);
+            console.log(`XXX notified`, { eventData });
+            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            if (updateTypeHeader === UPDATE_TYPE_STUDY_DEBUG) {
+                const {
+                    studyUuid,
+                    node: nodeUuid,
+                    rootNetworkUuid,
+                    computationType: computingType,
+                } = eventData.headers;
+                const debugIdentifierNotif = buildDebugIdentifier({
+                    studyUuid,
+                    nodeUuid,
+                    rootNetworkUuid,
+                    computingType,
+                });
+                if (getDebug(debugIdentifierNotif)) {
+                    // download by notif once, so unset debug identifier
+                    unsetDebug(debugIdentifierNotif);
+                    // perform download debug file once
+                    fetchResultUuid(
+                        {
+                            studyUuid,
+                            nodeUuid,
+                            rootNetworkUuid,
+                        },
+                        computingType
+                    ).then((resultUuid) => {
+                        downloadDebug(resultUuid, computingType);
+                    });
+                }
+            }
+        },
+        [downloadDebug]
+    );
+
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, { listenerCallbackMessage: onDebugNotification });
+    // --- End STUDY_DEBUG notification --- //
 
     const fetchStudyPath = useCallback(() => {
         fetchDirectoryElementPath(studyUuid)

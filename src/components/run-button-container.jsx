@@ -38,7 +38,7 @@ import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { startDynamicSecurityAnalysis, stopDynamicSecurityAnalysis } from '../services/study/dynamic-security-analysis';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useIntl } from 'react-intl';
-import useDebug from '../hooks/use-debug';
+import { buildDebugIdentifier, setDebug } from '../hooks/use-download-debug';
 
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -51,7 +51,6 @@ const checkDynamicSimulationParameters = (studyUuid) => {
 };
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
     const intl = useIntl();
-    const { set: setDebug } = useDebug();
 
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
@@ -282,8 +281,16 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                                             debug,
                                         }),
                                     (resultUuid) => {
-                                        // set debug true for this result uuid in the session storage
-                                        debug && setDebug(resultUuid);
+                                        // set debug true in the session storage
+                                        debug &&
+                                            setDebug(
+                                                buildDebugIdentifier({
+                                                    studyUuid: studyUuid,
+                                                    nodeUuid: currentNode?.id,
+                                                    rootNetworkUuid: currentRootNetworkUuid,
+                                                    computingType: ComputingType.DYNAMIC_SIMULATION,
+                                                })
+                                            );
                                         debug &&
                                             snackInfo({
                                                 headerTxt: intl.formatMessage({
@@ -377,7 +384,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         dispatch,
         snackError,
         snackInfo,
-        setDebug,
         startComputationAsync,
         intl,
         studyUuid,

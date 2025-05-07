@@ -28,7 +28,7 @@ export function fetchDynamicSimulationProviders() {
     return backendFetchJson(url);
 }
 
-export function downloadDynamicSimulationDebugFile(resultUuid: UUID): Promise<Response> {
+export function downloadDebugDynamicSimulation(resultUuid: UUID): Promise<Response> {
     console.info(`Download debug file of '${resultUuid}' ...`);
 
     const url = getDynamicSimulationUrl() + `results/${resultUuid}/download/debug-file`;

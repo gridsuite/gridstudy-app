@@ -7,45 +7,58 @@
 
 import { useCallback } from 'react';
 import { UUID } from 'crypto';
-import { getDebugMap, saveDebugMap } from '../redux/session-storage/debug-state';
+import { getDebugState, saveDebugState } from '../redux/session-storage/debug-state';
 import ComputingType, { formatComputingTypeLabel } from '../components/computing-status/computing-type';
 import { downloadZipFile } from '../services/utils';
 import { HttpStatusCode } from '../utils/http-status-code';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { downloadDynamicSimulationDebugFile } from '../services/dynamic-simulation';
+import { downloadDebugDynamicSimulation } from '../services/dynamic-simulation';
 
 export const UPDATE_TYPE_STUDY_DEBUG = 'STUDY_DEBUG';
 
-const debugFileFetchers = {
-    [ComputingType.DYNAMIC_SIMULATION]: downloadDynamicSimulationDebugFile,
+const debugFetchers = {
+    [ComputingType.DYNAMIC_SIMULATION]: downloadDebugDynamicSimulation,
 } as Record<ComputingType, ((resultUuid: UUID) => Promise<Response>) | null>;
 
-export default function useDebug() {
+export function buildDebugIdentifier({
+    studyUuid,
+    nodeUuid,
+    rootNetworkUuid,
+    computingType,
+}: {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    rootNetworkUuid: UUID;
+    computingType: ComputingType;
+}) {
+    return `${studyUuid}|${rootNetworkUuid}|${nodeUuid}|${computingType}`;
+}
+
+export function setDebug(identifier: string) {
+    const debugState = getDebugState() ?? new Map();
+    debugState.set(identifier, true);
+    saveDebugState(debugState);
+}
+
+export function getDebug(identifier: string) {
+    const debugState = getDebugState();
+    return debugState ? debugState.get(identifier) : null;
+}
+
+export function unsetDebug(identifier: string) {
+    const debugSate = getDebugState();
+    if (debugSate) {
+        debugSate.delete(identifier);
+        saveDebugState(debugSate);
+    }
+}
+
+export default function useDownloadDebug() {
     const { snackError, snackWarning } = useSnackMessage();
 
-    const set = useCallback((resultUuid: UUID) => {
-        const debugMap = getDebugMap() ?? new Map();
-        debugMap.set(resultUuid, true);
-        saveDebugMap(debugMap);
-    }, []);
-
-    const get = useCallback((resultUuid: UUID) => {
-        const debugMap = getDebugMap();
-        return debugMap ? debugMap.get(resultUuid) : null;
-    }, []);
-
-    const unset = useCallback((resultUuid: UUID) => {
-        const debugMap = getDebugMap();
-        if (debugMap) {
-            debugMap.delete(resultUuid);
-            saveDebugMap(debugMap);
-        }
-    }, []);
-
-    const downloadDebugFile = useCallback(
+    const downloadDebug = useCallback(
         (resultUuid: UUID, computingType: ComputingType) => {
-            resultUuid && computingType && get(resultUuid);
-            debugFileFetchers[computingType]?.(resultUuid) // download debug file from a specific computation server
+            debugFetchers[computingType]?.(resultUuid) // download debug file from a specific computation server
                 .then(async (response) => {
                     // Get the filename
                     const contentDisposition = response.headers.get('Content-Disposition');
@@ -74,13 +87,10 @@ export default function useDebug() {
                             headerId: 'debugFileErrorHeader',
                         });
                     }
-                })
-                .finally(() => {
-                    unset(resultUuid);
                 });
         },
-        [snackWarning, snackError, unset, get]
+        [snackWarning, snackError]
     );
 
-    return { get, set, unset, downloadDebugFile };
+    return downloadDebug;
 }

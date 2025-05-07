@@ -6,12 +6,11 @@
  */
 
 import { APP_NAME } from '../../utils/config-params';
-import { UUID } from 'crypto';
 
-const SESSION_STORAGE_DEBUG_MAP_STATE_KEY_PREFIX = APP_NAME.toUpperCase() + '_DEBUG_MAP_STATE_';
+const SESSION_STORAGE_DEBUG_STATE_KEY_PREFIX = APP_NAME.toUpperCase() + '_DEBUG_STATE_';
 
-export function getDebugMap() {
-    const objJson = sessionStorage.getItem(SESSION_STORAGE_DEBUG_MAP_STATE_KEY_PREFIX);
+export function getDebugState() {
+    const objJson = sessionStorage.getItem(SESSION_STORAGE_DEBUG_STATE_KEY_PREFIX);
     if (objJson) {
         const obj = JSON.parse(objJson) as Record<string, boolean>;
         return new Map(Object.entries(obj));
@@ -19,7 +18,7 @@ export function getDebugMap() {
     return null;
 }
 
-export function saveDebugMap(newDebugMap: Map<string, boolean>) {
-    const obj = Object.fromEntries(newDebugMap.entries());
-    sessionStorage.setItem(SESSION_STORAGE_DEBUG_MAP_STATE_KEY_PREFIX, JSON.stringify(obj));
+export function saveDebugState(newDebugState: Map<string, boolean>) {
+    const obj = Object.fromEntries(newDebugState.entries());
+    sessionStorage.setItem(SESSION_STORAGE_DEBUG_STATE_KEY_PREFIX, JSON.stringify(obj));
 }

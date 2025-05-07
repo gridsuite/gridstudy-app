@@ -18,8 +18,8 @@ import {
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
-    useNotificationsListener,
     useSnackMessage,
+    useNotificationsListener,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -70,8 +70,6 @@ import {
     mapColumnsDto,
     processSpreadsheetsCollectionData,
 } from './spreadsheet/custom-spreadsheet/custom-spreadsheet-utils';
-import { UPDATE_TYPE_HEADER } from './use-node-data.js';
-import useDebug, { UPDATE_TYPE_STUDY_DEBUG } from '../hooks/use-debug';
 
 const noUserManager = { instance: null, error: null };
 
@@ -225,22 +223,6 @@ const App = () => {
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
         listenerCallbackMessage: onSpreadsheetNotification,
     });
-
-    // debug file notification
-    const { downloadDebugFile } = useDebug();
-    const onDebugNotification = useCallback((event) => {
-        const eventData = JSON.parse(event.data);
-        console.log(`XXX notified`, { eventData });
-        const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
-        if (updateTypeHeader === UPDATE_TYPE_STUDY_DEBUG) {
-            const resultUuid = eventData.headers?.resultUuid;
-            const computingType = eventData.headers?.computationType;
-
-            // perform download debug file once
-            downloadDebugFile(resultUuid, computingType);
-        }
-    }, []);
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, { listenerCallbackMessage: onDebugNotification });
 
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
