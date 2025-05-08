@@ -8,7 +8,7 @@
 import { FunctionComponent, PropsWithChildren } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Box, Button, ButtonProps, Grid, Switch, Typography, TypographyProps } from '@mui/material';
-import { styles } from './parameters-style';
+import { parametersStyles } from '@gridsuite/commons-ui';
 
 interface LabelledButtonProps extends ButtonProps {
     callback: React.MouseEventHandler<HTMLButtonElement>;
@@ -32,10 +32,10 @@ interface SwitchWithLabelProps {
 export const SwitchWithLabel: FunctionComponent<SwitchWithLabelProps> = ({ value, label, callback }) => {
     return (
         <>
-            <Grid item xs={8} sx={styles.parameterName}>
+            <Grid item xs={8} sx={parametersStyles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={4} sx={styles.controlItem}>
+            <Grid item container xs={4} sx={parametersStyles.controlItem}>
                 <Switch
                     checked={value}
                     onChange={callback}
@@ -65,7 +65,7 @@ export const TabPanel = <T,>(props: PropsWithChildren<TabPanelProps<T>>) => {
             style={{ flexGrow: 1 }}
             {...other}
         >
-            {(value === index || keepState) && <Box sx={styles.panel}>{children}</Box>}
+            {(value === index || keepState) && <Box sx={parametersStyles.panel}>{children}</Box>}
         </Typography>
     );
 };

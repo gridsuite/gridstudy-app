@@ -20,11 +20,10 @@ import InfoIcon from '@mui/icons-material/Info';
 import { Grid, IconButton, Tooltip, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { ElementType } from '@gridsuite/commons-ui';
+import { ElementType, parametersStyles } from '@gridsuite/commons-ui';
 import { VoltageAdornment } from '../../dialog-utils';
 import Alert from '@mui/material/Alert';
 import { DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
-import { styles } from '../parameters-style';
 
 const VoltageLimitsParameters = () => {
     const intl = useIntl();
@@ -163,7 +162,7 @@ const VoltageLimitsParameters = () => {
             <Typography component="span" variant="h6" sx={{ alignSelf: 'center', marginRight: 2 }}>
                 <FormattedMessage id="AdjustExistingLimits" />
             </Typography>
-            <Alert sx={styles.adjustExistingLimitsInfo} severity="info" variant="outlined">
+            <Alert sx={parametersStyles.adjustExistingLimitsInfo} severity="info" variant="outlined">
                 <FormattedMessage id="AdjustExistingLimitsInfo" />
             </Alert>
             <DndTable

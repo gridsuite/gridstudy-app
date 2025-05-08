@@ -50,6 +50,8 @@ import {
     importParamsFr,
     exportParamsEn,
     exportParamsFr,
+    parametersEn,
+    parametersFr,
     NotificationsProvider,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
@@ -310,6 +312,7 @@ const messages = {
         ...errors_locale_en,
         ...events_locale_en,
         ...spreadsheet_locale_en,
+        ...parametersEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -342,6 +345,7 @@ const messages = {
         ...errors_locale_fr,
         ...events_locale_fr,
         ...spreadsheet_locale_fr,
+        ...parametersFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

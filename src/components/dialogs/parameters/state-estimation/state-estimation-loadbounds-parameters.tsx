@@ -7,12 +7,11 @@
 import { FunctionComponent, useMemo } from 'react';
 import { DEFAULT_BOUNDS, DEFAULT_FIXED_BOUNDS, VOLTAGE_LEVEL } from '../../../utils/field-constants';
 import { loadboundsParametersFields, TabValue } from './state-estimation-parameters-utils';
-import { IColumnsDef } from '../common/limitreductions/columns-definitions';
 import { useIntl } from 'react-intl';
 import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import GridSection from '../../commons/grid-section';
-import CustomVoltageLevelTable from '../common/voltage-level-table/custom-voltage-level-table';
+import { CustomVoltageLevelTable, type IColumnsDef } from '@gridsuite/commons-ui';
 
 export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
     const intl = useIntl();

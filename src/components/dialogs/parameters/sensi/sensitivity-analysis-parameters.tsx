@@ -6,13 +6,16 @@
  */
 
 import {
+    CreateParameterDialog,
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
     mergeSx,
     MuiSelectInput,
+    parametersStyles,
     SubmitButton,
     TreeViewFinderNodeProps,
+    UseParametersBackendReturnProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
@@ -66,13 +69,10 @@ import {
     IRowNewParams,
     SensitivityAnalysisParametersFormSchema,
 } from './utils';
-import CreateParameterDialog from '../common/parameters-creation-dialog';
 import LineSeparator from '../../commons/line-separator';
 import { AppState } from 'redux/reducer';
 import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
 import ComputingType from 'components/computing-status/computing-type';
-import { UseParametersBackendReturnProps } from '../parameters.type';
-import { styles } from '../parameters-style';
 
 interface SensitivityAnalysisParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;
@@ -91,7 +91,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] = useState(0);
-    const [providers, , , , params, updateParameters] = parametersBackend;
+    const [providers, , , , , params, , updateParameters] = parametersBackend;
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
 
@@ -499,10 +499,10 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
             <CustomFormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid container sx={{ height: '100%' }} justifyContent="space-between">
                     <Grid item container>
-                        <Grid item xs={8} xl={4} sx={styles.parameterName}>
+                        <Grid item xs={8} xl={4} sx={parametersStyles.parameterName}>
                             <FormattedMessage id="Provider" />
                         </Grid>
-                        <Grid item xs={4} xl={2} sx={styles.controlItem}>
+                        <Grid item xs={4} xl={2} sx={parametersStyles.controlItem}>
                             <MuiSelectInput name={PROVIDER} size="small" options={Object.values(formattedProviders)} />
                         </Grid>
                     </Grid>
@@ -510,7 +510,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
                         xs
                         item
                         container
-                        sx={mergeSx(styles.scrollableGrid, {
+                        sx={mergeSx(parametersStyles.scrollableGrid, {
                             paddingTop: 0,
                             display: 'unset',
                         })}
@@ -535,7 +535,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
 
                     <Grid item container>
                         <DialogActions
-                            sx={mergeSx(styles.controlParametersItem, {
+                            sx={mergeSx(parametersStyles.controlParametersItem, {
                                 paddingLeft: 0,
                                 paddingBottom: 2,
                             })}
@@ -562,6 +562,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
             </CustomFormProvider>
             {openCreateParameterDialog && (
                 <CreateParameterDialog
+                    studyUuid={studyUuid}
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={() => formatNewParams(getValues())}

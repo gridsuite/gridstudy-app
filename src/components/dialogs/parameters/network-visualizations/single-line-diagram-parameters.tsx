@@ -16,7 +16,7 @@ import {
 } from '../../../../utils/config-params';
 import LineSeparator from '../../commons/line-separator';
 import { FormattedMessage } from 'react-intl';
-import { MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { MuiSelectInput, SwitchInput, parametersStyles } from '@gridsuite/commons-ui';
 import {
     CENTER_LABEL,
     COMPONENT_LIBRARY,
@@ -25,7 +25,6 @@ import {
     SUBSTATION_LAYOUT,
     TabValue,
 } from './network-visualizations-utils';
-import { styles } from '../parameters-style';
 
 export const SingleLineDiagramParameters = ({ componentLibraries }: { componentLibraries: string[] }) => {
     const componentLibsRenderCache = useMemo(
@@ -40,20 +39,20 @@ export const SingleLineDiagramParameters = ({ componentLibraries }: { componentL
 
     const labelPosition = (name: string, label: string) => (
         <>
-            <Grid item xs={8} sx={styles.parameterName}>
+            <Grid item xs={8} sx={parametersStyles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={4} sx={styles.controlItem}>
+            <Grid item container xs={4} sx={parametersStyles.controlItem}>
                 <SwitchInput name={`${TabValue.SINGLE_LINE_DIAGRAM}.${name}`} />
             </Grid>
         </>
     );
     const substationLineDropDown = (
         <>
-            <Grid item xs={5} sx={styles.parameterName}>
+            <Grid item xs={5} sx={parametersStyles.parameterName}>
                 <FormattedMessage id={SUBSTATION_LAYOUT} />
             </Grid>
-            <Grid item xs={4} sx={styles.controlItem}>
+            <Grid item xs={4} sx={parametersStyles.controlItem}>
                 <MuiSelectInput
                     fullWidth
                     name={`${TabValue.SINGLE_LINE_DIAGRAM}.${PARAM_SUBSTATION_LAYOUT}`}
@@ -65,10 +64,10 @@ export const SingleLineDiagramParameters = ({ componentLibraries }: { componentL
     );
     const componentLineDropDown = (
         <>
-            <Grid item xs={5} sx={styles.parameterName}>
+            <Grid item xs={5} sx={parametersStyles.parameterName}>
                 <FormattedMessage id={COMPONENT_LIBRARY} />
             </Grid>
-            <Grid item xs={4} sx={styles.controlItem}>
+            <Grid item xs={4} sx={parametersStyles.controlItem}>
                 <MuiSelectInput
                     fullWidth
                     name={`${TabValue.SINGLE_LINE_DIAGRAM}.${PARAM_COMPONENT_LIBRARY}`}
@@ -82,7 +81,14 @@ export const SingleLineDiagramParameters = ({ componentLibraries }: { componentL
     );
 
     return (
-        <Grid xl={6} container spacing={1} sx={styles.scrollableGrid} marginTop={-3} justifyContent={'space-between'}>
+        <Grid
+            xl={6}
+            container
+            spacing={1}
+            sx={parametersStyles.scrollableGrid}
+            marginTop={-3}
+            justifyContent={'space-between'}
+        >
             {labelPosition(PARAM_DIAGONAL_LABEL, DIAGONAL_LABEL)}
             <LineSeparator />
             {labelPosition(PARAM_CENTER_LABEL, CENTER_LABEL)}

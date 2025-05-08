@@ -12,31 +12,28 @@ import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import { Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
-import { ISAParameters, TAB_INFO, TAB_VALUES } from '../common/limitreductions/columns-definitions';
 import ViolationsHidingParameters from './security-analysis-violations-hiding';
-import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
 import { PARAM_DEVELOPER_MODE, PARAM_PROVIDER_OPENLOADFLOW } from '../../../../utils/config-params';
 import { useParameterState } from '../use-parameters-state';
+import { ISAParameters, LimitReductionsTableForm, TAB_INFO, TabValues } from '@gridsuite/commons-ui';
 
 const SecurityAnalysisParametersSelector: FunctionComponent<{
     params: ISAParameters | null;
     currentProvider?: string;
 }> = ({ params, currentProvider }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [tabSelected, setTabSelected] = useState(TAB_VALUES.General);
+    const [tabSelected, setTabSelected] = useState(TabValues.General);
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: number) => {
         setTabSelected(newValue);
     }, []);
 
     const tabValue = useMemo(() => {
-        return tabSelected === TAB_VALUES.LimitReductions && !params?.limitReductions
-            ? TAB_VALUES.General
-            : tabSelected;
+        return tabSelected === TabValues.LimitReductions && !params?.limitReductions ? TabValues.General : tabSelected;
     }, [params, tabSelected]);
 
     useEffect(() => {
         if (currentProvider !== PARAM_PROVIDER_OPENLOADFLOW) {
-            setTabSelected(TAB_VALUES.General);
+            setTabSelected(TabValues.General);
         }
     }, [currentProvider]);
 
@@ -46,7 +43,7 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
                 <Tabs value={tabValue} onChange={handleTabChange}>
                     {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map(
                         (tab, index) =>
-                            (tab.label !== TAB_VALUES[TAB_VALUES.LimitReductions] ||
+                            (tab.label !== TabValues[TabValues.LimitReductions] ||
                                 (currentProvider === PARAM_PROVIDER_OPENLOADFLOW && params?.limitReductions)) && (
                                 <Tab
                                     key={tab.label}
@@ -64,8 +61,8 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
 
                 {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map((tab, index) => (
                     <TabPanel key={tab.label} value={tabValue} index={index}>
-                        {tabValue === TAB_VALUES.General && <ViolationsHidingParameters />}
-                        {tabValue === TAB_VALUES.LimitReductions &&
+                        {tabValue === TabValues.General && <ViolationsHidingParameters />}
+                        {tabValue === TabValues.LimitReductions &&
                             currentProvider === PARAM_PROVIDER_OPENLOADFLOW &&
                             params?.limitReductions && (
                                 <Grid sx={{ width: '100%' }}>

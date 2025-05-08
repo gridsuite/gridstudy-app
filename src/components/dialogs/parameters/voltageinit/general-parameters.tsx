@@ -6,7 +6,6 @@
  */
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ChangeEvent, useCallback } from 'react';
-import { ParameterSwitch, ParameterFloat } from '../widget';
 import { GENERAL, GENERAL_APPLY_MODIFICATIONS } from './voltage-init-parameters-form';
 import { FormattedMessage } from 'react-intl';
 import { Box, Grid, Alert } from '@mui/material';
@@ -14,7 +13,7 @@ import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } fro
 import { ReactivePowerAdornment } from '../../dialog-utils';
 import { UPDATE_BUS_VOLTAGE } from 'components/utils/field-constants';
 import LineSeparator from '../../commons/line-separator';
-import { styles } from '../parameters-style';
+import { ParameterFloat, parametersStyles, ParameterSwitch } from '@gridsuite/commons-ui';
 
 export const GeneralParameters = () => {
     const { setValue } = useFormContext();
@@ -47,7 +46,7 @@ export const GeneralParameters = () => {
 
     return (
         <Grid>
-            <Alert sx={styles.adjustExistingLimitsInfo} severity="info" variant="outlined">
+            <Alert sx={parametersStyles.adjustExistingLimitsInfo} severity="info" variant="outlined">
                 <FormattedMessage id="VoltageInitParametersGeneralSaveInfo" />
             </Alert>
             <ParameterSwitch
@@ -65,7 +64,7 @@ export const GeneralParameters = () => {
             />
             <ParameterFloat
                 name={`${GENERAL}.${REACTIVE_SLACKS_THRESHOLD}`}
-                style={styles.parameterName}
+                style={parametersStyles.parameterName}
                 label={'ReactiveSlacksThreshold'}
                 adornment={ReactivePowerAdornment}
                 labelSize={8}
@@ -73,7 +72,7 @@ export const GeneralParameters = () => {
             />
             <ParameterFloat
                 name={`${GENERAL}.${SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD}`}
-                style={styles.parameterName}
+                style={parametersStyles.parameterName}
                 label={'ShuntCompensatorActivationThreshold'}
                 adornment={ReactivePowerAdornment}
                 tooltip={'ShuntCompensatorActivationThresholdDescription'}

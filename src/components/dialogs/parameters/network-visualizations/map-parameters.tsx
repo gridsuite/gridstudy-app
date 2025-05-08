@@ -14,7 +14,7 @@ import {
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../../utils/config-params';
 import LineSeparator from '../../commons/line-separator';
-import { MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { MuiSelectInput, parametersStyles, SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import {
     INTL_LINE_FLOW_MODE_OPTIONS,
@@ -24,16 +24,15 @@ import {
     MAP_MANUAL_REFRESH,
     TabValue,
 } from './network-visualizations-utils';
-import { styles } from '../parameters-style';
 
 export const MapParameters = () => {
     // fields definition
     const lineSwitch = (name: string, label: string) => (
         <>
-            <Grid item xs={8} sx={styles.parameterName}>
+            <Grid item xs={8} sx={parametersStyles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={4} sx={styles.controlItem}>
+            <Grid item container xs={4} sx={parametersStyles.controlItem}>
                 <SwitchInput name={`${TabValue.MAP}.${name}`} />
             </Grid>
         </>
@@ -41,10 +40,10 @@ export const MapParameters = () => {
 
     const lineFlow = (name: string, label: string, options: { id: LineFlowMode; label: string }[]) => (
         <>
-            <Grid item xs={5} sx={styles.parameterName}>
+            <Grid item xs={5} sx={parametersStyles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item xs={4} sx={styles.controlItem}>
+            <Grid item xs={4} sx={parametersStyles.controlItem}>
                 <MuiSelectInput
                     fullWidth
                     name={`${TabValue.MAP}.${name}`}
@@ -57,10 +56,10 @@ export const MapParameters = () => {
 
     const mapBaseMap = (
         <>
-            <Grid item xs={5} sx={styles.parameterName}>
+            <Grid item xs={5} sx={parametersStyles.parameterName}>
                 <FormattedMessage id={MAP_BASE_MAP} />
             </Grid>
-            <Grid item xs={4} sx={styles.controlItem}>
+            <Grid item xs={4} sx={parametersStyles.controlItem}>
                 <MuiSelectInput
                     fullWidth
                     name={`${TabValue.MAP}.${PARAM_MAP_BASEMAP}`}
@@ -76,7 +75,7 @@ export const MapParameters = () => {
             xl={6}
             container
             spacing={1}
-            sx={styles.scrollableGrid}
+            sx={parametersStyles.scrollableGrid}
             key={'mapParameters'}
             marginTop={-3}
             justifyContent={'space-between'}
