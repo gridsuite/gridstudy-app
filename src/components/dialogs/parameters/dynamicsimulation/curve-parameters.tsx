@@ -137,7 +137,7 @@ const CurveParameters = ({ path }: { path: string }) => {
 
     return (
         <>
-            <Grid container direction={'column'} sx={{ height: 640 }}>
+            <Grid container direction={'column'} sx={{ height: '100%' }}>
                 {/* header toolbar of the aggrid */}
                 <Grid container item sx={{ marginBottom: theme.spacing(1) }}>
                     <Grid container item xs={'auto'}>
