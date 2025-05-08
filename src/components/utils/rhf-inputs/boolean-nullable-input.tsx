@@ -18,9 +18,19 @@ interface CheckboxNullableInputProps {
     id?: string;
     formProps?: CheckboxProps;
     previousValue?: string;
+    nullDisabled?: boolean;
+    disabled?: boolean;
 }
 
-const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Readonly<CheckboxNullableInputProps>) => {
+const CheckboxNullableInput = ({
+    name,
+    label,
+    id,
+    formProps,
+    previousValue,
+    nullDisabled,
+    disabled,
+}: Readonly<CheckboxNullableInputProps>) => {
     const {
         field: { onChange, value },
     } = useController({ name });
@@ -48,18 +58,23 @@ const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Re
                 control={
                     <Checkbox
                         checked={value === true}
-                        indeterminate={value === null}
+                        indeterminate={nullDisabled ? undefined : value === null}
                         onChange={handleChangeValue}
                         value="checked"
                         inputProps={{
                             'aria-label': 'primary checkbox',
                         }}
                         {...formProps}
+                        disabled={disabled}
                     />
                 }
-                label={intl.formatMessage({
-                    id: currentLabel,
-                })}
+                label={
+                    !label
+                        ? ''
+                        : intl.formatMessage({
+                              id: currentLabel,
+                          })
+                }
             />
             {previousValue && (
                 <HelperPreviousValue

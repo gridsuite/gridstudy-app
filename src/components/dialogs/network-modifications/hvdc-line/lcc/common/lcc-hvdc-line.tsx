@@ -13,20 +13,45 @@ import { Grid } from '@mui/material';
 import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
+import { LccFormInfos } from './lcc-type';
+import { useIntl } from 'react-intl';
 
 interface LccHvdcLineProps {
     id: string;
+    previousValues?: LccFormInfos | null;
+    isModification?: boolean;
 }
 
-export default function LccHvdcLine({ id }: Readonly<LccHvdcLineProps>) {
+export default function LccHvdcLine({ id, previousValues, isModification }: Readonly<LccHvdcLineProps>) {
+    const intl = useIntl();
     const dcNominalVoltageField = (
-        <FloatInput name={`${id}.${NOMINAL_V}`} adornment={VoltageAdornment} label={'dcNominalVoltageLabel'} />
+        <FloatInput
+            name={`${id}.${NOMINAL_V}`}
+            adornment={VoltageAdornment}
+            label={'dcNominalVoltageLabel'}
+            previousValue={previousValues?.nominalV}
+            clearable={isModification}
+        />
     );
 
-    const dcResistanceField = <FloatInput name={`${id}.${R}`} adornment={OhmAdornment} label={'dcResistanceLabel'} />;
+    const dcResistanceField = (
+        <FloatInput
+            name={`${id}.${R}`}
+            adornment={OhmAdornment}
+            label={'dcResistanceLabel'}
+            previousValue={previousValues?.r}
+            clearable={isModification}
+        />
+    );
 
     const maximumActivePowerField = (
-        <FloatInput name={`${id}.${MAX_P}`} adornment={ActivePowerAdornment} label={'MaximumActivePowerText'} />
+        <FloatInput
+            name={`${id}.${MAX_P}`}
+            adornment={ActivePowerAdornment}
+            label={'MaximumActivePowerText'}
+            previousValue={previousValues?.maxP}
+            clearable={isModification}
+        />
     );
 
     const converterModeField = (
@@ -36,6 +61,11 @@ export default function LccHvdcLine({ id }: Readonly<LccHvdcLineProps>) {
             options={Object.values(VSC_CONVERTER_MODE)}
             size={'small'}
             disableClearable
+            previousValue={
+                previousValues
+                    ? intl.formatMessage({ id: VSC_CONVERTER_MODE[previousValues.convertersMode].label })
+                    : ''
+            }
         />
     );
 
@@ -44,6 +74,8 @@ export default function LccHvdcLine({ id }: Readonly<LccHvdcLineProps>) {
             name={`${id}.${ACTIVE_POWER_SETPOINT}`}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
+            previousValue={previousValues?.activePowerSetpoint}
+            clearable={isModification}
         />
     );
 
@@ -61,7 +93,7 @@ export default function LccHvdcLine({ id }: Readonly<LccHvdcLineProps>) {
                 <GridItem>{activePowerField}</GridItem>
             </Grid>
 
-            <PropertiesForm id={id} />
+            <PropertiesForm id={id} isModification={isModification} />
         </Grid>
     );
 }

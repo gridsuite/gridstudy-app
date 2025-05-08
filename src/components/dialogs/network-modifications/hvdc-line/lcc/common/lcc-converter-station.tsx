@@ -21,8 +21,11 @@ import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-level
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 
-import FiltersShuntCompensatorTable from './filters-shunt-compensator-table';
+import FiltersShuntCompensatorTable from '../creation/filters-shunt-compensator-table';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
+import TextField from '@mui/material/TextField';
+import { LccConverterStationFormInfos } from './lcc-type';
+import { ModificationFiltersShuntCompensatorTable } from '../modification/filter-shunt-compensator-table-modification';
 
 interface LccConverterStationProps {
     id: string;
@@ -30,6 +33,8 @@ interface LccConverterStationProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
+    previousValues?: LccConverterStationFormInfos;
+    isModification?: boolean;
 }
 
 export default function LccConverterStation({
@@ -38,13 +43,32 @@ export default function LccConverterStation({
     currentNode,
     studyUuid,
     currentRootNetworkUuid,
+    previousValues,
+    isModification,
 }: Readonly<LccConverterStationProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
-    const stationIdField = <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />;
+    const stationIdField = previousValues ? (
+        <TextField
+            size="small"
+            fullWidth
+            name={`${id}.${CONVERTER_STATION_ID}`}
+            label={'converterStationId'}
+            value={previousValues?.id}
+            disabled
+        />
+    ) : (
+        <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />
+    );
 
-    const stationNameField = <TextInput name={`${id}.${CONVERTER_STATION_NAME}`} label={'converterStationName'} />;
-
+    const stationNameField = (
+        <TextInput
+            name={`${id}.${CONVERTER_STATION_NAME}`}
+            label={'converterStationName'}
+            previousValue={previousValues?.name ?? ''}
+            clearable={isModification}
+        />
+    );
     const connectivityForm = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY}`}
@@ -58,10 +82,41 @@ export default function LccConverterStation({
     );
 
     const lossFactorField = (
-        <FloatInput name={`${id}.${LOSS_FACTOR}`} label={'lossFactorLabel'} adornment={percentageTextField} />
+        <FloatInput
+            name={`${id}.${LOSS_FACTOR}`}
+            label={'lossFactorLabel'}
+            adornment={percentageTextField}
+            previousValue={previousValues?.lossFactor}
+            clearable={isModification}
+        />
     );
 
-    const powerFactorField = <FloatInput name={`${id}.${POWER_FACTOR}`} label={'powerFactorLabel'} />;
+    const connectivitySection = (
+        <>
+            <GridSection title={'Connectivity'} />
+            <Grid container spacing={2}>
+                <GridItem size={12}>{connectivityForm}</GridItem>
+            </Grid>
+        </>
+    );
+
+    const powerFactorField = (
+        <FloatInput
+            name={`${id}.${POWER_FACTOR}`}
+            label={'powerFactorLabel'}
+            previousValue={previousValues?.powerFactor}
+            clearable={isModification}
+        />
+    );
+
+    const ShuntCompensatorField = isModification ? (
+        <ModificationFiltersShuntCompensatorTable
+            id={`${id}`}
+            previousValues={previousValues?.shuntCompensatorsOnSide}
+        />
+    ) : (
+        <FiltersShuntCompensatorTable id={`${id}`} />
+    );
 
     return (
         <Grid container spacing={2}>
@@ -70,20 +125,14 @@ export default function LccConverterStation({
                 <GridItem size={4}>{stationIdField}</GridItem>
                 <GridItem size={4}>{stationNameField}</GridItem>
             </Grid>
-
-            <GridSection title={'Connectivity'} />
-            <Grid container spacing={2}>
-                <GridItem size={12}>{connectivityForm}</GridItem>
-            </Grid>
-
+            {!isModification && connectivitySection}
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
                 <GridItem size={4}>{lossFactorField}</GridItem>
                 <GridItem size={4}>{powerFactorField}</GridItem>
             </Grid>
-
             <GridSection title={'Filters'} />
-            <FiltersShuntCompensatorTable id={`${id}`} />
+            {ShuntCompensatorField}
         </Grid>
     );
 }

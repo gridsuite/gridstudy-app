@@ -161,7 +161,7 @@ export const SWITCH_TYPE = {
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
 } as const;
 
-export const VSC_CONVERTER_MODE = {
+export const VSC_CONVERTER_MODE: any = {
     SIDE_1_RECTIFIER_SIDE_2_INVERTER: {
         id: 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
         label: 'side1RectifierSide2Inverter',

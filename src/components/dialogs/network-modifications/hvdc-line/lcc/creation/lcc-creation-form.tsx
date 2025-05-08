@@ -7,9 +7,9 @@
 import { UUID } from 'crypto';
 import { Box } from '@mui/material';
 import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../../utils/field-constants';
-import LccHvdcLine from './lcc-hvdc-line';
-import { LccCreationDialogTab } from './lcc-creation.type';
-import LccConverterStation from './lcc-converter-station';
+import LccHvdcLine from '../common/lcc-hvdc-line';
+import { LccDialogTab } from '../common/lcc-type';
+import LccConverterStation from '../common/lcc-converter-station';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 
 interface LccCreationFormProps {
@@ -26,10 +26,10 @@ export default function LccCreationForm({
 }: Readonly<LccCreationFormProps>) {
     return (
         <>
-            <Box hidden={tabIndex !== LccCreationDialogTab.HVDC_LINE_TAB} p={1}>
+            <Box hidden={tabIndex !== LccDialogTab.HVDC_LINE_TAB} p={1}>
                 <LccHvdcLine id={HVDC_LINE_TAB} />
             </Box>
-            <Box hidden={tabIndex !== LccCreationDialogTab.CONVERTER_STATION_1} p={1}>
+            <Box hidden={tabIndex !== LccDialogTab.CONVERTER_STATION_1} p={1}>
                 <LccConverterStation
                     studyUuid={studyUuid}
                     currentNode={currentNode}
@@ -38,7 +38,7 @@ export default function LccCreationForm({
                     stationLabel={'converterStation1'}
                 />
             </Box>
-            <Box hidden={tabIndex !== LccCreationDialogTab.CONVERTER_STATION_2} p={1}>
+            <Box hidden={tabIndex !== LccDialogTab.CONVERTER_STATION_2} p={1}>
                 <LccConverterStation
                     studyUuid={studyUuid}
                     currentNode={currentNode}
