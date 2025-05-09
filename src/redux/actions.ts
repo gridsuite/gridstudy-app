@@ -219,12 +219,12 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
 
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
-    equipments: Record<EquipmentUpdateType, Identifiable[]>;
+    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>;
     nodeId: UUID;
 };
 
 export function updateEquipments(
-    equipments: Record<EquipmentUpdateType, Identifiable[]>,
+    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>,
     nodeId: UUID
 ): UpdateEquipmentsAction {
     return {

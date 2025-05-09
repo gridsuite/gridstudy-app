@@ -53,6 +53,7 @@ export const SpreadsheetTabToolbar = ({
             </Grid>
             <Grid item>
                 <ColumnsConfig
+                    gridRef={gridRef}
                     tableDefinition={tableDefinition}
                     disabled={disabled || tableDefinition?.columns.length === 0}
                 />
