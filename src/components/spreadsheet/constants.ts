@@ -12,8 +12,14 @@ import SpreadsheetFromModelDialog from './custom-spreadsheet/dialogs/spreadsheet
 import SpreadsheetCollectionDialog from './custom-spreadsheet/dialogs/spreadsheets-from-collection-dialog';
 import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import { ResetNodeAliasCallback } from './custom-columns/use-node-aliases';
+import { ColumnState } from 'ag-grid-community';
 
 export const ROW_INDEX_COLUMN_ID = 'rowIndex';
+export const ROW_INDEX_COLUMN_STATE: ColumnState = {
+    colId: ROW_INDEX_COLUMN_ID,
+    pinned: 'left',
+};
+
 export const UPDATE = 'UPDATE';
 export const DELETE = 'DELETE';
 
