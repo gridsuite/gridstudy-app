@@ -1461,3 +1461,12 @@ export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrR
         deletedOrRenamedNodes,
     };
 }
+
+export const RESET_DIAGRAM_EVENT = 'RESET_DIAGRAM_EVENT';
+export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT>>;
+
+export function resetDiagramEvent(): ResetDiagramEventAction {
+    return {
+        type: RESET_DIAGRAM_EVENT,
+    };
+}
