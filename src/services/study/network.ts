@@ -17,7 +17,7 @@ interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    voltageLevelId?: UUID;
+    voltageLevelId: string;
     useName: boolean;
     centerLabel: boolean;
     diagonalLabel: boolean;
@@ -30,7 +30,7 @@ interface SubstationSingleLineDiagram {
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    substationId: UUID;
+    substationId: string;
     useName: boolean;
     centerLabel: boolean;
     diagonalLabel: boolean;
