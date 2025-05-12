@@ -242,19 +242,21 @@ export const mergeModificationAndEquipmentShuntCompensatorInfos = (
 ): LccShuntCompensatorModificationInfos[] => {
     let result = new Map<string, LccShuntCompensatorModificationInfos>();
 
-    if (!infosModification && infosMapServer) {
-        for (const info of infosMapServer) {
-            result.set(info.id, {
-                ...info,
-                connectedToHvdc: null,
-                deletionMark: false,
-                type: 'LCC_SHUNT_MODIFICATION',
-            }); //we only consider
-        }
-        return Array.from(result.values());
-    }
-
     if (!infosModification) {
+      if (infosMapServer) {
+          //we only consider infosMapServer
+          for (const info of infosMapServer) {
+              result.set(info.id, {
+                  ...info,
+                  connectedToHvdc: null,
+                  deletionMark: false,
+                  type: 'LCC_SHUNT_MODIFICATION',
+              });
+          }
+          return Array.from(result.values());
+        }
+        
+        // nothing to be merged
         return [];
     }
 
