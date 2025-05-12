@@ -28,11 +28,10 @@ import {
     getSpreadsheetFromModelFormSchema,
     initialSpreadsheetFromModelForm,
 } from '../custom-spreadsheet-form';
-import { addNewSpreadsheet, mapColumnsDto } from '../custom-spreadsheet-utils';
+import { addNewSpreadsheet } from '../custom-spreadsheet-utils';
 import { getSpreadsheetModel } from 'services/study-config';
 import { UUID } from 'crypto';
 import { dialogStyles } from './styles';
-import { ColumnDefinitionDto, SpreadsheetEquipmentType } from 'components/spreadsheet/config/spreadsheet.type';
 
 interface SpreadsheetFromModelDialogProps {
     open: UseStateBooleanReturn;
@@ -87,12 +86,11 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
             const modelId = formData[SPREADSHEET_MODEL][0].id;
 
             getSpreadsheetModel(modelId)
-                .then((selectedModel: { columns: ColumnDefinitionDto[]; sheetType: SpreadsheetEquipmentType }) => {
-                    const columns = mapColumnsDto(selectedModel.columns);
-
+                .then((selectedModel) => {
                     addNewSpreadsheet({
                         studyUuid,
-                        columns,
+                        columns: selectedModel.columns,
+                        globalFilters: selectedModel.globalFilters,
                         sheetType: selectedModel.sheetType,
                         tabIndex,
                         tabName,
@@ -141,6 +139,7 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
                                 elementType={ElementType.SPREADSHEET_CONFIG}
                                 titleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
                                 label="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
+                                allowMultiSelect={false}
                             />
                         </Grid>
                     </Grid>

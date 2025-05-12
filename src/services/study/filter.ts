@@ -21,7 +21,8 @@ export interface ExpertFilter {
 }
 
 export interface SpreadsheetGlobalFilter {
-    id: UUID;
+    uuid?: UUID;
+    filterId: UUID;
     name: string;
 }
 

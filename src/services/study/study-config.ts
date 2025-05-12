@@ -10,6 +10,7 @@ import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { NetworkVisualizationParameters } from '../../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { SpreadsheetCollectionDto, SpreadsheetConfig } from 'components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetGlobalFilter } from './filter';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID) {
     console.info('get network visualization parameters');
@@ -111,6 +112,21 @@ export function createSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: U
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(column),
+    });
+}
+
+export function setGlobalFiltersToSpreadsheetConfig(
+    studyUuid: UUID,
+    spreadsheetModelUuid: UUID,
+    filters: SpreadsheetGlobalFilter[]
+) {
+    const fetchUrl = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/global-filters`;
+    return backendFetchJson(fetchUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filters),
     });
 }
 

@@ -43,7 +43,7 @@ export const SpreadsheetTab = React.memo(
         const columnsDefinitions = useCustomColumn(tableDefinition);
 
         const displayedColsDefs = useMemo(() => {
-            const columns = tableDefinition?.columns?.filter((column) => column.visible);
+            const columns = tableDefinition?.columns;
             const visibleColDefs =
                 columns?.map((column) => {
                     const colDef = columnsDefinitions.reduce((acc, curr) => {

@@ -8,6 +8,7 @@
     "voltageRange": "Niveau de tension",
 
     "button.delete": "Supprimer",
+    "button.continue": "Continuer",
     "filter": "Filtre",
     "enable": "Activer",
     "disable": "Désactiver",
@@ -919,7 +920,6 @@
     "DuplicateId": "Identifiant non unique",
     "CouplingOmnibusBetweenSameBusbar": "Couplage/omnibus interdit entre le même SJB",
     "VoltageLevelModificationError": "Erreur lors de la modification d'un poste",
-    "TopologyNotRetrieved": "La topologie du poste n'a pas pu être récupérée",
     "BusBarSectionsCopyingNotSupported": "La copie des sections de jeux de barres n'est pas supportée pour ce poste : des valeurs par défaut ont été renseignées",
 
     "LineSplitWithVoltageLevel": "Créer une coupure",
@@ -993,7 +993,7 @@
     "VoltageRegulation": "Réglage de tension",
     "ResetRegulationRule": "Réinitialiser la loi de réglage",
     "Regulating": "En réglage",
-    "TargetVoltage": "Tension",
+    "TargetVoltage": "Consigne de tension",
     "TargetVoltageMustBeGreaterThanZero": "La tension doit être supérieure à 0",
     "Deadband": "Bande morte",
     "TargetDeadbandMustBeGreaterOrEqualToZero": "La valeur de la bande morte doit être supérieure ou égale à 0",
@@ -1575,5 +1575,22 @@
     "qmax": "Q Max",
     "nodeAliasesRetrievingError": "Erreur lors de la récupération des alias de nœuds",
     "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds",
-    "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0"
+    "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",
+    "confirmRootNetworkCreation": "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
+    "RegulationSection": "Réglage",
+    "TapsSection": "Prises",
+    "VOLTAGE_LEVEL_TOPOLOGY": "Topologie de poste",
+    "ModifyVoltageLevelTopology": "Modifier la topologie d'un poste",
+    "TopologyNotRetrieved": "La topologie du poste n'a pas pu être récupérée",
+    "VoltageLevelTopologyModificationError": "Erreur lors de la modification de la topologie de poste",
+    "builtNodeTooltipVlTopoModif": "Liste des organes de coupure tenant compte de toutes les modifications réalisées",
+    "notBuiltNodeTooltipVlTopoModif": "Liste des organes de coupure d'après le dernier nœud réalisé de la branche courante",
+    "copyPreviousTopologyStatus": "Revenir à l'état précédent",
+    "modifiedSwitchesSeparatorTitle": "OC modifiés",
+    "unModifiedSwitchesSeparatorTitle": "OC non-modifiés",
+    "switchId": "ID de l'organe de coupure",
+    "previousStatus": "État précédent",
+    "currentStatus": "État modifié",
+    "Open": "Ouvert",
+    "Closed": "Fermé"
 }

@@ -37,5 +37,5 @@ export const initialSpreadsheetGsFilterForm: Record<string, ExpertFilterForm[]> 
 };
 
 export const toFormFormat = (input: SpreadsheetGlobalFilter[]): Record<string, ExpertFilterForm[]> => ({
-    [SPREADSHEET_GS_FILTER]: input.map(({ id, name }) => ({ id, name })),
+    [SPREADSHEET_GS_FILTER]: input.map(({ filterId, name }) => ({ id: filterId, name })),
 });

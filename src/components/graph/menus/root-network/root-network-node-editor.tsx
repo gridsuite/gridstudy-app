@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, Parameter, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, mergeSx, Parameter, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 
 import {
     Delete as DeleteIcon,
@@ -63,6 +63,23 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'space-between',
     }),
+    rootNetworkMonoRoot: (theme: Theme) => ({
+        display: 'flex',
+        padding: theme.spacing(1),
+        overflow: 'hidden',
+        borderTop: `1px solid ${theme.palette.divider}`,
+        marginRight: theme.spacing(1),
+        marginLeft: theme.spacing(1),
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingTop: theme.spacing(2),
+    }),
+    rootNetworkMonoRootHover: (theme: Theme) => ({
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+        },
+    }),
     toolbar: (theme: Theme) => ({
         '&': {
             // Necessary to overrides some @media specific styles that are defined elsewhere
@@ -107,6 +124,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -298,6 +316,37 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
             </Box>
         );
     };
+    const renderRootNetworkForMonoRootStudy = () => {
+        return (
+            <Box
+                sx={mergeSx(
+                    styles.rootNetworkMonoRoot,
+                    isRootNetworksProcessing ? undefined : styles.rootNetworkMonoRootHover
+                )}
+                onClick={handleMonoRootUpdate}
+            >
+                <Typography
+                    noWrap
+                    style={{
+                        opacity: isRootNetworksProcessing ? 0.5 : 1,
+                    }}
+                >
+                    {rootNetworks[0].name}
+                </Typography>
+                {isRootNetworksProcessing && (
+                    <span>
+                        <CircularProgress size={'1em'} sx={styles.toolbarCircularProgress} />
+                    </span>
+                )}
+            </Box>
+        );
+    };
+    const handleMonoRootUpdate = () => {
+        if (!isRootNetworksProcessing) {
+            setEditedRootNetwork(rootNetworks[0]);
+            setRootNetworkModificationDialogOpen(true);
+        }
+    };
 
     const renderRootNetworkModificationDialog = () => {
         if (!editedRootNetwork) {
@@ -346,37 +395,40 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
     return (
         <>
-            <Toolbar sx={styles.toolbar}>
-                <Checkbox
-                    disabled={isRootNetworksProcessing}
-                    checked={isChecked(selectedItems.length)}
-                    indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
-                    disableRipple
-                    onClick={toggleSelectAllRootNetworks}
-                />
-                <Box sx={styles.filler} />
-                <Tooltip title={<FormattedMessage id={'deleteNetwork'} values={{ count: selectedItems.length }} />}>
-                    <span>
-                        <IconButton
-                            onClick={doDeleteRootNetwork}
-                            size={'small'}
-                            sx={styles.toolbarIcon}
-                            disabled={
-                                selectedItems.length === 0 ||
-                                !currentNode ||
-                                rootNetworks.length === selectedItems.length ||
-                                isRootNetworksProcessing
-                            }
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </span>
-                </Tooltip>
-            </Toolbar>
-            {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
-            {renderRootNetworksListTitle()}
+            {!isMonoRootStudy && (
+                <Toolbar sx={styles.toolbar}>
+                    <Checkbox
+                        disabled={isRootNetworksProcessing}
+                        checked={isChecked(selectedItems.length)}
+                        indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
+                        disableRipple
+                        onClick={toggleSelectAllRootNetworks}
+                    />
+                    <Box sx={styles.filler} />
+                    <Tooltip title={<FormattedMessage id={'deleteNetwork'} values={{ count: selectedItems.length }} />}>
+                        <span>
+                            <IconButton
+                                onClick={doDeleteRootNetwork}
+                                size={'small'}
+                                sx={styles.toolbarIcon}
+                                disabled={
+                                    selectedItems.length === 0 ||
+                                    !currentNode ||
+                                    rootNetworks.length === selectedItems.length ||
+                                    isRootNetworksProcessing
+                                }
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                </Toolbar>
+            )}
 
-            {renderRootNetworksList()}
+            {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
+            {!isMonoRootStudy && renderRootNetworksListTitle()}
+
+            {isMonoRootStudy ? renderRootNetworkForMonoRootStudy() : renderRootNetworksList()}
         </>
     );
 };

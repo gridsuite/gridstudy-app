@@ -8,6 +8,7 @@
     "voltageRange": "Voltage range",
 
     "button.delete": "Delete",
+    "button.continue": "Continue",
     "filter": "Filter",
     "enable": "Enable",
     "disable": "Disable",
@@ -925,7 +926,6 @@
     "DuplicateId": "Duplicate id",
     "CouplingOmnibusBetweenSameBusbar": "Forbidden to have a Coupler between the same bus bar section",
     "VoltageLevelModificationError": "Error while modifying a voltage level",
-    "TopologyNotRetrieved": "The voltage level topology could not be retrieved",
     "BusBarSectionsCopyingNotSupported": "Copying bus bar sections is not supported for this voltage level : values were set to their default",
 
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",
@@ -997,7 +997,7 @@
     "OnLoad": "On-load",
     "VoltageRegulation": "Voltage regulation",
     "Regulating": "Regulating",
-    "TargetVoltage": "Voltage",
+    "TargetVoltage": "Voltage setpoint",
     "TargetVoltageMustBeGreaterThanZero": "Voltage value must be greater than 0",
     "Deadband": "Deadband",
     "TargetDeadbandMustBeGreaterOrEqualToZero": "Deadband value must be greater than or equal to 0",
@@ -1579,5 +1579,22 @@
     "qmax": "Max Q",
     "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
     "nodeAliasesUpdateError": "An error occured while updating node aliases",
-    "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0"
+    "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
+    "confirmRootNetworkCreation": "The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.",
+    "RegulationSection": "Regulation",
+    "TapsSection": "Taps",
+    "VOLTAGE_LEVEL_TOPOLOGY": "Voltage Level topology",
+    "ModifyVoltageLevelTopology": "Modify voltage level topology",
+    "TopologyNotRetrieved": "The voltage level topology could not be retrieved",
+    "VoltageLevelTopologyModificationError": "Voltage level topology modification error",
+    "builtNodeTooltipVlTopoModif": "Switches list taking into account all applied modifications",
+    "notBuiltNodeTooltipVlTopoModif": "Switches list from last built node in current branch",
+    "copyPreviousTopologyStatus": "Reset to previous status",
+    "modifiedSwitchesSeparatorTitle": "Modification",
+    "unModifiedSwitchesSeparatorTitle": "No-modification",
+    "switchId": "Switch ID",
+    "previousStatus": "Previous status",
+    "currentStatus": "Modified status",
+    "Open": "Open",
+    "Closed": "Closed"
 }
