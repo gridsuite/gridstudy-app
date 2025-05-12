@@ -6,9 +6,8 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { useIntl } from 'react-intl';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
-import { CancelButton, CustomFormProvider, SubmitButton, UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import { Grid } from '@mui/material';
+import { CustomFormProvider, UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,6 +19,7 @@ import {
     initialCustomColumnNodesForm,
     NODES_ALIASES,
 } from './custom-columns-nodes-form-utils';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import NodeAliasTable from './node-alias-table';
 import { UUID } from 'crypto';
 import { NodeAlias } from './node-alias.type';
@@ -38,8 +38,6 @@ const styles = {
         maxWidth: 'none',
         margin: 'auto',
     },
-    field: { width: '70%' },
-    actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 };
 
 const toCustomColumnNodesDialogFormValues = (nodeAliases: NodeAlias[]) => {
@@ -50,9 +48,8 @@ export default function CustomColumnNodesDialog({
     open,
     nodeAliases,
     updateNodeAliases,
+    ...dialogProps
 }: Readonly<CustomColumnNodesDialogProps>) {
-    const intl = useIntl();
-
     const formMethods = useForm<CustomColumnNodesForm>({
         defaultValues: initialCustomColumnNodesForm,
         resolver: yupResolver(customColumnNodesFormSchema),
@@ -67,7 +64,7 @@ export default function CustomColumnNodesDialog({
         [treeModel]
     );
 
-    const { reset, handleSubmit } = formMethods;
+    const { reset } = formMethods;
 
     const onValidate = (data: CustomColumnNodesForm) => {
         onClose();
@@ -98,34 +95,19 @@ export default function CustomColumnNodesDialog({
 
     return (
         <CustomFormProvider validationSchema={customColumnNodesFormSchema} {...formMethods}>
-            <Dialog
-                id="custom-column-nodes-dialog-edit"
+            <ModificationDialog
+                titleId={'spreadsheet/custom_column/parameter_nodes'}
                 open={open.value}
                 onClose={onClose}
-                aria-labelledby="custom-column-dialog-edit-title"
+                onSave={onValidate}
+                onClear={() => null}
                 PaperProps={{ sx: styles.dialogContent }}
+                {...dialogProps}
             >
-                <DialogTitle id="custom-column-dialog-edit-title">
-                    {intl.formatMessage({
-                        id: 'spreadsheet/custom_column/parameter_nodes',
-                    })}
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Grid container>
-                        <NodeAliasTable />
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Grid container spacing={0.5}>
-                        <Grid item xs>
-                            <Box sx={styles.actionButtons}>
-                                <CancelButton onClick={onClose} />
-                                <SubmitButton onClick={handleSubmit(onValidate)} variant="outlined" />
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </DialogActions>
-            </Dialog>
+                <Grid container>
+                    <NodeAliasTable />
+                </Grid>
+            </ModificationDialog>
         </CustomFormProvider>
     );
 }
