@@ -131,7 +131,7 @@ export const LccModificationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (lccHvdcLine: any) => {
+        (lccHvdcLine: LccModificationSchemaForm) => {
             const hvdcLineTab = lccHvdcLine[HVDC_LINE_TAB];
             if (!lccToModify) {
                 return;
