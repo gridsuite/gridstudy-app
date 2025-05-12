@@ -19,38 +19,12 @@ import {
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Identifiable } from '@gridsuite/commons-ui';
-import { IntlShape } from 'react-intl';
-
-export const NA_Value = 'N/A';
-
-export const formatNAValue = (value: string, intl: IntlShape): string => {
-    return value === NA_Value ? intl.formatMessage({ id: 'Undefined' }) : value;
-};
-
-export const convertDuration = (duration: number) => {
-    if (!duration || isNaN(duration)) {
-        return '';
-    }
-
-    const minutes = Math.floor(duration / 60);
-    const seconds = duration % 60;
-
-    if (seconds === 0) {
-        return minutes + ' mn';
-    }
-
-    if (minutes === 0) {
-        return seconds + ' s';
-    }
-
-    return `${minutes}' ${seconds}"`;
-};
 
 /*
  * This function is used to format the data of the table to be able to display it in the table
  * and resolve the issue of the calculated fields
  */
-const formatRatioTapChanger = (twt: any) => {
+const mapRatioTapChanger = (twt: any) => {
     if (!twt?.ratioTapChanger) {
         return twt;
     }
@@ -74,7 +48,7 @@ const formatRatioTapChanger = (twt: any) => {
     };
 };
 
-const formatPhaseTapChanger = (twt: any) => {
+const mapPhaseTapChanger = (twt: any) => {
     if (!twt?.phaseTapChanger) {
         return twt;
     }
@@ -98,14 +72,14 @@ const formatPhaseTapChanger = (twt: any) => {
     };
 };
 
-export const formatTwtDataForTable = (twt: any) => {
-    let formattedTwt = formatRatioTapChanger(twt);
-    formattedTwt = formatPhaseTapChanger(formattedTwt);
+const mapTwtDataForTable = (twt: any) => {
+    let formattedTwt = mapRatioTapChanger(twt);
+    formattedTwt = mapPhaseTapChanger(formattedTwt);
 
     return formattedTwt;
 };
 
-const formatGeneratorDataForTable = (generator: any) => {
+const mapGeneratorDataForTable = (generator: any) => {
     const formattedGenerator = { ...generator };
     const hasDistantRegulation =
         formattedGenerator.regulatingTerminalVlId || formattedGenerator.regulatingTerminalConnectableId;
@@ -115,7 +89,7 @@ const formatGeneratorDataForTable = (generator: any) => {
     return formattedGenerator;
 };
 
-const formatShuntCompensatorDataForTable = (shuntCompensator: any) => {
+const mapShuntCompensatorDataForTable = (shuntCompensator: any) => {
     const formattedCompensator = { ...shuntCompensator };
 
     if (formattedCompensator.type === undefined) {
@@ -128,24 +102,24 @@ const formatShuntCompensatorDataForTable = (shuntCompensator: any) => {
     return formattedCompensator;
 };
 
-export const formatFetchedEquipments = (equipmentType: EQUIPMENT_TYPES, equipments: Identifiable[]) => {
-    if (equipments && equipments?.length > 0) {
-        return equipments.map((equipment) => {
-            return formatFetchedEquipment(equipmentType, equipment);
-        });
-    }
-    return equipments;
-};
-
-export const formatFetchedEquipment = (equipmentType: EQUIPMENT_TYPES, equipment: Identifiable) => {
+const mapSpreadsheetEquipment = (equipmentType: EQUIPMENT_TYPES, equipment: Identifiable) => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-            return formatTwtDataForTable(equipment);
+            return mapTwtDataForTable(equipment);
         case EQUIPMENT_TYPES.GENERATOR:
-            return formatGeneratorDataForTable(equipment);
+            return mapGeneratorDataForTable(equipment);
         case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-            return formatShuntCompensatorDataForTable(equipment);
+            return mapShuntCompensatorDataForTable(equipment);
         default:
             return equipment;
     }
+};
+
+export const mapSpreadsheetEquipments = (equipmentType: EQUIPMENT_TYPES, equipments: Identifiable[]) => {
+    if (equipments && equipments?.length > 0) {
+        return equipments.map((equipment) => {
+            return mapSpreadsheetEquipment(equipmentType, equipment);
+        });
+    }
+    return equipments;
 };

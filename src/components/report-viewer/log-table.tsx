@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';

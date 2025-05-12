@@ -8,7 +8,7 @@ import { UUID } from 'crypto';
 import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';

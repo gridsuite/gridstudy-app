@@ -8,7 +8,6 @@
 import { useCallback } from 'react';
 import { EquipmentFetcher, SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from '../types/spreadsheet.type';
 import { UUID } from 'crypto';
-import { formatFetchedEquipments } from '../utils/equipment-table-utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { loadEquipments } from '../../../redux/actions';
@@ -33,6 +32,7 @@ import {
     fetchVoltageLevels,
     fetchVscConverterStations,
 } from '../../../services/study/network';
+import { mapSpreadsheetEquipments } from '../../../utils/spreadsheet-equipments-mapper';
 
 const getFetcher = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher => {
     switch (equipmentType) {
@@ -78,10 +78,10 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const formatEquipments = useCallback(
+    const mapEquipments = useCallback(
         (fetchedEquipments: any) => {
             //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return formatFetchedEquipments(type, fetchedEquipments);
+            return mapSpreadsheetEquipments(type, fetchedEquipments);
         },
         [type]
     );
@@ -102,7 +102,7 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
                         .then((results) => {
                             let fetchedEquipments = results.flat();
                             spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                            fetchedEquipments = formatEquipments(fetchedEquipments);
+                            fetchedEquipments = mapEquipments(fetchedEquipments);
                             spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
                         })
                         .catch((err) => {
@@ -131,7 +131,7 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
                     });
             }
         },
-        [dispatch, formatEquipments, snackError, studyUuid, type]
+        [dispatch, mapEquipments, snackError, studyUuid, type]
     );
 
     return { fetchNodesEquipmentData };

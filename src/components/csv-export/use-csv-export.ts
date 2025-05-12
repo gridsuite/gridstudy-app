@@ -9,7 +9,7 @@ import { useCallback } from 'react';
 import { ProcessCellForExportParams } from 'ag-grid-community';
 import { useIntl } from 'react-intl';
 import { CsvDownloadProps } from './csv-export.type';
-import { formatNAValue } from '../spreadsheet-view/utils/equipment-table-utils';
+import { formatNAValue } from '../custom-aggrid/utils/format-values-utils';
 
 export const useCsvExport = () => {
     const intl = useIntl();

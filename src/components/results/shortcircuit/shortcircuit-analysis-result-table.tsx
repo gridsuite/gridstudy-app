@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { CustomAGGrid, unitToKiloUnit } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
