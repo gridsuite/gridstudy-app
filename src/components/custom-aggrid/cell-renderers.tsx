@@ -18,7 +18,7 @@ import { ICellRendererParams } from 'ag-grid-community';
 import { CustomCellRendererProps } from 'ag-grid-react';
 import { mergeSx } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { CalculationRowType, CalculationType } from '../spreadsheet-view/utils/calculation.type';
+import { CalculationRowType, CalculationType } from '../spreadsheet-view/types/calculation.type';
 import { isCalculationRow } from '../spreadsheet-view/utils/calculation-utils';
 
 const styles = {

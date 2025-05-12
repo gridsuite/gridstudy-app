@@ -13,7 +13,7 @@ import { UUID } from 'crypto';
 import { useSelector, shallowEqual } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { CalculationRowType } from 'components/spreadsheet-view/utils/calculation.type';
+import { CalculationRowType } from 'components/spreadsheet-view/types/calculation.type';
 
 // Default calculation button row
 const DEFAULT_ROWS = [{ rowType: CalculationRowType.CALCULATION_BUTTON }];

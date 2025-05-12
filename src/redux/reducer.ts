@@ -308,7 +308,7 @@ import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types'
 import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { CalculationType } from 'components/spreadsheet-view/utils/calculation.type';
+import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 
 export enum NotificationType {
     STUDY = 'study',

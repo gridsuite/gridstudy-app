@@ -21,7 +21,47 @@ import { NodeType } from '../../../../graph/tree-node.type';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from 'services/study/network';
-import { getEquipmentUpdateTypeFromType } from 'components/spreadsheet-view/utils/convert-type-utils';
+
+const getEquipmentUpdateTypeFromType = (type: SpreadsheetEquipmentType) => {
+    switch (type) {
+        case 'SUBSTATION':
+            return EquipmentUpdateType.SUBSTATIONS;
+        case 'VOLTAGE_LEVEL':
+            return EquipmentUpdateType.VOLTAGE_LEVELS;
+        case 'TIE_LINE':
+            return EquipmentUpdateType.TIE_LINES;
+        case 'LINE':
+            return EquipmentUpdateType.LINES;
+        case 'TWO_WINDINGS_TRANSFORMER':
+            return EquipmentUpdateType.TWO_WINDINGS_TRANSFORMERS;
+        case 'THREE_WINDINGS_TRANSFORMER':
+            return EquipmentUpdateType.THREE_WINDINGS_TRANSFORMERS;
+        case 'HVDC_LINE':
+            return EquipmentUpdateType.HVDC_LINES;
+        case 'BUS':
+            return EquipmentUpdateType.BUSES;
+        case 'BUSBAR_SECTION':
+            return EquipmentUpdateType.BUSBAR_SECTIONS;
+        case 'GENERATOR':
+            return EquipmentUpdateType.GENERATORS;
+        case 'BATTERY':
+            return EquipmentUpdateType.BATTERIES;
+        case 'LOAD':
+            return EquipmentUpdateType.LOADS;
+        case 'SHUNT_COMPENSATOR':
+            return EquipmentUpdateType.SHUNT_COMPENSATORS;
+        case 'DANGLING_LINE':
+            return EquipmentUpdateType.DANGLING_LINES;
+        case 'STATIC_VAR_COMPENSATOR':
+            return EquipmentUpdateType.STATIC_VAR_COMPENSATORS;
+        case 'VSC_CONVERTER_STATION':
+            return EquipmentUpdateType.VSC_CONVERTER_STATIONS;
+        case 'LCC_CONVERTER_STATION':
+            return EquipmentUpdateType.LCC_CONVERTER_STATIONS;
+        default:
+            return;
+    }
+};
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,

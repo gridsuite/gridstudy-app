@@ -21,7 +21,7 @@ import {
 import { AppState } from '../../../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../../../dialogs/commons/utils';
 import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
-import { CalculationRowType } from '../../utils/calculation.type';
+import { CalculationRowType } from '../../types/calculation.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
 import { useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
