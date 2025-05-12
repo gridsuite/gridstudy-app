@@ -22,17 +22,16 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
+import {
+    SPREADSHEET_MODEL,
+    SPREADSHEET_NAME,
+    getSpreadsheetFromModelFormSchema,
+    initialSpreadsheetFromModelForm,
+} from './add-spreadsheet-form';
+import { addNewSpreadsheet } from './add-spreadsheet-utils';
 import { getSpreadsheetModel } from 'services/study-config';
 import { UUID } from 'crypto';
 import { dialogStyles } from '../styles/styles';
-import { ColumnDefinitionDto, SpreadsheetEquipmentType } from 'components/spreadsheet-view/types/spreadsheet.type';
-import {
-    getSpreadsheetFromModelFormSchema,
-    initialSpreadsheetFromModelForm,
-    SPREADSHEET_MODEL,
-    SPREADSHEET_NAME,
-} from './add-spreadsheet-form';
-import { addNewSpreadsheet, mapColumnsDto } from './add-spreadsheet-utils';
 
 interface SpreadsheetFromModelDialogProps {
     open: UseStateBooleanReturn;
@@ -44,6 +43,7 @@ interface SpreadsheetFromModelDialogProps {
 export default function AddSpreadsheetFromModelDialog({ open }: Readonly<SpreadsheetFromModelDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
@@ -78,16 +78,19 @@ export default function AddSpreadsheetFromModelDialog({ open }: Readonly<Spreads
 
     const onSubmit = useCallback(
         (formData: any) => {
+            if (!studyUuid) {
+                return;
+            }
             const tabIndex = tablesDefinitions.length;
             const tabName = formData[SPREADSHEET_NAME];
             const modelId = formData[SPREADSHEET_MODEL][0].id;
 
             getSpreadsheetModel(modelId)
-                .then((selectedModel: { columns: ColumnDefinitionDto[]; sheetType: SpreadsheetEquipmentType }) => {
-                    const columns = mapColumnsDto(selectedModel.columns);
-
+                .then((selectedModel) => {
                     addNewSpreadsheet({
-                        columns,
+                        studyUuid,
+                        columns: selectedModel.columns,
+                        globalFilters: selectedModel.globalFilters,
                         sheetType: selectedModel.sheetType,
                         tabIndex,
                         tabName,
@@ -105,7 +108,7 @@ export default function AddSpreadsheetFromModelDialog({ open }: Readonly<Spreads
                 });
             open.setFalse();
         },
-        [tablesDefinitions.length, spreadsheetsCollectionUuid, dispatch, snackError, open]
+        [studyUuid, tablesDefinitions.length, open, spreadsheetsCollectionUuid, dispatch, snackError]
     );
 
     return (
@@ -136,6 +139,7 @@ export default function AddSpreadsheetFromModelDialog({ open }: Readonly<Spreads
                                 elementType={ElementType.SPREADSHEET_CONFIG}
                                 titleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
                                 label="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
+                                allowMultiSelect={false}
                             />
                         </Grid>
                     </Grid>

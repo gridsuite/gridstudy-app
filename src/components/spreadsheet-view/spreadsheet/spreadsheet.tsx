@@ -19,31 +19,31 @@ import { mapColumns } from '../columns/utils/column-mapper';
 interface SpreadsheetProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
-    shouldDisableButtons: boolean;
     disabled: boolean;
     nodeAliases: NodeAlias[] | undefined;
     updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
+    active: boolean;
 }
 
 export const Spreadsheet = React.memo(
     ({
         currentNode,
         tableDefinition,
-        shouldDisableButtons,
         disabled,
         nodeAliases,
         updateNodeAliases,
         equipmentId,
         onEquipmentScrolled,
+        active,
     }: SpreadsheetProps) => {
         const gridRef = useRef<AgGridReact>(null);
 
         const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
 
         const displayedColsDefs = useMemo(() => {
-            const columns = tableDefinition?.columns?.filter((column) => column.visible);
+            const columns = tableDefinition?.columns;
             const visibleColDefs =
                 columns?.map((column) => {
                     return columnsDefinitions.reduce((acc, curr) => {
@@ -67,7 +67,6 @@ export const Spreadsheet = React.memo(
                     columns={displayedColsDefs}
                     nodeAliases={nodeAliases}
                     updateNodeAliases={updateNodeAliases}
-                    shouldDisableButtons={shouldDisableButtons}
                     disabled={disabled}
                 />
 
@@ -77,10 +76,10 @@ export const Spreadsheet = React.memo(
                     tableDefinition={tableDefinition}
                     columns={displayedColsDefs}
                     nodeAliases={nodeAliases}
-                    shouldDisableButtons={shouldDisableButtons}
                     disabled={disabled}
                     equipmentId={equipmentId}
                     onEquipmentScrolled={onEquipmentScrolled}
+                    active={active}
                 />
             </>
         );

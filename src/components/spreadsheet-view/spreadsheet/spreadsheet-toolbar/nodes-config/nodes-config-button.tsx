@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Badge, Button, Tooltip } from '@mui/material';
+import { Badge, Button, Theme, Tooltip } from '@mui/material';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import BuildIcon from '@mui/icons-material/Build';
 import { ROOT_NODE_LABEL } from '../../../../../constants/node.constant';
@@ -29,6 +29,14 @@ const styles = {
         height: '20px',
         width: '20px',
     },
+    badgeStyle: (theme: Theme) => ({
+        '& .MuiBadge-badge': {
+            minWidth: theme.spacing(2),
+            height: theme.spacing(2),
+            fontSize: theme.typography.caption.fontSize,
+            padding: theme.spacing(0, 0.5),
+        },
+    }),
 };
 
 enum NodesOptionId {
@@ -99,18 +107,30 @@ export default function NodesConfigButton({
 
     return (
         <>
-            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
-                <BuildIcon sx={styles.icon} />
-                <FormattedMessage id="spreadsheet/custom_column/nodes" />
-                {showWarning && (
-                    <Badge
-                        badgeContent="!"
-                        color="warning"
-                        overlap="circular"
-                        style={{ transform: 'translate(10px, -15px)' }}
-                    ></Badge>
-                )}
-            </Button>
+            <Badge
+                sx={styles.badgeStyle}
+                max={99}
+                color="secondary"
+                badgeContent={nodeAliases?.length && !showWarning ? nodeAliases.length : undefined}
+            >
+                <Button
+                    sx={spreadsheetStyles.spreadsheetButton}
+                    size={'small'}
+                    onClick={handleClick}
+                    disabled={disabled}
+                >
+                    <BuildIcon sx={styles.icon} />
+                    <FormattedMessage id="spreadsheet/custom_column/nodes" />
+                    {showWarning && (
+                        <Badge
+                            badgeContent="!"
+                            color="warning"
+                            overlap="circular"
+                            style={{ transform: 'translate(10px, -15px)' }}
+                        ></Badge>
+                    )}
+                </Button>
+            </Badge>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 <MenuItem
                     key={NodesOptionId.CONFIG}

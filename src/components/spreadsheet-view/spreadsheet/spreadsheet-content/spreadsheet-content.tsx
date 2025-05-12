@@ -53,9 +53,9 @@ interface SpreadsheetTabContentProps {
     columns: CustomColDef[];
     nodeAliases: NodeAlias[] | undefined;
     disabled: boolean;
-    shouldDisableButtons: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
+    active: boolean;
 }
 
 export const SpreadsheetContent = React.memo(
@@ -65,10 +65,10 @@ export const SpreadsheetContent = React.memo(
         tableDefinition,
         columns,
         nodeAliases,
-        shouldDisableButtons,
         disabled,
         equipmentId,
         onEquipmentScrolled,
+        active,
     }: SpreadsheetTabContentProps) => {
         const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
         const [isGridReady, setIsGridReady] = useState(false);
@@ -91,16 +91,21 @@ export const SpreadsheetContent = React.memo(
             setEquipmentToUpdateId(null);
         }, [equipmentToUpdateId, gridRef]);
 
+        // Only fetch when active
         const { equipments, isFetching } = useSpreadsheetEquipments(
             tableDefinition?.type,
+            equipmentToUpdateId,
             highlightUpdatedEquipment,
-            nodeAliases
+            nodeAliases,
+            active
         );
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
-        const { updateSortConfig, updateLockedColumnsConfig, isLockedColumnNamesEmpty, handleColumnDrag } =
-            useColumnManagement(gridRef, tableDefinition);
+        const { updateSortConfig, updateLockedColumnsConfig, handleColumnDrag } = useColumnManagement(
+            gridRef,
+            tableDefinition
+        );
 
         const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.uuid);
 
@@ -140,8 +145,9 @@ export const SpreadsheetContent = React.memo(
         }, [handleEquipmentScroll]);
 
         const onGridReady = useCallback(() => {
+            updateLockedColumnsConfig();
             setIsGridReady(true);
-        }, []);
+        }, [updateLockedColumnsConfig]);
 
         const transformedRowData = useMemo(() => {
             if (
@@ -149,7 +155,7 @@ export const SpreadsheetContent = React.memo(
                 !equipments?.nodesId.includes(currentNode.id) ||
                 !equipments.equipmentsByNodeId[currentNode.id]
             ) {
-                return [];
+                return undefined;
             }
 
             return equipments.equipmentsByNodeId[currentNode.id].map((equipment) => {
@@ -180,28 +186,27 @@ export const SpreadsheetContent = React.memo(
             }
 
             updateSortConfig();
-            updateLockedColumnsConfig();
-        }, [updateSortConfig, updateLockedColumnsConfig, equipments, gridRef, isGridReady]);
+        }, [updateSortConfig, equipments, gridRef, isGridReady]);
 
         useEffect(() => {
             const api = gridRef.current?.api;
-            if (!api || !isGridReady || !filters.length) {
+            if (!api || !isGridReady) {
                 return;
             }
-
             updateFilters(api, filters);
         }, [filters, gridRef, isGridReady, equipments]);
 
         return (
             <>
-                {disabled || shouldDisableButtons ? (
+                {disabled ? (
                     <Alert sx={styles.invalidNode} severity="warning">
-                        <FormattedMessage id={disabled ? 'InvalidNode' : 'NoSpreadsheets'} />
+                        <FormattedMessage id={'InvalidNode'} />
                     </Alert>
                 ) : (
                     <Box sx={styles.table}>
                         <EquipmentTable
                             gridRef={gridRef}
+                            rowData={transformedRowData}
                             currentNode={currentNode}
                             columnData={columns}
                             isFetching={isFetching}
@@ -210,7 +215,6 @@ export const SpreadsheetContent = React.memo(
                             handleColumnDrag={handleColumnDrag}
                             isExternalFilterPresent={isExternalFilterPresent}
                             doesExternalFilterPass={doesFormulaFilteringPass}
-                            shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
                             onModelUpdated={onModelUpdated}
                             onFirstDataRendered={onFirstDataRendered}
                             onGridReady={onGridReady}

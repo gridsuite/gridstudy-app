@@ -9,23 +9,33 @@ import { UUID } from 'crypto';
 import {
     ColumnDefinition,
     ColumnDefinitionDto,
+    SpreadsheetCollectionDto,
+    SpreadsheetConfigDto,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
 } from '../../types/spreadsheet.type';
 import { Dispatch } from 'redux';
 import { UseStateBooleanReturn } from '@gridsuite/commons-ui';
-import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
-import { SortWay } from 'types/custom-aggrid-types';
-import { addSpreadsheetConfigToCollection, getSpreadsheetModel } from 'services/study-config';
+import {
+    addFilterForNewSpreadsheet,
+    addSortForNewSpreadsheet,
+    saveSpreadsheetGsFilters,
+    updateTableDefinition,
+} from 'redux/actions';
+import { FilterConfig, SortWay } from 'types/custom-aggrid-types';
+import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
+import { GsFilterSpreadsheetState, SpreadsheetFilterState } from 'redux/reducer';
+import { SpreadsheetGlobalFilter } from 'services/study/filter';
+import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
 
 const createNewTableDefinition = (
     columns: ColumnDefinition[],
     sheetType: SpreadsheetEquipmentType,
     tabIndex: number,
     tabName: string
-): SpreadsheetTabDefinition => ({
+) => ({
     uuid: uuid4() as UUID,
     index: tabIndex,
     name: tabName,
@@ -37,15 +47,48 @@ const createNewTableDefinition = (
     })),
 });
 
+// This function is used to map the ColumnDefinition to ColumnDefinitionDto before sending it to the backend
+export const mapColDefToDto = (colDef: ColumnDefinition, colFilter?: FilterConfig) => ({
+    uuid: colDef.uuid,
+    id: colDef.id,
+    name: colDef.name,
+    type: colDef.type,
+    precision: colDef.precision,
+    formula: colDef.formula,
+    dependencies: colDef.dependencies?.length ? JSON.stringify(colDef.dependencies) : undefined,
+    filterDataType: colFilter?.dataType,
+    filterType: colFilter?.type,
+    filterValue: colFilter?.value ? JSON.stringify(colFilter.value) : undefined,
+    filterTolerance: colFilter?.tolerance,
+});
+
 export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
     return columns.map((column) => ({
-        ...column,
+        uuid: column?.uuid,
+        id: column.id,
+        name: column.name,
+        type: column.type,
+        precision: column?.precision,
+        formula: column.formula,
         [COLUMN_DEPENDENCIES]: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
     }));
 };
 
+export const extractColumnsFilters = (columns: ColumnDefinitionDto[]): FilterConfig[] => {
+    return columns
+        .filter((col) => col.filterDataType && col.filterType && col.filterValue)
+        .map((col) => ({
+            column: col.id,
+            dataType: col.filterDataType,
+            tolerance: col.filterTolerance,
+            type: col.filterType,
+            value: JSON.parse(col.filterValue ?? ''),
+        }));
+};
+
 const createSpreadsheetConfig = (
-    columns: ColumnDefinition[],
+    columns: ColumnDefinitionDto[],
+    globalFilters: SpreadsheetGlobalFilter[],
     sheetType: SpreadsheetEquipmentType,
     tabName: string
 ) => ({
@@ -55,6 +98,7 @@ const createSpreadsheetConfig = (
         ...col,
         dependencies: col?.[COLUMN_DEPENDENCIES]?.length ? JSON.stringify(col[COLUMN_DEPENDENCIES]) : undefined,
     })),
+    globalFilters,
 });
 
 const handleSuccess = (
@@ -67,15 +111,18 @@ const handleSuccess = (
     newTableDefinition.uuid = uuid;
     // we need to refetch the model to get the new column uuids
     getSpreadsheetModel(uuid)
-        .then((model) => {
+        .then((model: SpreadsheetConfigDto) => {
             newTableDefinition.columns = model.columns.map((col: ColumnDefinitionDto) => ({
                 ...col,
-                dependencies: col.dependencies?.length ? JSON.parse(col.dependencies) : undefined,
+                dependencies: col?.dependencies?.length ? JSON.parse(JSON.stringify(col.dependencies)) : undefined,
                 visible: true,
                 locked: false,
             }));
+            const columnsFilters = extractColumnsFilters(model.columns);
+            const formattedGlobalFilters = model.globalFilters ?? [];
             dispatch(updateTableDefinition(newTableDefinition));
-            dispatch(addFilterForNewSpreadsheet(uuid, []));
+            dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
+            dispatch(saveSpreadsheetGsFilters(uuid, formattedGlobalFilters));
             dispatch(addSortForNewSpreadsheet(uuid, [{ colId: 'id', sort: SortWay.ASC }]));
         })
         .catch((error) => {
@@ -90,7 +137,9 @@ const handleSuccess = (
 };
 
 interface AddNewSpreadsheetParams {
-    columns: ColumnDefinition[];
+    studyUuid: UUID;
+    columns: ColumnDefinitionDto[];
+    globalFilters?: SpreadsheetGlobalFilter[];
     sheetType: SpreadsheetEquipmentType;
     tabIndex: number;
     tabName: string;
@@ -101,7 +150,9 @@ interface AddNewSpreadsheetParams {
 }
 
 export const addNewSpreadsheet = ({
+    studyUuid,
     columns,
+    globalFilters = [],
     sheetType,
     tabIndex,
     tabName,
@@ -110,10 +161,11 @@ export const addNewSpreadsheet = ({
     snackError,
     open,
 }: AddNewSpreadsheetParams) => {
-    const newTableDefinition = createNewTableDefinition(columns, sheetType, tabIndex, tabName);
-    const spreadsheetConfig = createSpreadsheetConfig(columns, sheetType, tabName);
+    const columnsDefinition = mapColumnsDto(columns);
+    const newTableDefinition = createNewTableDefinition(columnsDefinition, sheetType, tabIndex, tabName);
+    const spreadsheetConfig = createSpreadsheetConfig(columns, globalFilters, sheetType, tabName);
 
-    addSpreadsheetConfigToCollection(spreadsheetsCollectionUuid, spreadsheetConfig)
+    addSpreadsheetConfigToCollection(studyUuid, spreadsheetsCollectionUuid, spreadsheetConfig)
         .then((uuid: UUID) => handleSuccess(uuid, newTableDefinition, dispatch, snackError, open))
         .catch((error) => {
             snackError({
@@ -123,3 +175,37 @@ export const addNewSpreadsheet = ({
             open.setFalse();
         });
 };
+
+export interface ProcessedCollectionData {
+    tableDefinitions: SpreadsheetTabDefinition[];
+    tablesFilters: SpreadsheetFilterState;
+    tableGlobalFilters: GsFilterSpreadsheetState;
+}
+
+export function processSpreadsheetsCollectionData(collectionData: SpreadsheetCollectionDto): ProcessedCollectionData {
+    const tableDefinitions = collectionData.spreadsheetConfigs.map((spreadsheetConfig, index) => ({
+        uuid: spreadsheetConfig.id,
+        index: index,
+        name: spreadsheetConfig.name,
+        columns: mapColumnsDto(spreadsheetConfig.columns),
+        type: spreadsheetConfig.sheetType,
+    }));
+
+    const tablesFilters = collectionData.spreadsheetConfigs.reduce(
+        (filters, spreadsheetConfig) => ({
+            ...filters,
+            [spreadsheetConfig.id]: extractColumnsFilters(spreadsheetConfig.columns),
+        }),
+        {}
+    );
+
+    const tableGlobalFilters = collectionData.spreadsheetConfigs.reduce(
+        (gsFilters, spreadsheetConfig) => ({
+            ...gsFilters,
+            [spreadsheetConfig.id]: spreadsheetConfig?.globalFilters ?? undefined,
+        }),
+        {}
+    );
+
+    return { tableDefinitions, tablesFilters, tableGlobalFilters };
+}

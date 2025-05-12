@@ -32,6 +32,7 @@ const NodeEditor = () => {
     const { snackError } = useSnackMessage();
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const closeModificationsDrawer = () => {
@@ -57,7 +58,7 @@ const NodeEditor = () => {
                 name={currentTreeNode?.data?.label ?? ''}
                 onClose={closeModificationsDrawer}
                 onChange={changeNodeName}
-                showRootNetworkSelection={enableDeveloperMode}
+                showRootNetworkSelection={enableDeveloperMode && !isMonoRootStudy}
             />
             <NetworkModificationNodeEditor />
         </Box>

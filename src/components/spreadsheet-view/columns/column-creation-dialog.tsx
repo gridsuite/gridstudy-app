@@ -34,14 +34,13 @@ import {
 import { useForm, UseFormSetError, useWatch } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
 import { setUpdateColumnsDefinitions } from 'redux/actions';
 import { hasCyclicDependencies, Item } from './utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
-import { createSpreadsheetColumn, updateSpreadsheetColumn } from 'services/study-config';
 import { UUID } from 'crypto';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import {
@@ -55,6 +54,8 @@ import {
     initialColumnCreationForm,
     PRECISION,
 } from './column-creation-form';
+import { AppState } from 'redux/reducer';
+import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../services/study/study-config';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -97,6 +98,7 @@ export default function ColumnCreationDialog({
     const columnsDefinitions = tableDefinition?.columns;
     const spreadsheetConfigUuid = tableDefinition?.uuid;
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const columnDefinition = useMemo(
         () => columnsDefinitions?.find((column) => column?.uuid === colUuid),
         [colUuid, columnsDefinitions]
@@ -200,7 +202,7 @@ export default function ColumnCreationDialog({
 
     const onSubmit = useCallback(
         async (newParams: ColumnCreationForm) => {
-            if (!validateParams(columnsDefinitions, newParams, colUuid, setError)) {
+            if (!studyUuid || !validateParams(columnsDefinitions, newParams, colUuid, setError)) {
                 return;
             }
 
@@ -220,8 +222,8 @@ export default function ColumnCreationDialog({
 
             const updateOrCreateColumn =
                 isUpdate && columnDefinition
-                    ? updateSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
-                    : createSpreadsheetColumn(spreadsheetConfigUuid, formattedParams);
+                    ? updateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid, formattedParams)
+                    : createSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, formattedParams);
 
             // we reset and close the dialog to avoid multiple submissions
             reset(initialColumnCreationForm);
@@ -254,17 +256,18 @@ export default function ColumnCreationDialog({
                 });
         },
         [
+            studyUuid,
             columnsDefinitions,
             colUuid,
             setError,
             columnDefinition,
             spreadsheetConfigUuid,
+            reset,
+            open,
             filters,
             dispatchFilters,
             dispatch,
             tableDefinition,
-            reset,
-            open,
             snackError,
         ]
     );

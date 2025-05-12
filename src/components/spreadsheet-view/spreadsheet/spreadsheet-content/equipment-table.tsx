@@ -25,7 +25,6 @@ import { CalculationRowType } from '../../utils/calculation.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
 import { useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
-import { styles } from './equipment-table.style';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 
 const DEFAULT_ROW_HEIGHT = 28;
@@ -57,11 +56,11 @@ const defaultColDef: ColDef = {
 
 interface EquipmentTableProps {
     gridRef: React.RefObject<AgGridReact>;
+    rowData: unknown[] | undefined;
     columnData: ColDef[];
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
     isFetching: boolean | undefined;
-    shouldHidePinnedHeaderRightBorder: boolean;
     onRowClicked?: (event: RowClickedEvent) => void;
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
@@ -74,10 +73,10 @@ interface EquipmentTableProps {
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     columnData,
     gridRef,
+    rowData,
     currentNode,
     handleColumnDrag,
     isFetching,
-    shouldHidePinnedHeaderRightBorder,
     onRowClicked,
     isExternalFilterPresent,
     doesExternalFilterPass,
@@ -166,7 +165,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             undoRedoCellEditing={true}
             onColumnMoved={handleColumnDrag}
             suppressDragLeaveHidesColumns={true}
-            suppressColumnVirtualisation={true}
+            rowBuffer={5}
             onCellMouseDown={handleCellMouseDown}
             onRowClicked={handleRowClicked}
             onModelUpdated={onModelUpdated}
@@ -178,8 +177,9 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             doesExternalFilterPass={doesExternalFilterPass}
             onFirstDataRendered={onFirstDataRendered}
             onGridReady={onGridReady}
-            sx={shouldHidePinnedHeaderRightBorder ? styles.noBorderRight : undefined}
             overrideLocales={AGGRID_LOCALES}
+            suppressNoRowsOverlay={rowData === undefined}
+            valueCache={true}
         />
     );
 };

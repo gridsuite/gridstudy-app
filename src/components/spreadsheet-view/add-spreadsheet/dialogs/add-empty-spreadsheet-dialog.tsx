@@ -58,6 +58,7 @@ const TABLES_TYPES = [
 export default function AddEmptySpreadsheetDialog({ open }: Readonly<EmptySpreadsheetDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
@@ -79,11 +80,15 @@ export default function AddEmptySpreadsheetDialog({ open }: Readonly<EmptySpread
 
     const onSubmit = useCallback(
         (formData: any) => {
+            if (!studyUuid) {
+                return;
+            }
             const tabIndex = tablesDefinitions.length;
             const tabName = formData[SPREADSHEET_NAME];
             const equipmentType = formData.equipmentType;
 
             addNewSpreadsheet({
+                studyUuid,
                 columns: [],
                 sheetType: equipmentType,
                 tabIndex,
@@ -94,7 +99,7 @@ export default function AddEmptySpreadsheetDialog({ open }: Readonly<EmptySpread
                 open,
             });
         },
-        [tablesDefinitions.length, spreadsheetsCollectionUuid, dispatch, snackError, open]
+        [tablesDefinitions.length, studyUuid, spreadsheetsCollectionUuid, dispatch, snackError, open]
     );
 
     return (

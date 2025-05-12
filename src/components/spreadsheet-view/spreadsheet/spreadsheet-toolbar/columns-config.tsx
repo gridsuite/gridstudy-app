@@ -9,7 +9,7 @@ import { Button, Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, L
 import { Theme } from '@mui/material/styles';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -18,10 +18,14 @@ import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateTableDefinition } from 'redux/actions';
 import { UUID } from 'crypto';
-import { reorderSpreadsheetColumns } from 'services/study-config';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';
+import { reorderSpreadsheetColumns } from 'services/study/study-config';
+import { AppState } from 'redux/reducer';
+import { ColumnState } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
+import { ROW_INDEX_COLUMN_STATE } from '../../constants';
 
 const MAX_LOCKS_PER_TAB = 5;
 
@@ -45,14 +49,16 @@ const styles = {
 };
 
 interface ColumnsConfigProps {
+    gridRef: React.RefObject<AgGridReact>;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
 }
 
-export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefinition, disabled }) => {
+export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefinition, disabled, gridRef }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [localColumns, setLocalColumns] = useState(tableDefinition?.columns);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState<boolean>(false);
@@ -69,22 +75,43 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         setLocalColumns(tableDefinition?.columns);
     }, [tableDefinition?.columns]);
 
+    // Restore AG Grid column state to match the original tableDefinition.columns
+    const resetColumnState = useCallback(() => {
+        if (gridRef.current?.api) {
+            gridRef.current.api.applyColumnState({
+                state: [
+                    ROW_INDEX_COLUMN_STATE,
+                    ...tableDefinition.columns.map((col) => ({
+                        colId: col.id || col.uuid,
+                        hide: !col.visible,
+                        pinned: col.locked ? ('left' as const) : null,
+                    })),
+                ],
+                applyOrder: true,
+                defaultState: { pinned: null, hide: false },
+            });
+        }
+    }, [gridRef, tableDefinition.columns]);
+
     const handleCancelPopupSelectColumnNames = useCallback(() => {
         setLocalColumns(tableDefinition?.columns);
+        resetColumnState();
         handleCloseColumnsSettingDialog();
-    }, [tableDefinition?.columns, handleCloseColumnsSettingDialog]);
+    }, [tableDefinition?.columns, resetColumnState, handleCloseColumnsSettingDialog]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
         // check if column order has changed by comparing uuids
         const hasOrderChanged = tableDefinition.columns.some((col, index) => col.uuid !== localColumns[index].uuid);
 
         // create a Promise chain that conditionally includes the reorder request
-        const updatePromise = hasOrderChanged
-            ? reorderSpreadsheetColumns(
-                  tableDefinition.uuid,
-                  localColumns.map((col) => col.uuid)
-              )
-            : Promise.resolve();
+        const updatePromise =
+            hasOrderChanged && studyUuid
+                ? reorderSpreadsheetColumns(
+                      studyUuid,
+                      tableDefinition.uuid,
+                      localColumns.map((col) => col.uuid)
+                  )
+                : Promise.resolve();
 
         updatePromise
             .then(() => {
@@ -96,6 +123,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
                 );
             })
             .catch((error) => {
+                resetColumnState();
                 snackError({
                     messageTxt: error,
                     headerId: 'spreadsheet/reorder_columns/error',
@@ -103,11 +131,20 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
             });
 
         handleCloseColumnsSettingDialog();
-    }, [tableDefinition, localColumns, handleCloseColumnsSettingDialog, dispatch, snackError]);
+    }, [
+        tableDefinition,
+        studyUuid,
+        localColumns,
+        handleCloseColumnsSettingDialog,
+        dispatch,
+        resetColumnState,
+        snackError,
+    ]);
 
     const handleToggle = (value: UUID) => () => {
         const newLocalColumns = localColumns.map((col) => {
             if (col.uuid === value) {
+                gridRef.current?.api.setColumnsVisible([col.id], !col.visible);
                 return {
                     ...col,
                     visible: !col.visible,
@@ -128,6 +165,19 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
                 visible: !isAllChecked,
                 locked: col.locked && !col.visible,
             };
+        });
+
+        const userLockedColumns =
+            newLocalColumns.map((column) => {
+                return {
+                    colId: column.id,
+                    hide: isAllChecked,
+                    pinned: 'left',
+                } as ColumnState;
+            }) || [];
+        gridRef.current?.api?.applyColumnState({
+            state: [ROW_INDEX_COLUMN_STATE, ...userLockedColumns],
+            defaultState: { pinned: null },
         });
         setLocalColumns(newLocalColumns);
     };
@@ -158,6 +208,19 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
             return col;
         });
 
+        const userLockedColumns =
+            newLocalColumns
+                ?.filter((column) => column.visible && column.locked)
+                ?.map((column) => {
+                    return {
+                        colId: column.id,
+                        pinned: 'left',
+                    } as ColumnState;
+                }) || [];
+        gridRef.current?.api?.applyColumnState({
+            state: [ROW_INDEX_COLUMN_STATE, ...userLockedColumns],
+            defaultState: { pinned: null },
+        });
         setLocalColumns(newLocalColumns);
     };
 
@@ -167,10 +230,16 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
                 let reorderedTableDefinitionIndexesTemp = [...localColumns];
                 const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
                 reorderedTableDefinitionIndexesTemp.splice(destination.index, 0, reorderedItem);
+                gridRef.current?.api.applyColumnState({
+                    state: reorderedTableDefinitionIndexesTemp.map((col) => ({
+                        colId: col.id,
+                    })),
+                    applyOrder: true,
+                });
                 setLocalColumns(reorderedTableDefinitionIndexesTemp);
             }
         },
-        [localColumns]
+        [gridRef, localColumns]
     );
 
     const renderColumnConfigLockIcon = (value: UUID) => {

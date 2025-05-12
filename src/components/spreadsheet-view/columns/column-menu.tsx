@@ -9,14 +9,15 @@ import { useCallback, useMemo, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { PopupConfirmationDialog, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setRemoveColumnDefinition } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
 import { DialogMenuProps } from '../../custom-aggrid/custom-aggrid-menu';
-import { deleteSpreadsheetColumn } from 'services/study-config';
 import { UUID } from 'crypto';
 import { SpreadsheetTabDefinition } from 'components/spreadsheet-view/types/spreadsheet.type';
 import ColumnCreationDialog from './column-creation-dialog';
+import { AppState } from 'redux/reducer';
+import { deleteSpreadsheetColumn } from 'services/study/study-config';
 
 const UPDATE = 'UPDATE';
 const DELETE = 'DELETE';
@@ -46,6 +47,7 @@ export const ColumnMenu: React.FC<CustomColumnConfigProps> = ({
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const dialogOpen = useStateBoolean(false);
     const columnsDefinitions = tableDefinition?.columns;
     const spreadsheetConfigUuid = tableDefinition?.uuid;
@@ -73,8 +75,8 @@ export const ColumnMenu: React.FC<CustomColumnConfigProps> = ({
     );
 
     const handleValidate = useCallback(() => {
-        if (columnDefinition?.id) {
-            deleteSpreadsheetColumn(spreadsheetConfigUuid, columnDefinition.uuid)
+        if (studyUuid && columnDefinition?.id) {
+            deleteSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid)
                 .then(() => {
                     setConfirmationDialogOpen(false);
                     dispatch(
@@ -97,6 +99,7 @@ export const ColumnMenu: React.FC<CustomColumnConfigProps> = ({
         dispatch,
         snackError,
         spreadsheetConfigUuid,
+        studyUuid,
         tableDefinition?.uuid,
     ]);
 

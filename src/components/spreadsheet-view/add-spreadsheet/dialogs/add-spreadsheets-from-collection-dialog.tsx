@@ -37,7 +37,7 @@ import {
     SpreadsheetCollectionForm,
     SpreadsheetCollectionImportMode,
 } from './add-spreadsheet-form';
-import { mapColumnsDto } from './add-spreadsheet-utils';
+import { processSpreadsheetsCollectionData } from './add-spreadsheet-utils';
 
 interface SpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
@@ -86,15 +86,12 @@ export default function SpreadsheetCollectionDialog({
             const appendMode = formData.spreadsheetCollectionMode === SpreadsheetCollectionImportMode.APPEND;
             updateStudySpreadsheetConfigCollection(studyUuid, collectionId, appendMode)
                 .then((collectionData: SpreadsheetCollectionDto) => {
-                    const tableDefinitions = collectionData.spreadsheetConfigs.map((spreadsheetConfig, index) => ({
-                        uuid: spreadsheetConfig.id,
-                        index: index,
-                        name: spreadsheetConfig.name,
-                        columns: mapColumnsDto(spreadsheetConfig.columns),
-                        type: spreadsheetConfig.sheetType,
-                    }));
+                    const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                        processSpreadsheetsCollectionData(collectionData);
                     resetNodeAliases(appendMode, collectionData.nodeAliases);
-                    dispatch(initTableDefinitions(collectionData.id, tableDefinitions || []));
+                    dispatch(
+                        initTableDefinitions(collectionData.id, tableDefinitions, tablesFilters, tableGlobalFilters)
+                    );
                     resetTabIndex(tableDefinitions);
                 })
                 .catch((error) => {
@@ -169,6 +166,7 @@ export default function SpreadsheetCollectionDialog({
                                     elementType={ElementType.SPREADSHEET_CONFIG_COLLECTION}
                                     titleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
                                     label="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
+                                    allowMultiSelect={false}
                                 />
                             </Grid>
                         </Grid>

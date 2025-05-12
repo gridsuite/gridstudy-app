@@ -6,7 +6,7 @@
  */
 import { UUID } from 'crypto';
 import { mixed, string } from 'yup';
-import { EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentInfos, EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import { APP_NAME } from 'utils/config-params';
 import yup from 'components/utils/yup-config';
 
@@ -23,7 +23,9 @@ const equipmentSchema = yup.object().shape({
     name: string(),
     label: string().required(),
     key: string().required(),
-    type: mixed<EquipmentType>().oneOf(Object.values(EquipmentType)).required(),
+    type: mixed<EquipmentType | ExtendedEquipmentType>()
+        .oneOf([...Object.values(EquipmentType), ...Object.values(ExtendedEquipmentType)])
+        .required(),
     voltageLevelLabel: string(),
     voltageLevelId: string(),
 });

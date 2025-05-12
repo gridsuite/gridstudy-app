@@ -71,26 +71,34 @@ export const useCustomAggridFilter = (
         [colId, debounceMs]
     );
 
-    const handleChangeFilterValue = (filterData: FilterData) => {
-        setSelectedFilterData(filterData.value);
-        setTolerance(filterData.tolerance);
-        debouncedUpdateFilter({
-            value: filterData.value,
-            type: filterData.type ?? selectedFilterComparator,
-            dataType,
-            tolerance: filterData.tolerance,
-        });
-    };
+    const handleChangeFilterValue = useCallback(
+        (filterData: FilterData) => {
+            setSelectedFilterData(filterData.value);
+            setTolerance(filterData.tolerance);
+            debouncedUpdateFilter({
+                value: filterData.value,
+                type: filterData.type ?? selectedFilterComparator,
+                dataType,
+                tolerance: filterData.tolerance,
+            });
+        },
+        [dataType, debouncedUpdateFilter, selectedFilterComparator]
+    );
 
-    const handleChangeComparator = (newType: string) => {
-        setSelectedFilterComparator(newType);
-        debouncedUpdateFilter({
-            value: selectedFilterData,
-            type: newType,
-            dataType,
-            tolerance: tolerance,
-        });
-    };
+    const handleChangeComparator = useCallback(
+        (newType: string) => {
+            setSelectedFilterComparator(newType);
+            if (selectedFilterData) {
+                updateFilter(colId, {
+                    value: selectedFilterData,
+                    type: newType,
+                    dataType,
+                    tolerance: tolerance,
+                });
+            }
+        },
+        [colId, dataType, selectedFilterData, tolerance, updateFilter]
+    );
 
     useEffect(() => {
         if (!selectedFilterComparator) {
@@ -101,16 +109,17 @@ export const useCustomAggridFilter = (
     useEffect(() => {
         if (!filters?.length) {
             setSelectedFilterData(undefined);
-        } else {
+        } else if (selectedFilterData === undefined) {
+            // selectedFilterData == undefined => the filter page just opened so we want to display up-to-date filters
+            // but while the filter page stays open we don't take into account other modification (what may happen because of notification)
+            // so that the input isn't modified by external sources while the user is interacting with it
             const filterObject = filters?.find((filter) => filter.column === colId);
             if (filterObject) {
                 setSelectedFilterData(filterObject.value);
-                setSelectedFilterComparator(filterObject.type ?? selectedFilterComparator);
-            } else {
-                setSelectedFilterData(undefined);
+                setSelectedFilterComparator((selectedFilterComparator || filterObject.type) ?? '');
             }
         }
-    }, [filters, colId, selectedFilterComparator]);
+    }, [filters, colId, selectedFilterComparator, selectedFilterData]);
 
     return {
         selectedFilterData,

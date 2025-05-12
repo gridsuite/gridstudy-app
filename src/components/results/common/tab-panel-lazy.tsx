@@ -22,6 +22,7 @@ export type TabPanelLazyProps = BoxProps & {
 function TabPanelLazy({ children, selected, ...otherProps }: Readonly<TabPanelLazyProps>) {
     const [initialized, setInitialized] = useState(false);
 
+    // force mount child once
     useEffect(() => {
         if (!initialized && selected) {
             setInitialized(true);
@@ -45,6 +46,7 @@ function TabPanelLazy({ children, selected, ...otherProps }: Readonly<TabPanelLa
                           left: 0,
                           visibility: 'hidden',
                           zIndex: -1,
+                          opacity: 0,
                       }
             }
             sx={styles.fullHeight}

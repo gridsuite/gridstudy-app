@@ -92,9 +92,11 @@ const AddSpreadsheetButton: React.FC<CustomSpreadsheetConfigProps> = ({
     return (
         <>
             <Tooltip title={<FormattedMessage id="spreadsheet/create_new_spreadsheet/add_button_tooltip" />}>
-                <Button onClick={handleClick} disabled={disabled} sx={styles.addButton}>
-                    <AddIcon />
-                </Button>
+                <span>
+                    <Button onClick={handleClick} disabled={disabled} sx={styles.addButton}>
+                        <AddIcon />
+                    </Button>
+                </span>
             </Tooltip>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 {Object.values(NEW_SPREADSHEET_CREATION_OPTIONS).map((option) => (
