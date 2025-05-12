@@ -58,7 +58,7 @@ export function ModificationFiltersShuntCompensatorTable({
                 width: '25%',
             },
             {
-                label: 'shuntCompensatorName',
+                label: SHUNT_COMPENSATOR_NAME,
                 dataKey: SHUNT_COMPENSATOR_NAME,
                 initialValue: '',
                 width: '20%',
