@@ -51,7 +51,7 @@ const styles = {
     }),
 };
 
-interface EquipmentTabsProps {
+interface SpreadsheetTabsProps {
     selectedTabUuid: UUID | null;
     handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
@@ -59,7 +59,7 @@ interface EquipmentTabsProps {
     handleResetCollectionClick?: () => void;
 }
 
-export const SpreadsheetTabs: FunctionComponent<EquipmentTabsProps> = ({
+export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
     selectedTabUuid,
     handleSwitchTab,
     disabled,

@@ -9,10 +9,10 @@ import { useState, MouseEvent, useCallback, useMemo, RefObject } from 'react';
 import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
-import CustomSpreadsheetSaveDialog from './custom-spreadsheet-save-dialog';
+import SaveSpreadsheetDialog from './save-spreadsheet-dialog';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import { useCsvExport } from '../../../../csv-export/use-csv-export';
-import { SpreadsheetCollectionSaveDialog } from './spreadsheet-collection-save-dialog';
+import { SaveSpreadsheetCollectionDialog } from './save-spreadsheet-collection-dialog';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
@@ -33,7 +33,7 @@ interface SpreadsheetSaveOption {
     disabled?: boolean;
 }
 
-interface SpreadsheetSaveProps {
+interface SaveSpreadsheetButtonProps {
     gridRef: RefObject<AgGridReact>;
     columns: ColDef[];
     disabled: boolean;
@@ -42,14 +42,14 @@ interface SpreadsheetSaveProps {
     nodeAliases: NodeAlias[] | undefined;
 }
 
-export default function SpreadsheetSave({
+export default function SaveSpreadsheetButton({
     tableDefinition,
     gridRef,
     columns,
     disabled,
     dataSize,
     nodeAliases,
-}: Readonly<SpreadsheetSaveProps>) {
+}: Readonly<SaveSpreadsheetButtonProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const customSaveDialogOpen = useStateBoolean(false);
     const saveCollectionDialogOpen = useStateBoolean(false);
@@ -125,8 +125,8 @@ export default function SpreadsheetSave({
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 {Object.values(spreadsheetOptions).map(renderMenuItem)}
             </Menu>
-            <CustomSpreadsheetSaveDialog tableDefinition={tableDefinition} open={customSaveDialogOpen} />
-            <SpreadsheetCollectionSaveDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
+            <SaveSpreadsheetDialog tableDefinition={tableDefinition} open={customSaveDialogOpen} />
+            <SaveSpreadsheetCollectionDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
         </>
     );
 }

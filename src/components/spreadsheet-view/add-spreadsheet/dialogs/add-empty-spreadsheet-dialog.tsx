@@ -28,7 +28,7 @@ import { dialogStyles } from '../styles/styles';
 import { getEmptySpreadsheetFormSchema, initialEmptySpreadsheetForm, SPREADSHEET_NAME } from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
 
-interface EmptySpreadsheetDialogProps {
+interface AddEmptySpreadsheetDialogProps {
     open: UseStateBooleanReturn;
 }
 
@@ -55,7 +55,7 @@ const TABLES_TYPES = [
 /**
  * Dialog for creating an empty spreadsheet
  */
-export default function AddEmptySpreadsheetDialog({ open }: Readonly<EmptySpreadsheetDialogProps>) {
+export default function AddEmptySpreadsheetDialog({ open }: Readonly<AddEmptySpreadsheetDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

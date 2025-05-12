@@ -33,7 +33,7 @@ import { NodeAlias } from '../../../types/node-alias.type';
 import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { SpreadsheetGlobalFilter } from 'services/study/filter';
 
-interface SpreadsheetCollectionSaveDialogProps {
+interface SaveSpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
     nodeAliases: NodeAlias[] | undefined;
 }
@@ -62,7 +62,7 @@ interface TableState {
     index: number;
 }
 
-export const SpreadsheetCollectionSaveDialog: FunctionComponent<SpreadsheetCollectionSaveDialogProps> = ({
+export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetCollectionDialogProps> = ({
     open,
     nodeAliases,
 }) => {

@@ -46,14 +46,14 @@ const styles = {
     }),
 };
 
-interface TabLabelProps {
+interface SpreadsheetTabLabelProps {
     name: string;
     onRemove: () => void;
     onRename?: () => void;
     disabled: boolean;
 }
 
-export const SpreadsheetTabLabel: React.FC<TabLabelProps> = ({ name, onRemove, onRename, disabled }) => {
+export const SpreadsheetTabLabel: React.FC<SpreadsheetTabLabelProps> = ({ name, onRemove, onRename, disabled }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isTextTruncated, setIsTextTruncated] = useState(false);
     const textRef = useRef<HTMLSpanElement>(null);

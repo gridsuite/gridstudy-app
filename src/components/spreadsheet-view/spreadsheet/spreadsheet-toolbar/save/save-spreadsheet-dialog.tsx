@@ -20,17 +20,14 @@ import { AppState } from '../../../../../redux/reducer';
 import { v4 as uuid4 } from 'uuid';
 import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
-import { FilterConfirmationDialog } from './filter-confirmation-dialog';
+import { SaveFilterConfirmationDialog } from './save-filter-confirmation-dialog';
 
-export type CustomSpreadsheetSaveDialogProps = {
+export type SaveSpreadsheetDialogProps = {
     tableDefinition: SpreadsheetTabDefinition;
     open: UseStateBooleanReturn;
 };
 
-export default function CustomSpreadsheetSaveDialog({
-    tableDefinition,
-    open,
-}: Readonly<CustomSpreadsheetSaveDialogProps>) {
+export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonly<SaveSpreadsheetDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const tableFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD][tableDefinition.uuid]);
     const tableGlobalFilters = useSelector((state: AppState) => state.gsFilterSpreadsheetState[tableDefinition.uuid]);
@@ -168,7 +165,7 @@ export default function CustomSpreadsheetSaveDialog({
     return (
         <>
             {showFilterConfirmation && (
-                <FilterConfirmationDialog open={showFilterConfirmation} onConfirm={handleFilterConfirmation} />
+                <SaveFilterConfirmationDialog open={showFilterConfirmation} onConfirm={handleFilterConfirmation} />
             )}
 
             {showSaveDialog && studyUuid && (

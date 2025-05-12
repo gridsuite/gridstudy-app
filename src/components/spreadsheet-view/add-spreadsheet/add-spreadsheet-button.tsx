@@ -14,9 +14,9 @@ import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
 import AddEmptySpreadsheetDialog from './dialogs/add-empty-spreadsheet-dialog';
 import AddSpreadsheetFromModelDialog from './dialogs/add-spreadsheet-from-model-dialog';
-import SpreadsheetCollectionDialog from './dialogs/add-spreadsheets-from-collection-dialog';
+import AddSpreadsheetsFromCollectionDialog from './dialogs/add-spreadsheets-from-collection-dialog';
 
-interface CustomSpreadsheetConfigProps {
+interface AddSpreadsheetButtonProps {
     disabled: boolean;
     resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
     resetNodeAliases: ResetNodeAliasCallback;
@@ -57,15 +57,11 @@ const NEW_SPREADSHEET_CREATION_OPTIONS: Record<string, SpreadsheetOption> = {
     APPLY_COLLECTION: {
         id: 'APPLY_COLLECTION',
         label: 'spreadsheet/create_new_spreadsheet/apply_collection_option',
-        dialog: SpreadsheetCollectionDialog,
+        dialog: AddSpreadsheetsFromCollectionDialog,
     },
 };
 
-const AddSpreadsheetButton: React.FC<CustomSpreadsheetConfigProps> = ({
-    disabled,
-    resetTabIndex,
-    resetNodeAliases,
-}) => {
+const AddSpreadsheetButton: React.FC<AddSpreadsheetButtonProps> = ({ disabled, resetTabIndex, resetNodeAliases }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const dialogOpen = useStateBoolean(false);
     const [selectedOption, setSelectedOption] = useState<SpreadsheetOption | undefined>();

@@ -33,14 +33,14 @@ import { getSpreadsheetModel } from 'services/study-config';
 import { UUID } from 'crypto';
 import { dialogStyles } from '../styles/styles';
 
-interface SpreadsheetFromModelDialogProps {
+interface AddSpreadsheetFromModelDialogProps {
     open: UseStateBooleanReturn;
 }
 
 /**
  * Dialog for creating a spreadsheet from an existing model
  */
-export default function AddSpreadsheetFromModelDialog({ open }: Readonly<SpreadsheetFromModelDialogProps>) {
+export default function AddSpreadsheetFromModelDialog({ open }: Readonly<AddSpreadsheetFromModelDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

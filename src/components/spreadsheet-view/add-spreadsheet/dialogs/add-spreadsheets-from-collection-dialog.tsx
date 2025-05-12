@@ -39,7 +39,7 @@ import {
 } from './add-spreadsheet-form';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet-utils';
 
-interface SpreadsheetCollectionDialogProps {
+interface AddSpreadsheetsFromCollectionDialogProps {
     open: UseStateBooleanReturn;
     resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
     resetNodeAliases: ResetNodeAliasCallback;
@@ -48,11 +48,11 @@ interface SpreadsheetCollectionDialogProps {
 /**
  * Dialog for importing a spreadsheet collection
  */
-export default function SpreadsheetCollectionDialog({
+export default function AddSpreadsheetsFromCollectionDialog({
     open,
     resetTabIndex,
     resetNodeAliases,
-}: Readonly<SpreadsheetCollectionDialogProps>) {
+}: Readonly<AddSpreadsheetsFromCollectionDialogProps>) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();

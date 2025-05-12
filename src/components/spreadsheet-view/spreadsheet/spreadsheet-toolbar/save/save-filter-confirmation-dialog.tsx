@@ -7,12 +7,12 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-export interface FilterConfirmationDialogProps {
+export interface SaveFilterConfirmationDialogProps {
     open: boolean;
     onConfirm: (includeFilters: boolean) => void;
 }
 
-export function FilterConfirmationDialog({ open, onConfirm }: Readonly<FilterConfirmationDialogProps>) {
+export function SaveFilterConfirmationDialog({ open, onConfirm }: Readonly<SaveFilterConfirmationDialogProps>) {
     return (
         <Dialog open={open}>
             <DialogTitle id="filter-confirmation-dialog-title">

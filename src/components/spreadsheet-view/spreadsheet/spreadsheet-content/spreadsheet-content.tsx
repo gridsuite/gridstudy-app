@@ -46,7 +46,7 @@ interface RecursiveIdentifiable extends Identifiable {
     [alias: string]: Identifiable | string | undefined;
 }
 
-interface SpreadsheetTabContentProps {
+interface SpreadsheetContentProps {
     gridRef: React.RefObject<AgGridReact>;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
@@ -69,7 +69,7 @@ export const SpreadsheetContent = React.memo(
         equipmentId,
         onEquipmentScrolled,
         active,
-    }: SpreadsheetTabContentProps) => {
+    }: SpreadsheetContentProps) => {
         const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
         const [isGridReady, setIsGridReady] = useState(false);
 

@@ -57,7 +57,7 @@ import {
 import { AppState } from 'redux/reducer';
 import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../services/study/study-config';
 
-export type CustomColumnDialogProps = {
+export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
     colUuid?: UUID;
     tableDefinition: SpreadsheetTabDefinition;
@@ -85,7 +85,7 @@ export default function ColumnCreationDialog({
     colUuid,
     tableDefinition,
     isCreate = true,
-}: Readonly<CustomColumnDialogProps>) {
+}: Readonly<ColumnCreationDialogProps>) {
     const formMethods = useForm({
         defaultValues: initialColumnCreationForm,
         resolver: yupResolver(columnCreationFormSchema),

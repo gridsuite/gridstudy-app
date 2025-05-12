@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { Menu, MenuItem } from '@mui/material';
 import { PopupConfirmationDialog, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -33,12 +33,12 @@ const CUSTOM_COLUMNS_MENU_DEFINITION = [
     },
 ];
 
-export interface CustomColumnConfigProps extends DialogMenuProps {
+export interface ColumnMenuProps extends DialogMenuProps {
     tableDefinition: SpreadsheetTabDefinition;
     colUuid: UUID;
 }
 
-export const ColumnMenu: React.FC<CustomColumnConfigProps> = ({
+export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
     open,
     tableDefinition,
     colUuid,

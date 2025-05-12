@@ -9,7 +9,7 @@ import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/cus
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Grid, Theme } from '@mui/material';
-import SpreadsheetSave from './save/spreadsheet-save';
+import SaveSpreadsheetButton from './save/save-spreadsheet-button';
 import { NodeAlias } from '../../types/node-alias.type';
 import SpreadsheetGsFilter from './gs-filter/spreadsheet-gs-filter';
 import { ColumnsConfig } from './columns-config';
@@ -71,7 +71,7 @@ export const SpreadsheetToolbar = ({
             </Grid>
             <Grid item sx={{ flexGrow: 1 }}></Grid>
             <Grid item sx={styles.save}>
-                <SpreadsheetSave
+                <SaveSpreadsheetButton
                     tableDefinition={tableDefinition}
                     gridRef={gridRef}
                     columns={columns}
