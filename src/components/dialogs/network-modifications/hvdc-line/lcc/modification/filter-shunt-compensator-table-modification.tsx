@@ -52,7 +52,7 @@ export function ModificationFiltersShuntCompensatorTable({
     const columnsDefinition = useMemo(() => {
         return [
             {
-                label: 'shuntCompensatorId',
+                label: SHUNT_COMPENSATOR_ID,
                 dataKey: SHUNT_COMPENSATOR_ID,
                 initialValue: '',
                 width: '25%',
