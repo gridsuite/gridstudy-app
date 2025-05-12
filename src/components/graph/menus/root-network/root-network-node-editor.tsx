@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, mergeSx, Parameter, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, mergeSx, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
 
 import {
     Delete as DeleteIcon,
@@ -26,12 +26,12 @@ import {
     Tooltip,
 } from '@mui/material';
 
-import { SetStateAction, useCallback, useRef, useState } from 'react';
+import { SetStateAction, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
-import { AppState, NotificationType, RootNetworksDeletionStartedEventData } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 
 import { getCaseImportParameters } from 'services/network-conversion';
@@ -39,7 +39,6 @@ import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
-import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 
 const styles = {
@@ -110,11 +109,15 @@ const ItemLabelSecondary = (item: RootNetworkMetadata) => {
 interface RootNetworkNodeEditorProps {
     isRootNetworksProcessing: boolean;
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
+    selectedItems: RootNetworkMetadata[];
+    setSelectedItems: React.Dispatch<SetStateAction<RootNetworkMetadata[]>>;
 }
 
 const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
     isRootNetworksProcessing,
     setIsRootNetworksProcessing,
+    selectedItems,
+    setSelectedItems,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
@@ -123,50 +126,10 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const currentRootNetworkUuidRef = useRef<UUID | null>(null);
-    currentRootNetworkUuidRef.current = currentRootNetworkUuid;
-
-    const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
 
     const [rootNetworkModificationDialogOpen, setRootNetworkModificationDialogOpen] = useState(false);
     const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
     const dispatch = useDispatch();
-
-    const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
-    rootNetworksRef.current = rootNetworks;
-
-    const rootNetworkDeletionStartedNotification = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksDeletionStartedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_DELETION_STARTED) {
-                if (!rootNetworksRef.current) {
-                    return;
-                }
-                // If the current root network isn't going to be deleted, we don't need to do anything
-                const deletedRootNetworksUuids = eventData.headers.rootNetworksUuids;
-                if (
-                    currentRootNetworkUuidRef.current &&
-                    !deletedRootNetworksUuids.includes(currentRootNetworkUuidRef.current)
-                ) {
-                    return;
-                }
-                // Choice: if the current root network is going to be deleted, we select the first root network that won't be deleted
-                const newSelectedRootNetwork = rootNetworksRef.current.find(
-                    (rootNetwork) => !deletedRootNetworksUuids.includes(rootNetwork.rootNetworkUuid)
-                );
-                if (newSelectedRootNetwork) {
-                    dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
-                }
-            }
-        },
-        [dispatch]
-    );
-
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
-        listenerCallbackMessage: rootNetworkDeletionStartedNotification,
-    });
 
     const doDeleteRootNetwork = useCallback(() => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
@@ -185,7 +148,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
     const toggleSelectAllRootNetworks = useCallback(() => {
         setSelectedItems((oldVal) => (oldVal.length === 0 ? rootNetworks : []));
-    }, [rootNetworks]);
+    }, [rootNetworks, setSelectedItems]);
 
     const handleSecondaryAction = useCallback(
         (rootNetwork: RootNetworkMetadata) => {
