@@ -203,7 +203,7 @@ export function ModificationFiltersShuntCompensatorTable({
                 {column.dataKey === SHUNT_COMPENSATOR_ID && IdField(index)}
                 {column.dataKey === SHUNT_COMPENSATOR_NAME && NameField(index, disabled)}
                 {column.dataKey === MAX_Q_AT_NOMINAL_V && NominalVoltageField(index, disabled)}
-                {column.dataKey === PREVIOUS_SHUNT_COMPENSATOR_SELECTED && PreviousConnexion(index)}
+                {column.dataKey === PREVIOUS_SHUNT_COMPENSATOR_SELECTED && PreviousConnection(index)}
                 {column.dataKey === SHUNT_COMPENSATOR_SELECTED && ShuntCompensatorSelectedField(index, disabled)}
             </TableCell>
         ));
