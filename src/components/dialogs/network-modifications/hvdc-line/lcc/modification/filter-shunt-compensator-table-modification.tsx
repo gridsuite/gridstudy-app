@@ -98,7 +98,7 @@ export function ModificationFiltersShuntCompensatorTable({
         [shouldDeleteRow, getValues, id, setValue]
     );
 
-    const PreviousConnexion = useCallback(
+    const PreviousConnection = useCallback(
         (index: number) => {
             const currentId = getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`);
             const filteredValues = previousValues?.filter((value) => value.id === currentId);
