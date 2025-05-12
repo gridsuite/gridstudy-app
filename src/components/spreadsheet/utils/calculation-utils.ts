@@ -20,16 +20,22 @@ export interface CalculationRowData {
 /**
  * Extract numerical values for multiple columns in a single pass
  */
-export const extractNumericValuesForColumns = (gridApi: GridApi, columnIds: string[]): Record<string, number[]> => {
-    if (!gridApi || !columnIds.length) {
+export const extractNumericValuesForColumns = (
+    gridApi: GridApi,
+    columns: { colId: string; columnType: COLUMN_TYPES | undefined }[]
+): Record<string, number[]> => {
+    if (!gridApi || !columns.length) {
         return {};
     }
 
     try {
         // Create a map to store values for each column
         const columnValues: Record<string, number[]> = {};
-        columnIds.forEach((colId) => {
-            columnValues[colId] = [];
+        // Track ENUM columns that already have a non-numeric value
+        const enumNonNumeric: Set<string> = new Set();
+
+        columns.forEach((col) => {
+            columnValues[col.colId] = [];
         });
 
         gridApi.forEachNodeAfterFilter((node) => {
@@ -39,15 +45,23 @@ export const extractNumericValuesForColumns = (gridApi: GridApi, columnIds: stri
             }
 
             // Process each column
-            columnIds.forEach((colId) => {
+            columns.forEach((col) => {
+                // If this ENUM column is already marked as non-numeric, skip further checks
+                if (col.columnType === COLUMN_TYPES.ENUM && enumNonNumeric.has(col.colId)) {
+                    return;
+                }
                 const cellValue = gridApi.getCellValue({
                     rowNode: node,
-                    colKey: colId,
+                    colKey: col.colId,
                 });
                 if (cellValue !== undefined && cellValue !== null) {
                     const numValue = parseFloat(String(cellValue));
                     if (!isNaN(numValue)) {
-                        columnValues[colId].push(numValue);
+                        columnValues[col.colId].push(numValue);
+                    } else if (col.columnType === COLUMN_TYPES.ENUM) {
+                        enumNonNumeric.add(col.colId);
+                        // Clear values immediately since we know this column is not fully numeric
+                        columnValues[col.colId] = [];
                     }
                 }
             });
@@ -97,8 +111,18 @@ export const generateCalculationRows = (
     }
 
     const numericColumns = columnData
-        .filter((colDef) => colDef?.colId && colDef?.context?.columnType === COLUMN_TYPES.NUMBER)
-        .map((colDef) => colDef.colId);
+        .filter(
+            (colDef) =>
+                colDef?.colId &&
+                (colDef?.context?.columnType === COLUMN_TYPES.NUMBER ||
+                    colDef?.context?.columnType === COLUMN_TYPES.ENUM)
+        )
+        .map((colDef) => {
+            return {
+                colId: colDef.colId,
+                columnType: colDef.context?.columnType,
+            };
+        });
 
     // Create empty calculation rows even when there are no numeric columns
     const calculationRows = calculationSelections.map((calculationType) => {
@@ -113,12 +137,12 @@ export const generateCalculationRows = (
             const batchColumnValues = extractNumericValuesForColumns(gridApi, numericColumns);
 
             // Process values for each column
-            numericColumns.forEach((colId) => {
-                const values = batchColumnValues[colId] || [];
+            numericColumns.forEach((col) => {
+                const values = batchColumnValues[col.colId] || [];
                 const calculatedValue = calculateValue(values, calculationType);
 
                 if (calculatedValue !== null) {
-                    row[colId] = calculatedValue;
+                    row[col.colId] = calculatedValue;
                 }
             });
         }
