@@ -7,13 +7,14 @@
 
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Box, Grid } from '@mui/material';
-import { CancelButton, CustomFormProvider, SubmitButton, TextInput } from '@gridsuite/commons-ui';
+import { Grid } from '@mui/material';
+import { CustomFormProvider, TextInput } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { SpreadsheetTabDefinition } from './config/spreadsheet.type';
 import { UUID } from 'crypto';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 interface RenameTabDialogProps {
     open: boolean;
@@ -35,6 +36,7 @@ export default function RenameTabDialog({
     currentName,
     tabUuid,
     tablesDefinitions,
+    ...dialogProps
 }: Readonly<RenameTabDialogProps>) {
     const intl = useIntl();
 
@@ -61,7 +63,7 @@ export default function RenameTabDialog({
         resolver: yupResolver(schema),
     });
 
-    const { handleSubmit, reset } = formMethods;
+    const { reset } = formMethods;
 
     React.useEffect(() => {
         if (open) {
@@ -75,36 +77,28 @@ export default function RenameTabDialog({
 
     return (
         <CustomFormProvider validationSchema={schema} {...formMethods}>
-            <Dialog
+            <ModificationDialog
+                titleId={'spreadsheet/rename_dialog_title'}
                 open={open}
                 onClose={onClose}
-                aria-labelledby="rename-tab-dialog-title"
-                PaperProps={{ sx: { width: '20%' } }}
+                onSave={onSubmit}
+                onClear={() => null}
+                PaperProps={{ sx: { width: '30%' } }}
+                {...dialogProps}
             >
-                <DialogTitle id="rename-tab-dialog-title">
-                    {intl.formatMessage({ id: 'spreadsheet/rename_dialog_title' })}
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Grid container spacing={2} direction="column">
-                        <Grid item>
-                            <TextInput
-                                name="name"
-                                label="spreadsheet/create_new_spreadsheet/spreadsheet_name"
-                                formProps={{
-                                    autoFocus: true,
-                                    fullWidth: true,
-                                }}
-                            />
-                        </Grid>
+                <Grid container spacing={2} direction="column" marginTop="auto">
+                    <Grid item>
+                        <TextInput
+                            name="name"
+                            label="spreadsheet/create_new_spreadsheet/spreadsheet_name"
+                            formProps={{
+                                autoFocus: true,
+                                fullWidth: true,
+                            }}
+                        />
                     </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'end' }}>
-                        <CancelButton onClick={onClose} />
-                        <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined" />
-                    </Box>
-                </DialogActions>
-            </Dialog>
+                </Grid>
+            </ModificationDialog>
         </CustomFormProvider>
     );
 }
