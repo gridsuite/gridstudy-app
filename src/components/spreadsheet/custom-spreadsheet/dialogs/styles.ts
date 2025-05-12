@@ -17,9 +17,4 @@ export const dialogStyles = {
         maxWidth: 'none',
         margin: 'auto',
     },
-    actionButtons: {
-        display: 'flex',
-        gap: 2,
-        justifyContent: 'end',
-    },
 } as const satisfies Record<string, SxProps<Theme>>;

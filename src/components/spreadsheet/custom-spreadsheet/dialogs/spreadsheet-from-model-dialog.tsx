@@ -6,13 +6,11 @@
  */
 
 import { useCallback, useEffect, useMemo } from 'react';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
-    CancelButton,
     CustomFormProvider,
     DirectoryItemsInput,
     ElementType,
-    SubmitButton,
     TextInput,
     UseStateBooleanReturn,
     useSnackMessage,
@@ -21,7 +19,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { FormattedMessage } from 'react-intl';
 import {
     SPREADSHEET_MODEL,
     SPREADSHEET_NAME,
@@ -31,6 +28,7 @@ import {
 import { addNewSpreadsheet } from '../custom-spreadsheet-utils';
 import { getSpreadsheetModel } from 'services/study-config';
 import { UUID } from 'crypto';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from './styles';
 
 interface SpreadsheetFromModelDialogProps {
@@ -40,7 +38,10 @@ interface SpreadsheetFromModelDialogProps {
 /**
  * Dialog for creating a spreadsheet from an existing model
  */
-export default function SpreadsheetFromModelDialog({ open }: Readonly<SpreadsheetFromModelDialogProps>) {
+export default function SpreadsheetFromModelDialog({
+    open,
+    ...dialogProps
+}: Readonly<SpreadsheetFromModelDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -56,7 +57,7 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
         resolver: yupResolver(formSchema),
     });
 
-    const { handleSubmit, reset, setValue, getValues } = formMethods;
+    const { reset, setValue, getValues } = formMethods;
 
     // Reset form when dialog opens
     useEffect(() => {
@@ -113,49 +114,34 @@ export default function SpreadsheetFromModelDialog({ open }: Readonly<Spreadshee
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Dialog
-                id="spreadsheet-model-dialog"
+            <ModificationDialog
+                titleId={'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model'}
                 open={open.value}
                 onClose={open.setFalse}
-                aria-labelledby="spreadsheet-model-dialog-title"
+                onSave={onSubmit}
+                onClear={() => null}
                 PaperProps={{ sx: dialogStyles.dialogContent }}
+                {...dialogProps}
             >
-                <DialogTitle id="spreadsheet-model-dialog-title">
-                    <FormattedMessage id="spreadsheet/create_new_spreadsheet/apply_spreadsheet_model" />
-                </DialogTitle>
-
-                <DialogContent dividers>
-                    <Grid container spacing={2} direction="column">
-                        <Grid item xs>
-                            <TextInput
-                                name={SPREADSHEET_NAME}
-                                label="spreadsheet/create_new_spreadsheet/spreadsheet_name"
-                                formProps={{ autoFocus: true }}
-                            />
-                        </Grid>
-                        <Grid item xs>
-                            <DirectoryItemsInput
-                                name={SPREADSHEET_MODEL}
-                                elementType={ElementType.SPREADSHEET_CONFIG}
-                                titleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
-                                label="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
-                                allowMultiSelect={false}
-                            />
-                        </Grid>
+                <Grid container spacing={2} direction="column" marginTop="auto">
+                    <Grid item xs>
+                        <TextInput
+                            name={SPREADSHEET_NAME}
+                            label="spreadsheet/create_new_spreadsheet/spreadsheet_name"
+                            formProps={{ autoFocus: true }}
+                        />
                     </Grid>
-                </DialogContent>
-
-                <DialogActions>
-                    <Grid container spacing={0.5}>
-                        <Grid item xs>
-                            <Box sx={dialogStyles.actionButtons}>
-                                <CancelButton onClick={open.setFalse} />
-                                <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined" />
-                            </Box>
-                        </Grid>
+                    <Grid item xs>
+                        <DirectoryItemsInput
+                            name={SPREADSHEET_MODEL}
+                            elementType={ElementType.SPREADSHEET_CONFIG}
+                            titleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
+                            label="spreadsheet/create_new_spreadsheet/select_spreadsheet_model"
+                            allowMultiSelect={false}
+                        />
                     </Grid>
-                </DialogActions>
-            </Dialog>
+                </Grid>
+            </ModificationDialog>
         </CustomFormProvider>
     );
 }
