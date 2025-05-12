@@ -36,7 +36,7 @@ interface LccModificationHeaderProps {
     lccToModify: LccFormInfos | null;
 }
 
-function LccModificationDialogHeader({ lccToModify }: LccModificationHeaderProps) {
+function LccModificationDialogHeader({ lccToModify }: Readonly<LccModificationHeaderProps>) {
     const LccIdField = (
         <TextField
             size="small"
