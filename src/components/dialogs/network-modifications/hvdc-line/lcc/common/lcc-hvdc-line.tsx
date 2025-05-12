@@ -64,7 +64,7 @@ export default function LccHvdcLine({ id, previousValues, isModification }: Read
             previousValue={
                 previousValues
                     ? intl.formatMessage({ id: VSC_CONVERTER_MODE[previousValues.convertersMode].label })
-                    : ''
+                    : undefined
             }
         />
     );
