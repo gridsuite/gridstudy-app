@@ -54,7 +54,7 @@ export default function LccConverterStation({
             fullWidth
             name={`${id}.${CONVERTER_STATION_ID}`}
             label={'converterStationId'}
-            value={previousValues?.id}
+            value={previousValues.id}
             disabled
         />
     ) : (
