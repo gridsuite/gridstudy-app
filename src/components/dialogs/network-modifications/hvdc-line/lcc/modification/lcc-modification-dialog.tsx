@@ -166,7 +166,7 @@ export const LccModificationDialog = ({
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData ? editData.uuid : null,
                 isUpdate: !!editData,
-            }).catch((error: any) => {
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LccModificationError',
@@ -202,7 +202,7 @@ export const LccModificationDialog = ({
                     .then((value: LccFormInfos | null) => {
                         if (value) {
                             setLccToModify({ ...value });
-                            reset((formValues: any) => ({
+                            reset((formValues) => ({
                                 ...formValues,
                                 [HVDC_LINE_TAB]: {
                                     ...formValues,
