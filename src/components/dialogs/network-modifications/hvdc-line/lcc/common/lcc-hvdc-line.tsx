@@ -8,7 +8,7 @@
 import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
 import { ACTIVE_POWER_SETPOINT, CONVERTERS_MODE, MAX_P, NOMINAL_V, R } from '../../../../../utils/field-constants';
 import { ActivePowerAdornment, OhmAdornment, VoltageAdornment } from '../../../../dialog-utils';
-import { VSC_CONVERTER_MODE } from 'components/network/constants';
+import { VSC_CONVERTER_MODE, VscConverterMode } from 'components/network/constants';
 import { Grid } from '@mui/material';
 import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
 import GridSection from '../../../../commons/grid-section';
@@ -63,7 +63,9 @@ export default function LccHvdcLine({ id, previousValues, isModification }: Read
             disableClearable
             previousValue={
                 previousValues
-                    ? intl.formatMessage({ id: VSC_CONVERTER_MODE[previousValues.convertersMode].label })
+                    ? intl.formatMessage({
+                          id: VSC_CONVERTER_MODE[previousValues.convertersMode as VscConverterMode].label,
+                      })
                     : undefined
             }
         />
