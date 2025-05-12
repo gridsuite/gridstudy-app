@@ -118,15 +118,13 @@ export const useSpreadsheetEquipments = (
             // updating data related to impacted elements
             const nodeId = currentNode?.id as UUID;
 
-            if (
-                impactedSubstationsIds.length > 0 &&
-                studyUuid &&
-                currentRootNetworkUuid &&
-                currentNode?.id &&
-                equipmentToUpdateId
-            ) {
+            if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid && currentNode?.id) {
                 // The formatting of the fetched equipments is done in the reducer
-                if (type === EQUIPMENT_TYPES.SUBSTATION || type === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
+                if (
+                    type === EQUIPMENT_TYPES.SUBSTATION ||
+                    type === EQUIPMENT_TYPES.VOLTAGE_LEVEL ||
+                    !equipmentToUpdateId
+                ) {
                     // we must fetch data for all equipments, as substation data (country) and voltage level data(nominalV)
                     // can be displayed for all equipment types
                     fetchAllEquipments(studyUuid, nodeId, currentRootNetworkUuid, impactedSubstationsIds).then(
