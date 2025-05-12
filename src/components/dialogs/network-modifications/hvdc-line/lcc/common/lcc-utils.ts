@@ -127,10 +127,7 @@ export const getEmptyShuntCompensatorOnSideFormData = () => ({
 });
 
 export const getEmptyShuntCompensatorOnSideModificationFormData = () => ({
-    [SHUNT_COMPENSATOR_ID]: null,
-    [SHUNT_COMPENSATOR_NAME]: '',
-    [MAX_Q_AT_NOMINAL_V]: null,
-    [SHUNT_COMPENSATOR_SELECTED]: null,
+    ...getEmptyShuntCompensatorOnSideFormData(),
     [DELETION_MARK]: false,
 });
 
