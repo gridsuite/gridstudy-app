@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { IconButton, Box, Typography, Menu, MenuItem, Tooltip, Theme } from '@mui/material';
+import { ButtonBase, Box, Typography, Menu, MenuItem, Tooltip, Theme } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { FormattedMessage } from 'react-intl';
 
@@ -42,6 +42,16 @@ const styles = {
             position: 'absolute',
             right: theme.spacing(-1),
             display: 'flex',
+        },
+    }),
+    getTabActionButton: (theme: Theme, disabled: boolean) => ({
+        color: disabled ? theme.palette.text.disabled : theme.palette.text.primary,
+        padding: 0.5,
+        borderRadius: '50%',
+        cursor: disabled ? 'default' : 'pointer',
+        opacity: disabled ? 0.5 : 1,
+        '&:hover': {
+            backgroundColor: disabled ? 'transparent' : theme.palette.action.hover,
         },
     }),
 };
@@ -103,9 +113,14 @@ export const TabLabel: React.FC<TabLabelProps> = ({ name, onRemove, onRename, di
                 typographyComponent
             )}
             <div className="tab-actions">
-                <IconButton size="small" onClick={handleMenuOpen} disabled={disabled}>
+                <ButtonBase
+                    component="div"
+                    sx={(theme) => styles.getTabActionButton(theme, disabled)}
+                    disabled={disabled}
+                    onClick={disabled ? undefined : handleMenuOpen}
+                >
                     <MoreVertIcon fontSize="small" />
-                </IconButton>
+                </ButtonBase>
                 <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose} onClick={(e) => e.stopPropagation()}>
                     {Object.values(TAB_MENU_DEFINITION).map((option) => (
                         <MenuItem
