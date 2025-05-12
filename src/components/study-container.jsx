@@ -309,6 +309,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     node: nodeUuid,
                     rootNetworkUuid,
                     computationType: computingType,
+                    error,
                 } = eventData.headers;
                 const debugIdentifierNotif = buildDebugIdentifier({
                     studyUuid,
@@ -316,24 +317,31 @@ export function StudyContainer({ view, onChangeTab }) {
                     rootNetworkUuid,
                     computingType,
                 });
-                if (getDebug(debugIdentifierNotif)) {
+                const debug = getDebug(debugIdentifierNotif);
+                if (debug) {
                     // download by notif once, so unset debug identifier
                     unsetDebug(debugIdentifierNotif);
-                    // perform download debug file once
-                    fetchResultUuid(
-                        {
-                            studyUuid,
-                            nodeUuid,
-                            rootNetworkUuid,
-                        },
-                        computingType
-                    ).then((resultUuid) => {
-                        downloadDebug(resultUuid, computingType);
-                    });
+                    if (error) {
+                        snackWarning({
+                            messageTxt: error,
+                        });
+                    } else {
+                        // perform download debug file once
+                        fetchResultUuid(
+                            {
+                                studyUuid,
+                                nodeUuid,
+                                rootNetworkUuid,
+                            },
+                            computingType
+                        ).then((resultUuid) => {
+                            downloadDebug(resultUuid, computingType);
+                        });
+                    }
                 }
             }
         },
-        [downloadDebug]
+        [downloadDebug, snackWarning]
     );
 
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, { listenerCallbackMessage: onDebugNotification });
