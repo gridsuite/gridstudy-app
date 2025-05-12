@@ -12,7 +12,7 @@ import { SxProps, Theme } from '@mui/material';
  */
 export const dialogStyles = {
     dialogContent: {
-        width: '20%',
+        width: '40%',
         height: '30%',
         maxWidth: 'none',
         margin: 'auto',
