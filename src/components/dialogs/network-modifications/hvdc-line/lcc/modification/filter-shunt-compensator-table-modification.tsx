@@ -93,7 +93,7 @@ export function ModificationFiltersShuntCompensatorTable({
             });
             setShouldDeleteRow(shouldDeleteRow.map((value, i) => (i === index ? !value : value)));
         },
-        [shouldDeleteRow, getValues, id, setValue]
+        [shouldDeleteRow, id, setValue]
     );
 
     const PreviousConnection = useCallback(
