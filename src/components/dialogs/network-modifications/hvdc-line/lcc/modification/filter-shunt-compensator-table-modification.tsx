@@ -64,7 +64,7 @@ export function ModificationFiltersShuntCompensatorTable({
                 width: '20%',
             },
             {
-                label: 'maxQAtNominalV',
+                label: MAX_Q_AT_NOMINAL_V,
                 dataKey: MAX_Q_AT_NOMINAL_V,
                 initialValue: null,
                 width: '25%',
