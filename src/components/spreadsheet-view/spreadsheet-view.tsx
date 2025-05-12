@@ -30,7 +30,7 @@ const styles = {
         left: '43%',
     },
 };
-interface TableWrapperProps {
+interface SpreadsheetViewProps {
     currentNode: CurrentTreeNode;
     equipmentId: string;
     equipmentType: SpreadsheetEquipmentType;
@@ -38,7 +38,7 @@ interface TableWrapperProps {
     onEquipmentScrolled: () => void;
 }
 
-export const SpreadsheetView: FunctionComponent<TableWrapperProps> = ({
+export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
     currentNode,
     equipmentId,
     equipmentType,
