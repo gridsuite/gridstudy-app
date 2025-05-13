@@ -64,7 +64,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
             multiple
             value={Array.isArray(selectedFilterData) ? selectedFilterData : []}
             options={computedFilterOptions}
-            getOptionLabel={getOptionLabel}
+            getOptionLabel={(option) => String(getOptionLabel ? getOptionLabel(option) : option)}
             onChange={handleFilterAutoCompleteChange}
             size="small"
             disableCloseOnSelect
