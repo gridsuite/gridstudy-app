@@ -42,13 +42,6 @@ export const getStudyUrlWithRootNetworkUuid = (
 export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: string | undefined) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
-export const fetchStudyExists = (studyUuid: UUID) => {
-    console.info(`Fetching study '${studyUuid}' existence ...`);
-    const fetchStudiesUrl = getStudyUrl(studyUuid);
-    console.debug(fetchStudiesUrl);
-    return backendFetch(fetchStudiesUrl, { method: 'head' });
-};
-
 export function getNetworkAreaDiagramUrl(
     studyUuid: UUID,
     currentNodeUuid: UUID,

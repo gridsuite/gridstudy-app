@@ -12,8 +12,7 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
-import { CustomMenuItem } from '../../utils/custom-nested-menu';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, CustomMenuItem } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const styles = {

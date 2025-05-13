@@ -107,18 +107,14 @@ export const useCustomAggridFilter = (
     }, [selectedFilterComparator, comparators]);
 
     useEffect(() => {
-        if (!filters?.length) {
-            setSelectedFilterData(undefined);
+        const filterObject = filters?.find((filter) => filter.column === colId);
+        if (filterObject) {
+            setSelectedFilterData(filterObject.value);
+            setSelectedFilterComparator(filterObject.type ?? '');
         } else {
-            const filterObject = filters?.find((filter) => filter.column === colId);
-            if (filterObject) {
-                setSelectedFilterData(filterObject.value);
-                setSelectedFilterComparator((selectedFilterComparator || filterObject.type) ?? '');
-            } else {
-                setSelectedFilterData(undefined);
-            }
+            setSelectedFilterData(undefined);
         }
-    }, [filters, colId, selectedFilterComparator]);
+    }, [filters, colId]);
 
     return {
         selectedFilterData,

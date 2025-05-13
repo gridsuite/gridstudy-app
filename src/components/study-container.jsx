@@ -22,6 +22,7 @@ import {
     setRootNetworks,
     setRootNetworkIndexationStatus,
     studyUpdated,
+    setMonoRootStudy,
 } from '../redux/actions';
 import { fetchRootNetworks } from 'services/root-network';
 
@@ -39,10 +40,10 @@ import { computeFullPath, computePageTitle } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchCaseName, fetchStudyExists } from '../services/study/index';
+import { fetchCaseName } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
-import { recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
+import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { NodeType } from './graph/tree-node.type';
@@ -64,9 +65,10 @@ function useStudy(studyUuidRequest) {
     const intlRef = useIntlRef();
 
     useEffect(() => {
-        fetchStudyExists(studyUuidRequest)
-            .then(() => {
+        fetchStudy(studyUuidRequest)
+            .then((res) => {
                 setStudyUuid(studyUuidRequest);
+                dispatch(setMonoRootStudy(res.monoRoot));
 
                 // Fetch root networks and set the first one as the current root network
                 fetchRootNetworks(studyUuidRequest)

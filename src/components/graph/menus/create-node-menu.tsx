@@ -12,7 +12,7 @@ import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import ChildMenuItem from './create-child-menu-item';
 import { CustomDialog } from '../../utils/custom-dialog';
-import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
+import { CustomNestedMenuItem } from '@gridsuite/commons-ui';
 import { BUILD_STATUS } from '../../network/constants';
 import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
 import { UUID } from 'crypto';

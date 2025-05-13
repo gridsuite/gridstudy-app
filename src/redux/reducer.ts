@@ -214,6 +214,8 @@ import {
     DeletedOrRenamedNodesAction,
     UPDATE_TABLE_COLUMNS,
     UpdateTableColumnsAction,
+    SET_MONO_ROOT_STUDY,
+    SetMonoRootStudyAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -251,7 +253,6 @@ import { getAllChildren } from 'components/graph/util/model-functions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
-import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     ALL_BUSES,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,
@@ -299,14 +300,15 @@ import {
     SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-} from '../components/spreadsheet/config/spreadsheet.type';
+} from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
+import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
+import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 
 // Redux state
 export type StudyUpdated = {
@@ -449,6 +451,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isEventScenarioDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
+    isMonoRootStudy: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;
     freezeMapUpdates: boolean;
@@ -582,6 +585,7 @@ const initialState: AppState = {
     centerOnSubstation: undefined,
     notificationIdList: [],
     isModificationsInProgress: false,
+    isMonoRootStudy: true,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     nadNodeMovements: [],
@@ -816,17 +820,15 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
-        const { spreadsheetConfigDto } = action;
+        const { spreadsheetConfigUuid, columns } = action;
         const existingTableDefinition = state.tables.definitions.find(
-            (tabDef) => tabDef.uuid === spreadsheetConfigDto.id
+            (tabDef) => tabDef.uuid === spreadsheetConfigUuid
         );
         if (existingTableDefinition) {
-            existingTableDefinition.name = spreadsheetConfigDto.name;
-            existingTableDefinition.columns = spreadsheetConfigDto.columns.map((column) => {
+            existingTableDefinition.columns = columns.map((column) => {
                 const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
                 const colDef: ColumnDefinition = {
                     ...column,
-                    dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
                     visible: existingColDef ? existingColDef.visible : true,
                     locked: existingColDef ? existingColDef.locked : false,
                 };
@@ -850,7 +852,13 @@ export const reducer = createReducer(initialState, (builder) => {
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
-            .reduce((acc, tabUuid) => ({ ...acc, [tabUuid]: [] }), {});
+            .reduce(
+                (acc, tabUuid) => ({
+                    ...acc,
+                    [tabUuid]: action?.tablesFilters?.[tabUuid] ?? [],
+                }),
+                {}
+            );
         state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce((acc, tabUuid) => {
@@ -862,6 +870,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 ];
                 return acc;
             }, {} as TableSortConfig);
+        state.gsFilterSpreadsheetState = action?.gsFilterSpreadsheetState ?? {};
     });
 
     builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {
@@ -1199,6 +1208,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
             state.studyDisplayMode = action.studyDisplayMode;
         }
+    });
+
+    builder.addCase(SET_MONO_ROOT_STUDY, (state, action: SetMonoRootStudyAction) => {
+        state.isMonoRootStudy = action.isMonoRootStudy;
     });
 
     /*
@@ -1583,7 +1596,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
             // Format the updated equipments to match the table format
-            const formattedEquipments = formatFetchedEquipments(
+            const formattedEquipments = mapSpreadsheetEquipments(
                 // @ts-expect-error TODO manage undefined value case
                 equipmentType,
                 equipments

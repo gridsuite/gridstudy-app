@@ -22,8 +22,10 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import type {
     AppState,
     EquipmentUpdateType,
+    GsFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
+    SpreadsheetFilterState,
     TableSortKeysType,
 } from './reducer';
 import { ComputingType } from '../components/computing-status/computing-type';
@@ -48,8 +50,7 @@ import {
     ColumnDefinition,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-    SpreadsheetConfigDto,
-} from '../components/spreadsheet/config/spreadsheet.type';
+} from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { SpreadsheetGlobalFilter } from '../services/study/filter';
@@ -216,12 +217,12 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
 
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
-    equipments: Record<EquipmentUpdateType, Identifiable[]>;
+    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>;
     nodeId: UUID;
 };
 
 export function updateEquipments(
-    equipments: Record<EquipmentUpdateType, Identifiable[]>,
+    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>,
     nodeId: UUID
 ): UpdateEquipmentsAction {
     return {
@@ -697,6 +698,18 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen: boolean): 
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
         isModificationsDrawerOpen: isModificationsDrawerOpen,
+    };
+}
+
+export const SET_MONO_ROOT_STUDY = 'SET_MONO_ROOT_STUDY';
+export type SetMonoRootStudyAction = Readonly<Action<typeof SET_MONO_ROOT_STUDY>> & {
+    isMonoRootStudy: boolean;
+};
+
+export function setMonoRootStudy(isMonoRootStudy: boolean): SetMonoRootStudyAction {
+    return {
+        type: SET_MONO_ROOT_STUDY,
+        isMonoRootStudy: isMonoRootStudy,
     };
 }
 
@@ -1287,12 +1300,17 @@ export const UPDATE_TABLE_COLUMNS = 'UPDATE_TABLE_COLUMNS';
 
 export type UpdateTableColumnsAction = {
     type: typeof UPDATE_TABLE_COLUMNS;
-    spreadsheetConfigDto: SpreadsheetConfigDto;
+    spreadsheetConfigUuid: UUID;
+    columns: ColumnDefinition[];
 };
 
-export const updateTableColumns = (spreadsheetConfigDto: SpreadsheetConfigDto): UpdateTableColumnsAction => ({
+export const updateTableColumns = (
+    spreadsheetConfigUuid: UUID,
+    columns: ColumnDefinition[]
+): UpdateTableColumnsAction => ({
     type: UPDATE_TABLE_COLUMNS,
-    spreadsheetConfigDto,
+    spreadsheetConfigUuid,
+    columns,
 });
 
 export const RENAME_TABLE_DEFINITION = 'RENAME_TABLE_DEFINITION';
@@ -1315,15 +1333,21 @@ export type InitTableDefinitionsAction = {
     type: typeof INIT_TABLE_DEFINITIONS;
     collectionUuid: UUID;
     tableDefinitions: SpreadsheetTabDefinition[];
+    tablesFilters?: SpreadsheetFilterState;
+    gsFilterSpreadsheetState?: GsFilterSpreadsheetState;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
-    tableDefinitions: SpreadsheetTabDefinition[]
+    tableDefinitions: SpreadsheetTabDefinition[],
+    tablesFilters: SpreadsheetFilterState = {},
+    gsFilterSpreadsheetState: GsFilterSpreadsheetState = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
+    tablesFilters,
+    gsFilterSpreadsheetState,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
