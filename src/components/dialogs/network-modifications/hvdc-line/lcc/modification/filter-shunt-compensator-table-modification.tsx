@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import {
     DELETION_MARK,
     FILTERS_SHUNT_COMPENSATOR_TABLE,
@@ -37,10 +37,9 @@ export function ModificationFiltersShuntCompensatorTable({
     previousValues,
 }: Readonly<ModificationFiltersShuntCompensatorTableProps>) {
     const intl = useIntl();
-    const { fields: rows } = useFieldArray({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
+    const rows = useWatch({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
     const { getValues, setValue } = useFormContext();
     const [isHover, setIsHover] = useState<Record<number, boolean>>({});
-    const [shouldDeleteRow, setShouldDeleteRow] = useState<Array<boolean>>(rows.map((row: any) => row.deletionMark));
     const handleHover = (rowIndex: number, hoverState: boolean) => {
         setIsHover((prev) => ({
             ...prev,
@@ -92,9 +91,8 @@ export function ModificationFiltersShuntCompensatorTable({
             setValue(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${DELETION_MARK}`, newDeleteMark, {
                 shouldDirty: true,
             });
-            setShouldDeleteRow(shouldDeleteRow.map((value, i) => (i === index ? !value : value)));
         },
-        [shouldDeleteRow, getValues, id, setValue]
+        [getValues, id, setValue]
     );
 
     const PreviousConnection = useCallback(
@@ -198,8 +196,15 @@ export function ModificationFiltersShuntCompensatorTable({
         [id]
     );
 
+    const shouldDeleteRow = useCallback(
+        (index: number) => {
+            return rows?.[index].deletionMark ?? false;
+        },
+        [rows]
+    );
+
     const renderTableCell = (index: number) => {
-        const disabled = shouldDeleteRow?.[index] ?? false;
+        const disabled = shouldDeleteRow(index);
         return columnsDefinition.map((column) => (
             <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
                 {column.dataKey === SHUNT_COMPENSATOR_ID && IdField(index)}
@@ -250,11 +255,11 @@ export function ModificationFiltersShuntCompensatorTable({
                                 {isHover[index] && (
                                     <Tooltip
                                         title={intl.formatMessage({
-                                            id: !shouldDeleteRow?.[index] ? 'DeleteRows' : 'button.restore',
+                                            id: !shouldDeleteRow(index) ? 'DeleteRows' : 'button.restore',
                                         })}
                                     >
                                         <IconButton onClick={() => markRowToDeleteOrRestore(index)}>
-                                            {DeleteOrRestoreIcon(shouldDeleteRow?.[index])}
+                                            {DeleteOrRestoreIcon(shouldDeleteRow(index))}
                                         </IconButton>
                                     </Tooltip>
                                 )}
