@@ -270,21 +270,9 @@ export const mergeModificationAndEquipmentShuntCompensatorInfos = (
     if (infosMapServer) {
         infosMapServer.forEach((value: LccShuntCompensatorInfos) => {
             if (value.id !== null) {
-                let concatenatedInfos = null;
                 // If the property is present in the modification and in the equipment
-                if (result.has(value.id)) {
-                    const modInfos = result.get(value.id);
-                    if (modInfos) {
-                        concatenatedInfos = {
-                            ...modInfos,
-                            name: modInfos.name || value.name,
-                            maxQAtNominalV: modInfos.maxQAtNominalV || value.maxQAtNominalV,
-                        };
-                    }
-                }
-
-                if (concatenatedInfos) {
-                    result.set(value.id, concatenatedInfos);
+                if (!result.has(value.id)) {
+                    result.set(value.id, { ...value, connectedToHvdc: null, deletionMark: false });
                 }
             }
         });
