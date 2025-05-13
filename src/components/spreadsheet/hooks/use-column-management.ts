@@ -9,7 +9,7 @@ import { useCallback, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ColumnMovedEvent, ColumnState } from 'ag-grid-community';
 import { SpreadsheetTabDefinition } from '../config/spreadsheet.type';
-import { ROW_INDEX_COLUMN_ID } from '../constants';
+import { ROW_INDEX_COLUMN_STATE } from '../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
@@ -33,14 +33,6 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
     }, [sortConfig, gridRef]);
 
     const updateLockedColumnsConfig = useCallback(() => {
-        // Start with the row index column which should always be pinned left
-        const lockedColumnsConfig: ColumnState[] = [
-            {
-                colId: ROW_INDEX_COLUMN_ID,
-                pinned: 'left',
-            },
-        ];
-
         // Add any other locked columns from the table definition
         const userLockedColumns =
             tableDefinition?.columns
@@ -53,16 +45,12 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
                 }) || [];
 
         // Apply column state with the specified default
+        // Start with the row index column which should always be pinned left
         gridRef.current?.api?.applyColumnState({
-            state: [...lockedColumnsConfig, ...userLockedColumns],
+            state: [ROW_INDEX_COLUMN_STATE, ...userLockedColumns],
             defaultState: { pinned: null },
         });
     }, [tableDefinition, gridRef]);
-
-    const isLockedColumnNamesEmpty = useMemo(
-        () => !tableDefinition?.columns?.some((col) => col.locked),
-        [tableDefinition?.columns]
-    );
 
     // Create a map to store the original positions of all columns
     const originalColumnPositions = useMemo(() => {
@@ -125,7 +113,6 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
     return {
         updateSortConfig,
         updateLockedColumnsConfig,
-        isLockedColumnNamesEmpty,
         handleColumnDrag,
     };
 }
