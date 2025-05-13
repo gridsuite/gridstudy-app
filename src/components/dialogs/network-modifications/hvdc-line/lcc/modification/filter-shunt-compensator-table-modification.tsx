@@ -119,6 +119,10 @@ export function ModificationFiltersShuntCompensatorTable({
                     value={value}
                     name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
                     disabled
+                    variant="standard"
+                    InputProps={{
+                        disableUnderline: true,
+                    }}
                 />
             );
         },

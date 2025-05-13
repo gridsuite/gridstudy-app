@@ -26,6 +26,7 @@ import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
 import TextField from '@mui/material/TextField';
 import { LccConverterStationFormInfos } from './lcc-type';
 import { ModificationFiltersShuntCompensatorTable } from '../modification/filter-shunt-compensator-table-modification';
+import { useIntl } from 'react-intl';
 
 interface LccConverterStationProps {
     id: string;
@@ -47,13 +48,14 @@ export default function LccConverterStation({
     isModification,
 }: Readonly<LccConverterStationProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
+    const intl = useIntl();
 
     const stationIdField = previousValues ? (
         <TextField
             size="small"
             fullWidth
             name={`${id}.${CONVERTER_STATION_ID}`}
-            label={'converterStationId'}
+            label={intl.formatMessage({ id: 'converterStationId' })}
             value={previousValues.id}
             disabled
         />
