@@ -12,7 +12,7 @@ import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { isNodeBuilt } from './graph/util/model-functions';
-import { TableWrapper } from './spreadsheet/table-wrapper';
+import { SpreadsheetView } from './spreadsheet-view/spreadsheet-view.js';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 import { StudyView } from './utils/utils';
@@ -90,7 +90,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={props.view === StudyView.SPREADSHEET}>
                 <Paper sx={styles.table}>
-                    <TableWrapper
+                    <SpreadsheetView
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         equipmentId={tableEquipment.id}
