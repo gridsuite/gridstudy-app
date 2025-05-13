@@ -162,7 +162,6 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             getRowStyle={getRowStyle}
             columnDefs={columnData}
             defaultColDef={defaultColDef}
-            undoRedoCellEditing={true}
             onColumnMoved={handleColumnDrag}
             suppressDragLeaveHidesColumns={true}
             rowBuffer={5}
