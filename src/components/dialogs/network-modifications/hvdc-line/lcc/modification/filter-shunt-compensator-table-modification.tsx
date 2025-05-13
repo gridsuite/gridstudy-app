@@ -87,13 +87,14 @@ export function ModificationFiltersShuntCompensatorTable({
     }, [intl]);
 
     const markRowToDeleteOrRestore = useCallback(
-        (index: number, oldDeletionMark: boolean) => {
-            setValue(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${DELETION_MARK}`, !oldDeletionMark, {
+        (index: number) => {
+            const newDeleteMark = !getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${DELETION_MARK}`);
+            setValue(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${DELETION_MARK}`, newDeleteMark, {
                 shouldDirty: true,
             });
             setShouldDeleteRow(shouldDeleteRow.map((value, i) => (i === index ? !value : value)));
         },
-        [shouldDeleteRow, id, setValue]
+        [shouldDeleteRow, getValues, id, setValue]
     );
 
     const PreviousConnection = useCallback(
@@ -175,32 +176,9 @@ export function ModificationFiltersShuntCompensatorTable({
         [getValues, id]
     );
 
-    const DeleteOrRestoreButton = useCallback(
-        (shouldDelete: boolean, index: number) => {
-            return !shouldDelete ? (
-                <Tooltip
-                    title={intl.formatMessage({
-                        id: 'DeleteRows',
-                    })}
-                >
-                    <IconButton onClick={() => markRowToDeleteOrRestore(index, shouldDelete)}>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip
-                    title={intl.formatMessage({
-                        id: 'button.restore',
-                    })}
-                >
-                    <IconButton onClick={() => markRowToDeleteOrRestore(index, shouldDelete)}>
-                        <RestoreFromTrashIcon />
-                    </IconButton>
-                </Tooltip>
-            );
-        },
-        [intl, markRowToDeleteOrRestore]
-    );
+    const DeleteOrRestoreIcon = useCallback((shouldDelete: boolean) => {
+        return !shouldDelete ? <DeleteIcon /> : <RestoreFromTrashIcon />;
+    }, []);
 
     const ShuntCompensatorSelectedField = useCallback(
         (index: number, disabled: boolean) => {
@@ -239,10 +217,9 @@ export function ModificationFiltersShuntCompensatorTable({
                                 <Box>{column.label}</Box>
                             </TableCell>
                         ))}
-                        {
-                            //TODO : uncomment this code when we can add shunt Compensator
-                            /*                        <TableCell sx={{ width: '10%', textAlign: 'right' }}>
-                            <Tooltip
+                        <TableCell sx={{ width: '10%', textAlign: 'right' }}>
+                            {/*   TODO : uncomment this code when we can add new shunt compensators
+                                                      <Tooltip
                                 title={intl.formatMessage({
                                     id: 'AddRows',
                                 })}
@@ -252,9 +229,8 @@ export function ModificationFiltersShuntCompensatorTable({
                                         <AddCircleIcon />
                                     </IconButton>
                                 </span>
-                            </Tooltip>
-                        </TableCell>*/
-                        }
+                            </Tooltip>*/}
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -267,7 +243,17 @@ export function ModificationFiltersShuntCompensatorTable({
                         >
                             {renderTableCell(index)}
                             <TableCell>
-                                {isHover[index] && DeleteOrRestoreButton(shouldDeleteRow?.[index], index)}
+                                {isHover[index] && (
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: !shouldDeleteRow?.[index] ? 'DeleteRows' : 'button.restore',
+                                        })}
+                                    >
+                                        <IconButton onClick={() => markRowToDeleteOrRestore(index)}>
+                                            {DeleteOrRestoreIcon(shouldDeleteRow?.[index])}
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
                             </TableCell>
                         </TableRow>
                     ))}
