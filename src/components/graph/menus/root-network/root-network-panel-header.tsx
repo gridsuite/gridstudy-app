@@ -26,6 +26,7 @@ import { customizeCurrentParameters, formatCaseImportParameters } from '../../ut
 import { useDispatch, useSelector } from 'react-redux';
 import { setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
+import SearchIcon from '@mui/icons-material/Search';
 
 const styles = {
     headerPanel: (theme: Theme) => ({
@@ -51,6 +52,7 @@ interface RootNetworkPanelHeaderProps {
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
     isRootNetworkPanelMinimized: boolean;
     setIsRootNetworkPanelMinimized: React.Dispatch<SetStateAction<boolean>>;
+    setIsSearchActive: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
@@ -58,6 +60,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     setIsRootNetworksProcessing,
     isRootNetworkPanelMinimized,
     setIsRootNetworkPanelMinimized,
+    setIsSearchActive,
 }) => {
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
@@ -173,6 +176,10 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
         setIsRootNetworkPanelMinimized((prev) => !prev);
     }, [setIsRootNetworkPanelMinimized]);
 
+    const openSearch = useCallback(() => {
+        setIsSearchActive(true);
+    }, [setIsSearchActive]);
+
     return (
         <>
             <Box sx={styles.headerPanel}>
@@ -191,6 +198,9 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                             </IconButton>
                         </span>
                     </Tooltip>
+                    <IconButton size={'small'} onClick={openSearch}>
+                        <SearchIcon />
+                    </IconButton>
                 </Box>
                 <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
                     {isRootNetworkPanelMinimized ? <LeftPanelOpenIcon /> : <LeftPanelCloseIcon />}

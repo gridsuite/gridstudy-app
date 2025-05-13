@@ -12,6 +12,7 @@ import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-con
 import RootNetworkNodeEditor from './root-network-node-editor';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import ModificationsPanel from './root-network-panel-search';
 
 const styles = {
     paper: {
@@ -28,6 +29,7 @@ const RootNetworkPanel: FunctionComponent = () => {
     const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
     const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(false);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
+    const [isSearchActive, setIsSearchActive] = useState(false);
 
     const theme = useTheme();
     // Set the panel's width and height based on designer's proposed values
@@ -52,14 +54,16 @@ const RootNetworkPanel: FunctionComponent = () => {
                 setIsRootNetworksProcessing={setIsRootNetworksProcessing}
                 isRootNetworkPanelMinimized={isRootNetworkPanelMinimized}
                 setIsRootNetworkPanelMinimized={setIsRootNetworkPanelMinimized}
+                setIsSearchActive={setIsSearchActive}
             />
             {isRootNetworkPanelMinimized && !isMonoRootStudy && <RootNetworkMinimizedPanelContent />}
-            {!isRootNetworkPanelMinimized && (
+            {!isSearchActive && !isRootNetworkPanelMinimized && (
                 <RootNetworkNodeEditor
                     isRootNetworksProcessing={isRootNetworksProcessing}
                     setIsRootNetworksProcessing={setIsRootNetworksProcessing}
                 />
             )}
+            {isSearchActive && <ModificationsPanel setIsSearchActive={(value) => setIsSearchActive(value)} />}
         </Paper>
     );
 };
