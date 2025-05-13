@@ -7,7 +7,7 @@
 
 import { useCallback, useRef, useMemo, useEffect, useState, FunctionComponent } from 'react';
 import { BasicModificationDialog } from '../commons/basicModificationDialog';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
