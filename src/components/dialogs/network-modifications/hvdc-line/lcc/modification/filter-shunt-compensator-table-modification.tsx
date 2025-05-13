@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import {
     DELETION_MARK,
     FILTERS_SHUNT_COMPENSATOR_TABLE,
@@ -37,16 +37,11 @@ export function ModificationFiltersShuntCompensatorTable({
     previousValues,
 }: Readonly<ModificationFiltersShuntCompensatorTableProps>) {
     const intl = useIntl();
-    const rows = useWatch({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
+    const { fields: rows } = useFieldArray({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
+    console.log('------------Rendering');
+    const watchedRows = useWatch({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
     const { getValues, setValue } = useFormContext();
-    const [isHover, setIsHover] = useState<Record<number, boolean>>({});
-    const handleHover = (rowIndex: number, hoverState: boolean) => {
-        setIsHover((prev) => ({
-            ...prev,
-            [rowIndex]: hoverState,
-        }));
-    };
-
+    const [hoveredRow, setHoveredRow] = useState<number>(-1);
     const columnsDefinition = useMemo(() => {
         return [
             {
@@ -96,7 +91,7 @@ export function ModificationFiltersShuntCompensatorTable({
     );
 
     const PreviousConnection = useCallback(
-        (index: number) => {
+        ({ index }: { index: number }) => {
             const currentId = getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`);
             const filteredValues = previousValues?.filter((value) => value.id === currentId);
             let previousValue: boolean | null = null;
@@ -128,7 +123,7 @@ export function ModificationFiltersShuntCompensatorTable({
     );
 
     const IdField = useCallback(
-        (index: number) => {
+        ({ index }: { index: number }) => {
             return (
                 <TextField
                     fullWidth
@@ -144,7 +139,7 @@ export function ModificationFiltersShuntCompensatorTable({
     );
 
     const NameField = useCallback(
-        (index: number, disabled: boolean) => {
+        ({ index, disabled }: { index: number; disabled: boolean }) => {
             return disabled ? (
                 <TextField
                     fullWidth
@@ -160,7 +155,7 @@ export function ModificationFiltersShuntCompensatorTable({
     );
 
     const NominalVoltageField = useCallback(
-        (index: number, disabled: boolean) => {
+        ({ index, disabled }: { index: number; disabled: boolean }) => {
             return disabled ? (
                 <TextField
                     fullWidth
@@ -183,7 +178,7 @@ export function ModificationFiltersShuntCompensatorTable({
     }, []);
 
     const ShuntCompensatorSelectedField = useCallback(
-        (index: number, disabled: boolean) => {
+        ({ index, disabled }: { index: number; disabled: boolean }) => {
             return (
                 <CheckboxNullableInput
                     name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
@@ -198,23 +193,36 @@ export function ModificationFiltersShuntCompensatorTable({
 
     const shouldDeleteRow = useCallback(
         (index: number) => {
-            return rows?.[index].deletionMark ?? false;
+            return watchedRows?.[index].deletionMark ?? false;
         },
-        [rows]
+        [watchedRows]
     );
 
-    const renderTableCell = (index: number) => {
-        const disabled = shouldDeleteRow(index);
-        return columnsDefinition.map((column) => (
-            <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
-                {column.dataKey === SHUNT_COMPENSATOR_ID && IdField(index)}
-                {column.dataKey === SHUNT_COMPENSATOR_NAME && NameField(index, disabled)}
-                {column.dataKey === MAX_Q_AT_NOMINAL_V && NominalVoltageField(index, disabled)}
-                {column.dataKey === PREVIOUS_SHUNT_COMPENSATOR_SELECTED && PreviousConnection(index)}
-                {column.dataKey === SHUNT_COMPENSATOR_SELECTED && ShuntCompensatorSelectedField(index, disabled)}
-            </TableCell>
-        ));
-    };
+    const TableCellList = useCallback(
+        ({ index }: { index: number }) => {
+            const disabled = shouldDeleteRow(index);
+            return columnsDefinition.map((column) => (
+                <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
+                    {column.dataKey === SHUNT_COMPENSATOR_ID && <IdField index={index} />}
+                    {column.dataKey === SHUNT_COMPENSATOR_NAME && <NameField index={index} disabled={disabled} />}
+                    {column.dataKey === MAX_Q_AT_NOMINAL_V && <NominalVoltageField index={index} disabled={disabled} />}
+                    {column.dataKey === PREVIOUS_SHUNT_COMPENSATOR_SELECTED && <PreviousConnection index={index} />}
+                    {column.dataKey === SHUNT_COMPENSATOR_SELECTED && (
+                        <ShuntCompensatorSelectedField index={index} disabled={disabled} />
+                    )}
+                </TableCell>
+            ));
+        },
+        [
+            IdField,
+            NameField,
+            NominalVoltageField,
+            PreviousConnection,
+            ShuntCompensatorSelectedField,
+            columnsDefinition,
+            shouldDeleteRow,
+        ]
+    );
 
     return (
         <TableContainer>
@@ -246,13 +254,13 @@ export function ModificationFiltersShuntCompensatorTable({
                     {rows.map((row: Record<'id', string>, index: number) => (
                         <TableRow
                             key={row.id}
-                            className={isHover[index] ? 'hover-row' : ''}
-                            onMouseEnter={() => handleHover(index, true)}
-                            onMouseLeave={() => handleHover(index, false)}
+                            className={hoveredRow === index ? 'hover-row' : ''}
+                            onMouseEnter={() => setHoveredRow(index)}
+                            onMouseLeave={() => setHoveredRow(-1)}
                         >
-                            {renderTableCell(index)}
+                            <TableCellList index={index} />
                             <TableCell>
-                                {isHover[index] && (
+                                {hoveredRow === index && (
                                     <Tooltip
                                         title={intl.formatMessage({
                                             id: !shouldDeleteRow(index) ? 'DeleteRows' : 'button.restore',
