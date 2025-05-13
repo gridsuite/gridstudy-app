@@ -16,8 +16,8 @@ import {
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
-import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { ContingencyCellRenderer } from 'components/custom-aggrid/cell-renderers';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
     SECURITY_ANALYSIS_RESULT_N,
@@ -34,7 +34,6 @@ import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { convertDuration, formatNAValue } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
@@ -42,6 +41,7 @@ import {
     FILTER_TEXT_COMPARATORS,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
