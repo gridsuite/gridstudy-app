@@ -52,7 +52,7 @@ import { UUID } from 'crypto';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType } from '../diagram.type';
-import { useDiagram } from '../use-diagram';
+import { useDiagramApi } from '../use-diagram-api';
 
 type EquipmentMenuState = {
     position: [number, number];
@@ -65,8 +65,8 @@ interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly studyUuid: UUID;
     readonly svgType: DiagramType;
-    readonly svg?: string;
-    readonly svgMetadata?: SLDMetadata;
+    readonly svg: string | null;
+    readonly svgMetadata: SLDMetadata | null;
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
@@ -132,7 +132,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
     const [errorMessage, setErrorMessage] = useState('');
-    const { openDiagramView } = useDiagram();
+    const { openDiagramView } = useDiagramApi();
     const [equipmentToModify, setEquipmentToModify] = useState<EquipmentToModify>();
     const [equipmentToDelete, setEquipmentToDelete] = useState<EquipmentToModify>();
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
@@ -224,14 +224,9 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
 
     const handleNextVoltageLevelClick = useCallback(
         (id: string) => {
-            // This function is called by powsybl-network-viewer when clicking on a navigation arrow in a single line diagram.
-            // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
-            if (!studyUuid || !currentNode) {
-                return;
-            }
             openDiagramView(id, DiagramType.VOLTAGE_LEVEL);
         },
-        [studyUuid, currentNode, openDiagramView]
+        [openDiagramView]
     );
 
     const [equipmentMenu, setEquipmentMenu] = useState<EquipmentMenuState>(defaultMenuState);
