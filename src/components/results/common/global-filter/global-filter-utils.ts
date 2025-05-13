@@ -18,7 +18,6 @@ export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) =>
         case FilterType.VOLTAGE_LEVEL:
             return option.label + ' kV';
         case FilterType.GENERIC_FILTER:
-            return option.label;
         case FilterType.SUBSTATION_PROPERTY:
             return option.label;
     }
@@ -29,7 +28,10 @@ export async function fetchSubstationPropertiesGlobalFilters(): Promise<{
     substationPropertiesGlobalFilters?: Map<string, string[]>;
 }> {
     const { substationPropertiesGlobalFilters } = await fetchStudyMetadata();
+    const definedSubstationPropertiesGlobalFilters: Map<string, string[]> = substationPropertiesGlobalFilters
+        ? new Map(Object.entries(substationPropertiesGlobalFilters))
+        : new Map<string, string[]>();
     return {
-        substationPropertiesGlobalFilters: new Map(Object.entries(substationPropertiesGlobalFilters)),
+        substationPropertiesGlobalFilters: definedSubstationPropertiesGlobalFilters,
     };
 }

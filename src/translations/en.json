@@ -523,7 +523,6 @@
     "results.globalFilter.genericFilter": "Generic",
     "results.globalFilter.country": "Countries",
     "results.globalFilter.voltageLevel": "Voltage levels",
-    "results.globalFilter.regionCvg": "Regions",
     "results.globalFilter.nonApplicable": "Filtering {filterName} is not applicable for the current results table and is inactive",
     "results.globalFilter.nonApplicableExtra": "Filtering {filterName} and {extraFiltersNum} others are not applicable for the current results table and are inactive",
 

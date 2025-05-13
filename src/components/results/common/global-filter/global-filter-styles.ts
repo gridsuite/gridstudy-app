@@ -144,10 +144,10 @@ export const resultsGlobalFilterStyles = {
     }),
     chipProperty: (theme: Theme) => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
-            backgroundColor: `${theme.palette.info.main}!important`,
+            backgroundColor: `${theme.palette.success.main}!important`,
         },
         '&.MuiChip-root:hover, &.MuiChip-root:focus': {
-            backgroundColor: `${theme.palette.info.dark}!important`,
+            backgroundColor: `${theme.palette.success.dark}!important`,
         },
     }),
 };

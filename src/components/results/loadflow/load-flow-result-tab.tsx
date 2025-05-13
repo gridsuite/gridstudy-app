@@ -285,16 +285,18 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
                     .map((filter: GlobalFilter) => filter.label)
             );
-            // extract the substation properties and sort them by property name
+            // extract the substation properties and sort them by property name (ie filterSubtype)
             const substationProperties: Map<string, string[]> = new Map();
             value
                 .filter((filter: GlobalFilter) => filter.filterType === FilterType.SUBSTATION_PROPERTY)
-                .filter((filter: GlobalFilter) => !!filter.filterSubtype)
                 .forEach((filter: GlobalFilter) => {
-                    if (substationProperties.has(filter.filterSubtype)) {
-                        substationProperties.get(filter.filterSubtype).push(filter.label);
-                    } else {
-                        substationProperties.set(filter.filterSubtype, [filter.label]);
+                    if (filter.filterSubtype) {
+                        const subtypeSubstationProperties = substationProperties.get(filter.filterSubtype);
+                        if (subtypeSubstationProperties) {
+                            subtypeSubstationProperties.push(filter.label);
+                        } else {
+                            substationProperties.set(filter.filterSubtype, [filter.label]);
+                        }
                     }
                 });
 
