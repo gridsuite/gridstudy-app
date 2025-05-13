@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNotificationsListener } from '@gridsuite/commons-ui';
+import { Identifiable, useNotificationsListener } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments } from 'redux/actions';
-import { AppState, NotificationType } from 'redux/reducer';
-import type { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
+import { AppState, EquipmentUpdateType, NotificationType } from 'redux/reducer';
+import { SpreadsheetEquipmentType } from '../config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
 import { NodeAlias } from '../custom-columns/node-alias.type';
@@ -19,9 +19,13 @@ import { isStatusBuilt } from '../../graph/util/model-functions';
 import { useFetchEquipment } from './use-fetch-equipment';
 import { NodeType } from '../../graph/tree-node.type';
 import { validAlias } from '../custom-columns/use-node-aliases';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { fetchNetworkElementInfos } from '../../../services/study/network';
+import { getEquipmentUpdateTypeFromType } from '../utils/convert-type-utils';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
+    equipmentToUpdateId: string | null,
     highlightUpdatedEquipment: () => void,
     nodeAliases: NodeAlias[] | undefined,
     active: boolean = false
@@ -116,10 +120,40 @@ export const useSpreadsheetEquipments = (
 
             if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid && currentNode?.id) {
                 // The formatting of the fetched equipments is done in the reducer
-                fetchAllEquipments(studyUuid, nodeId, currentRootNetworkUuid, impactedSubstationsIds).then((values) => {
-                    highlightUpdatedEquipment();
-                    dispatch(updateEquipments(values, nodeId));
-                });
+                if (
+                    type === EQUIPMENT_TYPES.SUBSTATION ||
+                    type === EQUIPMENT_TYPES.VOLTAGE_LEVEL ||
+                    !equipmentToUpdateId
+                ) {
+                    // we must fetch data for all equipments, as substation data (country) and voltage level data(nominalV)
+                    // can be displayed for all equipment types
+                    fetchAllEquipments(studyUuid, nodeId, currentRootNetworkUuid, impactedSubstationsIds).then(
+                        (values) => {
+                            highlightUpdatedEquipment();
+                            dispatch(updateEquipments(values, nodeId));
+                        }
+                    );
+                } else {
+                    // here, we can fetch only the data for the modified equipment
+                    fetchNetworkElementInfos(
+                        studyUuid,
+                        nodeId,
+                        currentRootNetworkUuid,
+                        type,
+                        'TAB',
+                        equipmentToUpdateId,
+                        false
+                    ).then((value: Identifiable) => {
+                        highlightUpdatedEquipment();
+                        const updateType = getEquipmentUpdateTypeFromType(type);
+                        if (updateType) {
+                            const equipmentsToUpdate: Partial<Record<EquipmentUpdateType, Identifiable[]>> = {
+                                [updateType]: [value],
+                            };
+                            dispatch(updateEquipments(equipmentsToUpdate, nodeId));
+                        }
+                    });
+                }
             }
             if (deletedEquipments.length > 0) {
                 const equipmentsToDelete = deletedEquipments
@@ -145,7 +179,15 @@ export const useSpreadsheetEquipments = (
                 }
             }
         },
-        [studyUuid, currentRootNetworkUuid, currentNode?.id, dispatch, type, highlightUpdatedEquipment]
+        [
+            studyUuid,
+            currentRootNetworkUuid,
+            currentNode?.id,
+            dispatch,
+            type,
+            highlightUpdatedEquipment,
+            equipmentToUpdateId,
+        ]
     );
 
     const listenerUpdateEquipmentsLocal = useCallback(
