@@ -180,6 +180,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             overrideLocales={AGGRID_LOCALES}
             suppressNoRowsOverlay={rowData === undefined}
             valueCache={true}
+            accentedSort={true}
         />
     );
 };
