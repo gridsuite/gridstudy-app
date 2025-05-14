@@ -10,11 +10,12 @@ import { SecurityAnalysisResultProps } from './security-analysis.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { GridReadyEvent } from 'ag-grid-community';
 import { IntlShape, useIntl } from 'react-intl';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
     rows,
@@ -60,6 +61,7 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
             defaultColDef={defaultColDef}
             onGridReady={onGridReady}
             overlayNoRowsTemplate={overlayNoRowsTemplate}
+            overrideLocales={AGGRID_LOCALES}
             {...agGridProps}
         />
     );

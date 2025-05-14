@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CsvExport } from '../spreadsheet/csv-export/csv-export';
+import { CsvExport } from '../csv-export/csv-export';
 import { FunctionComponent, RefObject } from 'react';
 import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { Box } from '@mui/material';
+import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 
 const styles = {
     gridContainer: {
@@ -84,6 +85,7 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
                                 api.showNoRowsOverlay();
                             }
                         }}
+                        overrideLocales={AGGRID_LOCALES}
                     />
                 </Box>
             )}

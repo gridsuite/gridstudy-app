@@ -42,8 +42,11 @@ import { fetchConfigParameter, fetchConfigParameters } from '../services/config'
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
+    addFilterForNewSpreadsheet,
     attemptLeaveParametersTab,
     initTableDefinitions,
+    renameTableDefinition,
+    saveSpreadsheetGsFilters,
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
@@ -54,9 +57,20 @@ import {
     setOptionalServices,
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
+    updateTableColumns,
 } from '../redux/actions';
-import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
+import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import { StudyView } from './utils/utils';
+import { NotificationType } from '../redux/reducer';
+import {
+    getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
+    getSpreadsheetModel,
+} from '../services/study-config';
+import {
+    extractColumnsFilters,
+    mapColumnsDto,
+    processSpreadsheetsCollectionData,
+} from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 
 const noUserManager = { instance: null, error: null };
 
@@ -140,6 +154,77 @@ const App = () => {
         listenerCallbackMessage: updateConfig,
     });
 
+    const resetTableDefinitions = useCallback(
+        (collection) => {
+            const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                processSpreadsheetsCollectionData(collection);
+            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters));
+        },
+        [dispatch]
+    );
+
+    const updateSpreadsheetTabOnNotification = useCallback(
+        (configUuid) => {
+            console.debug('Update spreadsheet tab on notification', configUuid);
+            getSpreadsheetModel(configUuid)
+                .then((model) => {
+                    const tabUuid = model.id;
+                    const formattedColumns = mapColumnsDto(model.columns);
+                    const columnsFilters = extractColumnsFilters(model.columns);
+                    const formattedGlobalFilters = model.globalFilters ?? [];
+                    dispatch(renameTableDefinition(tabUuid, model.name));
+                    dispatch(updateTableColumns(tabUuid, formattedColumns));
+                    dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
+                    dispatch(saveSpreadsheetGsFilters(tabUuid, formattedGlobalFilters));
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error,
+                        headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
+                    });
+                });
+        },
+        [dispatch, snackError]
+    );
+
+    const updateSpreadsheetCollectionOnNotification = useCallback(
+        (collectionUuid) => {
+            console.debug('Reset spreadsheet collection on notification', collectionUuid);
+            getSpreadsheetConfigCollectionFromId(collectionUuid)
+                .then((collection) => {
+                    resetTableDefinitions(collection);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error,
+                        headerId: 'spreadsheet/create_new_spreadsheet/error_loading_collection',
+                    });
+                });
+        },
+        [resetTableDefinitions, snackError]
+    );
+
+    const onSpreadsheetNotification = useCallback(
+        (event) => {
+            const eventData = JSON.parse(event.data);
+            if (eventData.headers.studyUuid !== studyUuid) {
+                return;
+            }
+            if (eventData.headers.updateType === NotificationType.SPREADSHEET_TAB_UPDATED) {
+                const configUuid = eventData.payload;
+                updateSpreadsheetTabOnNotification(configUuid);
+            } else if (eventData.headers.updateType === NotificationType.SPREADSHEET_COLLECTION_UPDATED) {
+                const collectionUuid = eventData.payload;
+                updateSpreadsheetCollectionOnNotification(collectionUuid);
+            }
+        },
+        [studyUuid, updateSpreadsheetCollectionOnNotification, updateSpreadsheetTabOnNotification]
+    );
+
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+        listenerCallbackMessage: onSpreadsheetNotification,
+    });
+
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
         useMatch({
@@ -212,26 +297,8 @@ const App = () => {
                 });
             });
 
-            const mapColumns = (columns) => {
-                return columns.map((column) => {
-                    return {
-                        ...column,
-                        dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
-                    };
-                });
-            };
-
-            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((config) => {
-                const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                    return {
-                        uuid: spreadsheetConfig.id,
-                        index: index,
-                        name: spreadsheetConfig.name,
-                        columns: mapColumns(spreadsheetConfig.columns),
-                        type: spreadsheetConfig.sheetType,
-                    };
-                });
-                dispatch(initTableDefinitions(config.id, tableDefinitions));
+            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((collection) => {
+                resetTableDefinitions(collection);
             });
 
             const fetchOptionalServices = getOptionalServices()
@@ -288,7 +355,7 @@ const App = () => {
                     })
                 );
         }
-    }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams]);
+    }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams, resetTableDefinitions]);
 
     const onChangeTab = useCallback(
         (newTabIndex) => {

@@ -7,7 +7,7 @@
 
 import { useCallback, useRef, useMemo, useEffect, useState, FunctionComponent } from 'react';
 import { BasicModificationDialog } from '../commons/basicModificationDialog';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -15,6 +15,7 @@ import { suppressEventsToPreventEditMode } from '../commons/utils';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef } from 'ag-grid-community';
 import { LineTypeInfo } from './line-catalog.type';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
@@ -278,6 +279,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
                     rowSelection="single"
                     onSelectionChanged={onSelectionChanged}
                     onGridReady={scrollToPreselectedElement} // Highlights the preselected row when AGGrid is ready
+                    overrideLocales={AGGRID_LOCALES}
                 />
             );
         },

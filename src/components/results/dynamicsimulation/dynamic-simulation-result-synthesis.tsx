@@ -13,14 +13,15 @@ import { MEDIUM_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { useSelector } from 'react-redux';
 import ComputingType from '../../computing-status/computing-type';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
+import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { COL_STATUS, StatusCellRender } from '../common/result-cell-renderers';
 import { UUID } from 'crypto';
 import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     loader: {
@@ -106,6 +107,7 @@ const DynamicSimulationResultSynthesis = memo(
                     defaultColDef={defaultColDef}
                     overlayNoRowsTemplate={overlayMessage}
                     enableCellTextSelection
+                    overrideLocales={AGGRID_LOCALES}
                 />
             </>
         );

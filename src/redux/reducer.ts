@@ -163,7 +163,7 @@ import {
     SET_ROOT_NETWORKS,
     SET_RELOAD_MAP_NEEDED,
     SET_STUDY_DISPLAY_MODE,
-    SET_STUDY_INDEXATION_STATUS,
+    SET_ROOT_NETWORK_INDEXATION_STATUS,
     SetAppTabIndexAction,
     SetCalculationSelectionsAction,
     SetComputationStartingAction,
@@ -179,7 +179,7 @@ import {
     SetRootNetworksAction,
     SetReloadMapNeededAction,
     SetStudyDisplayModeAction,
-    SetStudyIndexationStatusAction,
+    SetRootNetworkIndexationStatusAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
@@ -212,6 +212,10 @@ import {
     SetEditNadModeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
+    UPDATE_TABLE_COLUMNS,
+    UpdateTableColumnsAction,
+    SET_MONO_ROOT_STUDY,
+    SetMonoRootStudyAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -250,7 +254,6 @@ import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
-import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     ALL_BUSES,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,
@@ -294,16 +297,18 @@ import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../c
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
+    ColumnDefinition,
     SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-} from '../components/spreadsheet/config/spreadsheet.type';
+} from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
+import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
+import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -313,9 +318,12 @@ export enum NotificationType {
     ROOT_NETWORKS_DELETION_STARTED = 'rootNetworksDeletionStarted',
     ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
     ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
+    SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
+    SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
+    SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
 }
 
-export enum StudyIndexationStatus {
+export enum RootNetworkIndexationStatus {
     NOT_INDEXED = 'NOT_INDEXED',
     INDEXING_ONGOING = 'INDEXING_ONGOING',
     INDEXED = 'INDEXED',
@@ -550,7 +558,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
-    studyIndexationStatus: StudyIndexationStatus;
+    rootNetworkIndexationStatus: RootNetworkIndexationStatus;
     tableSort: TableSort;
     tables: TablesState;
 
@@ -571,6 +579,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isEventScenarioDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
+    isMonoRootStudy: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;
     freezeMapUpdates: boolean;
@@ -704,6 +713,7 @@ const initialState: AppState = {
     centerOnSubstation: undefined,
     notificationIdList: [],
     isModificationsInProgress: false,
+    isMonoRootStudy: true,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     nadNodeMovements: [],
@@ -734,7 +744,7 @@ const initialState: AppState = {
         status: OptionalServicesStatus.Pending,
     })),
     oneBusShortCircuitAnalysisDiagram: null,
-    studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
+    rootNetworkIndexationStatus: RootNetworkIndexationStatus.NOT_INDEXED,
     deletedOrRenamedNodes: [],
 
     // params
@@ -937,6 +947,24 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
+    builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
+        const { spreadsheetConfigUuid, columns } = action;
+        const existingTableDefinition = state.tables.definitions.find(
+            (tabDef) => tabDef.uuid === spreadsheetConfigUuid
+        );
+        if (existingTableDefinition) {
+            existingTableDefinition.columns = columns.map((column) => {
+                const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
+                const colDef: ColumnDefinition = {
+                    ...column,
+                    visible: existingColDef ? existingColDef.visible : true,
+                    locked: existingColDef ? existingColDef.locked : false,
+                };
+                return colDef;
+            });
+        }
+    });
+
     builder.addCase(RENAME_TABLE_DEFINITION, (state, action: RenameTableDefinitionAction) => {
         const tableDefinition = state.tables.definitions.find((tabDef) => tabDef.uuid === action.tabUuid);
         if (tableDefinition) {
@@ -952,7 +980,13 @@ export const reducer = createReducer(initialState, (builder) => {
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
-            .reduce((acc, tabUuid) => ({ ...acc, [tabUuid]: [] }), {});
+            .reduce(
+                (acc, tabUuid) => ({
+                    ...acc,
+                    [tabUuid]: action?.tablesFilters?.[tabUuid] ?? [],
+                }),
+                {}
+            );
         state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce((acc, tabUuid) => {
@@ -964,23 +998,27 @@ export const reducer = createReducer(initialState, (builder) => {
                 ];
                 return acc;
             }, {} as TableSortConfig);
+        state.gsFilterSpreadsheetState = action?.gsFilterSpreadsheetState ?? {};
     });
 
     builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {
-        state.tables.definitions = action.definitions.map((def, idx) => ({
-            ...def,
-            index: idx,
-        }));
+        const reorderedTabs = action.definitions;
+
+        // Create a map of existing tabs to preserve their references
+        const existingTabsMap = new Map(state.tables.definitions.map((tab) => [tab.uuid, tab]));
+
+        // Use the exact same object references in the new order
+        state.tables.definitions = reorderedTabs.map((newTab) => existingTabsMap.get(newTab.uuid) || newTab);
     });
 
     builder.addCase(REMOVE_TABLE_DEFINITION, (state, action: RemoveTableDefinitionAction) => {
         const removedTable = state.tables.definitions[action.tabIndex];
-        state.tables.definitions.splice(action.tabIndex, 1);
 
-        // Update indexes of remaining table definitions
-        state.tables.definitions.forEach((table, idx) => {
-            table.index = idx;
-        });
+        // Create a new array without the removed tab while preserving object references
+        const newDefinitions = state.tables.definitions.filter((_, idx) => idx !== action.tabIndex);
+
+        // Replace the definitions array with the new one
+        state.tables.definitions = newDefinitions;
 
         if (state[SPREADSHEET_STORE_FIELD]) {
             delete state[SPREADSHEET_STORE_FIELD][removedTable.uuid];
@@ -1298,6 +1336,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
             state.studyDisplayMode = action.studyDisplayMode;
         }
+    });
+
+    builder.addCase(SET_MONO_ROOT_STUDY, (state, action: SetMonoRootStudyAction) => {
+        state.isMonoRootStudy = action.isMonoRootStudy;
     });
 
     /*
@@ -1682,7 +1724,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
             // Format the updated equipments to match the table format
-            const formattedEquipments = formatFetchedEquipments(
+            const formattedEquipments = mapSpreadsheetEquipments(
                 // @ts-expect-error TODO manage undefined value case
                 equipmentType,
                 equipments
@@ -1787,8 +1829,8 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     );
 
-    builder.addCase(SET_STUDY_INDEXATION_STATUS, (state, action: SetStudyIndexationStatusAction) => {
-        state.studyIndexationStatus = action.studyIndexationStatus;
+    builder.addCase(SET_ROOT_NETWORK_INDEXATION_STATUS, (state, action: SetRootNetworkIndexationStatusAction) => {
+        state.rootNetworkIndexationStatus = action.rootNetworkIndexationStatus;
     });
 
     builder.addCase(ADD_TO_RECENT_GLOBAL_FILTERS, (state, action: AddToRecentGlobalFiltersAction) => {
@@ -1874,7 +1916,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const { colData } = action;
 
         // Retrieve the table definition by index
-        const tableDefinition = state.tables.definitions[colData.index];
+        const tableDefinition = state.tables.definitions.find((tabDef) => tabDef.uuid === colData.uuid);
 
         if (tableDefinition) {
             const existingColumnIndex = tableDefinition.columns.findIndex((col) => col.uuid === colData.value.uuid);
@@ -1890,8 +1932,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(REMOVE_COLUMN_DEFINITION, (state, action: RemoveColumnDefinitionAction) => {
-        const { index, value } = action.definition;
-        const tableDefinition = state.tables.definitions[index];
+        const { uuid, value } = action.definition;
+        const tableDefinition = state.tables.definitions.find((tabDef) => tabDef.uuid === uuid);
         const tableSort = state.tableSort[SPREADSHEET_SORT_STORE];
         const tableFilter = state[SPREADSHEET_STORE_FIELD];
 
@@ -1899,10 +1941,10 @@ export const reducer = createReducer(initialState, (builder) => {
             tableDefinition.columns = tableDefinition.columns.filter((col) => col.id !== value);
         }
         // remove sort and filter for the removed column
-        if (tableSort[tableDefinition.name]) {
+        if (tableDefinition && tableSort[tableDefinition.name]) {
             tableSort[tableDefinition.name] = tableSort[tableDefinition.name].filter((sort) => sort.colId !== value);
         }
-        if (tableFilter[tableDefinition.uuid]) {
+        if (tableDefinition && tableFilter[tableDefinition.uuid]) {
             tableFilter[tableDefinition.uuid] = tableFilter[tableDefinition.uuid].filter(
                 (filter) => filter.column !== value
             );

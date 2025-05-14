@@ -10,6 +10,7 @@ const spreadsheetFr = {
     'spreadsheet/column/dialog/title': 'Liste des colonnes',
     'spreadsheet/collection/save/title': 'Liste des tableurs',
     'spreadsheet/column/dialog/check_all': 'Sélectionner tout / aucun',
+    'spreadsheet/column/dialog/include_filters': 'Inclure les filtres',
     'spreadsheet/custom_column/add_columns': 'Ajouter une colonne',
     'spreadsheet/custom_column/edit_columns': 'Éditer une colonne',
     'spreadsheet/custom_column/column_name': 'Nom de la colonne',
@@ -43,7 +44,6 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/error_saving_or_updating_column':
         'Erreur lors de la sauvegarde ou de la mise à jour de la colonne',
     'spreadsheet/save/button': 'Enregistrer',
-    'spreadsheet/reset/button': 'Réinitialiser',
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/collection': 'Collection',
     'spreadsheet/save/options/csv': 'Export CSV',
@@ -74,6 +74,11 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/apply_model_option': 'Choisir un modèle',
     'spreadsheet/create_new_spreadsheet/apply_collection_option': 'Choisir une collection',
     'spreadsheet/create_new_spreadsheet/select_spreadsheet_model': 'Modèle de tableur',
+    'spreadsheet/save/include_filters_title': 'Inclure les filtres',
+    'spreadsheet/save/include_filters_message':
+        'Ce tableur comporte des filtres de colonnes et/ou des filtres globaux. Souhaitez-vous inclure ces filtres dans le modèle enregistré ?',
+    'spreadsheet/save/include_filters_yes': 'Oui',
+    'spreadsheet/save/include_filters_no': 'Non',
     'spreadsheet/create_new_spreadsheet/select_spreadsheet_collection': 'Collection de tableurs',
     'spreadsheet/create_new_spreadsheet/spreadsheet_name': 'Nom du tableur',
     'spreadsheet/create_new_spreadsheet/equipment_type': "Type d'équipement",
@@ -91,6 +96,7 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/error_adding_spreadsheet': "Erreur lors de l'ajout du tableur",
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Erreur lors de la réinitialisation de la collection de tableurs',
+    'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Réinitialiser la collection de tableurs',
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',

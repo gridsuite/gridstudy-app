@@ -28,10 +28,9 @@ import {
     NetworkModificationEditorNameHeader,
     NetworkModificationEditorNameHeaderProps,
 } from './network-modification-node-editor-name-header';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
 import SwitchCellRenderer from './switch-cell-renderer';
+import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     container: (theme: Theme) => ({
@@ -74,7 +73,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     ...nameHeaderProps
 }) => {
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -128,7 +127,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 width: 60,
             },
         ];
-        const dynamicColumns: ColDef<NetworkModificationInfos>[] = enableDeveloperMode
+        const dynamicColumns: ColDef<NetworkModificationInfos>[] = !isMonoRootStudy
             ? rootNetworks.map((rootNetwork) => {
                   const rootNetworkUuid = rootNetwork.rootNetworkUuid;
                   const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
@@ -143,7 +142,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                       headerStyle: { padding: 0 },
                       width: 72,
                       headerComponent: () =>
-                          isCurrentRootNetwork && (
+                          isCurrentRootNetwork &&
+                          modifications.length >= 1 && (
                               <Box
                                   sx={{
                                       width: '100%',
@@ -164,12 +164,12 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     }, [
         isRowDragDisabled,
         modifications?.length,
-        rootNetworks,
-        currentRootNetworkUuid,
-        enableDeveloperMode,
-        getModificationLabel,
-        setModifications,
         nameHeaderProps,
+        setModifications,
+        isMonoRootStudy,
+        rootNetworks,
+        getModificationLabel,
+        currentRootNetworkUuid,
     ]);
 
     const getRowId = (params: GetRowIdParams<NetworkModificationInfos>) => params.data.modificationInfos.uuid;
@@ -203,6 +203,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 onRowDragEnd={onRowDragEnd}
                 rowDragManaged={!isRowDragDisabled}
                 suppressNoRowsOverlay={true}
+                overrideLocales={AGGRID_LOCALES}
             />
         </Box>
     );

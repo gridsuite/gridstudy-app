@@ -8,8 +8,7 @@ import { Grid } from '@mui/material';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../../utils/config-params';
 import { FormattedMessage } from 'react-intl';
 import { INIT_NAD_WITH_GEO_DATA, TabValue } from './network-visualizations-utils';
-import { SwitchInput } from '@gridsuite/commons-ui';
-import { styles } from '../parameters-style';
+import { SwitchInput, parametersStyles } from '@gridsuite/commons-ui';
 
 export const NetworkAreaDiagramParameters = () => {
     return (
@@ -17,15 +16,15 @@ export const NetworkAreaDiagramParameters = () => {
             xl={6}
             container
             spacing={1}
-            sx={styles.scrollableGrid}
+            sx={parametersStyles.scrollableGrid}
             key={'networkAreaDiagramParameters'}
             marginTop={-3}
             justifyContent={'space-between'}
         >
-            <Grid item xs={8} sx={styles.parameterName}>
+            <Grid item xs={8} sx={parametersStyles.parameterName}>
                 <FormattedMessage id={INIT_NAD_WITH_GEO_DATA} />
             </Grid>
-            <Grid item container xs={4} sx={styles.controlItem}>
+            <Grid item container xs={4} sx={parametersStyles.controlItem}>
                 <SwitchInput name={`${TabValue.NETWORK_AREA_DIAGRAM}.${PARAM_INIT_NAD_WITH_GEO_DATA}`} />
             </Grid>
         </Grid>

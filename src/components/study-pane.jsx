@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Box, Paper } from '@mui/material';
 import PropTypes from 'prop-types';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { isNodeBuilt } from './graph/util/model-functions';
-import { TableWrapper } from './spreadsheet/table-wrapper';
+import { SpreadsheetView } from './spreadsheet-view/spreadsheet-view.js';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 import { StudyView } from './utils/utils';
@@ -49,7 +49,6 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
-        changed: false,
     });
 
     const { openDiagramView } = useDiagram();
@@ -64,9 +63,9 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
         }
     }
 
-    const unsetTableEquipment = () => {
-        setTableEquipment({ id: null, type: null, changed: false });
-    };
+    const unsetTableEquipment = useCallback(() => {
+        setTableEquipment({ id: null, type: null });
+    }, []);
 
     return (
         <>
@@ -91,12 +90,11 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={props.view === StudyView.SPREADSHEET}>
                 <Paper sx={styles.table}>
-                    <TableWrapper
+                    <SpreadsheetView
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
-                        equipmentChanged={tableEquipment.changed}
                         disabled={disabled}
                         onEquipmentScrolled={unsetTableEquipment}
                     />

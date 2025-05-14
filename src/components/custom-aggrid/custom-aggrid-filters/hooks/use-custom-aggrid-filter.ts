@@ -71,26 +71,34 @@ export const useCustomAggridFilter = (
         [colId, debounceMs]
     );
 
-    const handleChangeFilterValue = (filterData: FilterData) => {
-        setSelectedFilterData(filterData.value);
-        setTolerance(filterData.tolerance);
-        debouncedUpdateFilter({
-            value: filterData.value,
-            type: filterData.type ?? selectedFilterComparator,
-            dataType,
-            tolerance: filterData.tolerance,
-        });
-    };
+    const handleChangeFilterValue = useCallback(
+        (filterData: FilterData) => {
+            setSelectedFilterData(filterData.value);
+            setTolerance(filterData.tolerance);
+            debouncedUpdateFilter({
+                value: filterData.value,
+                type: filterData.type ?? selectedFilterComparator,
+                dataType,
+                tolerance: filterData.tolerance,
+            });
+        },
+        [dataType, debouncedUpdateFilter, selectedFilterComparator]
+    );
 
-    const handleChangeComparator = (newType: string) => {
-        setSelectedFilterComparator(newType);
-        debouncedUpdateFilter({
-            value: selectedFilterData,
-            type: newType,
-            dataType,
-            tolerance: tolerance,
-        });
-    };
+    const handleChangeComparator = useCallback(
+        (newType: string) => {
+            setSelectedFilterComparator(newType);
+            if (selectedFilterData) {
+                updateFilter(colId, {
+                    value: selectedFilterData,
+                    type: newType,
+                    dataType,
+                    tolerance: tolerance,
+                });
+            }
+        },
+        [colId, dataType, selectedFilterData, tolerance, updateFilter]
+    );
 
     useEffect(() => {
         if (!selectedFilterComparator) {
@@ -99,18 +107,14 @@ export const useCustomAggridFilter = (
     }, [selectedFilterComparator, comparators]);
 
     useEffect(() => {
-        if (!filters?.length) {
-            setSelectedFilterData(undefined);
+        const filterObject = filters?.find((filter) => filter.column === colId);
+        if (filterObject) {
+            setSelectedFilterData(filterObject.value);
+            setSelectedFilterComparator(filterObject.type ?? '');
         } else {
-            const filterObject = filters?.find((filter) => filter.column === colId);
-            if (filterObject) {
-                setSelectedFilterData(filterObject.value);
-                setSelectedFilterComparator(filterObject.type ?? selectedFilterComparator);
-            } else {
-                setSelectedFilterData(undefined);
-            }
+            setSelectedFilterData(undefined);
         }
-    }, [filters, colId, selectedFilterComparator]);
+    }, [filters, colId]);
 
     return {
         selectedFilterData,

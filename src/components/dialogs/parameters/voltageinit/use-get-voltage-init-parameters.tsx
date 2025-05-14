@@ -14,8 +14,8 @@ import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service
 import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
 import { getVoltageInitStudyParameters } from '../../../../services/study/voltage-init';
 import ComputingType from '../../../computing-status/computing-type';
-import { isComputationParametersUpdated } from '../common/computation-parameters-util';
 import { UUID } from 'crypto';
+import { isComputationParametersUpdated } from '../use-parameters-notification';
 
 export const useGetVoltageInitParameters = (): [
     VoltageInitParam | null,

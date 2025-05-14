@@ -10,13 +10,14 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
 import { useIntl } from 'react-intl';
 import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
-import { GlobalFilter } from '../../../spreadsheet/global-filter';
+import { GlobalFilter } from './global-filter';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { Curve as CurveType } from './curve/dialog/curve-preview';
 import { ValueFormatterParams } from 'ag-grid-community';
 import { Curve } from './dynamic-simulation-utils';
+import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     grid: {
@@ -170,6 +171,7 @@ const CurveParameters = ({ path }: { path: string }) => {
                             defaultColDef={defaultColDef}
                             rowSelection={'multiple'}
                             onSelectionChanged={onSelectionChanged}
+                            overrideLocales={AGGRID_LOCALES}
                         />
                     </Box>
                 </Grid>

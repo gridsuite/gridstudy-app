@@ -30,7 +30,28 @@ function TabPanelLazy({ children, selected, ...otherProps }: Readonly<TabPanelLa
     }, [selected, initialized]);
 
     return (
-        <Box style={{ display: selected ? 'inherit' : 'none' }} sx={styles.fullHeight} {...otherProps}>
+        <Box
+            style={
+                selected
+                    ? {
+                          display: 'inherit',
+                          position: 'relative',
+                          visibility: 'visible',
+                      }
+                    : {
+                          width: '100%',
+                          display: 'inherit',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          visibility: 'hidden',
+                          zIndex: -1,
+                          opacity: 0,
+                      }
+            }
+            sx={styles.fullHeight}
+            {...otherProps}
+        >
             {initialized && children}
         </Box>
     );

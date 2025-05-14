@@ -21,11 +21,12 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
 import { TABULAR_CREATION_FIELDS, styles, TabularCreationField } from './tabular-creation-utils';
-import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
+import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 
 const TabularCreationForm = () => {
     const intl = useIntl();
@@ -226,6 +227,7 @@ const TabularCreationForm = () => {
                     pagination
                     paginationPageSize={100}
                     suppressDragLeaveHidesColumns
+                    overrideLocales={AGGRID_LOCALES}
                 />
             </Grid>
         </Grid>

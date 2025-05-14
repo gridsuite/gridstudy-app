@@ -14,8 +14,8 @@ import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../ut
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { AppState } from '../../../redux/reducer';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
+import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { CustomAGGrid, unitToKiloUnit } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
@@ -30,6 +30,7 @@ import {
     FILTER_TEXT_COMPARATORS,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -417,6 +418,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
                 onRowDataUpdated={handleRowDataUpdated}
+                overrideLocales={AGGRID_LOCALES}
             />
         </Box>
     );
