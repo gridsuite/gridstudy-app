@@ -243,7 +243,7 @@ export const mergeModificationAndEquipmentShuntCompensatorInfos = (
     let result = new Map<string, LccShuntCompensatorModificationInfos>();
 
     if (!infosModification) {
-        if (infosMapServer) {
+        if (infosMap) {
             //we only consider infosMapServer
             for (const info of infosMapServer) {
                 result.set(info.id, {
