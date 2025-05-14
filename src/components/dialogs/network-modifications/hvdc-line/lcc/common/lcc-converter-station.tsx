@@ -50,7 +50,8 @@ export default function LccConverterStation({
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
     const intl = useIntl();
 
-    const stationIdField = previousValues ? (
+   // TODO should use TextInput when it supports disabled prop
+    const stationIdField = isModification ? (
         <TextField
             size="small"
             fullWidth
