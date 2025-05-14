@@ -69,8 +69,6 @@ type RowFormProps<T> = {
 
 function ShuntRowForm({ id, deletionMark, previousValues }: Readonly<RowFormProps<LccShuntCompensatorInfos>>) {
     const intl = useIntl();
-    const { getValues } = useFormContext();
-
     const PreviousConnection = useCallback(() => {
         let previousValue: boolean | null = null;
 
@@ -95,63 +93,39 @@ function ShuntRowForm({ id, deletionMark, previousValues }: Readonly<RowFormProp
                 InputProps={{
                     disableUnderline: true,
                 }}
+                sx={{ textAlign: 'end' }}
             />
         );
     }, [id, intl, previousValues]);
 
-    const IdField = useCallback(() => {
-        return <TextField fullWidth size="small" value={getValues(`${id}.${SHUNT_COMPENSATOR_ID}`) ?? ''} disabled />;
-    }, [getValues, id]);
-
-    const NameField = useCallback(
-        ({ disabled }: { disabled: boolean }) => {
-            return disabled ? (
-                <TextField fullWidth size="small" value={getValues(`${id}.${SHUNT_COMPENSATOR_NAME}`)} disabled />
-            ) : (
-                <TextInput name={`${id}.${SHUNT_COMPENSATOR_NAME}`} />
-            );
-        },
-        [getValues, id]
-    );
-
-    const NominalVoltageField = useCallback(
-        ({ disabled }: { disabled: boolean }) => {
-            return disabled ? (
-                <TextField fullWidth size="small" value={getValues(`${id}.${MAX_Q_AT_NOMINAL_V}`)} disabled />
-            ) : (
-                <FloatInput name={`${id}.${MAX_Q_AT_NOMINAL_V}`} adornment={ReactivePowerAdornment} />
-            );
-        },
-        [getValues, id]
-    );
-
-    const ShuntCompensatorSelectedField = useCallback(
-        ({ disabled }: { disabled: boolean }) => {
-            return (
-                <CheckboxNullableInput
-                    name={`${id}.${SHUNT_COMPENSATOR_SELECTED}`}
-                    label=""
-                    nullDisabled={false}
-                    disabled={disabled}
-                />
-            );
-        },
-        [id]
-    );
-
     const FieldList = useCallback(() => {
         return SHUNT_COLUMNS_DEFINITION.map((column) => (
             <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
-                {column.dataKey === SHUNT_COMPENSATOR_ID && <IdField />}
-                {column.dataKey === SHUNT_COMPENSATOR_NAME && <NameField disabled={deletionMark} />}
-                {column.dataKey === MAX_Q_AT_NOMINAL_V && <NominalVoltageField disabled={deletionMark} />}
+                {column.dataKey === SHUNT_COMPENSATOR_ID && (
+                    <TextInput name={`${id}.${SHUNT_COMPENSATOR_ID}`} disabled={deletionMark} />
+                )}
+                {column.dataKey === SHUNT_COMPENSATOR_NAME && (
+                    <TextInput name={`${id}.${SHUNT_COMPENSATOR_NAME}`} disabled={deletionMark} />
+                )}
+                {column.dataKey === MAX_Q_AT_NOMINAL_V && (
+                    <FloatInput
+                        name={`${id}.${MAX_Q_AT_NOMINAL_V}`}
+                        adornment={ReactivePowerAdornment}
+                        disabled={deletionMark}
+                    />
+                )}
                 {column.dataKey === PREVIOUS_SHUNT_COMPENSATOR_SELECTED && <PreviousConnection />}
                 {column.dataKey === SHUNT_COMPENSATOR_SELECTED && (
-                    <ShuntCompensatorSelectedField disabled={deletionMark} />
+                    <CheckboxNullableInput
+                        name={`${id}.${SHUNT_COMPENSATOR_SELECTED}`}
+                        label=""
+                        nullDisabled={false}
+                        disabled={deletionMark}
+                    />
                 )}
             </TableCell>
         ));
-    }, [IdField, NameField, NominalVoltageField, PreviousConnection, ShuntCompensatorSelectedField, deletionMark]);
+    }, [PreviousConnection, deletionMark, id]);
     return <FieldList />;
 }
 

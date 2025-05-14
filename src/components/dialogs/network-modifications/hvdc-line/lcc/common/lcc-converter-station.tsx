@@ -23,10 +23,9 @@ import GridItem from '../../../../commons/grid-item';
 
 import FiltersShuntCompensatorTable from '../creation/filters-shunt-compensator-table';
 import { CurrentTreeNode } from '../../../../../graph/tree-node.type';
-import TextField from '@mui/material/TextField';
 import { LccConverterStationFormInfos } from './lcc-type';
 import ModificationFiltersShuntCompensatorTable from '../modification/filter-shunt-compensator-table-modification';
-import { useIntl } from 'react-intl';
+import { useCallback } from 'react';
 
 interface LccConverterStationProps {
     id: string;
@@ -48,21 +47,6 @@ export default function LccConverterStation({
     isModification,
 }: Readonly<LccConverterStationProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
-    const intl = useIntl();
-
-    // TODO should use TextInput when it supports disabled prop
-    const stationIdField = isModification ? (
-        <TextField
-            size="small"
-            fullWidth
-            name={`${id}.${CONVERTER_STATION_ID}`}
-            label={intl.formatMessage({ id: 'converterStationId' })}
-            value={previousValues?.id}
-            disabled
-        />
-    ) : (
-        <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />
-    );
 
     const stationNameField = (
         <TextInput
@@ -84,16 +68,6 @@ export default function LccConverterStation({
         />
     );
 
-    const lossFactorField = (
-        <FloatInput
-            name={`${id}.${LOSS_FACTOR}`}
-            label={'lossFactorLabel'}
-            adornment={percentageTextField}
-            previousValue={previousValues?.lossFactor}
-            clearable={isModification}
-        />
-    );
-
     const connectivitySection = (
         <>
             <GridSection title={'Connectivity'} />
@@ -112,30 +86,49 @@ export default function LccConverterStation({
         />
     );
 
-    const ShuntCompensatorSection = isModification ? (
-        <ModificationFiltersShuntCompensatorTable
-            id={`${id}`}
-            previousValues={previousValues?.shuntCompensatorsOnSide}
-        />
-    ) : (
-        <FiltersShuntCompensatorTable id={`${id}`} />
+    const ShuntCompensatorSection = useCallback(
+        ({ isModification }: { isModification?: boolean }) =>
+            isModification ? (
+                <ModificationFiltersShuntCompensatorTable
+                    id={`${id}`}
+                    previousValues={previousValues?.shuntCompensatorsOnSide}
+                />
+            ) : (
+                <FiltersShuntCompensatorTable id={`${id}`} />
+            ),
+        [id, previousValues?.shuntCompensatorsOnSide]
     );
 
     return (
         <Grid container spacing={2}>
             <GridSection title={stationLabel} />
             <Grid container spacing={2}>
-                <GridItem size={4}>{stationIdField}</GridItem>
+                <GridItem size={4}>
+                    <TextInput
+                        name={`${id}.${CONVERTER_STATION_ID}`}
+                        label={'converterStationId'}
+                        disabled={isModification}
+                    />
+                </GridItem>
                 <GridItem size={4}>{stationNameField}</GridItem>
             </Grid>
             {!isModification && connectivitySection}
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                <GridItem size={4}>{lossFactorField}</GridItem>
+                <GridItem size={4}>
+                    {' '}
+                    <FloatInput
+                        name={`${id}.${LOSS_FACTOR}`}
+                        label={'lossFactorLabel'}
+                        adornment={percentageTextField}
+                        previousValue={previousValues?.lossFactor}
+                        clearable={isModification}
+                    />
+                </GridItem>
                 <GridItem size={4}>{powerFactorField}</GridItem>
             </Grid>
             <GridSection title={'Filters'} />
-            {ShuntCompensatorSection}
+            <ShuntCompensatorSection isModification={isModification} />
         </Grid>
     );
 }
