@@ -218,8 +218,8 @@ export const getShuntCompensatorOnSideFormModificationData = (
 };
 
 export const getConcatenatedShuntCompensatorOnSideInfos = (
-    infos?: LccShuntCompensatorModificationInfos[],
-    infosMapServer?: LccShuntCompensatorInfos[]
+    infosModification?: LccShuntCompensatorModificationInfos[],
+    infosMap?: LccShuntCompensatorInfos[]
 ) => {
     const result: LccShuntCompensatorModificationInfos[] | null = mergeModificationAndEquipmentShuntCompensatorInfos(
         infos,
